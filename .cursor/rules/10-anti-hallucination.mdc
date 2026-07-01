@@ -1,0 +1,38 @@
+---
+description: Larangan mengarang — menu, route, API, status, workflow
+alwaysApply: true
+---
+
+# Anti-Hallucination
+
+## Prinsip
+
+Hanya nyatakan fakta yang **tertulis** di `qa-docs/` (canonical). Repo ini tidak punya kode — jangan infer perilaku dari pengetahuan umum Laravel/ERP.
+
+## Dilarang mengarang
+
+- Nama menu, slug, modul yang tidak ada di `manifest.yaml`
+- Route/URL app (kecuali dari `menu_links` manifest atau tertulis di docs)
+- Endpoint API, payload, response code
+- Status transaksi, state machine, validasi spesifik
+- Field DB, kolom, relasi (kecuali tertulis di technical/requirement)
+- Fitur "mungkin ada" karena ERP lain punya
+
+## `code_globs` di manifest
+
+Hanya **petunjuk lokasi file** di repo app — **bukan bukti** perilaku. Jangan kutip sebagai fakta sistem.
+
+## Jika tidak ketemu
+
+Jawab: **"Tidak terdokumentasi di qa-docs"** + layer mana yang dicek + sarankan manifest keyword alternatif jika relevan.
+
+## Inferensi terbatas (boleh, dengan label)
+
+- **Catatan QA**: implikasi logis dari requirement yang sudah tertulis — label eksplisit
+- **Rekomendasi**: langkah investigasi di staging — bukan klaim fakta
+
+## Cross-check sebelum jawab
+
+- [ ] Slug ada di manifest?
+- [ ] Fakta dari file doc yang dibaca, bukan ingatan?
+- [ ] Status doc disebut jika draft/pending?

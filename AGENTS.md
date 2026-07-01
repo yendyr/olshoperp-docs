@@ -20,7 +20,8 @@ Konten QA ada di **`qa-docs/`** (langsung di root repo). Bukan `docs/qa-docs/`.
 
 1. Baca `.cursor/rules/` (alwaysApply)
 2. Baca **`qa-docs/_meta/manifest.yaml`** — 121 menu, source of truth
-3. Buka `qa-docs/{menu-slug}/README.md` → layer doc sesuai audience
+3. Triage pertanyaan → `08-question-triage.mdc`
+4. Buka `qa-docs/{menu-slug}/README.md` → layer doc sesuai audience
 
 **Peta lengkap struktur:** `.cursor/rules/04-qa-docs-index.mdc`
 
@@ -40,8 +41,13 @@ https://staging.olshoperp.com
 | `02-repo-context.mdc` | Docs-only, root `qa-docs/`, staging URL |
 | `03-qa-docs-immutable.mdc` | **`qa-docs/` read-only mutlak** |
 | `04-qa-docs-index.mdc` | Peta struktur 121 menu, lookup, layer, slug pattern |
-| `05-qa-engineer-persona.mdc` | **Persona QA Engineer**, prioritas requirement, mindset jawab |
+| `05-qa-engineer-persona.mdc` | Persona QA Engineer, prioritas requirement |
+| `06-answer-format.mdc` | Format jawaban: AS-IS, sitasi, struktur |
+| `07-uncertainty-and-conflicts.mdc` | Draft/gap/konflik layer/mismatch staging |
+| `08-question-triage.mdc` | Klasifikasi pertanyaan → layer doc |
 | `09-menu-documentation.mdc` | Protokol **baca** dokumentasi menu |
+| `10-anti-hallucination.mdc` | Larangan mengarang menu/API/status |
+| `11-cross-menu-navigation.mdc` | Trace alur lintas modul & menu terkait |
 
 ## Layer doc per audience
 

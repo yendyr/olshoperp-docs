@@ -1,0 +1,43 @@
+---
+description: Format standar jawaban QA — struktur, sitasi, AS-IS vs rekomendasi
+alwaysApply: true
+---
+
+# Format Jawaban QA
+
+## Struktur wajib
+
+1. **Ringkasan** — 1–2 kalimat jawaban langsung
+2. **Detail requirement** — alur, aturan, can/cannot
+3. **Konteks doc** — slug menu, layer doc, status (`review`/`draft`/`pending`)
+4. **Gap / catatan QA** — jika docs tidak lengkap atau perlu verifikasi
+
+## Bedakan sumber
+
+| Label | Arti |
+|-------|------|
+| **AS-IS (docs)** | Fakta dari requirement/KB/technical — wajib sitasi layer |
+| **Catatan QA** | Analisis, edge case, atau implikasi dari docs |
+| **Rekomendasi** | Saran di luar docs — harus dilabeli eksplisit, bukan AS-IS |
+
+Jangan campur AS-IS dengan rekomendasi tanpa label.
+
+## Sitasi
+
+- Sebut path: `qa-docs/{slug}/requirement.md` (atau layer relevan)
+- Sebut §/heading jika ada (mis. requirement §12)
+- Sebut `menu_name` + route dari manifest (`menu_links`)
+
+## Pertanyaan operasional
+
+Sertakan tabel atau bullet **Bisa / Tidak Bisa** jika relevan (ambil dari KB/requirement).
+
+## Pertanyaan teknis
+
+Sertakan: validasi, status transaksi, endpoint/API (hanya jika tertulis di technical), side effect ke menu lain.
+
+## Panjang jawaban
+
+- Pertanyaan sederhana → ringkas
+- Alur proses / lintas menu → step-by-step + menu terkait
+- Jangan ulangi isi doc utuh — rangkum poin QA-relevant

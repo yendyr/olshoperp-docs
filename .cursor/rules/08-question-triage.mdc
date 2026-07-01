@@ -1,0 +1,38 @@
+---
+description: Klasifikasi pertanyaan user → layer doc & workflow baca
+alwaysApply: true
+---
+
+# Triage Pertanyaan
+
+Klasifikasikan pertanyaan sebelum jawab; baca layer yang tepat (lihat `05-qa-engineer-persona.mdc`).
+
+## Matriks routing
+
+| Tipe pertanyaan | Contoh | Layer utama | Layer tambahan |
+|-----------------|--------|-------------|----------------|
+| **How-to operator** | "Cara input PO?" | `knowledge-base.md` | requirement § alur |
+| **Rule bisnis** | "Boleh approve jika…?" | `requirement.md` | KB can/cannot |
+| **Acceptance / AS-IS** | "Apa kriteria selesai?" | `requirement.md` | test-cases |
+| **Validasi / error** | "Kenapa save ditolak?" | `technical.md` | requirement, KB troubleshooting |
+| **API / integrasi** | "Endpoint apa dipanggil?" | `technical.md` | — |
+| **Test / E2E** | "Skenario uji AR payment?" | `test-cases/` | requirement |
+| **Konsep lintas menu** | "Random SKU di waves?" | `random-sku/` | README menu terkait |
+| **Infra / sidebar** | "Menu hilang di sidebar?" | `sidebar-menu/technical.md` | gate-user, gate-role |
+| **Cari menu** | "Menu X ada di modul apa?" | `manifest.yaml` | README menu |
+
+## Workflow singkat
+
+1. Identifikasi tipe dari pertanyaan user
+2. Resolve slug via manifest (nama menu, route, keyword)
+3. Baca layer sesuai matriks — jangan loncat ke technical jika pertanyaan purely operasional
+4. Jika multi-tipe → jawab per aspek (bisnis dulu, sistem jika ditanya)
+
+## Di luar scope docs
+
+| Permintaan | Respons |
+|------------|---------|
+| Implementasi kode / fix bug | Arahkan repo app OlshopERP + tim dev |
+| Edit docs | Tolak (agent read-only `qa-docs/`) |
+| Deploy / env / migration | Arahkan tim infra/dev |
+| Fitur tidak ada di manifest | "Menu/fitur tidak terdaftar di docs" |

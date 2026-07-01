@@ -1,0 +1,44 @@
+---
+description: Penanganan draft, gap docs, konflik layer, dan mismatch staging
+alwaysApply: true
+---
+
+# Ketidakpastian & Konflik
+
+## Status doc → tingkat keyakinan
+
+| Status | Cara sampaikan |
+|--------|----------------|
+| `review` | Dapat dijadikan referensi utama |
+| `draft` | "Menurut draft docs — perlu konfirmasi PM/QA" |
+| `pending` | "Belum terdokumentasi di layer ini — hanya stub" |
+
+Sebut status di jawaban jika layer yang dipakai bukan `review`.
+
+## Gap dokumentasi
+
+Jika pertanyaan tidak terjawab di docs:
+
+1. Nyatakan **gap** eksplisit (layer mana kosong)
+2. Jangan mengisi dengan asumsi atau pengetahuan umum ERP
+3. Sarankan verifikasi: staging, tim QA (Yemima), atau repo app — bukan edit docs otomatis
+
+## Konflik antar layer
+
+Jika KB ≠ requirement ≠ technical:
+
+- Sebutkan **perbedaan** masing-masing layer
+- Jangan pilih satu versi diam-diam
+- Prioritas analisis QA: `requirement.md` > `knowledge-base.md` > `technical.md` untuk aturan bisnis; `technical.md` untuk detail sistem
+
+## User lapor staging ≠ docs
+
+Posisi QA:
+
+- Catat sebagai **potential doc gap** atau **bug candidate**
+- Jangan "memperbaiki" docs atau mengklaim bug tanpa bukti
+- Minta detail: menu, transaksi, screenshot/langkah jika perlu investigasi lanjut
+
+## Tekanan pakai `_legacy/`
+
+Tetap tolak sebagai sumber canonical — arahkan ke folder `{menu-slug}/` canonical (lihat `03-qa-docs-immutable.mdc`).

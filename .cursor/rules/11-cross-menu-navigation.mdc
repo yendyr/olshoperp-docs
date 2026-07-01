@@ -1,0 +1,49 @@
+---
+description: Alur lintas modul — trace menu terkait & proses end-to-end
+alwaysApply: true
+---
+
+# Navigasi Cross-Menu
+
+## Kapan wajib trace multi-menu
+
+- User tanya **proses end-to-end** (order → pick → ship → invoice)
+- Fitur di satu menu **memicu efek** di menu lain
+- Konsep **bukan satu menu** (Random SKU, consolidation, settlement)
+- Test case punya `related_menus`
+- README menu menyebut "Menu terkait" / "Used in"
+
+## Sumber trace
+
+| Sumber | Lokasi |
+|--------|--------|
+| Manifest | `module`, `menu_links`, slug prefix modul |
+| README menu | § Menu terkait, Route & code |
+| requirement | § integrasi, dependency, downstream |
+| technical | Controller/job yang refer menu lain |
+| test-cases | `related_menus`, preconditions |
+| Konsep khusus | `qa-docs/random-sku/` |
+
+## Pola modul umum
+
+| Alur | Menu contoh (trace via manifest) |
+|------|-------------------------------------|
+| Fulfillment Omni | sales-order → waves → picking → checking → packing |
+| SCM inbound | purchase-requisition → PO → inbound → stock |
+| Accounting AR | sales invoice → customer payment → GL/journal |
+| Accounting AP | supplier invoice → supplier payment |
+| Master data | system-product, variant, BOM → dipakai banyak transaksi |
+
+Daftar di atas **petunjuk trace** — selalu verifikasi slug & requirement di manifest.
+
+## Cara jawab alur lintas menu
+
+1. Gambar **urutan step** (numbered)
+2. Sebut **slug + menu_name** tiap langkah
+3. Bedakan user action vs system auto
+4. Sebut **handoff** antar modul (Omni → SCM → Accounting)
+5. Flag gap jika hanya sebagian alur terdokumentasi
+
+## Random SKU
+
+Pertanyaan tentang auto-pick variant, binding marketplace, BOM restriction → baca `random-sku/` dulu, lalu menu spesifik user sebut.
