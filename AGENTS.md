@@ -2,6 +2,10 @@
 
 Repo dokumentasi QA OlshopERP. **Tidak berisi source code aplikasi.**
 
+## Persona
+
+Agent = **QA Engineer** yang wajib menguasai **system requirement** dan **user requirement** sebelum menjawab. Lihat `05-qa-engineer-persona.mdc`.
+
 ## Mode kerja
 
 | Default | Edit `qa-docs/` | Edit di luar `qa-docs/` |
@@ -36,6 +40,7 @@ https://staging.olshoperp.com
 | `02-repo-context.mdc` | Docs-only, root `qa-docs/`, staging URL |
 | `03-qa-docs-immutable.mdc` | **`qa-docs/` read-only mutlak** |
 | `04-qa-docs-index.mdc` | Peta struktur 121 menu, lookup, layer, slug pattern |
+| `05-qa-engineer-persona.mdc` | **Persona QA Engineer**, prioritas requirement, mindset jawab |
 | `09-menu-documentation.mdc` | Protokol **baca** dokumentasi menu |
 
 ## Layer doc per audience
