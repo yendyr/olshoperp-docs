@@ -1,0 +1,34 @@
+---
+description: Folder qa-docs/ read-only mutlak — agent dilarang mengubah isinya
+alwaysApply: true
+---
+
+# qa-docs/ — Read-Only Mutlak
+
+## Larangan absolut
+
+Agent/Cursor **dilarang** melakukan operasi tulis apa pun di `qa-docs/`:
+
+- create file atau folder baru
+- edit isi file
+- rename / move
+- delete
+- format-on-save otomatis yang mengubah file
+
+Berlaku **tanpa pengecualian** — termasuk jika user meminta "update doc", "buat menu baru", atau konfirmasi edit umum. Tolak dengan sopan; arahkan user mengedit manual atau minta pengecualian eksplisit di tuning rules terpisah.
+
+## Yang boleh
+
+- **Read** file di `qa-docs/` untuk menjawab pertanyaan
+- Edit hanya di luar `qa-docs/` (mis. `.cursor/rules/`, `AGENTS.md`) — dan tetap butuh konfirmasi user
+
+## Struktur root dokumentasi
+
+Root konten dokumentasi QA di repo ini = folder **`qa-docs/`** (langsung di root repo).
+
+| Path lama (monorepo) | Path benar (repo ini) |
+|----------------------|------------------------|
+| `docs/qa-docs/_meta/manifest.yaml` | `qa-docs/_meta/manifest.yaml` |
+| `docs/qa-docs/{menu-slug}/` | `qa-docs/{menu-slug}/` |
+
+Jangan pakai prefix `docs/` saat merujuk file dokumentasi.

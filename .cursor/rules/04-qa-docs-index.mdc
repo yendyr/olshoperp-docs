@@ -1,0 +1,101 @@
+---
+description: Peta struktur qa-docs/ untuk navigasi & indexing agent (read-only)
+alwaysApply: true
+---
+
+# Index qa-docs/
+
+## Statistik (2026-06-25 manifest)
+
+| Item | Nilai |
+|------|-------|
+| Menu terdaftar | **121** slug di `qa-docs/_meta/manifest.yaml` |
+| Folder menu | 1:1 dengan slug manifest |
+| Modul | SupplyChain 55 · Accounting 42 · OmniChannel 12 · GeneralSetting 6 · Gate 4 · AI 2 |
+| Status per layer doc | pending 122 · draft 217 · review 25 |
+
+## Pohon folder
+
+```
+qa-docs/
+├── README.md                 ← overview repo (bukan sumber per-menu)
+├── _meta/                    ← jangan kutip ke user; manifest boleh dibaca agent
+│   ├── manifest.yaml         ← SOURCE OF TRUTH index menu
+│   ├── manifest-gate-gs-draft.yaml  ← snippet historis, bukan SoT
+│   ├── MERMAID_STYLE_GUIDE.md
+│   └── templates/            ← kb · requirement · technical · e2e-test-case
+├── _legacy/                  ← referensi lama; BUKAN canonical
+├── Debug *.xlsx              ← abaikan untuk jawaban
+└── {menu-slug}/
+    ├── README.md             ← indeks layer + route + legacy
+    ├── knowledge-base.md     ← operator, support, ops
+    ├── requirement.md        ← PM, QA, support
+    ├── technical.md          ← developer
+    └── test-cases/           ← opsional (2 menu saat ini)
+        ├── README.md
+        └── TC-*.md
+```
+
+## Schema entry manifest (per menu)
+
+```yaml
+{slug}:
+  menu_name: "Display Name"
+  path: {slug}                    # = nama folder
+  module: OmniChannel|Accounting|SupplyChain|Gate|GeneralSetting|AI
+  menu_links: [fe/route/segment]  # mapping URL staging
+  owner: QA - Yemima
+  docs:
+    knowledge-base: { file, status }
+    requirement:    { file, status }
+    technical:      { file, status }
+    test_cases:     { path, status }   # opsional
+  legacy_sources: [_legacy/...]
+  code_globs:       # referensi repo app — tidak ada di repo ini
+    backend: [...]
+    frontend: [...]
+```
+
+## Pola slug → modul
+
+| Prefix / pola | Modul | Contoh |
+|---------------|-------|--------|
+| `omni-*` | OmniChannel | `omni-picking-process` |
+| `accounting-*` | Accounting | `accounting-customer-invoice` |
+| `supplychain-*` | SupplyChain | `supplychain-purchase-order` |
+| `gate-*` | Gate | `gate-user` |
+| `generalsetting-*` | GeneralSetting | `generalsetting-country` |
+| `ai-*`, `kb-*` | AI | `ai-kb-assistant`, `kb-store-monitor` |
+| Tanpa prefix (legacy naming) | lihat manifest | `journal`, `general-ledger`, `system-product`, `bill-of-material`, `sales-order-general`, `manage-platform-product`, `random-sku`, `sidebar-menu` |
+
+## Workflow lookup (wajib)
+
+1. **Cari slug** — grep `manifest.yaml` by: `menu_name`, `menu_links`, atau teks user → keyword slug
+2. **Buka** `qa-docs/{slug}/README.md`
+3. **Pilih layer** by audience (lihat `09-menu-documentation.mdc`)
+4. **Cross-menu concept** → `random-sku/` (bukan satu menu app)
+5. **Sidebar kosong / menu hilang** → `sidebar-menu/technical.md` (status `final`)
+6. **Test case E2E** → cek manifest `test_cases:` dulu:
+   - `accounting-customer-payment/test-cases/`
+   - `generalsetting-general-company/test-cases/`
+
+## URL staging dari menu_links
+
+Base: `https://staging.olshoperp.com/{menu_links}`
+
+Contoh: `menu_links: [accounting/journal]` → `/accounting/journal`
+
+## Frontmatter per doc_type
+
+| doc_type | Field khas |
+|----------|------------|
+| `knowledge-base` | `audience`, `sections` |
+| `requirement` | § acceptance criteria, AS-IS |
+| `technical` | `related_docs`, architecture, file map |
+| `e2e-test-case` | `tc_code`, `steps`, `expected_result`, `related_menus` |
+
+## Yang diabaikan saat indexing jawaban
+
+- `_legacy/**`, `_meta/templates/**`, `manifest-gate-gs-draft.yaml`
+- Skill/path lama `docs/qa-docs/` atau `.cursor/skills/` dari referensi docs
+- `code_globs` — hanya petunjuk repo app, bukan bukti perilaku

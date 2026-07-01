@@ -1,0 +1,32 @@
+---
+description: Protokol baca dokumentasi menu QA (read-only)
+alwaysApply: true
+---
+
+# Protokol Dokumentasi Menu
+
+## Menjawab pertanyaan menu/fitur
+
+Urutan baca (wajib):
+
+1. `qa-docs/_meta/manifest.yaml` — cari slug menu, status doc, modul
+2. `qa-docs/{menu-slug}/README.md` — indeks layer doc
+3. Layer sesuai audience:
+   - `knowledge-base.md` — operator, support, ops
+   - `requirement.md` — PM, QA, support
+   - `technical.md` — developer
+
+## Larangan sumber
+
+- **Jangan** pakai `qa-docs/_legacy/` sebagai sumber canonical (hanya referensi historis).
+- **Jangan** pakai flat file markdown di root `qa-docs/` (selain README repo).
+- **Jangan** mengutip `draft.md` atau `_meta/` sebagai jawaban user-facing.
+
+## Status doc
+
+- Hormati status: `pending` / `draft` / `review` — sebutkan tingkat keyakinan jika masih draft.
+- Agent **tidak** mengubah manifest atau frontmatter (read-only).
+
+## Modul terdaftar
+
+OmniChannel · Accounting · SupplyChain · Gate · GeneralSetting — total menu lihat manifest.

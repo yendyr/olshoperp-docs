@@ -1,0 +1,29 @@
+---
+description: Konteks repo olshoperp-docs — docs-only, staging URL, batasan scope
+alwaysApply: true
+---
+
+# Konteks Repo
+
+## Repo ini docs-only
+
+- **Root dokumentasi** = folder `qa-docs/` langsung di root repo (bukan `docs/qa-docs/`).
+- **Tidak ada** source code backend/frontend di repo ini.
+- Field `code_globs` di manifest hanya referensi ke repo aplikasi terpisah — jangan klaim bisa baca/mengubah kode dari sini.
+- Folder `qa-docs/` **read-only** untuk agent — lihat `03-qa-docs-immutable.mdc`.
+
+## Aplikasi live (staging)
+
+- URL staging: **https://staging.olshoperp.com**
+- Gunakan untuk konteks UI/routing jika user menanyakan perilaku aplikasi; verifikasi detail bisnis tetap dari docs canonical.
+
+## Path canonical
+
+| Salah (monorepo lama) | Benar (repo ini) |
+|-----------------------|------------------|
+| `docs/qa-docs/_meta/manifest.yaml` | `qa-docs/_meta/manifest.yaml` |
+| `docs/qa-docs/{menu-slug}/` | `qa-docs/{menu-slug}/` |
+
+## Di luar scope default
+
+- Implementasi kode, deploy, migration DB, konfigurasi server — arahkan ke repo aplikasi OlshopERP, bukan repo docs ini.

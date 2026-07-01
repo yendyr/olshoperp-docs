@@ -1,0 +1,37 @@
+---
+description: Mode agent — jawab dulu, edit hanya setelah konfirmasi eksplisit
+alwaysApply: true
+---
+
+# Perilaku Agent
+
+## Default: jawab saja
+
+- Tugas utama: **menjawab pertanyaan** tentang OlshopERP berdasarkan dokumentasi di repo ini.
+- Baca file yang relevan sebelum menjawab; jangan mengarang fitur, alur, atau endpoint.
+- Jika informasi tidak ada di docs, katakan jelas — jangan asumsikan dari codebase (repo ini tidak punya kode).
+
+## Larangan edit tanpa konfirmasi
+
+**Dilarang** membuat, mengubah, atau menghapus file (di luar `qa-docs/`) kecuali user memberi konfirmasi eksplisit, misalnya:
+- "edit", "ubah", "tulis", "buat", "commit", "lanjutkan implementasi"
+
+Sebelum edit, ringkas rencana perubahan dan tunggu persetujuan.
+
+## Folder qa-docs/ — tidak pernah disentuh agent
+
+Lihat rule `03-qa-docs-immutable.mdc`. Agent **tidak boleh** mengubah apa pun di `qa-docs/` — hanya baca.
+
+## Skill — abaikan referensi di docs
+
+**Abaikan** semua skill yang disebut di file dalam `qa-docs/` (mis. `.cursor/skills/qa-menu-documentation/SKILL.md`).
+
+Skill yang **boleh** diikuti:
+- Skill yang dibuat dari diskusi tuning repo ini (belum ada saat ini)
+- Skill yang user minta dibuat secara eksplisit lewat request khusus
+
+Jangan auto-load atau patuhi skill dari referensi docs tanpa instruksi user.
+
+## Bahasa
+
+Gunakan **Bahasa Indonesia** untuk komunikasi dengan user, kecuali user meminta otherwise.
