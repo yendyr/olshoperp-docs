@@ -2,8 +2,8 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Sales Order General (Internal)"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-07-02
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -18,10 +18,11 @@ related_docs:
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | AS-IS import + merge bulk improvement TO-BE |
+| 1.1 | 2026-07-02 | QA - Yemima | §7 Failed Process AS-IS file map + §8 Re-check TO-BE design |
 
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB  
 **Type:** `type_sales_order = general`  
-**UI routes:** `/businessdevelopment/sales-order-general`, `/businessdevelopment/all-sales-order`  
+**UI routes:** `/businessdevelopment/sales-order-general`, `/businessdevelopment/all-sales-order`, `/omni/sales-order` (Dev - Sales Platform)  
 **API prefix:** `/api/omnichannel/sales-order/*`
 
 ---
@@ -67,7 +68,9 @@ flowchart LR
 |------|------|
 | `olshoperp-frontend/src/pages/BusinessDevelopment/SalesOrderGeneral/DataList.vue` | CRUD + import UI |
 | `olshoperp-frontend/src/pages/BusinessDevelopment/SalesOrderGeneral/Form.vue` | Create/edit SO |
-| `olshoperp-frontend/src/pages/BusinessDevelopment/Report/AllSalesOrder/DataList.vue` | Combined view + import |
+| `olshoperp-frontend/src/pages/BusinessDevelopment/Report/AllSalesOrder/DataList.vue` | Combined view + import + PillButtons Failed Process |
+| `olshoperp-frontend/src/pages/Omni/SalesOrder/DataList.vue` | Dev - Sales Platform datalist + Failed Process |
+| `olshoperp-frontend/src/pages/Omni/SalesOrder/components/PillButtons.vue` | Pills: Failed Process, Failed Sync, Ready to Process |
 | `src/utils/imports.ts` | Import history columns |
 | `src/components/project/DataTables/ImportFileTable.vue` | Import progress |
 
@@ -79,7 +82,12 @@ flowchart LR
 
 | File | Role |
 |------|------|
-| `Modules/OmniChannel/Http/Controllers/SalesOrderController.php` | CRUD, upload, progress, import history |
+| `Modules/OmniChannel/Http/Controllers/SalesOrderController.php` | CRUD, `error_flags_formatted`, `failedProcess()`, `validateOrderDetails()` |
+| `Modules/OmniChannel/Entities/SalesOrder.php` | `renderErrorFlags()`, `getErrors()`, `dataListRelations()` |
+| `Modules/OmniChannel/Entities/SalesOrderDetailError.php` | Detail-level error flags (`omni_sales_order_detail_errors`) |
+| `Modules/OmniChannel/Concerns/CanManageOrderDetailError.php` | `addError()`, `removeError()`, `clearError()` |
+| `Modules/OmniChannel/Jobs/CheckOrderFlagsJob.php` | Post-approve platform validation flags |
+| `app/Console/Commands/ScreeningErrorFlagStockSalesOrderCommand.php` | Daily auto-clear `stock-error` |
 | `Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php` | Detail lines, detail import |
 | `Modules/OmniChannel/Import/SalesOrderImport.php` | Import orchestrator |
 | `Modules/OmniChannel/Import/SalesOrderImportSheet1.php` | Sheet 1 parse + validate (sync today) |
@@ -218,6 +226,120 @@ flowchart TD
 
 ---
 
+## 7. Failed Process — AS-IS (Technical)
+
+### 7.1 Data model
+
+| Tabel / relasi | Level | Isi |
+|----------------|-------|-----|
+| `omni_sales_order_detail_errors` | Per detail (morph) | JSON `errors`: `{ "bind-error": "...", "stock-error": "..." }` |
+| `omni_sales_order_errors` (`error_info`) | Per order | JSON `error` — shipping, warehouse, stock order-level |
+| `SalesOrder::getErrors()` | Aggregate | Merge `error_info` + reduce `detail_error_flags` |
+
+**AS-IS gap:** Tidak ada kolom `last_checked_at` per flag.
+
+### 7.2 API (AS-IS)
+
+| Method | Path | Role |
+|--------|------|------|
+| POST/GET | `omnichannel/sales-order/get?failed_process=true` | Datalist + kolom `error_flags_formatted` |
+| POST | `businessdevelopment/all-sales-order/get?failed_process=true` | All Sales Order (proxy ke SalesOrderController) |
+| GET | `omnichannel/sales-order/failed-process` | Counter pill Failed Process |
+| GET | `omnichannel/unassign-wave/refresh-stock` | Manual stock re-check (**Unassign Wave only**) |
+
+### 7.3 Rendering pipeline
+
+```
+SalesOrderController@index
+  → addColumn('error_flags_formatted')
+  → if failed_process=false → return '-'
+  → $row->getErrors()
+  → Store::getStockWH() → warehouse-error jika empty
+  → SalesOrder::renderErrorFlags($id, $flag, $message, $color)
+  → HTML tooltip-function-text + fa-solid icon
+```
+
+Flag → icon mapping: `SalesOrder::renderErrorFlags()` (`bind-error` → `link-slash`, `coa-error` → `share-nodes`, `stock-error` → `boxes-stacked`, `warehouse-error` → `warehouse`).
+
+### 7.4 Scheduled & manual refresh (AS-IS)
+
+| Mechanism | Schedule / trigger | Scope | Flags |
+|-----------|-------------------|-------|-------|
+| `screening:error-flag-stock-sales-order` | Daily 04:00 WIB | Semua SO dengan stock-error | `stock-error` only |
+| `CheckOrderFlagsJob` | Post platform approve | 1 SO | All approve validation flags |
+| `UnassignWaveController@refreshStock` | Manual button | Unassign Wave list | `stock-error` |
+| `ProductBindingObserver` | On bind/unbind | Related orders | `bind-error` |
+
+---
+
+## 8. Re-check Failed Process — TO-BE (Design Spec)
+
+> Merged dari requirement §9. **Not yet implemented.**
+
+### 8.1 Target architecture
+
+```mermaid
+flowchart TD
+    A[User klik Re-check Failed Process] --> B[Create batch log session]
+    B --> C[Bus::batch RecheckFailedProcessJob per SO]
+    C --> D1[Job SO-001]
+    C --> D2[Job SO-002]
+    C --> DN[Job SO-N]
+    D1 --> E[Evaluate bind / COA / stock / warehouse granular]
+    E --> F[Update flags + last_checked per icon]
+    F --> G[Aggregate log per store]
+    G --> H[Enable tombol kembali]
+```
+
+### 8.2 Proposed API
+
+| Method | Path | Role |
+|--------|------|------|
+| POST | `businessdevelopment/all-sales-order/recheck-failed-process` | Dispatch batch (all orders) |
+| GET | `businessdevelopment/all-sales-order/recheck-failed-process/progress` | Batch progress + disable/enable button |
+| GET | `businessdevelopment/all-sales-order/recheck-failed-process/logs` | Log grouped per store |
+
+### 8.3 Proposed jobs
+
+| Job | Role |
+|-----|------|
+| `RecheckFailedProcessBatchJob` | Orchestrator — collect all SO ids, dispatch `Bus::batch` |
+| `RecheckFailedProcessOrderJob` | 1 SO — reuse logic dari `validateOrderDetails()` + warehouse check; granular `addError`/`removeError`; partial failure tracking |
+
+**Reuse candidates:** `SalesOrderController@validateOrderDetails()`, `Store::getProcessWH()` / `getStockWH()`, `CanManageOrderDetailError::removeError()`.
+
+### 8.4 Proposed schema changes
+
+**Option A — extend detail errors JSON:**
+
+```json
+{
+  "stock-error": "Insufficient stock",
+  "_meta": {
+    "stock-error": { "last_checked_at": "2026-06-23T14:32:05+07:00" }
+  }
+}
+```
+
+**Option B — tabel baru `omni_sales_order_failed_process_checks`:** `sales_order_id`, `flag`, `last_checked_at`, `last_result` (ok/failed), `last_error`.
+
+**Log table (proposal):** `bd_all_sales_order_recheck_logs` — batch_id, store_id, triggered_at, triggered_by, success_count, failed_summary, started_at, ended_at.
+
+### 8.5 Frontend (TO-BE)
+
+| File | Change |
+|------|--------|
+| `AllSalesOrder/DataList.vue` | Tombol Re-check + progress message + log modal |
+| `SalesOrder/DataList.vue` | Tooltip Last Checked (konsumsi API `error_flags_formatted` terbaru) |
+| `SalesOrder::renderErrorFlags()` | Append Last checked ke tooltip `value` |
+
+### 8.6 Horizon & locking
+
+- Pattern mirip export lock: `Cache::lock('recheck_failed_process_{company_id}')` selama batch aktif
+- Progress: poll `recheck-failed-process/progress` atau reuse batch ID Laravel `Bus::batch`
+
+---
+
 ## 6. Cross-References
 
 | Topic | Doc |
@@ -225,6 +347,7 @@ flowchart TD
 | Business rules & import columns | [requirement.md](./requirement.md) §4 |
 | Operator guide | [knowledge-base.md](./knowledge-base.md) |
 | Platform SO comparison | [requirement.md](./requirement.md) §6 |
+| Failed Process AS-IS & TO-BE | [requirement.md](./requirement.md) §8–§9 |
 
 ---
 

@@ -1,6 +1,12 @@
 # Sales Order General (Internal) — Dokumentasi
 
-Menu **Sales Order General** — sales order internal (bukan platform marketplace).
+Menu terkait sales order internal, platform, dan view gabungan.
+
+| Menu UI | Route | Cakupan doc |
+|---------|-------|-------------|
+| Dev - Sales Order | `/businessdevelopment/sales-order-general` | SO internal (general) |
+| **All Sales Order** | `/businessdevelopment/all-sales-order` | View gabungan general + platform |
+| **Dev - Sales Platform** | `/omni/sales-order` | SO marketplace |
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
@@ -9,6 +15,8 @@ Menu **Sales Order General** — sales order internal (bukan platform marketplac
 | Technical | [technical.md](./technical.md) | Developer | draft |
 
 **Maintenance owner:** QA — Yemima
+
+**Latest:** §8–§9 Failed Process re-check improvement (2026-07-02)
 
 ## Legacy sources
 

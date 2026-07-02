@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Sales Order General (Internal)"
-version: 2.1
-last_updated: 2026-06-24
+version: 2.2
+last_updated: 2026-07-02
 owner: QA - Yemima
 status: review
 legacy_sources:
@@ -28,6 +28,8 @@ legacy_sources:
 5. [Relasi Menu Lain — Fungsi & Dampak](#5-relasi-menu-lain--fungsi--dampak)
 6. [Relasi dengan Sales Order Platform & Perbedaannya](#6-relasi-dengan-sales-order-platform--perbedaannya)
 7. [FAQ](#7-faq)
+8. [Failed Process — AS-IS](#8-failed-process--as-is)
+9. [Improvement TO-BE — Re-check Failed Process & Log](#9-improvement-to-be--re-check-failed-process--log)
 
 ---
 
@@ -801,6 +803,177 @@ A: POS membuat SO dengan `type_sales_order = general` dan `pos_session_id`. Appr
 
 ---
 
+## 8. Failed Process — AS-IS
+
+Kolom **Failed Process** (datalist) menampilkan icon error kondisi order yang menghalangi proses fulfillment. Fitur ini aktif di:
+
+| Menu | Route | API datalist |
+|------|-------|--------------|
+| **Dev - Sales Platform** | `/omni/sales-order` | `GET omnichannel/sales-order/get?type=platform&failed_process=true` |
+| **All Sales Order** | `/businessdevelopment/all-sales-order` | `POST businessdevelopment/all-sales-order/get?type=all&failed_process=true` |
+
+### 8.1 Visibility & filter
+
+| Aspek | Perilaku AS-IS |
+|-------|----------------|
+| Kolom error flag | Hanya muncul saat pill **Failed Process** aktif (`failed_process=true`) |
+| Tanpa pill | Kolom `error_flags_formatted` mengembalikan `-` |
+| Pill **Ready to Process** | `failed_process=false` — order tanpa flag error |
+| Counter pill | `GET omnichannel/sales-order/failed-process` → `count_errors` |
+| Scope filter datalist | Filter aktif (store, status, search builder) **tidak** memengaruhi counter pill; hanya memengaruhi baris yang ditampilkan |
+
+### 8.2 Icon & kondisi (AS-IS)
+
+Icon dirender oleh `SalesOrder::renderErrorFlags()` — tooltip memakai class `tooltip-function-text` + atribut `value` (wording saja, **tanpa** timestamp).
+
+| Flag key | Icon | Warna | Tooltip utama | Sumber data |
+|----------|------|-------|---------------|-------------|
+| `bind-error` | `fa-link-slash` | `#d02828` | Unbinded Product. | `omni_sales_order_detail_errors` per detail |
+| `coa-error` | `fa-share-nodes` | `#d02828` | Product COA has not been set up. | Detail error flags |
+| `stock-error` | `fa-boxes-stacked` | `#d02828` | Unavailable Stock \| {nama WH process} | Detail error flags |
+| `warehouse-error` | `fa-warehouse` | `#2f6495` | No warehouse process / stock found. Check Omni settings… | Store tanpa WH stock/process (`Store::getStockWH()`) + order-level `error_info` |
+| `shipping-error` | `fa-truck` | `#d02828` | Pesan shipping (platform) | Order-level `omni_sales_order_errors` |
+| `shipping-error-min-weight` | `fa-truck` | `#d02828` | Berat di bawah minimum kurir | Order-level |
+| `price-error` | `fa-tag` | `#d02828` | Price is null. | Detail flags |
+| `bundle-error` | `fa-flag` | `#d02828` | Bundle detail belum lengkap | Detail flags |
+
+> **Catatan:** Improvement TO-BE (§9) fokus pada 4 icon utama (`bind-error`, `coa-error`, `stock-error`, `warehouse-error`). Icon shipping/price/bundle tetap ada di AS-IS tetapi di luar scope re-check manual pertama.
+
+### 8.3 Kapan flag diset & dihapus (AS-IS)
+
+| Trigger | Flag yang terpengaruh |
+|---------|----------------------|
+| Approve SO Platform → `CheckOrderFlagsJob` (async) | Semua flag validasi approve (binding, COA, stock, shipping) |
+| `validateOrderDetails()` saat approve/wave | `bind-error`, `coa-error`, `stock-error` per detail |
+| Product bind (`ProductBindingObserver`) | `bind-error` bisa hilang otomatis |
+| Artisan `screening:error-flag-stock-sales-order` | Hanya `stock-error` — **daily 04:00 WIB** |
+| Unassign Wave → **Refresh Availability Stock** | Hanya `stock-error` — scope order di Unassign Wave saja |
+
+**Gap AS-IS:** Tidak ada tombol re-check manual di All Sales Order / Sales Platform. Flag tidak realtime; user tidak tahu kapan terakhir dievaluasi.
+
+### 8.4 Acceptance Criteria AS-IS
+
+| ID | Kriteria | Validasi |
+|----|----------|----------|
+| FP-01 | Pill Failed Process menampilkan kolom icon | Toggle pill → kolom `error_flags_formatted` muncul |
+| FP-02 | Hover icon menampilkan wording error | Tooltip dari atribut `value` pada elemen HTML |
+| FP-03 | Order multi-flag menampilkan semua icon relevan | `getErrors()` merge order-level + detail-level |
+| FP-04 | Filter search builder mendukung teks flag | Mapping di `error_flags_formatted` filter (bind-error, stock-error, dll.) |
+
+---
+
+## 9. Improvement TO-BE — Re-check Failed Process & Log
+
+**Status:** TO-BE (belum diimplementasi)  
+**Menu utama trigger:** Business Development → **All Sales Order**  
+**Dampak UI terkait:** Kolom Failed Process di **All Sales Order** dan **Dev - Sales Platform** (tooltip + data flag sama — sumber API `error_flags_formatted`)
+
+### 9.1 Background & objective
+
+Flag Failed Process tidak update realtime. Contoh: order dengan Unavailable Stock tidak otomatis hilang meski stok sudah tersedia. User tidak punya cara memaksa evaluasi ulang tanpa menunggu trigger otomatis (approve job, daily screening, atau bind produk).
+
+**Objective:**
+
+1. Tooltip per icon menampilkan **Last Checked** timestamp
+2. Tombol manual **Re-check Failed Process** untuk seluruh order (lintas store, tanpa batas filter datalist)
+3. Satu order = satu Horizon job (traceable)
+4. Log hasil trigger dikelompokkan per store
+
+### 9.2 AC 1 — Hover tooltip: Last Checked timestamp
+
+| ID | Kriteria | Expected |
+|----|----------|----------|
+| RC-01 | Hover icon Failed Process | Menampilkan wording existing **dan** baris `Last checked: DD-MM-YYYY HH:MM:SS` |
+| RC-02 | Format datetime | `DD-MM-YYYY HH:MM:SS` (standar OlshopERP) |
+| RC-03 | Contoh | `Unavailable Stock` + `Last checked: 23-06-2026 14:32:05` |
+
+### 9.3 AC 2 — Tombol trigger Re-check Failed Process
+
+| ID | Kriteria | Expected |
+|----|----------|----------|
+| RC-04 | Lokasi tombol | Halaman **All Sales Order** |
+| RC-05 | Scope batch | Semua order di sistem (lintas store); **tidak** dibatasi filter datalist aktif |
+| RC-06 | Dispatch | 1 batch job; tiap order = 1 job terpisah di Horizon |
+| RC-07 | Tombol disabled saat batch berjalan | Pesan: `Re-check is in progress. Button will be available once the current process is complete.` |
+| RC-08 | Tombol enabled kembali | Setelah seluruh job batch selesai (sukses **atau** gagal) |
+
+### 9.4 AC 3 — Logic re-check per job (per order)
+
+Setiap job mengevaluasi ulang kondisi secara **granular** — flag resolved dihapus per icon; flag yang masih valid tetap tampil.
+
+| Icon | Flag key | Kondisi dicek ulang |
+|------|----------|---------------------|
+| `fa-link-slash` (merah) | `bind-error` | Detail produk belum terbinding ke System Product |
+| `fa-share-nodes` (orange) | `coa-error` | System Product belum punya konfigurasi COA lengkap |
+| `fa-boxes-stacked` (merah) | `stock-error` | Stok unavailable di Warehouse Process store order |
+| `fa-warehouse` (`#2F6495`) | `warehouse-error` | Store belum punya Warehouse Process |
+
+| ID | Kriteria | Expected |
+|----|----------|----------|
+| RC-09 | Granular update | Unavailable Stock resolved + Unbinded masih ada → hanya icon stock hilang |
+| RC-10 | Last Checked sukses | Timestamp tiap icon diupdate ke waktu eksekusi job |
+| RC-11 | Job gagal (exception) | Flag yang gagal dievaluasi **tidak** diubah; Last Checked tetap nilai terakhir valid |
+| RC-12 | Partial failure dalam 1 job | Catat icon/kondisi mana yang gagal (lihat RC-16) |
+
+### 9.5 AC 4 — Log trigger re-check (grouped per store)
+
+Setiap klik tombol menghasilkan **set log baru** (append, bukan overwrite).
+
+| Kolom | Keterangan |
+|-------|------------|
+| Store | Nama store yang ordernya masuk batch |
+| Action | `Re-check Failed Process` |
+| Description | `Manual re-check triggered for all sales orders in [Store Name]. Evaluates binding status, COA configuration, stock availability, and warehouse process for each order.` |
+| Date | Waktu user klik tombol (bukan waktu job selesai) |
+| Success | Jumlah order berhasil dievaluasi (job sukses), per store |
+| Failed | Jumlah job gagal + ringkasan reason |
+| Start | Timestamp job paling awal di store tersebut |
+| Ended | Timestamp job paling akhir di store tersebut |
+| Updated By | User yang mengklik trigger |
+
+| ID | Kriteria | Expected |
+|----|----------|----------|
+| RC-13 | Agregasi lintas store | 5 store → 5 baris log |
+| RC-14 | Riwayat multi-trigger | Klik 2× (setelah batch 1 selesai) → 2 set log tersimpan |
+
+### 9.6 AC 5 — Granularitas kegagalan per icon
+
+| ID | Kriteria | Expected |
+|----|----------|----------|
+| RC-15 | Partial evaluasi gagal | Log Failed mencatat icon/kondisi spesifik, bukan hanya "job failed" |
+| RC-16 | Format contoh | `Order SO-001: Failed to evaluate Unavailable Stock (timeout). Other flags updated successfully.` |
+
+### 9.7 QA test scenarios (TO-BE)
+
+| # | Skenario | Expected |
+|---|----------|----------|
+| T01 | Hover icon setelah trigger | Wording + Last checked `DD-MM-YYYY HH:MM:SS` |
+| T02 | Klik Re-check Failed Process | Batch dispatched; N order = N job Horizon |
+| T03 | Klik saat batch masih jalan | Tombol disabled + pesan progress |
+| T04 | Unavailable Stock resolved lalu trigger | Icon stock hilang |
+| T05 | 2 flag; stock resolved, unbinded belum | Hanya icon stock hilang |
+| T06 | Order dari 5 store | Log 5 baris (1 per store) |
+| T07 | Sebagian job gagal | Kolom Failed + Success terisi benar |
+| T08 | Partial failure 1 order | Log catat kondisi/icon yang gagal |
+| T09 | Trigger 2× berturut (batch 1 selesai) | 2 set log |
+| T10 | 100 order | 100 job terpisah dalam 1 batch |
+
+### 9.8 Open items
+
+| # | Item | Status |
+|---|------|--------|
+| O-01 | Log ditampilkan di modal terpisah All Sales Order, atau digabung log view Sales Platform? | **Open** — rekomendasi: modal/log tab di All Sales Order (sumber trigger); Sales Platform hanya konsumsi tooltip |
+| O-02 | Rate limit setelah batch selesai (cooldown X menit)? | **Open** — AS-IS Unassign Wave tidak punya cooldown; rekomendasi: cukup disabled selama batch berjalan |
+| O-03 | Retention policy log re-check | **Open** |
+
+### 9.9 Out of scope (explicit)
+
+- Menu **Failed Ship** (SCM) — proses pasca-shipped COD gagal; **bukan** kolom Failed Process SO
+- Tombol **Refresh Availability Stock** di Unassign Wave — tetap terpisah, scope Unassign Wave only
+- Re-check otomatis shipping-error / price-error / bundle-error — belum masuk AC awal
+
+---
+
 ## Relasi Instant Settlement
 
 **Dampak ke menu ini:** Sales Order (General & Platform — entitas `omni_sales_orders`) adalah **sumber baris** settlement. Import CSV match order by **`platform_order_id`** (platform) atau **`code`** SO internal (General/Others). Settlement generate outbound + SI + (setelah Approve) AR per order lolos validasi.
@@ -832,6 +1005,7 @@ Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/req
 | 1.0 | 18 Juni 2026 | Dokumen awal |
 | 2.0 | 18 Juni 2026 | Restruktur 7 bagian: fungsi, how it works, validasi, import detail, relasi mendalam (stok→processing→settlement→finance), perbandingan platform, FAQ |
 | 2.1 | 2026-06-23 | Cross-reference Relasi Instant Settlement (Fase 2) — section standar |
+| 2.2 | 2026-07-02 | §8 Failed Process AS-IS + §9 Improvement TO-BE Re-check Failed Process & Log |
 
 ## Lampiran Teknis (Developer)
 

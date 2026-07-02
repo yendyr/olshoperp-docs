@@ -1,0 +1,258 @@
+# Manifest snippet — Gate & General Settings (draft menus)
+#
+# Merge entries below into docs/qa-docs/_meta/manifest.yaml under `menus:`.
+# All doc status: draft — sync with frontmatter in each file.
+# Created: 2026-06-19
+
+  gate-user:
+    menu_name: "User (Gate)"
+    path: gate-user
+    module: Gate
+    menu_links:
+      - gate/user
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/Gate/Http/Controllers/UserController.php
+        - Modules/Gate/Http/Controllers/RoleAssignmentController.php
+        - Modules/Gate/Entities/User.php
+        - Modules/Gate/Entities/RolePivot.php
+        - Modules/Gate/Routes/api.php
+        - olshoperp-frontend/src/pages/gate/user/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  gate-role:
+    menu_name: "Role (Gate)"
+    path: gate-role
+    module: Gate
+    menu_links:
+      - gate/role
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/Gate/Http/Controllers/RoleController.php
+        - Modules/Gate/Http/Controllers/RoleMenuController.php
+        - Modules/Gate/Entities/Role.php
+        - Modules/Gate/Entities/RoleMenu.php
+        - Modules/Gate/Routes/api.php
+        - olshoperp-frontend/src/pages/gate/role/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  gate-global-audit-log:
+    menu_name: "Global Audit Log"
+    path: gate-global-audit-log
+    module: Gate
+    menu_links:
+      - gate/global-audit-log
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/Gate/Http/Controllers/GlobalAuditLogController.php
+        - Modules/Gate/Entities/GlobalAuditLog.php
+        - App/Traits/AuditHandlerTrait.php
+        - olshoperp-frontend/src/pages/gate/GlobalAuditLog/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-country:
+    menu_name: "Master Country"
+    path: generalsetting-country
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/country
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/CountryController.php
+        - Modules/GeneralSetting/Entities/Country.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/country/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-region:
+    menu_name: "Master Region"
+    path: generalsetting-region
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/region
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/RegionController.php
+        - Modules/GeneralSetting/Entities/Region.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/region/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-currency:
+    menu_name: "Master Currency"
+    path: generalsetting-currency
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/currency
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/CurrencyController.php
+        - Modules/GeneralSetting/Entities/Currency.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/currency/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-internal-company:
+    menu_name: "Internal Company"
+    path: generalsetting-internal-company
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/internal-company
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/InternalCompanyController.php
+        - Modules/GeneralSetting/Entities/Company.php
+        - Modules/GeneralSetting/Entities/InternalCompanyTree.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/company/InternalCompanyList.vue
+        - olshoperp-frontend/src/pages/master/company/Form.vue
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-general-company:
+    menu_name: "General Company"
+    path: generalsetting-general-company
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/general-company
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/GeneralCompanyController.php
+        - Modules/GeneralSetting/Entities/Company.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/company/DataListGeneralCompany.vue
+        - olshoperp-frontend/src/pages/master/company/Form.vue
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-application:
+    menu_name: "Application"
+    path: generalsetting-application
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/application
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/RenderTransactionLimitController.php
+        - Modules/GeneralSetting/Http/Controllers/OrderProcessSettingController.php
+        - Modules/GeneralSetting/Http/Controllers/GenerateSalesOrderSettingController.php
+        - Modules/GeneralSetting/Entities/RenderTransactionLimit.php
+        - Modules/GeneralSetting/Entities/OrderProcessSetting.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/Application/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []

@@ -1,0 +1,3313 @@
+# SOURCE OF TRUTH — QA menu documentation index.
+# AGENTS: Read this file FIRST. Protocol: .cursor/rules/09-menu-documentation.mdc (alwaysApply).
+# Update this file in the same commit when adding/changing menus or doc status.
+# Field `status` must match frontmatter `status` in each doc file.
+
+version: 1
+last_updated: 2026-06-25
+
+menus:
+  manage-platform-product:
+    menu_name: "Manage Platform Product"
+    path: manage-platform-product
+    module: OmniChannel
+    menu_links:
+      - omni/platform-product
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+    legacy_sources:
+      - _legacy/old_platform-product-binding-glossary.md
+      - _legacy/old_platform-product-sync-newrequirement.md
+      - _legacy/old_bulk-binding-requirement.md
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/ProductController.php
+        - Modules/OmniChannel/Routes/api.php
+        - Modules/OmniChannel/Jobs/ProductPlatform*
+        - Modules/OmniChannel/Observers/*Product*
+        - app/Console/Commands/PlatformProduct/TriggerOnboardingCommand.php
+        - Modules/OmniChannel/Entities/StoreOnboarding.php
+        - olshoperp-frontend/src/pages/Omni/ProductPlatform/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  omni-checking-process:
+    menu_name: "Checking Process"
+    path: omni-checking-process
+    module: OmniChannel
+    menu_links:
+      - omni/checking-process
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/TransferCheckingController.php
+        - olshoperp-frontend/src/pages/Omni/CheckingProcess/**/*
+      frontend: []
+
+  omni-global-settings:
+    menu_name: "Omni Channel Settings"
+    path: omni-global-settings
+    module: OmniChannel
+    menu_links:
+      - omni/global-settings
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/GlobalSettingController.php
+        - olshoperp-frontend/src/pages/Omni/master/GlobalSetting/**/*
+      frontend: []
+
+  omni-packing-process:
+    menu_name: "Packing Process"
+    path: omni-packing-process
+    module: OmniChannel
+    menu_links:
+      - omni/packing-process
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/TransferPackingController.php
+        - olshoperp-frontend/src/pages/Omni/PackingProcess/**/*
+      frontend: []
+
+  omni-picking-process:
+    menu_name: "Picking Process"
+    path: omni-picking-process
+    module: OmniChannel
+    menu_links:
+      - omni/picking-process
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/TransferPickingController.php
+        - olshoperp-frontend/src/pages/Omni/PickingProcess/**/*
+      frontend: []
+
+  omni-platform-api:
+    menu_name: "Platform API"
+    path: omni-platform-api
+    module: OmniChannel
+    menu_links:
+      - omni/platform-api
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/PlatformApiController.php
+        - olshoperp-frontend/src/pages/Omni/PlatformApi/**/*
+      frontend: []
+
+  omni-sales-order-report:
+    menu_name: "Sales Order Report"
+    path: omni-sales-order-report
+    module: OmniChannel
+    menu_links:
+      - omni/sales-order-report
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/SalesOrderReportController.php
+        - olshoperp-frontend/src/pages/Omni/Report/**/*
+      frontend: []
+
+  omni-shipping-service:
+    menu_name: "Master Shipping Service"
+    path: omni-shipping-service
+    module: OmniChannel
+    menu_links:
+      - omni/shipping-service
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/ShippingServiceController.php
+        - olshoperp-frontend/src/pages/Omni/master/ShippingService/**/*
+      frontend: []
+
+  omni-shipping-service-platform:
+    menu_name: "Platform Shipping Service"
+    path: omni-shipping-service-platform
+    module: OmniChannel
+    menu_links:
+      - omni/shipping-service-platform
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/ShippingServicePlatformController.php
+        - olshoperp-frontend/src/pages/Omni/master/ShippingServicePlatform/**/*
+      frontend: []
+
+  omni-store-binding:
+    menu_name: "Store"
+    path: omni-store-binding
+    module: OmniChannel
+    menu_links:
+      - omni/store-binding
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/StoreController.php
+        - Modules/OmniChannel/Http/Controllers/OmniChannelController.php
+        - Modules/OmniChannel/Http/Controllers/OmniCallbackController.php
+        - Modules/OmniChannel/Http/Controllers/WarehouseBindingController.php
+        - Modules/OmniChannel/Entities/Store.php
+        - Modules/OmniChannel/Observers/StoreAfterCommitObserver.php
+        - Modules/OmniChannel/Entities/StoreOnboarding.php
+        - Modules/OmniChannel/Jobs/WarehouseSyncJob.php
+        - Modules/OmniChannel/Jobs/ProductPlatformSyncStoreJob.php
+        - app/Console/Commands/PlatformProduct/TriggerOnboardingCommand.php
+        - config/omni.php
+        - config/warehouse.php
+        - olshoperp-frontend/src/pages/Omni/master/StoreBinding/**/*
+        - olshoperp-frontend/src/components/Omni/StoreSelect.vue
+      frontend: []
+
+  omni-warehouse-binding:
+    menu_name: "Warehouse Binding"
+    path: omni-warehouse-binding
+    module: OmniChannel
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    menu_links:
+      - omni/warehouse-binding
+    owner: QA - Yemima
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/WarehouseBindingController.php
+        - olshoperp-frontend/src/pages/Omni/master/WarehouseBinding/**/*
+      frontend: []
+
+  sales-order-general:
+    menu_name: "Dev - Sales Platform"
+    path: sales-order-general
+    module: OmniChannel
+    menu_links:
+      - omni/sales-order
+      - businessdevelopment/all-sales-order
+      - businessdevelopment/sales-order-general
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      - _legacy/old_sales-order-general-requirement.md
+      - _legacy/old_sales-order-import-bulk-improvement.md
+    code_globs:
+      backend:
+        - Modules/BusinessDevelopment/Http/Controllers/*SalesOrder*
+        - Modules/OmniChannel/Http/Controllers/*SalesOrder*
+        - Modules/OmniChannel/Jobs/CheckOrderFlagsJob.php
+        - app/Console/Commands/ScreeningErrorFlagStockSalesOrderCommand.php
+        - olshoperp-frontend/src/pages/**/SalesOrderGeneral/**/*
+        - olshoperp-frontend/src/pages/Omni/SalesOrder/**/*
+        - olshoperp-frontend/src/pages/BusinessDevelopment/Report/AllSalesOrder/**/*
+      frontend: []
+
+  accounting-account-payable-report:
+    menu_name: "Account Payable Report"
+    path: accounting-account-payable-report
+    module: Accounting
+    menu_links:
+      - accounting/account-payable-report
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-account-receivable-report:
+    menu_name: "Account Receivable Report"
+    path: accounting-account-receivable-report
+    module: Accounting
+    menu_links:
+      - accounting/account-receivable-report
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-adjustment-inbound:
+    menu_name: "Stock Addition Approval"
+    path: accounting-adjustment-inbound
+    module: Accounting
+    menu_links:
+      - accounting/adjustment-inbound
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-adjustment-outbound:
+    menu_name: "Stock Deduction Approval"
+    path: accounting-adjustment-outbound
+    module: Accounting
+    menu_links:
+      - accounting/adjustment-outbound
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-asset-category:
+    menu_name: "Asset Category"
+    path: accounting-asset-category
+    module: Accounting
+    menu_links:
+      - accounting/asset-category
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-asset-list:
+    menu_name: "Asset List"
+    path: accounting-asset-list
+    module: Accounting
+    menu_links:
+      - accounting/asset-list
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-balance-sheet:
+    menu_name: "Balance Sheet"
+    path: accounting-balance-sheet
+    module: Accounting
+    menu_links:
+      - accounting/balance-sheet
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-cash-bank-reconcile:
+    menu_name: "Cash/Bank Reconcile"
+    path: accounting-cash-bank-reconcile
+    module: Accounting
+    menu_links:
+      - accounting/cash-bank-reconcile
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-chart-of-account:
+    menu_name: "COA"
+    path: accounting-chart-of-account
+    module: Accounting
+    menu_links:
+      - accounting/chart-of-account
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-company-detail-bank:
+    menu_name: "Cash/Bank Account"
+    path: accounting-company-detail-bank
+    module: Accounting
+    menu_links:
+      - accounting/company-detail-bank
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-consolidation-report:
+    menu_name: "Consolidation Report"
+    path: accounting-consolidation-report
+    module: Accounting
+    menu_links:
+      - accounting/consolidation-report
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-credit-note:
+    menu_name: "Credit Note"
+    path: accounting-credit-note
+    module: Accounting
+    menu_links:
+      - accounting/credit-note
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-customer-invoice:
+    menu_name: "Sales Invoice"
+    path: accounting-customer-invoice
+    module: Accounting
+    menu_links:
+      - accounting/customer-invoice
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/CustomerInvoiceController.php
+        - Modules/Accounting/Http/Controllers/CustomerInvoiceDetailItemController.php
+        - Modules/Accounting/Entities/CustomerInvoice.php
+        - Modules/Accounting/Routes/api.php
+        - app/Helpers/Accounting/JournalProcess.php
+        - olshoperp-frontend/src/pages/Accounting/AccountReceivable/CustomerInvoice/**/*
+      frontend: []
+
+  accounting-customer-payment:
+    menu_name: "Account Receive"
+    path: accounting-customer-payment
+    module: Accounting
+    menu_links:
+      - accounting/customer-payment
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: pending
+      test_cases:
+        path: test-cases/
+        status: review
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/CustomerPaymentController.php
+        - Modules/Accounting/Http/Controllers/CustomerPaymentDetailController.php
+        - Modules/Accounting/Http/Controllers/PaymentDetailController.php
+        - Modules/Accounting/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/AccountReceivable/Receive/DatalistDetail.vue
+        - olshoperp-frontend/src/pages/Accounting/AccountReceivable/Receive/AvailableData.vue
+        - olshoperp-frontend/src/pages/Accounting/AccountReceivable/Receive/Form.vue
+        - olshoperp-frontend/src/base-components/project/Dialog/Dialog.vue
+        - olshoperp-frontend/src/composables/useE2eTestCase.ts
+        - olshoperp-frontend/src/pages/qa/TestCaseLibrary.vue
+        - olshoperp-frontend/e2e/account-receive-single-use-available-si.spec.ts
+        - olshoperp-frontend/e2e/account-receive-single-use-empty-amount.spec.ts
+        - olshoperp-frontend/e2e/account-receive-bulk-use-available-si.spec.ts
+        - olshoperp-frontend/e2e/account-receive-bulk-select-invoice.spec.ts
+        - olshoperp-frontend/e2e/helpers/account-receive.ts
+
+  accounting-debit-note:
+    menu_name: "Debit Note"
+    path: accounting-debit-note
+    module: Accounting
+    menu_links:
+      - accounting/debit-note
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-default-vat:
+    menu_name: "Default VAT"
+    path: accounting-default-vat
+    module: Accounting
+    menu_links:
+      - accounting/default-vat
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-fiscal-period:
+    menu_name: "Fiscal Period"
+    path: accounting-fiscal-period
+    module: Accounting
+    menu_links:
+      - accounting/fiscal-period
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-item:
+    menu_name: "Item COA"
+    path: accounting-item
+    module: Accounting
+    menu_links:
+      - accounting/item
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-opening-stock:
+    menu_name: "Opening Stock"
+    path: accounting-opening-stock
+    module: Accounting
+    menu_links:
+      - accounting/opening-stock
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-platform-account-labels:
+    menu_name: "Platform Account Labelling"
+    path: accounting-platform-account-labels
+    module: Accounting
+    menu_links:
+      - accounting/platform-account-labels
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-platform-account-mapping:
+    menu_name: "Platform Account Mapping"
+    path: accounting-platform-account-mapping
+    module: Accounting
+    menu_links:
+      - accounting/platform-account-mapping
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-product-benchmark-price:
+    menu_name: "Benchmark COGS"
+    path: accounting-product-benchmark-price
+    module: Accounting
+    menu_links:
+      - accounting/product-benchmark-price
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-product-coa-group:
+    menu_name: "Product COA Group"
+    path: accounting-product-coa-group
+    module: Accounting
+    menu_links:
+      - accounting/product-coa-group
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-product-profit-loss:
+    menu_name: "Product Profit Loss"
+    path: accounting-product-profit-loss
+    module: Accounting
+    menu_links:
+      - accounting/product-profit-loss
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/ProductProfitLossController.php
+        - Modules/Accounting/Jobs/GenerateProductProfitLoss*.php
+        - Modules/Accounting/Exports/ProductProfitLossExport.php
+        - Modules/Accounting/Entities/*ProductProfitLoss*.php
+        - app/Console/Commands/CleanProductProfitLoss.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Report/ProductProfitLoss/**
+
+  accounting-profit-loss:
+    menu_name: "Profit & Loss"
+    path: accounting-profit-loss
+    module: Accounting
+    menu_links:
+      - accounting/profit-loss
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-profit-loss-v1:
+    menu_name: "Dev - Profit & Loss"
+    path: accounting-profit-loss-v1
+    module: Accounting
+    menu_links:
+      - accounting/profit-loss-v1
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-purchase-return:
+    menu_name: "Purchase Return"
+    path: accounting-purchase-return
+    module: Accounting
+    menu_links:
+      - accounting/purchase-return
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-sales-order-invoicing:
+    menu_name: "Sales Order Invoicing"
+    path: accounting-sales-order-invoicing
+    module: Accounting
+    menu_links:
+      - accounting/sales-order-invoicing
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-sales-order-profit-loss:
+    menu_name: "Sales Order Profit Loss"
+    path: accounting-sales-order-profit-loss
+    module: Accounting
+    menu_links:
+      - accounting/sales-order-profit-loss
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-sales-return:
+    menu_name: "Sales Return"
+    path: accounting-sales-return
+    module: Accounting
+    menu_links:
+      - accounting/sales-return
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-settlement-mapping:
+    menu_name: "Settlement Mapping"
+    path: accounting-settlement-mapping
+    module: Accounting
+    menu_links:
+      - accounting/settlement-mapping
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-settlement-upload:
+    menu_name: "Instant Settlement"
+    path: accounting-settlement-upload
+    module: Accounting
+    menu_links:
+      - accounting/settlement-upload
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/SettlementUpload*.php
+        - Modules/Accounting/Import/Settlement*.php
+        - Modules/Accounting/Jobs/*Settlement*.php
+        - Modules/Accounting/Jobs/ImportLazadaSettlementJob.php
+        - Modules/Accounting/Jobs/DeleteSettlementJob.php
+        - Modules/Accounting/Entities/Settlement*.php
+        - Modules/Accounting/Observers/SettlementUploadObserver.php
+        - Modules/Accounting/Broadcasting/InstantSettlementChannel.php
+        - Modules/Accounting/Constants/SettlementUploadStatus.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Settlement/Upload/**
+
+  accounting-stock-monitoring-value:
+    menu_name: "Stock Monitoring Value"
+    path: accounting-stock-monitoring-value
+    module: Accounting
+    menu_links:
+      - accounting/stock-monitoring-value
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-stock-opname-approval:
+    menu_name: "Stock Opname Approval "
+    path: accounting-stock-opname-approval
+    module: Accounting
+    menu_links:
+      - accounting/stock-opname-approval
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-supplier-invoice:
+    menu_name: "Purchase Invoice"
+    path: accounting-supplier-invoice
+    module: Accounting
+    menu_links:
+      - accounting/supplier-invoice
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/SupplierInvoiceController.php
+        - Modules/Accounting/Http/Controllers/SupplierInvoiceDetailItemController.php
+        - Modules/Accounting/Entities/SupplierInvoice.php
+        - Modules/Accounting/Observers/SupplierInvoiceObserver.php
+        - Modules/Accounting/Routes/api.php
+        - app/Helpers/Accounting/JournalProcess.php
+        - olshoperp-frontend/src/pages/Accounting/AccountPayable/SupplierInvoice/**/*
+      frontend: []
+
+  accounting-supplier-payment:
+    menu_name: "Account Payment"
+    path: accounting-supplier-payment
+    module: Accounting
+    menu_links:
+      - accounting/supplier-payment
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-tax:
+    menu_name: "Tax"
+    path: accounting-tax
+    module: Accounting
+    menu_links:
+      - accounting/tax
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  accounting-trial-balance:
+    menu_name: "Trial Balance"
+    path: accounting-trial-balance
+    module: Accounting
+    menu_links:
+      - accounting/trial-balance
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/TrialBalanceController.php
+        - Modules/Accounting/Policies/TrialBalancePolicy.php
+        - app/Helpers/Accounting/JournalReport.php
+        - Modules/Accounting/Routes/api.php
+        - olshoperp-frontend/src/pages/Accounting/Report/TrialBalance/**/*
+      frontend: []
+
+  general-ledger:
+    menu_name: "General Ledger Report"
+    path: general-ledger
+    module: Accounting
+    menu_links:
+      - accounting/general-ledger
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      - _legacy/old_general-ledger-requirement.md
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/GeneralLedgerController.php
+        - app/Helpers/Accounting/JournalReport.php
+        - Modules/Accounting/Jobs/GeneralLedgerExportJob.php
+        - Modules/Accounting/Routes/api.php
+        - olshoperp-frontend/src/pages/Accounting/Report/GeneralLedger/**/*
+      frontend: []
+
+  journal:
+    menu_name: "Journal"
+    path: journal
+    module: Accounting
+    menu_links:
+      - accounting/journal
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      - _legacy/old_Journal-Requirement.md
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/JournalController.php
+        - Modules/Accounting/Entities/Journal.php
+        - Modules/Accounting/Routes/api.php
+        - olshoperp-frontend/src/pages/Accounting/Journal/**/*
+      frontend: []
+
+  omni-other-cost:
+    menu_name: "Other Cost"
+    path: omni-other-cost
+    module: Accounting
+    menu_links:
+      - omni/other-cost
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/OtherCostController.php
+        - Modules/OmniChannel/Http/Controllers/OtherCostOwnerController.php
+        - Modules/OmniChannel/Entities/OtherCost.php
+        - Modules/OmniChannel/Import/OtherCostImport.php
+        - Modules/OmniChannel/Policies/OtherCostPolicy.php
+        - Modules/OmniChannel/Routes/api.php
+        - Modules/Accounting/Entities/OtherCostPivot.php
+        - Modules/Accounting/Http/Controllers/SettlementUploadController.php
+        - olshoperp-frontend/src/pages/Omni/master/OtherCost/**/*
+        - olshoperp-frontend/src/pages/SCM/PurchaseOrder/OtherCost*.vue
+        - olshoperp-frontend/src/pages/Accounting/AccountReceivable/CustomerInvoice/OtherCost*.vue
+        - olshoperp-frontend/src/pages/Accounting/AccountPayable/SupplierInvoice/OtherCost*.vue
+        - olshoperp-frontend/src/pages/BusinessDevelopment/SalesOrderGeneral/OtherCost.vue
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  omni-other-discount:
+    menu_name: "Other Discount"
+    path: omni-other-discount
+    module: Accounting
+    menu_links:
+      - omni/other-discount
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/OtherDiscountController.php
+        - Modules/OmniChannel/Http/Controllers/OtherDiscountOwnerController.php
+        - Modules/OmniChannel/Entities/OtherDiscount.php
+        - Modules/OmniChannel/Entities/OtherDiscountPivot.php
+        - Modules/OmniChannel/Import/OtherDiscountImport.php
+        - Modules/OmniChannel/Policies/OtherDiscountPolicy.php
+        - Modules/OmniChannel/Http/Controllers/SalesOrderOtherDiscountController.php
+        - Modules/SupplyChain/Http/Controllers/PurchaseOrderOtherDiscountController.php
+        - Modules/Accounting/Http/Controllers/CustomerInvoiceOtherDiscountController.php
+        - Modules/Accounting/Http/Controllers/SupplierInvoiceOtherDiscountController.php
+        - Modules/Accounting/Http/Controllers/SettlementUploadController.php
+      frontend:
+        - olshoperp-frontend/src/pages/Omni/master/OtherDiscount/**
+        - olshoperp-frontend/src/pages/SCM/PurchaseOrder/OtherDiscount*.vue
+        - olshoperp-frontend/src/pages/Accounting/AccountReceivable/CustomerInvoice/OtherDiscount*.vue
+        - olshoperp-frontend/src/pages/Accounting/AccountPayable/SupplierInvoice/OtherDiscount*.vue
+        - olshoperp-frontend/src/pages/BusinessDevelopment/SalesOrderGeneral/OtherDiscount.vue
+        - olshoperp-frontend/src/pages/Omni/SalesOrder/OtherDiscount.vue
+        - olshoperp-frontend/src/router/index.ts
+
+  bill-of-material:
+    menu_name: "Bill of Material"
+    path: bill-of-material
+    module: SupplyChain
+    menu_links:
+      - supplychain/bill-of-material
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      - _legacy/old_bill-of-material.md
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/BillOfMaterialGeneralConfigurationController.php
+        - Modules/SupplyChain/Http/Controllers/BillOfMaterialInventoryConfigurationController.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SupplyChain/BillOfMaterial/**/*
+      frontend: []
+
+  omni-checking-list:
+    menu_name: "Checking List"
+    path: omni-checking-list
+    module: SupplyChain
+    menu_links:
+      - omni/checking-list
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  omni-packing-list:
+    menu_name: "Packing List"
+    path: omni-packing-list
+    module: SupplyChain
+    menu_links:
+      - omni/packing-list
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  omni-picking-list:
+    menu_name: "Picking List"
+    path: omni-picking-list
+    module: SupplyChain
+    menu_links:
+      - omni/picking-list
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  omni-process-summary:
+    menu_name: "Order Process"
+    path: omni-process-summary
+    module: SupplyChain
+    menu_links:
+      - omni/process-summary
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  omni-skip-processing:
+    menu_name: "Skip Processing"
+    path: omni-skip-processing
+    module: SupplyChain
+    menu_links:
+      - omni/skip-processing
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  omni-skip-wave-process:
+    menu_name: "Skip Wave Process"
+    path: omni-skip-wave-process
+    module: SupplyChain
+    menu_links:
+      - omni/skip-wave-process
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  omni-unassign-wave:
+    menu_name: "Unassign Wave"
+    path: omni-unassign-wave
+    module: SupplyChain
+    menu_links:
+      - omni/unassign-wave
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  omni-waves-management:
+    menu_name: "Waves Management"
+    path: omni-waves-management
+    module: SupplyChain
+    menu_links:
+      - omni/waves-management
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/WaveController.php
+        - Modules/OmniChannel/Jobs/GenerateWaveJob.php
+        - Modules/OmniChannel/Services/WaveService.php
+        - olshoperp-frontend/src/pages/Omni/WavesManagement/**/*
+      frontend: []
+
+  random-sku:
+    menu_name: "Random SKU"
+    path: random-sku
+    module: SupplyChain
+    menu_links:
+      - supplychain/variant
+    cross_menu: true
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      - _legacy/old_random-sku-requirement.md
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/VariantOptionController.php
+        - Modules/SupplyChain/Http/Controllers/ProductVariantController.php
+        - app/Helpers/SupplyChain/WarehouseHelper.php
+        - Modules/OmniChannel/Concerns/CanAutoBind.php
+        - Modules/OmniChannel/Entities/SalesOrderDetailRandom.php
+      frontend: []
+
+  supplychain-adjustment-addition:
+    menu_name: "Stock Addition "
+    path: supplychain-adjustment-addition
+    module: SupplyChain
+    menu_links:
+      - supplychain/adjustment-addition
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMutationAdditionController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationAdditionDetailController.php
+        - Modules/SupplyChain/Entities/StockMutationAddition.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/StockAdjustment/StockAddition/**/*
+      frontend: []
+
+  supplychain-adjustment-deduction:
+    menu_name: "Stock Deduction "
+    path: supplychain-adjustment-deduction
+    module: SupplyChain
+    menu_links:
+      - supplychain/adjustment-deduction
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMutationDeductionController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationDeductionDetailController.php
+        - Modules/SupplyChain/Entities/StockMutationDeduction.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/StockAdjustment/StockDeduction/**/*
+      frontend: []
+
+  supplychain-assembly:
+    menu_name: "Assembly"
+    path: supplychain-assembly
+    module: SupplyChain
+    menu_links:
+      - supplychain/assembly
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/WorkorderController.php
+        - Modules/SupplyChain/Http/Controllers/WorkorderDetailController.php
+        - Modules/SupplyChain/Entities/WorkOrder.php
+        - Modules/SupplyChain/Entities/WorkOrderDetail.php
+        - Modules/SupplyChain/Entities/WorkOrderBillOfMaterial.php
+        - Modules/SupplyChain/Entities/WorkOrderApproval.php
+        - Modules/SupplyChain/Jobs/WorkOrderApprovalJob.php
+        - Modules/SupplyChain/Jobs/WorkOrderExportExcelJob.php
+        - Modules/SupplyChain/Jobs/ProcessWorkOrderDetailsJob.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/Assembly/**/*
+
+  supplychain-bundle-stock-report:
+    menu_name: "Bundle Stock"
+    path: supplychain-bundle-stock-report
+    module: SupplyChain
+    menu_links:
+      - supplychain/bundle-stock-report
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/BundleStockReportController.php
+        - Modules/SupplyChain/Entities/BundleStockReport.php
+        - Modules/SupplyChain/Policies/BundleStockReportPolicy.php
+        - Modules/OmniChannel/Http/Controllers/ProductController.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/Report/BundleStockReport/**/*
+        - olshoperp-frontend/src/components/project/DataTables/BundleStockReportTable.vue
+
+  supplychain-cancelled-order:
+    menu_name: "Cancelled Order"
+    path: supplychain-cancelled-order
+    module: SupplyChain
+    menu_links:
+      - supplychain/cancelled-order
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/CancelledOrderController.php
+        - Modules/SupplyChain/Entities/CancelledOrder.php
+        - Modules/SupplyChain/Policies/CancelledOrderPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/Omni/Processing/CancelledOrder/**/*
+
+  supplychain-delivery-order:
+    menu_name: "Delivery Order"
+    path: supplychain-delivery-order
+    module: SupplyChain
+    menu_links:
+      - supplychain/delivery-order
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  supplychain-dimension-and-weight-label:
+    menu_name: "Dimension and Weight Label"
+    path: supplychain-dimension-and-weight-label
+    module: SupplyChain
+    menu_links:
+      - supplychain/dimension-and-weight-label
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/DimensionAndWeightController.php
+        - Modules/SupplyChain/Http/Controllers/ProductDnWController.php
+        - Modules/SupplyChain/Entities/DimensionAndWeight.php
+        - Modules/SupplyChain/Entities/ProductDnW.php
+        - Modules/SupplyChain/Policies/DimensionAndWeightPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/DimensionAndWeight/**/*
+
+  supplychain-failed-ship:
+    menu_name: "Failed Ship"
+    path: supplychain-failed-ship
+    module: SupplyChain
+    menu_links:
+      - supplychain/failed-ship
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/FailedShipController.php
+        - Modules/SupplyChain/Http/Controllers/FailedShipDetailController.php
+        - Modules/SupplyChain/Entities/FailedShip.php
+        - Modules/SupplyChain/Entities/FailedShipDataTemp.php
+        - Modules/SupplyChain/Entities/FailedShipExportFile.php
+        - Modules/SupplyChain/Jobs/FailedShipApprovalJob.php
+        - Modules/SupplyChain/Jobs/FailedShipExportJob.php
+        - Modules/SupplyChain/Policies/FailedShipPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/FailedShip/**/*
+
+  supplychain-inventory-detail:
+    menu_name: "Dev - Inventory Detail"
+    path: supplychain-inventory-detail
+    module: SupplyChain
+    menu_links:
+      - supplychain/inventory-detail
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/InventoryDetailController.php
+        - Modules/SupplyChain/Jobs/InventoryDetailTempJob.php
+        - Modules/SupplyChain/Jobs/InventoryDetailExportJob.php
+        - Modules/SupplyChain/Entities/InventoryDetail.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/Report/InventoryDetail/**/*
+      frontend: []
+
+  supplychain-item-category:
+    menu_name: "Item Category"
+    path: supplychain-item-category
+    module: SupplyChain
+    menu_links:
+      - supplychain/item-category
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ItemCategoryController.php
+        - Modules/SupplyChain/Entities/ItemCategory.php
+        - Modules/SupplyChain/Entities/ItemCategoryTree.php
+        - Modules/SupplyChain/Policies/ItemCategoryPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/ItemCategory/**/*
+
+  supplychain-item-interchange:
+    menu_name: "Product Interchange"
+    path: supplychain-item-interchange
+    module: SupplyChain
+    menu_links:
+      - supplychain/item-interchange
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ItemInterchangeController.php
+        - Modules/SupplyChain/Entities/ItemInterchange.php
+        - Modules/SupplyChain/Policies/ItemInterchangePolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/ItemInterchange/**/*
+
+  supplychain-location:
+    menu_name: "Location"
+    path: supplychain-location
+    module: SupplyChain
+    menu_links:
+      - supplychain/location
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/LocationController.php
+        - Modules/SupplyChain/Entities/Location.php
+        - Modules/SupplyChain/Policies/LocationPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/Location/**/*
+
+  supplychain-manual-picking-list:
+    menu_name: "Manual Picking List "
+    path: supplychain-manual-picking-list
+    module: SupplyChain
+    menu_links:
+      - supplychain/manual-picking-list
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ManualPickingListController.php
+        - Modules/SupplyChain/Http/Controllers/ManualPickingListDetailController.php
+        - Modules/SupplyChain/Http/Controllers/ManualPickingListMiddleDetailController.php
+        - Modules/SupplyChain/Entities/ManualPickingList.php
+        - Modules/SupplyChain/Import/ManualPickingListDetailImport.php
+        - Modules/SupplyChain/Jobs/ManualPickingListDetailImportJob.php
+        - Modules/SupplyChain/Jobs/PickingListExportDetailJob.php
+        - Modules/SupplyChain/Policies/ManualPickingListPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/PickingList/**/*
+
+  supplychain-master-brand:
+    menu_name: "Master Brand"
+    path: supplychain-master-brand
+    module: SupplyChain
+    menu_links:
+      - supplychain/master-brand
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/BrandController.php
+        - Modules/SupplyChain/Entities/Brand.php
+        - Modules/OmniChannel/Entities/Brand.php
+        - Modules/SupplyChain/Policies/BrandPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/MasterBrand/**/*
+
+  supplychain-mutation-inbound:
+    menu_name: "Purchase Inbound"
+    path: supplychain-mutation-inbound
+    module: SupplyChain
+    menu_links:
+      - supplychain/mutation-inbound
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMutationInboundController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationInboundDetailController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationInboundMiddleDetailController.php
+        - Modules/SupplyChain/Entities/StockMutationInbound.php
+        - Modules/SupplyChain/Routes/api.php
+        - app/Helpers/SupplyChain/ItemStockMutation.php
+        - olshoperp-frontend/src/pages/SCM/StockMutation/InventoryIn/**/*
+      frontend: []
+
+  supplychain-mutation-outbound:
+    menu_name: "Outbound External"
+    path: supplychain-mutation-outbound
+    module: SupplyChain
+    menu_links:
+      - supplychain/mutation-outbound
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMutationOutboundController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationOutboundDetailController.php
+        - Modules/SupplyChain/Entities/StockMutationOutbound.php
+        - Modules/SupplyChain/Routes/api.php
+        - app/Helpers/SupplyChain/ItemStockMutation.php
+        - olshoperp-frontend/src/pages/SCM/StockMutation/InventoryOut/**/*
+      frontend: []
+
+  supplychain-mutation-transfer-external:
+    menu_name: "External"
+    path: supplychain-mutation-transfer-external
+    module: SupplyChain
+    menu_links:
+      - supplychain/mutation-transfer-external
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferExternalController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferExternalDetailController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferController.php
+        - Modules/SupplyChain/Entities/StockMutationTransferExternal.php
+        - Modules/SupplyChain/Services/TransferExternalApproveService.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/StockMutation/TransferExternal/**/*
+      frontend: []
+
+  supplychain-mutation-transfer-internal:
+    menu_name: "Transfer Internal"
+    path: supplychain-mutation-transfer-internal
+    module: SupplyChain
+    menu_links:
+      - supplychain/mutation-transfer-internal
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferDetailController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferInternalController.php
+        - Modules/SupplyChain/Entities/StockMutationTransfer.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/StockMutation/Transfer/**/*
+      frontend: []
+
+  supplychain-mutation-transfer-scrap:
+    menu_name: "Broken"
+    path: supplychain-mutation-transfer-scrap
+    module: SupplyChain
+    menu_links:
+      - supplychain/mutation-transfer-scrap
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferScrapController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferScrapDetailController.php
+        - Modules/SupplyChain/Entities/StockMutationTransferScrap.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferController.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/StockMutation/TransferScrap/**/*
+      frontend: []
+
+  supplychain-mutation-transfer-void:
+    menu_name: "Void"
+    path: supplychain-mutation-transfer-void
+    module: SupplyChain
+    menu_links:
+      - supplychain/mutation-transfer-void
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferVoidController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferVoidDetailController.php
+        - Modules/SupplyChain/Entities/StockMutationTransferVoid.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferController.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/StockMutation/TransferVoid/**/*
+      frontend: []
+
+  supplychain-new-purchase-inbound:
+    menu_name: "BETA - New Purchase Inbound"
+    path: supplychain-new-purchase-inbound
+    module: SupplyChain
+    menu_links:
+      - supplychain/new-purchase-inbound
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMutationInboundController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationInboundDetailController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationInboundMiddleDetailController.php
+        - Modules/SupplyChain/Http/Controllers/ItemInboundInspectionController.php
+        - Modules/SupplyChain/Entities/StockMutationInbound.php
+        - Modules/SupplyChain/Entities/InboundMutationDetail.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/Inbound/PurchaseInbound/**
+
+  supplychain-other-inbound:
+    menu_name: "Other Inbound"
+    path: supplychain-other-inbound
+    module: SupplyChain
+    menu_links:
+      - supplychain/other-inbound
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/OtherInboundController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationInboundController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationInboundDetailController.php
+        - Modules/SupplyChain/Jobs/OtherInboundExportJob.php
+        - Modules/SupplyChain/Jobs/WorkOrderApprovalJob.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/StockMutation/InventoryOther/**
+
+  supplychain-product-ending-stock:
+    menu_name: "Dev - Product Ending Stock"
+    path: supplychain-product-ending-stock
+    module: SupplyChain
+    menu_links:
+      - supplychain/product-ending-stock
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ProductEndingStockController.php
+        - Modules/SupplyChain/Jobs/ProductEndingStockJob.php
+        - Modules/SupplyChain/Entities/ItemStockProductEndingStock.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/Report/ProductEndingStock/**/*
+      frontend: []
+
+  supplychain-product-general-configuration:
+    menu_name: "Product General Configuration"
+    path: supplychain-product-general-configuration
+    module: SupplyChain
+    menu_links:
+      - supplychain/product-general-configuration
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ProductGeneralConfigurationController.php
+        - Modules/SupplyChain/Http/Controllers/ProductController.php
+        - Modules/SupplyChain/Http/Controllers/BillOfMaterialGeneralConfigurationController.php
+        - Modules/SupplyChain/Http/Controllers/ProductGeneral*Controller.php
+        - Modules/SupplyChain/Entities/ProductGeneralConfiguration.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/master/ProductGeneralConfiguration/**/*
+        - olshoperp-frontend/src/pages/SCM/master/Product/components/**/*
+      frontend: []
+
+  supplychain-product-inventory-configuration:
+    menu_name: "Product Inventory Configuration"
+    path: supplychain-product-inventory-configuration
+    module: SupplyChain
+    menu_links:
+      - supplychain/product-inventory-configuration
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ProductInventoryConfigurationController.php
+        - Modules/SupplyChain/Http/Controllers/ProductController.php
+        - Modules/SupplyChain/Http/Controllers/BillOfMaterialInventoryConfigurationController.php
+        - Modules/SupplyChain/Http/Controllers/ProductInventory*Controller.php
+        - Modules/SupplyChain/Entities/ProductInventoryConfiguration.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/master/ProductInventoryConfiguration/**/*
+        - olshoperp-frontend/src/pages/SCM/master/Product/components/**/*
+      frontend: []
+
+  supplychain-product-mutation:
+    menu_name: "Dev - Product Mutation History"
+    path: supplychain-product-mutation
+    module: SupplyChain
+    menu_links:
+      - supplychain/product-mutation
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ProductMutationController.php
+        - Modules/SupplyChain/Jobs/CalculateEndingBalance.php
+        - Modules/SupplyChain/Jobs/ProductMutationHistory.php
+        - Modules/SupplyChain/Entities/ItemStockProductMutationHistory.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/Report/ProductMutation/**/*
+      frontend: []
+
+  supplychain-product-mutation-stock:
+    menu_name: "Stock History"
+    path: supplychain-product-mutation-stock
+    module: SupplyChain
+    menu_links:
+      - supplychain/product-mutation-stock
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ProductMutationController.php
+        - Modules/SupplyChain/Jobs/MutationSummaryPerWhTempJob.php
+        - Modules/SupplyChain/Jobs/MutationSummaryPerWhExportJob.php
+        - Modules/SupplyChain/Entities/ItemStockProductMutationStock.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/Report/ProductMutationStock/**/*
+        - olshoperp-frontend/src/pages/SCM/Report/StockHistory/**/*
+      frontend: []
+
+  supplychain-product-transaction-history:
+    menu_name: "Dev - Product Transaction History"
+    path: supplychain-product-transaction-history
+    module: SupplyChain
+    menu_links:
+      - supplychain/product-transaction-history
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ItemTransactionHistoryController.php
+        - app/Helpers/SupplyChain/ScmReport.php
+        - Modules/SupplyChain/Jobs/ProductTransactionHistoryExportJob.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/Report/ProductTransactionHistory/**/*
+      frontend: []
+
+  supplychain-purchase-order:
+    menu_name: "Purchase Order"
+    path: supplychain-purchase-order
+    module: SupplyChain
+    menu_links:
+      - supplychain/purchase-order
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  supplychain-purchase-requisition:
+    menu_name: "Purchase Requisition"
+    path: supplychain-purchase-requisition
+    module: SupplyChain
+    menu_links:
+      - supplychain/purchase-requisition
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/PurchaseRequisitionController.php
+        - Modules/SupplyChain/Http/Controllers/PurchaseRequisitionDetailController.php
+        - Modules/SupplyChain/Entities/PurchaseRequisition.php
+        - Modules/SupplyChain/Entities/PurchaseRequisitionDetail.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/PurchaseRequisition/**
+
+  supplychain-qc-procedure:
+    menu_name: "QC Procedure"
+    path: supplychain-qc-procedure
+    module: SupplyChain
+    menu_links:
+      - supplychain/qc-procedure
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ReceivingInspectionTemplateController.php
+        - Modules/SupplyChain/Http/Controllers/ReceivingInspectionTemplateDetailController.php
+        - Modules/SupplyChain/Http/Controllers/ProductProcessingConfigurationController.php
+        - Modules/SupplyChain/Entities/ReceivingInspectionTemplate.php
+        - Modules/SupplyChain/Entities/ReceivingInspectionTemplateDetail.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/ReceivingInspectionTemplate/**/*
+
+  supplychain-real-stock:
+    menu_name: "Real Time Stock"
+    path: supplychain-real-stock
+    module: SupplyChain
+    menu_links:
+      - supplychain/real-stock
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/RealStockController.php
+        - Modules/SupplyChain/Http/Controllers/RealStockBySKUController.php
+        - Modules/SupplyChain/Jobs/RealStockSkuExportJob.php
+        - Modules/SupplyChain/Jobs/StoreEndingStockJob.php
+        - Modules/SupplyChain/Entities/ItemStockRealStock.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SCM/Report/RealStock/**/*
+      frontend: []
+
+  supplychain-sales-returns:
+    menu_name: "Sales Return "
+    path: supplychain-sales-returns
+    module: SupplyChain
+    menu_links:
+      - supplychain/sales-returns
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/SalesReturnController.php
+        - Modules/Accounting/Http/Controllers/SalesReturnDetailController.php
+        - Modules/Accounting/Entities/SalesReturn.php
+        - Modules/Accounting/Entities/SalesReturnDetail.php
+        - Modules/OmniChannel/Entities/SalesReturn.php
+        - Modules/OmniChannel/Entities/SalesReturnDetail.php
+        - Modules/SupplyChain/Policies/SalesReturnPolicy.php
+        - Modules/SupplyChain/Broadcasting/SalesReturnChannel.php
+        - Modules/Accounting/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/SalesReturn/**/*
+        - olshoperp-frontend/src/pages/Accounting/Return/SalesReturn/**/*
+
+  supplychain-setting:
+    menu_name: "Warehouse Setting"
+    path: supplychain-setting
+    module: SupplyChain
+    menu_links:
+      - supplychain/setting
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/SettingWarehouseScrapVoidController.php
+        - Modules/SupplyChain/Entities/SettingWarehouseScrapVoid.php
+        - Modules/SupplyChain/Entities/SettingWarehouseOutRack.php
+        - Modules/SupplyChain/Entities/SettingSCM.php
+        - Modules/SupplyChain/Policies/SettingSCMPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/Setting/**/*
+
+  supplychain-stock-monitoring:
+    menu_name: "Dev - Stock Monitoring"
+    path: supplychain-stock-monitoring
+    module: SupplyChain
+    menu_links:
+      - supplychain/stock-monitoring
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMonitoringController.php
+        - app/Helpers/SupplyChain/ItemStockChecker.php
+        - Modules/SupplyChain/Entities/ItemStockMonitoring.php
+        - Modules/SupplyChain/Policies/ItemStockMonitoringPolicy.php
+        - Modules/SupplyChain/Jobs/StockMonitoringExportJob.php
+        - Modules/SupplyChain/Jobs/StockMonitoringExportExcelJob.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/Report/StockMonitoring/**/*
+        - olshoperp-frontend/src/components/project/DataTables/StockMonitoringTable.vue
+
+  supplychain-stock-opname:
+    menu_name: "Stock Opname"
+    path: supplychain-stock-opname
+    module: SupplyChain
+    menu_links:
+      - supplychain/stock-opname
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
+  supplychain-tagging:
+    menu_name: "Tagging"
+    path: supplychain-tagging
+    module: SupplyChain
+    menu_links:
+      - supplychain/tagging
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/TaggingController.php
+        - Modules/SupplyChain/Entities/Tagging.php
+        - Modules/SupplyChain/Entities/ProductTagging.php
+        - Modules/SupplyChain/Policies/TaggingPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/Tagging/**/*
+
+  supplychain-transaction-history:
+    menu_name: "BETA - Transaction History"
+    path: supplychain-transaction-history
+    module: SupplyChain
+    menu_links:
+      - supplychain/transaction-history
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/TransactionHistoryController.php
+        - Modules/SupplyChain/Jobs/TransactionHistoryExportChunkJob.php
+        - Modules/SupplyChain/Jobs/TransactionHistoryExportCombineJob.php
+        - Modules/SupplyChain/Entities/TransactionHistoryExportFile.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/Report/TransactionHistory/**/*
+
+  supplychain-transfer-inbound:
+    menu_name: "Transfer Inbound"
+    path: supplychain-transfer-inbound
+    module: SupplyChain
+    menu_links:
+      - supplychain/transfer-inbound
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferExternalController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferExternalDetailController.php
+        - Modules/SupplyChain/Http/Controllers/TransferMutationMiddleDetailExternalController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferController.php
+        - Modules/SupplyChain/Entities/StockMutationTransferExternal.php
+        - Modules/SupplyChain/Entities/TransferInbound.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/StockMutation/TransferExternal/**
+
+  supplychain-unit:
+    menu_name: "Unit"
+    path: supplychain-unit
+    module: SupplyChain
+    menu_links:
+      - supplychain/unit
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/UnitController.php
+        - Modules/SupplyChain/Entities/Unit.php
+        - Modules/SupplyChain/Entities/UnitClass.php
+        - Modules/SupplyChain/Policies/UnitPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/Unit/**/*
+
+  supplychain-warehouse-layout:
+    menu_name: "Warehouse Layout"
+    path: supplychain-warehouse-layout
+    module: SupplyChain
+    menu_links:
+      - supplychain/warehouse-layout
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/WarehouseLayoutController.php
+        - Modules/SupplyChain/Entities/WarehouseLayout.php
+        - Modules/SupplyChain/Entities/WarehouseLayoutDetail.php
+        - Modules/SupplyChain/Import/WhLayout*
+        - Modules/SupplyChain/Policies/WarehouseLayoutPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/WarehouseLayout/**/*
+
+  supplychain-warehouse-structure:
+    menu_name: "Warehouse Structure"
+    path: supplychain-warehouse-structure
+    module: SupplyChain
+    menu_links:
+      - supplychain/warehouse-structure
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/WarehouseController.php
+        - Modules/SupplyChain/Entities/Warehouse.php
+        - Modules/SupplyChain/Entities/WarehouseTree.php
+        - Modules/SupplyChain/Entities/WarehouseAddress.php
+        - Modules/SupplyChain/Jobs/WarehouseGenerator*
+        - Modules/SupplyChain/Policies/WarehousePolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/Warehouse/**/*
+
+  supplychain-warehouse-type:
+    menu_name: "Warehouse Level"
+    path: supplychain-warehouse-type
+    module: SupplyChain
+    menu_links:
+      - supplychain/warehouse-type
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/WarehouseSpaceTypeController.php
+        - Modules/SupplyChain/Entities/WarehouseSpaceType.php
+        - Modules/SupplyChain/Policies/WarehouseSpaceTypePolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/WarehouseType/**/*
+
+  supplychain-warranty:
+    menu_name: "Warranty"
+    path: supplychain-warranty
+    module: SupplyChain
+    menu_links:
+      - supplychain/warranty
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/WarrantyController.php
+        - Modules/SupplyChain/Entities/Warranty.php
+        - Modules/SupplyChain/Policies/WarrantyPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/Warranty/**/*
+
+  system-product:
+    menu_name: "System Product"
+    path: system-product
+    module: SupplyChain
+    menu_links:
+      - supplychain/product
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      - _legacy/old_system-product-requirement.md
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/ProductController.php
+        - Modules/SupplyChain/Http/Controllers/ProductGeneralConfigurationController.php
+        - Modules/SupplyChain/Routes/api.php
+        - olshoperp-frontend/src/pages/SupplyChain/Product/**/*
+      frontend: []
+
+  gate-user:
+    menu_name: "User (Gate)"
+    path: gate-user
+    module: Gate
+    menu_links:
+      - gate/user
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/Gate/Http/Controllers/UserController.php
+        - Modules/Gate/Http/Controllers/RoleAssignmentController.php
+        - Modules/Gate/Entities/User.php
+        - Modules/Gate/Entities/RolePivot.php
+        - Modules/Gate/Routes/api.php
+        - olshoperp-frontend/src/pages/gate/user/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  gate-role:
+    menu_name: "Role (Gate)"
+    path: gate-role
+    module: Gate
+    menu_links:
+      - gate/role
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/Gate/Http/Controllers/RoleController.php
+        - Modules/Gate/Http/Controllers/RoleMenuController.php
+        - Modules/Gate/Entities/Role.php
+        - Modules/Gate/Entities/RoleMenu.php
+        - Modules/Gate/Routes/api.php
+        - olshoperp-frontend/src/pages/gate/role/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  ai-kb-assistant:
+    menu_name: "AI Assistant"
+    path: ai-kb-assistant
+    module: AI
+    menu_links:
+      - "#"
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      - Modules/AI/docs/kb-assistant.md
+    code_globs:
+      backend:
+        - Modules/AI/app/Http/Controllers/Api/V1/KbAssistantController.php
+        - Modules/AI/app/Policies/KbAssistantPolicy.php
+        - Modules/AI/app/Support/KbAssistantAccess.php
+        - Modules/AI/app/Entities/KbAssistant.php
+        - Modules/AI/routes/api.php
+        - app/Http/Controllers/Auth/AuthController.php
+        - olshoperp-frontend/src/components/project/KbAssistant/**/*
+        - olshoperp-frontend/src/composables/useKbAssistant.ts
+        - olshoperp-frontend/src/lib/kbAssistantApi.ts
+      frontend: []
+
+  kb-store-monitor:
+    menu_name: "KB Store Monitor"
+    path: kb-store-monitor
+    module: AI
+    menu_links:
+      - ai/kb-store-monitor
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources:
+      - Modules/AI/docs/kb-assistant.md
+    code_globs:
+      backend:
+        - Modules/AI/app/Http/Controllers/Api/V1/KbStoreMonitorController.php
+        - Modules/AI/app/Services/KbCorpusIndexTriggerService.php
+        - Modules/AI/app/Services/KbCorpusIndexer.php
+        - Modules/AI/app/Jobs/UploadKbCorpusChunkJob.php
+        - Modules/AI/app/Console/Commands/IndexKbCorpusCommand.php
+        - Modules/AI/config/kb-corpus.php
+        - Modules/Gate/Database/Seeders/ModuleMenu/AIMenuSeeder.php
+        - olshoperp-frontend/src/pages/AI/KbStoreMonitor/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  sidebar-menu:
+    menu_name: "Sidebar Menu (Gate)"
+    path: sidebar-menu
+    module: Gate
+    menu_links: []
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: pending
+      requirement:
+        file: requirement.md
+        status: pending
+      technical:
+        file: technical.md
+        status: final
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/Gate/Http/Controllers/SidebarMenuController.php
+        - Modules/Gate/Support/SidebarMenuCache.php
+        - Modules/Gate/Http/Controllers/RoleMenuController.php
+        - Modules/Gate/Entities/Menu.php
+        - app/Policies/MainPolicy.php
+        - Modules/GeneralSetting/Http/Controllers/RenderTransactionLimitController.php
+        - .cursor/rules/10-sidebar-menu.mdc
+        - olshoperp-frontend/src/utils/sidebarMenuResponse.ts
+        - olshoperp-frontend/src/layouts/project/SideMenu/**/*
+        - olshoperp-frontend/src/components/project/MobileMenu/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  gate-global-audit-log:
+    menu_name: "Global Audit Log"
+    path: gate-global-audit-log
+    module: Gate
+    menu_links:
+      - gate/global-audit-log
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/Gate/Http/Controllers/GlobalAuditLogController.php
+        - Modules/Gate/Entities/GlobalAuditLog.php
+        - App/Traits/AuditHandlerTrait.php
+        - olshoperp-frontend/src/pages/gate/GlobalAuditLog/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-country:
+    menu_name: "Master Country"
+    path: generalsetting-country
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/country
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/CountryController.php
+        - Modules/GeneralSetting/Entities/Country.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/country/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-region:
+    menu_name: "Master Region"
+    path: generalsetting-region
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/region
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/RegionController.php
+        - Modules/GeneralSetting/Entities/Region.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/region/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-currency:
+    menu_name: "Master Currency"
+    path: generalsetting-currency
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/currency
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/CurrencyController.php
+        - Modules/GeneralSetting/Entities/Currency.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/currency/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-internal-company:
+    menu_name: "Internal Company"
+    path: generalsetting-internal-company
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/internal-company
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/InternalCompanyController.php
+        - Modules/GeneralSetting/Entities/Company.php
+        - Modules/GeneralSetting/Entities/InternalCompanyTree.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/company/InternalCompanyList.vue
+        - olshoperp-frontend/src/pages/master/company/Form.vue
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-general-company:
+    menu_name: "General Company"
+    path: generalsetting-general-company
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/general-company
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+      test_cases:
+        path: test-cases/
+        status: review
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/GeneralCompanyController.php
+        - Modules/GeneralSetting/Http/Controllers/CompanyAccountingController.php
+        - Modules/GeneralSetting/Http/Controllers/InternalCompanyController.php
+        - Modules/GeneralSetting/Import/GeneralCompanyImport.php
+        - Modules/GeneralSetting/Entities/Company.php
+        - Modules/GeneralSetting/Entities/GeneralCompanyImportHistory.php
+        - Modules/GeneralSetting/Entities/GeneralCompanyImportLog.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/company/DataListGeneralCompany.vue
+        - olshoperp-frontend/src/pages/master/company/Form.vue
+        - olshoperp-frontend/src/pages/master/company/PaymentType.vue
+        - olshoperp-frontend/src/pages/master/company/FormDocument.vue
+        - olshoperp-frontend/src/pages/master/company/DataListShipperWarehouse.vue
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  generalsetting-application:
+    menu_name: "Application"
+    path: generalsetting-application
+    module: GeneralSetting
+    menu_links:
+      - generalsetting/application
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/RenderTransactionLimitController.php
+        - Modules/GeneralSetting/Http/Controllers/OrderProcessSettingController.php
+        - Modules/GeneralSetting/Http/Controllers/GenerateSalesOrderSettingController.php
+        - Modules/GeneralSetting/Entities/RenderTransactionLimit.php
+        - Modules/GeneralSetting/Entities/OrderProcessSetting.php
+        - Modules/GeneralSetting/Routes/api.php
+        - olshoperp-frontend/src/pages/master/Application/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+

@@ -7,6 +7,7 @@ last_updated: 2026-06-19
 owner: QA - Yemima
 status: draft
 audience: operator
+aliases: [PO, purchase order docs, pembelian, outstanding PR, goods receipt link]
 ---
 
 # Purchase Order — Knowledge Base

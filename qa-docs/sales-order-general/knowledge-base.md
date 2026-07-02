@@ -2,13 +2,13 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Sales Order General (Internal)"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-07-02
 owner: QA - Yemima
 status: review
 audience: operator
 sections:
-  core: [what-is, lifecycle, import, faq]
+  core: [what-is, lifecycle, import, failed-process, faq]
 ---
 
 # Sales Order General — Knowledge Base
@@ -62,7 +62,38 @@ Download dari tombol Export/Template di datalist — file 2 sheet:
 
 > **Catatan:** Import file besar (>~2.000 baris) saat ini bisa stuck — improvement sedang direncanakan (lihat technical.md §5).
 
-## 5. FAQ
+## 5. Failed Process (icon error di datalist)
+
+Kolom **Failed Process** muncul saat pill merah **Failed Process** diklik di:
+
+- **Dev - Sales Platform** (`/omni/sales-order`)
+- **All Sales Order** (`/businessdevelopment/all-sales-order`)
+
+### Icon yang umum muncul
+
+| Icon | Arti | Tindakan operator |
+|------|------|-------------------|
+| 🔗 merah (link-slash) | Produk platform belum di-bind ke System Product | Bind di Platform Product |
+| 🔀 orange (share-nodes) | COA produk belum lengkap | Set COA di System Product |
+| 📦 merah (boxes-stacked) | Stok tidak cukup di gudang proses | Cek ATS / inbound / tunggu stok |
+| 🏭 biru (`#2F6495`, warehouse) | Store belum punya Warehouse Process | Set di Omni Settings / Warehouse Binding |
+
+**AS-IS:** Hover icon hanya menampilkan pesan error — **belum** ada timestamp "Last checked".
+
+**TO-BE (planned):** Tombol **Re-check Failed Process** di All Sales Order + tooltip Last checked. Detail: [requirement.md §9](./requirement.md#9-improvement-to-be--re-check-failed-process--log).
+
+### Cara flag hilang (AS-IS)
+
+| Kondisi | Cara hilang |
+|---------|-------------|
+| Unbinded Product | Bind produk platform |
+| Unavailable Stock | Stok tersedia + screening harian 04:00 WIB, atau Refresh Stock di **Unassign Wave** |
+| COA not set | Lengkapi COA produk |
+| No Warehouse Process | Konfigurasi warehouse process store |
+
+> **Bukan Failed Ship:** Menu Failed Ship (SCM) untuk order COD gagal kirim pasca-shipped — berbeda dari Failed Process di datalist SO.
+
+## 6. FAQ
 
 **Q: Beda dengan Sales Order Platform?**  
 A: SO Platform dari sync marketplace (Shopee/TikTok). SO General dibuat manual/import internal.
