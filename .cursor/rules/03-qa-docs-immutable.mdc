@@ -7,7 +7,7 @@ alwaysApply: true
 
 ## Larangan absolut
 
-Agent/Cursor **dilarang** melakukan operasi tulis apa pun di `qa-docs/`:
+Agent/Cursor **dilarang** melakukan operasi tulis apa pun di `qa-docs/` **kecuali** subfolder `qa-docs/{menu-slug}/test-cases/`:
 
 - create file atau folder baru
 - edit isi file
@@ -15,20 +15,18 @@ Agent/Cursor **dilarang** melakukan operasi tulis apa pun di `qa-docs/`:
 - delete
 - format-on-save otomatis yang mengubah file
 
-Berlaku **tanpa pengecualian** — termasuk jika user meminta "update doc", "buat menu baru", atau konfirmasi edit umum. Tolak dengan sopan; arahkan user mengedit manual atau minta pengecualian eksplisit di tuning rules terpisah.
+Berlaku **tanpa pengecualian** untuk semua folder di `qa-docs/` selain `test-cases/` — termasuk jika user meminta "update doc", "buat menu baru", atau konfirmasi edit umum.
+
+## Pengecualian: qa-docs/{menu-slug}/test-cases/
+
+Agent **boleh** membuat dan mengedit file di dalam subfolder `test-cases/` jika user memberi konfirmasi eksplisit. Aturan konfirmasi sebelum edit tetap berlaku (lihat `01-agent-behavior.mdc`) — tidak ada auto-edit tanpa persetujuan.
+
+Yang **tidak boleh** diubah meski di dalam `test-cases/`:
+- `README.md` di level `test-cases/`
+- File di luar pola `TC-*.md`
 
 ## Yang boleh
 
 - **Read** file di `qa-docs/` untuk menjawab pertanyaan
-- Edit hanya di luar `qa-docs/` (mis. `.cursor/rules/`, `AGENTS.md`) — dan tetap butuh konfirmasi user
-
-## Struktur root dokumentasi
-
-Root konten dokumentasi QA di repo ini = folder **`qa-docs/`** (langsung di root repo).
-
-| Path lama (monorepo) | Path benar (repo ini) |
-|----------------------|------------------------|
-| `docs/qa-docs/_meta/manifest.yaml` | `qa-docs/_meta/manifest.yaml` |
-| `docs/qa-docs/{menu-slug}/` | `qa-docs/{menu-slug}/` |
-
-Jangan pakai prefix `docs/` saat merujuk file dokumentasi.
+- **Edit** file di `qa-docs/{menu-slug}/test-cases/` — dengan konfirmasi eksplisit user, hanya file berpola `TC-*.md`
+- Edit di luar `qa-docs/` (mis. `.cursor/rules/`, `AGENTS.md`) — tetap butuh konfirmasi user
