@@ -19,7 +19,7 @@ Berlaku **tanpa pengecualian** untuk semua folder di `qa-docs/` selain `test-cas
 
 ## Pengecualian: qa-docs/{menu-slug}/test-cases/
 
-Agent **boleh** membuat dan mengedit file di dalam subfolder `test-cases/` jika user memberi konfirmasi eksplisit. Aturan konfirmasi sebelum edit tetap berlaku (lihat `01-agent-behavior.mdc`) — tidak ada auto-edit tanpa persetujuan.
+Agent **boleh** membuat folder `qa-docs/{menu-slug}/test-cases/` jika belum ada, dan mengedit file di dalam subfolder `test-cases/` jika user memberi konfirmasi eksplisit. Aturan konfirmasi sebelum edit tetap berlaku (lihat `01-agent-behavior.mdc`) — tidak ada auto-edit tanpa persetujuan.
 
 Yang **tidak boleh** diubah meski di dalam `test-cases/`:
 - `README.md` di level `test-cases/`
