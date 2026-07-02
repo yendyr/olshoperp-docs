@@ -1,0 +1,217 @@
+---
+description: Format standar Jira card — Bug Report, Improvement, Change Requirement
+alwaysApply: true
+---
+
+# Format Jira Card
+
+Gunakan rule ini setiap kali user meminta membuat Jira card, bug report, improvement task, atau change requirement.
+
+---
+
+## Aturan Judul Card (WAJIB semua tipe)
+
+Format: `[Nama Menu] - short desc`
+
+- `[Nama Menu]` = nama menu sistem yang tertera di aplikasi — **tidak boleh diubah, disingkat, atau diterjemahkan**
+- Short desc: padat, langsung ke gejala/konteks, maksimal ±15 kata
+- Berlaku konsisten untuk Bug, Improvement, maupun Change Requirement
+
+---
+
+## Tipe 1 — Bug Report
+
+```
+## Judul Card
+
+[Nama Menu] - short desc
+
+---
+
+## Description
+
+**Summary**
+[1–3 kalimat: apa yang rusak, di fitur/menu apa, kondisi spesifik pemicu]
+
+---
+
+**Environment**
+- Menu/Fitur: [menu utama - sub-fitur]
+- Environment: [Staging / Production / UAT — jika tidak disebutkan: "Not specified"]
+
+---
+
+**Precondition Data**
+[kondisi data/state yang harus ada sebelum steps dijalankan: status store, status product, kondisi binding, role user, dll]
+[Tulis "Precondition tidak disebutkan" jika reporter tidak memberikan info ini — jangan ditebak]
+
+---
+
+**Steps to Reproduce**
+1. [langkah konkret — sertakan nama file/data spesifik jika ada]
+2. ...
+
+---
+
+**Expected Result**
+[apa yang seharusnya terjadi — sertakan alasan jika membantu pemahaman dev]
+
+---
+
+**Actual Result**
+[apa yang benar-benar terjadi — error message verbatim, partial/full failure, dll]
+
+---
+
+**Additional Context**
+[root cause hypothesis jika ada data pendukung, file terlampir, video test, frekuensi, dll]
+[Kosongkan dengan "(tidak ada catatan tambahan)" jika tidak ada]
+```
+
+### Aturan penulisan Bug Report
+
+1. Jangan mengganti istilah yang dipakai reporter — "blank page" tetap "blank page", bukan "crash total"
+2. Jangan menambahkan analisis teknis yang tidak ada di input atau tidak didukung data lampiran
+3. Root cause hypothesis di Additional Context hanya boleh ditulis jika:
+   - Reporter menyebutkannya sendiri → label "Reporter menduga..."
+   - Ada data mentah (URL, log, file) yang membuat root cause jelas → label "Catatan teknis (berdasarkan data yang dilampirkan):"
+4. Error message, ID, nama file — salin verbatim, jangan parafrase
+5. Jika input mengandung lebih dari satu bug berbeda → proses bug utama yang paling jelas, informasikan ke user bahwa sebaiknya dipecah jadi tiket terpisah
+6. Precondition Data adalah section permanen — selalu ada meski isinya "Precondition tidak disebutkan"
+
+---
+
+## Tipe 2 — Improvement
+
+```
+## Judul Card
+
+[Nama Menu] - short desc improvement
+
+---
+
+## Description
+
+**Summary**
+[1–3 kalimat: apa yang ingin ditingkatkan dan mengapa ini penting]
+
+---
+
+**Environment**
+- Menu/Fitur: [menu utama - sub-fitur]
+- Environment: [Staging / Production / UAT — jika tidak disebutkan: "Not specified"]
+
+---
+
+**Background**
+[latar belakang mengapa improvement ini dibutuhkan — konteks bisnis, kejadian pemicu, pain point user/operator]
+
+---
+
+**Example Data**
+[contoh data konkret untuk mengilustrasikan kondisi AS-IS vs yang diharapkan — opsional, tulis "Tidak ada contoh data" jika tidak relevan]
+
+---
+
+**Current Behavior (AS-IS)**
+[perilaku sistem saat ini yang ingin ditingkatkan]
+
+---
+
+**Expected Improvement (TO-BE)**
+[perilaku yang diinginkan setelah improvement diimplementasi]
+
+---
+
+**Acceptance Criteria**
+- [ ] [kriteria konkret yang harus terpenuhi agar improvement dianggap selesai]
+- [ ] ...
+
+---
+
+**Additional Context**
+[workaround saat ini, referensi, dampak ke user, file terlampir, dll]
+[Kosongkan dengan "(tidak ada catatan tambahan)" jika tidak ada]
+```
+
+### Aturan penulisan Improvement
+
+1. Background wajib ada — jangan biarkan kosong; ini yang membedakan improvement dari bug
+2. Example Data bersifat ilustratif, bukan precondition teknis — tujuannya memperlihatkan "data seperti apa yang dimaksud" agar TO-BE lebih mudah dipahami
+3. Acceptance Criteria minimal 1 poin yang terukur dan konkret
+
+---
+
+## Tipe 3 — Change Requirement
+
+```
+## Judul Card
+
+[Nama Menu] - short desc perubahan requirement
+
+---
+
+## Description
+
+**Summary**
+[1–3 kalimat: requirement apa yang berubah dan apa trigger perubahannya]
+
+---
+
+**Environment**
+- Menu/Fitur: [menu utama - sub-fitur]
+
+---
+
+**Example Data**
+[contoh data konkret yang mengilustrasikan perbedaan AS-IS vs TO-BE — opsional, tulis "Tidak ada contoh data" jika tidak relevan]
+
+---
+
+**Current Requirement (AS-IS)**
+[requirement yang berlaku sekarang]
+
+---
+
+**New Requirement (TO-BE)**
+[requirement pengganti yang diminta]
+
+---
+
+**Reason / Justification**
+[alasan bisnis atau teknis mengapa requirement ini perlu diubah]
+
+---
+
+**Impact Assessment**
+[menu lain yang terdampak, docs/test case yang perlu diupdate, risiko jika tidak diupdate]
+[WAJIB diisi — agent harus baca docs manifest untuk identifikasi menu terdampak]
+
+---
+
+**Acceptance Criteria**
+- [ ] [kriteria konkret yang harus terpenuhi]
+- [ ] ...
+
+---
+
+**Additional Context**
+[referensi tiket terkait, keputusan PM, dll]
+[Kosongkan dengan "(tidak ada catatan tambahan)" jika tidak ada]
+```
+
+### Aturan penulisan Change Requirement
+
+1. Impact Assessment **wajib diisi** — agent harus baca `manifest.yaml` dan docs menu terkait untuk mengidentifikasi dampak ke menu lain sebelum menulis section ini; jangan kosongkan atau tulis "tidak ada dampak" tanpa verifikasi docs
+2. Example Data bersifat ilustratif — sama konsepnya dengan Improvement, untuk memperjelas perbedaan AS-IS vs TO-BE dari sisi data
+3. Reason / Justification wajib ada — change requirement tanpa alasan tidak bisa di-assess dev/PM
+
+---
+
+## Self-check sebelum output (semua tipe)
+
+- [ ] Judul pakai format `[Nama Menu] - short desc`?
+- [ ] Nama menu di `[]` tidak diubah dari nama asli di sistem?
+- [ ] Semua section ada dengan separator `---`?
+- [ ] Tidak ada istilah yang diganti/ditambah sendiri di luar input reporter?
+- [ ] Additional Context kosong ditulis "(tidak ada catatan tambahan)", bukan dihapus?

@@ -1,5 +1,5 @@
 ---
-description: Format standar jawaban QA — struktur, sitasi, AS-IS vs rekomendasi
+description: Format standar jawaban QA — struktur, sitasi, audience, AS-IS vs rekomendasi
 alwaysApply: true
 ---
 
@@ -28,6 +28,25 @@ Jangan campur AS-IS dengan rekomendasi tanpa label.
 - Sebut §/heading jika ada (mis. requirement §12)
 - Sebut `menu_name` + route dari manifest (`menu_links`)
 
+---
+
+## Audience default: QA & PM
+
+Jika user tidak menyebut audience secara eksplisit, default ke **QA tone**.
+
+| Audience | Tone & fokus |
+|----------|-------------|
+| **QA** (default) | Teknis, edge case, gap — tekankan acceptance criteria, validasi, status doc, precondition, dan dampak ke menu lain |
+| **PM** | Bisnis, impact — tekankan AS-IS/TO-BE, user requirement, workaround yang tersedia, dan keputusan yang perlu dibuat |
+| **Dev** (hanya jika user eksplisit minta) | Sistem, implementasi — tekankan endpoint, state machine, side effect, file map dari technical.md |
+
+Cara baca sinyal audience dari user:
+- "untuk dev" / "jelaskan ke developer" → Dev tone
+- "untuk PM" / "ringkasan bisnis" → PM tone
+- Tidak ada sinyal → QA tone (default)
+
+---
+
 ## Pertanyaan operasional
 
 Sertakan tabel atau bullet **Bisa / Tidak Bisa** jika relevan (ambil dari KB/requirement).
@@ -40,4 +59,4 @@ Sertakan: validasi, status transaksi, endpoint/API (hanya jika tertulis di techn
 
 - Pertanyaan sederhana → ringkas
 - Alur proses / lintas menu → step-by-step + menu terkait
-- Jangan ulangi isi doc utuh — rangkum poin QA-relevant
+- Jangan ulangi isi doc utuh — rangkum poin yang relevan untuk audience-nya

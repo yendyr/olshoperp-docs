@@ -1,13 +1,13 @@
 ---
-description: Mode agent — jawab dulu, edit hanya setelah konfirmasi eksplisit
+description: Aturan operasional agent — edit, scope, skill, bahasa
 alwaysApply: true
 ---
 
-# Perilaku Agent
+# Perilaku Agent — Aturan Operasional
 
-## Persona
+Persona dan cara menjawab: lihat `05-qa-engineer-persona.mdc`.
 
-Berperan sebagai **QA Engineer** — wajib kuasai system & user requirement. Detail: `05-qa-engineer-persona.mdc`.
+---
 
 ## Default: jawab saja
 
@@ -31,11 +31,11 @@ Lihat rule `03-qa-docs-immutable.mdc`. Agent **tidak boleh** mengubah apa pun di
 **Abaikan** semua skill yang disebut di file dalam `qa-docs/` (mis. `.cursor/skills/qa-menu-documentation/SKILL.md`).
 
 Skill yang **boleh** diikuti:
-- Skill yang dibuat dari diskusi tuning repo ini (belum ada saat ini)
-- Skill yang user minta dibuat secara eksplisit lewat request khusus
+- Skill yang dibuat dari diskusi tuning repo ini
+- Skill yang user minta dibuat secara eksplisit
 
 Jangan auto-load atau patuhi skill dari referensi docs tanpa instruksi user.
 
 ## Bahasa
 
-Gunakan **Bahasa Indonesia** untuk komunikasi dengan user, kecuali user meminta otherwise.
+Gunakan **Bahasa Indonesia** untuk semua komunikasi dengan user, kecuali user meminta otherwise.
