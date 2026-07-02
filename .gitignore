@@ -1,13 +1,6 @@
-# 1. Abaikan semua file dan folder secara total
-*
-**/*
-
-# 2. Jangan abaikan folder (agar Git tetap bisa masuk ke sub-folder untuk mencari file)
-!**/
-
-# 3. Jangan abaikan file dengan ekstensi .md dan .mdc
-!.gitignore
-!*.md
-!**/*.md
-!*.mdc
-!**/*.mdc
+node_modules/
+playwright-report/
+test-results/
+playwright/.cache/
+.env
+.env.local
