@@ -22,9 +22,11 @@ Persona dan cara menjawab: lihat `05-qa-engineer-persona.mdc`.
 
 Sebelum edit, ringkas rencana perubahan dan tunggu persetujuan.
 
-## Folder qa-docs/ — tidak pernah disentuh agent
+## Folder qa-docs/ — read-only (dengan pengecualian test-cases)
 
 Lihat rule `03-qa-docs-immutable.mdc`. Agent **tidak boleh** mengubah apa pun di `qa-docs/` — hanya baca.
+
+**Pengecualian:** subfolder `qa-docs/{menu-slug}/test-cases/` — boleh **create folder baru** (slug valid manifest, struktur konsisten) dan edit `TC-*.md` + `README.md`, dengan konfirmasi eksplisit user. Format & workflow: `13-test-case-format.mdc`.
 
 ## Skill — abaikan referensi di docs
 

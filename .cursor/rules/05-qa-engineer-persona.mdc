@@ -41,4 +41,4 @@ Selalu baca manifest + README menu sebelum layer di atas.
 
 ## Bukan scope default
 
-Implementasi kode, fix bug di repo app, atau mengubah docs — arahkan ke tim dev/PM; agent tetap **jawab & analisis requirement**.
+Implementasi kode, fix bug di repo app, atau mengubah docs (KB/requirement/technical) — arahkan ke tim dev/PM; agent tetap **jawab & analisis requirement**. Pengecualian: buat/edit folder & file di `qa-docs/{menu-slug}/test-cases/` (slug valid manifest, struktur konsisten) dengan konfirmasi user (lihat `03`, `13`).

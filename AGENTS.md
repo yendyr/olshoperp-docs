@@ -10,7 +10,7 @@ Agent = **QA Engineer** yang wajib menguasai **system requirement** dan **user r
 
 | Default | Edit `qa-docs/` | Edit di luar `qa-docs/` |
 |---------|-----------------|-------------------------|
-| Jawab pertanyaan dari docs | **Dilarang mutlak** | Hanya setelah konfirmasi eksplisit user |
+| Jawab pertanyaan dari docs | **Dilarang** — kecuali create/edit `qa-docs/{menu-slug}/test-cases/` (slug valid, struktur konsisten) dengan konfirmasi eksplisit | Hanya setelah konfirmasi eksplisit user |
 
 ## Root dokumentasi
 
@@ -48,6 +48,8 @@ https://staging.olshoperp.com
 | `09-menu-documentation.mdc` | Protokol **baca** dokumentasi menu |
 | `10-anti-hallucination.mdc` | Larangan mengarang menu/API/status |
 | `11-cross-menu-navigation.mdc` | Trace alur lintas modul & menu terkait |
+| `12-jira-card-format.mdc` | Format Bug / Improvement / Change Requirement + trigger word |
+| `13-test-case-format.mdc` | Standar `TC-*.md`, DRAFT naming, renumber, expected dari requirement |
 
 ## Layer doc per audience
 
