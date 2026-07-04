@@ -208,10 +208,83 @@ Format: `[Nama Menu] - short desc`
 
 ---
 
+---
+
+## Aturan Tone & Bahasa (berlaku semua tipe)
+
+Card ini dibaca oleh QA manual dan PM — **bukan developer**. Tulis dengan bahasa yang mudah dipahami tanpa latar belakang teknis.
+
+1. **Hindari jargon teknis** di Summary, Steps, Expected, dan Actual Result — gunakan bahasa operasional yang dipakai user sehari-hari di aplikasi
+2. **Nama file, nama class, nama method, nama tabel DB** — jika perlu disebutkan, masukkan ke Additional Context saja, bukan di section utama
+3. **Error message** dari UI boleh dikutip verbatim di Actual Result — ini bukan jargon, ini yang dilihat user
+4. **Root cause teknis** (nama controller, query, job) hanya boleh masuk Additional Context dengan label "Catatan teknis" dan hanya jika didukung data lampiran — bukan spekulasi
+5. Tone: netral, deskriptif, tidak dramatis — jangan "sistem crash total" kalau user cuma bilang "jadi blank page"
+
+---
+
+## Trigger word — langsung generate vs diskusi dulu
+
+### Langsung generate card (tanpa tanya)
+
+Gunakan trigger word berikut di awal pesan:
+
+| Trigger | Tipe card yang di-generate |
+|---------|---------------------------|
+| `bug:` | Bug Report |
+| `improvement:` | Improvement |
+| `cr:` | Change Requirement |
+
+Contoh: `bug: sales order, saat klik approve muncul error 404`
+→ langsung generate Bug Report tanpa konfirmasi.
+
+### Tanpa trigger word — tanya dulu
+
+Jika user mendeskripsikan masalah/usulan **tanpa trigger word** dan konteksnya ambigu (bisa jadi bug, bisa improvement, bisa perlu analisa dulu), tanya:
+
+> "Mau langsung jadi card Jira, atau perlu deep analisa requirement dulu?"
+
+Jika user jawab "langsung card" → generate sesuai tipe yang paling sesuai konteks.
+Jika user jawab "analisa dulu" → jalankan research dari docs (requirement, KB, technical) sebelum generate.
+
+### Deep research tetap jalan saat generate langsung
+
+Bahkan saat trigger word dipakai dan card langsung di-generate, agent tetap wajib:
+1. Baca `requirement.md` menu terkait untuk validasi Expected Result
+2. Bandingkan expected result dari input user dengan requirement
+3. Jika berbeda → tambahkan catatan di Expected Result (lihat aturan di bawah)
+
+---
+
+## Validasi Expected Result dari Requirement (berlaku semua tipe)
+
+Sebelum menulis Expected Result / Expected Improvement / New Requirement (TO-BE), agent wajib:
+1. Baca `qa-docs/{menu-slug}/requirement.md` yang relevan
+2. Cari acceptance criteria atau aturan bisnis untuk skenario tersebut
+
+**Jika expected dari user sesuai requirement** → tulis apa adanya.
+
+**Jika expected dari user TIDAK sesuai requirement:**
+```
+[Catatan: Expected result yang disebutkan ("{kutip input user singkat}") 
+berbeda dari requirement di {path requirement}. 
+Expected di atas mengacu pada requirement yang berlaku — 
+konfirmasi ke QA lead jika requirement perlu diupdate.]
+```
+
+**Jika requirement tidak mencakup skenario ini:**
+```
+[Menunggu requirement: kondisi ini belum terdokumentasi di requirement.md — 
+expected result perlu dikonfirmasi ke QA lead sebelum card difinalisasi.]
+```
+
+---
+
 ## Self-check sebelum output (semua tipe)
 
 - [ ] Judul pakai format `[Nama Menu] - short desc`?
 - [ ] Nama menu di `[]` tidak diubah dari nama asli di sistem?
 - [ ] Semua section ada dengan separator `---`?
 - [ ] Tidak ada istilah yang diganti/ditambah sendiri di luar input reporter?
+- [ ] Tidak ada jargon teknis di section utama (Summary/Steps/Expected/Actual)?
+- [ ] Expected Result sudah divalidasi dari requirement.md?
 - [ ] Additional Context kosong ditulis "(tidak ada catatan tambahan)", bukan dihapus?

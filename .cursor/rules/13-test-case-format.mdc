@@ -1,0 +1,213 @@
+---
+description: Standarisasi test case docs — format TC-*.md, duplikasi, expected result, renumber
+alwaysApply: true
+---
+
+# Test Case Documentation Standard
+
+Rule ini berlaku di repo `olshoperp-docs`. Semua operasi tulis di `qa-docs/{menu-slug}/test-cases/` mengikuti rule ini.
+
+---
+
+## 1. Kapan boleh membuat TC baru
+
+Hanya saat ada instruksi eksplisit dari user. Agent tidak boleh auto-generate TC tanpa diminta.
+
+Sebelum membuat TC baru, agent wajib:
+1. Baca `qa-docs/_meta/manifest.yaml` — verifikasi `{menu-slug}` valid
+2. Scan seluruh `TC-*.md` di folder `qa-docs/{menu-slug}/test-cases/` — cek duplikasi
+3. Baca `qa-docs/{menu-slug}/requirement.md` — verifikasi expected result
+
+---
+
+## 2. Naming file TC baru (WAJIB format DRAFT)
+
+Semua TC baru dari device manapun pakai format:
+
+```
+TC-{PREFIX}-DRAFT-{timestamp}.md
+```
+
+Contoh: `TC-ARCP-DRAFT-20260704143022.md`
+
+- `{PREFIX}` — ambil dari TC code existing di folder yang sama; kalau folder baru/kosong, derive dari menu slug (contoh: `accounting-customer-payment` → `ARCP`)
+- `{timestamp}` — format `YYYYMMDDHHmmss`, waktu file dibuat
+- **Jangan pakai nomor urut saat create** — nomor urut hanya di-assign saat renumber oleh QA lead
+
+Field `tc_code` di frontmatter diisi: `PENDING-{timestamp}` (sama dengan timestamp di nama file)
+
+---
+
+## 3. Format frontmatter wajib
+
+```yaml
+---
+doc_type: e2e-test-case
+tc_code: PENDING-{timestamp}        # diisi PENDING saat draft; diganti saat renumber
+menu: {menu-slug}
+menu_name: "{Nama Menu}"
+title: "{Judul lengkap test case}"
+summary: "{Ringkasan satu baris untuk datalist UI}"
+status: draft
+owner: QA - {nama pembuat}
+last_updated: {YYYY-MM-DD}
+requirement_ref: "qa-docs/{menu-slug}/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 112
+  code: FAT
+related_menus: []
+preconditions:
+  - "{kondisi awal 1}"
+test_data:
+  - field: "{nama field}"
+    value: "{nilai}"
+steps:
+  - "{langkah 1}"
+  - "{langkah 2}"
+expected_result: |
+  {hasil yang diharapkan}
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+---
+```
+
+### Aturan `execution_company`
+
+- Default: `id: 112, code: FAT`
+- Jika user menyebut company lain, gunakan company tersebut
+- Company allowlist: FAT (112), lumicharmsid (153), DEV-STG (13), Lumielle (810), TANRISE (3)
+- Jangan gunakan company di luar allowlist
+
+### Aturan `automated`
+
+- Selalu `false` dan `automated_spec: null` saat create — spec Playwright ditulis manual oleh QA/dev terpisah
+- Jangan set `automated: true` kecuali user eksplisit minta dan menyebut path spec-nya
+
+---
+
+## 4. Kredensial default Playwright
+
+Selalu gunakan kredensial berikut untuk semua referensi akun E2E di docs:
+
+```
+Email : playwright@gmail.com
+Password : 12345678
+Company default : FAT (id: 112)
+```
+
+Jangan gunakan akun lain kecuali user instruksikan eksplisit.
+
+---
+
+## 5. Cek duplikasi sebelum buat TC baru
+
+Sebelum membuat file baru, scan seluruh `TC-*.md` (termasuk DRAFT) di folder `test-cases/` menu yang sama. Bandingkan:
+- `title` — apakah judul sama atau sangat mirip?
+- `steps` — apakah alur uji identik atau subset dari TC existing?
+- `preconditions` + `expected_result` — kombinasi yang sama = duplikat
+
+Jika ditemukan duplikat atau sangat mirip:
+- Informasikan ke user TC mana yang sudah ada (sebutkan nama file + `tc_code`)
+- Tanya apakah ini memang TC berbeda atau update dari yang sudah ada
+- Jangan buat file baru sampai user konfirmasi
+
+---
+
+## 6. Expected result wajib dari requirement
+
+`expected_result` di frontmatter **harus** berdasarkan `requirement.md` menu terkait.
+
+Alur wajib:
+1. Baca `qa-docs/{menu-slug}/requirement.md`
+2. Temukan acceptance criteria atau aturan bisnis yang relevan dengan skenario TC
+3. Tulis `expected_result` mengacu pada requirement tersebut — bukan asumsi umum ERP
+
+Jika requirement tidak cukup jelas atau tidak ditemukan untuk skenario tersebut:
+```yaml
+expected_result: |
+  [MENUNGGU REQUIREMENT] Expected result untuk skenario ini belum dapat ditentukan
+  karena requirement di qa-docs/{menu-slug}/requirement.md belum mencakup kondisi ini.
+  Referensi: {sebutkan section/heading requirement yang paling dekat}
+  QA lead perlu update requirement sebelum TC ini bisa difinalisasi.
+```
+
+Jika user menyebut expected result di input mereka tapi berbeda dari requirement:
+```yaml
+expected_result: |
+  {expected result dari requirement — tulis di sini}
+
+  [CATATAN QA] Expected result yang disebutkan user ("{kutip input user}")
+  tidak sesuai dengan requirement di {path requirement § section}.
+  Expected result di atas mengacu pada requirement yang berlaku.
+  Konfirmasi ke QA lead jika requirement perlu diupdate.
+```
+
+---
+
+## 7. Larangan rekomendasi di luar docs
+
+Agent **dilarang**:
+- Memberikan rekomendasi skenario TC berdasarkan pengetahuan umum ERP
+- Menyebut "biasanya di sistem ERP..." atau sejenisnya
+- Mengasumsikan alur end-to-end yang tidak terdokumentasi di `requirement.md` atau `knowledge-base.md`
+
+Semua skenario, precondition, dan expected result harus merujuk ke docs yang ada di repo ini. Jika tidak ada docs-nya → nyatakan gap, jangan isi dengan asumsi.
+
+---
+
+## 8. Struktur folder test-cases
+
+```
+qa-docs/{menu-slug}/
+└── test-cases/
+    ├── README.md          ← wajib ada, berisi daftar TC + status
+    ├── TC-{PREFIX}-DRAFT-{timestamp}.md
+    └── TC-{PREFIX}-NNN.md   ← setelah renumber oleh QA lead
+```
+
+`test-cases/README.md` wajib diupdate setiap kali ada TC baru — tambahkan entry ke tabel daftar TC.
+
+---
+
+## 9. Trigger renumber — khusus QA lead
+
+**Trigger phrase:** `#renumber-tc {menu-slug}`
+
+Contoh: `#renumber-tc accounting-customer-payment`
+
+Saat trigger ini dijalankan, agent:
+1. Scan semua file `TC-*.md` di `qa-docs/{menu-slug}/test-cases/`
+2. Pisahkan TC yang sudah bernomor (non-DRAFT) dan yang masih DRAFT
+3. Sort semua DRAFT by timestamp di nama file (ascending — timestamp terkecil = nomor terkecil)
+4. Tentukan nomor lanjutan dari TC bernomor terakhir yang sudah ada (jika belum ada, mulai dari 001)
+5. Rename file DRAFT → `TC-{PREFIX}-{NNN}.md` dan update `tc_code` di frontmatter
+6. Update `test-cases/README.md` dengan daftar TC final
+7. Laporkan ke user: daftar rename yang dilakukan (old name → new name + tc_code baru)
+
+TC yang sudah bernomor (non-DRAFT) **tidak diubah nomornya** — hanya DRAFT yang di-assign nomor baru.
+
+Trigger ini hanya dijalankan saat user mengetiknya secara eksplisit. Agent tidak boleh menjalankan renumber otomatis di situasi lain.
+
+---
+
+## 10. README test-cases — format wajib
+
+```markdown
+# Test Cases — {Menu Name}
+
+| TC Code | Title | Status | Automated | Last Updated |
+|---------|-------|--------|-----------|-------------|
+| TC-{PREFIX}-001 | {judul} | draft/review/final | ✅/❌ | YYYY-MM-DD |
+```
+
+Entry DRAFT ditulis dengan `tc_code: PENDING-{timestamp}` sampai renumber dijalankan.
