@@ -1,31 +1,44 @@
 import { Page, expect } from '@playwright/test';
-
-export const STAGING_API_URL =
-  process.env.OLSHOP_API_URL ?? 'https://api.staging.olshoperp.com/api';
+import {
+  CompanyConfig,
+  EnvConfig,
+  findCompanyByCode,
+  findCompanyById,
+  getEnvConfig,
+} from './env-config';
 
 export const TEST_EMAIL = process.env.OLSHOP_TEST_EMAIL ?? 'playwright@gmail.com';
 export const TEST_PASSWORD = process.env.OLSHOP_TEST_PASSWORD ?? '12345678';
 
-/** Company scope allowed for this test suite. */
-export const ALLOWED_COMPANIES = [
-  { id: 112, code: 'FAT', label: 'FAT' },
-  { id: 153, code: 'lumicharmsid', label: 'Lumi Charms.id' },
-  { id: 13, code: 'DEV-STG', label: 'Dev Staging' },
-] as const;
+/** @deprecated Use getApiUrl(getEnvConfig()) */
+export const STAGING_API_URL = getEnvConfig('staging').apiURL;
 
-export type AllowedCompany = (typeof ALLOWED_COMPANIES)[number];
+/** @deprecated Use getEnvConfig(projectName).allowedCompanies */
+export const ALLOWED_COMPANIES = getEnvConfig().allowedCompanies;
 
-export function isAllowedCompanyId(companyId: number): boolean {
-  return ALLOWED_COMPANIES.some((company) => company.id === companyId);
+export type AllowedCompany = CompanyConfig;
+
+export function getApiUrl(env?: EnvConfig): string {
+  return (env ?? getEnvConfig()).apiURL;
+}
+
+export function isAllowedCompanyId(
+  companyId: number,
+  env?: EnvConfig,
+): boolean {
+  const config = env ?? getEnvConfig();
+  return config.allowedCompanies.some((company) => company.id === companyId);
 }
 
 export function assertAllowedCompanyId(
   companyId: number,
   context = 'company access',
+  env?: EnvConfig,
 ): void {
+  const config = env ?? getEnvConfig();
   expect(
-    isAllowedCompanyId(companyId),
-    `${context}: company id ${companyId} is outside the allowed scope (${ALLOWED_COMPANIES.map((c) => `${c.label}/${c.id}`).join(', ')})`,
+    isAllowedCompanyId(companyId, config),
+    `${context}: company id ${companyId} is outside the allowed scope for ${config.name} (${config.allowedCompanies.map((c) => `${c.label}/${c.id}`).join(', ')})`,
   ).toBe(true);
 }
 
@@ -78,7 +91,7 @@ export async function readActiveCompanyFromPage(page: Page): Promise<{
   });
 }
 
-export async function login(page: Page): Promise<void> {
+export async function login(page: Page, env?: EnvConfig): Promise<void> {
   await page.goto('/login', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: 'Sign In' })).toBeVisible();
 
@@ -96,6 +109,25 @@ export async function login(page: Page): Promise<void> {
   const auth = await readAuthFromPage(page);
   expect(auth.token, 'auth token should exist after login').toBeTruthy();
   expect(auth.user?.email ?? auth.user?.username).toBeTruthy();
+
+  if (env) {
+    const activeCompany = await readActiveCompanyFromPage(page);
+    assertAllowedCompanyId(activeCompany.id, 'default company after login', env);
+  }
+}
+
+export async function ensureDefaultCompany(
+  page: Page,
+  env?: EnvConfig,
+): Promise<CompanyConfig> {
+  const config = env ?? getEnvConfig();
+  await switchCompanyById(
+    page,
+    config.defaultCompany.id,
+    config.defaultCompany.label,
+    config,
+  );
+  return config.defaultCompany;
 }
 
 export async function openCompanySwitcher(page: Page): Promise<void> {
@@ -115,8 +147,10 @@ export async function switchCompanyById(
   page: Page,
   companyId: number,
   companyLabel: string,
+  env?: EnvConfig,
 ): Promise<void> {
-  assertAllowedCompanyId(companyId, `switch to ${companyLabel}`);
+  const config = env ?? getEnvConfig();
+  assertAllowedCompanyId(companyId, `switch to ${companyLabel}`, config);
 
   const activeCompany = await readActiveCompanyFromPage(page);
   if (activeCompany.id === companyId) {
@@ -157,13 +191,23 @@ export async function switchCompanyById(
 export async function switchCompanyByCode(
   page: Page,
   companyCode: string,
+  env?: EnvConfig,
 ): Promise<void> {
-  const company = ALLOWED_COMPANIES.find((item) => item.code === companyCode);
+  const config = env ?? getEnvConfig();
+  const company = findCompanyByCode(config, companyCode);
   if (!company) {
     throw new Error(
-      `Company code "${companyCode}" is not registered in ALLOWED_COMPANIES`,
+      `Company code "${companyCode}" is not registered in allowed companies for ${config.name}`,
     );
   }
 
-  await switchCompanyById(page, company.id, company.label);
+  await switchCompanyById(page, company.id, company.label, config);
+}
+
+export function resolveCompanyLabel(
+  env: EnvConfig,
+  companyId: number,
+  fallbackLabel: string,
+): string {
+  return findCompanyById(env, companyId)?.label ?? fallbackLabel;
 }

@@ -14,7 +14,12 @@ import { SystemProductPage } from './helpers/system-product';
  */
 
 test.describe.serial('System Product — lumicharmsid (153)', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'staging',
+      'System Product E2E hanya dijalankan di staging (company lumicharmsid)',
+    );
+
     await login(page);
     await switchCompanyByCode(page, 'lumicharmsid');
   });

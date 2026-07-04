@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
+import { getEnvConfig } from './helpers/env-config';
 import {
-  ALLOWED_COMPANIES,
   assertAllowedCompanyId,
   login,
   readActiveCompanyFromPage,
@@ -9,8 +9,8 @@ import {
 
 /**
  * Selectors derived from olshoperp-frontend staging bundles:
- * - Login: `assets/Login-CvdZr7Xo.js` → placeholder Email/Password, button "Login"
- * - TopBar: `index-*.js` → profile dropdown "Switch Company", confirm modal "Proceed"
+ * - Login: placeholder Email/Password, button "Login"
+ * - TopBar: profile dropdown "Switch Company", confirm modal "Proceed"
  *
  * Related TC docs:
  * - qa-docs/gate-user/test-cases/TC-GATE-001.md
@@ -18,32 +18,40 @@ import {
  */
 
 test.describe('OlshopERP — login & company scope', () => {
-  // 1. Login
-  test('login dengan akun tester berhasil masuk ke dashboard', async ({ page }) => {
-    await login(page);
+  test('login dengan akun tester berhasil masuk ke dashboard', async ({
+    page,
+  }, testInfo) => {
+    const env = getEnvConfig(testInfo.project.name);
+
+    await login(page, env);
 
     await expect(page.locator('.topbar')).toBeVisible();
 
     const activeCompany = await readActiveCompanyFromPage(page);
     expect(activeCompany.id).toBeGreaterThan(0);
-    assertAllowedCompanyId(activeCompany.id, 'default company after login');
+    assertAllowedCompanyId(activeCompany.id, 'default company after login', env);
   });
 
-  // 2–4. Verifikasi akses ke Company ID 112, 153, dan 13
-  for (const company of ALLOWED_COMPANIES) {
-    test(`bisa mengakses company ${company.code} (ID ${company.id})`, async ({
-      page,
-    }) => {
-      await login(page);
-      await switchCompanyByCode(page, company.code);
+  test('verifikasi akses semua allowed company di environment aktif', async ({
+    page,
+  }, testInfo) => {
+    const env = getEnvConfig(testInfo.project.name);
+
+    for (const company of env.allowedCompanies) {
+      await login(page, env);
+      await switchCompanyByCode(page, company.code, env);
 
       const activeCompany = await readActiveCompanyFromPage(page);
       expect(activeCompany.id).toBe(company.id);
-      assertAllowedCompanyId(activeCompany.id, `active company ${company.code}`);
+      assertAllowedCompanyId(
+        activeCompany.id,
+        `active company ${company.code}`,
+        env,
+      );
 
       if (company.code === 'DEV-STG') {
         await page.waitForTimeout(5_000);
       }
-    });
-  }
+    }
+  });
 });
