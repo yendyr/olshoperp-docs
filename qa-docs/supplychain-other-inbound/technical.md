@@ -171,10 +171,11 @@ sequenceDiagram
 
 | Sistem | Mekanisme |
 |--------|-----------|
-| Work Order / Assembly | `transaction_reference_class = WorkOrder::class` |
-| Accounting Journal | URL helper → `/supplychain/other-inbound/edit/{id}` |
+| Work Order / Assembly | `transaction_reference_class = WorkOrder::class`; full chain TFI → Outbound → Other Inbound — [Assembly technical §7](../supplychain-assembly/technical.md) |
+| Accounting Journal | `JournalProcess::stockInboundAutoJournal` when ref = WorkOrder; Dr Inventory FG, Cr WIP |
 | Product Mutation History | Link formatting to other-inbound edit |
 | Item Stock | `approveInbound()` same as purchase inbound |
+| Master Unit | `inbound_quantity_unit_id` on detail; base unit conversion via observer |
 
 ---
 
@@ -182,6 +183,19 @@ sequenceDiagram
 
 Shared `StockMutationInboundPolicy` for detail/approve operations.  
 Menu seeder: `supplychain/other-inbound`.
+
+---
+
+## Related Documents
+
+| Doc | Path |
+|-----|------|
+| Requirement | [requirement.md](./requirement.md) |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
+| Assembly | [../supplychain-assembly/technical.md](../supplychain-assembly/technical.md) |
+| Master Unit | [../supplychain-unit/technical.md](../supplychain-unit/technical.md) |
+| Outbound External | [../supplychain-mutation-outbound/technical.md](../supplychain-mutation-outbound/technical.md) |
+| Transfer Internal | [../supplychain-mutation-transfer-internal/technical.md](../supplychain-mutation-transfer-internal/technical.md) |
 
 ---
 

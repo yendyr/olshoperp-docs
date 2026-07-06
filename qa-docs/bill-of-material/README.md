@@ -22,4 +22,6 @@ Menu **Bill of Material** (SCM) — definisi komponen BOM untuk Assembly.
 ## Related menus
 
 - [system-product](../system-product/) — prerequisite SKU header/detail
+- [supplychain-assembly](../supplychain-assembly/) — consumer utama; snapshot BoM saat Open/Approve
+- [supplychain-unit](../supplychain-unit/) — primary/alternate unit untuk detail BoM
 - [random-sku](../random-sku/) — random SKU tidak boleh jadi Header/Detail BOM

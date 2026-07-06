@@ -17,8 +17,13 @@ audience: operator
 
 Menu **Credit Note** adalah bagian dari modul **Accounting** di OlshopERP.
 
-## Status dokumentasi
+## Relasi Sales Return
 
-- Knowledge Base: **pending**
-- Requirement: **pending**
-- Technical: **pending**
+Credit Note dapat **otomatis terbentuk** saat Finance menyelesaikan (**Complete**) Sales Return bertipe **Billed** — invoice customer sudah pernah dibayar.
+
+| Sumber | Menu |
+|--------|------|
+| Manual create | Credit Note |
+| Auto dari retur | [Sales Return Approval](../accounting-sales-return/knowledge-base.md) |
+
+Detail teknis: [Sales Return requirement §7](../supplychain-sales-returns/requirement.md).

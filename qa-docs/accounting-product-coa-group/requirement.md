@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-product-coa-group
 menu_name: "Product COA Group"
-version: 1.0
-last_updated: 2026-06-23
+version: 1.1
+last_updated: 2026-07-04
 owner: QA - Yemima
 status: draft
 ---
@@ -23,6 +23,7 @@ status: draft
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-06-23 | QA - Yemima | Cross-reference Relasi Instant Settlement (Fase 2) |
+| 1.1 | 2026-07-04 | QA - Yemima | Cross-reference Relasi Assembly (WIP + Inventory COA) |
 
 ---
 
@@ -46,6 +47,23 @@ Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/req
 
 ---
 
+## Relasi Assembly
+
+**Dampak ke menu ini:** Assembly Approve job mem-posting jurnal via Outbound + Other Inbound. Mapping COA diambil dari Product COA Group per SKU:
+
+| Transaksi | Akun yang dipakai | Produk |
+|-----------|-------------------|--------|
+| Outbound Other (WIP) | **Work In Progress** (Dr), **Inventory** (Cr) | Setiap komponen BoM |
+| Other Inbound (FG) | **Inventory** (Dr), **Work In Progress** (Cr) | Finish goods |
+
+**Prasyarat dari menu ini agar Assembly lolos:** FG **dan semua komponen** BoM snapshot punya Product COA Group lengkap dengan akun WIP + Inventory **sebelum** Open/Approve. Missing mapping → Open/Approve ditolak dengan pesan COA.
+
+**Independensi:** Ubah COA group setelah Assembly Approved **tidak** re-post jurnal transaksi lama.
+
+**Detail alur:** [Assembly requirement §6](../supplychain-assembly/requirement.md) — Journal Integration · [System Product](../system-product/requirement.md) — Product COA Group field.
+
+---
+
 ## Related Documents
 
 | Doc | Path |
@@ -54,3 +72,4 @@ Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/req
 | Technical | technical.md *(pending)* |
 | System Product | [../system-product/README.md](../system-product/README.md) |
 | Instant Settlement | [../accounting-settlement-upload/requirement.md](../accounting-settlement-upload/requirement.md) |
+| Assembly | [../supplychain-assembly/requirement.md](../supplychain-assembly/requirement.md) |

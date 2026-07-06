@@ -4,7 +4,7 @@
 # Field `status` must match frontmatter `status` in each doc file.
 
 version: 1
-last_updated: 2026-06-25
+last_updated: 2026-07-05
 
 menus:
   manage-platform-product:
@@ -852,18 +852,32 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/ProductBenchmarkPriceController.php
+        - Modules/Accounting/Jobs/ProductBenchmarkPriceJob.php
+        - Modules/Accounting/Jobs/ProductBenchmarkPriceExportJob.php
+        - Modules/Accounting/Entities/ProductBenchmarkPrice.php
+        - Modules/Accounting/Entities/ProductBenchmarkPriceExportFile.php
+        - Modules/Accounting/Policies/ProductBenchmarkPricePolicy.php
+        - app/Console/Commands/ProductBenchmarkPriceCalculate.php
+        - Modules/OmniChannel/Entities/SalesOrderDetail.php
+        - Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php
+        - Modules/OmniChannel/Observers/SalesOrderDetailPriceObserver.php
+        - Modules/SupplyChain/Http/Controllers/StockOpnameDetailController.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Report/ProductBenchmarkPrice/**/*
+        - olshoperp-frontend/src/pages/BusinessDevelopment/SalesOrderGeneral/DatalistDetail.vue
+        - olshoperp-frontend/src/pages/Omni/SalesOrder/DatalistDetail.vue
 
   accounting-product-coa-group:
     menu_name: "Product COA Group"
@@ -1042,18 +1056,26 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/SalesReturnController.php
+        - Modules/Accounting/Http/Controllers/SalesReturnDetailController.php
+        - Modules/Accounting/Entities/SalesReturn.php
+        - Modules/Accounting/Entities/SalesReturnDetail.php
+        - app/Helpers/Accounting/JournalProcess.php
+        - app/Helpers/SupplyChain/ItemStockMutation.php
+        - Modules/Accounting/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Return/SalesReturn/**/*
 
   accounting-settlement-mapping:
     menu_name: "Settlement Mapping"
@@ -1167,25 +1189,29 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
       backend:
         - Modules/Accounting/Http/Controllers/SupplierInvoiceController.php
         - Modules/Accounting/Http/Controllers/SupplierInvoiceDetailItemController.php
+        - Modules/Accounting/Http/Controllers/SupplierInvoiceOtherCostController.php
+        - Modules/Accounting/Http/Controllers/SupplierInvoiceOtherDiscountController.php
         - Modules/Accounting/Entities/SupplierInvoice.php
+        - Modules/Accounting/Entities/SupplierInvoiceDetailItem.php
+        - Modules/Accounting/Services/SupplierInvoicePrice.php
         - Modules/Accounting/Observers/SupplierInvoiceObserver.php
-        - Modules/Accounting/Routes/api.php
+        - Modules/Accounting/Routes/components/supplier-invoice.php
         - app/Helpers/Accounting/JournalProcess.php
+      frontend:
         - olshoperp-frontend/src/pages/Accounting/AccountPayable/SupplierInvoice/**/*
-      frontend: []
 
   accounting-supplier-payment:
     menu_name: "Account Payment"
@@ -1197,18 +1223,25 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/PaymentController.php
+        - Modules/Accounting/Http/Controllers/PaymentDetailController.php
+        - Modules/Accounting/Entities/Payment.php
+        - Modules/Accounting/Entities/PaymentDetail.php
+        - Modules/Accounting/Routes/components/supplier-payment.php
+        - app/Helpers/Accounting/JournalProcess.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/AccountPayable/SupplierPayment/**/*
 
   accounting-tax:
     menu_name: "Tax"
@@ -1477,7 +1510,7 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: draft
       requirement:
         file: requirement.md
         status: pending
@@ -1704,13 +1737,13 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -1987,7 +2020,7 @@ menus:
         - olshoperp-frontend/src/pages/SCM/master/Location/**/*
 
   supplychain-manual-picking-list:
-    menu_name: "Manual Picking List "
+    menu_name: "Manual Picking List"
     path: supplychain-manual-picking-list
     module: SupplyChain
     menu_links:
@@ -1996,13 +2029,13 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2016,8 +2049,15 @@ menus:
         - Modules/SupplyChain/Jobs/PickingListExportDetailJob.php
         - Modules/SupplyChain/Policies/ManualPickingListPolicy.php
         - Modules/SupplyChain/Routes/api.php
+        - Modules/OmniChannel/Http/Controllers/PickingListController.php
+        - app/Helpers/SupplyChain/WarehouseHelper.php
+        - app/Helpers/SupplyChain/ItemStockMutation.php
+        - Modules/SupplyChain/Http/Controllers/SettingWarehouseScrapVoidController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationTransferController.php
+        - Modules/SupplyChain/Http/Controllers/StockMutationDeductionController.php
       frontend:
         - olshoperp-frontend/src/pages/SCM/PickingList/**/*
+        - olshoperp-frontend/src/pages/Omni/PickingList/components/**/*
 
   supplychain-master-brand:
     menu_name: "Master Brand"
@@ -2058,13 +2098,13 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2073,10 +2113,12 @@ menus:
         - Modules/SupplyChain/Http/Controllers/StockMutationInboundDetailController.php
         - Modules/SupplyChain/Http/Controllers/StockMutationInboundMiddleDetailController.php
         - Modules/SupplyChain/Entities/StockMutationInbound.php
+        - Modules/SupplyChain/Entities/InboundMutationDetail.php
         - Modules/SupplyChain/Routes/api.php
         - app/Helpers/SupplyChain/ItemStockMutation.php
+        - app/Helpers/Accounting/JournalProcess.php
+      frontend:
         - olshoperp-frontend/src/pages/SCM/StockMutation/InventoryIn/**/*
-      frontend: []
 
   supplychain-mutation-outbound:
     menu_name: "Outbound External"
@@ -2234,13 +2276,13 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2251,6 +2293,12 @@ menus:
         - Modules/SupplyChain/Http/Controllers/ItemInboundInspectionController.php
         - Modules/SupplyChain/Entities/StockMutationInbound.php
         - Modules/SupplyChain/Entities/InboundMutationDetail.php
+        - Modules/SupplyChain/Entities/InboundMutationMiddleDetail.php
+        - Modules/SupplyChain/Jobs/ApproveInboundJob.php
+        - Modules/SupplyChain/Jobs/GenerateItemStockChunkJob.php
+        - Modules/SupplyChain/Import/StockMutationInboundColliImport.php
+        - app/Helpers/SupplyChain/ItemStockMutation.php
+        - app/Helpers/Accounting/JournalProcess.php
       frontend:
         - olshoperp-frontend/src/pages/SCM/Inbound/PurchaseInbound/**
 
@@ -2470,18 +2518,29 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/SupplyChain/Http/Controllers/PurchaseOrderController.php
+        - Modules/SupplyChain/Http/Controllers/PurchaseOrderDetailController.php
+        - Modules/SupplyChain/Http/Controllers/PurchaseOrderOtherCostController.php
+        - Modules/SupplyChain/Http/Controllers/PurchaseOrderOtherDiscountController.php
+        - Modules/SupplyChain/Import/PurchaseOrderWithPrImport.php
+        - Modules/SupplyChain/Import/PurchaseOrderWithoutPrImport.php
+        - Modules/SupplyChain/Entities/PurchaseOrder.php
+        - Modules/SupplyChain/Entities/PurchaseOrderDetail.php
+        - app/Helpers/SupplyChain/PurchaseOrderPrice.php
+        - app/Helpers/SupplyChain/PurchaseOrderDetailPrice.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/PurchaseOrder/**
 
   supplychain-purchase-requisition:
     menu_name: "Purchase Requisition"
@@ -2493,13 +2552,13 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2581,13 +2640,13 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2596,11 +2655,14 @@ menus:
         - Modules/Accounting/Http/Controllers/SalesReturnDetailController.php
         - Modules/Accounting/Entities/SalesReturn.php
         - Modules/Accounting/Entities/SalesReturnDetail.php
+        - Modules/OmniChannel/Http/Controllers/SalesReturnController.php
         - Modules/OmniChannel/Entities/SalesReturn.php
         - Modules/OmniChannel/Entities/SalesReturnDetail.php
         - Modules/SupplyChain/Policies/SalesReturnPolicy.php
         - Modules/SupplyChain/Broadcasting/SalesReturnChannel.php
+        - app/Helpers/SupplyChain/ItemStockMutation.php
         - Modules/Accounting/Routes/api.php
+        - Modules/OmniChannel/Routes/api.php
       frontend:
         - olshoperp-frontend/src/pages/SCM/SalesReturn/**/*
         - olshoperp-frontend/src/pages/Accounting/Return/SalesReturn/**/*
@@ -2788,13 +2850,13 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2930,6 +2992,8 @@ menus:
     module: SupplyChain
     menu_links:
       - supplychain/product
+      - supplychain/product-general-configuration
+      - supplychain/product-inventory-configuration
     owner: QA - Yemima
     docs:
       knowledge-base:
@@ -2937,19 +3001,27 @@ menus:
         status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources:
       - _legacy/old_system-product-requirement.md
     code_globs:
       backend:
         - Modules/SupplyChain/Http/Controllers/ProductController.php
         - Modules/SupplyChain/Http/Controllers/ProductGeneralConfigurationController.php
+        - Modules/SupplyChain/Http/Controllers/ProductInventoryConfigurationController.php
+        - Modules/SupplyChain/Http/Controllers/ProductSpecificationController.php
+        - Modules/SupplyChain/Http/Controllers/ProductVariantController.php
+        - Modules/SupplyChain/Http/Controllers/ProductDnWController.php
+        - Modules/SupplyChain/Http/Controllers/ProductDetailController.php
+        - Modules/SupplyChain/Http/Controllers/BillOfMaterialController.php
+        - Modules/SupplyChain/Entities/Product.php
         - Modules/SupplyChain/Routes/api.php
-        - olshoperp-frontend/src/pages/SupplyChain/Product/**/*
-      frontend: []
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/Product/**/*
+        - olshoperp-frontend/src/utils/imports.ts
 
   gate-user:
     menu_name: "User (Gate)"
@@ -2961,13 +3033,13 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources: []
     code_globs:
       backend:
@@ -2990,13 +3062,13 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
     legacy_sources: []
     code_globs:
       backend:

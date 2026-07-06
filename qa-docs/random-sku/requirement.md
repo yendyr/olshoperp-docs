@@ -3,7 +3,7 @@ doc_type: requirement
 menu: random-sku
 menu_name: "Random SKU"
 version: 1.0
-last_updated: 2026-06-19
+last_updated: 2026-07-05
 owner: QA - Yemima
 status: review
 cross_menu: true
@@ -38,7 +38,7 @@ Virtual SKU (non-stockable) auto-generated saat opsi `random` dipilih di variant
 | A-08 | Random SKU bisa di-bind ke Platform Product |
 | A-09 | Random SKU **tidak** boleh Header/Detail BOM |
 | A-10 | Random SKU **tidak** bisa PR/PO/inbound |
-| A-11 | Benchmark COGS = 0 untuk line dengan random SKU |
+| A-11 | Benchmark COGS di SO line random — master inherit parent; validasi auto-approve khusus (lihat [Benchmark COGS](../accounting-product-benchmark-price/requirement.md) · [KB](../accounting-product-benchmark-price/knowledge-base.md)) |
 | A-12 | Availability random SKU selalu 0 |
 
 ---
@@ -68,7 +68,8 @@ Virtual SKU (non-stockable) auto-generated saat opsi `random` dipilih di variant
 | Sales Order (General/Platform) | ✅ | Line or `SalesOrderDetailRandom` |
 | Send to Default Waves | ✅ | Primary trigger for auto-pick |
 | PR / PO / Inbound | ❌ | Non-stockable |
-| Benchmark COGS | N/A | Always 0 |
+| Benchmark COGS (master) | ✅ | Random variant **inherits parent MAX** via `ProductBenchmarkPriceJob` |
+| Benchmark COGS (SO line) | ⚠️ | Often **0** on random-only platform lines pre-bind; post-bind may inherit random product row — see [Benchmark COGS](../accounting-product-benchmark-price/requirement.md) |
 
 ---
 
@@ -78,7 +79,7 @@ Virtual SKU (non-stockable) auto-generated saat opsi `random` dipilih di variant
 |---|----------|----------|
 | T-01 | Order variant `-random`, siblings A(10), B(5) stock | Pick A |
 | T-02 | Stock only in different warehouse hierarchy | Pick fails / stock-error |
-| T-03 | Bundle detail contains random | Benchmark COGS = 0 |
+| T-03 | Bundle detail contains random | Validasi auto-approve khusus; benchmark master = parent MAX |
 | T-04 | Bind platform SKU to random system product | Confirm or `-acak` match |
 | T-05 | Try BOM with random header | Rejected |
 | T-06 | Variant without random option selected | No `-random` SKU generated |
@@ -93,3 +94,4 @@ Virtual SKU (non-stockable) auto-generated saat opsi `random` dipilih di variant
 | Technical | [technical.md](./technical.md) |
 | System Product | [../system-product/requirement.md](../system-product/requirement.md) |
 | Platform Product binding | [../manage-platform-product/requirement.md](../manage-platform-product/requirement.md) §12 |
+| Benchmark COGS | [../accounting-product-benchmark-price/requirement.md](../accounting-product-benchmark-price/requirement.md) |

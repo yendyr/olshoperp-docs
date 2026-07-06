@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-other-inbound
 menu_name: "Other Inbound"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-07-04
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -84,10 +84,22 @@ audience: operator
 
 | Menu | Route | Hubungan |
 |------|-------|----------|
-| Assembly / Work Order | `supplychain/assembly` | Auto-generate other inbound |
-| Purchase Inbound | `supplychain/new-purchase-inbound` | Same backend, beda scope |
+| [Assembly](../supplychain-assembly/) | `supplychain/assembly` | Auto-generate + approve other inbound saat Approve job |
+| [Transfer Internal](../supplychain-mutation-transfer-internal/) | `supplychain/mutation-transfer-internal` | Pre-step: komponen Building→WIP |
+| [Outbound](../supplychain-mutation-outbound/) | `supplychain/mutation-outbound` | Pre-step: konsumsi komponen di WIP |
+| [Warehouse Setting](../supplychain-setting/) | `supplychain/setting` | Finish Good warehouse = destination |
+| Purchase Inbound | `supplychain/new-purchase-inbound` | Same backend, beda scope (`supplier_id` NOT NULL) |
 | Adjustment Addition | `supplychain/adjustment-addition` | Beda flag `is_inventory_adjustment=1` |
 | Real Time Stock | `supplychain/real-stock` | Stok naik setelah approve |
+
+### Alur Assembly → Other Inbound (operator view)
+
+1. Operator **Approve** Assembly (status Open)
+2. Job async: approve TFI → outbound WIP → **create + approve Other Inbound** ke Finish Good warehouse
+3. Dokumen muncul di datalist Other Inbound dengan deskripsi auto-generated
+4. Stok FG naik; jurnal Dr Inventory, Cr WIP
+
+Detail teknis: [Other Inbound requirement §Relasi Assembly](./requirement.md) · [Assembly knowledge-base](../supplychain-assembly/knowledge-base.md).
 
 ## Istilah
 

@@ -2,65 +2,150 @@
 doc_type: knowledge-base
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 1.0
-last_updated: 2026-06-19
+version: 2.0
+last_updated: 2026-07-05
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
+sections:
+  core: [what-is, vs-failed-ship, workflow, ui-buttons, qty-rules, troubleshooting, faq]
 ---
 
-# Sales Return — Knowledge Base
+# Sales Return — Knowledge Base (Team Gudang)
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase per 2026-06-19. Perlu direview PM/QA sebelum final.
+## 1. Apa itu Sales Return?
 
-## Ringkasan
+Fitur untuk memproses **pengembalian barang dari customer** setelah order sudah **Outbound** dan **Sales Invoice** terbit.
 
-Menu **Sales Return** dipakai operator gudang untuk memproses retur pesanan penjualan (platform/omni). UI berada di modul SCM, tetapi API utama di modul **Accounting** (`accounting/sales-returns`).
+| Item | Nilai |
+|------|-------|
+| Menu | Supply Chain → Operations → **Sales Return** |
+| Route | `/supplychain/sales-returns` |
+| Kode dokumen | `SR-…` |
+| Tim | **Gudang** — input qty; **Finance** approve di menu terpisah |
 
-## Kapan dipakai
+> **Bukan Failed Ship.** Failed Ship untuk paket gagal kirim **sebelum** invoice/outbound. Sales Return untuk retur **setelah** barang sudah keluar dan di-invoice.
 
-- Paket retur diterima di gudang.
-- Perlu restock, catat barang rusak/hilang, dan approve inbound retur.
+---
 
-## Langkah operator
+## 2. Kapan dipakai?
 
-### 1. Siapkan konteks gudang
+- Customer kirim balik barang (retur marketplace / internal).
+- Platform status refund/cancelled — muncul di pill **Sales Return Platform**.
+- Order sudah punya **Outbound Approved** + **Sales Invoice**.
 
-1. Buka **Supply Chain → Operations → Sales Return**.
-2. Pilih **Warehouse** dan **CCTV Location** — disimpan di localStorage per company.
+**Tidak bisa dipakai jika:**
 
-### 2. Scan / input Sales Order
+- Order belum outbound → gunakan **Failed Ship**
+- Invoice masih foreign currency (non-IDR) → manual settlement
+- Masih ada pending payment di invoice
 
-1. Scan atau ketik kode SO / platform order ID / platform return ID.
-2. Sistem validasi: SO ditemukan, belum fully processed, tidak ada pending return.
+---
 
-### 3. Proses detail retur
+## 3. Langkah operator gudang
 
-1. Buka halaman edit retur (`sales-returns/edit/:id`).
-2. Per SKU isi:
-   - **Restock quantity** (masuk gudang)
-   - **Broken quantity**
-   - **Lost quantity**
-3. Minimal salah satu qty > 0 sebelum approve.
+### Step 1 — Siapkan lokasi
 
-### 4. Approve
+1. Buka **Sales Return**.
+2. Pilih **Return WH Location** — hanya gudang yang di-set **Return Location** di Warehouse Setting.
+3. Pilih **CCTV Location** — lokasi kamera saat proses retur.
+4. Pilihan tersimpan otomatis untuk session berikutnya.
+5. **Reset** — kosongkan WH & CCTV jika perlu.
 
-1. Klik Approve — sistem:
-   - Mutasi stok inbound retur (`ItemStockMutation::approveReturn`)
-   - Jurnal akuntansi terkait
-   - Duplikasi platform return jika masih ada sisa qty
+### Step 2 — Scan order
 
-## Troubleshooting
+1. Scan/ketik **nomor SO internal** atau **platform order ID**.
+2. Sistem validasi outbound, invoice, currency IDR.
+3. Jika valid → redirect ke halaman edit SR.
+
+**Alternatif:** buka pill **Sales Return Platform** → pilih order refund/cancelled → **Continue**.
+
+### Step 3 — Input qty retur (per SKU)
+
+| Kolom | Arti |
+|-------|------|
+| **Product Qty** | Qty order asli |
+| **Restock Qty** | Barang layak → masuk gudang return |
+| **Broken Items** | Rusak → otomatis pindah ke gudang scrap saat Finance approve |
+| **Lost Items** | Hilang → otomatis deduction + biaya saat Finance approve |
+| **Total SR Qty** | Restock + Broken + Lost — **tidak boleh > Product Qty** |
+
+Qty auto-save setelah edit (~1 detik).
+
+**Pesan sukses:** *"Return data saved. Waiting for Finance team to review and complete the approval process."*
+
+### Step 4 — Selesai (gudang)
+
+- **Tidak ada tombol Complete** di menu SCM — itu tugas Finance.
+- Bisa **Back to Datalist** atau lanjut order lain.
+- Bisa **Delete** SR jika belum di-approve Finance.
+
+---
+
+## 4. Tombol toolbar datalist
+
+| Tombol | Fungsi |
+|--------|--------|
+| **Sales Return Platform** | Toggle daftar order platform refund/cancelled |
+| **Sync** | Tarik data retur terbaru dari marketplace API |
+| **Reset** | Clear WH + CCTV selection |
+| **Export** | Download Excel (with/without details) |
+| **Continue** | Lanjut proses SR yang sudah ter-create |
+| **Delete** | Hapus SR open (belum approved) |
+| **Show** | Lihat SR yang sudah approved (read-only) |
+
+---
+
+## 5. Aturan qty
+
+```
+Total SR Qty = Restock + Broken + Lost
+Total SR Qty ≤ (Qty outbound - retur sebelumnya)
+```
+
+Minimal **satu** dari Restock/Broken/Lost harus > 0 sebelum Finance bisa approve.
+
+---
+
+## 6. Troubleshooting
 
 | Gejala | Penyebab | Tindakan |
 |--------|----------|----------|
-| SO tidak ditemukan | Kode salah / scope company | Cek kode SO atau platform ID |
-| Pending return exists | Ada retur belum selesai | Selesaikan retur sebelumnya |
-| Approve: qty kosong | Semua qty 0 | Isi restock/broken/lost |
-| Fiscal period error | Periode tutup | Buka periode atau ubah tanggal |
+| SO tidak ditemukan | Kode salah | Cek SO code / platform order ID |
+| "please use Failed Ship" | Belum outbound | Proses Failed Ship dulu |
+| "not been fully processed to invoice" | Belum SI | Selesaikan invoice/settlement |
+| Foreign currency error | SI non-IDR | Manual settlement |
+| Pending payment | AR/payment belum selesai | Selesaikan payment dulu |
+| Pending SR exists | Ada SR open | Selesaikan atau delete SR lama |
+| Total qty exceed | Restock+Broken+Lost > order qty | Kurangi qty |
+| "Not Authorized" di datalist | Belum create SR | Scan order dulu |
+| Complete tidak muncul | Menu SCM | Normal — Finance yang Complete |
 
-## Relasi menu
+---
 
-- **Sales Order** (Omni / General) — sumber retur.
-- **Inventory In** — mutasi inbound hasil approve.
-- **Customer Invoice** — referensi harga/COA.
+## 7. FAQ
+
+**Q: Apakah gudang bisa approve sendiri?**  
+A: Tidak. Approve/Complete hanya di menu **Accounting → Sales Return**.
+
+**Q: Satu SR bisa beberapa order?**  
+A: Saat ini **scan per order**. Bulk multi-order belum aktif.
+
+**Q: Barang rusak/hilang kemana stoknya?**  
+A: Saat Finance approve: rusak → transfer ke scrap WH; hilang → stock deduction + jurnal expense.
+
+**Q: Apa beda Billed vs Unbilled?**  
+A: **Billed** = invoice sudah ada pembayaran → generate Credit Note. **Unbilled** = jurnal sales/AR adjustment.
+
+**Q: Sync platform untuk apa?**  
+A: Update status retur dari marketplace (refund/cancelled) ke datalist pill.
+
+---
+
+## Related Documents
+
+| Doc | Path |
+|-----|------|
+| Requirement (full) | [requirement.md](./requirement.md) |
+| Finance menu | [../accounting-sales-return/knowledge-base.md](../accounting-sales-return/knowledge-base.md) |
+| Failed Ship | [../supplychain-failed-ship/knowledge-base.md](../supplychain-failed-ship/knowledge-base.md) |

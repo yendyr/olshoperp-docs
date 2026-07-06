@@ -89,9 +89,29 @@ Largest GeneralSetting controller — company master + nested CRUD. Filter `Comp
 - Full create side-effect chain lengthy — document detailed technical flow in pass 2.
 - Contact validation company_id on store — verify FE always sends.
 
+---
+
+## Relasi Master User
+
+**Dampak ke menu ini:** Internal Company **Active** muncul sebagai opsi **Company** di Role Assignment (Master User).
+
+| Aspek | Behaviour |
+|-------|-----------|
+| Select2 | `UserController@select2company` — `company_type=internal`, `status=1` |
+| Assignment | `gate_role_pivots.company_id` → FK company |
+| Login context | Default/first pivot menentukan company saat login |
+| User Profile | Switch company list = companies dari pivot user |
+
+**Prasyarat:** Company harus **Active** agar bisa di-assign ke user.
+
+**Detail:** [Master User requirement §4–§5](../gate-user/requirement.md) · Pending items: [§14](../gate-user/requirement.md#14-pending-items-registry--harus-segera-di-close).
+
+---
+
 ## Related Documents
 
 | Doc | Path |
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| Master User | [../gate-user/requirement.md](../gate-user/requirement.md) |

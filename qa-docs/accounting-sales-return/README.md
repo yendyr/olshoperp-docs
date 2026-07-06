@@ -1,23 +1,51 @@
-# Sales Return — Dokumentasi
+# Sales Return Approval — Dokumentasi (Finance)
 
-Menu **Sales Return** (Accounting).
+Menu **Sales Return** di modul **Finance Accounting** — review harga/COGS dan **Complete** approval.
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | pending |
-| Requirement | requirement.md | PM, QA | pending |
-| Technical | technical.md | Developer | pending |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator Finance | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
 
 **Maintenance owner:** QA — Yemima
 
-## Relasi Failed Ship & Settlement
+---
+
+## Changelog
+
+| Date | Version | Changes |
+|------|---------|---------|
+| 2026-07-05 | 2.0 | Finance layer docs created; canonical flow di supplychain-sales-returns v2.0 |
+
+---
+
+## Route & code
+
+| Item | Path |
+|------|------|
+| UI | `/accounting/sales-return` |
+| API | `accounting/sales-returns` |
+| FE | `olshoperp-frontend/src/pages/Accounting/Return/SalesReturn/` |
+
+**Canonical E2E requirement:** [supplychain-sales-returns/requirement.md](../supplychain-sales-returns/requirement.md)
+
+---
+
+## Relasi Failed Ship & Sales Return (SCM)
 
 | Kondisi order | Menu |
 |---------------|------|
-| Shipped 3PL, **belum** SI & Outbound | [Failed Ship](../supplychain-failed-ship/requirement.md) |
-| Sudah SI & Outbound (settled) | **Sales Return** (menu ini) |
+| Shipped, **belum** SI & Outbound | [Failed Ship](../supplychain-failed-ship/requirement.md) |
+| Sudah SI & Outbound | [Sales Return SCM](../supplychain-sales-returns/requirement.md) + **menu ini (Finance)** |
 
-- Qty return **≤ qty outbound** per SKU; `invoicableQuantityInBaseUnit` sudah net Failed Ship.
-- Pill platform di Failed Ship vs Sales Return: filter outbound terbalik — [FS §4.0.5](../supplychain-failed-ship/requirement.md#405-pill-sales-platform-returns-failed-ship-index).
+Qty return ≤ qty outbound per SKU. Pill platform di Failed Ship vs Sales Return: filter outbound terbalik — [FS §4.0.5](../supplychain-failed-ship/requirement.md).
 
-**Rantai fulfillment sebelum FS:** [Transfer Internal §8](../supplychain-mutation-transfer-internal/technical.md#8-relasi-failed-ship--rantai-fulfillment) → [DO §8](../supplychain-delivery-order/technical.md#8-relasi-failed-ship--collecting--shipped-3pl)
+---
+
+## Related menus
+
+- [Sales Return SCM](../supplychain-sales-returns/README.md) — input qty gudang
+- [Credit Note](../accounting-credit-note/README.md) — auto-generated billed returns
+- [Customer Invoice](../accounting-customer-invoice/) — source price & tax
+- [Failed Ship](../supplychain-failed-ship/README.md) — pre-settlement

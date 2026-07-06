@@ -2,99 +2,191 @@
 doc_type: knowledge-base
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 1.0
-last_updated: 2026-06-19
+version: 2.0
+last_updated: 2026-07-05
 owner: QA - Yemima
-status: draft
-audience: operator
-sections:
-  core: [what-is, glossary, can-cannot, faq, help]
-  modular: [status-badge, how-to, troubleshooting]
+status: review
 ---
 
-# Purchase Invoice — Knowledge Base
+# Purchase Invoice — Knowledge Base (Operator)
 
-> **DRAFT** — Dokumentasi AS-IS dari codebase (19 Juni 2026). Belum final review QA/PM.
+**Audience:** Finance, AP clerk, Operations support  
+**Route:** `/accounting/supplier-invoice`
+
+---
 
 ## 1. Apa itu Purchase Invoice?
 
-**Purchase Invoice** (Faktur Pembelian) mencatat tagihan dari supplier atas barang yang sudah diterima (inbound). Invoice approved menjadi **hutang** (AP) dan dapat dibayar via **Account Payment**.
+Purchase Invoice (PI) adalah dokumen **pengakuan hutang** ke supplier setelah barang sudah **diterima (Purchase Inbound approved)**. PI:
 
-**Menu:** FA → Account Payable → Purchase Invoice (`/accounting/supplier-invoice`)
+- Menagihkan barang yang sudah masuk gudang
+- **Mencatat PPN Masukan** (VAT) — tidak lagi di saat inbound
+- Memindahkan saldo dari **Unbilled Goods** ke **Account Payable**
+- Menjadi dasar **Account Payment** (pelunasan)
 
-Nomor transaksi otomatis dengan prefix **PI**.
+**Kode transaksi:** `PI-XXXXX`
 
-## 2. Glosarium
+---
 
-| Istilah | Arti |
-|---------|------|
-| PI | Prefix kode Purchase Invoice |
-| AP / Hutang | Account Payable |
-| Inbound / IV-IN | Purchase Inbound — mutasi stok masuk dari PO |
-| Outstanding inbound | Baris `InboundMutationDetail` yang belum/sebagian di-invoice |
-| PO Other Cost / Discount | Biaya atau diskon dari Purchase Order yang bisa ikut di-invoice |
-| Payable COA | Akun hutang supplier — di-resolve saat approve |
+## 2. Kapan membuat PI?
 
-## 3. Yang Bisa / Tidak Bisa Dilakukan
+| ✅ Buat PI jika | ❌ Jangan buat PI jika |
+|----------------|------------------------|
+| Inbound sudah **Approved** | Inbound masih draft/open |
+| Supplier & mata uang sama dengan PO/inbound | Mata uang PO berbeda dengan PI |
+| Tanggal PI **setelah** tanggal inbound | Inbound belum ada |
+| COA Unbilled Goods, Tax, AP sudah di-setup | Product COA belum lengkap |
 
-### Bisa
+---
 
-- Buat invoice untuk supplier aktif
-- Tambah baris dari **outstanding inbound mutation detail** (terhubung PO)
-- Tambah other cost & other discount (termasuk copy dari PO)
-- Lampiran, print, export Excel
-- Approval multi-level → **journal otomatis** (tipe Purchase Invoice)
-- Void / reject sesuai status
+## 3. Alur kerja standar
 
-### Tidak Bisa
-
-- Edit setelah **Approved**
-- Approve tanpa baris detail
-- Transaksi di luar fiscal period aktif
-- Ubah supplier/currency/rate/tanggal jika sudah ada detail (rule sama seperti AR invoice)
-
-## 4. Status transaksi
-
-```mermaid
-flowchart LR
-    D[Draft] --> O[Open]
-    O --> A[Approved]
-    O --> R[Rejected]
-    R --> D
-    A --> V[Void]
+```
+1. Buka Accounting → Purchase Invoice → Create
+2. Isi Supplier, Tanggal, Mata Uang, Kurs (Due Date opsional)
+3. Pilih status Open (bukan Draft) sebelum approve
+4. Klik "Inbound Transaction" → pilih barang outstanding
+   - Bulk Use (checkbox) ATAU Single Use (modal qty)
+5. (Opsional) Tambah Additional Cost / Discount dari PO
+6. Cek Total panel — Net Purchase Invoice
+7. Save All → Approve
+8. Lanjut Account Payment untuk bayar supplier
 ```
 
-## 5. Cara Pakai (How-To)
+---
 
-### Skenario: Invoice dari Purchase Inbound
+## 4. Panel Inbound Transaction
 
-1. **Create** → pilih supplier, tanggal, currency, due date, referensi supplier
-2. Tab **Item Configuration** → tambah dari outstanding inbound (per item atau group)
-3. (Opsional) Other Cost / Other Discount dari PO
-4. Set status **Open**
-5. **Approve** — sistem update qty invoiced di inbound detail & generate journal
-6. Lanjut **Account Payment** untuk pembayaran supplier
+Tombol **Inbound Transaction** (icon box) membuka panel outstanding.
 
-## 6. Troubleshooting
+| Fitur | Cara pakai |
+|-------|------------|
+| **Bulk Use** | Centang beberapa baris → Bulk Use |
+| **Single Use** | Klik baris → modal → isi Invoice Qty → Save |
+| **Group** | Pilih seluruh inbound sekaligus (group view) |
+
+**Max Invoice Qty** = qty inbound − yang sudah disiapkan/diproses invoice − retur.
+
+Pesan error umum:
+- *"Invoice Qty must not exceed Inbound Qty..."* — kurangi qty
+- *"already included in this purchase invoice"* — baris sudah ada di PI ini
+- *"different currency"* — PO beda mata uang
+
+---
+
+## 5. Additional Cost & Discount
+
+**Dynamic allocation (Okt 2025):** Biaya/diskon PO tidak harus ditagih sekaligus.
+
+| Skenario | Contoh |
+|----------|--------|
+| Barang saja | PI 1: tagih qty barang; cost ditunda |
+| Barang + cost | PI 1: barang + freight |
+| Cost saja | PI 2: freight saja (barang sudah PI 1) |
+
+**Cara tambah:**
+1. Tab **Additional Cost** / **Additional Discount**
+2. Pilih dari dropdown PO (outstanding costs) ATAU entry manual
+3. Cost otomatis muncul saat line pertama ditambah (dari PO)
+
+---
+
+## 6. Tombol & status
+
+| Tombol | Kapan muncul | Fungsi |
+|--------|--------------|--------|
+| **Save & Next** | Halaman create | Simpan header |
+| **Save All** | Edit, belum approved | Simpan perubahan |
+| **Approve** | Status Open + ada detail | Posting jurnal + AP |
+| **Void** | Sudah approved | Batalkan (⚠️ lihat §9) |
+| **Print** | Edit | ⚠️ Saat ini **tidak berfungsi** dengan benar |
+| **Draft / Open** | Side panel | Harus **Open** sebelum approve |
+
+**Status:**
+- **Draft** — masih edit, belum siap approve
+- **Open** — siap approve
+- **Approved** — jurnal sudah jalan; tidak bisa edit
+- **Rejected** — ditolak approver; tampil sebagai draft di UI
+
+---
+
+## 7. Panel Total (kanan bawah)
+
+| Baris | Arti |
+|-------|------|
+| Total Products | Σ harga baris (DPP) |
+| Disc Products | Total diskon baris |
+| Total VAT | Total PPN baris |
+| Additional Cost / Disc | Biaya & diskon header |
+| **Net Purchase Invoice** | Total yang jadi hutang (termasuk PPN) |
+
+Mata uang asing: angka konversi ke mata uang primary company ditampilkan di bawah.
+
+---
+
+## 8. Hubungan dengan Purchase Inbound
+
+| Inbound | PI |
+|---------|-----|
+| Barang masuk gudang | Tagihan resmi ke supplier |
+| Jurnal: Dr Inventory Cr **Unbilled Goods** (DPP saja) | Jurnal: Dr **Unbilled Goods** + **PPN** Cr **AP** |
+| Tidak ada PPN di inbound | PPN di PI |
+
+**Qty tracking:** Setiap baris inbound punya batas berapa qty yang masih bisa di-invoice. Setelah PI approve, qty inbound ter-mark **processed to invoice**.
+
+Detail teknis: [requirement §10](./requirement.md#10-relasi-purchase-inbound-detail)
+
+---
+
+## 9. Hubungan dengan Account Payment
+
+Setelah PI **Approved**, muncul di **Account Payment → Outstanding Invoice**.
+
+| Langkah | Efek |
+|---------|------|
+| Buat payment, alokasi ke PI | `prepared_to_payment` naik |
+| Approve payment | `processed_to_payment` naik; hutang berkurang |
+| Bayar penuh | Outstanding PI = 0 |
+
+**Penting:** Jangan void PI yang sudah ada payment — sistem **belum** memblokir void otomatis (GAP-PI-04). Batalkan/reject payment dulu secara manual jika perlu koreksi.
+
+Detail: [Account Payment KB](../accounting-supplier-payment/knowledge-base.md)
+
+---
+
+## 10. Troubleshooting
 
 | Gejala | Penyebab | Solusi |
 |--------|----------|--------|
-| Approve gagal: AP COA | Supplier belum punya Account Payable COA | Konfigurasi di master supplier/company |
-| Approve gagal: Exchange Diff COA | Company belum set Exchange Diff. COA | Company accounting settings |
-| No detail | Belum ada baris inbound | Tambah outstanding inbound |
-| Qty inbound tidak update | Approve belum sukses / rollback | Cek log; pastikan approve complete |
-| Sudah approved tidak bisa edit | By design | Void atau buat debit note sesuai kebijakan |
+| Supplier tidak muncul | Tidak ada inbound approved | Approve inbound dulu |
+| Outstanding kosong | Currency/date mismatch | Samakan currency; PI date > inbound date |
+| Approve gagal — COA | Unbilled Goods / Tax / AP kosong | Setup Product COA Group |
+| Approve gagal — fiscal | Periode tutup | Ubah tanggal atau buka periode |
+| Total negatif | Discount > subtotal | Kurangi discount/cost |
+| Print salah/kosong | Bug template | Export Excel sementara (GAP-PI-01) |
+| Void tidak kembalikan qty | Bug void | Hubungi dev; jangan void sembarangan (GAP-PI-02) |
+| PI auto-terbuat saat buka create | Auto-submit create | Hapus draft atau lanjut edit (GAP-PI-08) |
 
-## 7. FAQ
+---
 
-**Q: Dari mana baris invoice?**  
-A: Dari **InboundMutationDetail** (purchase inbound) yang masih punya qty outstanding untuk invoice.
+## 11. FAQ
 
-**Q: Apa hubungan dengan PO?**  
-A: Detail inbound terhubung ke PO; other cost/discount bisa diambil dari `PurchaseOrderOtherCost` / `PurchaseOrderOtherDiscount`.
+**Q: Apakah harga bisa diubah di PI?**  
+A: Tidak. Harga & PPN mengikuti PO.
 
-**Q: Kapan journal dibuat?**  
-A: Saat approve — `JournalProcess::supplierInvoiceAutoJournal`.
+**Q: Bisa partial invoice per inbound?**  
+A: Ya — isi Invoice Qty < Max Qty.
+
+**Q: PPN kapan dijurnal?**  
+A: Saat **Approve PI**, bukan saat inbound.
+
+**Q: Satu PI bisa beberapa inbound?**  
+A: Ya — bulk use dari beberapa GRN.
+
+**Q: Due date otomatis dari TOP supplier?**  
+A: Belum — isi manual (GAP-PI-06).
+
+---
 
 ## Related Documents
 
@@ -102,3 +194,5 @@ A: Saat approve — `JournalProcess::supplierInvoiceAutoJournal`.
 |-----|------|
 | Requirement | [requirement.md](./requirement.md) |
 | Technical | [technical.md](./technical.md) |
+| Purchase Inbound | [../supplychain-new-purchase-inbound/knowledge-base.md](../supplychain-new-purchase-inbound/knowledge-base.md) |
+| Account Payment | [../accounting-supplier-payment/knowledge-base.md](../accounting-supplier-payment/knowledge-base.md) |

@@ -3,7 +3,7 @@ doc_type: requirement
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
 version: 1.0
-last_updated: 2026-06-19
+last_updated: 2026-07-05
 owner: QA - Yemima
 status: draft
 ---
@@ -113,7 +113,7 @@ flowchart LR
    - Set `adjustment_type = in`
    - Auto-create `StockMutationAddition` (jika belum ada per warehouse)
    - Auto-create inbound detail via `StockMutationAdditionDetailController`
-   - Harga: input user atau `benchmarkPrice`
+   - Harga: input user atau **`product.benchmarkPrice.benchmark_price`** (menu [Benchmark COGS](../accounting-product-benchmark-price/requirement.md)) — **bukan** MA30 (`MaPrice30Days()` commented out di controller)
 4. Jika selisih < 0:
    - Set `adjustment_type = out`
    - Auto-create `StockMutationDeduction` + outbound detail
@@ -216,6 +216,7 @@ flowchart TB
 | Adjustment Deduction | `supplychain/adjustment-deduction` | Auto-generated child docs |
 | Warehouse Structure | `supplychain/warehouse-structure` | Master `warehouse_destination` |
 | Real Stock | `supplychain/real-stock` | Referensi stok untuk operator |
+| **Benchmark COGS** | `accounting/product-benchmark-price` | Default harga surplus opname (jika user tidak input) — lihat [requirement](../accounting-product-benchmark-price/requirement.md) §7 |
 
 ---
 
@@ -228,7 +229,7 @@ A: Tidak — keduanya baca `scm_stock_mutations` dengan `is_opname=1`. Approval 
 A: Saat detail opname di-create/update, bukan saat approve header (tapi approve header yang finalize adjustment).
 
 **Q: Bagaimana harga adjustment in ditentukan?**  
-A: Dari input `each_price_before_discount_before_vat` atau fallback `product.benchmarkPrice.benchmark_price`.
+A: Dari input `each_price_before_discount_before_vat` atau fallback **`product.benchmarkPrice.benchmark_price`** dari menu [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md). Sumber kalkulasi benchmark = highest PO inbound 30 hari → Last Buy → 0. **Stock opname inbound tidak** mempengaruhi nilai benchmark master.
 
 **Q: Apakah bisa opname tanpa selisih?**  
 A: Jika selisih = 0, tidak ada adjustment in/out untuk baris tersebut.

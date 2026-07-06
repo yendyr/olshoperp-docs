@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-other-inbound
 menu_name: "Other Inbound"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-07-04
 owner: QA - Yemima
 status: draft
 ---
@@ -15,6 +15,15 @@ status: draft
 **Modul:** SupplyChain  
 **Audience:** PM, Operations, QA, Support, Developer  
 **Status:** AS-IS
+
+---
+
+## 0. Metadata & Changelog
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
+| 1.1 | 2026-07-04 | QA - Yemima | Expand Relasi Assembly (full stock chain + journal) |
 
 ---
 
@@ -125,20 +134,64 @@ Tidak ada update PO qty.
 ## 4. Relasi Menu Lain
 
 ```mermaid
-flowchart LR
-    WO["Work Order / Assembly"]
-    OI["Other Inbound"]
+flowchart TB
+    WO["Assembly / Work Order"]
+    TFI["Transfer Internal"]
+    OUT["Outbound Other\nWIP consume"]
+    OI["Other Inbound\nFG receive"]
+    JR["Journal"]
     ST["ItemStock"]
 
-    WO -->|"WorkOrderApprovalJob\nstore other=true"| OI
+    WO -->|"Open"| TFI
+    WO -->|"Approve job"| OUT
+    WO -->|"Approve job"| OI
+    OUT --> JR
+    OI --> JR
     OI -->|"approveInbound"| ST
 ```
 
 | Menu | Relasi |
 |------|--------|
-| Assembly | Auto-create other inbound + detail |
-| Purchase Inbound | Shared mutation-inbound API |
-| Journal (Accounting) | JournalProcess links to other-inbound edit URL |
+| [Assembly](../supplychain-assembly/) | Auto-create + approve other inbound per FG detail |
+| [Transfer Internal](../supplychain-mutation-transfer-internal/) | Pre-step: komponen Building→WIP |
+| [Outbound External](../supplychain-mutation-outbound/) | Pre-step: konsumsi komponen di WIP (`type_so=other`) |
+| [Warehouse Setting](../supplychain-setting/) | Finish Good warehouse = destination |
+| [Product COA Group](../accounting-product-coa-group/) | COA Inventory FG + WIP untuk jurnal |
+| [Master Unit](../supplychain-unit/) | Qty unit per detail FG |
+| Purchase Inbound | Shared `mutation-inbound` API, beda scope (`supplier_id` NOT NULL) |
+| Journal (Accounting) | `JournalProcess::stockInboundAutoJournal` when ref = WorkOrder |
+
+---
+
+## Relasi Assembly
+
+**Dampak ke menu ini:** `WorkOrderApprovalJob` (Assembly Approve) auto-create **Other Inbound** per FG line jika belum ada inbound open dengan ref WorkOrder:
+
+| Step | Action |
+|------|--------|
+| 1 | Cari inbound open: `transaction_reference_class = WorkOrder`, `supplier_id = null` |
+| 2 | Jika tidak ada → `StockMutationInboundController@store(other: true)` |
+| 3 | Create detail FG + `each_price_before_vat` dari rollup cost komponen outbound |
+| 4 | Link ke WO detail via `stock_mutation_ids` |
+| 5 | Auto-approve inbound → stok FG masuk Finish Good warehouse |
+
+**Jurnal saat approve:** Dr Inventory (FG), Cr WIP — aggregated per FG line.
+
+**Prasyarat dari menu ini agar Assembly lolos:** Finish Good warehouse configured di Warehouse Setting; COA Inventory + WIP valid untuk SKU FG.
+
+**Independensi:** Other Inbound manual (non-Assembly) tetap bisa dibuat — tidak require Work Order reference.
+
+**Detail alur:** [Assembly requirement §5–§6](../supplychain-assembly/requirement.md) · [Assembly technical §7–§8](../supplychain-assembly/technical.md).
+
+---
+
+## Relasi Master Unit
+
+**Dampak ke menu ini:** Detail other inbound punya `inbound_quantity_unit_id` — biasanya primary/alternate unit FG dari System Product.
+
+**Prasyarat:** Unit Active; konversi ke base unit saat approve via observer.
+
+**Detail:** [Master Unit requirement](../supplychain-unit/requirement.md).
 
 ---
 
@@ -160,3 +213,5 @@ flowchart LR
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
 | New Purchase Inbound | [../supplychain-new-purchase-inbound/requirement.md](../supplychain-new-purchase-inbound/requirement.md) |
+| Assembly | [../supplychain-assembly/requirement.md](../supplychain-assembly/requirement.md) |
+| Master Unit | [../supplychain-unit/requirement.md](../supplychain-unit/requirement.md) |

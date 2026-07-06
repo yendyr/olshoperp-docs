@@ -93,8 +93,8 @@ Artinya: BOM **tidak valid** jika hanya ada 1 SKU detail dengan qty tepat 1.
 | **Master System Product (Create New flow)** | Saat user pilih "Create New BOM", system auto-create system product. Toggle Variations ON → auto-create parent + variants. |
 | **Master System Product (Bundle toggle)** | Cross-validation: SKU yg ter-flag Header BOM tidak bisa di-switch bundle = YES. Akan muncul notif gagal. |
 | **Master Variant** | Sumber options variant saat Create New BOM dengan toggle Variations ON. |
-| **Master Unit** | Sumber primary/alternate unit untuk Detail BOM. Unit yang sudah ter-relasi di BOM **tidak boleh dihapus** — baik dari Master Unit maupun dari setup unit di System Product. |
-| **Assembly Transaction** | Konsumer utama BOM. Hanya SKU dengan status Header BOM = Active yang muncul sebagai opsi. Assembly in-progress tetap refer ke snapshot BOM versi lama saat transaksi dibuat. |
+| **Master Unit** | Sumber primary/alternate unit untuk Detail BOM. Unit yang sudah ter-relasi di BOM **tidak boleh dihapus** — baik dari Master Unit maupun dari setup unit di System Product. Lihat [Master Unit](../supplychain-unit/requirement.md). |
+| **Assembly Transaction** | Konsumer utama BOM. Hanya SKU dengan status Header BOM = Active yang muncul sebagai opsi FG. Saat Open → snapshot ke `scm_work_order_bill_of_materials`. Saat Approve → generate TFI + Outbound WIP + Other Inbound FG. Nested BOM **sequential** — sub-assembly harus di-Assembly dulu. Lihat [Assembly](../supplychain-assembly/requirement.md). |
 | **Random SKU** | SKU `-random` tetap ter-generate by system saat Create New BOM dengan Variants ON, tapi di-exclude dari flagging Header BOM. Tidak valid untuk Header maupun Detail BOM. |
 
 ### UIX Specification

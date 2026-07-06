@@ -2,86 +2,147 @@
 doc_type: knowledge-base
 menu: gate-user
 menu_name: "User (Gate)"
-version: 1.0
-last_updated: 2026-06-19
+version: 2.1
+last_updated: 2026-07-05
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 sections:
-  core: [what-is, glossary, can-cannot, faq, help]
-  modular: [data-source, status-badge, how-to, troubleshooting]
+  core: [what-is, glossary, workflow, ui-buttons, role-assignment, troubleshooting, faq]
 ---
 
-# User (Gate) — Knowledge Base
+# Master User — Knowledge Base
 
-> **Draft — 2026-06-19** — Dokumentasi AS-IS dari kode production. Belum review QA/PM; jangan jadikan referensi final.
+## Apa itu Master User?
 
-## 1. Apa itu menu User?
+**Master User** (menu **User**) mengelola akun yang bisa login ke OlshopERP — username, email, password, dan **assignment akses** ke company + role.
 
-Menu **User** mengelola akun yang bisa login ke OlshopERP. Setiap user punya kredensial (username, email, password) dan bisa di-assign ke **beberapa kombinasi Company + Role** lewat **Role Assignment** (`RolePivot`).
+| Item | Nilai |
+|------|-------|
+| Menu | Developer Setting → Setting → **User** |
+| Route UI | `/gate/user` |
+| API | `gate/user` |
 
-Login API memakai Sanctum Bearer token; company/role aktif saat login ditentukan oleh assignment default atau pilihan saat login.
+Satu user bisa akses **beberapa company** dengan **role berbeda** per company. Saat login, sistem masuk ke **Default Company**.
 
-## 2. Glosarium
+---
+
+## Glosarium
 
 | Istilah | Arti |
 |---------|------|
-| **User** | Akun `gate_users` — identitas login |
-| **Role Assignment** | Baris `gate_role_pivots`: user ↔ internal company ↔ role |
-| **Master User** | User utama per company; hanya satu per company (company_id > 2) |
-| **Default Company** | Assignment yang dipakai otomatis saat login (`is_default_company`) |
-| **All Company** | Flag user bisa akses lintas company (super-admin context) |
-| **Multi Device** | Izinkan login simultan di beberapa perangkat |
+| Role Assignment | Baris Company + Role per user (`gate_role_pivots`) |
+| Default Company | Assignment yang dipakai otomatis saat login (`is_default_company`) |
+| Active | User aktif — harus ON untuk login |
+| Is Verified | Email verified — harus ON untuk login (independen dari Active) |
+| Show for All Company | Public — visible ke company lain |
+| Allow Multi-Device Login | Izinkan login simultan di banyak device |
+| Assigned Employee | Link ke data HR Employee (jika ada) |
 
-## 3. Yang Bisa / Tidak Bisa Dilakukan
+---
 
-### Bisa
-- Buat user baru (username, nama, email, password, toggles status/master/employee)
-- Edit profil user (admin) atau profile sendiri (`/gate/user/profile/:id`)
-- Bulk update status user terpilih
-- Assign / ubah role per internal company
-- Set default company pada assignment
-- Hapus assignment (kecuali default company — delete disabled)
-- Lihat audit log per user
-- Upload foto profil
+## Alur Kerja Operator
 
-### Tidak Bisa
-- Hapus user dari datalist (action delete disabled di `UserController@index`)
-- Edit role assignment **diri sendiri**
-- Ubah role master user untuk dirinya sendiri (non-bypass company)
-- Assign ke company non-internal atau role inactive
+### Langkah 1 — Buat User
 
-## 4. Cara Pakai (How-To)
+1. **Setting → User → Create**
+2. Isi First Name, Last Name, Email, Username, Password + Re-type Password
+3. Atur toggle: **Active** (default ON), **Is Verified** (default ON), **Show for All Company** (default OFF), **Allow Multi-Device** (default OFF)
+4. Upload foto opsional
+5. **Save & Next** → lanjut ke Role Assignment (edit mode)
 
-### Buat user baru
-1. Buka **Setting → User** → Create.
-2. Isi username (alpha_dash, unik), first/last name, email, password + konfirmasi (min 8).
-3. Atur toggle: Status, Master User, Employee, Email Verified, Multi Device, All Company.
-4. Save → lanjut **Role Assignment** di detail user.
+### Langkah 2 — Role Assignment
 
-### Assign role ke company
-1. Edit user → tab/section **Role Assignment**.
-2. Pilih **Internal Company** + **Role** (keduanya harus status aktif).
-3. Opsional: centang **Default Company**.
-4. Save — semua token user di-revoke (harus login ulang).
+1. Pilih **Company** (internal company active)
+2. Pilih **Role**
+3. Opsional: **Is Default Company**
+4. Klik **Save** → baris muncul di datatable
+5. Ulangi untuk company lain jika perlu
 
-### Bulk nonaktifkan user
-1. Centang baris di datalist → Bulk Update Status.
+**Tips (notice kuning di form):**
 
-## 5. Troubleshooting
+- Jika tidak ada default company, **baris pertama/terbaru** otomatis jadi default
+- Jika role user diubah, user **otomatis logout**
+
+### Langkah 3 — Edit / Nonaktifkan
+
+| Kebutuhan | Cara |
+|-----------|------|
+| Blok login sementara | **Is Verified OFF** (assignment tetap) |
+| Nonaktifkan user | **Active OFF** atau bulk deactivate di datalist |
+| Ganti default company | Assign ulang dengan toggle Default ON — default lama otomatis OFF |
+| Hapus akses ke 1 company | Delete row (kecuali row Default Company) |
+
+---
+
+## UI/UX — Tombol & Fitur
+
+### Datalist
+
+| Tombol/Fitur | Fungsi |
+|--------------|--------|
+| **Create** | Form user baru |
+| **Edit** | Edit user + Role Assignment |
+| **Delete user** | **Tidak tersedia** di datalist |
+| **Bulk Activate/Deactivate** | Update status banyak user |
+| **Column Show/Hide** | `filter_column=true` + Reset to Defaults |
+| **Export Basic** | Export kolom visible + default |
+
+### Form User Information
+
+| Toggle | Default | Efek |
+|--------|---------|------|
+| Active | ON | OFF = tidak bisa login |
+| Is Verified | ON | OFF = tidak bisa login |
+| Assign to Employee | OFF | **Read-only** — di-set dari modul HR |
+| Show for All Company | OFF | ON = public ke semua company |
+| Allow Multi-Device Login | OFF | OFF = 1 device; login baru logout device lama |
+
+### Role Assignment Datatable
+
+| Row | Action |
+|-----|--------|
+| Default Company = No | **Delete** |
+| Default Company = Yes | **Tidak bisa delete** |
+
+---
+
+## Troubleshooting
 
 | Gejala | Penyebab | Solusi |
 |--------|----------|--------|
-| User tidak muncul di list | Company scope / bukan internal context | Login sebagai admin company yang benar |
-| "Assigned Company Already has Master User" | Sudah ada master user di company | Nonaktifkan master lama atau jangan set master |
-| "Cannot edit your own role data" | Self-assign | Minta admin lain assign |
-| Login gagal setelah assign | Token di-force delete | Login ulang |
-| Employee name `-` | Belum link ke HR employee | Link via HR module jika perlu |
+| Login gagal, Active ON | Is Verified OFF | Aktifkan Is Verified |
+| Tidak bisa delete row company | Row = Default Company | Set default ke company lain dulu, atau Is Verified OFF |
+| User logout sendiri | Role privilege diupdate / assignment changed / multi-device OFF | Re-login |
+| "Cannot edit your own role data" | Assign role diri sendiri | Minta admin lain |
+| Assigned Employee `-` | Belum link dari HR | Link di modul Employee |
+| Login ulang wajib setelah assign | Token di-revoke by design | Normal — login lagi |
 
-## 6. FAQ
+> **Pending items (PM §15):** Gap & action items yang harus di-close — [requirement §14](./requirement.md#14-pending-items-registry--harus-segera-di-close).
 
-**Q: Apa beda User dan Employee?**
-A: User = akun login. Employee = data HR. Flag `is_employee` menandai user terkait karyawan; kolom employee name dari relasi `employee_detail_user`.
+---
 
-**Q: Kenapa delete user tidak ada di list?**
-A: AS-IS: `renderAction(..., render_delete: false)` — delete hanya via API/policy jika diizinkan role menu.
+## FAQ
+
+**Q: Apa beda Active vs Is Verified?**  
+A: Keduanya harus ON untuk login. Is Verified berguna untuk cabut akses cepat tanpa hapus assignment.
+
+**Q: Kenapa toggle Assign to Employee tidak bisa diklik?**  
+A: By design — assignment employee dilakukan dari modul **HR Employee**, bukan dari form User.
+
+**Q: Bisa 1 user punya role berbeda di company berbeda?**  
+A: Ya.
+
+**Q: User logout karena orang lain pakai akun yang sama?**  
+A: Kemungkinan **Allow Multi-Device Login = OFF** — login baru menggantikan session lama.
+
+---
+
+## Related Documents
+
+| Doc | Path |
+|-----|------|
+| Requirement | [requirement.md](./requirement.md) |
+| Technical | [technical.md](./technical.md) |
+| Master Role | [../gate-role/knowledge-base.md](../gate-role/knowledge-base.md) |
+| Internal Company | [../generalsetting-internal-company/knowledge-base.md](../generalsetting-internal-company/knowledge-base.md) |

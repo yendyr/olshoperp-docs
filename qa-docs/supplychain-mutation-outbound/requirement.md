@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-mutation-outbound
 menu_name: "Outbound External"
-version: 1.1
-last_updated: 2026-06-23
+version: 1.2
+last_updated: 2026-07-04
 owner: QA - Yemima
 status: draft
 ---
@@ -25,6 +25,7 @@ status: draft
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
 | 1.1 | 2026-06-23 | QA - Yemima | Cross-reference Relasi Instant Settlement (Fase 1) |
+| 1.2 | 2026-07-04 | QA - Yemima | Cross-reference Relasi Assembly + Master Unit |
 
 ## 1. Ringkasan Eksekutif
 
@@ -109,6 +110,37 @@ Menu terkait: **sales-order-general, supplychain-delivery-order, accounting-cust
 
 Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/requirement.md#10-relasi-menu--integrasi).
 
+---
+
+## Relasi Assembly
+
+**Dampak ke menu ini:** Saat Assembly **Approve** (`WorkOrderApprovalJob`), sistem auto-create + auto-approve **Outbound** dengan:
+
+| Aspek | Nilai |
+|-------|-------|
+| `type_so` | **`other`** (bukan linked ke Sales Order) |
+| Origin | WIP warehouse (dari Warehouse Setting) |
+| Destination | `null` |
+| Referensi | `transaction_reference_class = WorkOrder` |
+| Detail | Komponen BoM snapshot × assembly qty |
+| Jurnal | Dr WIP, Cr Inventory per komponen (`JournalProcess::stockOutboundAutoJournal`) |
+
+**Prasyarat dari menu ini agar Assembly lolos:** Stok komponen sudah ada di WIP (via TFI approved). COA WIP + Inventory valid per produk (Product COA Group).
+
+**Independensi:** Outbound manual `type_so=other` di menu ini **independen** dari Assembly — tidak auto-link ke Work Order.
+
+**Detail alur:** [Assembly requirement §5–§6](../supplychain-assembly/requirement.md) — Approve job step 3 (Outbound WIP).
+
+---
+
+## Relasi Master Unit
+
+**Dampak ke menu ini:** Detail outbound punya `outbound_quantity_unit_id`; konversi ke base unit saat save/approve via observer.
+
+**Prasyarat:** Unit **Active** di Master Unit; rate locked jika sudah `haveRelations()`.
+
+**Detail:** [Master Unit requirement](../supplychain-unit/requirement.md).
+
 ## 7. QA Test Notes
 
 - [ ] Create header — validasi tanggal, gudang wajib, kode auto `OT`
@@ -134,4 +166,6 @@ Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/req
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| Assembly | [../supplychain-assembly/requirement.md](../supplychain-assembly/requirement.md) |
+| Master Unit | [../supplychain-unit/requirement.md](../supplychain-unit/requirement.md) |
 | Manifest | [../_meta/manifest.yaml](../_meta/manifest.yaml) |

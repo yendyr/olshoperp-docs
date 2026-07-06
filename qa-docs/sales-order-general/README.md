@@ -16,7 +16,7 @@ Menu terkait sales order internal, platform, dan view gabungan.
 
 **Maintenance owner:** QA — Yemima
 
-**Latest:** §8–§9 Failed Process re-check improvement (2026-07-02)
+**Latest:** §11 Benchmark COGS detail order (2026-07-05) · §10 Bundle proporsi · §8–§9 Failed Process
 
 ## Legacy sources
 

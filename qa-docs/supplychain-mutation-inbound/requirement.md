@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-mutation-inbound
 menu_name: "Purchase Inbound"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-07-04
 owner: QA - Yemima
 status: draft
 ---
@@ -24,6 +24,7 @@ status: draft
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
+| 1.1 | 2026-07-04 | QA - Yemima | Cross-reference Relasi Master Unit; pointer ke Other Inbound / Assembly |
 
 ## 1. Ringkasan Eksekutif
 
@@ -94,7 +95,21 @@ Validasi gudang tujuan level ≤20 (smallest warehouse). Blok jika import detail
 
 ## 6. Relasi Menu
 
-Menu terkait: **supplychain-purchase-order, supplychain-new-purchase-inbound, accounting-supplier-invoice**.
+Menu terkait: **supplychain-purchase-order, supplychain-new-purchase-inbound, accounting-supplier-invoice, [Other Inbound](../supplychain-other-inbound/), [Master Unit](../supplychain-unit/)**.
+
+> **Catatan:** Penerimaan stok **tanpa supplier** (hasil Assembly, dll.) bukan scope menu ini — lihat [Other Inbound](../supplychain-other-inbound/requirement.md). Assembly auto-generate Other Inbound via `WorkOrderApprovalJob`, bukan Purchase Inbound.
+
+---
+
+## Relasi Master Unit
+
+**Dampak ke menu ini:** Detail inbound punya `inbound_quantity_unit_id`; konversi ke base unit saat save/approve.
+
+**Prasyarat:** Unit **Active** (`status=1`) di Master Unit agar selectable di select2.
+
+**Detail:** [Master Unit requirement](../supplychain-unit/requirement.md).
+
+---
 
 ## 7. QA Test Notes
 

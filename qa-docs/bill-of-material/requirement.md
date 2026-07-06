@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: bill-of-material
 menu_name: "Bill of Material"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-07-04
 owner: QA - Yemima
 status: review
 ---
@@ -15,6 +15,7 @@ status: review
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Migrated from legacy KB to structured requirement |
+| 1.1 | 2026-07-04 | QA - Yemima | Cross-reference Relasi Assembly + Master Unit |
 
 **UI route:** `/supplychain/bill-of-material`  
 **Module:** Supply Chain
@@ -107,8 +108,36 @@ Detail section: autosave per row; hyperlink ke System Product edit.
 | [system-product](../system-product/) | Sumber SKU header/detail |
 | [random-sku](../random-sku/) | Excluded dari BOM |
 | Master Variant | Options saat Create New + Variations |
-| Master Unit | Primary/alternate; unit lock |
-| Assembly | Consumer utama — snapshot BOM saat transaksi dibuat |
+| [Master Unit](../supplychain-unit/) | Primary/alternate; unit lock |
+| [Assembly](../supplychain-assembly/) | Consumer utama — snapshot BOM saat transaksi dibuat |
+
+---
+
+## Relasi Assembly
+
+**Dampak ke menu ini:** Assembly hanya menampilkan SKU dengan **Header BOM Active**. Saat Assembly **Open**, sistem snapshot komposisi BoM ke `scm_work_order_bill_of_materials`. Saat **Approve**, qty komponen = `bom_qty × assembly_qty` per baris snapshot.
+
+**Prasyarat dari menu ini agar Assembly lolos:**
+
+- Header BOM **Active** + composition rule valid (≥2 detail ATAU qty > 1)
+- Semua komponen **stockable** dan **active**
+- Nested BOM (sub-assembly): child Header BOM diperlakukan sebagai **1 SKU komponen** — tidak auto-explode; operator Assembly child dulu ([Assembly §8](../supplychain-assembly/requirement.md))
+
+**Independensi:** Edit BoM setelah Assembly Draft → snapshot di-rebuild saat Open. Edit setelah Open → qty snapshot di-update saat Approve (non-retry). Assembly **Approved** tidak terpengaruh edit BoM. Delete BoM diblok jika pernah dipakai Assembly.
+
+**Detail alur:** [Assembly requirement](../supplychain-assembly/requirement.md) — §5 Stock Movement, §8 Nested BOM, §10 Relasi Menu.
+
+---
+
+## Relasi Master Unit
+
+**Dampak ke menu ini:** Kolom **Unit** di Detail BOM hanya dari **primary** atau **alternate unit** produk komponen. Qty detail BOM **integer only** — pecahan via konversi unit di Master Unit (mis. gram vs kg).
+
+**Prasyarat dari menu ini agar Master Unit lock applies:** Unit yang sudah dipakai di baris Detail BOM **tidak boleh dihapus** dari Master Unit maupun di-unassign dari System Product alternate unit.
+
+**Independensi:** Ubah conversion rate di Master Unit setelah unit ter-lock di BOM → **diblok** (`haveRelations()`). Rate NULL di master tetap flexible per produk di alternate unit.
+
+**Detail:** [Master Unit requirement](../supplychain-unit/requirement.md) — §5 Validasi, §10 Relasi.
 
 ---
 
@@ -131,3 +160,6 @@ Detail section: autosave per row; hyperlink ke System Product edit.
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| Assembly | [../supplychain-assembly/requirement.md](../supplychain-assembly/requirement.md) |
+| Master Unit | [../supplychain-unit/requirement.md](../supplychain-unit/requirement.md) |
+| System Product | [../system-product/requirement.md](../system-product/requirement.md) |

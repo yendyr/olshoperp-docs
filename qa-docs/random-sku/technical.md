@@ -62,7 +62,7 @@ related_docs:
 |------|-------|
 | `StockOpnameDetailController` | Blocks random product stock ops |
 | `ItemStockObserver` | Skips random products |
-| `ProductBenchmarkPriceJob` | Excludes random variant options |
+| `ProductBenchmarkPriceJob` | Excludes random variant from parent MAX loop; random row **inherits** parent benchmark — see [Benchmark COGS technical §4](../accounting-product-benchmark-price/technical.md#42-processproductproduct_id-) |
 | BOM controllers | Random excluded from header/detail |
 
 ## 6. Order platform
@@ -87,3 +87,4 @@ related_docs:
 | Requirement | [requirement.md](./requirement.md) |
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Bill of Material | [../bill-of-material/requirement.md](../bill-of-material/requirement.md) |
+| Benchmark COGS | [../accounting-product-benchmark-price/technical.md](../accounting-product-benchmark-price/technical.md) |

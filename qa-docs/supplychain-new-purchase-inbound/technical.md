@@ -2,189 +2,227 @@
 doc_type: technical
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 1.0
-last_updated: 2026-06-19
+version: 2.1
+last_updated: 2026-07-05
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
-  - ./knowledge-base.md
   - ./requirement.md
+  - ./knowledge-base.md
+  - ../supplychain-mutation-inbound/technical.md
 ---
 
-# BETA - New Purchase Inbound — Technical Documentation
+# Purchase Inbound (GRN) — Technical Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
-
-**Stack:** Laravel 13 API · Vue 3 SPA  
-**Primary module:** `Modules/SupplyChain`  
-**Menu slug:** `supplychain-new-purchase-inbound`  
-**UI route:** `/supplychain/new-purchase-inbound`  
-**API base:** `{VITE_API_URL}supplychain/mutation-inbound*`
+**UI route (BETA):** `/supplychain/new-purchase-inbound`  
+**API base:** `{VITE_API_URL}supplychain/mutation-inbound`  
+**Controller:** `StockMutationInboundController`  
+**Detail:** `StockMutationInboundDetailController`  
+**Middle (COLLI):** `StockMutationInboundMiddleDetailController`
 
 ---
 
-## 1. Architecture Overview
+## 1. Entity & scope filter
 
-```mermaid
-flowchart TB
-    subgraph Frontend["olshoperp-frontend/Inbound/PurchaseInbound"]
-        DL[DataList.vue\nfrom_menu=newInobound]
-        FM[Form.vue]
-        DD[DatalistDetail.vue]
-        DG[DatalistDetailGroup.vue]
-    end
+`StockMutationInbound` extends `StockMutation` on `scm_stock_mutations`:
 
-    subgraph API["Laravel API"]
-        SIC[StockMutationInboundController]
-        SID[StockMutationInboundDetailController]
-        SIM[StockMutationInboundMiddleDetailController]
-        III[ItemInboundInspectionController]
-    end
-
-    subgraph Domain["Entities"]
-        SM[StockMutationInbound\nscm_stock_mutations]
-        IMD[InboundMutationDetail]
-        IMMD[InboundMutationMiddleDetail]
-        POD[PurchaseOrderDetail]
-    end
-
-    subgraph Jobs["Async"]
-        AIJ[ApproveInboundJob]
-        IEJ[StockMutationDetailExportJob]
-    end
-
-    DL --> SIC
-    FM --> SIC
-    DD --> SID
-    DD --> SIM
-    SID --> IMD
-    SID --> POD
-    SIC --> SM
-    SIC -->|"approve"| AIJ
+```php
+// StockMutationInboundController@index
+->whereNotNull('supplier_id')
+->whereNull('type')
+->where('is_inventory_adjustment', 0)
+->where('is_return_process', 0);
 ```
+
+Detail: `InboundMutationDetail` → `scm_inbound_mutation_details` with `purchase_order_detail_id`.
+
+Middle: `InboundMutationMiddleDetail` → `scm_inbound_mutation_middle_details` (`qty_in_colly`, `qty_each_colly`, `qty_each_colly_unit_id`).
 
 ---
 
 ## 2. Frontend File Map
 
-**Root:** `olshoperp-frontend/src/pages/SCM/Inbound/PurchaseInbound/`
+| File | Role |
+|------|------|
+| `SCM/Inbound/PurchaseInbound/DataList.vue` | Header datalist |
+| `SCM/Inbound/PurchaseInbound/Form.vue` | Create/edit |
+| `SCM/Inbound/PurchaseInbound/DatalistDetail.vue` | Detail grid (flat) |
+| `SCM/Inbound/PurchaseInbound/DatalistDetailGroup.vue` | Detail grid (group + COLLI column) |
+| `SCM/Inbound/PurchaseInbound/InboundColly.vue` | COLLI inline edit component |
+| `OutstandingPurchaseOrderDetail.vue` | Outstanding PO panel |
 
-| File | Role | Key API |
-|------|------|---------|
-| `DataList.vue` | Datalist + export | `GET mutation-inbound?from_menu=newInobound` |
-| `Form.vue` | Create/edit header (Composition API) | `POST/PUT mutation-inbound/{id}` |
-| `DatalistDetail.vue` | Detail grid + outstanding PO | `mutation-inbound-detail` |
-| `DatalistDetailGroup.vue` | Middle detail grouping | `mutation-inbound-detail/middle/primevue` |
-| `InboundColly.vue` / `InboundQuantity.vue` | Colli/qty helpers | detail endpoints |
+**Router:** `src/router/index.ts` L1307–1339 → `new-purchase-inbound`
 
-### Router
-
-| Route | Component |
-|-------|-----------|
-| `supplychain/new-purchase-inbound` | `DataList.vue` |
-| `supplychain/new-purchase-inbound/create` | `Form.vue` |
-| `supplychain/new-purchase-inbound/edit/:id` | `Form.vue` |
-
-**Note:** `redirectUrl` di Form = `supplychain/new-purchase-inbound`; API tetap `mutation-inbound`.
+**View toggle:** `groupView` in Form.vue — `DatalistDetail` vs `DatalistDetailGroup`
 
 ---
 
-## 3. Backend File Map
+## 3. API Routes (key)
 
-| Class | Responsibility |
-|-------|----------------|
-| `StockMutationInboundController` | CRUD header, approve, select2, export, print RIR |
-| `StockMutationInboundDetailController` | CRUD detail, outstanding PO, bulk FIFO, import |
-| `StockMutationInboundMiddleDetailController` | Middle layer FIFO, inline update |
-| `ItemInboundInspectionController` | Receiving inspection checklist |
-| `ItemStockMutation` (helper) | `approveInbound()` — core stock posting |
+| Method | Path |
+|--------|------|
+| CRUD | `supplychain/mutation-inbound` |
+| Approve | `POST …/{id}/approve` |
+| Unapprove | `GET …/unapprove/{id}` (dev/local) |
+| Print | `GET …/{id}/print`, `/print-rir` |
+| Export | `GET …/export-excel`, `/export-file`, `/export-progress` |
+| Outstanding | `GET …/{id}/mutation-inbound-detail/outstanding` |
+| Detail CRUD | `…/mutation-inbound-detail/*` |
+| Middle CRUD | `…/middle/*` |
+| Import | `POST …/mutation-inbound-detail/upload` |
+| Import log | `…/import-log`, `/import-history` |
 
-### Models
+Full list: `Modules/SupplyChain/Routes/api.php` L234–293
 
-| Class | Table |
+---
+
+## 4. PO qty chain
+
+```php
+// PurchaseOrderDetail::inBalance()
+order_quantity_in_base_unit - prepared_to_grn_quantity - processed_to_grn_quantity
+```
+
+| Event | Field |
 |-------|-------|
-| `StockMutationInbound` extends `StockMutation` | `scm_stock_mutations` |
-| `InboundMutationDetail` | `scm_inbound_mutation_details` |
-| `InboundMutationMiddleDetail` | `scm_inbound_mutation_middle_details` |
-| `InboundMutationApprovalStatus` | Progress tracker approval async |
-| `StockMutationInboundPolicy` | Authorization |
+| Detail add | `prepared_to_grn_quantity` ↑ |
+| Detail delete | `prepared_to_grn_quantity` ↓ |
+| Approve | prepared ↓, `processed_to_grn_quantity` ↑ |
+
+PO observer: partial → `processed`; full all lines → `complete`.
 
 ---
 
-## 4. API Routes (selected)
+## 5. COLLI technical flow
 
-**File:** `Modules/SupplyChain/Routes/api.php`
+### 5.1 Middle detail create/update
 
-| Method | Path | Notes |
-|--------|------|-------|
-| GET | `mutation-inbound` | Index; `from_menu=newInobound` → link ke UI BETA |
-| POST | `mutation-inbound` | Create header |
-| PUT | `mutation-inbound/{id}` | Update (POST + `_method=put` di FE) |
-| POST | `mutation-inbound/{id}/approve` | Approve GRN |
-| GET | `mutation-inbound-detail/outstanding` | Outstanding PO (alias route) |
-| GET | `mutation-inbound/{id}/mutation-inbound-detail/primevue` | Detail list |
-| POST | `mutation-inbound/{id}/mutation-inbound-detail` | Create detail |
-| POST | `mutation-inbound/{id}/mutation-inbound-detail/bulk-fifo` | Bulk FIFO |
-| GET | `mutation-inbound/select2/supplier` | Supplier select2 |
-| GET | `mutation-inbound/select2/warehouse-destination` | Warehouse select2 |
+`StockMutationInboundMiddleDetailController`:
+- Auto-creates middle row on detail add
+- `latest_colly` column: last middle detail same product_id, converted unit, `floor()`
 
----
+### 5.2 FE auto-fill (`InboundColly.vue`)
 
-## 5. Database
-
-### 5.1 Header filter (purchase inbound)
-
-```sql
--- Conceptual scope for New Purchase Inbound datalist
-warehouse_origin IS NULL
-AND warehouse_destination IS NOT NULL
-AND supplier_id IS NOT NULL
-AND is_inventory_adjustment = 0
-AND is_return_process = 0
-AND type IS NULL
+```javascript
+if (qty_in_colly > 0) {
+  if (qty_in_colly * latest_colly <= outstanding_po_qty + quantity)
+    item.qty_each_colly = latest_colly;
+  else
+    item.qty_each_colly = 1;
+}
 ```
 
-### 5.2 Detail key columns
+### 5.3 Approve async path
 
-| Column | Keterangan |
-|--------|------------|
-| `purchase_order_detail_id` | Link ke PO detail |
-| `each_price_before_vat` | Harga per base unit dari PO |
-| `prepared_to_invoice_quantity` | Untuk supplier invoice downstream |
-| `middle_detail_id` | FK middle layer FIFO |
+`StockMutationInboundController@approve`:
+- If middle details exist → dispatch `ApproveInboundJob`
+- Job chunks `GenerateItemStockChunkJob` (200 detail IDs/chunk)
+- `ItemStock.isFloor` with `is_colly = (middle_detail.qty_in_colly > 0)`
 
-### 5.3 PO qty integration
+### 5.4 Job failure (`ApproveInboundJob::handleFailed`)
 
-```mermaid
-sequenceDiagram
-    participant UI as "PurchaseInbound Form"
-    participant SID as "InboundDetailController"
-    participant POD as "PurchaseOrderDetail"
-    participant IS as "ItemStockMutation"
+- Revert header to `open`
+- Delete partial ItemStock, journal, approval record
+- Toast notification to creator
+- User re-clicks Approve
 
-    UI->>SID: store detail + PO detail id
-    SID->>POD: increment prepared_to_grn_quantity
-    UI->>SID: approve inbound
-    SID->>IS: approveInbound
-    IS->>POD: increment processed_to_grn_quantity
-```
+### 5.5 Progress UI
+
+`item_stock_status_formatted` column — cache key `item_stock_status_formatted:{id}`
 
 ---
 
-## 6. Key Integration Points
+## 6. Approve sync path
 
-| Sistem | Mekanisme |
-|--------|-----------|
-| Purchase Order | Outstanding query + observer status via GRN qty |
-| Purchase Requisition | PO detail → PR detail tree; pickChildsForInbound |
-| Product | Batch/expired/serial rules per product config |
-| Warehouse | Leaf-only destination; tree display formatted |
-| Accounting | Supplier invoice qty fields on inbound detail |
+`ItemStockMutation::approveInbound()`:
+- Creates `ItemStock` per detail **kecuali** `ProductCoaGroup.type == 'Service'`
+- `each_price_before_vat` from PO line
+- Fix Asset: `is_fix_asset = true` on ItemStock (`product->isFixAsset()`)
+- Service: skip stock block entirely (L401); journal still posted
+- `StockAfterApproveHandler` for ending balance jobs
 
 ---
 
-## 7. Permissions
+## 7. Journal — Product COA Group type matrix
 
-Policy: `StockMutationInboundPolicy` — `viewAny`, `create`, `update`, `delete`, `approval`.
+`JournalProcess::stockInboundAutoJournal()` L254–294:
 
-Menu seeder: `SupplyChainMenuSeeder` → `supplychain/new-purchase-inbound`.
+| `ProductCoaGroup.type` | Debit COA field | Credit COA field | Stock |
+|------------------------|-----------------|------------------|-------|
+| `Purchased Item` | Inventory | Unbilled Goods | ✅ |
+| `Manufactured Item` | Inventory | Unbilled Goods | ✅ |
+| `Fix Asset` | **Assets** | Unbilled Goods | ✅ |
+| `Service` | **Operational Expense** | Unbilled Goods | ❌ |
+
+Constants: `ProductCoaGroup::PRODUCT_TYPE_*` in `Modules/Accounting/Entities/ProductCoaGroup.php`.
+
+| Config | Effect |
+|--------|--------|
+| `inbound-with-unbilled-goods=true` | Credit Unbilled Goods COA (all types) |
+| false | Credit AP COA on supplier |
+
+Tax lines commented — deferred to Supplier Invoice L298–307.
+
+Currency: first detail PO `current_primary_currency_id`.
+
+---
+
+## 8. Import classes
+
+| Class | File |
+|-------|------|
+| Standard | `StockMutationInboundImport.php` |
+| COLLI | `StockMutationInboundColliImport.php` → `InboundDetailImportColliJob` |
+
+Colli rule: `inbound_qty = colli × colli_qty`
+
+---
+
+## 9. Config keys
+
+| Key | Value |
+|-----|-------|
+| `general.max_child_10000` | 10000 max detail rows |
+| `StockMutation::LIMIT_CREATE_SERIAL_NUMBER` | 50 |
+| `accounting.inbound-with-unbilled-goods` | true default |
+| `upload.size.file` | attachment max |
+
+---
+
+## 10. Validation catalog (selected)
+
+| Message | Source |
+|---------|--------|
+| `Transaction date cannot be greater than today.` | store/update |
+| `Input Quantity exceeds Outstanding PO. Max allowed: {n}` | detail store |
+| `Approval in progress, please wait a moment.` | async approve |
+| `{code} has failed to be approved` | ApproveInboundJob fail toast |
+| `Data cannot be deleted because it is already linked to colli data.` | detail destroy |
+| `This transaction have more than 10.000 details.` | approve validate |
+
+---
+
+## 11. Testing Notes
+
+1. Standard approve → sync stock + journal
+2. COLLI 300+ koli → async job completes without timeout
+3. Job fail simulation → open status + re-approve
+4. PO partial/full status transitions
+5. Serial 51st row blocked
+6. Import colli template validation
+7. Void dialog → expect API rejection (regression GAP-PI-01)
+8. `latest_colly` when last isi > outstanding → defaults 1
+9. Service SKU → no ItemStock; journal Dr Operational Expense
+10. Fix Asset SKU → ItemStock `is_fix_asset=1`; journal Dr Assets COA
+
+---
+
+## 12. Related Documents
+
+| Doc | Path |
+|-----|------|
+| Requirement | [requirement.md](./requirement.md) |
+| Legacy menu technical | [../supplychain-mutation-inbound/technical.md](../supplychain-mutation-inbound/technical.md) |
+| Purchase Order | [../supplychain-purchase-order/technical.md](../supplychain-purchase-order/technical.md) |
+| ItemStockMutation | `app/Helpers/SupplyChain/ItemStockMutation.php` |
+| JournalProcess | `app/Helpers/Accounting/JournalProcess.php` |

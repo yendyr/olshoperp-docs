@@ -213,7 +213,7 @@ Stok SKU order bergerak melalui rantai TF internal (mayoritas di **virtual WH**)
 | 5 | **Delivery Order** (+ Collecting) | `supplychain-delivery-order` | SL `shipping` (Collected, open) masuk DO; approve DO → TFI `shipping do` ke **WH 3PL** + status SO **Shipped** → **prasyarat FS**. | [technical §8](../supplychain-delivery-order/technical.md#8-relasi-failed-ship--collecting--shipped-3pl) |
 | 6 | **Sales Order** | `sales-order-general` | Header referensi semua TF (`transaction_reference` SO/SO detail); kolom qty FS & settlement di `omni_sales_order_details`. | [requirement](../sales-order-general/requirement.md) |
 | 7 | **Instant Settlement** | `accounting-settlement-upload` | Setelah FS approved: qty invoice/outbound net; FS open memblokir upload. | [requirement §4.3](../accounting-settlement-upload/requirement.md) |
-| 8 | **Sales Return** | `accounting-sales-return` | Alternatif jika order **sudah** SI & Outbound; qty return cap ke outbound; `invoicableQuantity` net FS. | [README](../accounting-sales-return/README.md) |
+| 8 | **Sales Return** | `supplychain-sales-returns` + `accounting-sales-return` | Alternatif jika order **sudah** SI & Outbound; qty return cap ke outbound; dual menu SCM/Finance v2.0. | [SCM](../supplychain-sales-returns/README.md) · [Finance](../accounting-sales-return/README.md) |
 
 **Cara baca pergerakan di Transfer Internal:** buka menu TF Internal → toggle **Show Virtual** → filter `process_type` / kode prefix PL, CL, PK, SL, TFI untuk order yang sama (`transaction_reference` = SO).
 
@@ -299,7 +299,7 @@ Tooltip UI: *"Returned and/or refunded Sales Platform that has not been processe
 | `without-outbound` | **true** (belum outbound) | **tidak dikirim** → default: `processed_to_out = order qty` (**sudah full outbound**) |
 | `without-used` | true | true (saat platform tab aktif) |
 
-Sales Return **sengaja** menampilkan platform return yang order-nya **sudah punya outbound penuh** (+ invoice via detail SR) — kebalikan dari Failed Ship pill.
+Sales Return **sengaja** menampilkan platform return yang order-nya **sudah punya outbound penuh** (+ invoice via detail SR) — kebalikan dari Failed Ship pill. Dokumentasi canonical v2.0: [supplychain-sales-returns/requirement.md §4.3](../supplychain-sales-returns/requirement.md#43-pill--sales-return-platform).
 
 Kolom referensi di platform return table: `outbound_reference_formatted`, `invoice_reference_formatted` (`OmniChannel\SalesReturnController`).
 
@@ -493,7 +493,7 @@ flowchart TB
 
 **Aturan bisnis:** per baris SKU order, `qty Failed Ship + qty Return` tidak boleh melebihi `qty order`. Setelah FS, order bisa di-retur via **Sales Return** (hanya jika sudah settled/outbound). Qty return **tidak boleh melebihi qty outbound terakhir** per baris.
 
-**AS-IS (Accounting Sales Return — UI aktif `accounting/sales-return`):**
+**AS-IS (Sales Return v2.0 — SCM + Finance):** Lihat [supplychain-sales-returns/requirement.md §10](../supplychain-sales-returns/requirement.md#10-stock-impact-timeline) dan [technical.md §5](../supplychain-sales-returns/technical.md#5-create-flow-salesreturncontrollerstore).
 
 | Lapisan | Mekanisme |
 |---------|-----------|

@@ -2,10 +2,11 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Sales Order General (Internal)"
-version: 2.2
-last_updated: 2026-07-02
+version: 2.4
+last_updated: 2026-07-05
 owner: QA - Yemima
 status: review
+aliases: [bundle price proportion, proporsi harga bundle, Price Before VAT bundle, bundle detail modal, HPP bundle validation, ETM-12890, ETM-12947]
 legacy_sources:
   - ../_legacy/old_sales-order-import-bulk-improvement.md
 ---
@@ -30,6 +31,8 @@ legacy_sources:
 7. [FAQ](#7-faq)
 8. [Failed Process — AS-IS](#8-failed-process--as-is)
 9. [Improvement TO-BE — Re-check Failed Process & Log](#9-improvement-to-be--re-check-failed-process--log)
+10. [Product Bundle — Proporsi Harga (Price Before VAT)](#10-product-bundle--proporsi-harga-price-before-vat)
+11. [Benchmark COGS & Price Before VAT (Detail Order)](#11-benchmark-cogs--price-before-vat-detail-order)
 
 ---
 
@@ -224,7 +227,7 @@ Job lama `InstantProcessingSalesOrderJob` sudah **deprecated** — diganti `Skip
 | Outbound approve (pertama) | Accounting → Sales Invoice | Auto-create & approve Customer Invoice + jurnal AR |
 | Settlement upload & approve | Accounting → Instant Settlement | Generate outbound + invoice + payment + jurnal |
 | Manual invoice | Accounting → Sales Invoice | User pilih outstanding SO |
-| Sales Return | Accounting / SCM → Sales Return | Retur barang dari SO yang sudah outbound |
+| Sales Return | SCM / Accounting → [Sales Return](../supplychain-sales-returns/README.md) · [Approval](../accounting-sales-return/README.md) | Retur barang dari SO yang sudah outbound + invoice |
 | POS approve | Busdev → Point of Sales | Auto invoice + outbound + receive |
 
 **SO General approve saja TIDAK membuat invoice** (berbeda dengan POS yang langsung invoice).
@@ -574,7 +577,8 @@ flowchart TB
 
 | # | Menu | Modul | Keterlibatan | Fungsi | Dampak ke SO / Stok / Finance |
 |---|------|-------|-------------|--------|-------------------------------|
-| 1 | **System Product** | SCM | **Wajib** — sumber SKU di detail | Master produk, harga, pajak, bundle | Produk inactive → tidak bisa tambah/approve; ATS berkurang saat outstanding |
+| 1 | **System Product** | SCM | **Wajib** — sumber SKU di detail | Master produk, harga, pajak, bundle; primary/alternate unit | Produk inactive → tidak bisa tambah/approve; ATS berkurang saat outstanding |
+| 1b | **[Master Unit](../supplychain-unit/)** | SCM | **Wajib** — satuan qty detail | Primary + alternate unit; konversi ke base unit | Unit inactive → tidak muncul di select2; rate lock jika `haveRelations()` |
 | 2 | **General Company** | GS | **Wajib** — customer | Master customer B2B | `customer_id` di header; alamat billing/shipping |
 | 3 | **Store General/Other** | Omni | **Wajib** — store | Toko internal (`PL_OTHER`) | Menentukan `platform_id`, warehouse proses |
 | 4 | **Shipper Service** | Omni | **Wajib** — pengiriman | Kurir & metode kirim | `shipping_platform_system_id`; referensi DO |
@@ -594,7 +598,7 @@ flowchart TB
 | 18 | **Instant Settlement** | Accounting | **Rekonsiliasi** | Upload CSV settlement general | Generate outbound + invoice + payment sekaligus |
 | 19 | **Upload Settlement** | Accounting | **Rekonsiliasi** | Template `SettlementGeneralExport` | Kolom: Order ID, Date, Total + OC/OD |
 | 20 | **Customer Payment** | Accounting | **Pasca-invoice** | Pembayaran customer | Jurnal kas/bank |
-| 21 | **Sales Return** | SCM/Accounting | **Retur** | Kembalikan barang | Link ke SO detail yang sudah outbound |
+| 21 | **Sales Return** | SCM + Accounting | **Retur** | Kembalikan barang post-outbound | [SCM](../supplychain-sales-returns/README.md) · [Finance](../accounting-sales-return/README.md) — gudang input qty, Finance Complete |
 | 22 | **SO Profit/Loss** | Accounting | **Laporan** | Margin per SO | Read-only analytics |
 | 23 | **SO Invoicing** | Accounting | **Laporan** | Status invoice per SO | Read-only analytics |
 | 24 | **Point of Sales** | Busdev | **Input alternatif** | Buat SO saat transaksi retail | Approve khusus: auto invoice + outbound + receive |
@@ -650,7 +654,7 @@ Keduanya adalah **satu entitas** (`omni_sales_orders`) dengan flag `type_sales_o
 | **Import Excel** | Ya (2 sheet) | Tidak — pakai platform sync |
 | **Status saat create/import** | Draft (manual) / Open (import) | Dari platform (biasanya langsung open) |
 | **Approval** | **Sinkron** — `approveGeneral()` langsung | **Async** — `CheckOrderFlagsJob` di queue |
-| **Validasi approve** | FIFO stock, bundle, wave (jika config on) | Binding, logistic, platform flags |
+| **Validasi approve** | FIFO stock, bundle, wave, **benchmark COGS** (auto-approve) | Binding, logistic, platform flags, **benchmark COGS** |
 | **Observer khusus** | Tidak ada | `SalesOrderStatusObserver` → auto download AWB |
 | **Invoice saat approve** | Tidak (kecuali POS) | Settlement-driven |
 | **AWB / logistic API** | Tidak ada | Platform API integration |
@@ -785,8 +789,8 @@ A: Bukan saat approve SO. Invoice dibuat saat: (1) **Outbound approve** (otomati
 **Q: Bagaimana cara settlement untuk SO General?**  
 A: Via **Instant Settlement** / Upload Settlement. Pilih store General/Other. Download template `SettlementGeneralExport` (CSV). Upload → sistem generate outbound + invoice + payment.
 
-**Q: Apakah SO General bisa di Sales Return?**  
-A: **Ya.** Sales Return platform sync exclude General/Other, tapi SO General bisa diretur manual jika sudah outbound (atau dengan flag `without_outbound`).
+**Q: Apakah SO General bisa di Sales Return?**
+A: **Ya.** Sales Return platform sync exclude General/Other, tapi SO General bisa diretur manual jika sudah outbound + invoice. Lihat [Sales Return requirement v2.0](../supplychain-sales-returns/requirement.md).
 
 ---
 
@@ -974,6 +978,231 @@ Setiap klik tombol menghasilkan **set log baru** (append, bukan overwrite).
 
 ---
 
+## 10. Product Bundle — Proporsi Harga (Price Before VAT)
+
+**Scope:** Sales Order **General** & **Platform** (detail bundle di `omni_sales_order_details` + tree child).  
+**PM source:** Proporsi harga Product Bundle menggunakan acuan **Price Before VAT**.  
+**Jira:** [ETM-12890](https://erpintegration.atlassian.net/browse/ETM-12890) (SO General HPP) · [ETM-12947](https://erpintegration.atlassian.net/browse/ETM-12947) (SO Platform HPP)  
+**System Product (parent tax hide, rumus proporsi):** [system-product §6.4 & §11](../system-product/requirement.md#11-bundle-pricing-distribution-sales-order--to-be)
+
+### 10.1 Ringkasan perubahan
+
+| Topik | Before | After (TO-BE) |
+|-------|--------|---------------|
+| Basis proporsi alokasi | Retail Price (gross) | **Price Before VAT** per komponen |
+| Pajak parent bundle (master) | Bisa di-set di header | **Hidden** — pajak hanya di komponen |
+| Coefficient Tax (12%, DPP 11/12) | Tidak terdokumentasi konsisten | Price Before VAT ÷ **1.11**; DPP dari VAT ÷ 12% |
+| Modal Detail Bundle | Kolom parsial | Kolom lengkap + **Price Before VAT hidden default** |
+| Snapshot nilai | Partial | **Capture** saat sync/approve — tidak ikut edit master |
+
+**Code canonical:** `SalesOrderDetailController::pickBundleChildren()` · Modal API: `so_general_parent_bundle()` · UI: `PrimeDataTables.vue` (icon bundle di datalist detail SO).
+
+### 10.2 Core logic — proporsi & alokasi
+
+**Input:** Bundle Price (harga baris header di SO) · Retail Price tiap komponen (× qty) · setting pajak komponen.
+
+**Steps:**
+
+1. Konversi retail → **Price Before VAT (basis)** per komponen:
+   - **Include:** `Retail / (1 + rate_efektif)` — coefficient true → rate efektif **11%** (÷1.11)
+   - **Exclude / No tax:** `Retail`
+2. `% proporsi` = `basis_item / sum(basis_all_items)`
+3. **Alokasi** = `% × Bundle Price`
+4. Hitung kolom output per komponen (Price Before VAT, DPP, VAT, Total Price) — lihat §10.3
+
+**Equal split:** jika total basis = 0 → `Bundle Price / jumlah komponen`.
+
+**Tax Exclude penting:** VAT ditambahkan **di atas** alokasi → Total Price komponen exclude **> alokasi** → **jumlah Total Price semua komponen dapat melebihi Bundle Price header** (bukan bug rounding).
+
+### 10.3 Simulation & QA validation
+
+**Global variables (PM):**
+
+| Variable | Nilai |
+|----------|-------|
+| Bundle Price (target) | 49.999 |
+| FRESHBOXBB4 retail | 25.000 |
+| bbll retail | 5.000 |
+
+#### Scenario A — Coefficient Tax (Include 12% eff 11%) + No VAT
+
+| Step | Item 1 (FRESHBOXBB4) | Item 2 (bbll) |
+|------|----------------------|---------------|
+| Basis proporsi | 25.000 / 1.11 = **22.522,52** | **5.000,00** |
+| Total basis | **27.522,52** | |
+| % proporsi | **81,83%** | **18,17%** |
+| Alokasi Bundle Price | 49.999 × 81,83% = **40.915,93** | **9.083,07** |
+
+**Output kolom (final):**
+
+| Item | Price Before VAT | DPP | VAT | Total Price | Notes |
+|------|------------------|-----|-----|-------------|-------|
+| FRESHBOXBB4 | 36.861,20 (40.915,93/1.11) | 33.789,42 (VAT/12%) | 4.054,73 | **40.915,93** | Coefficient: P.BeforeVAT ÷1.11; DPP dari VAT÷12% |
+| bbll | 9.083,07 | 9.083,07 | 0 | **9.083,07** | No tax |
+| **TOTAL** | | | | **49.999,00** | = Bundle Price |
+
+#### Scenario B — Mixed VAT (Include 11% + Exclude 11%)
+
+Basis proporsi **sama** dengan Scenario A (27.522,52 · 81,83% / 18,17% · alokasi 40.915,93 / 9.083,07).
+
+| Item | Price Before VAT | DPP | VAT | Total Price | Notes |
+|------|------------------|-----|-----|-------------|-------|
+| FRESHBOXBB4 (Inc 11%) | 36.861,20 | 36.861,20 | 4.054,73 | **40.915,93** | Total = alokasi |
+| bbll (Exc 11%) | 9.083,07 | 9.083,07 | 999,14 (×11%) | **10.082,21** | Total = alokasi + VAT |
+| **TOTAL** | | | | **50.998,14** | **> 49.999** — expected (efek Exclude) |
+
+### 10.4 Data integrity & snapshot
+
+| Konteks | Rule |
+|---------|------|
+| **SO Platform** | Saat order terbentuk / binding, nilai Bundle Price, DPP, VAT, Price Before VAT per komponen harus **di-capture** — **tidak berubah** meskipun master product diedit |
+| **SO General — Draft/Open** | Masih **recalculate** jika user edit harga bundle header |
+| **SO General — Approved** | Nilai **di-capture (lock)** — sama seperti platform post-sync |
+
+**UI warning (AS-IS):** Modal Detail Bundle menampilkan peringatan jika resep bundle master berubah setelah transaksi dibuat — nilai transaksional tetap pakai snapshot/capture, bukan master terbaru.
+
+### 10.5 Modal Detail Bundle (UI/UX)
+
+Trigger: klik icon bundle pada baris detail SO (General & Platform).
+
+| Kolom | Keterangan | Default visibility |
+|-------|------------|-------------------|
+| **SKU Code \| Name** | Gabung 1 sel | **Visible** |
+| **Qty** | Qty komponen dalam bundle | **Visible** |
+| **Unit** | Satuan komponen | **Visible** |
+| **Retail Price** | Harga retail master product | **Visible** |
+| **Bundle Price** | Harga alokasi hasil proporsi | **Visible** |
+| **Price Before VAT** | Harga bersih sebelum pajak (§10.2–10.3) | **Hidden** |
+| **DPP** | Dasar Pengenaan Pajak — **≠ Price Before VAT** jika Coefficient True | **Visible** |
+| **VAT** | Nilai pajak | **Visible** |
+| **Total Price** | Price Before VAT + VAT (per aturan include/exclude) | **Visible** |
+
+**AS-IS gap:** Label kolom alokasi masih **"Order Price"** di `PrimeDataTables.vue` — TO-BE rename **"Bundle Price"**. Kolom Price Before VAT saat ini **visible** — TO-BE **hidden by default**.
+
+### 10.6 Validasi Auto-Approval (HPP / Benchmark COGS)
+
+Validasi HPP (ETM-12890 General · ETM-12947 Platform) — **PM TO-BE** untuk bundle komponen:
+
+```
+Price Before VAT (dari detail bundle komponen)  VS  Benchmark COGS (Parent SKU header)
+```
+
+| Kondisi | Hasil (PM) |
+|---------|------------|
+| Price Before VAT **<** Benchmark COGS Parent | **Auto-Approval DITOLAK** |
+| Price Before VAT **≥** Benchmark COGS Parent | Lanjut rule auto-approve lainnya |
+
+**AS-IS code (semua line SO, termasuk non-bundle):** `updateAutoApproveFlagForSalesOrder()` membandingkan **`each_price_after_vat_primary_currency`** vs **`benchmark_cogs`** snapshot — **bukan** Price Before VAT (GAP-BM-05). Detail: [Benchmark COGS requirement §12](../accounting-product-benchmark-price/requirement.md#12-gaps--pm-vs-as-is-codebase).
+
+**UI flag:** icon dollar merah — *"Product price is below COGS Benchmark. Manual approval required."* (`CanManageOrderDetailError`).
+
+### 10.7 Acceptance Criteria (bundle proporsi)
+
+| ID | Kriteria | Expected |
+|----|----------|----------|
+| BND-01 | Basis proporsi | Price Before VAT, bukan retail gross |
+| BND-02 | Coefficient True | DPP ≠ Price Before VAT (Scenario A) |
+| BND-03 | Exclude VAT | Grand total komponen boleh > Bundle Price (Scenario B) |
+| BND-04 | Modal kolom | Sesuai tabel §10.5; Price Before VAT hidden default |
+| BND-05 | SO Platform snapshot | Nilai tidak berubah setelah edit master |
+| BND-06 | SO General Approved | Nilai lock; Draft/Open recalculate saat edit header |
+| BND-07 | HPP auto-approve | Tolak jika Price Before VAT < Benchmark COGS parent |
+| BND-08 | Parent bundle master | Accounting & Tax hidden di System Product |
+
+### 10.8 QA test scenarios
+
+| # | Skenario | Expected |
+|---|----------|----------|
+| T-B01 | Tambah bundle Scenario A ke SO Open | Alokasi 40.915,93 + 9.083,07; total = 49.999 |
+| T-B02 | Scenario B mixed VAT | Total komponen > Bundle Price header |
+| T-B03 | Edit retail master setelah SO Platform sync | Modal/tax snapshot SO tidak berubah |
+| T-B04 | Edit bundle price SO General Draft | Komponen recalculate |
+| T-B05 | Approve SO General dengan bundle | Nilai lock post-approve |
+| T-B06 | Auto-approve HPP — Price Before VAT < benchmark parent | Ditolak |
+| T-B07 | Klik icon bundle | Modal kolom lengkap; Price Before VAT hidden (TO-BE) |
+
+---
+
+## 11. Benchmark COGS & Price Before VAT (Detail Order)
+
+**Scope:** Sales Order **General** & **Platform** — semua baris detail (bukan hanya bundle).  
+**Master menu:** [Benchmark COGS](../accounting-product-benchmark-price/requirement.md)  
+**Jira:** [ETM-12890](https://erpintegration.atlassian.net/browse/ETM-12890) · [ETM-12947](https://erpintegration.atlassian.net/browse/ETM-12947)
+
+### 11.1 Kolom detail SO (PM TO-BE)
+
+| Kolom | Posisi | Default visibility | Formula / sumber |
+|-------|--------|-------------------|------------------|
+| **Price Before VAT** | Sebelum **DPP** | **Hidden** | Include: `Price / (1 + Tax Rate)` · Exclude/No tax: `Price` |
+| **Benchmark COGS** | Setelah Price Before VAT | **Hidden** | Snapshot `accounting_product_benchmark_prices` saat line dibuat / binding |
+
+**AS-IS kolom FE:**
+
+| Menu | Field backend | `visible` default |
+|------|---------------|-------------------|
+| SO General | `price_before_vat_formatted` | `false` |
+| SO Platform | `each_price_before_discount_before_vat_so_formatted` (header **Price Before VAT**) | `false` |
+| Keduanya | `benchmark_cogs_formatted` | `false` |
+
+Bundle header (General): `price_before_vat_formatted` = **sum** child `each_price_before_discount_before_vat × qty`.
+
+### 11.2 Snapshot `benchmark_cogs`
+
+| Event | AS-IS |
+|-------|-------|
+| Create detail / random line | `handleBenchmarkCogsOnCreating()` — copy master jika `product_id` set & belum > 0 |
+| Platform product **binding** | Re-set `benchmark_cogs` dari system product ter-bind |
+| Ganti `product_id` di edit | Re-fetch benchmark |
+| Master Benchmark COGS berubah | Kolom SO **tetap** (history) |
+
+**DB:** `omni_sales_order_details.benchmark_cogs` · `omni_sales_order_detail_randoms.benchmark_cogs`
+
+### 11.3 Logic pengambilan nilai (PM)
+
+| Tipe line | PM | AS-IS capture |
+|-----------|-----|---------------|
+| Single / Variant child | COGS SKU line | `product_id` → master row |
+| Bundle header / Random (representasi) | COGS **Parent SKU** | Header: parent `product_id` ✓ |
+| Bundle **child** komponen | PM bundle §10.6: vs parent | Child: **own** product benchmark — **GAP-BM-06** |
+| Platform **unbound** | Skip; COGS 0 | `product_id` null → 0, validasi skip |
+
+Spreadsheet logic: [Google Sheet](https://docs.google.com/spreadsheets/d/1c_eDle4g4E_IIp6d0wNpER6LIzugh1MBBYE1gxv28iU/edit?gid=2129708031#gid=2129708031)
+
+### 11.4 Auto-Approval (HPP)
+
+| Aspek | PM TO-BE | AS-IS |
+|-------|----------|-------|
+| Bandingkan | **Price Before VAT** vs **Benchmark COGS** (snapshot) | **`each_price_after_vat_primary_currency`** vs `benchmark_cogs` |
+| Block | Set `prevent_auto_approve = true` | ✓ same flag |
+| Observer | — | `SalesOrderDetailPriceObserver` |
+| Random **bundle** line | — | Force block auto-approve |
+| UI | — | Icon dollar merah di error flags |
+
+**Bundle-specific rule (PM):** lihat [§10.6](#106-validasi-auto-approval-hpp--benchmark-cogs).
+
+### 11.5 Acceptance Criteria
+
+| ID | Kriteria |
+|----|----------|
+| BC-01 | Kolom Price Before VAT & Benchmark COGS hidden default; bisa di-unhide |
+| BC-02 | Snapshot: edit master COGS tidak mengubah order lama |
+| BC-03 | Binding platform mengisi `benchmark_cogs` |
+| BC-04 | Unbound platform: benchmark 0, validasi skip |
+| BC-05 | Harga di bawah benchmark → manual approval (PM: Price Before VAT — verify GAP-BM-05) |
+| BC-06 | Bundle/Random parent: benchmark = parent SKU (header line) |
+
+### 11.6 Perbandingan SO General vs Platform
+
+| Aspek | General | Platform |
+|-------|---------|----------|
+| Kolom Benchmark COGS | ✓ | ✓ |
+| Snapshot on create | ✓ | ✓ |
+| Snapshot on bind | N/A (direct system product) | ✓ saat binding |
+| Price Before VAT field name | `price_before_vat_formatted` | `each_price_before_discount_before_vat_so_formatted` |
+| Auto-approve check | Same `updateAutoApproveFlagForSalesOrder()` | Same |
+
+---
+
 ## Relasi Instant Settlement
 
 **Dampak ke menu ini:** Sales Order (General & Platform — entitas `omni_sales_orders`) adalah **sumber baris** settlement. Import CSV match order by **`platform_order_id`** (platform) atau **`code`** SO internal (General/Others). Settlement generate outbound + SI + (setelah Approve) AR per order lolos validasi.
@@ -1006,6 +1235,8 @@ Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/req
 | 2.0 | 18 Juni 2026 | Restruktur 7 bagian: fungsi, how it works, validasi, import detail, relasi mendalam (stok→processing→settlement→finance), perbandingan platform, FAQ |
 | 2.1 | 2026-06-23 | Cross-reference Relasi Instant Settlement (Fase 2) — section standar |
 | 2.2 | 2026-07-02 | §8 Failed Process AS-IS + §9 Improvement TO-BE Re-check Failed Process & Log |
+| 2.3 | 2026-07-05 | §10 Product Bundle — proporsi harga Price Before VAT, coefficient, modal, snapshot, HPP (ETM-12890/12947) |
+| 2.4 | 2026-07-05 | §11 Benchmark COGS & Price Before VAT detail order; §10.6 AS-IS gap auto-approve |
 
 ## Lampiran Teknis (Developer)
 
@@ -1013,6 +1244,11 @@ Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/req
 |---------|------|
 | Model | `Modules/OmniChannel/Entities/SalesOrder.php`, `SalesOrderGeneral.php` |
 | Controller | `SalesOrderController.php`, `SalesOrderApprovalController.php`, `SalesOrderDetailController.php` |
+| Bundle proporsi | `SalesOrderDetailController::pickBundleChildren()`, `so_general_parent_bundle()` |
+| Bundle modal FE | `olshoperp-frontend/src/components/project/DataTables/PrimeDataTables.vue` |
+| Benchmark COGS snapshot | `SalesOrderDetail.php` / `SalesOrderDetailRandom.php` — `handleBenchmarkCogsOnCreating()` |
+| Auto-approve HPP | `SalesOrderDetailController::updateAutoApproveFlagForSalesOrder()`, `SalesOrderDetailPriceObserver.php` |
+| Master Benchmark COGS | [accounting-product-benchmark-price](../accounting-product-benchmark-price/technical.md) |
 | Import | `Import/SalesOrderImportSheet1.php`, `SalesOrderImportSheet2.php`, `SalesOrderDetailImport.php` |
 | Wave | `Services/WaveService.php`, `Jobs/MoveSOToWaveMixJob.php` |
 | Instant processing | `Jobs/SkipProcessingJob.php`, `Services/ProcessingService.php` |

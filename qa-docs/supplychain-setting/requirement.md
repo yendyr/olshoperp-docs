@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-setting
 menu_name: "Warehouse Setting"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.2
+last_updated: 2026-07-05
 owner: QA - Yemima
 status: draft
 ---
@@ -17,6 +17,8 @@ status: draft
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft (AS-IS) |
+| 1.1 | 2026-07-04 | QA - Yemima | Cross-reference Relasi Assembly (WIP + Finish Good) |
+| 1.2 | 2026-07-05 | QA - Yemima | Relasi Manual Picking List (Outrack Picking) |
 
 ## 1. Ringkasan Eksekutif
 
@@ -71,6 +73,42 @@ flowchart LR
 |------|--------|
 | Warehouse Structure | Source buildings & leaf racks |
 | Transfer Void / Scrap / Picking | Consumes `getWarehouseOutRack` |
+| [Assembly](../supplychain-assembly/) | WIP + Finish Good warehouse per building |
+
+---
+
+## Relasi Assembly
+
+**Dampak ke menu ini:** Assembly **tidak** punya field user untuk WIP / Finish Good warehouse. Kedua lokasi di-resolve dari `SettingWarehouseScrapVoid` per **Building Origin** yang dipilih operator:
+
+| Field setting | Kolom DB | Dipakai Assembly saat |
+|---------------|----------|----------------------|
+| WIP Warehouse | `warehouse_wip_id` | TFI destination + Outbound origin |
+| Finish Good Warehouse | `warehouse_finish_good_id` | Other Inbound destination |
+
+**Prasyarat dari menu ini agar Assembly lolos:** Building Origin harus punya **WIP dan FG configured** — jika tidak, Open/Approve ditolak. Building Origin **tidak boleh sama** dengan WIP warehouse.
+
+**Independensi:** Ubah WIP/FG setting setelah Assembly Open **tidak** retroaktif mengubah TFI yang sudah dibuat.
+
+**Detail alur:** [Assembly requirement §5](../supplychain-assembly/requirement.md) — warehouse resolution, stock chain.
+
+---
+
+## Relasi Manual Picking List
+
+**Dampak ke menu ini:** Kolom **Outrack Picking** (`SettingWarehouseOutRack::PICKING_TYPE`) wajib terisi agar Manual PL bisa dibuat dan complete.
+
+| Aspek | Detail |
+|-------|--------|
+| Helper | `SettingWarehouseScrapVoidController@getWarehouseOutRack($building_id, PICKING_TYPE)` |
+| Dipakai saat | Create MPL header → set `warehouse_destination` |
+| Validasi | Jika Outrack NULL → create PL **gagal** |
+| FIFO exclude | Semua Outrack picking + destination PL di-exclude dari alloc origin |
+| Complete picked | Stok transfer rack → Outrack ini |
+
+**Prasyarat:** Building Origin harus punya leaf Outrack Picking configured (smallest child validation).
+
+**Detail:** [Manual Picking List requirement §12](../supplychain-manual-picking-list/requirement.md)
 
 ## 6. Permission
 
@@ -96,3 +134,4 @@ flowchart LR
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
 | Warehouse Structure | [../supplychain-warehouse-structure/requirement.md](../supplychain-warehouse-structure/requirement.md) |
+| Assembly | [../supplychain-assembly/requirement.md](../supplychain-assembly/requirement.md) |

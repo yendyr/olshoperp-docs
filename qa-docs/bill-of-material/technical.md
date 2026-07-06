@@ -2,8 +2,8 @@
 doc_type: technical
 menu: bill-of-material
 menu_name: "Bill of Material"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-07-04
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -81,6 +81,29 @@ Schema: `docs/db-schema/supply_chain/scm_bill_of_materials.md`
 | `store_header()` | Create BOM header |
 | `index_detail_primevue()` | Detail datalist for export |
 
+## 7. Assembly Integration
+
+Assembly (backend: `WorkOrder`) consumes live BoM via `detail_product_bom()` and persists snapshot on Open.
+
+| Artifact | Table / field | Notes |
+|----------|---------------|-------|
+| BoM snapshot | `scm_work_order_bill_of_materials` | Copy per WO detail line saat Open |
+| FG selector | `BillOfMaterial` + `is_bom=1`, active | Hanya Header BOM Active |
+| Component qty | `quantity × wo_detail.quantity` | Unit dari BoM detail `quantity_unit_id` |
+| Nested BOM | Direct children only | No recursive explode — [Assembly §8](../supplychain-assembly/requirement.md) |
+| Approve validation | `validateProductDetailBom()` | Reject inactive BoM/components |
+
+**Generated transactions (via Assembly, not BoM menu):** TFI Building→WIP → Outbound Other (WIP) → Other Inbound (FG). See [Assembly technical §7](../supplychain-assembly/technical.md).
+
+## 8. Master Unit Integration
+
+| Field | Source |
+|-------|--------|
+| `quantity_unit_id` | Product primary or alternate unit |
+| Unit lock | Same as `Unit::haveRelations()` when unit used in BoM detail |
+
+Cross-ref: [Master Unit technical §10](../supplychain-unit/technical.md).
+
 ## Related Documents
 
 | Doc | Path |
@@ -88,3 +111,5 @@ Schema: `docs/db-schema/supply_chain/scm_bill_of_materials.md`
 | Requirement | [requirement.md](./requirement.md) |
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | System Product | [../system-product/technical.md](../system-product/technical.md) |
+| Assembly | [../supplychain-assembly/technical.md](../supplychain-assembly/technical.md) |
+| Master Unit | [../supplychain-unit/technical.md](../supplychain-unit/technical.md) |

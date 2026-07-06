@@ -1,26 +1,29 @@
-# Purchase Invoice — Dokumentasi
+# Purchase Invoice — Dokumentasi QA
 
-Menu **Purchase Invoice** (Accounting) — faktur pembelian / hutang usaha (AP).
+Menu **Purchase Invoice** (Accounting / Account Payable).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
 
-**Maintenance owner:** QA — Yemima
+**PM source:** `purchase-invoice-requirement-okt2025.md` v1.1 (29 Okt 2025)  
+**Version:** 2.0 · **Last updated:** 2026-07-05
 
-## Route & code
+## Changelog
 
-- FE: `/accounting/supplier-invoice` → `olshoperp-frontend/src/pages/Accounting/AccountPayable/SupplierInvoice/`
-- BE: `Modules/Accounting/Http/Controllers/SupplierInvoiceController.php`
-- Tabel: `accounting_supplier_invoices` — prefix kode **PI**
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2026-06-19 | Initial draft AS-IS |
+| 2.0 | 2026-07-05 | PM merge v1.1; VAT at PI; dynamic cost; inbound & payment relasi; gaps §19–§21 |
 
 ## Related menus
 
-| Menu | Relasi |
-|------|--------|
-| Purchase Inbound | Baris invoice dari `InboundMutationDetail` |
-| Purchase Order | Referensi PO pada detail; other cost/discount dari PO |
-| Account Payment (Supplier Payment) | Alokasi pembayaran ke invoice approved |
-| Journal | Auto-generate saat approve |
+| Menu | Link |
+|------|------|
+| Purchase Inbound | [../supplychain-new-purchase-inbound/](../supplychain-new-purchase-inbound/) |
+| Purchase Order | [../supplychain-purchase-order/](../supplychain-purchase-order/) |
+| Account Payment | [../accounting-supplier-payment/](../accounting-supplier-payment/) |
+
+**Maintenance owner:** QA — Yemima

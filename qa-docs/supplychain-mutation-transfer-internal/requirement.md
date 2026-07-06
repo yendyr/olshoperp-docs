@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-mutation-transfer-internal
 menu_name: "Transfer Internal"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.2
+last_updated: 2026-07-05
 owner: QA - Yemima
 status: draft
 ---
@@ -24,6 +24,8 @@ status: draft
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
+| 1.1 | 2026-07-04 | QA - Yemima | Cross-reference Relasi Assembly + Master Unit |
+| 1.2 | 2026-07-05 | QA - Yemima | Relasi Manual Picking List (TF_INTERNAL auto-approve) |
 
 ## 1. Ringkasan Eksekutif
 
@@ -94,7 +96,69 @@ Origin dan destination tidak boleh sama per detail. Warehouse tree harus valid (
 
 ## 6. Relasi Menu
 
-Menu terkait: **supplychain-warehouse-structure, omni-picking-process, supplychain-manual-picking-list**.
+Menu terkait: **supplychain-warehouse-structure, omni-picking-process, supplychain-manual-picking-list, [Assembly](../supplychain-assembly/), [Master Unit](../supplychain-unit/)**.
+
+---
+
+## Relasi Assembly
+
+**Dampak ke menu ini:** Saat Assembly status **Open**, sistem auto-create **Transfer Internal** (`TFI`) per detail line:
+
+| Aspek | Nilai |
+|-------|-------|
+| Origin | Building Origin (user-selected) |
+| Destination | WIP warehouse dari Warehouse Setting |
+| Status awal | **open** (approved saat Assembly Approve job) |
+| Referensi | `transaction_reference_class = WorkOrder` |
+| Detail qty | `bom_snapshot_qty × assembly_qty` per komponen |
+| FIFO | `item_stock_id = null` → auto-pick dari building tree |
+
+**Prasyarat dari menu ini agar Assembly lolos:** Origin ≠ WIP; stok komponen cukup di building tree (exclude In Transit, virtual, WIP). Saat Assembly **delete** (Draft/Open), TFI linked ikut di-destroy.
+
+**Independensi:** TFI manual di menu ini **independen** dari Assembly — tidak auto-link ke Work Order kecuali dibuat programmatically.
+
+**Detail alur:** [Assembly requirement §5](../supplychain-assembly/requirement.md) — stock movement chain step 1 (Open).
+
+---
+
+## Relasi Master Unit
+
+**Dampak ke menu ini:** Setiap detail TFI punya `transfer_quantity_unit_id`. Saat approve, `MainModelObserver` konversi qty ke base unit (`*_in_base_unit`).
+
+**Prasyarat:** Unit harus **Active** (`status=1`) di Master Unit agar muncul di select2 detail.
+
+**Detail:** [Master Unit requirement](../supplychain-unit/requirement.md) — §2 Conversion Rate, §6 Transaction flow.
+
+---
+
+## Relasi Manual Picking List
+
+**Dampak ke menu ini:** Manual Picking List **bukan** TFI manual terpisah — header PL **adalah** dokumen `TF_INTERNAL` dengan `process_type = 'manual picking'` dan kode prefix **`PL-`** (bukan `TFI-`).
+
+| Aspek | Nilai |
+|-------|-------|
+| Origin per detail | Rack hasil FIFO alloc (`warehouse_origin_id` / `item_stock_id`) |
+| Destination | WH Outrack dari Warehouse Setting (`PICKING_TYPE`) |
+| Approve trigger | Complete Picking → `StockMutationTransferController@approve(..., is_from_pl: true)` |
+| Qty yang di-transfer | Hanya **picked** qty per line (line di-shrink sebelum approve) |
+| Reservation | Insert detail → `reserved_quantity ↑`; approve/unpick/delete → release |
+| Lost qty | **Bukan** TFI — lewat Stock Deduction `AO-*` (`process_type = lost`) |
+| New PL qty | Generate MPL baru — bukan TFI |
+
+**Perbedaan dari TFI menu standar:**
+
+| Aspek | TFI menu (`TFI-*`) | Manual PL (`PL-*`) |
+|-------|-------------------|-------------------|
+| Create | User manual di menu Transfer Internal | User di Manual Picking List |
+| Approve | User klik Approve | Auto saat Complete Picking |
+| Picking UI | Tidak ada | Shared Omni picking process |
+| `process_type` | null | `'manual picking'` |
+
+**Stock movement saat approve PL:** Sama dengan TFI approve — kurangi stok di rack origin, tambah di Outrack destination via `ItemStockMutation`.
+
+**Detail alur:** [Manual Picking List requirement §12](../supplychain-manual-picking-list/requirement.md)
+
+---
 
 ## 7. QA Test Notes
 
@@ -121,4 +185,6 @@ Menu terkait: **supplychain-warehouse-structure, omni-picking-process, supplycha
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| Assembly | [../supplychain-assembly/requirement.md](../supplychain-assembly/requirement.md) |
+| Master Unit | [../supplychain-unit/requirement.md](../supplychain-unit/requirement.md) |
 | Manifest | [../_meta/manifest.yaml](../_meta/manifest.yaml) |

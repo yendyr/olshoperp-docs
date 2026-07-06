@@ -2,8 +2,8 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Sales Order General (Internal)"
-version: 1.1
-last_updated: 2026-07-02
+version: 1.3
+last_updated: 2026-07-05
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -19,6 +19,7 @@ related_docs:
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | AS-IS import + merge bulk improvement TO-BE |
 | 1.1 | 2026-07-02 | QA - Yemima | §7 Failed Process AS-IS file map + §8 Re-check TO-BE design |
+| 1.2 | 2026-07-05 | QA - Yemima | §9 Bundle proporsi · §10 Benchmark COGS file map |
 
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB  
 **Type:** `type_sales_order = general`  
@@ -340,6 +341,46 @@ flowchart TD
 
 ---
 
+## 9. Product Bundle — Proporsi Harga (file map)
+
+**Requirement:** [requirement.md §10](./requirement.md#10-product-bundle--proporsi-harga-price-before-vat) · **System Product §11:** [../system-product/requirement.md](../system-product/requirement.md#11-bundle-pricing-distribution-sales-order--to-be)
+
+| Layer | File | Fungsi |
+|-------|------|--------|
+| **Distribusi harga (canonical)** | `Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php` | `pickBundleChildren()` — basis `price_before_vat`, alokasi `% × header_price`, create child detail/random + tree |
+| **Deprecated** | Same controller | `pickChildsForSalesOrder()` — retail gross; `@deprecated` |
+| **Modal payload** | Same controller | `so_general_parent_bundle()` — kolom retail, bundle_price, bundle_price_before_vat, dpp, vat, total |
+| **Platform sync bundle** | `OmniTikTokService.php`, `OmniShopeeService.php` | Memanggil `pickBundleChildren()` saat header bundle |
+| **Parent tax hide (FE)** | `olshoperp-frontend/.../FormProductComponent.vue` | Accordion Accounting & Tax `v-if="!enable_bundle"` |
+| **Modal UI** | `olshoperp-frontend/src/components/project/DataTables/PrimeDataTables.vue` | Tooltip + tabel Detail Bundle (TO-BE: rename Order Price → Bundle Price; hide Price Before VAT default) |
+| **Tax on child** | `SalesOrderDetail` + `SalesOrderTax` morph | `dpp_value`, `vat_amount` per child line |
+| **HPP auto-approve** | ETM-12890 / ETM-12947 (ref requirement) | Compare Price Before VAT komponen vs Benchmark COGS parent |
+
+**DB (child lines):** `omni_sales_order_details` + `omni_sales_order_detail_trees.parent_id` → header bundle; tax pivot via `sales_order_detail_tax`.
+
+---
+
+## 10. Benchmark COGS — Detail Order (file map)
+
+**Requirement:** [requirement.md §11](./requirement.md#11-benchmark-cogs--price-before-vat-detail-order) · **Master menu:** [../accounting-product-benchmark-price/technical.md](../accounting-product-benchmark-price/technical.md)
+
+| Layer | File | Fungsi |
+|-------|------|--------|
+| Master COGS | `ProductBenchmarkPriceJob.php` | Highest/Last Buy dari PO inbound |
+| Snapshot create | `SalesOrderDetail.php`, `SalesOrderDetailRandom.php` | `handleBenchmarkCogsOnCreating()` |
+| Platform bind | `OmniChannel/Http/Controllers/ProductController.php` | Set `benchmark_cogs` on bind |
+| Auto-approve | `SalesOrderDetailController::updateAutoApproveFlagForSalesOrder()` | `prevent_auto_approve` flag |
+| Observer | `SalesOrderDetailPriceObserver.php` | Re-run on price/qty/product/benchmark change |
+| UI flag | `Concerns/CanManageOrderDetailError.php` | Dollar icon below benchmark |
+| Datalist BE | `SalesOrderDetailController` | `price_before_vat_formatted`, `benchmark_cogs_formatted` |
+| Datalist FE General | `SalesOrderGeneral/DatalistDetail.vue` | Hidden columns default |
+| Datalist FE Platform | `Omni/SalesOrder/DatalistDetail.vue` | Hidden columns default |
+| Export | `SalesOrderGeneralExportAll.php`, `SalesOrderPlatformExport.php` | Include `benchmark_cogs` |
+
+**Known gap (GAP-BM-05):** auto-approve compares `each_price_after_vat_primary_currency`, not Price Before VAT.
+
+---
+
 ## 6. Cross-References
 
 | Topic | Doc |
@@ -348,6 +389,8 @@ flowchart TD
 | Operator guide | [knowledge-base.md](./knowledge-base.md) |
 | Platform SO comparison | [requirement.md](./requirement.md) §6 |
 | Failed Process AS-IS & TO-BE | [requirement.md](./requirement.md) §8–§9 |
+| Bundle proporsi Price Before VAT | [requirement.md](./requirement.md) §10 · [technical.md](./technical.md) §9 |
+| Benchmark COGS detail order | [requirement.md](./requirement.md) §11 · [technical.md](./technical.md) §10 · [accounting-product-benchmark-price](../accounting-product-benchmark-price/requirement.md) |
 
 ---
 
