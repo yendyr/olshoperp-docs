@@ -15,9 +15,8 @@ Hanya saat ada instruksi eksplisit dari user. Agent tidak boleh auto-generate TC
 
 Sebelum membuat TC baru, agent wajib:
 1. Baca `qa-docs/_meta/manifest.yaml` — verifikasi `{menu-slug}` valid
-2. Jika folder `test-cases/` belum ada — boleh dibuat per §8 (struktur konsisten, konfirmasi user)
-3. Scan seluruh `TC-*.md` di folder `qa-docs/{menu-slug}/test-cases/` — cek duplikasi
-4. Baca `qa-docs/{menu-slug}/requirement.md` — verifikasi expected result
+2. Scan seluruh `TC-*.md` di folder `qa-docs/{menu-slug}/test-cases/` — cek duplikasi
+3. Baca `qa-docs/{menu-slug}/requirement.md` — verifikasi expected result
 
 ---
 
@@ -168,10 +167,6 @@ Semua skenario, precondition, dan expected result harus merujuk ke docs yang ada
 
 ## 8. Struktur folder test-cases
 
-### Pola path (wajib konsisten)
-
-Semua test case **hanya** di path ini — sama untuk menu yang sudah punya TC maupun menu baru:
-
 ```
 qa-docs/{menu-slug}/
 └── test-cases/
@@ -179,25 +174,6 @@ qa-docs/{menu-slug}/
     ├── TC-{PREFIX}-DRAFT-{timestamp}.md
     └── TC-{PREFIX}-NNN.md   ← setelah renumber oleh QA lead
 ```
-
-| Kondisi | Path | Boleh? |
-|---------|------|--------|
-| Menu terdaftar di manifest | `qa-docs/{menu-slug}/test-cases/` | ✅ |
-| Di root qa-docs atau di luar folder menu | `qa-docs/test-cases/` | ❌ |
-| Nested di layer doc | `qa-docs/{slug}/requirement/test-cases/` | ❌ |
-| Slug tidak ada di manifest | `qa-docs/{slug-baru}/test-cases/` | ❌ |
-
-### Membuat folder test-cases baru
-
-Hanya saat user minta secara eksplisit (konfirmasi + instruksi buat TC). Sebelum create:
-
-1. Verifikasi `{menu-slug}` ada di `qa-docs/_meta/manifest.yaml`
-2. Pastikan folder `qa-docs/{menu-slug}/` sudah ada (struktur menu standar)
-3. Cek folder `test-cases/` belum ada — jika sudah ada, tambah file TC saja
-4. Buat `README.md` mengikuti format §10 (tabel kosong atau entry TC pertama)
-5. Buat `TC-{PREFIX}-DRAFT-{timestamp}.md` pertama
-
-Agent **tidak** mengupdate `manifest.yaml` (`test_cases:`) atau `README.md` menu induk — informasikan QA lead jika manifest perlu diselaraskan.
 
 `test-cases/README.md` wajib diupdate setiap kali ada TC baru — tambahkan entry ke tabel daftar TC.
 

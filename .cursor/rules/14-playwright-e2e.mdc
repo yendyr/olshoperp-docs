@@ -1,0 +1,243 @@
+---
+description: Standar eksekusi Playwright E2E — OlshopERP QA automation
+alwaysApply: true
+---
+
+# Playwright E2E Execution Standard
+
+Rule ini berlaku di repo `olshoperp-docs` untuk semua operasi tulis dan eksekusi Playwright.
+Referensi lengkap: `Documents/playwright-e2e-execution-standard.md`
+
+---
+
+## 1. TC fidelity — langkah TC adalah hukum
+
+Automation mengikuti skenario TC **verbatim**. Pola kode lama tidak boleh mengoverride instruksi TC.
+
+| TC menulis | Automation WAJIB | Automation DILARANG |
+|------------|------------------|---------------------|
+| "Setelah Save, scroll ke section X" | Tetap di halaman edit → scroll | `goto` datalist sebelum section tersebut |
+| "Klik Create di datalist" | Buka datalist → klik Create | Langsung `goto` create kecuali TC izinkan |
+| "Verifikasi di datalist" | Cek datalist **setelah** aksi selesai | Cek datalist di tengah flow form |
+
+Self-check sebelum commit/run:
+- [ ] Setiap step TC punya baris kode atau method POM yang correspond 1:1
+- [ ] Tidak ada navigasi "bonus" yang tidak tertulis di TC
+- [ ] Tidak menyalin pola test lain tanpa mapping ulang ke TC baru
+
+---
+
+## 2. Satu halaman, satu konteks
+
+Setelah aksi yang **tidak** mengubah route, automation **tetap di konteks halaman itu** sampai TC memerintahkan pindah. Jangan goto halaman lain di tengah flow.
+
+---
+
+## 3. Scope run terkunci
+
+| Permintaan user | Perintah run |
+|-----------------|--------------|
+| Satu TC | `npx playwright test -g "@TC-XXX"` |
+| Satu skenario spesifik | `-g` dengan judul test spesifik |
+| Full regression | Hanya jika user eksplisit minta "full suite" / "semua test" |
+
+**DILARANG:** run seluruh file spec ketika user hanya menyebut satu skenario.
+
+Laporan hasil hanya untuk TC yang diminta — jangan lapor "suite pass" jika user minta satu TC.
+
+---
+
+## 4. Preflight — wajib sekali per sesi
+
+```powershell
+cd <repo-root>
+npm install
+npx playwright install chromium
+npx playwright test --list
+npx playwright test -g "<scope TC>" --list
+```
+
+Jika error `Executable doesn't exist` → preflight gagal, jangan lanjut run.
+
+---
+
+## 5. Retry limit
+
+| Aturan | Batas |
+|--------|-------|
+| Run per masalah | Maks 2 |
+| File inspect sementara | Buat → hapus sebelum selesai task |
+| Setelah 2 gagal | STOP → lapor blocker + screenshot + langkah TC yang gagal |
+
+**DILARANG:** run file penuh sebagai "debug", login 5–8× untuk satu masalah selector, biarkan `inspect-*.spec.ts` di repo.
+
+---
+
+## 6. Mode eksekusi
+
+| Mode | Headless | slowMo | Kapan |
+|------|----------|--------|-------|
+| **DEV** (default) | `true` | `0` | Semua run normal, debug, iterasi selector |
+| **SIGN-OFF** | `false` | `1000`–`1500ms` | Hanya jika user minta "lihat flow" / "slowMo" |
+
+Sinyal SIGN-OFF dari user: "lihat flow", "slowMo", "demo". Selain itu → DEV.
+
+Browser selalu tutup setelah test selesai — ini normal, bukan bug.
+
+---
+
+## 7. Auth & company scope
+
+### Setup auth (TO-BE — Cursor yang setup jika belum ada)
+
+Jika `tests/.auth/` dan `global-setup.ts` belum ada di repo, **Cursor wajib setup dulu** sebelum run:
+
+1. Buat `tests/global-setup.ts` — login sekali + simpan `storageState` per company
+2. Update `playwright.config.ts` — tambah `storageState` per project
+3. Update `helpers/company-access.ts` — `prepareSession(company, targetPath)` + langsung `goto` menu target setelah switch
+
+Setelah setup: tiap test tidak perlu login ulang — pakai session tersimpan.
+
+### Alur per run (setelah storageState ada)
+
+```
+[Setup sekali — global-setup]
+  login + switch {company} → simpan tests/.auth/{company}.json
+
+[Tiap run]
+  buka browser dengan session tersimpan
+  → langsung goto {menu target}
+  → jalankan skenario
+```
+
+Setelah switch company → **langsung `goto` menu target**, jangan berhenti di home.
+
+### Company allowlist — Staging
+
+| Code | ID | Label UI |
+|------|----|----------|
+| FAT | 112 | FAT |
+| lumicharmsid | 153 | Lumi Charms.id |
+| DEV-STG | 13 | Dev Staging |
+| Lumielle | 810 | Lumielle |
+| TANRISE | 3 | TANRISE |
+
+Default company jika tidak disebutkan: **FAT (112)**.
+
+Environment lain (Tyas, Merdian): update allowlist di rules terbaru sesuai instruksi Lead QA.
+
+---
+
+## 8. Mapping langkah TC → kode (wajib sebelum tulis spec)
+
+Sebelum menulis spec baru, buat tabel mapping:
+
+| # | Langkah TC (copy verbatim) | Method POM / aksi | Halaman setelah step |
+|---|---------------------------|-------------------|----------------------|
+| 1 | … | … | … |
+
+**Kolom "Halaman setelah step" wajib diisi** — mencegah navigasi salah.
+
+### Penamaan test
+
+```typescript
+test('[@TC-{PREFIX}-NNN] Judul skenario — deskripsi singkat', ...)
+```
+
+Tag `@TC-*` wajib untuk traceability ke `qa-docs/.../test-cases/`.
+
+---
+
+## 9. Idempotent — berlaku semua menu
+
+Test harus aman dijalankan ulang tanpa duplikasi data. Pattern ini berlaku global:
+
+```typescript
+// Cek apakah data sudah ada — jika ada, masuk mode edit; jika tidak, mode create
+const mode = await menuHelper.openCreateOrEditBy{UniqueField}(identifier);
+
+if (mode === 'create') {
+  // langkah create dari TC
+  await fillRequiredFields();
+  await clickSave();
+}
+
+// langkah lanjutan (setelah save / edit) — langsung dari halaman edit
+if (!(await menuHelper.hasExpectedState(expectedValues))) {
+  // lanjutkan setup yang belum lengkap
+}
+
+// verifikasi akhir sesuai TC
+await menuHelper.verifyFinalState(expectedValues);
+```
+
+Adaptasi `{UniqueField}` dan `identifier` sesuai menu — misal SKU code untuk System Product, Order ID untuk Sales Order, dsb.
+
+| Fase | Cara benar | Cara salah |
+|------|------------|------------|
+| Sebelum create | Cek data existing → edit jika ada | Selalu create duplikat |
+| Setelah save, ada step lanjutan | Tetap di halaman edit | Keluar ke datalist dulu |
+| Verifikasi akhir | Assert di datalist/view sesuai TC | Assert di tengah form |
+
+---
+
+## 10. Struktur kode automation
+
+```
+tests/
+  global-setup.ts          # auth sekali per company
+  helpers/
+    company-access.ts      # login, switch, session, prepareSession
+    {menu}.ts              # POM per menu
+  {menu}.spec.ts           # spec tipis, tag @TC-*
+playwright.config.ts       # env: PW_SLOW_MO, PW_HEADED, storageState
+package.json
+```
+
+| Layer | Isi | Bukan isinya |
+|-------|-----|--------------|
+| `helpers/*.ts` | Selector, interaksi UI, assert reusable | Urutan bisnis TC |
+| `*.spec.ts` | Urutan step TC verbatim, data test | Selector detail |
+
+---
+
+## 11. Scripts standar
+
+```json
+{
+  "scripts": {
+    "test:preflight": "playwright install chromium && playwright test --list",
+    "test:tc": "playwright test -g",
+    "test:signoff": "cross-env PW_HEADED=1 PW_SLOW_MO=1000 playwright test -g"
+  }
+}
+```
+
+Contoh:
+```powershell
+npm run test:preflight
+npm run test:tc -- "@TC-SYSPROD-003"
+npm run test:signoff -- "@TC-SYSPROD-003"
+```
+
+---
+
+## 12. Checklist agent sebelum selesai task
+
+### Penulisan kode
+- [ ] Setiap langkah TC ada di spec, urutan sama
+- [ ] Tidak ada navigasi ekstra di luar TC
+- [ ] Kolom "halaman setelah step" di mapping tabel sudah dicek
+- [ ] POM method baru hanya jika reusable
+- [ ] Tag `@TC-*` ada di judul test
+
+### Eksekusi
+- [ ] Preflight OK
+- [ ] Run scoped: `-g` sesuai TC diminta
+- [ ] Mode DEV untuk debug; SIGN-OFF hanya jika diminta
+- [ ] Maks 2 retry; lapor blocker jika masih gagal
+
+### Pelaporan
+- [ ] Status PASS/FAIL untuk TC yang diminta saja
+- [ ] Sebutkan jika expected result TC tidak cocok dengan test data aktual
+- [ ] Lampirkan perintah run yang dipakai
