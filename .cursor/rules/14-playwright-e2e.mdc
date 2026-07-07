@@ -67,7 +67,7 @@ Jika error `Executable doesn't exist` → preflight gagal, jangan lanjut run.
 |--------|-------|
 | Run per masalah | Maks 2 |
 | File inspect sementara | Buat → hapus sebelum selesai task |
-| Setelah 2 gagal | STOP → lapor blocker + screenshot + langkah TC yang gagal |
+| Setelah 2 gagal | STOP → lapor blocker + langkah TC yang gagal |
 
 **DILARANG:** run file penuh sebagai "debug", login 5–8× untuk satu masalah selector, biarkan `inspect-*.spec.ts` di repo.
 
@@ -83,6 +83,15 @@ Jika error `Executable doesn't exist` → preflight gagal, jangan lanjut run.
 Sinyal SIGN-OFF dari user: "lihat flow", "slowMo", "demo". Selain itu → DEV.
 
 Browser selalu tutup setelah test selesai — ini normal, bukan bug.
+
+---
+
+## 6A. Standar eksekusi run (background, non-live)
+
+- Jalankan Playwright via command line di background (non-interactive), bukan live demo browser.
+- Tidak perlu minta user membuka website live untuk pembuktian run normal.
+- Gunakan mode `headless` sebagai default; mode headed hanya jika user eksplisit minta demo visual.
+- Setelah run selesai, fokus ke hasil run dari terminal/report, bukan screenshot bukti visual.
 
 ---
 
@@ -240,4 +249,6 @@ npm run test:signoff -- "@TC-SYSPROD-003"
 ### Pelaporan
 - [ ] Status PASS/FAIL untuk TC yang diminta saja
 - [ ] Sebutkan jika expected result TC tidak cocok dengan test data aktual
+- [ ] Ringkas **Actual Result** dengan bahasa sederhana, jelas, dan langsung ke poin
+- [ ] Hindari jargon teknis yang tidak perlu atau kalimat ambigu
 - [ ] Lampirkan perintah run yang dipakai

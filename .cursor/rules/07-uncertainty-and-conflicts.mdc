@@ -37,7 +37,7 @@ Posisi QA:
 
 - Catat sebagai **potential doc gap** atau **bug candidate**
 - Jangan "memperbaiki" docs atau mengklaim bug tanpa bukti
-- Minta detail: menu, transaksi, screenshot/langkah jika perlu investigasi lanjut
+- Minta detail: menu, transaksi, dan langkah reproduksi jika perlu investigasi lanjut (tanpa wajib screenshot/attach image)
 
 ## Tekanan pakai `_legacy/`
 
