@@ -4,17 +4,27 @@
   "version": "1.0.0",
   "description": "Playwright E2E automation for OlshopERP staging",
   "scripts": {
-    "test": "playwright test --project=staging",
-    "test:staging": "playwright test --project=staging",
+    "test": "playwright test --project=authenticated",
+    "test:staging": "playwright test --project=authenticated",
     "test:tyas": "playwright test --project=tyas",
     "test:merdian": "playwright test --project=merdian",
     "test:all-envs": "playwright test",
+    "test:preflight": "playwright install chromium && playwright test --list",
+    "test:tc": "playwright test --project=authenticated -g",
+    "test:signoff": "playwright test --project=authenticated -g",
+    "test:system-product": "playwright test tests/specs/system-product/system-product.spec.ts --project=authenticated",
+    "test:system-product:dev-stg": "playwright test tests/specs/system-product/system-product-dev-stg.spec.ts --project=authenticated",
+    "test:system-product:tc": "playwright test tests/specs/system-product --project=authenticated -g",
+    "test:system-product:qa": "cross-env PW_QA_VIDEO=1 playwright test tests/specs/system-product --project=authenticated",
+    "test:system-product:qa:tc": "cross-env PW_QA_VIDEO=1 playwright test tests/specs/system-product --project=authenticated -g",
+    "test:system-product:headed": "cross-env PW_HEADLESS=false PW_SLOW_MO=1000 playwright test tests/specs/system-product --project=authenticated",
     "test:crawl": "playwright test sidebar-crawl --project=staging",
     "test:crawl:staging": "playwright test sidebar-crawl --project=staging",
     "test:crawl:tyas": "playwright test sidebar-crawl --project=tyas",
     "test:crawl:merdian": "playwright test sidebar-crawl --project=merdian",
     "test:crawl:all": "playwright test sidebar-crawl",
-    "test:headed": "PW_HEADLESS=false PW_SLOW_MO=1500 playwright test --project=staging",
+    "test:headed": "cross-env PW_HEADLESS=false PW_SLOW_MO=1500 playwright test --project=authenticated",
+    "test:qa": "cross-env PW_QA_VIDEO=1 playwright test --project=authenticated",
     "test:ui": "playwright test --ui",
     "test:report": "playwright show-report",
     "postinstall": "playwright install chromium"
@@ -22,6 +32,7 @@
   "devDependencies": {
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.0",
+    "cross-env": "^7.0.3",
     "typescript": "^5.8.3"
   }
 }

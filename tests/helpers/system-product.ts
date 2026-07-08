@@ -74,19 +74,104 @@ export class SystemProductPage {
     );
   }
 
+  async assertAndEnsureSalesCategory(expectedLabel: string): Promise<void> {
+    const combobox = this.salesCategoryCombobox;
+    const pattern = this.labelToFlexiblePattern(expectedLabel);
+    const current = await this.getMultiselectSelectedLabel(combobox);
+
+    if (pattern.test(current)) {
+      return;
+    }
+
+    await this.skuInput.click();
+    await combobox.scrollIntoViewIfNeeded();
+    await combobox.click();
+    await expect(combobox).toHaveAttribute('aria-expanded', 'true', { timeout: 15_000 });
+
+    // List panjang — ketik "Hobbies" lalu pilih opsi exact dari master data DEV-STG.
+    await combobox.pressSequentially('Hobbies', { delay: 80 });
+    await this.page.waitForTimeout(500);
+
+    const option = this.page.getByRole('option', { name: expectedLabel, exact: true });
+    await expect(option, `Opsi Sales Category "${expectedLabel}" harus ada`).toBeVisible({
+      timeout: 15_000,
+    });
+    await option.click();
+
+    await this.skuInput.click();
+    await this.page.waitForTimeout(300);
+
+    const selected = await this.getMultiselectSelectedLabel(combobox);
+    expect(selected, `Sales Category harus "${expectedLabel}"`).toMatch(pattern);
+  }
+
+  async assertAndEnsureProductCoaGroup(expectedLabel: string): Promise<void> {
+    await this.assertComboboxFilled(
+      this.productCoaGroupCombobox,
+      PRODUCT_COA_GROUP_LABEL,
+    );
+    await this.ensureComboboxValue(this.productCoaGroupCombobox, expectedLabel);
+    await this.fillAssetCategoryIfRequired();
+  }
+
+  async clearProductAliasName(): Promise<void> {
+    await this.productAliasNameInput.scrollIntoViewIfNeeded();
+    await this.productAliasNameInput.fill('');
+    await expect(this.productAliasNameInput).toHaveValue('');
+  }
+
+  async clearTagging(): Promise<void> {
+    const tags = this.taggingMultiselect.locator('.multiselect-tag');
+
+    while ((await tags.count()) > 0) {
+      const removeButton = tags
+        .first()
+        .locator('.multiselect-tag-remove, .multiselect-tag-remove-icon');
+      await removeButton.click();
+      await this.page.waitForTimeout(300);
+    }
+
+    await expect(tags).toHaveCount(0);
+  }
+
+  async setTagging(tag: string): Promise<void> {
+    const combobox = this.taggingCombobox;
+    await combobox.scrollIntoViewIfNeeded();
+    await combobox.click();
+    await combobox.fill(tag).catch(async () => {
+      await combobox.pressSequentially(tag, { delay: 50 });
+    });
+    await this.page.waitForTimeout(300);
+
+    const option = this.page.getByRole('option', { name: new RegExp(tag, 'i') }).first();
+    if (await option.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await option.click();
+    } else {
+      await this.dropdownOptions.filter({ hasText: tag }).first().click();
+    }
+
+    await expect(this.taggingMultiselect).toContainText(tag);
+  }
+
   async selectRandomProductCoaGroup(): Promise<string> {
     const combobox = this.productCoaGroupCombobox;
-    await combobox.click();
+    const multiselect = this.getMultiselectFor(combobox);
 
-    const options = this.dropdownOptions;
+    await combobox.scrollIntoViewIfNeeded();
+    await combobox.click();
+    await expect(combobox).toHaveAttribute('aria-expanded', 'true', { timeout: 15_000 });
+
+    const options = multiselect
+      .locator('.multiselect-dropdown .multiselect-option')
+      .filter({ hasNotText: 'No results found' });
     await expect(options.first()).toBeVisible({ timeout: 20_000 });
 
     const count = await options.count();
     const eligibleIndexes: number[] = [];
 
     for (let index = 0; index < count; index++) {
-      const label = (await options.nth(index).innerText()).trim();
-      if (!this.isBlockedCoaGroupOption(label)) {
+      const label = await this.normalizeOptionLabel(options.nth(index));
+      if (label && !this.isBlockedCoaGroupOption(label)) {
         eligibleIndexes.push(index);
       }
     }
@@ -97,14 +182,18 @@ export class SystemProductPage {
         : Array.from({ length: count }, (_, index) => index);
     const randomIndex = pool[Math.floor(Math.random() * pool.length)];
     const selectedOption = options.nth(randomIndex);
-    const label = (await selectedOption.innerText()).trim();
 
     await selectedOption.click();
     await this.skuInput.click();
+    await this.page.keyboard.press('Escape');
+    await this.page.waitForTimeout(300);
     await this.fillAssetCategoryIfRequired();
-    await expect(combobox).not.toHaveAccessibleName(/choose product coa group/i);
 
-    return label;
+    const selectedCoa = await this.getMultiselectSelectedLabel(combobox);
+    expect(selectedCoa).not.toMatch(/choose product coa group/i);
+    expect(selectedCoa.length).toBeGreaterThan(0);
+
+    return selectedCoa;
   }
 
   async clickSaveWithCoaRetry(
@@ -142,6 +231,11 @@ export class SystemProductPage {
     return /BOM|WIP|Assembly|Fix Asset|Header BOM|Return Expense/i.test(label);
   }
 
+  private async normalizeOptionLabel(option: Locator): Promise<string> {
+    const text = (await option.innerText()).trim();
+    return text.split('\n').map((line) => line.trim()).find(Boolean) ?? '';
+  }
+
   private async fillAssetCategoryIfRequired(): Promise<void> {
     const assetCategory = this.page.getByPlaceholder('Choose Asset Category');
 
@@ -158,11 +252,16 @@ export class SystemProductPage {
   }
 
   async clickSave(): Promise<void> {
-    const saveButton = this.page.getByRole('button', { name: 'Save', exact: true });
+    const saveButton = this.page
+      .getByRole('button', { name: 'Save', exact: true })
+      .last();
     await saveButton.scrollIntoViewIfNeeded();
-    await expect(this.productCoaGroupCombobox).not.toHaveAccessibleName(
+
+    const coaLabel = await this.getMultiselectSelectedLabel(this.productCoaGroupCombobox);
+    expect(coaLabel, 'Product Coa Group harus terisi sebelum save').not.toMatch(
       /choose product coa group/i,
     );
+    expect(coaLabel.length).toBeGreaterThan(0);
 
     const saveResponse = this.page.waitForResponse(
       (response) =>
@@ -207,19 +306,42 @@ export class SystemProductPage {
     await expect(productDetails).toHaveAttribute('aria-expanded', 'true', {
       timeout: 20_000,
     });
+
+    const enableVariationsLabel = this.page.getByText('Enable Variations', {
+      exact: true,
+    });
+    await enableVariationsLabel.scrollIntoViewIfNeeded();
   }
 
   async enableVariations(): Promise<void> {
-    const toggle = this.enableVariationsToggle;
-    await toggle.scrollIntoViewIfNeeded();
+    const enableVariationsLabel = this.page.getByText('Enable Variations', {
+      exact: true,
+    });
+    await expect(enableVariationsLabel).toBeVisible({ timeout: 20_000 });
+    await enableVariationsLabel.scrollIntoViewIfNeeded();
 
-    if (!(await toggle.isChecked())) {
-      await toggle.click({ force: true });
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (await this.variantTypeDropdown.isVisible().catch(() => false)) {
+        break;
+      }
+
+      await enableVariationsLabel.click({ force: true });
+      await this.page.waitForTimeout(700);
+
+      if (await this.variantTypeDropdown.isVisible().catch(() => false)) {
+        break;
+      }
+
+      const box = await enableVariationsLabel.boundingBox();
+      if (box) {
+        await this.page.mouse.click(box.x - 18, box.y + box.height / 2);
+      }
+      await this.page.waitForTimeout(700);
     }
 
-    await expect(toggle).toBeChecked();
+    await this.page.waitForTimeout(1_500);
     await this.openVariantEditorIfNeeded();
-    await expect(this.variantTypeDropdown).toBeVisible({ timeout: 20_000 });
+    await this.waitForVariantInputs();
   }
 
   private async openVariantEditorIfNeeded(): Promise<void> {
@@ -228,21 +350,55 @@ export class SystemProductPage {
     }
 
     const addVariant = this.page
-      .locator('div')
-      .filter({ hasText: 'Add New Variant' })
-      .last();
+      .locator('div.border-dashed, button, a, div')
+      .filter({ hasText: /Add New Variant|Add Variant/i })
+      .locator('visible=true')
+      .first();
 
-    await addVariant.scrollIntoViewIfNeeded();
-    await addVariant.click();
-    await this.page.waitForTimeout(2_000);
+    if (await addVariant.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await addVariant.scrollIntoViewIfNeeded();
+      await addVariant.click({ force: true });
+      await this.page.waitForTimeout(2_000);
+      return;
+    }
+
+    const fallbackAddVariant = this.page
+      .getByText(/Add New Variant|Add Variant/i)
+      .locator('visible=true')
+      .first();
+
+    if (await fallbackAddVariant.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await fallbackAddVariant.click();
+      await this.page.waitForTimeout(2_000);
+    }
+  }
+
+  private async waitForVariantInputs(): Promise<void> {
+    for (let attempt = 0; attempt < 6; attempt++) {
+      if (await this.variantTypeDropdown.isVisible().catch(() => false)) {
+        await expect(this.variantTypeDropdown).toBeVisible();
+        return;
+      }
+
+      await this.page.mouse.wheel(0, 500);
+      await this.page.waitForTimeout(500);
+      await this.openVariantEditorIfNeeded();
+    }
+
+    await expect(this.variantTypeDropdown).toBeVisible({ timeout: 30_000 });
   }
 
   async selectVariantType(variantName: string): Promise<void> {
     await this.variantTypeDropdown.click();
-    await this.dropdownOptions
-      .filter({ hasText: variantName })
-      .first()
-      .click();
+    await this.page.waitForTimeout(300);
+
+    const listboxOption = this.page.getByRole('option', { name: variantName, exact: true });
+    if (await listboxOption.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await listboxOption.click();
+    } else {
+      await this.dropdownOptions.filter({ hasText: variantName }).first().click();
+    }
+
     await this.page.waitForTimeout(1_000);
   }
 
@@ -254,10 +410,17 @@ export class SystemProductPage {
 
     for (const option of options) {
       await this.variantOptionsDropdown.click();
-      await this.dropdownOptions
-        .filter({ hasText: option })
-        .first()
-        .click();
+      await this.page.waitForTimeout(300);
+
+      const listboxOption = this.page.getByRole('option', {
+        name: option,
+        exact: true,
+      });
+      if (await listboxOption.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await listboxOption.click();
+      } else {
+        await this.dropdownOptions.filter({ hasText: option }).first().click();
+      }
     }
 
     for (const option of options) {
@@ -266,7 +429,11 @@ export class SystemProductPage {
   }
 
   async clickSaveAll(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Save All', exact: true }).click();
+    const saveAllButton = this.page
+      .getByRole('button', { name: 'Save All', exact: true })
+      .last();
+    await saveAllButton.scrollIntoViewIfNeeded();
+    await saveAllButton.click();
     await this.waitForVariantSaveCompleted();
   }
 
@@ -332,16 +499,32 @@ export class SystemProductPage {
   private get variantTypeDropdown(): Locator {
     return this.page
       .locator(
-        '[placeholder="e.g: Flavour"], [aria-placeholder="e.g: Flavour"], .multiselect-search[aria-placeholder*="Flavour"]',
+        [
+          '[placeholder="e.g: Flavour"]',
+          '[aria-placeholder="e.g: Flavour"]',
+          '.multiselect-search[aria-placeholder*="Flavour"]',
+          '[placeholder*="Flavour"]',
+          '[placeholder*="Flavor"]',
+          '[aria-placeholder*="Flavour"]',
+          '[aria-placeholder*="Flavor"]',
+        ].join(', '),
       )
+      .locator('visible=true')
       .first();
   }
 
   private get variantOptionsDropdown(): Locator {
     return this.page
       .locator(
-        '[placeholder="Choose Option"], [aria-placeholder="Choose Option"], .multiselect-search[aria-placeholder*="Choose Option"]',
+        [
+          '[placeholder="Choose Option"]',
+          '[aria-placeholder="Choose Option"]',
+          '.multiselect-search[aria-placeholder*="Choose Option"]',
+          '[placeholder*="Choose Option"]',
+          '[aria-placeholder*="Choose Option"]',
+        ].join(', '),
       )
+      .locator('visible=true')
       .first();
   }
 
@@ -352,26 +535,121 @@ export class SystemProductPage {
   }
 
   private get salesCategoryCombobox(): Locator {
-    return this.page.getByRole('combobox').nth(0);
+    return this.page.locator('[aria-placeholder="Choose Category"]').first();
   }
 
   private get productCoaGroupCombobox(): Locator {
-    return this.page.getByRole('combobox').nth(1);
+    return this.page
+      .locator('[aria-placeholder="Choose Product Coa Group"]')
+      .first();
+  }
+
+  private get productAliasNameInput(): Locator {
+    return this.page.getByPlaceholder('e.g: Alias Name Product');
+  }
+
+  private get taggingCombobox(): Locator {
+    return this.page.locator('[aria-placeholder="Choose Tagging"]').first();
+  }
+
+  private get taggingMultiselect(): Locator {
+    return this.page.locator('.multiselect').filter({ has: this.taggingCombobox }).first();
+  }
+
+  private getMultiselectFor(combobox: Locator): Locator {
+    return this.page.locator('.multiselect').filter({ has: combobox }).first();
+  }
+
+  private async getMultiselectSelectedLabel(combobox: Locator): Promise<string> {
+    const multiselect = this.getMultiselectFor(combobox);
+    const singleLabel = multiselect.locator('.multiselect-single-label');
+
+    if (await singleLabel.isVisible().catch(() => false)) {
+      return (await singleLabel.textContent())?.trim() ?? '';
+    }
+
+    const comboboxText = (await combobox.textContent())?.trim() ?? '';
+    if (comboboxText && !/choose (category|product coa group|tagging)/i.test(comboboxText)) {
+      return comboboxText;
+    }
+
+    return (await multiselect.textContent())?.trim() ?? '';
   }
 
   private async assertComboboxFilled(
     combobox: Locator,
     label: string,
   ): Promise<void> {
-    await expect(combobox, `${label} should be auto-filled`).toBeVisible();
-    await expect(
-      combobox,
-      `${label} should not show empty placeholder`,
-    ).not.toHaveAccessibleName(/choose (category|product coa group)/i);
-    await expect(
-      combobox,
-      `${label} should have a selected value`,
-    ).toHaveAccessibleName(/.+/);
+    await expect(combobox, `${label} should be visible`).toBeVisible();
+
+    const text = await this.getMultiselectSelectedLabel(combobox);
+    expect(text, `${label} should be auto-filled`).not.toMatch(
+      /choose (category|product coa group|tagging)/i,
+    );
+    expect(text.length, `${label} should have a selected value`).toBeGreaterThan(0);
+  }
+
+  private labelToFlexiblePattern(expectedLabel: string): RegExp {
+    const parts = expectedLabel
+      .split(/\s*&\s*/)
+      .map((part) => part.trim())
+      .filter(Boolean);
+
+    if (parts.length <= 1) {
+      return new RegExp(
+        `^${expectedLabel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`,
+        'i',
+      );
+    }
+
+    return new RegExp(`^${parts.join('.*')}$`, 'i');
+  }
+
+  private async ensureComboboxValue(
+    combobox: Locator,
+    expectedLabel: string,
+  ): Promise<void> {
+    const pattern = this.labelToFlexiblePattern(expectedLabel);
+    const multiselect = this.getMultiselectFor(combobox);
+    const current = await this.getMultiselectSelectedLabel(combobox);
+
+    if (pattern.test(current)) {
+      return;
+    }
+
+    await this.skuInput.click();
+    await combobox.click();
+    await expect(combobox).toHaveAttribute('aria-expanded', 'true');
+
+    const searchToken = expectedLabel.replace(/&/g, '').trim();
+    await combobox.fill(searchToken).catch(async () => {
+      await combobox.pressSequentially(searchToken, { delay: 50 });
+    });
+    await this.page.waitForTimeout(500);
+
+    const scopedOptions = multiselect.getByRole('option', { name: pattern });
+    const globalOption = this.page.getByRole('option', { name: pattern }).first();
+    const multiselectOption = this.page
+      .locator('.multiselect-option:visible')
+      .filter({ hasText: pattern })
+      .first();
+
+    if (await scopedOptions.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await scopedOptions.first().click();
+    } else if (await globalOption.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await globalOption.click();
+    } else {
+      await multiselectOption.click({ timeout: 20_000 });
+    }
+
+    await this.page.waitForTimeout(500);
+    await this.skuInput.click();
+
+    const selected = await this.getMultiselectSelectedLabel(combobox);
+    expect(
+      selected,
+      `Dropdown harus menampilkan "${expectedLabel}" setelah dipilih`,
+    ).toMatch(pattern);
   }
 
   private async waitForBasicInformationSaved(): Promise<void> {

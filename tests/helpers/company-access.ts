@@ -43,7 +43,8 @@ export function assertAllowedCompanyId(
 }
 
 export async function dismissStagingBanner(page: Page): Promise<void> {
-  const closeButton = page.getByRole('button', { name: 'Close' });
+  // Banner staging pakai btn-close; jangan pakai name "Close" saja — bentrok dengan tombol "Closed" di datalist.
+  const closeButton = page.locator('button.btn-close[aria-label="Close"]');
   if (await closeButton.isVisible().catch(() => false)) {
     await closeButton.click();
   }
@@ -53,19 +54,23 @@ export async function readAuthFromPage(page: Page): Promise<{
   token: string;
   user: Record<string, unknown>;
 }> {
-  return page.evaluate(() => {
-    const raw = localStorage.getItem('auth');
-    if (!raw) {
-      return { token: '', user: {} };
-    }
+  try {
+    return await page.evaluate(() => {
+      const raw = localStorage.getItem('auth');
+      if (!raw) {
+        return { token: '', user: {} };
+      }
 
-    const parsed = JSON.parse(raw) as {
-      token?: string;
-      user?: Record<string, unknown>;
-    };
+      const parsed = JSON.parse(raw) as {
+        token?: string;
+        user?: Record<string, unknown>;
+      };
 
-    return { token: parsed.token ?? '', user: parsed.user ?? {} };
-  });
+      return { token: parsed.token ?? '', user: parsed.user ?? {} };
+    });
+  } catch (error) {
+    throw formatBrowserStorageError(page, 'auth (login)', error);
+  }
 }
 
 export async function readActiveCompanyFromPage(page: Page): Promise<{
@@ -73,22 +78,67 @@ export async function readActiveCompanyFromPage(page: Page): Promise<{
   name?: string;
   code?: string;
 }> {
-  return page.evaluate(() => {
-    const raw = localStorage.getItem('company');
-    if (!raw) {
-      return { id: -1 };
-    }
+  try {
+    return await page.evaluate(() => {
+      const raw = localStorage.getItem('company');
+      if (!raw) {
+        return { id: -1 };
+      }
 
-    const parsed = JSON.parse(raw) as {
-      data?: { id?: number; name?: string; code?: string };
-    };
+      const parsed = JSON.parse(raw) as {
+        data?: { id?: number; name?: string; code?: string };
+      };
 
-    return {
-      id: parsed.data?.id ?? -1,
-      name: parsed.data?.name,
-      code: parsed.data?.code,
-    };
-  });
+      return {
+        id: parsed.data?.id ?? -1,
+        name: parsed.data?.name,
+        code: parsed.data?.code,
+      };
+    });
+  } catch (error) {
+    throw formatBrowserStorageError(page, 'company (switch company)', error);
+  }
+}
+
+/**
+ * Ubah error teknis browser (localStorage / SecurityError) jadi pesan yang bisa dibaca QA.
+ */
+function formatBrowserStorageError(
+  page: Page,
+  dataLabel: string,
+  error: unknown,
+): Error {
+  const message = error instanceof Error ? error.message : String(error);
+  const currentUrl = page.url();
+  const isAccessDenied =
+    message.includes('SecurityError') ||
+    message.includes('Access is denied') ||
+    message.includes('localStorage');
+
+  if (!isAccessDenied) {
+    return error instanceof Error ? error : new Error(message);
+  }
+
+  return new Error(
+    [
+      `[Automation] Gagal membaca data ${dataLabel} dari browser.`,
+      '',
+      'Apa artinya untuk QA:',
+      '- Test mencoba cek session/company sebelum halaman staging terbuka.',
+      '- Tab browser masih kosong (about:blank) atau belum di URL OlshopERP.',
+      '',
+      'Yang terlihat di layar biasanya:',
+      '- Halaman putih/kosong, atau',
+      '- Test langsung gagal di awal sebelum masuk menu.',
+      '',
+      'Kemungkinan penyebab:',
+      '1. Bug urutan langkah di helper prepareSession (bukan masalah data TC).',
+      '2. File session tests/.auth/lumicharmsid.json belum ada / expired — jalankan ulang test.',
+      '3. Staging tidak bisa diakses (VPN / jaringan).',
+      '',
+      `Detail teknis (untuk dev): URL saat ini = "${currentUrl}" | ${message}`,
+    ].join('\n'),
+  );
 }
 
 export async function login(page: Page, env?: EnvConfig): Promise<void> {
@@ -210,4 +260,42 @@ export function resolveCompanyLabel(
   fallbackLabel: string,
 ): string {
   return findCompanyById(env, companyId)?.label ?? fallbackLabel;
+}
+
+export type PrepareSessionOptions = {
+  /** Default: `OLSHOP_COMPANY_CODE` env atau `lumicharmsid`. */
+  companyCode?: string;
+  /** Route menu target — langsung goto, tidak berhenti di home. */
+  targetPath: string;
+};
+
+/**
+ * Siapkan page untuk skenario menu: pastikan company benar, lalu goto menu target.
+ * Dipakai bersama `storageState` dari global-setup — tanpa `login()` UI.
+ */
+export async function prepareSession(
+  page: Page,
+  options: PrepareSessionOptions,
+): Promise<void> {
+  const companyCode =
+    options.companyCode ?? process.env.OLSHOP_COMPANY_CODE ?? 'lumicharmsid';
+  const company = ALLOWED_COMPANIES.find((item) => item.code === companyCode);
+
+  if (!company) {
+    throw new Error(
+      `Company code "${companyCode}" is not registered in ALLOWED_COMPANIES`,
+    );
+  }
+
+  // Tab baru + storageState dimulai di about:blank — buka staging dulu baru baca localStorage.
+  await page.goto(options.targetPath, { waitUntil: 'domcontentloaded' });
+
+  const activeCompany = await readActiveCompanyFromPage(page);
+  if (activeCompany.id !== company.id) {
+    await switchCompanyByCode(page, companyCode);
+    await page.goto(options.targetPath, { waitUntil: 'domcontentloaded' });
+  }
+
+  await dismissStagingBanner(page);
+  await expect(page.locator('.topbar')).toBeVisible();
 }
