@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260707154546
+tc_code: TC-SYSPROD-003
 menu: system-product
 menu_name: "System Product"
 title: "Membuat SKU Variant 6 warna di datalist System Product (SKU-WENTER)"
