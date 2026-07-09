@@ -307,7 +307,7 @@ Setelah save qty → status tetap **open** → menunggu Finance. Tidak ada Compl
 
 | Action | When | Effect |
 |--------|------|--------|
-| **Delete** | Not approved (`firstValidateStockMutation`) | Revert `prepared_to_return_quantity`; clear pivot; soft-delete mutation |
+| **Delete** | Not approved (`ensureMutationNotApprovedOrApproving`) | Revert `prepared_to_return_quantity`; clear pivot; soft-delete mutation |
 
 Messages: `Data already approved.` · `Data approval process is in progress. Please wait a moment.`
 

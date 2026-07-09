@@ -144,13 +144,15 @@ Setelah PI **Approved**, muncul di **Account Payment → Outstanding Invoice**.
 
 | Langkah | Efek |
 |---------|------|
-| Buat payment, alokasi ke PI | `prepared_to_payment` naik |
-| Approve payment | `processed_to_payment` naik; hutang berkurang |
+| Buat AP, alokasi ke PI | `prepared_to_payment` naik |
+| Approve AP | `processed_to_payment` naik; hutang berkurang |
 | Bayar penuh | Outstanding PI = 0 |
 
-**Penting:** Jangan void PI yang sudah ada payment — sistem **belum** memblokir void otomatis (GAP-PI-04). Batalkan/reject payment dulu secara manual jika perlu koreksi.
+**Multi-source:** AP bisa bayar pakai **Cash/Bank** + **Debit Note** (potongan retur). Total source harus = total detail sebelum approve.
 
-Detail: [Account Payment KB](../accounting-supplier-payment/knowledge-base.md)
+Detail lengkap: [Account Payment requirement](../accounting-supplier-payment/requirement.md)
+
+**Penting:** Void AP (MVP) belum tersedia — UI void ada tapi tidak berfungsi (GAP-PAY-VOID-01).
 
 ---
 

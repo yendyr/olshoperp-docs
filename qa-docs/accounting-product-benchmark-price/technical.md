@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.0
-last_updated: 2026-07-05
+version: 1.1
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: review
 related_docs:
@@ -17,6 +17,7 @@ related_docs:
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-07-09 | QA - Yemima | v1.1 source allowlist TO-BE; AS-IS code gap §4.3; pending items cross-ref §13 requirement |
 | 1.0 | 2026-07-05 | QA - Yemima | Initial technical — calculation job, API, SO snapshot, gaps |
 
 **Stack:** Laravel 13 · Horizon · Vue 3 · MariaDB  
@@ -28,6 +29,13 @@ related_docs:
 
 ```mermaid
 flowchart TB
+    subgraph Sources["Cost-in Sources (v1.1 TO-BE)"]
+        PO["PO Inbound"]
+        SA["Stock Addition"]
+        SO_IN["Stock Opname IN"]
+        OS["Opening Stock"]
+    end
+
     subgraph Master["Benchmark COGS Menu"]
         CMD["Artisan product-benchmark-price:calculate\n00:00 Asia/Jakarta"]
         MAN["Manual Calculate per row"]
@@ -42,6 +50,10 @@ flowchart TB
         EXP["Export jobs"]
     end
 
+    PO --> JOB
+    SA --> JOB
+    SO_IN --> JOB
+    OS --> JOB
     CMD --> JOB
     MAN --> JOB
     JOB --> TBL
@@ -91,7 +103,7 @@ flowchart TB
 | `id` | bigint | PK |
 | `product_id` | FK → `scm_products.id` | One row per product |
 | `benchmark_price` | decimal(21,4) | Default 0 |
-| `description` | string nullable | `Highest Price` / `Last Buy` / `No Purchase` |
+| `description` | string nullable | `Highest Price` / `Last Inbound` / `No Inbound` |
 | `status`, `is_all_company`, `owned_by`, `created_by` | | From `baseColumns` |
 | timestamps, soft deletes | | |
 
@@ -146,22 +158,35 @@ else:
 
 ### 4.3 `getBenchmarkPrice($product_id, $start30DaysAgo, $endToday)`
 
-**Step 1 — 30-day highest:**
+#### TO-BE (v1.1) — allowlist 4 sumber
 
-```php
-InboundMutationDetail::query()
-    ->join stock_mutation (approved)
-    ->join item_stock on inbound detail
-    ->whereNull(transaction_reference_class)
-    ->whereNotNull(purchase_order_detail_id)
-    ->whereBetween(transaction_date, [start30, endToday])
-    ->where(item_stock.product_id, $product_id)
-    ->max('item_stock.each_price_before_vat');
-```
+Join: `InboundMutationDetail` → `StockMutation` (approved) → `ItemStock`.
 
-**Step 2 — Last Buy** if step 1 empty: same joins, `transaction_date < start30DaysAgo`, `orderByDesc`, take first `COALESCE(NULLIF(item_stock.each_price_before_vat,0), inbound.each_price_before_vat)`.
+Filter sumber — salah satu kondisi berikut (OR):
+
+| # | Sumber | Query hint |
+|---|--------|------------|
+| 1 | PO Inbound | `purchase_order_detail_id IS NOT NULL` AND `is_inventory_adjustment = 0` |
+| 2 | Stock Addition manual | `is_inventory_adjustment = 1` · `supplier_id IS NULL` · `is_return_process = 0` · bukan ref `StockOpname` |
+| 3 | Stock Opname IN | `transaction_reference_class = StockOpname` · parent tanpa `OpeningStockCoa` |
+| 4 | Opening Stock | `transaction_reference_class = StockOpname` · parent punya `accounting_opening_stock_coas` |
+
+**Step 1 — 30-day highest:** `whereBetween(transaction_date, ...)` → `max(item_stock.each_price_before_vat)`
+
+**Step 2 — Last Inbound** if empty: `transaction_date < start30DaysAgo` → `orderByDesc` → `COALESCE(NULLIF(item_stock.each_price_before_vat,0), inbound.each_price_before_vat)`
 
 **Returns:** `[price, description]`
+
+#### AS-IS (kode per 2026-07-09) — belum allowlist
+
+Filter PO **di-comment** di `ProductBenchmarkPriceJob.php`:
+
+```php
+// ->WhereNull($tableInboundDetail.'.transaction_reference_class')
+// ->whereNotNull($tableInboundDetail.'.purchase_order_detail_id')
+```
+
+Akibatnya: **semua** `InboundMutationDetail` approved ikut terhitung (termasuk return, transfer) — belum sesuai v1.1 TO-BE. Lihat [requirement §13 P-01](./requirement.md#131-fungsi-utama-benchmark-cogs).
 
 ---
 
@@ -243,18 +268,31 @@ if ($unit_price < $detail->benchmark_cogs) {
 
 ---
 
-## 7. Stock Opname Integration
+## 7. Stock Opname, Stock Addition & Opening Stock
 
-**File:** `Modules/SupplyChain/Http/Controllers/StockOpnameDetailController.php`
+### 7.1 Opname surplus fallback (konsumen benchmark)
 
-Surplus path (~579):
+**File:** `Modules/SupplyChain/Http/Controllers/StockOpnameDetailController.php` (~579)
 
 ```php
 $price = $product?->benchmarkPrice?->benchmark_price ?? 0;
 $price = ($price * $base_unit); // unit conversion
 ```
 
-Commented: `$product->MaPrice30Days()`.
+### 7.2 Opname / Opening Stock → addition inbound (sumber benchmark v1.1)
+
+**Files:**
+
+- `StockOpnameDetailController` — auto-create `StockMutationAddition` saat surplus
+- `OpeningStockController` / `StockOpnameController` — opening stock flow (`is_opening_stock: true`)
+- `StockMutationAdditionController` — header addition `AI`
+- `StockMutationAdditionDetailController` — `InboundMutationDetail` + `ItemStock`
+
+Opname IN dan Opening Stock menghasilkan `InboundMutationDetail.each_price_before_vat` yang menjadi input job benchmark (v1.1).
+
+### 7.3 Stock Addition manual
+
+**File:** `StockMutationAdditionDetailController` — user input `each_price_before_vat` di detail; setelah approve masuk rantai yang sama.
 
 ---
 
@@ -289,7 +327,9 @@ Commented: `$product->MaPrice30Days()`.
 | Business rules & AC | [requirement.md](./requirement.md) |
 | Operator guide | [knowledge-base.md](./knowledge-base.md) |
 | SO detail columns & auto-approve | [../sales-order-general/requirement.md §11](../sales-order-general/requirement.md#11-benchmark-cogs--price-before-vat-detail-order) |
-| Stock opname default price | [../supplychain-stock-opname/requirement.md](../supplychain-stock-opname/requirement.md) |
+| Stock opname & addition | [../supplychain-stock-opname/requirement.md](../supplychain-stock-opname/requirement.md) · [../supplychain-adjustment-addition/requirement.md](../supplychain-adjustment-addition/requirement.md) |
+| Opening Stock | [../accounting-opening-stock/knowledge-base.md](../accounting-opening-stock/knowledge-base.md) |
+| Pending items | [requirement.md §13](./requirement.md#13-hal-yang-perlu-diperhatikan--pending-items) |
 | Random SKU | [../random-sku/technical.md](../random-sku/technical.md) |
 
 ---

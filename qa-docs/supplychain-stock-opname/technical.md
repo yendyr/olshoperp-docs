@@ -251,4 +251,4 @@ On approve (`StockOpnameController@approve`):
 | `StockOpnamePolicy` | SCM stock opname |
 | `StockOpnameFAPolicy` | Accounting stock opname approval |
 
-Approve cache helpers: `addCacheApproveStockMutation()`, `deleteCacheApproveStockMutation()`, `firstValidateStockMutation()`.
+Approve cache helpers: `addCacheApproveStockMutation()`, `deleteCacheApproveStockMutation()`, `ensureMutationNotApprovedOrApproving()`.

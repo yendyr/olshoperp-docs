@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.0
-last_updated: 2026-07-05
+version: 2.1
+last_updated: 2026-07-06
 owner: QA - Yemima
 status: review
 ---
@@ -11,7 +11,7 @@ status: review
 # Account Payment — Technical Documentation
 
 **API prefix:** `accounting/supplier-payment`  
-**Module:** `Modules/Accounting`
+**Type:** `Payment to Supplier` · **Code prefix:** `PY`
 
 ---
 
@@ -21,110 +21,225 @@ status: review
 
 | Layer | Path |
 |-------|------|
-| Routes | `Modules/Accounting/Routes/components/supplier-payment.php` |
-| Controller | `Modules/Accounting/Http/Controllers/PaymentController.php` |
-| Detail | `PaymentDetailController.php` |
-| Model | `Modules/Accounting/Entities/Payment.php`, `PaymentDetail.php` |
+| Wrapper | `SupplierPaymentController.php` → delegates `PaymentController` |
+| Core | `PaymentController.php` |
+| PI allocation | `PaymentDetailController.php` |
+| Wrapper | `SupplierPaymentDetailController.php` |
+| Cash/Bank source | `PaymentDetailFundController.php` |
+| DN source | `PaymentDetailFundController.php` (`storeClearing`, deposits) |
+| Wrapper funds | `SupplierPaymentDetailFundController.php` |
+| Adjustment | `PaymentDetailAdjustmentController.php` |
+| Header import | `SupplierPaymentImportController.php` |
+| Models | `Payment.php`, `SupplierPayment.php`, `PaymentDetail.php`, `PaymentDetailFund.php`, `PaymentDetailDeposit.php`, `PaymentDetailAdjustment.php` |
+| Pricing | `PaymentPrice.php`, `PaymentDetailHelper.php` |
 | Journal | `JournalProcess::supplierPaymentAutoJournal()` |
+| Balance | `JournalReport::getInPeriodAvailableBalance()` |
+| Import jobs | `SupplierPaymentImportJob`, `SupplierPaymentImportPerMutationJob`, `ImportSupplierPaymentFinalValidationJob` |
+| Routes | `Modules/Accounting/Routes/api.php` (prefix `accounting/supplier-payment`) |
 
 ### Frontend
 
-| Layer | Path |
-|-------|------|
-| Route | `olshoperp-frontend/src/router/accounting.ts` |
-| List | `src/pages/Accounting/AccountPayable/SupplierPayment/DataList.vue` |
-| Form | `Form.vue` |
-| Outstanding PI | `DatalistOutstandingSupplierInvoice.vue` |
+| File | Section |
+|------|---------|
+| `AccountPayable/Payment/DataList.vue` | List + Import Log |
+| `Form.vue` | Basic Information |
+| `PaymentSource.vue` | Section B — Cash/Bank + DN |
+| `OutstandingSupplierInvoice.vue` | Section C — Outstanding PI |
+| `DatalistDetail.vue` | Section D — Detail grid |
+| `Adjustment.vue` | Section E |
+| `ImportLog.vue` | Header import UI |
+
+**Route:** `/accounting/supplier-payment`, `/create`, `/edit/:id`
 
 ---
 
-## 2. API Routes
+## 2. API Routes (utama)
 
 | Method | Path | Action |
 |--------|------|--------|
-| GET | `accounting/supplier-payment` | Index |
-| POST | `accounting/supplier-payment` | Store |
-| GET | `accounting/supplier-payment/{id}` | Show |
-| PATCH | `accounting/supplier-payment/{id}` | Update |
-| DELETE | `accounting/supplier-payment/{id}` | Destroy |
-| POST | `accounting/supplier-payment/{id}/approve` | Approve |
-| GET | `accounting/supplier-payment/{id}/outstanding-supplier-invoice` | Outstanding PI |
-| GET | `accounting/supplier-payment/supplier-invoice/{id}` | Show PI from payment |
-| POST | `accounting/supplier-payment/{id}/details` | Add PI allocation |
-| PATCH | `accounting/supplier-payment/{id}/details/{detailId}` | Update allocation |
-| DELETE | `accounting/supplier-payment/{id}/details/{detailId}` | Remove allocation |
+| GET/POST | `accounting/supplier-payment` | index / store |
+| GET/PATCH/DELETE | `accounting/supplier-payment/{id}` | show / update / destroy |
+| POST | `accounting/supplier-payment/{id}/approve` | approve (void via `approval_status=void` — broken) |
+| GET | `.../outstanding-supplier-invoice` | outstanding PI |
+| GET | `.../cash-bank-account` | outstanding cash/bank |
+| POST | `.../cash-bank-account/bulk-use` | bulk cash allocation |
+| GET | `.../debit-note` | available DN datalist |
+| POST | `.../supplier-payment-detail-fund/clearing` | single DN full clear |
+| GET | `.../select2-available-debit-notes` | DN select2 |
+| CRUD | `.../supplier-payment-detail` | PI lines |
+| POST | `.../bulk-select` | full outstanding PI (clearing) |
+| POST | `.../supplier-payment-detail-bulk` | bulk PI add |
+| CRUD | `.../supplier-payment-adjustment` | adjustments |
+| GET | `accounting/supplier-payment/supplier-invoice/{id}` | PI show from payment |
+| **Import** | `accounting/supplier-payment/import/*` | template, import, progress, errors |
 
 ---
 
-## 3. PI Allocation — Database
+## 3. Database
 
-### `accounting_payments` / `accounting_payment_details`
+### `accounting_payments` (supplier)
 
 | Column | Notes |
 |--------|-------|
-| `supplier_id` | Filters outstanding PI |
-| `currency_id`, `exchange_rate` | |
-| `bank_coa_id` | Cr on journal |
-| detail.`supplier_invoice_id` | FK to PI |
-| detail.`amount` | Allocation in payment currency |
+| `type` | `Payment to Supplier` |
+| `code` | PY prefix via `SupplierPayment::$code_identifier` |
+| `actor_reference_id` | supplier `Company` id |
+| `currency_id`, `exchange_rate` | header |
+| `transaction_status` | draft/open/approved/... |
+| `grand_total` | computed |
 
-### PI fields updated (`accounting_supplier_invoices`)
+### `accounting_payment_details`
 
-| Field | When |
-|-------|------|
-| `prepared_to_payment_amount` | Detail store/update/delete on draft/open payment |
-| `processed_to_payment_amount` | Payment approve |
+| Column | Notes |
+|--------|-------|
+| `transaction_reference_id/class` | `SupplierInvoice` |
+| `payment_amount_in_invoice_currency` | paid in PI currency |
+| `amount_before_discount_before_vat` | used in grand total |
+| `exchange_gain_local_currency` | forex per line |
+| `cash_difference_local_currency` | full-clearing diff |
+| `is_full_amount` | clearing flag |
 
-**Outstanding formula:**
+### `accounting_payment_detail_funds`
 
+Cash/bank: `coa_id`, `amount`, `amount_foreign`, `company_detail_bank_id`
+
+### `accounting_payment_detail_deposits`
+
+Debit note: `deposit_id` → `DebitNote`, `type = Debit Note`, `amount`
+
+### `accounting_payment_detail_adjustments`
+
+`coa_id`, `debit`, `credit`, `description`
+
+### PI coupling (`accounting_supplier_invoices`)
+
+| Field | Event |
+|-------|-------|
+| `prepared_to_payment_amount` | detail store/delete |
+| `processed_to_payment_amount` | payment approve |
+| `prepared_to_amount_return` / `processed_to_amount_return` | **unused by PR writer** |
+
+### DN coupling (`accounting_payments` as DebitNote)
+
+| Field | Event |
+|-------|-------|
+| `prepared_to_use_amount` | deposit store |
+| `processed_to_use_amount` | payment approve |
+
+---
+
+## 4. Pricing & Balancing
+
+### `PaymentPrice::grandTotalPriceAfterVat` (supplier)
+
+```php
+grandTotal = totalDetailAfterVat − totalAdjustment
+// totalAdjustment = Σ(credit − debit) on adjustments
 ```
-outstanding = grand_total_after_vat - prepared_to_payment_amount - processed_to_payment_amount
+
+### `PaymentPrice::totalSource`
+
+```php
+totalSource = totalFund + totalDeposit
+// foreign: totalFundForeign + totalDepositForeign
+```
+
+### Approve check (`checkBalancePayment`)
+
+```php
+bccomp(grandTotalPriceAfterVat, totalSource, 15) === 0
+```
+
+### Exchange gain (`PaymentDetailHelper::calculateExchangeGain`)
+
+```php
+exchange_gain = (invoice.exchange_rate − payment.exchange_rate) × amount_in_invoice_currency
+// when has_exchange_gain flag true
+```
+
+### Cash difference (full clearing)
+
+```php
+cash_difference = (invoice_remaining − paid_in_invoice_currency) × rate_factor
 ```
 
 ---
 
-## 4. Outstanding PI Query
+## 5. Journal (`supplierPaymentAutoJournal`)
 
-`PaymentController@queryOutstandingSupplierInvoice` (conceptual filters):
+Requires company COAs: **Exchange Diff. COA**, **Cash Diff. COA**, supplier **Account Payable COA**.
 
+| Source | Posting |
+|--------|---------|
+| `payment_detail_funds` | Cr cash/bank COA |
+| `payment_detail_deposits` | Cr deposit COA + DN forex |
+| `payment_details` | Dr AP (`paid × PI.exchange_rate`) + line forex |
+| Sum `cash_difference_local_currency` | Cr/Dr Cash Diff COA |
+| `payment_detail_adjustments` | Dr/Cr per row |
+
+---
+
+## 6. Cash/Bank Balance
+
+```php
+available = JournalReport::getInPeriodAvailableBalance($coa, '1900-01-01', $payment_date)
+        − JournalReport::getInPeriodReservedPayment(...)
+```
+
+Blocked when `balance < fund_amount` for `Payment to Supplier`.
+
+---
+
+## 7. Outstanding PI Query
+
+`PaymentController::queryOutstandingSupplierInvoice`:
+
+- `supplier_id` = payment actor
 - `transaction_status` IN (`approved`, `processed`)
-- Same `supplier_id` as payment
-- PI `transaction_date` ≤ payment date
-- Outstanding > 0
+- `grand_total_after_vat > processed_to_payment_amount`
+- PI date ≤ payment date
+- Eager: inbound refs, `purchase_return`, `debit_notes`
+
+Accessor `invoice_remaining_after_vat` on `SupplierInvoice`.
 
 ---
 
-## 5. Approve Flow
+## 8. Import AP
 
-1. Validate open status, fiscal period, ≥1 detail
-2. For each detail: move PI prepared → processed payment amounts
-3. `supplierPaymentAutoJournal($payment)` — Dr AP / Cr Bank per line
-4. Set payment approved
+| Component | Path |
+|-----------|------|
+| Controller | `SupplierPaymentImportController` |
+| Template export | `AccountPaymentTemplateExport` (3 sheets) |
+| Validate job | `ImportSupplierPaymentValidateBankMutationJob` |
+| Process job | `SupplierPaymentImportJob` → `SupplierPaymentImportPerMutationJob` |
+| Entities | `ImportSupplierPayment`, `ImportSupplierPaymentDetail`, `ImportSupplierPaymentLog` |
 
----
-
-## 6. Integration with Purchase Invoice
-
-| Event | PI effect |
-|-------|-----------|
-| Payment detail created | `prepared_to_payment_amount` += amount |
-| Payment detail deleted | prepared -= amount |
-| Payment approved | prepared -= amount; processed += amount |
-| Payment void (if implemented) | Should reverse processed — **verify** (GAP-PAY-02) |
-
-PI header status **not** updated to `processed` on pay (GAP-PAY-01).
-
-Cross-ref: [PI technical §7](../accounting-supplier-invoice/technical.md#7-account-payment-integration)
+Queue lock: `cacheKey(['import', 'ap', $company_id])`
 
 ---
 
-## 7. Validation
+## 9. Approve Flow
 
-| Rule | Message |
-|------|---------|
-| amount ≤ PI outstanding | `To be paid amount must be less than invoice outstanding amount` |
-| No duplicate PI on same payment | `already included in this payment detail` |
-| amount > 0 | standard validation |
+1. `Cache::lock` approval
+2. `validate_fiscal_period`
+3. `can_approve` (status **open**)
+4. Require details + (funds OR deposits)
+5. `checkBalancePayment`
+6. `approvePayment`:
+   - PI: `processed_to_payment` ↑, `prepared_to_payment` ↓
+   - DN: `processed_to_use` ↑, `prepared_to_use` ↓
+7. `supplierPaymentAutoJournal`
+
+---
+
+## 10. Known Issues
+
+| ID | Issue |
+|----|-------|
+| GAP-PAY-VOID-01 | Void from approved — `can_approve` requires open |
+| GAP-PAY-DN-CLEAR | FE bulk DN → wrong `customer-payment` URL |
+| GAP-PAY-PR-OUT | PR return fields on PI not wired to payment outstanding |
+| GAP-PAY-01 | PI status not set processed on pay |
 
 ---
 

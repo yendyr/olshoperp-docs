@@ -17,8 +17,12 @@ audience: operator
 
 Menu **Debit Note** adalah bagian dari modul **Accounting** di OlshopERP.
 
-## Status dokumentasi
+## Relasi Account Payment
 
-- Knowledge Base: **pending**
-- Requirement: **pending**
-- Technical: **pending**
+Debit Note approved dapat dipakai sebagai **Payment Source** di [Account Payment](../accounting-supplier-payment/knowledge-base.md) — mengurangi kas keluar saat bayar supplier.
+
+**Sumber DN umum:**
+- [Purchase Return](../accounting-purchase-return/) — retur barang
+- Kelebihan bayar AP (import adjustment `DEBIT NOTE`)
+
+Detail teknis: [Account Payment requirement §12](../accounting-supplier-payment/requirement.md#12-relasi-debit-note-detail)

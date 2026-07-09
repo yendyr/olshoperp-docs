@@ -60,6 +60,7 @@ Virtual SKU (non-stockable) yang auto-generated oleh system saat user memilih op
 - **Benchmark COGS (master menu):** Variant `-random` **mengikuti** nilai MAX parent di menu [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md) — bukan dihitung dari inbound random SKU.
 - **Benchmark COGS (detail order):** Line order dengan SKU random sering menampilkan **0** sebelum binding / jika `product_id` belum ter-set; validasi "harga di bawah benchmark" mungkin **tidak trigger**. Random **bundle** line dapat memaksa **manual approval** (AS-IS).
 - **Ripple effect ke Bundle:** Order bundle yang komponennya random — cek [Benchmark COGS requirement §6](../accounting-product-benchmark-price/requirement.md#6-integrasi-sales-order-general--platform) dan [Random SKU requirement](../random-sku/requirement.md).
+- **Stock Remapping:** SKU `-random` **diblok** sebagai Origin maupun Remapped To — lihat [Stock Remapping](../accounting-stock-remapping/knowledge-base.md)
 - **Pemilihan sibling terbatas pada warehouse hierarchy.** Stock comparison hanya menghitung stock dalam warehouse parent hierarchy yang sama dengan order — bukan stock global lintas warehouse.
 - **Jika opsi `random` tidak dipilih saat setup variant**, fitur random tidak aktif untuk product tersebut, dan SKU `random` tidak akan ter-generate.
 

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-adjustment-deduction
 menu_name: "Stock Deduction"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: draft
 ---
@@ -24,6 +24,7 @@ status: draft
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
+| 1.1 | 2026-07-09 | QA - Yemima | §9 relasi Stock Remapping (auto-generate AO) |
 
 ## 1. Ringkasan Eksekutif
 
@@ -114,6 +115,15 @@ Menu terkait: **accounting-adjustment-outbound, supplychain-stock-opname, supply
 - SCM Stock Deduction: route approve tidak terdaftar di SupplyChain Routes — approve hanya via Accounting.
 - SCM Stock Addition: tombol approve disembunyikan di `menu=scm`; verifikasi E2E dengan Accounting.
 - Middle detail (inbound/outbound/transfer): behavior async approve perlu test terpisah.
+
+## 9. Relasi Stock Remapping (TO-BE)
+
+| Arah | Detail |
+|------|--------|
+| **Stock Remapping → Deduction** | Saat approve [Stock Remapping](../accounting-stock-remapping/requirement.md), sistem auto-generate & auto-approve dokumen **`AO`** per baris (SKU Origin) dengan referensi ke nomor `RM-*` |
+| Manual AO | Jangan dipakai untuk kasus remap variant yang seharusnya lewat Stock Remapping — risiko double movement ([P-SRM-13](../accounting-stock-remapping/requirement.md#153-relasi--loophole-operasional)) |
+
+Detail sequencing: [accounting-stock-remapping requirement §8](../accounting-stock-remapping/requirement.md#8-approval--dokumen-auto-generated)
 
 ## Related Documents
 

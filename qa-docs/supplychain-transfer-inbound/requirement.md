@@ -80,7 +80,7 @@ Alternate: `TransferMutationMiddleDetailExternalController@updateQuantityReceive
 
 `POST mutation-transfer-external/{id}/approve` dengan `transit` input:
 
-1. `firstValidateStockMutation()` + cache approve lock.
+1. `ensureMutationNotApprovedOrApproving()` + cache approve lock.
 2. Jika approved + transit: target detail dari linked transfer record (`warehouse_transfer_external[1]`).
 3. Broken qty > 0 → `getScrapWHParent(destination)`.
 4. Delegasi ke `StockMutationTransferController@approve`.

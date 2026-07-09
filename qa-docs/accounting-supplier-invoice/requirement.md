@@ -389,7 +389,12 @@ payment.transaction_date ≥ invoice.transaction_date
 
 ### 11.5 Payment journal (downstream)
 
-On payment approve: `JournalProcess::supplierPaymentAutoJournal` — Dr AP / Cr Bank (+ forex diff).
+On payment approve: `JournalProcess::supplierPaymentAutoJournal`:
+- **Dr** Account Payable (per PI allocation)
+- **Cr** Cash/Bank and/or **Debit Note** (multi-source)
+- Exchange diff + Cash diff + Adjustment lines
+
+Full AP spec: [accounting-supplier-payment/requirement.md §10–§12](../accounting-supplier-payment/requirement.md#10-penjurnalan-saat-approve)
 
 **Show PI from payment form:** `GET accounting/supplier-payment/supplier-invoice/{id}` → delegates PI show.
 
