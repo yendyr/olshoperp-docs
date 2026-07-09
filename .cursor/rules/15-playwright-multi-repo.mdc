@@ -1,0 +1,92 @@
+---
+description: Routing sumber baca multi-repo khusus Playwright — docs vs backend vs frontend
+alwaysApply: true
+---
+
+# Playwright Testing — Multi-Repo Source Routing
+
+Rule ini aktif **hanya** untuk tugas Playwright: menulis/menjalankan spec, crawling UI, investigasi selector, mapping TC → automation, debug E2E.
+
+Untuk pertanyaan QA umum, analisis requirement, atau Jira card → tetap **`olshoperp-docs` saja** (lihat `02-repo-context`, `10-anti-hallucination`, `12-jira-card-format`).
+
+Standar eksekusi run, retry, auth: `14-playwright-e2e.mdc`.
+
+---
+
+## Repo & path
+
+Asumsi tiga repo sebagai **sibling** di folder GitHub yang sama:
+
+| Repo | Path relatif dari `olshoperp-docs` | Peran |
+|------|-------------------------------------|-------|
+| **olshoperp-docs** (workspace ini) | `.` | Requirement, TC, expected result, manifest |
+| **olshoperp** | `../olshoperp` | Backend — API, controller, job, validasi server |
+| **olshoperp-frontend** | `../olshoperp-frontend` | Frontend — komponen UI, selector, route FE, folder `e2e/` |
+
+Jika path sibling tidak ada, laporkan ke user — jangan tebak lokasi repo.
+
+---
+
+## Matriks sumber baca (khusus Playwright)
+
+| Kebutuhan | Sumber utama | Bukan dari |
+|-----------|--------------|------------|
+| Expected result, langkah TC, precondition | `qa-docs/{slug}/requirement.md`, `qa-docs/{slug}/test-cases/TC-*.md` | Infer hanya dari kode app |
+| Slug menu, `menu_name`, route staging | `qa-docs/_meta/manifest.yaml` | Tebak dari URL FE saja |
+| Selector, label UI, struktur halaman | `olshoperp-frontend` (`src/`, `e2e/helpers/`) | Docs atau asumsi umum |
+| Endpoint API, payload, response, validasi server | `olshoperp` (routes, controllers, jobs) | Field `code_globs` manifest tanpa baca file |
+| Sidebar crawl / navigasi menu | `olshoperp-frontend` + `qa-docs/sidebar-menu/` | — |
+
+Prioritas requirement tetap: `requirement.md` > `knowledge-base.md` > `technical.md` — sama seperti persona QA (`05-qa-engineer-persona`).
+
+---
+
+## Lokasi kode Playwright per repo
+
+| Repo | Folder automation | Kapan dipakai |
+|------|-------------------|---------------|
+| `olshoperp-docs` | `tests/` | TC-driven automation dari qa-docs; sidebar crawler |
+| `olshoperp-frontend` | `e2e/` | Regression staging; spec terhubung Test Case Library |
+
+Sebelum menulis atau mengubah spec: baca TC terkait (`automated_spec`, README `test-cases/`) — tentukan repo target yang benar.
+
+---
+
+## Larangan scope bleed
+
+| Konteks | Boleh baca repo app? | AS-IS requirement dari mana? |
+|---------|----------------------|------------------------------|
+| Playwright / crawler / automation | ✅ `olshoperp` + `olshoperp-frontend` | **`olshoperp-docs`** (TC + requirement) |
+| Jawaban QA umum | ❌ — docs only (`10-anti-hallucination`) | **`olshoperp-docs`** |
+| Jira Bug / Improvement / CR | ❌ untuk Expected & AS-IS bisnis | **`olshoperp-docs`** (`12-jira-card-format`) |
+
+- Temuan dari kode atau run Playwright **bukan** pengganti requirement — label **Catatan automation (dari kode/run)** jika perlu disebutkan.
+- Actual ≠ requirement di run E2E → laporkan sebagai potential doc gap atau bug candidate; **jangan** update docs otomatis (`03-qa-docs-immutable`).
+
+---
+
+## Jira card — docs tetap referensi utama
+
+Meski investigasi Playwright memakai `olshoperp` / `olshoperp-frontend`:
+
+- **Expected Result** / **Expected Improvement** / **New Requirement (TO-BE)** → validasi dari `qa-docs/{slug}/requirement.md`
+- **Actual Result** → boleh dari output Playwright (error UI, HTTP status, screenshot path)
+- Detail teknis (nama controller, selector, spec path) → **Additional Context** saja, bukan section utama card
+
+Lihat validasi Expected di `12-jira-card-format.mdc`.
+
+---
+
+## Workflow Playwright (ringkas)
+
+1. Resolve `{menu-slug}` via `manifest.yaml` (`olshoperp-docs`)
+2. Baca TC + `requirement.md` — steps & expected result adalah hukum (`14` §1)
+3. Baca `olshoperp-frontend` untuk selector/UI; `olshoperp` jika TC menyentuh API atau validasi server
+4. Tulis/jalankan spec di repo target (`tests/` atau `e2e/`) per `14-playwright-e2e.mdc`
+5. Laporkan PASS/FAIL **terhadap expected dari TC/requirement**, bukan terhadap perilaku kode semata
+
+---
+
+## Kredensial & company E2E
+
+Ikuti `13-test-case-format.mdc` §4 dan `14-playwright-e2e.mdc` §7 — tidak menduplikasi di rule ini.

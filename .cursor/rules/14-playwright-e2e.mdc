@@ -5,8 +5,11 @@ alwaysApply: true
 
 # Playwright E2E Execution Standard
 
-Rule ini berlaku di repo `olshoperp-docs` untuk semua operasi tulis dan eksekusi Playwright.
-Referensi lengkap: `Documents/playwright-e2e-execution-standard.md`
+Rule ini berlaku untuk operasi tulis dan eksekusi Playwright di workspace QA.
+
+**Routing repo sumber baca** (requirement vs UI vs backend): `15-playwright-multi-repo.mdc` — wajib dibaca sebelum tulis spec atau crawler.
+
+Referensi lengkap (jika ada): `Documents/playwright-e2e-execution-standard.md`
 
 ---
 

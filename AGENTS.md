@@ -50,6 +50,18 @@ https://staging.olshoperp.com
 | `11-cross-menu-navigation.mdc` | Trace alur lintas modul & menu terkait |
 | `12-jira-card-format.mdc` | Format Bug / Improvement / Change Requirement + trigger word |
 | `13-test-case-format.mdc` | Standar `TC-*.md`, DRAFT naming, renumber, expected dari requirement |
+| `14-playwright-e2e.mdc` | Eksekusi Playwright — fidelity TC, run scope, auth, POM |
+| `15-playwright-multi-repo.mdc` | Routing sumber baca: docs (requirement) vs `olshoperp` / `olshoperp-frontend` (khusus Playwright) |
+
+## Repo sibling (Playwright saja)
+
+| Repo | Path | Peran |
+|------|------|-------|
+| `olshoperp-docs` | workspace ini | Requirement, TC, manifest |
+| `olshoperp` | `../olshoperp` | Backend — API, validasi |
+| `olshoperp-frontend` | `../olshoperp-frontend` | Frontend — UI, selector, `e2e/` |
+
+Jira card & jawaban QA umum: **hanya** `olshoperp-docs`. Repo app hanya untuk tugas Playwright (`15`).
 
 ## Layer doc per audience
 
