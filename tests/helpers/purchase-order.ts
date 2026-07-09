@@ -197,8 +197,25 @@ export class PurchaseOrderPage {
     return new RegExp(pattern, 'i');
   }
 
+  async clearOutstandingSearch(): Promise<void> {
+    const search = this.page.getByPlaceholder(/find something/i).last();
+    if (await search.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await search.fill('');
+      await this.page.waitForTimeout(1_000);
+    }
+  }
+
   async openAvailableProductsModal(): Promise<void> {
     await this.expandPurchaseOrderDetail();
+
+    const useButton = this.outstandingTable()
+      .locator('button[class*="use-button"]')
+      .first();
+    if (await useButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await this.clearOutstandingSearch();
+      return;
+    }
+
     await this.availableProductsLink.scrollIntoViewIfNeeded();
 
     const outstandingResponse = this.page
@@ -215,12 +232,15 @@ export class PurchaseOrderPage {
     await this.page.waitForTimeout(1_000);
 
     await expect(this.outstandingTable()).toBeVisible({ timeout: 45_000 });
+    await this.clearOutstandingSearch();
     await expect(
       this.outstandingTable().locator('button[class*="use-button"]').first(),
     ).toBeVisible({ timeout: 45_000 });
   }
 
   async searchOutstandingProducts(query: string): Promise<void> {
+    await this.clearOutstandingSearch();
+
     const search = this.page.getByPlaceholder(/find something/i).last();
     if (await search.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await search.fill(query);
