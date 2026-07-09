@@ -2,105 +2,57 @@
 
 Automation staging: **https://staging.olshoperp.com**
 
-SOP eksekusi lengkap: **`C:\Users\p\Documents\playwright-e2e-execution-standard.md`** (v1.2) — di luar repo.
+| Dokumen | Isi |
+|---------|-----|
+| **`POM-AUTOMATION-ROADMAP.md`** | Roadmap fase, checklist, progress, template prompt Notion-style |
+| **`QA-AUTOMATION-GUIDE.md`** | Panduan QA tanpa codebase — prompt, perintah, aturan |
+| `.cursor/rules/14-playwright-e2e.mdc` | SOP eksekusi lengkap untuk agent |
+| `pom-registry/README.md` | Kamus elemen per menu |
 
 ---
 
-## Struktur folder (slug-first)
-
-Folder spec mengikuti **slug manifest** (`qa-docs/_meta/manifest.yaml`), bukan nama modul UI.
+## Struktur folder
 
 ```
 tests/
-├── global-setup.ts              # Login + switch company sekali per run → .auth/
+├── QA-AUTOMATION-GUIDE.md       # Mulai di sini (QA)
+├── global-setup.ts              # Login + switch company → .auth/
+├── pom-registry/                # Kamus selector (dari Vue, bukan generator)
+│   ├── system-product.yaml
+│   ├── purchase-requisition.yaml
+│   ├── pricelist-category.yaml
+│   └── purchase-order.yaml
 ├── specs/
-│   ├── gate-user/
-│   │   └── company-access.spec.ts       # Login & switch company (tanpa session)
+│   ├── smoke/pom-smoke.spec.ts  # @smoke — 4 menu datalist + PO create
 │   ├── system-product/
-│   │   ├── system-product.spec.ts       # lumicharmsid — TC-SYSPROD-001/002
-│   │   └── system-product-dev-stg.spec.ts # DEV-STG — SKU-PLUSHIE, SKU-TRUZV1
-│   └── pricelist-category/
-│       └── category-price.spec.ts       # Category Price — lumicharmsid
-└── helpers/                     # POM & flow reusable (bukan skenario)
+│   ├── pricelist-category/
+│   └── purchase-requisition/
+└── helpers/
+    ├── shared/                  # datalist, multiselect, form-actions, toast
     ├── company-access.ts
     ├── system-product.ts
-    └── pricelist-category.ts
+    ├── pricelist-category.ts
+    ├── purchase-requisition.ts
+    └── purchase-order.ts        # baru — smoke + form dasar
 ```
-
-| Folder | Isi | Bukan untuk |
-|--------|-----|-------------|
-| `specs/{slug}/` | File `*.spec.ts` — langkah test | Helper, config, kode di `qa-docs/` |
-| `helpers/` | Login, POM, flow bersama | Skenario TC utuh |
-| `.auth/` | Session tersimpan (gitignored) | Commit ke Git |
-
-**Root repo:**
-
-```
-olshoperp-docs/
-├── playwright.config.ts         # Project login-flow vs authenticated
-├── package.json
-└── qa-docs/                     # TC & requirement (dokumentasi saja)
-```
-
----
-
-## Dua mode project Playwright
-
-| Project | Spec | Login UI |
-|---------|------|----------|
-| `login-flow` | `specs/gate-user/company-access.spec.ts` | Ya — uji login & switch company |
-| `authenticated` | Semua spec lain | Tidak — pakai session `tests/.auth/lumicharmsid.json` |
-
----
-
-## Artefak (headless default)
-
-| Artefak | Setting | Kapan tersedia |
-|---------|---------|----------------|
-| Screenshot | `only-on-failure` | Gagal → `test-results/.../test-failed-1.png` |
-| Trace | `retain-on-failure` | Gagal → buka via `npx playwright show-trace <zip>` |
-| Video | `off` | — |
-| HTML report | `playwright-report/` | `npm run test:report` |
-
-Mode **SIGN-OFF** (demo visual): `npm run test:headed` atau set `PW_HEADLESS=false` + `PW_SLOW_MO=1000`.
-
----
-
-## Setup cepat
-
-```powershell
-cd d:\olshoperp-docs
-npm install
-npm run test:preflight    # install chromium + list tests
-```
-
-Akun default: `playwright@gmail.com` / `12345678`
-
-| Code | ID | Label UI |
-|------|----|----------|
-| FAT | 112 | FAT |
-| lumicharmsid | 153 | Lumi Charms.id |
-| DEV-STG | 13 | Dev Staging |
 
 ---
 
 ## Menjalankan test
 
 ```powershell
-# Semua (authenticated)
-npm test
+cd d:\olshoperp-docs
+npm install
+npm run test:preflight
 
-# Satu TC (disarankan)
+# Smoke POM — 4 menu (QA daily check)
+npm run test:smoke
+
+# System Product — satu skenario
+npm run test:system-product:tc -- "SKU-WENTER"
+
+# Satu TC by tag
 npm run test:tc -- "@TC-SYSPROD-001"
-
-# Satu skenario by judul
-npm run test:tc -- "SKU-GELAS"
-
-# Sign-off visual
-npm run test:headed -- "SKU-GELAS"
-
-# Login saja
-npx playwright test --project=login-flow
 
 # Laporan HTML
 npm run test:report
@@ -108,41 +60,23 @@ npm run test:report
 
 ---
 
-## Mapping TC docs ↔ spec
+## Mapping menu ↔ POM
 
-| TC | Dokumentasi | Spec |
-|----|-------------|------|
-| TC-GATE-001 | `qa-docs/gate-user/test-cases/TC-GATE-001.md` | `specs/gate-user/company-access.spec.ts` |
-| TC-SMENU-001..003 | `qa-docs/sidebar-menu/test-cases/` | `specs/gate-user/company-access.spec.ts` |
-| TC-SYSPROD-001..002 | `qa-docs/system-product/test-cases/` | `specs/system-product/system-product.spec.ts` |
-| DEV-STG demo | — | `specs/system-product/system-product-dev-stg.spec.ts` |
-| Category Price | route `/businessdevelopment/pricelist-category` | `specs/pricelist-category/category-price.spec.ts` |
-
-Playwright **tidak membaca** file TC saat runtime — TC = dokumentasi QA; yang dijalankan = `.spec.ts`.
+| Menu | Registry | POM | Spec | Status |
+|------|----------|-----|------|--------|
+| System Product | `pom-registry/system-product.yaml` | `helpers/system-product.ts` | `specs/system-product/` | TC automated |
+| Purchase Requisition | `pom-registry/purchase-requisition.yaml` | `helpers/purchase-requisition.ts` | `specs/purchase-requisition/` | TC automated |
+| Pricelist Category | `pom-registry/pricelist-category.yaml` | `helpers/pricelist-category.ts` | `specs/pricelist-category/` | TC automated |
+| Purchase Order | `pom-registry/purchase-order.yaml` | `helpers/purchase-order.ts` | `specs/smoke/` | Smoke only |
 
 ---
 
-## Variabel environment
+## Kredensial & company default
 
-| Variabel | Default |
-|----------|---------|
-| `OLSHOP_BASE_URL` | `https://staging.olshoperp.com` |
-| `OLSHOP_COMPANY_CODE` | `lumicharmsid` |
-| `OLSHOP_TEST_EMAIL` | `playwright@gmail.com` |
-| `OLSHOP_TEST_PASSWORD` | `12345678` |
-| `PW_HEADLESS` | `true` (set `false` untuk SIGN-OFF) |
-| `PW_SLOW_MO` | `0` (set `1000` untuk SIGN-OFF) |
-
----
-
-## Troubleshooting (QA)
-
-| Gejala | Arti | Langkah |
-|--------|------|---------|
-| `Executable doesn't exist` | Browser belum terinstall | `npm run test:preflight` |
-| `localStorage` / `SecurityError` | Session dibaca sebelum staging terbuka | Pull terbaru; jalankan ulang |
-| Muncul `/login` di test menu | Session expired | Hapus `tests/.auth/`, run ulang |
-| `Switch Company` tidak ketemu | Label UI salah | Pakai **Lumi Charms.id**, bukan `lumicharmsid` |
-| SKU sudah ada | Normal (idempotent) | Test lewati create, cek datalist saja |
+| Item | Nilai |
+|------|--------|
+| Email | `playwright@gmail.com` |
+| Password | `12345678` |
+| Company default | `lumicharmsid` (153) |
 
 Folder tidak di-commit: `node_modules/`, `test-results/`, `playwright-report/`, `tests/.auth/`

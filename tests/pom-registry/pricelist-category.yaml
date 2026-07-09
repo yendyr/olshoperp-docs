@@ -1,0 +1,52 @@
+# POM Element Registry — Pricelist Category (Category Price)
+# Sumber: olshoperp-frontend BusinessDevelopment/PricelistCategory/Form.vue
+
+menu: pricelist-category
+menu_name: Category Price
+route: /businessdevelopment/pricelist-category
+create_button_mode: link
+pom_helper: tests/helpers/pricelist-category.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  datalist_search:
+    strategy: role
+    role: searchbox
+    index: first
+
+  code:
+    strategy: placeholder
+    value: "e.g: SHPRC"
+
+  category_name:
+    strategy: placeholder
+    value: "e.g: Shopee Price"
+
+  margin_price_section:
+    strategy: role
+    role: button
+    name: Margin Price Configuration
+
+  end_margin_price:
+    strategy: placeholder
+    value: End Margin Price
+
+  margin_value:
+    strategy: placeholder
+    value: Margin Percentage/Amount
+
+  basic_information_section:
+    strategy: role
+    role: button
+    name: Basic Information
+
+  save_button:
+    strategy: role
+    role: button
+    name: Save
+    position: last

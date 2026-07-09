@@ -6,6 +6,9 @@ import {
   findCompanyById,
   getEnvConfig,
 } from './env-config';
+import { dismissStagingBanner } from './shared/staging-banner';
+
+export { dismissStagingBanner };
 
 export const TEST_EMAIL = process.env.OLSHOP_TEST_EMAIL ?? 'playwright@gmail.com';
 export const TEST_PASSWORD = process.env.OLSHOP_TEST_PASSWORD ?? '12345678';
@@ -40,14 +43,6 @@ export function assertAllowedCompanyId(
     isAllowedCompanyId(companyId, config),
     `${context}: company id ${companyId} is outside the allowed scope for ${config.name} (${config.allowedCompanies.map((c) => `${c.label}/${c.id}`).join(', ')})`,
   ).toBe(true);
-}
-
-export async function dismissStagingBanner(page: Page): Promise<void> {
-  // Banner staging pakai btn-close; jangan pakai name "Close" saja — bentrok dengan tombol "Closed" di datalist.
-  const closeButton = page.locator('button.btn-close[aria-label="Close"]');
-  if (await closeButton.isVisible().catch(() => false)) {
-    await closeButton.click();
-  }
 }
 
 export async function readAuthFromPage(page: Page): Promise<{

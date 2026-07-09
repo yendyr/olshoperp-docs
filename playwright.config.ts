@@ -23,12 +23,6 @@ const chromiumDevice = {
   },
 };
 
-const ENV_PROJECTS = [
-  { name: 'staging', baseURL: 'https://staging.olshoperp.com' },
-  { name: 'tyas', baseURL: 'https://tyas.olshoperp.com' },
-  { name: 'merdian', baseURL: 'https://merdian.olshoperp.com' },
-] as const;
-
 export default defineConfig({
   testDir: './tests',
   globalSetup: './tests/global-setup.ts',
@@ -40,29 +34,9 @@ export default defineConfig({
   timeout: 180_000,
   expect: { timeout: 15_000 },
   projects: [
-    ...ENV_PROJECTS.map((env) => ({
-      name: env.name,
-      testMatch: '**/sidebar-crawl.spec.ts',
-      use: {
-        ...sharedUse,
-        ...chromiumDevice,
-        baseURL: env.baseURL,
-      },
-    })),
-    {
-      name: 'login-flow',
-      testMatch: '**/specs/gate-user/company-access.spec.ts',
-      grep: /login dengan akun|bisa mengakses company/,
-      use: {
-        ...sharedUse,
-        ...chromiumDevice,
-        baseURL: stagingBaseURL,
-      },
-    },
     {
       name: 'authenticated',
       testMatch: '**/specs/**/*.spec.ts',
-      testIgnore: '**/specs/gate-user/company-access.spec.ts',
       use: {
         ...sharedUse,
         ...chromiumDevice,

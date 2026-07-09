@@ -3,10 +3,19 @@ import { dismissStagingBanner } from './company-access';
 
 export const SYSTEM_PRODUCT_DATALIST_PATH = '/supplychain/product';
 export const SYSTEM_PRODUCT_CREATE_PATH = '/supplychain/product/create';
+export const SYSTEM_PRODUCT_EDIT_PATH_PATTERN = /\/supplychain\/product\/edit\/\d+/;
+
+export function systemProductEditPath(productId: string | number): string {
+  return `/supplychain/product/edit/${productId}`;
+}
 
 const SALES_CATEGORY_LABEL = 'Sales Category';
 const PRODUCT_COA_GROUP_LABEL = 'Product Coa Group';
 
+/**
+ * POM umum System Product — datalist, create, edit, variant.
+ * Dipakai semua skenario TC menu Master System Product.
+ */
 export class SystemProductPage {
   constructor(private readonly page: Page) {}
 
@@ -24,7 +33,23 @@ export class SystemProductPage {
     await this.page.waitForURL(/\/supplychain\/product\/create/, {
       timeout: 45_000,
     });
-    await expect(this.skuInput).toBeVisible();
+    await expect(this.systemProductSkuInput).toBeVisible();
+  }
+
+  async gotoCreate(): Promise<void> {
+    await this.page.goto(SYSTEM_PRODUCT_CREATE_PATH, {
+      waitUntil: 'domcontentloaded',
+    });
+    await dismissStagingBanner(this.page);
+    await expect(this.systemProductSkuInput).toBeVisible({ timeout: 45_000 });
+  }
+
+  async gotoEdit(productId: string | number): Promise<void> {
+    await this.page.goto(systemProductEditPath(productId), {
+      waitUntil: 'domcontentloaded',
+    });
+    await dismissStagingBanner(this.page);
+    await expect(this.saveAllButton).toBeVisible({ timeout: 45_000 });
   }
 
   async openCreateOrEditBySku(sku: string): Promise<'create' | 'edit'> {
@@ -39,16 +64,14 @@ export class SystemProductPage {
         await this.page.goto(editPath, { waitUntil: 'domcontentloaded' });
       } else {
         await Promise.all([
-          this.page.waitForURL(/\/supplychain\/product\/edit\/\d+/, {
+          this.page.waitForURL(SYSTEM_PRODUCT_EDIT_PATH_PATTERN, {
             timeout: 90_000,
           }),
           existingSku.click(),
         ]);
       }
 
-      await expect(
-        this.page.getByRole('button', { name: 'Save All', exact: true }),
-      ).toBeVisible({ timeout: 45_000 });
+      await expect(this.saveAllButton).toBeVisible({ timeout: 45_000 });
       return 'edit';
     }
 
@@ -57,9 +80,9 @@ export class SystemProductPage {
   }
 
   async fillBasicInformation(sku: string, name: string): Promise<void> {
-    await this.skuInput.fill(sku);
-    await this.nameInput.fill(name);
-    await this.nameInput.blur();
+    await this.systemProductSkuInput.fill(sku);
+    await this.systemProductNameInput.fill(name);
+    await this.systemProductNameInput.blur();
     await this.page.waitForTimeout(1_500);
   }
 
@@ -83,7 +106,7 @@ export class SystemProductPage {
       return;
     }
 
-    await this.skuInput.click();
+    await this.systemProductSkuInput.click();
     await combobox.scrollIntoViewIfNeeded();
     await combobox.click();
     await expect(combobox).toHaveAttribute('aria-expanded', 'true', { timeout: 15_000 });
@@ -98,7 +121,7 @@ export class SystemProductPage {
     });
     await option.click();
 
-    await this.skuInput.click();
+    await this.systemProductSkuInput.click();
     await this.page.waitForTimeout(300);
 
     const selected = await this.getMultiselectSelectedLabel(combobox);
@@ -184,7 +207,7 @@ export class SystemProductPage {
     const selectedOption = options.nth(randomIndex);
 
     await selectedOption.click();
-    await this.skuInput.click();
+    await this.systemProductSkuInput.click();
     await this.page.keyboard.press('Escape');
     await this.page.waitForTimeout(300);
     await this.fillAssetCategoryIfRequired();
@@ -248,7 +271,7 @@ export class SystemProductPage {
     const options = this.dropdownOptions;
     await expect(options.first()).toBeVisible({ timeout: 20_000 });
     await options.first().click();
-    await this.skuInput.click();
+    await this.systemProductSkuInput.click();
   }
 
   async clickSave(): Promise<void> {
@@ -288,10 +311,7 @@ export class SystemProductPage {
   }
 
   async scrollToProductDetails(): Promise<void> {
-    const productDetails = this.page.getByRole('button', {
-      name: 'Product Details',
-      exact: true,
-    });
+    const productDetails = this.productDetailsSectionButton;
     await productDetails.scrollIntoViewIfNeeded();
 
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -307,32 +327,26 @@ export class SystemProductPage {
       timeout: 20_000,
     });
 
-    const enableVariationsLabel = this.page.getByText('Enable Variations', {
-      exact: true,
-    });
-    await enableVariationsLabel.scrollIntoViewIfNeeded();
+    await this.enableVariationsLabel.scrollIntoViewIfNeeded();
   }
 
   async enableVariations(): Promise<void> {
-    const enableVariationsLabel = this.page.getByText('Enable Variations', {
-      exact: true,
-    });
-    await expect(enableVariationsLabel).toBeVisible({ timeout: 20_000 });
-    await enableVariationsLabel.scrollIntoViewIfNeeded();
+    await expect(this.enableVariationsLabel).toBeVisible({ timeout: 20_000 });
+    await this.enableVariationsLabel.scrollIntoViewIfNeeded();
 
     for (let attempt = 0; attempt < 3; attempt++) {
-      if (await this.variantTypeDropdown.isVisible().catch(() => false)) {
+      if (await this.variantTypeCombobox.isVisible().catch(() => false)) {
         break;
       }
 
-      await enableVariationsLabel.click({ force: true });
+      await this.enableVariationsLabel.click({ force: true });
       await this.page.waitForTimeout(700);
 
-      if (await this.variantTypeDropdown.isVisible().catch(() => false)) {
+      if (await this.variantTypeCombobox.isVisible().catch(() => false)) {
         break;
       }
 
-      const box = await enableVariationsLabel.boundingBox();
+      const box = await this.enableVariationsLabel.boundingBox();
       if (box) {
         await this.page.mouse.click(box.x - 18, box.y + box.height / 2);
       }
@@ -345,7 +359,7 @@ export class SystemProductPage {
   }
 
   private async openVariantEditorIfNeeded(): Promise<void> {
-    if (await this.variantTypeDropdown.isVisible().catch(() => false)) {
+    if (await this.variantTypeCombobox.isVisible().catch(() => false)) {
       return;
     }
 
@@ -375,8 +389,8 @@ export class SystemProductPage {
 
   private async waitForVariantInputs(): Promise<void> {
     for (let attempt = 0; attempt < 6; attempt++) {
-      if (await this.variantTypeDropdown.isVisible().catch(() => false)) {
-        await expect(this.variantTypeDropdown).toBeVisible();
+      if (await this.variantTypeCombobox.isVisible().catch(() => false)) {
+        await expect(this.variantTypeCombobox).toBeVisible();
         return;
       }
 
@@ -385,11 +399,11 @@ export class SystemProductPage {
       await this.openVariantEditorIfNeeded();
     }
 
-    await expect(this.variantTypeDropdown).toBeVisible({ timeout: 30_000 });
+    await expect(this.variantTypeCombobox).toBeVisible({ timeout: 30_000 });
   }
 
   async selectVariantType(variantName: string): Promise<void> {
-    await this.variantTypeDropdown.click();
+    await this.variantTypeCombobox.click();
     await this.page.waitForTimeout(300);
 
     const listboxOption = this.page.getByRole('option', { name: variantName, exact: true });
@@ -405,11 +419,11 @@ export class SystemProductPage {
   async selectVariantOptions(options: string[]): Promise<void> {
     const optionsContainer = this.page
       .locator('.multiselect')
-      .filter({ has: this.variantOptionsDropdown })
+      .filter({ has: this.variantOptionsCombobox })
       .first();
 
     for (const option of options) {
-      await this.variantOptionsDropdown.click();
+      await this.variantOptionsCombobox.click();
       await this.page.waitForTimeout(300);
 
       const listboxOption = this.page.getByRole('option', {
@@ -429,11 +443,8 @@ export class SystemProductPage {
   }
 
   async clickSaveAll(): Promise<void> {
-    const saveAllButton = this.page
-      .getByRole('button', { name: 'Save All', exact: true })
-      .last();
-    await saveAllButton.scrollIntoViewIfNeeded();
-    await saveAllButton.click();
+    await this.saveAllButton.scrollIntoViewIfNeeded();
+    await this.saveAllButton.click();
     await this.waitForVariantSaveCompleted();
   }
 
@@ -480,23 +491,27 @@ export class SystemProductPage {
     return this.page.getByRole('searchbox').first();
   }
 
-  private get skuInput(): Locator {
+  private get systemProductSkuInput(): Locator {
     return this.page.locator('#sku');
   }
 
-  private get nameInput(): Locator {
+  private get systemProductNameInput(): Locator {
     return this.page.locator('#name');
   }
 
-  private get enableVariationsToggle(): Locator {
-    return this.page
-      .locator('div')
-      .filter({ has: this.page.getByText('Enable Variations', { exact: true }) })
-      .locator('input[type="checkbox"]')
-      .first();
+  private get productDetailsSectionButton(): Locator {
+    return this.page.getByRole('button', { name: 'Product Details', exact: true });
   }
 
-  private get variantTypeDropdown(): Locator {
+  private get enableVariationsLabel(): Locator {
+    return this.page.getByText('Enable Variations', { exact: true });
+  }
+
+  private get saveAllButton(): Locator {
+    return this.page.getByRole('button', { name: 'Save All', exact: true }).last();
+  }
+
+  private get variantTypeCombobox(): Locator {
     return this.page
       .locator(
         [
@@ -513,7 +528,7 @@ export class SystemProductPage {
       .first();
   }
 
-  private get variantOptionsDropdown(): Locator {
+  private get variantOptionsCombobox(): Locator {
     return this.page
       .locator(
         [
@@ -617,7 +632,7 @@ export class SystemProductPage {
       return;
     }
 
-    await this.skuInput.click();
+    await this.systemProductSkuInput.click();
     await combobox.click();
     await expect(combobox).toHaveAttribute('aria-expanded', 'true');
 
@@ -643,7 +658,7 @@ export class SystemProductPage {
     }
 
     await this.page.waitForTimeout(500);
-    await this.skuInput.click();
+    await this.systemProductSkuInput.click();
 
     const selected = await this.getMultiselectSelectedLabel(combobox);
     expect(
@@ -653,18 +668,14 @@ export class SystemProductPage {
   }
 
   private async waitForBasicInformationSaved(): Promise<void> {
-    await this.page.waitForURL(/\/supplychain\/product\/edit\/\d+/, {
+    await this.page.waitForURL(SYSTEM_PRODUCT_EDIT_PATH_PATTERN, {
       timeout: 90_000,
     });
-    await expect(
-      this.page.getByRole('button', { name: 'Save All', exact: true }),
-    ).toBeVisible({ timeout: 45_000 });
+    await expect(this.saveAllButton).toBeVisible({ timeout: 45_000 });
   }
 
   private async waitForVariantSaveCompleted(): Promise<void> {
-    await expect(
-      this.page.getByRole('button', { name: 'Save All', exact: true }),
-    ).toBeEnabled({ timeout: 60_000 });
+    await expect(this.saveAllButton).toBeEnabled({ timeout: 60_000 });
 
     const successToast = this.page
       .locator('.toastify, [class*="toast"]')

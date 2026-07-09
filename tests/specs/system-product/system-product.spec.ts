@@ -182,4 +182,47 @@ test.describe.serial('System Product — lumicharmsid (153)', () => {
 
     await page.waitForTimeout(1_000);
   });
+
+  test('[@TC-SYSPROD-DRAFT] Membuat SKU Variant 6 warna (SKU-WENTER00)', async ({
+    page,
+  }) => {
+    const systemProduct = new SystemProductPage(page);
+    const parentSku = 'SKU-WENTER00';
+    const productName = 'Pewarna Tekstil';
+    const variantColors = ['black', 'blue', 'maroon', 'navy', 'yellow', 'purple'];
+    const expectedSkus = [
+      parentSku,
+      `${parentSku}-black`,
+      `${parentSku}-blue`,
+      `${parentSku}-maroon`,
+      `${parentSku}-navy`,
+      `${parentSku}-yellow`,
+      `${parentSku}-purple`,
+    ];
+
+    const mode = await systemProduct.openCreateOrEditBySku(parentSku);
+
+    if (mode === 'create') {
+      await systemProduct.fillBasicInformation(parentSku, productName);
+      await systemProduct.selectRandomProductCoaGroup();
+      await systemProduct.assertSalesCategoryAutoFilled();
+      await systemProduct.clickSaveWithCoaRetry(parentSku, productName);
+    }
+
+    await systemProduct.searchDatalist(parentSku);
+
+    if (!(await systemProduct.areSkusVisibleInDatalist(expectedSkus))) {
+      await systemProduct.openCreateOrEditBySku(parentSku);
+      await systemProduct.scrollToProductDetails();
+      await systemProduct.enableVariations();
+      await systemProduct.selectVariantType('Warna');
+      await systemProduct.selectVariantOptions(variantColors);
+      await systemProduct.clickSaveAll();
+    }
+
+    await systemProduct.searchDatalist(parentSku);
+    await systemProduct.assertSkusVisibleInDatalist(expectedSkus);
+
+    await page.waitForTimeout(1_000);
+  });
 });

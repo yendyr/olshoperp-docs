@@ -1,0 +1,82 @@
+# POM Element Registry — System Product
+# Sumber: olshoperp-frontend FormProductComponent.vue + DatalistProductComponent.vue
+# QA: gunakan registry ini + tests/helpers/system-product.ts — JANGAN tebak selector dari DOM.
+
+menu: system-product
+menu_name: System Product
+route: /supplychain/product
+create_button_mode: link
+pom_helper: tests/helpers/system-product.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+    notes: Bukan button — TopBar DataTablesV3
+
+  datalist_search:
+    strategy: role
+    role: searchbox
+    index: first
+
+  system_product_sku:
+    strategy: id
+    value: "#sku"
+
+  system_product_name:
+    strategy: id
+    value: "#name"
+
+  sales_category:
+    strategy: aria-placeholder
+    value: Choose Category
+
+  product_coa_group:
+    strategy: aria-placeholder
+    value: Choose Product Coa Group
+
+  product_alias_name:
+    strategy: placeholder
+    value: "e.g: Alias Name Product"
+
+  tagging:
+    strategy: aria-placeholder
+    value: Choose Tagging
+
+  save_button:
+    strategy: role
+    role: button
+    name: Save
+    position: last
+    notes: Ada beberapa Save di halaman — selalu .last()
+
+  save_all_button:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  product_details_section:
+    strategy: role
+    role: button
+    name: Product Details
+
+  enable_variations:
+    strategy: text
+    value: Enable Variations
+
+  variant_type:
+    strategy: aria-placeholder-fragment
+    value: Flavour
+    notes: Placeholder "e.g: Flavour" — pilih tipe variant (Warna, dll.)
+
+  variant_options:
+    strategy: aria-placeholder
+    value: Choose Option
+
+  asset_category:
+    strategy: placeholder
+    value: Choose Asset Category
+    notes: Muncul kondisional jika COA Group = Fix Asset

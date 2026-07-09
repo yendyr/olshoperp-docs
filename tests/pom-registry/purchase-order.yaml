@@ -1,0 +1,83 @@
+# POM Element Registry — Purchase Order
+# Sumber: olshoperp-frontend SCM/PurchaseOrder/Form.vue + DataList.vue
+# Status: smoke-ready (datalist + create); form flow — backlog TC
+
+menu: supplychain-purchase-order
+menu_name: Purchase Order
+route: /supplychain/purchase-order
+create_button_mode: link
+pom_helper: tests/helpers/purchase-order.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  datalist_search:
+    strategy: role
+    role: searchbox
+    index: first
+
+  edit_button:
+    strategy: id
+    value: "#updateButton"
+
+  po_code:
+    strategy: id
+    value: "#code"
+    notes: Auto-generate placeholder "Automatically generate by system"
+
+  supplier:
+    strategy: aria-placeholder
+    value: Choose Supplier
+    notes: Vue Multiselect — pakai aria-placeholder, bukan getByPlaceholder
+
+  payment_type:
+    strategy: aria-placeholder
+    value: Choose Payment Type
+
+  transaction_status:
+    strategy: placeholder
+    value: Choose Transaction Status
+
+  supplier_reference:
+    strategy: id
+    value: "#supplier_reference_document"
+
+  without_pr_radio:
+    strategy: id
+    value: "#without_pr"
+
+  with_pr_radio:
+    strategy: id
+    value: "#with_pr"
+
+  purchase_requisition_section:
+    strategy: id
+    value: "#PurchaseRequisition"
+
+  purchase_order_detail_section:
+    strategy: id
+    value: "#PurchaseOrderDetail"
+
+  status_draft:
+    strategy: id
+    value: "#draft"
+
+  status_open:
+    strategy: id
+    value: "#open"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: "Save & Next"
+    position: last
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last

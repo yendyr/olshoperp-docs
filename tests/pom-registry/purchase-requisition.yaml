@@ -1,0 +1,64 @@
+# POM Element Registry — Purchase Requisition
+# Sumber: olshoperp-frontend PurchaseRequisition/DataList.vue + Form.vue
+
+menu: supplychain-purchase-requisition
+menu_name: Purchase Requisition
+route: /supplychain/purchase-requisition
+create_button_mode: button
+pom_helper: tests/helpers/purchase-requisition.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: composite
+    selectors:
+      - 'button:has-text("Create")'
+      - 'role=link[name="Create"]'
+    notes: PR pakai button Create; fallback link jika layout berubah
+
+  datalist_search:
+    strategy: role
+    role: searchbox
+    index: first
+
+  edit_button:
+    strategy: id
+    value: "#updateButton"
+    notes: URL edit di atribut value
+
+  bulk_operation:
+    strategy: id
+    value: "#triggerBulkOperationButton"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: "Save & Next"
+    position: last
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  purchase_requisition_detail_section:
+    strategy: role
+    role: button
+    name: Purchase Requisition Detail
+
+  datalist_approve_button:
+    strategy: css
+    value: 'button[class*="approve-button"]'
+    scope: row by trx code
+    notes: Ikon approve di kolom action datalist — bukan approve di halaman edit
+
+  datalist_delete_button:
+    strategy: css
+    value: 'button[class*="delete-button"]'
+    scope: row by trx code
+    notes: Ikon delete (trash) di kolom action datalist
+
+  transaction_date:
+    strategy: label
+    notes: Auto-filled — assert tidak kosong

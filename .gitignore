@@ -5,3 +5,6 @@ playwright/.cache/
 tests/.auth/
 .env
 .env.local
+
+# Catatan pribadi QA — hanya lokal, JANGAN commit/push
+_local/
