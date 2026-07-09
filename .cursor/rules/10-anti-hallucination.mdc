@@ -31,8 +31,18 @@ Jawab: **"Tidak terdokumentasi di qa-docs"** + layer mana yang dicek + sarankan 
 - **Catatan QA**: implikasi logis dari requirement yang sudah tertulis — label eksplisit
 - **Rekomendasi**: langkah investigasi di staging — bukan klaim fakta
 
+## Pengecualian terbatas — tugas Playwright
+
+Saat tugas aktif adalah Playwright / crawler / automation E2E (lihat `15-playwright-multi-repo.mdc`), agent **boleh** membaca `olshoperp` dan `olshoperp-frontend` untuk fakta UI, selector, endpoint, dan validasi kode.
+
+Aturan tetap berlaku:
+- **AS-IS requirement bisnis** tetap hanya dari `qa-docs/` — bukan dari kode app
+- Fakta dari kode/run → label **Catatan automation (dari kode/run)**, jangan dicampur tanpa label
+- Jira card: Expected & AS-IS bisnis tetap dari `requirement.md` (`12-jira-card-format`)
+
 ## Cross-check sebelum jawab
 
 - [ ] Slug ada di manifest?
 - [ ] Fakta dari file doc yang dibaca, bukan ingatan?
 - [ ] Status doc disebut jika draft/pending?
+- [ ] Jika Playwright: expected dari docs, selector/API dari repo app dengan label yang benar?

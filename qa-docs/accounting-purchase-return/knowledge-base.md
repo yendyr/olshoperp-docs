@@ -17,8 +17,16 @@ audience: operator
 
 Menu **Purchase Return** adalah bagian dari modul **Accounting** di OlshopERP.
 
+## Relasi Account Payment
+
+Purchase Return dapat menghasilkan **Debit Note** yang dipakai sebagai sumber dana di [Account Payment](../accounting-supplier-payment/knowledge-base.md).
+
+Kolom **Purchase Return** di outstanding PI (Account Payment) menampilkan referensi retur terkait invoice.
+
+Detail: [Account Payment requirement §14](../accounting-supplier-payment/requirement.md#14-relasi-purchase-return-detail)
+
 ## Status dokumentasi
 
-- Knowledge Base: **pending**
+- Knowledge Base: **pending** (relasi AP di atas)
 - Requirement: **pending**
 - Technical: **pending**

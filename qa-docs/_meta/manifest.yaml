@@ -1179,6 +1179,29 @@ menus:
       backend: []
       frontend: []
 
+  accounting-stock-remapping:
+    menu_name: "Stock Remapping"
+    path: accounting-stock-remapping
+    module: Accounting
+    menu_links:
+      - accounting/stock-remapping
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+    legacy_sources:
+      []
+    code_globs:
+      backend: []
+      frontend: []
+
   accounting-supplier-invoice:
     menu_name: "Purchase Invoice"
     path: accounting-supplier-invoice
@@ -1235,13 +1258,24 @@ menus:
     code_globs:
       backend:
         - Modules/Accounting/Http/Controllers/PaymentController.php
+        - Modules/Accounting/Http/Controllers/SupplierPaymentController.php
         - Modules/Accounting/Http/Controllers/PaymentDetailController.php
+        - Modules/Accounting/Http/Controllers/PaymentDetailFundController.php
+        - Modules/Accounting/Http/Controllers/PaymentDetailAdjustmentController.php
+        - Modules/Accounting/Http/Controllers/SupplierPaymentImportController.php
         - Modules/Accounting/Entities/Payment.php
+        - Modules/Accounting/Entities/SupplierPayment.php
         - Modules/Accounting/Entities/PaymentDetail.php
-        - Modules/Accounting/Routes/components/supplier-payment.php
+        - Modules/Accounting/Entities/PaymentDetailFund.php
+        - Modules/Accounting/Entities/PaymentDetailDeposit.php
+        - Modules/Accounting/Entities/PaymentDetailAdjustment.php
+        - Modules/Accounting/Import/SupplierPaymentImport.php
+        - app/Helpers/Accounting/PaymentPrice.php
+        - app/Helpers/Accounting/PaymentDetailHelper.php
         - app/Helpers/Accounting/JournalProcess.php
+        - Modules/Accounting/Routes/api.php
       frontend:
-        - olshoperp-frontend/src/pages/Accounting/AccountPayable/SupplierPayment/**/*
+        - olshoperp-frontend/src/pages/Accounting/AccountPayable/Payment/**/*
 
   accounting-tax:
     menu_name: "Tax"

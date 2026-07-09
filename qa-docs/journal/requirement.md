@@ -3,7 +3,7 @@ doc_type: requirement
 menu: journal
 menu_name: "Journal"
 version: 1.1
-last_updated: 2026-06-23
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: review
 ---
@@ -237,6 +237,7 @@ Trx Ref journal = nomor Stock Deduction (bukan nomor Stock Opname)
 | Outbound (as expense/internal) | Warehouse Stock Outbound |
 | Stock Addition | Stock Adjustment (Addition) |
 | Stock Deduction | Stock Adjustment (Deduction) |
+| Stock Remapping (approve) | Stock Adjustment (Deduction) + Stock Adjustment (Addition) — auto per baris; Trx Ref journal = nomor **AO/AI** langsung |
 | Account Receive (AR) | Payment from Customer |
 | Account Payment (AP) | Payment to Supplier |
 | Purchase Invoice | Purchase Invoice |

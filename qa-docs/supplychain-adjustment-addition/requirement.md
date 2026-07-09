@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-adjustment-addition
 menu_name: "Stock Addition"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: draft
 ---
@@ -24,6 +24,7 @@ status: draft
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
+| 1.1 | 2026-07-09 | QA - Yemima | §9 Benchmark COGS v1.1 · §10 relasi Stock Remapping |
 
 ## 1. Ringkasan Eksekutif
 
@@ -114,6 +115,24 @@ Menu terkait: **accounting-adjustment-inbound, supplychain-stock-opname**.
 - SCM Stock Deduction: route approve tidak terdaftar di SupplyChain Routes — approve hanya via Accounting.
 - SCM Stock Addition: tombol approve disembunyikan di `menu=scm`; verifikasi E2E dengan Accounting.
 - Middle detail (inbound/outbound/transfer): behavior async approve perlu test terpisah.
+
+## 9. Relasi Benchmark COGS (v1.1)
+
+| Arah | Detail |
+|------|--------|
+| **Addition → Benchmark** | Stock Addition manual (approved) dengan `each_price_before_vat` di detail **ikut** sumber kalkulasi [Benchmark COGS](../accounting-product-benchmark-price/requirement.md) v1.1 |
+| **Bukan sumber** | Addition auto dari opname — dihitung sebagai Stock Opname IN, bukan addition manual |
+
+Detail: [Benchmark COGS requirement §7](../accounting-product-benchmark-price/requirement.md#7-integrasi-stock-opname-stock-addition--opening-stock) · [pending items §13](../accounting-product-benchmark-price/requirement.md#13-hal-yang-perlu-diperhatikan--pending-items)
+
+## 10. Relasi Stock Remapping (TO-BE)
+
+| Arah | Detail |
+|------|--------|
+| **Stock Remapping → Addition** | Saat approve [Stock Remapping](../accounting-stock-remapping/requirement.md), sistem auto-generate & auto-approve dokumen **`AI`** per baris (SKU Remapped To), trx date RM + 10 detik, unit price = stock ID origin |
+| Manual AI | Hindari double movement untuk kasus remap variant — gunakan Stock Remapping ([P-SRM-13](../accounting-stock-remapping/requirement.md#153-relasi--loophole-operasional)) |
+
+Detail: [accounting-stock-remapping requirement §8](../accounting-stock-remapping/requirement.md#8-approval--dokumen-auto-generated)
 
 ## Related Documents
 

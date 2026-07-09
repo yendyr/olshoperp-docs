@@ -3,7 +3,7 @@ doc_type: requirement
 menu: supplychain-warehouse-structure
 menu_name: "Warehouse Structure"
 version: 1.0
-last_updated: 2026-06-19
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: draft
 ---
@@ -76,7 +76,10 @@ flowchart TB
     WS --> WSET
     WS --> WLAY
     WS --> STK
+    WS --> RM["Stock Remapping (FA)"]
 ```
+
+**Stock Remapping:** Warehouse Origin memakai exclusion rules yang **sama** dengan Stock Deduction & Outbound (exclude WIP Assembly, Outrack, virtual). Detail: [accounting-stock-remapping](../accounting-stock-remapping/requirement.md).
 
 ## 6. Permission
 

@@ -24,6 +24,6 @@ Menu **Purchase Invoice** (Accounting / Account Payable).
 |------|------|
 | Purchase Inbound | [../supplychain-new-purchase-inbound/](../supplychain-new-purchase-inbound/) |
 | Purchase Order | [../supplychain-purchase-order/](../supplychain-purchase-order/) |
-| Account Payment | [../accounting-supplier-payment/](../accounting-supplier-payment/) |
+| Account Payment | [../accounting-supplier-payment/](../accounting-supplier-payment/) — v2.1 multi-source |
 
 **Maintenance owner:** QA — Yemima

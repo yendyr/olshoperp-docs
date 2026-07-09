@@ -3,7 +3,7 @@ doc_type: requirement
 menu: sales-order-general
 menu_name: "Sales Order General (Internal)"
 version: 2.4
-last_updated: 2026-07-05
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: review
 aliases: [bundle price proportion, proporsi harga bundle, Price Before VAT bundle, bundle detail modal, HPP bundle validation, ETM-12890, ETM-12947]
@@ -1126,7 +1126,7 @@ Price Before VAT (dari detail bundle komponen)  VS  Benchmark COGS (Parent SKU h
 ## 11. Benchmark COGS & Price Before VAT (Detail Order)
 
 **Scope:** Sales Order **General** & **Platform** — semua baris detail (bukan hanya bundle).  
-**Master menu:** [Benchmark COGS](../accounting-product-benchmark-price/requirement.md)  
+**Master menu:** [Benchmark COGS](../accounting-product-benchmark-price/requirement.md) — sumber kalkulasi v1.1: PO + Stock Addition + Opname IN + Opening Stock  
 **Jira:** [ETM-12890](https://erpintegration.atlassian.net/browse/ETM-12890) · [ETM-12947](https://erpintegration.atlassian.net/browse/ETM-12947)
 
 ### 11.1 Kolom detail SO (PM TO-BE)
@@ -1236,6 +1236,7 @@ Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/req
 | 2.1 | 2026-06-23 | Cross-reference Relasi Instant Settlement (Fase 2) — section standar |
 | 2.2 | 2026-07-02 | §8 Failed Process AS-IS + §9 Improvement TO-BE Re-check Failed Process & Log |
 | 2.3 | 2026-07-05 | §10 Product Bundle — proporsi harga Price Before VAT, coefficient, modal, snapshot, HPP (ETM-12890/12947) |
+| 2.5 | 2026-07-09 | Cross-ref Benchmark COGS v1.1 perluasan sumber |
 | 2.4 | 2026-07-05 | §11 Benchmark COGS & Price Before VAT detail order; §10.6 AS-IS gap auto-approve |
 
 ## Lampiran Teknis (Developer)

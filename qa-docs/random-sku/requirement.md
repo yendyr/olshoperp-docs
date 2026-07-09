@@ -3,7 +3,7 @@ doc_type: requirement
 menu: random-sku
 menu_name: "Random SKU"
 version: 1.0
-last_updated: 2026-07-05
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: review
 cross_menu: true
@@ -40,6 +40,7 @@ Virtual SKU (non-stockable) auto-generated saat opsi `random` dipilih di variant
 | A-10 | Random SKU **tidak** bisa PR/PO/inbound |
 | A-11 | Benchmark COGS di SO line random — master inherit parent; validasi auto-approve khusus (lihat [Benchmark COGS](../accounting-product-benchmark-price/requirement.md) · [KB](../accounting-product-benchmark-price/knowledge-base.md)) |
 | A-12 | Availability random SKU selalu 0 |
+| A-13 | Random SKU **diblok** di [Stock Remapping](../accounting-stock-remapping/requirement.md) — tidak boleh Origin maupun Remapped To |
 
 ---
 
@@ -95,3 +96,4 @@ Virtual SKU (non-stockable) auto-generated saat opsi `random` dipilih di variant
 | System Product | [../system-product/requirement.md](../system-product/requirement.md) |
 | Platform Product binding | [../manage-platform-product/requirement.md](../manage-platform-product/requirement.md) §12 |
 | Benchmark COGS | [../accounting-product-benchmark-price/requirement.md](../accounting-product-benchmark-price/requirement.md) |
+| Stock Remapping | [../accounting-stock-remapping/requirement.md](../accounting-stock-remapping/requirement.md) |

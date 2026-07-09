@@ -7,6 +7,8 @@ alwaysApply: true
 
 Gunakan rule ini setiap kali user meminta membuat Jira card, bug report, improvement task, atau change requirement.
 
+**Sumber AS-IS & Expected:** `olshoperp-docs` (`qa-docs/{slug}/requirement.md`) — **bukan** dari kode `olshoperp` / `olshoperp-frontend`, meski investigasi Playwright memakai repo app. Temuan automation → Actual Result / Additional Context saja (`15-playwright-multi-repo.mdc`).
+
 ---
 
 ## Aturan Judul Card (WAJIB semua tipe)

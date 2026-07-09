@@ -611,3 +611,4 @@ Artifact (7 Mei 2026) mensyaratkan tiga section: Unit Configuration ✅, **D&W D
 | Bill of Material | [../bill-of-material/requirement.md](../bill-of-material/requirement.md) |
 | Random SKU | [../random-sku/requirement.md](../random-sku/requirement.md) |
 | Benchmark COGS | [../accounting-product-benchmark-price/requirement.md](../accounting-product-benchmark-price/requirement.md) |
+| Stock Remapping | [../accounting-stock-remapping/requirement.md](../accounting-stock-remapping/requirement.md) — remap variant 1 parent (FA) |

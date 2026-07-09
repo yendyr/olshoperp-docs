@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.0
-last_updated: 2026-07-05
+version: 1.1
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: review
 aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product benchmark price, daily COGS]
@@ -15,7 +15,7 @@ aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product ben
 **UI route:** `/accounting/product-benchmark-price`  
 **API base:** `{VITE_API_URL}accounting/product-benchmark-price`  
 **Audience:** PM, Operations, QA, Support, Developer  
-**Status:** AS-IS verified against codebase per 2026-07-05  
+**Status:** TO-BE requirement v1.1 (perluasan sumber data) · kode AS-IS divergen — lihat §12–§13  
 **PM source:** Notion Benchmark COGS v1.0 (27 Jan 2026) · Jira [ETM-7029](https://erpintegration.atlassian.net/browse/ETM-7029)  
 **Spreadsheet logic:** [Google Sheet](https://docs.google.com/spreadsheets/d/1c_eDle4g4E_IIp6d0wNpER6LIzugh1MBBYE1gxv28iU/edit?gid=2129708031#gid=2129708031)
 
@@ -25,6 +25,7 @@ aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product ben
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-07-09 | QA - Yemima | Perluasan sumber data (PO + Stock Addition + Opname IN + Opening Stock); before/after §2.2; pending items §13; relasi Stock Remapping |
 | 1.0 | 2026-07-05 | QA - Yemima | Full doc from PM requirement + codebase AS-IS, gaps §12 |
 
 ---
@@ -43,6 +44,7 @@ aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product ben
 10. [Relasi Menu Lain](#10-relasi-menu-lain)
 11. [QA Test Scenarios](#11-qa-test-scenarios)
 12. [Gaps — PM vs AS-IS Codebase](#12-gaps--pm-vs-as-is-codebase)
+13. [Hal yang Perlu Diperhatikan / Pending Items](#13-hal-yang-perlu-diperhatikan--pending-items)
 
 ---
 
@@ -62,27 +64,81 @@ Nilai ini **bukan** moving average accounting inventory — melainkan **acuan op
 
 ## 2. Before vs After (Requirement Comparison)
 
-| Fitur | Before (Lama) | After (Baru — TO-BE / Live) |
+### 2.1 Evolusi fitur (rilis awal → live)
+
+| Fitur | Before (Lama) | After (Rilis awal — v1.0 doc) |
 |-------|---------------|------------------------------|
 | Menu monitoring | Tidak ada menu khusus | Menu **Benchmark COGS** |
-| Metode kalkulasi | **MA30** (Moving Avg 30 hari); fallback Last Buy; null jika kosong | **Highest Price** (30 hari terakhir); fallback **Last Buy**; **0** jika kosong |
+| Metode kalkulasi | **MA30** (Moving Avg 30 hari); fallback Last Inbound; null jika kosong | **Highest Price** (30 hari terakhir); fallback **Last Inbound**; **0** jika kosong |
 | Input manual di menu | User bisa edit default | **Read-only** — sistem hitung; user trigger **Calculate** saja |
 | Scope implementasi | Stock Opname saja | Stock Opname + **SO Auto-Approval** + kolom detail SO |
 
-**AS-IS note:** Kode job **tidak** memanggil `Product::MaPrice30Days()` — hanya `max(each_price_before_vat)` dari inbound PO (lihat §12).
+### 2.2 Perluasan sumber data (v1.0 doc → v1.1 TO-BE)
+
+**Satu-satunya perubahan material di v1.1:** sumber nilai benchmark COGS diperluas. Logika 3-tier, periode, field harga, rules parent/variant, UI, schedule, dan integrasi konsumen **tidak berubah**.
+
+| Aspek | Before (v1.0 doc — 5 Juli 2026) | After (v1.1 TO-BE) |
+|-------|--------------------------------|---------------------|
+| Tier 1 ≤30 hari | MAX `each_price_before_vat` | **Sama** |
+| Tier 2 >30 hari | Last inbound terakhir | **Sama** |
+| Tier 3 kosong | 0 / `No Inbound` | **Sama** |
+| **Sumber transaksi** | Hanya **Purchase Inbound (PO)** | PO + **Stock Addition** + **Stock Opname IN** + **Opening Stock** |
+
+| # | Sumber (v1.1) | Menu | Kode | Keterangan |
+|---|---------------|------|------|------------|
+| 1 | Purchase Inbound (PO) | Mutation Inbound | `IN` | Sumber existing (v1.0) |
+| 2 | Stock Addition | Adjustment Addition | `AI` | Penambahan stok manual |
+| 3 | Stock Opname IN | Adjustment Addition (auto) | `AI` | Auto-generated saat opname surplus (selisih > 0) |
+| 4 | Opening Stock | Opening Stock → Addition | `OS` → `AI` | Addition auto-generated saat opening stock approve |
+
+**AS-IS note (kode per 2026-07-09):** Job **belum** memakai allowlist eksplisit 4 sumber — filter PO di-comment sehingga semua inbound approved ikut terhitung (lihat §12 GAP-BM-12). Kode **tidak** memanggil `Product::MaPrice30Days()`.
 
 ---
 
 ## 3. Logika Perhitungan COGS Master
 
-### 3.1 Sumber data
+### 3.1 Sumber data (v1.1 TO-BE)
+
+Semua sumber valid menghasilkan record di rantai yang sama:
+
+```
+scm_stock_mutations (approved)
+  → scm_inbound_mutation_details (each_price_before_vat)
+    → scm_item_stocks (each_price_before_vat)
+```
 
 | Rule | Detail |
 |------|--------|
-| Transaksi sumber | **Purchase Inbound** approved — **Price Before VAT** |
-| Tidak dihitung | Stock Opname inbound, adjustment addition tanpa PO, inbound dengan `transaction_reference_class` |
-| Filter inbound | `transaction_status = approved`, `purchase_order_detail_id IS NOT NULL`, `transaction_reference_class IS NULL` |
-| Field harga | **`item_stock.each_price_before_vat`** — MAX (30 hari) / latest (Last Buy) |
+| Status transaksi | `transaction_status = approved` |
+| Field harga | **`item_stock.each_price_before_vat`** — Price Before VAT (MAX ≤30 hari / latest >30 hari) |
+| Tier 1 (≤30 hari) | **Highest** — `max(each_price_before_vat)` dari semua sumber valid |
+| Tier 2 (>30 hari) | **Last Inbound** — transaksi terakhir (`orderByDesc` `transaction_date`) |
+| Tier 3 (kosong) | COGS = **0**, description `No Inbound` |
+
+#### Allowlist sumber valid (v1.1)
+
+| # | Sumber | Kriteria identifikasi (DB) |
+|---|--------|------------------------------|
+| 1 | **PO Inbound** | `inbound.purchase_order_detail_id IS NOT NULL` AND `stock_mutation.is_inventory_adjustment = 0` |
+| 2 | **Stock Addition** (manual) | `is_inventory_adjustment = 1` · `supplier_id IS NULL` · `is_return_process = 0` · bukan referensi opname (`transaction_reference_class` bukan `StockOpname` atau null) |
+| 3 | **Stock Opname IN** | `transaction_reference_class = StockOpname` · parent opname **tanpa** record `accounting_opening_stock_coas` |
+| 4 | **Opening Stock** | `transaction_reference_class = StockOpname` · parent opname (via `transaction_reference_id`) punya record di `accounting_opening_stock_coas` |
+
+#### Tidak dihitung (v1.1)
+
+- Return process inbound (`RI`)
+- Transfer inbound
+- Failed ship / scrap / lost adjustment inbound
+- Inbound supplier tanpa PO (non-adjustment)
+- Transaksi non-approved
+
+#### Before (v1.0 doc) — hanya untuk referensi
+
+| Rule | Nilai v1.0 |
+|------|------------|
+| Sumber | Hanya **Purchase Inbound** PO |
+| Filter | `purchase_order_detail_id IS NOT NULL`, `transaction_reference_class IS NULL` |
+| Eksklusi eksplisit | Stock Opname, Stock Addition, Opening Stock |
 
 ### 3.2 Periode waktu
 
@@ -95,11 +151,11 @@ Nilai ini **bukan** moving average accounting inventory — melainkan **acuan op
 
 | Tipe | Kondisi | Logic | Label `description` |
 |------|---------|-------|---------------------|
-| **Single** | Ada inbound PO ≤30 hari | **Highest** `each_price_before_vat` | `Highest Price` |
-| **Single** | Tidak ada ≤30 hari, ada lampau | **Last Buy** (inbound terdekat) | `Last Buy` |
-| **Single** | Tidak ada history | **0** | `No Purchase` |
-| **Variant (child)** | Per variant | Sama seperti Single — **row sendiri** | Highest / Last Buy / No Purchase |
-| **Parent** | Punya variant | **MAX** benchmark seluruh variant (**exclude** variant `-random`) | `Highest Price` atau `No Purchase` |
+| **Single** | Ada transaksi valid ≤30 hari | **Highest** `each_price_before_vat` | `Highest Price` |
+| **Single** | Tidak ada ≤30 hari, ada lampau | **Last Inbound** (transaksi terdekat) | `Last Inbound` |
+| **Single** | Tidak ada history | **0** | `No Inbound` |
+| **Variant (child)** | Per variant | Sama seperti Single — **row sendiri** | Highest / Last Inbound / No Inbound |
+| **Parent** | Punya variant | **MAX** benchmark seluruh variant (**exclude** variant `-random`) | `Highest Price` atau `No Inbound` |
 | **Random variant** | Child dengan opsi random | **Inherit** nilai MAX parent (bukan hitung dari inbound random SKU) | Sama parent |
 
 **Scheduled job:** `product-benchmark-price:calculate` setiap **00:00 WIB** → dispatch `ProductBenchmarkPriceJob` untuk semua parent/single.
@@ -142,7 +198,7 @@ Nilai ini **bukan** moving average accounting inventory — melainkan **acuan op
 | Created by / at | `created_by_formatted` (+ hidden `created_at_formatted`) | Audit default columns |
 | Updated by / at | `updated_by_formatted` (+ hidden `updated_at_formatted`) | Audit default columns |
 | **COGS** | `benchmark_price_formatted` | Nilai benchmark — currency format |
-| **Description** | `description_formatted` | `Highest Price` / `Last Buy` / `No Purchase` |
+| **Description** | `description_formatted` | `Highest Price` / `Last Inbound` / `No Inbound` |
 | **COGS Last Updated** | `last_updated_formatted` | Timestamp update row benchmark |
 | Action | sync | Manual calculate |
 
@@ -232,9 +288,18 @@ Keduanya `visible: false` default — user unhide via column picker.
 
 ---
 
-## 7. Integrasi Stock Opname & Stock Addition
+## 7. Integrasi Stock Opname, Stock Addition & Opening Stock
 
-### 7.1 Stock Opname — surplus (diff > 0)
+### 7.1 Arah integrasi (dua arah)
+
+| Arah | Menu | Perilaku |
+|------|------|----------|
+| **Benchmark → Opname** | Stock Opname | Surplus tanpa input harga → fallback `product.benchmarkPrice.benchmark_price` |
+| **Opname IN → Benchmark** | Benchmark COGS (v1.1) | Transaksi addition dari opname surplus **masuk** sumber kalkulasi |
+| **Addition manual → Benchmark** | Benchmark COGS (v1.1) | Stock Addition manual **masuk** sumber kalkulasi |
+| **Opening Stock → Benchmark** | Benchmark COGS (v1.1) | Addition dari opening stock **masuk** sumber kalkulasi |
+
+### 7.2 Stock Opname — surplus (diff > 0)
 
 Saat opname menghasilkan penambahan stok dan user **tidak** input harga:
 
@@ -244,16 +309,22 @@ price = product.benchmarkPrice.benchmark_price (converted to detail unit)
 
 **File:** `StockOpnameDetailController` (~579, ~1066).
 
-**AS-IS:** Commented code `MaPrice30Days()` — tidak aktif.
+Opname approve → auto-create `StockMutationAddition` (`AI`) dengan `each_price_before_vat` → setelah v1.1, transaksi ini **bisa mempengaruhi** benchmark master pada job berikutnya.
 
-### 7.2 Stock Addition (Adjustment Addition)
+### 7.3 Stock Addition (manual)
 
 | Path | Benchmark usage |
 |------|-----------------|
-| Opname → auto addition | Harga sudah terisi dari benchmark (atau user) di opname detail → diteruskan sebagai `each_price_before_vat` |
-| Manual addition | User input / referensi PO — **tidak** lookup benchmark langsung |
+| Opname → auto addition | Harga dari benchmark (atau input user) di opname detail → diteruskan sebagai `each_price_before_vat` |
+| Manual addition | User input harga di detail → setelah approve, **masuk** sumber benchmark (v1.1) |
 
 Detail: [supplychain-stock-opname](../supplychain-stock-opname/requirement.md) · [supplychain-adjustment-addition](../supplychain-adjustment-addition/requirement.md)
+
+### 7.4 Opening Stock
+
+Alur sama seperti Stock Opname (surplus → auto addition `AI`), dengan header `OpeningStock` (kode `OS`) dan `OpeningStockCoa`. Setelah approve, addition inbound **masuk** sumber benchmark (v1.1).
+
+Detail: [accounting-opening-stock](../accounting-opening-stock/knowledge-base.md)
 
 ---
 
@@ -262,14 +333,18 @@ Detail: [supplychain-stock-opname](../supplychain-stock-opname/requirement.md) �
 | ID | Kriteria | Expected |
 |----|----------|----------|
 | BM-01 | Scheduled 00:00 WIB | Job `product-benchmark-price:calculate` jalan |
-| BM-02 | Highest Price 30 hari | SKU dengan inbound PO ≤30 hari → MAX price before VAT |
-| BM-03 | Last Buy fallback | Tidak ada 30 hari → harga inbound lampau terakhir |
-| BM-04 | No purchase | Tidak ada inbound PO → COGS **0**, desc `No Purchase` |
+| BM-02 | Highest Price 30 hari | SKU dengan transaksi valid ≤30 hari → MAX price before VAT (semua sumber v1.1) |
+| BM-03 | Last Inbound fallback | Tidak ada 30 hari → harga transaksi lampau terakhir |
+| BM-04 | No Inbound | Tidak ada transaksi valid → COGS **0**, desc `No Inbound` |
 | BM-05 | Parent = MAX variant | Parent row = tertinggi dari variant (exclude random) |
 | BM-06 | Show Detail toggle | Off: Single+Parent; On: +Variant |
 | BM-07 | Manual Calculate | Trigger job per SKU; audit log tercatat |
 | BM-08 | Calculate Log | Old/new COGS + description + SKU |
 | BM-09 | Export All | Excel semua baris filter aktif |
+| BM-10 | Stock Addition sebagai sumber | SKU tanpa PO, addition manual ≤30 hari → COGS > 0 |
+| BM-11 | Stock Opname IN sebagai sumber | SKU tanpa PO, opname surplus ≤30 hari → COGS > 0 |
+| BM-12 | Opening Stock sebagai sumber | SKU tanpa PO, opening stock ≤30 hari → COGS > 0 |
+| BM-13 | MAX lintas sumber | PO 6.000 + Addition 8.000 ≤30 hari → COGS = 8.000 |
 
 ---
 
@@ -295,8 +370,10 @@ Detail: [supplychain-stock-opname](../supplychain-stock-opname/requirement.md) �
 | [System Product](../system-product/requirement.md) | Sumber SKU; parent/variant/random structure |
 | [Sales Order General / Platform](../sales-order-general/requirement.md) | Kolom detail + auto-approve §11 |
 | [Random SKU](../random-sku/requirement.md) | Random variant inherit parent COGS di master; validasi SO khusus |
-| [Stock Opname](../supplychain-stock-opname/requirement.md) | Default price surplus |
-| [Stock Addition](../supplychain-adjustment-addition/requirement.md) | Indirect via opname |
+| [Stock Opname](../supplychain-stock-opname/requirement.md) | Default price surplus · **sumber** opname IN (v1.1) |
+| [Stock Addition](../supplychain-adjustment-addition/requirement.md) | Manual addition · **sumber** benchmark (v1.1) |
+| [Opening Stock](../accounting-opening-stock/knowledge-base.md) | **Sumber** benchmark (v1.1) |
+| [Stock Remapping](../accounting-stock-remapping/requirement.md) | Addition auto dari Stock Remapping **bisa** masuk sumber benchmark v1.1 (unit price dari stock ID origin) — [P-SRM-16](../accounting-stock-remapping/requirement.md#153-relasi--loophole-operasional) |
 | [Product Bundle proporsi](../sales-order-general/requirement.md#10-product-bundle--proporsi-harga-price-before-vat) | HPP validation bundle vs parent benchmark |
 
 ---
@@ -306,15 +383,21 @@ Detail: [supplychain-stock-opname](../supplychain-stock-opname/requirement.md) �
 | # | Skenario | Expected |
 |---|----------|----------|
 | T-01 | SKU dengan 2 inbound PO dalam 30 hari (5.000 & 6.000) | COGS = **6.000**, desc Highest Price |
-| T-02 | SKU tanpa inbound 30 hari, ada inbound 60 hari lalu | Last Buy |
-| T-03 | SKU baru tanpa PO | COGS 0, No Purchase |
+| T-02 | SKU tanpa inbound 30 hari, ada inbound 60 hari lalu | Last Inbound |
+| T-03 | SKU baru tanpa PO | COGS 0, No Inbound |
 | T-04 | Parent 3 variant — hitung manual MAX | Parent row = MAX |
 | T-05 | Midnight job | Audit log System updated |
 | T-06 | Manual Calculate 1 SKU | Row + variant ter-update |
 | T-07 | Create SO → ubah master COGS | `benchmark_cogs` di SO tetap |
 | T-08 | Bind platform product | `benchmark_cogs` ter-set |
 | T-09 | Harga under benchmark | `prevent_auto_approve` + icon dollar |
-| T-10 | Opname surplus tanpa input harga | Pakai benchmark master |
+| T-10 | Opname surplus tanpa input harga | Pakai benchmark master sebagai harga addition |
+| T-11 | SKU tanpa PO, Stock Addition manual ≤30 hari @ 5.000 | COGS = 5.000, Highest Price |
+| T-12 | SKU tanpa PO, Opname IN ≤30 hari @ 7.000 | COGS = 7.000, Highest Price |
+| T-13 | SKU tanpa PO, Opening Stock @ 10.000 | COGS = 10.000 |
+| T-14 | PO 6.000 + Addition 8.000 dalam 30 hari | COGS = **8.000** (MAX lintas sumber) |
+| T-15 | Opname surplus pakai fallback benchmark | Benchmark dapat mengulang nilai sebelumnya — expected (§13 P-02) |
+| T-16 | Return inbound / transfer inbound | **Tidak** masuk kalkulasi |
 
 ---
 
@@ -324,15 +407,51 @@ Detail: [supplychain-stock-opname](../supplychain-stock-opname/requirement.md) �
 |----|-------|-------------------|-------|--------|
 | **GAP-BM-01** | Metode kalkulasi | Highest Price 30 hari | ✓ `max(item_stock.each_price_before_vat)` | **OK** |
 | **GAP-BM-02** | MA30 legacy | Diganti Highest Price | `MaPrice30Days()` masih ada di Product, **commented** di opname — tidak dipakai job | **OK (by design)** |
-| **GAP-BM-03** | Scope inbound | Purchase inbound price before VAT | Hanya PO-linked, `transaction_reference_class IS NULL` | **OK — catatan scope** |
+| **GAP-BM-03** | Scope sumber (v1.0) | PO only | Filter PO **di-comment** — semua inbound masuk | **Superseded by GAP-BM-12** |
 | **GAP-BM-04** | COALESCE item_stock vs inbound detail | Fallback jika item_stock price 0 | **Commented out** di job | **Partial** |
 | **GAP-BM-05** | Auto-approve metric | Price **Before** VAT | **`each_price_after_vat_primary_currency`** | **Bug / gap** |
 | **GAP-BM-06** | Bundle child COGS | Parent benchmark untuk validasi | Each line own `product_id` benchmark | **Gap vs bundle §10.6** |
 | **GAP-BM-07** | Random SO line | Parent COGS | Master: random inherits parent · SO: depends on `product_id` at capture | **See random-sku doc** |
 | **GAP-BM-08** | Manual calculate UX | Immediate feedback | Async job + sleep(1) | **UX gap** |
 | **GAP-BM-09** | `checkLatestPricePO` | Replaced by benchmark | Method exists, **never called** | **Dead code** |
-| **GAP-BM-10** | Description parent | Highest / Last Buy per logic | Parent with max>0 always **Highest Price** even if from Last Buy child | **Minor** |
+| **GAP-BM-10** | Description parent | Highest / Last Inbound per logic | Parent with max>0 always **Highest Price** even if from Last Inbound child | **Minor** |
 | **GAP-BM-11** | QA docs | 3-layer complete | Was pending — **this release** | **Resolved** |
+| **GAP-BM-12** | Allowlist 4 sumber (v1.1) | PO + Addition + Opname IN + Opening Stock | Filter PO di-comment; **belum** allowlist eksplisit; return/transfer ikut terhitung | **Pending implementasi** |
+
+---
+
+## 13. Hal yang Perlu Diperhatikan / Pending Items
+
+Item di bawah ini adalah **potensi loophole**, risiko operasional, atau pekerjaan tertunda terkait fungsi utama Benchmark COGS dan relasinya ke menu lain. Bukan semuanya bug — beberapa adalah keputusan bisnis yang diterima.
+
+### 13.1 Fungsi utama Benchmark COGS
+
+| ID | Topik | Deskripsi | Status / Tindakan |
+|----|-------|-----------|---------------------|
+| **P-01** | Allowlist sumber belum di kode | `ProductBenchmarkPriceJob` belum filter eksplisit 4 sumber v1.1 — filter PO di-comment sehingga inbound return/transfer ikut terhitung | **Pending dev** — refactor `getBenchmarkPrice()` |
+| **P-02** | Circular dependency Opname ↔ Benchmark | Opname surplus tanpa input harga memakai benchmark sebagai default → setelah v1.1, transaksi tersebut masuk balik ke kalkulasi benchmark | **Diterima bisnis** — keputusan di tangan operator (input harga manual vs fallback) |
+| **P-03** | Label `No Inbound` | Description tetap `No Inbound` meski sumber v1.1 bukan hanya inbound PO | **Minor** — pertimbangkan rename ke `No Cost History` di rilis mendatang |
+| **P-04** | COALESCE harga 0 | Fallback `item_stock` → `inbound.each_price_before_vat` di-comment di job | **Partial** — edge case harga 0 di item_stock |
+| **P-05** | Parent description | Parent row selalu `Highest Price` meski nilai MAX berasal dari child `Last Inbound` | **Minor** — cosmetic |
+| **P-06** | Manual Calculate UX | Job async + `sleep(1)` — reload datalist tidak menjamin nilai terbaru | **UX gap** — operator perlu refresh manual |
+
+### 13.2 Relasi ke menu lain
+
+| ID | Menu terkait | Deskripsi | Status / Tindakan |
+|----|--------------|-----------|---------------------|
+| **P-07** | Sales Order — auto-approve | Kode bandingkan **price after VAT** vs benchmark; requirement **Price Before VAT** (GAP-BM-05) | **Bug / gap** — [ETM-12890](https://erpintegration.atlassian.net/browse/ETM-12890) · [ETM-12947](https://erpintegration.atlassian.net/browse/ETM-12947) |
+| **P-08** | Sales Order — bundle child | Validasi PM: komponen vs parent benchmark; kode: each line own `product_id` (GAP-BM-06) | **Gap** — lihat [sales-order-general §10.6](../sales-order-general/requirement.md#106-validasi-auto-approval-hpp--benchmark-cogs) |
+| **P-09** | Sales Order — random SKU | Line random sering `benchmark_cogs = 0` pre-bind; validasi under-benchmark tidak trigger | **Known** — [random-sku](../random-sku/requirement.md) |
+| **P-10** | Stock Opname | Dua arah: konsumen fallback harga **dan** sumber kalkulasi (v1.1) — operator perlu paham dampak input harga | **Catatan operasional** |
+| **P-11** | Opening Stock | Doc menu masih **pending** — relasi ke benchmark baru didokumentasikan di sini | **Pending doc** opening-stock requirement/technical |
+| **P-12** | SO export | `resolveBenchmarkCogs()` fallback ke live master jika snapshot 0 — bisa beda dari nilai saat order dibuat | **Edge case** export |
+
+### 13.3 Dead code & legacy
+
+| ID | Item | Catatan |
+|----|------|---------|
+| **P-13** | `checkLatestPricePO()` | Tidak pernah dipanggil — digantikan benchmark |
+| **P-14** | `Product::MaPrice30Days()` | Legacy MA30 — commented di opname, tidak dipakai job benchmark |
 
 ---
 

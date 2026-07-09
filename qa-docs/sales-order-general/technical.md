@@ -3,7 +3,7 @@ doc_type: technical
 menu: sales-order-general
 menu_name: "Sales Order General (Internal)"
 version: 1.3
-last_updated: 2026-07-05
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -20,6 +20,7 @@ related_docs:
 | 1.0 | 2026-06-19 | QA - Yemima | AS-IS import + merge bulk improvement TO-BE |
 | 1.1 | 2026-07-02 | QA - Yemima | §7 Failed Process AS-IS file map + §8 Re-check TO-BE design |
 | 1.2 | 2026-07-05 | QA - Yemima | §9 Bundle proporsi · §10 Benchmark COGS file map |
+| 1.3 | 2026-07-09 | QA - Yemima | §10 cross-ref Benchmark COGS v1.1 perluasan sumber |
 
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB  
 **Type:** `type_sales_order = general`  
@@ -366,7 +367,7 @@ flowchart TD
 
 | Layer | File | Fungsi |
 |-------|------|--------|
-| Master COGS | `ProductBenchmarkPriceJob.php` | Highest/Last Buy dari PO inbound |
+| Master COGS | `ProductBenchmarkPriceJob.php` | Highest/Last Inbound dari 4 sumber v1.1 (PO, Addition, Opname IN, Opening Stock) — lihat [benchmark technical §4](../accounting-product-benchmark-price/technical.md#43-getbenchmarkpriceproduct_id-start30daysago-endtoday) |
 | Snapshot create | `SalesOrderDetail.php`, `SalesOrderDetailRandom.php` | `handleBenchmarkCogsOnCreating()` |
 | Platform bind | `OmniChannel/Http/Controllers/ProductController.php` | Set `benchmark_cogs` on bind |
 | Auto-approve | `SalesOrderDetailController::updateAutoApproveFlagForSalesOrder()` | `prevent_auto_approve` flag |

@@ -8,4 +8,10 @@ Menu **Opening Stock** (Accounting).
 | Requirement | requirement.md | PM, QA | pending |
 | Technical | technical.md | Developer | pending |
 
+## Changelog
+
+| Date | Note |
+|------|------|
+| 2026-07-09 | Relasi Benchmark COGS v1.1 ditambahkan di knowledge-base |
+
 **Maintenance owner:** QA — Yemima

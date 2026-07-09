@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-product-coa-group
 menu_name: "Product COA Group"
-version: 1.1
-last_updated: 2026-07-04
+version: 1.2
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: draft
 ---
@@ -24,6 +24,7 @@ status: draft
 |---------|------|--------|---------|
 | 1.0 | 2026-06-23 | QA - Yemima | Cross-reference Relasi Instant Settlement (Fase 2) |
 | 1.1 | 2026-07-04 | QA - Yemima | Cross-reference Relasi Assembly (WIP + Inventory COA) |
+| 1.2 | 2026-07-09 | QA - Yemima | Relasi Stock Remapping eligibility |
 
 ---
 
@@ -44,6 +45,12 @@ status: draft
 **Detail alur bulk:** [Instant Settlement](../accounting-settlement-upload/requirement.md) — Out Journal warnings, retry jurnal.
 
 Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/requirement.md#10-relasi-menu--integrasi).
+
+---
+
+## Relasi Stock Remapping
+
+SKU dengan Product COA Group type **Service** atau **Asset** **tidak eligible** untuk [Stock Remapping](../accounting-stock-remapping/requirement.md). Hanya **Purchased Item** dan **Manufactured Item**.
 
 ---
 

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
-version: 1.0
-last_updated: 2026-07-05
+version: 1.1
+last_updated: 2026-07-09
 owner: QA - Yemima
 status: draft
 ---
@@ -15,6 +15,10 @@ status: draft
 **Modul:** SupplyChain + Accounting  
 **Audience:** PM, Operations, QA, Support, Developer  
 **Status:** Sesuai perilaku sistem saat ini (AS-IS)
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.1 | 2026-07-09 | QA - Yemima | Relasi Benchmark COGS v1.1 · cross-ref Stock Remapping |
 
 ---
 
@@ -216,7 +220,8 @@ flowchart TB
 | Adjustment Deduction | `supplychain/adjustment-deduction` | Auto-generated child docs |
 | Warehouse Structure | `supplychain/warehouse-structure` | Master `warehouse_destination` |
 | Real Stock | `supplychain/real-stock` | Referensi stok untuk operator |
-| **Benchmark COGS** | `accounting/product-benchmark-price` | Default harga surplus opname (jika user tidak input) — lihat [requirement](../accounting-product-benchmark-price/requirement.md) §7 |
+| **Benchmark COGS** | `accounting/product-benchmark-price` | **Konsumen:** default harga surplus · **Sumber (v1.1):** opname IN ikut kalkulasi benchmark — [requirement](../accounting-product-benchmark-price/requirement.md) §7 |
+| **Stock Remapping** | `accounting/stock-remapping` | Remap variant 1 parent (FA) — alternatif sortir SKU acak tanpa opname manual — [requirement](../accounting-stock-remapping/requirement.md) |
 
 ---
 
@@ -229,7 +234,10 @@ A: Tidak — keduanya baca `scm_stock_mutations` dengan `is_opname=1`. Approval 
 A: Saat detail opname di-create/update, bukan saat approve header (tapi approve header yang finalize adjustment).
 
 **Q: Bagaimana harga adjustment in ditentukan?**  
-A: Dari input `each_price_before_discount_before_vat` atau fallback **`product.benchmarkPrice.benchmark_price`** dari menu [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md). Sumber kalkulasi benchmark = highest PO inbound 30 hari → Last Buy → 0. **Stock opname inbound tidak** mempengaruhi nilai benchmark master.
+A: Dari input `each_price_before_discount_before_vat` atau fallback **`product.benchmarkPrice.benchmark_price`** dari menu [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md).
+
+**Q: Apakah transaksi opname IN mempengaruhi nilai Benchmark COGS master?**  
+A: **Ya** (v1.1). Setelah opname approve, addition inbound tercatat dengan `each_price_before_vat` dan **ikut** sumber kalkulasi benchmark (Highest Price 30 hari → Last Inbound → 0). Jika surplus memakai fallback benchmark (tanpa input manual), nilai benchmark dapat mengulang dirinya — expected; keputusan di tangan operator. Detail: [Benchmark COGS requirement §7](../accounting-product-benchmark-price/requirement.md#7-integrasi-stock-opname-stock-addition--opening-stock) · [pending items §13](../accounting-product-benchmark-price/requirement.md#13-hal-yang-perlu-diperhatikan--pending-items).
 
 **Q: Apakah bisa opname tanpa selisih?**  
 A: Jika selisih = 0, tidak ada adjustment in/out untuk baris tersebut.
