@@ -33,12 +33,18 @@ Jawab: **"Tidak terdokumentasi di qa-docs"** + layer mana yang dicek + sarankan 
 
 ## Pengecualian terbatas — tugas Playwright
 
-Saat tugas aktif adalah Playwright / crawler / automation E2E (lihat `15-playwright-multi-repo.mdc`), agent **boleh** membaca `olshoperp` dan `olshoperp-frontend` untuk fakta UI, selector, endpoint, dan validasi kode.
+Saat tugas aktif adalah Playwright (lihat `15-playwright-multi-repo.mdc`):
 
-Aturan tetap berlaku:
-- **AS-IS requirement bisnis** tetap hanya dari `qa-docs/` — bukan dari kode app
-- Fakta dari kode/run → label **Catatan automation (dari kode/run)**, jangan dicampur tanpa label
-- Jira card: Expected & AS-IS bisnis tetap dari `requirement.md` (`12-jira-card-format`)
+| Mode | Baca repo app? |
+|------|----------------|
+| **RUN** — TC automation lengkap, re-test sama | ❌ default — cukup docs + registry + POM |
+| **BUILD** — TC baru, POM belum ada | ✅ setelah urutan lookup `14` §8A |
+| **Debug FAIL** — selector/API error | ✅ terbatas; registry dulu, lalu FE/BE |
+
+Aturan tetap:
+- **AS-IS requirement bisnis** tetap hanya dari `qa-docs/`
+- Fakta dari kode/run → label **Catatan automation (dari kode/run)**
+- Jira card: Expected & AS-IS dari `requirement.md` (`12`)
 
 ## Cross-check sebelum jawab
 

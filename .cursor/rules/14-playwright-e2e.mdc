@@ -160,6 +160,46 @@ Tag `@TC-*` wajib untuk traceability ke `qa-docs/.../test-cases/`.
 
 ---
 
+## 8A. Urutan lookup POM — wajib sebelum buka codebase (mode BUILD)
+
+Menu baru atau automation belum lengkap — terutama pola transaksi **SCM** (Create, Save & Next, Save All, multiselect, status radio):
+
+1. `tests/helpers/shared/` — datalist, multiselect, form-actions, toast
+2. Bandingkan `tests/pom-registry/purchase-requisition.yaml` dan `tests/pom-registry/purchase-order.yaml`
+3. `tests/pom-registry/{menu}.yaml` menu target
+4. `tests/helpers/{menu}.ts`
+5. Spec existing di `tests/specs/` dengan pola serupa
+
+**Baru kemudian** buka `olshoperp-frontend` / `olshoperp` — hanya untuk elemen atau flow yang **belum** tercover registry/helper.
+
+Mode **RUN** (TC automation lengkap): **lewati langkah 5 ke repo app** — cukup registry + helper di `olshoperp-docs` (`15` § Dua mode).
+
+Panduan QA: `tests/QA-AUTOMATION-GUIDE.md`.
+
+---
+
+## 8B. Gotcha SCM — status radio & cleanup (Purchase Order)
+
+Temuan automation — wajib di POM/registry, bukan di spec:
+
+### Status radio → tunggu API sebelum aksi berikutnya
+
+Saat ubah status transaksi (mis. `Draft` → `Open`), klik radio sering memicu **auto-save API + re-render**. Jika langsung klik `Save All`, locator bisa **detached**.
+
+**Wajib di helper:** setelah `check()` radio status, `waitForResponse` save/update PO (atau toast sukses + network idle) sebelum `Save All` atau aksi lain.
+
+Pola yang sama berlaku untuk menu SCM serupa (PR, PO) — bandingkan `purchase-requisition.ts` vs `purchase-order.ts`.
+
+### Cleanup draft PO With PR
+
+Delete header draft **bisa gagal** jika qty PR masih terikat di detail.
+
+**Urutan cleanup:** kosongkan/hapus detail → save → baru delete header.
+
+Catat di `tests/pom-registry/purchase-order.yaml` (`notes` / `gotchas`) dan method guard di `tests/helpers/purchase-order.ts`.
+
+---
+
 ## 9. Idempotent — berlaku semua menu
 
 Test harus aman dijalankan ulang tanpa duplikasi data. Pattern ini berlaku global:
@@ -197,19 +237,24 @@ Adaptasi `{UniqueField}` dan `identifier` sesuai menu — misal SKU code untuk S
 
 ```
 tests/
-  global-setup.ts          # auth sekali per company
+  global-setup.ts
   helpers/
-    company-access.ts      # login, switch, session, prepareSession
-    {menu}.ts              # POM per menu
-  {menu}.spec.ts           # spec tipis, tag @TC-*
-playwright.config.ts       # env: PW_SLOW_MO, PW_HEADED, storageState
-package.json
+    shared/                  # pola UI umum — baca dulu (§8A)
+    company-access.ts
+    {menu}.ts                # POM per menu
+  pom-registry/
+    {menu}.yaml              # kamus elemen — sumber selector
+  specs/
+    {menu}/*.spec.ts         # tipis, tag @TC-*
+playwright.config.ts
 ```
 
 | Layer | Isi | Bukan isinya |
 |-------|-----|--------------|
-| `helpers/*.ts` | Selector, interaksi UI, assert reusable | Urutan bisnis TC |
-| `*.spec.ts` | Urutan step TC verbatim, data test | Selector detail |
+| `pom-registry/*.yaml` | Selector stabil per menu | Urutan bisnis TC |
+| `helpers/shared/` | Datalist, multiselect, Save | Logic menu spesifik |
+| `helpers/{menu}.ts` | Interaksi + assert + wait API | Selector di spec |
+| `specs/*.spec.ts` | Urutan step TC verbatim | `page.locator(...)` mentah |
 
 ---
 
@@ -235,6 +280,11 @@ npm run test:signoff -- "@TC-SYSPROD-003"
 ---
 
 ## 12. Checklist agent sebelum selesai task
+
+### Mode & sumber baca
+- [ ] Tentukan BUILD vs RUN (`15` § Kriteria lengkap)
+- [ ] RUN: tidak buka `olshoperp` / `olshoperp-frontend` kecuali FAIL debug
+- [ ] BUILD: urutan lookup §8A sebelum buka repo app
 
 ### Penulisan kode
 - [ ] Setiap langkah TC ada di spec, urutan sama

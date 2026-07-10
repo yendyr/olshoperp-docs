@@ -17,12 +17,14 @@ Klasifikasikan pertanyaan sebelum jawab; baca layer yang tepat (lihat `05-qa-eng
 | **Validasi / error** | "Kenapa save ditolak?" | `technical.md` | requirement, KB troubleshooting |
 | **API / integrasi** | "Endpoint apa dipanggil?" | `technical.md` | — |
 | **Test / E2E** | "Skenario uji AR payment?" | `test-cases/` | requirement |
-| **Playwright / crawler / automation** | "tulis spec untuk TC-001", "crawl sidebar" | `15-playwright-multi-repo.mdc` | `14-playwright-e2e`, TC, requirement; FE/BE repo untuk selector & API |
+| **Playwright — tulis spec / TC baru** | "automate TC-001", "tambah POM PO" | `15` mode **BUILD** | `14` §8A–8B, registry, FE/BE jika gap |
+| **Playwright — re-run TC lengkap** | "run @TC-ARCP-001 lagi" | `15` mode **RUN** | TC, registry, helper — **tanpa** repo app |
 | **Konsep lintas menu** | "Random SKU di waves?" | `random-sku/` | README menu terkait |
 | **Infra / sidebar** | "Menu hilang di sidebar?" | `sidebar-menu/technical.md` | gate-user, gate-role |
 | **Cari menu** | "Menu X ada di modul apa?" | `manifest.yaml` | README menu |
 | **Jira card** | `bug:` / `improvement:` / `cr:` atau minta tiket | `requirement.md` | KB, technical |
 | **Buat / edit TC** | "buat test case untuk…" | `13-test-case-format.mdc` | `requirement.md`, `test-cases/` |
+| **Renumber TC** | `#renumber-tc` atau `#renumber-tc {menu-slug}` | `13-test-case-format.mdc` §9 | scan DRAFT per menu, update README |
 
 ## Workflow singkat
 
@@ -40,6 +42,7 @@ Klasifikasikan pertanyaan sebelum jawab; baca layer yang tepat (lihat `05-qa-eng
 | Buat / edit test case (`TC-*.md`) | Boleh di `test-cases/` dengan konfirmasi eksplisit — ikuti `13-test-case-format.mdc` |
 | Buat folder `test-cases/` baru | Boleh jika `{menu-slug}` valid di manifest & path `qa-docs/{menu-slug}/test-cases/` — ikuti `03` + `13` |
 | Buat Jira card | Ikuti `12-jira-card-format.mdc`; expected & AS-IS **hanya** dari `olshoperp-docs` — meski ada temuan Playwright |
-| Playwright / tulis spec / crawler | Baca `15` + `14`; requirement dari docs, UI/kode dari `olshoperp-frontend` / `olshoperp` |
+| Playwright — tulis spec / BUILD | Baca `15` + `14`; FE/BE hanya setelah registry/shared (`14` §8A) |
+| Playwright — re-run TC lengkap | `15` mode RUN — **hanya** `olshoperp-docs`; repo app hanya jika FAIL debug |
 | Deploy / env / migration | Arahkan tim infra/dev |
 | Fitur tidak ada di manifest | "Menu/fitur tidak terdaftar di docs" |

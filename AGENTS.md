@@ -49,11 +49,20 @@ https://staging.olshoperp.com
 | `10-anti-hallucination.mdc` | Larangan mengarang menu/API/status |
 | `11-cross-menu-navigation.mdc` | Trace alur lintas modul & menu terkait |
 | `12-jira-card-format.mdc` | Format Bug / Improvement / Change Requirement + trigger word |
-| `13-test-case-format.mdc` | Standar `TC-*.md`, DRAFT naming, renumber, expected dari requirement |
+| `13-test-case-format.mdc` | Standar `TC-*.md`, DRAFT naming, `#renumber-tc` (semua menu), expected dari requirement |
 | `14-playwright-e2e.mdc` | Eksekusi Playwright — fidelity TC, run scope, auth, POM |
-| `15-playwright-multi-repo.mdc` | Routing sumber baca: docs (requirement) vs `olshoperp` / `olshoperp-frontend` (khusus Playwright) |
+| `15-playwright-multi-repo.mdc` | BUILD vs RUN: docs-only re-test jika TC automation lengkap; FE/BE hanya BUILD/debug |
 
-## Repo sibling (Playwright saja)
+## Playwright — dua mode (ringkas)
+
+| Mode | Kapan | Repo app |
+|------|-------|----------|
+| **RUN** | TC punya spec + registry + POM lengkap | ❌ — cukup `olshoperp-docs` |
+| **BUILD** | Automation baru / belum lengkap | ✅ setelah `shared/` + `pom-registry/` |
+
+Detail: `15-playwright-multi-repo.mdc`.
+
+## Repo sibling (Playwright BUILD / debug)
 
 | Repo | Path | Peran |
 |------|------|-------|
@@ -61,7 +70,7 @@ https://staging.olshoperp.com
 | `olshoperp` | `../olshoperp` | Backend — API, validasi |
 | `olshoperp-frontend` | `../olshoperp-frontend` | Frontend — UI, selector, `e2e/` |
 
-Jira card & jawaban QA umum: **hanya** `olshoperp-docs`. Repo app hanya untuk tugas Playwright (`15`).
+Requirement & expected result tetap dari **`olshoperp-docs`**. Repo app untuk mode **BUILD** atau **debug FAIL** saja — lihat `15-playwright-multi-repo.mdc`.
 
 ## Layer doc per audience
 

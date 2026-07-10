@@ -92,6 +92,7 @@ run_history: []
 
 - Selalu `false` dan `automated_spec: null` saat create — spec Playwright ditulis manual oleh QA/dev terpisah
 - Jangan set `automated: true` kecuali user eksplisit minta dan menyebut path spec-nya
+- Saat `automated: true` + spec + registry + POM lengkap → re-run TC mengikuti mode **RUN** docs-only (`15-playwright-multi-repo.mdc` § Dua mode) — agent tidak perlu baca `olshoperp` / `olshoperp-frontend` lagi kecuali debug FAIL
 
 ---
 
@@ -181,22 +182,44 @@ qa-docs/{menu-slug}/
 
 ## 9. Trigger renumber — khusus QA lead
 
-**Trigger phrase:** `#renumber-tc {menu-slug}`
+**Trigger phrase (utama):** `#renumber-tc`
 
-Contoh: `#renumber-tc accounting-customer-payment`
+**Trigger opsional (satu menu saja):** `#renumber-tc {menu-slug}`
 
-Saat trigger ini dijalankan, agent:
-1. Scan semua file `TC-*.md` di `qa-docs/{menu-slug}/test-cases/`
-2. Pisahkan TC yang sudah bernomor (non-DRAFT) dan yang masih DRAFT
-3. Sort semua DRAFT by timestamp di nama file (ascending — timestamp terkecil = nomor terkecil)
-4. Tentukan nomor lanjutan dari TC bernomor terakhir yang sudah ada (jika belum ada, mulai dari 001)
-5. Rename file DRAFT → `TC-{PREFIX}-{NNN}.md` dan update `tc_code` di frontmatter
-6. Update `test-cases/README.md` dengan daftar TC final
-7. Laporkan ke user: daftar rename yang dilakukan (old name → new name + tc_code baru)
+Contoh:
+- `#renumber-tc` — scan semua menu yang punya folder `test-cases/`
+- `#renumber-tc accounting-customer-payment` — hanya menu tersebut
+
+### Scope scan
+
+| Trigger | Folder yang di-scan |
+|---------|---------------------|
+| `#renumber-tc` | Semua `qa-docs/{menu-slug}/test-cases/` di repo |
+| `#renumber-tc {menu-slug}` | Hanya `qa-docs/{menu-slug}/test-cases/` — verifikasi slug ada di manifest |
+
+Menu tanpa file `TC-*-DRAFT-*.md` → dilewati (bukan error).
+
+### Alur per menu (dijalankan berulang untuk tiap menu yang punya DRAFT)
+
+1. Scan file `TC-*.md` di `qa-docs/{menu-slug}/test-cases/`
+2. Pisahkan TC yang sudah bernomor (non-DRAFT) dan yang masih DRAFT (`TC-{PREFIX}-DRAFT-{timestamp}.md`)
+3. Jika tidak ada DRAFT → skip menu ini
+4. Sort semua DRAFT by timestamp di nama file (ascending — timestamp terkecil = nomor terkecil)
+5. Tentukan nomor lanjutan dari TC bernomor terakhir yang sudah ada (jika belum ada, mulai dari 001)
+6. `{PREFIX}` — dari TC bernomor existing di folder yang sama; jika folder kosong (hanya DRAFT), derive dari slug (contoh: `accounting-customer-payment` → `ARCP`)
+7. Rename file DRAFT → `TC-{PREFIX}-{NNN}.md` dan update `tc_code` di frontmatter
+8. Update `test-cases/README.md` menu tersebut dengan daftar TC final
+9. Lanjut ke menu berikutnya yang punya DRAFT
+
+### Laporan ke user
+
+Setelah selesai, laporkan ringkasan per menu:
+- Menu yang di-renumber: `old name → new name + tc_code`
+- Menu tanpa DRAFT: sebutkan "(tidak ada DRAFT)" atau tidak perlu dilist jika banyak menu bersih
 
 TC yang sudah bernomor (non-DRAFT) **tidak diubah nomornya** — hanya DRAFT yang di-assign nomor baru.
 
-Trigger ini hanya dijalankan saat user mengetiknya secara eksplisit. Agent tidak boleh menjalankan renumber otomatis di situasi lain.
+Trigger ini hanya dijalankan saat user mengetiknya secara eksplisit. Agent tidak boleh menjalankan renumber otomatis di situasi lain (termasuk setelah buat TC DRAFT baru).
 
 ---
 

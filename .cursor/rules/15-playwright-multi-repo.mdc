@@ -9,7 +9,55 @@ Rule ini aktif **hanya** untuk tugas Playwright: menulis/menjalankan spec, crawl
 
 Untuk pertanyaan QA umum, analisis requirement, atau Jira card → tetap **`olshoperp-docs` saja** (lihat `02-repo-context`, `10-anti-hallucination`, `12-jira-card-format`).
 
-Standar eksekusi run, retry, auth: `14-playwright-e2e.mdc`.
+Standar eksekusi run, retry, auth, POM lookup: `14-playwright-e2e.mdc`.
+
+---
+
+## Dua mode — BUILD vs RUN
+
+Tujuan baca `olshoperp` / `olshoperp-frontend` adalah **membantu menemukan selector & perilaku UI/API saat automation belum matang** — bukan setiap kali test dijalankan ulang.
+
+| Mode | Kapan | Baca `olshoperp-docs` | Baca `olshoperp` / `olshoperp-frontend` |
+|------|-------|----------------------|----------------------------------------|
+| **BUILD** | TC baru, tulis spec, tambah POM/registry, menu belum punya automation | ✅ Wajib | ✅ Boleh — setelah cek asset docs (lihat § Urutan lookup) |
+| **RUN** | Re-test TC yang **automation-nya sudah lengkap** (lihat § Kriteria lengkap) | ✅ Wajib | ❌ **Tidak** — kecuali pengecualian debug (lihat § Pengecualian RUN) |
+
+**Default jika ragu:** mulai RUN (docs-only). Buka repo app hanya jika kriteria BUILD terpenuhi atau ada pengecualian debug.
+
+---
+
+## Kriteria TC automation lengkap (syarat mode RUN)
+
+Semua poin berikut **harus terpenuhi** sebelum agent menetapkan mode RUN untuk TC tersebut:
+
+| # | Kriteria | Cek di |
+|---|----------|--------|
+| 1 | File TC ada (`TC-*.md`, bukan DRAFT tanpa spec) | `qa-docs/{slug}/test-cases/` |
+| 2 | `automated: true` | frontmatter TC |
+| 3 | `automated_spec` mengarah ke file spec yang **ada** | path di frontmatter TC |
+| 4 | Spec berisi tag `@TC-{CODE}` yang **match** `tc_code` | file `automated_spec` |
+| 5 | Registry menu ada | `tests/pom-registry/{menu}.yaml` (atau path di registry) |
+| 6 | POM helper ada | `tests/helpers/{menu}.ts` (atau `pom_helper` di registry) |
+
+Jika salah satu kosong → mode **BUILD** (boleh baca repo app setelah urutan lookup § bawah).
+
+Contoh RUN: user minta `npm run test:tc -- "@TC-ARCP-001"` dan keenam kriteria di atas OK → baca TC + requirement + registry + helper + spec di **olshoperp-docs** saja, lalu jalankan.
+
+---
+
+## Pengecualian RUN — kapan boleh buka repo app lagi
+
+Meski TC sudah lengkap, baca `olshoperp` / `olshoperp-frontend` **hanya jika**:
+
+| Kondisi | Repo | Urutan |
+|---------|------|--------|
+| FAIL: locator / selector / timeout / elemen tidak ditemukan | `olshoperp-frontend` | Cek `pom-registry` + `helpers` dulu (`14` §8A) — FE hanya jika gap tercatat |
+| FAIL: API / validasi backend / HTTP error | `olshoperp` | Setelah cek apakah gotcha sudah di POM (`14` §8B) |
+| User eksplisit minta investigasi UI/kode | sesuai kebutuhan | Laporkan alasan buka repo app |
+| TC / steps / expected **berubah** sejak automation dibuat | keduanya boleh | Kembali ke mode BUILD untuk step yang berubah |
+| Elemen baru belum ada di registry | `olshoperp-frontend` | Update registry + helper di docs repo — bukan selector di spec |
+
+Setelah perbaikan POM/registry → run berikutnya kembali **RUN docs-only**.
 
 ---
 
@@ -19,25 +67,39 @@ Asumsi tiga repo sebagai **sibling** di folder GitHub yang sama:
 
 | Repo | Path relatif dari `olshoperp-docs` | Peran |
 |------|-------------------------------------|-------|
-| **olshoperp-docs** (workspace ini) | `.` | Requirement, TC, expected result, manifest |
-| **olshoperp** | `../olshoperp` | Backend — API, controller, job, validasi server |
-| **olshoperp-frontend** | `../olshoperp-frontend` | Frontend — komponen UI, selector, route FE, folder `e2e/` |
+| **olshoperp-docs** (workspace ini) | `.` | Requirement, TC, expected, manifest, **POM registry & helpers** |
+| **olshoperp** | `../olshoperp` | Backend — API, controller, validasi (mode BUILD / debug API) |
+| **olshoperp-frontend** | `../olshoperp-frontend` | Frontend — komponen UI, selector (mode BUILD / debug UI) |
 
 Jika path sibling tidak ada, laporkan ke user — jangan tebak lokasi repo.
 
 ---
 
-## Matriks sumber baca (khusus Playwright)
+## Urutan lookup sebelum buka repo app (mode BUILD)
 
-| Kebutuhan | Sumber utama | Bukan dari |
-|-----------|--------------|------------|
-| Expected result, langkah TC, precondition | `qa-docs/{slug}/requirement.md`, `qa-docs/{slug}/test-cases/TC-*.md` | Infer hanya dari kode app |
-| Slug menu, `menu_name`, route staging | `qa-docs/_meta/manifest.yaml` | Tebak dari URL FE saja |
-| Selector, label UI, struktur halaman | `olshoperp-frontend` (`src/`, `e2e/helpers/`) | Docs atau asumsi umum |
-| Endpoint API, payload, response, validasi server | `olshoperp` (routes, controllers, jobs) | Field `code_globs` manifest tanpa baca file |
-| Sidebar crawl / navigasi menu | `olshoperp-frontend` + `qa-docs/sidebar-menu/` | — |
+Wajib untuk menu pola transaksi **SCM** (dan disarankan untuk semua menu):
 
-Prioritas requirement tetap: `requirement.md` > `knowledge-base.md` > `technical.md` — sama seperti persona QA (`05-qa-engineer-persona`).
+1. `tests/helpers/shared/`
+2. `tests/pom-registry/purchase-requisition.yaml` + `tests/pom-registry/purchase-order.yaml` (bandingkan pola)
+3. `tests/pom-registry/{menu-slug}.yaml` menu target
+4. `tests/helpers/{menu}.ts`
+5. Spec existing dengan tag serupa di `tests/specs/`
+6. **Baru kemudian** `olshoperp-frontend` / `olshoperp` — hanya untuk elemen/flow yang belum tercover
+
+Detail gotcha SCM (status radio, cleanup PO With PR): `14-playwright-e2e.mdc` §8B.
+
+---
+
+## Matriks sumber baca per mode
+
+| Kebutuhan | RUN (TC lengkap) | BUILD (belum lengkap) |
+|-----------|------------------|------------------------|
+| Expected, steps, precondition | `requirement.md` + `TC-*.md` | sama |
+| Selector, klik, form | `pom-registry` + `helpers` + `shared/` | sama → lalu FE jika gap |
+| Endpoint, payload API | gotcha di POM / notes registry | `olshoperp` |
+| Tulis spec baru | — | TC + registry; FE/BE jika perlu |
+
+Prioritas requirement: `requirement.md` > `knowledge-base.md` > `technical.md` (`05-qa-engineer-persona`).
 
 ---
 
@@ -45,48 +107,43 @@ Prioritas requirement tetap: `requirement.md` > `knowledge-base.md` > `technical
 
 | Repo | Folder automation | Kapan dipakai |
 |------|-------------------|---------------|
-| `olshoperp-docs` | `tests/` | TC-driven automation dari qa-docs; sidebar crawler |
-| `olshoperp-frontend` | `e2e/` | Regression staging; spec terhubung Test Case Library |
+| `olshoperp-docs` | `tests/` | Semua mode — sumber utama POM + spec TC-driven |
+| `olshoperp-frontend` | `e2e/` | Legacy regression; mode BUILD atau debug |
 
-Sebelum menulis atau mengubah spec: baca TC terkait (`automated_spec`, README `test-cases/`) — tentukan repo target yang benar.
+Sebelum tulis/ubah spec: tentukan mode BUILD vs RUN dari § Kriteria lengkap.
 
 ---
 
 ## Larangan scope bleed
 
-| Konteks | Boleh baca repo app? | AS-IS requirement dari mana? |
-|---------|----------------------|------------------------------|
-| Playwright / crawler / automation | ✅ `olshoperp` + `olshoperp-frontend` | **`olshoperp-docs`** (TC + requirement) |
-| Jawaban QA umum | ❌ — docs only (`10-anti-hallucination`) | **`olshoperp-docs`** |
-| Jira Bug / Improvement / CR | ❌ untuk Expected & AS-IS bisnis | **`olshoperp-docs`** (`12-jira-card-format`) |
+| Konteks | Repo app | AS-IS requirement |
+|---------|----------|-------------------|
+| RUN — re-test TC lengkap | ❌ default | `olshoperp-docs` |
+| BUILD / debug / TC baru | ✅ terbatas (§ atas) | `olshoperp-docs` |
+| Jawaban QA umum | ❌ | `olshoperp-docs` |
+| Jira card | ❌ untuk Expected/AS-IS | `olshoperp-docs` (`12`) |
 
-- Temuan dari kode atau run Playwright **bukan** pengganti requirement — label **Catatan automation (dari kode/run)** jika perlu disebutkan.
-- Actual ≠ requirement di run E2E → laporkan sebagai potential doc gap atau bug candidate; **jangan** update docs otomatis (`03-qa-docs-immutable`).
+Temuan kode/run ≠ requirement — label **Catatan automation**. Actual ≠ docs → gap/bug candidate; jangan auto-edit docs (`03`).
 
 ---
 
 ## Jira card — docs tetap referensi utama
 
-Meski investigasi Playwright memakai `olshoperp` / `olshoperp-frontend`:
-
-- **Expected Result** / **Expected Improvement** / **New Requirement (TO-BE)** → validasi dari `qa-docs/{slug}/requirement.md`
-- **Actual Result** → boleh dari output Playwright (error UI, HTTP status, screenshot path)
-- Detail teknis (nama controller, selector, spec path) → **Additional Context** saja, bukan section utama card
-
-Lihat validasi Expected di `12-jira-card-format.mdc`.
+Expected / AS-IS bisnis dari `requirement.md` — bukan dari kode app. Temuan Playwright → Actual Result / Additional Context. Lihat `12-jira-card-format.mdc`.
 
 ---
 
 ## Workflow Playwright (ringkas)
 
-1. Resolve `{menu-slug}` via `manifest.yaml` (`olshoperp-docs`)
-2. Baca TC + `requirement.md` — steps & expected result adalah hukum (`14` §1)
-3. Baca `olshoperp-frontend` untuk selector/UI; `olshoperp` jika TC menyentuh API atau validasi server
-4. Tulis/jalankan spec di repo target (`tests/` atau `e2e/`) per `14-playwright-e2e.mdc`
-5. Laporkan PASS/FAIL **terhadap expected dari TC/requirement**, bukan terhadap perilaku kode semata
+1. Resolve `{menu-slug}` via `manifest.yaml`
+2. Tentukan **BUILD** vs **RUN** dari § Kriteria lengkap
+3. Baca TC + `requirement.md` — steps & expected adalah hukum (`14` §1)
+4. **RUN:** registry + helper + spec → jalankan (`14`)
+5. **BUILD:** urutan lookup § atas → FE/BE jika gap → tulis/update POM & spec
+6. Laporkan PASS/FAIL vs expected **dari TC/requirement**
 
 ---
 
 ## Kredensial & company E2E
 
-Ikuti `13-test-case-format.mdc` §4 dan `14-playwright-e2e.mdc` §7 — tidak menduplikasi di rule ini.
+Ikuti `13-test-case-format.mdc` §4 dan `14-playwright-e2e.mdc` §7.

@@ -28,14 +28,7 @@ alwaysApply: true
 
 Tugas **bukan** Playwright: repo ini docs-only — jangan baca/mengutip kode dari repo app sebagai AS-IS requirement (`10-anti-hallucination`).
 
-Tugas **Playwright** (spec, crawler, selector, debug E2E): agent **boleh** membaca repo sibling:
-
-| Repo | Path relatif | Isi relevan |
-|------|--------------|-------------|
-| `olshoperp` | `../olshoperp` | Backend API, controller, validasi |
-| `olshoperp-frontend` | `../olshoperp-frontend` | UI, komponen, `e2e/` |
-
-Requirement & expected result tetap dari **`olshoperp-docs`** — lihat `15-playwright-multi-repo.mdc`.
+Requirement & expected result tetap dari **`olshoperp-docs`**. Repo app (`olshoperp`, `olshoperp-frontend`) hanya mode **BUILD** automation atau **debug FAIL** — bukan setiap re-run TC lengkap (`15-playwright-multi-repo.mdc`).
 
 ## Di luar scope default
 
