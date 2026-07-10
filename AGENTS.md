@@ -31,7 +31,15 @@ https://staging.olshoperp.com
 
 ## Skill
 
-**Abaikan** skill yang direferensikan di file `qa-docs/`. Hanya ikuti skill dari tuning diskusi ini atau request khusus user.
+**Abaikan** skill yang direferensikan di file `qa-docs/`.
+
+Skill **repo ini** (`.cursor/skills/`):
+
+| Skill | Fungsi |
+|-------|--------|
+| `caveman` | Mode jawaban ringkas — hemat token output (~65–75%). Default full. Matikan: `stop caveman` |
+
+Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit user.
 
 ## Rules
 
