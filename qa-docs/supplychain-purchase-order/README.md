@@ -17,6 +17,7 @@
 | 1.0 | 2026-06-19 | Initial draft from codebase auto-analysis |
 | 2.0 | 2026-07-05 | Full rewrite: PM merge, import/export/print/pricing, UI buttons, gaps §19–§20 |
 | 2.1 | 2026-07-05 | GAP clarifications; §21 Pending Items Major; import §12 expanded |
+| 2.2 | 2026-07-10 | Cross-ref PI COA override; koreksi posisi jurnal Other Cost/Disc |
 
 ## Related menus
 
@@ -26,7 +27,7 @@
 | [Purchase Inbound (GRN)](../supplychain-new-purchase-inbound/README.md) | GRN → processed/complete |
 | [General Company](../generalsetting-general-company/) | Supplier master |
 | [Other Cost](../omni-other-cost/) | Additional cost COA |
-| [Purchase Invoice](../accounting-supplier-invoice/requirement.md) | Penjurnalan other cost/disc; dynamic allocation v2.0 |
+| [Purchase Invoice](../accounting-supplier-invoice/requirement.md) | Penjurnalan other cost/disc; dynamic allocation; **COA override** di PI (v2.1) |
 
 ## Key notes (v2.0)
 

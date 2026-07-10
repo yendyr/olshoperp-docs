@@ -196,14 +196,14 @@ Tidak ada dedicated export class. `DataTablesV3.exportActivePageOnly()` — kolo
 
 ## 8. Related QA Docs
 
-| Menu | Slug |
-|------|------|
-| Instant Settlement | `accounting-settlement-upload` |
-| Purchase Order | `supplychain-purchase-order` |
-| Customer Invoice | `accounting-customer-invoice` |
-| Supplier Invoice | `accounting-supplier-invoice` |
-| Sales Order General | `sales-order-general` |
-| Other Discount | `omni-other-discount` |
+| Menu | Slug | Catatan |
+|------|------|---------|
+| Instant Settlement | `accounting-settlement-upload` | |
+| Purchase Order | `supplychain-purchase-order` | |
+| Customer Invoice | `accounting-customer-invoice` | |
+| Supplier Invoice | `accounting-supplier-invoice` | COA default dari master; **override editable** di PI sebelum approve |
+| Sales Order General | `sales-order-general` | |
+| Other Discount | `omni-other-discount` | |
 
 ## 9. COA class limits (per channel)
 

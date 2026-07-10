@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 2.0
-last_updated: 2026-07-05
+version: 2.1
+last_updated: 2026-07-10
 owner: QA - Yemima
 status: review
 ---
@@ -26,12 +26,15 @@ status: review
 | Detail items | `SupplierInvoiceDetailItemController.php` |
 | Other cost | `SupplierInvoiceOtherCostController.php` |
 | Other discount | `Modules/Accounting/Http/Controllers/SupplierInvoiceOtherDiscountController.php` |
+| FormRequest OC/OD | `SupplierInvoiceOtherCostRequest`, `SupplierInvoiceOtherDiscountRequest` |
 | Model header | `Modules/Accounting/Entities/SupplierInvoice.php` |
 | Model detail | `SupplierInvoiceDetailItem.php` |
+| Model OC/OD | `SupplierInvoiceOtherCost`, `SupplierInvoiceOtherDiscount` |
 | Pricing | `Modules/Accounting/Services/SupplierInvoicePrice.php` |
-| Journal | `Modules/Accounting/Services/JournalProcess.php` → `supplierInvoiceAutoJournal()` |
+| Journal | `app/Helpers/Accounting/JournalProcess.php` → `supplierInvoiceAutoJournal()` |
+| COA select2 | `ChartOfAccountController@select2Child` |
 | Export | `SupplierInvoiceExportJob` |
-| FormRequest | `StoreSupplierInvoiceRequest`, `UpdateSupplierInvoiceRequest` |
+| FormRequest header | `StoreSupplierInvoiceRequest`, `UpdateSupplierInvoiceRequest` |
 
 ### Frontend
 
@@ -41,8 +44,11 @@ status: review
 | List | `src/pages/Accounting/AccountPayable/SupplierInvoice/DataList.vue` |
 | Form | `Form.vue` |
 | Outstanding | `DatalistOutstanding.vue`, `DatalistOutstandingGroup.vue` |
+| Other cost grid | `OtherCost.vue` — kolom COA via `CoaSelect` |
+| Other discount grid | `OtherDiscount.vue` — kolom COA via `CoaSelect` |
 | Other cost PO select | `OtherCostSelectFromPO.vue` |
 | Other discount PO select | `OtherDiscountSelectFromPO.vue` |
+| Shared COA picker | `src/pages/Accounting/components/CoaSelect.vue` → `accounting/chart-of-account/select2/child` |
 | Detail grid | `DetailItemDataList.vue` |
 
 ### Account Payment (cross-ref)
@@ -114,6 +120,22 @@ status: review
 | `prepared_to_invoice` | Set when cost linked to draft PI |
 | `processed_to_invoice` | Set on PI approve |
 
+### PI other cost / discount (`accounting_supplier_invoice_other_costs` / `_other_discounts`)
+
+| Column | Notes |
+|--------|-------|
+| `other_cost_id` / `other_discount_id` | FK master |
+| `other_cost_name` / `other_discount_name` | Snapshot label |
+| `expense_coa_id` | **COA transaksi** — default dari master/PO; **editable** sebelum approve |
+| `purchase_order_other_cost_id` / `_discount_id` | Null = entry dari master; filled = dari PO (amount locked) |
+| `amount`, `description` | Amount locked jika dari PO |
+
+**Update rules (`SupplierInvoiceOtherCostController@update` / OtherDiscount):**
+
+- Jika dari PO (`purchase_order_*_id` set): `checkInvalidModified` menolak ubah label & amount; **mengizinkan** ubah `expense_coa_id` + description
+- Jika dari master: amount/description/`expense_coa_id` boleh diubah
+- Gate: `$supplier_invoice->can_update` (false setelah approved)
+
 ---
 
 ## 4. Pricing Service
@@ -151,10 +173,12 @@ grandTotal.after_vat  = subTotal.after_vat  + totalOtherCost - totalOtherDiscoun
 |-------|-----|--------------|
 | Dr | Unbilled Goods (product) | qty_base × DPP_unit × PO_rate |
 | Dr | Tax COA | pro-rata VAT on qty |
-| Dr | Other cost expense | primary amount |
-| Cr | Other discount expense | primary amount |
+| Dr | **`$other_cost->expense_coa_id`** (baris PI) | primary amount |
+| Cr | **`$other_discount->expense_coa_id`** (baris PI) | primary amount |
 | Dr/Cr | Exchange diff COA | net diff |
 | Cr | Account Payable | balance |
+
+Approve juga memvalidasi `expense_coa.owned_by == PI.owned_by` untuk setiap baris OC/OD.
 
 ---
 
@@ -211,6 +235,10 @@ Updates PI `prepared_to_payment_amount` on payment detail store/update/delete.
 | No duplicate inbound line on same PI | Detail store |
 | Cannot update header fields if details exist | Update request |
 | Other cost amount ≤ PO remaining | OtherCost store |
+| PO-sourced OC/OD: cannot change label/amount | `checkInvalidModified` |
+| PO-sourced OC/OD: **may** change `expense_coa_id` | OtherCost/OtherDiscount `@update` |
+| `expense_coa_id` FormRequest | `nullable` (OI-COA-03 — enforce leaf/owner di API masih open) |
+| COA owned_by match company | Journal approve |
 
 ---
 
@@ -222,8 +250,17 @@ Updates PI `prepared_to_payment_amount` on payment detail store/update/delete.
 | Totals computed | API show includes `grand_total_*`, FE `totalProduct` |
 | Outstanding overlay | `DatalistOutstanding.vue` |
 | PO cost multiselect | `OtherCostSelectFromPO.vue` → `supplychain/purchase-order/outstanding-other-costs/select2` |
+| **Inline COA edit** | `OtherCost.vue` / `OtherDiscount.vue` → `CoaSelect` → PUT `.../other-costs/{id}` |
+| Amount locked if PO ref | `:disabled="data.purchase_order_other_cost !== null"` |
 | Print | Calls print API — wrong PDF backend |
 | Min backdate 6 months | Date picker config |
+
+### COA select2 filter (`CoaSelect` → `select2/child`)
+
+- Active (`status=1`)
+- Leaf only (exclude parents in `coa_trees`)
+- **No** COA class filter
+- Company-scoped list; selected id can load without company scope for display
 
 ---
 
@@ -237,6 +274,9 @@ Updates PI `prepared_to_payment_amount` on payment detail store/update/delete.
 | Void | Document expected failure — no reversal today |
 | Print | Assert 200 + correct view name (currently fails expectation) |
 | Exchange diff | Foreign PO + different PI rate |
+| **COA override** | Update `expense_coa_id` on OC/OD → approve → journal `coa_id` matches override |
+| **COA default** | No override → journal matches master/PO COA |
+| **PO lock** | PUT amount on PO-sourced line → 4xx; PUT `expense_coa_id` → 200 |
 
 ---
 

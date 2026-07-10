@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.1
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-07-10
 owner: QA - Yemima
 status: review
 audience: operator
@@ -26,10 +26,11 @@ audience: operator
 
 1. Buat PO → pilih **With PR** atau **Without PR** → isi supplier, currency, kurs
 2. Tambah **Detail** (dari outstanding PR atau pilih produk)
-3. (Opsional) Other Cost / Other Discount
+3. (Opsional) Other Cost / Other Discount — COA dari master ikut ke PI sebagai default; di PI COA bisa diganti sebelum approve (amount dari PO tetap locked)
 4. Set status **Open** → **Approve**
 5. Buat **Purchase Inbound** dari PO approved
 6. Saat semua qty diterima → **Complete**; atau **Close** manual jika sisa qty tidak dilanjutkan
+7. Buat **Purchase Invoice** dari inbound — tagih barang ± Additional Cost/Disc
 
 ---
 

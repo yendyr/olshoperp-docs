@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-other-cost
 menu_name: "Other Cost"
-version: 1.3
-last_updated: 2026-06-23
+version: 1.4
+last_updated: 2026-07-10
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -19,6 +19,7 @@ legacy_sources: []
 | 1.1 | 2026-06-23 | QA - Yemima | Klarifikasi QA atas V-30–V-35 & open items; tambah requirement Import TO-BE; selaraskan Code max 50 |
 | 1.2 | 2026-06-23 | QA - Yemima | Konfirmasi PM atas open items; audit import AS-IS vs TO-BE (§4.4); cross-ref menu konsumen |
 | 1.3 | 2026-06-23 | QA - Yemima | Koreksi: Applied Store import pakai **store name** (bukan code) — selaras codebase & form manual; batalkan IMP-01 |
+| 1.4 | 2026-07-10 | QA - Yemima | Cross-ref: COA di Master = **default** untuk PI; override COA per baris di Purchase Invoice (§6) |
 
 **Nama lain menu:** Other Cost, Master Other Cost  
 **UI route:** `/omni/other-cost`  
@@ -397,11 +398,13 @@ Gunakan file xlsx dengan header persis: `Code | Name | Other Cost COA | Applied 
 | Purchase Order | [supplychain-purchase-order](../supplychain-purchase-order/requirement.md) | Picker other cost di tab header; line `scm_purchase_order_other_costs`; warisan ke PI |
 | Sales Order General | [sales-order-general](../sales-order-general/requirement.md) | Tab other cost; import sheet 2; settlement general |
 | Customer Invoice (SI) | [accounting-customer-invoice](../accounting-customer-invoice/requirement.md) | Tab other cost; warisan dari SO |
-| Supplier Invoice (PI) | [accounting-supplier-invoice](../accounting-supplier-invoice/requirement.md) | Tab other cost + from PO; warisan dari PO |
+| Supplier Invoice (PI) | [accounting-supplier-invoice](../accounting-supplier-invoice/requirement.md) | Tab other cost + from PO; **COA default dari master, editable override per baris** sebelum approve — [PI §8.3](../accounting-supplier-invoice/requirement.md#83-coa-editable-per-baris-change-req-2026-07) |
 | Instant Settlement | [accounting-settlement-upload](../accounting-settlement-upload/requirement.md) | Template General: kolom `OC:{code}`; filter Applied Store — [§4.6](../accounting-settlement-upload/requirement.md) |
 | Other Discount | [omni-other-discount](../omni-other-discount/README.md) | Master paralel (struktur serupa) |
 
 **Prasyarat bersama:** Other Cost harus **active** untuk muncul di dropdown transaksi baru & template settlement. Inactive tetap valid untuk line warisan.
+
+> **Catatan PI (v2.1):** Mengubah COA di Master Other Cost **tidak** mengubah baris PI yang sudah tersimpan. Sebaliknya, override COA di PI **tidak** mengubah master. Class COA di form master tetap dibatasi (Expense / ORev); di PI override memakai `select2/child` **tanpa** batasan class (hanya active + leaf).
 
 ---
 

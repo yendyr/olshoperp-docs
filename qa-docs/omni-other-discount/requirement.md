@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-other-discount
 menu_name: "Other Discount"
-version: 1.0
-last_updated: 2026-06-23
+version: 1.1
+last_updated: 2026-07-10
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -16,6 +16,7 @@ legacy_sources: []
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-06-23 | QA - Yemima | Konsolidasi requirement PM + verifikasi AS-IS codebase; selaraskan jawaban konsisten dengan [Other Cost](../omni-other-cost/requirement.md) |
+| 1.1 | 2026-07-10 | QA - Yemima | Cross-ref: COA di Master = **default** untuk PI; override COA per baris di Purchase Invoice (§6) |
 
 **Nama lain menu:** Other Discount, Master Other Discount  
 **UI route:** `/omni/other-discount`  
@@ -278,11 +279,13 @@ Header: `Code | Name | Other Discount COA | Applied Store | Description`
 | Sales Order General | [sales-order-general](../sales-order-general/requirement.md) | Tab other discount |
 | Sales Order Platform | `sales-order-general` / Omni SO | Tab other discount |
 | Customer Invoice (SI) | [accounting-customer-invoice](../accounting-customer-invoice/requirement.md) | Tab + warisan SO |
-| Supplier Invoice (PI) | [accounting-supplier-invoice](../accounting-supplier-invoice/requirement.md) | Tab + warisan PO |
+| Supplier Invoice (PI) | [accounting-supplier-invoice](../accounting-supplier-invoice/requirement.md) | Tab + warisan PO; **COA default dari master, editable override per baris** sebelum approve — [PI §8.3](../accounting-supplier-invoice/requirement.md#83-coa-editable-per-baris-change-req-2026-07) |
 | Instant Settlement | [accounting-settlement-upload](../accounting-settlement-upload/requirement.md) | Template General: `OD:{code}`; filter Applied Store — [§4.6](../accounting-settlement-upload/requirement.md) |
 | Other Cost | [omni-other-cost](../omni-other-cost/requirement.md) | Master paralel |
 
 **AR/AP:** Other Discount muncul **via Customer Invoice / Supplier Invoice** (line `accounting_*_other_discounts`), bukan field master langsung di header AR/AP.
+
+> **Catatan PI (v2.1):** Override COA di Additional Discount PI tidak mengubah master. Class COA di form master tetap dibatasi (TO-BE: Revenue / ORev / COGS); di PI override memakai `select2/child` **tanpa** batasan class (hanya active + leaf).
 
 ---
 

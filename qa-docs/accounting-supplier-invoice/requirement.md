@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 2.0
-last_updated: 2026-07-05
+version: 2.1
+last_updated: 2026-07-10
 owner: QA - Yemima
 status: review
 ---
@@ -13,13 +13,14 @@ status: review
 **Modul:** Finance & Accounting / Account Payable  
 **Prefix transaksi:** `PI-`  
 **Audience:** PM, Finance, Operations, QA, Support, Developer  
-**Status:** AS-IS verified against codebase per 2026-07-05
+**Status:** AS-IS verified against codebase per 2026-07-10
 
 **UI route:** `/accounting/supplier-invoice`  
 **API base:** `{VITE_API_URL}accounting/supplier-invoice`  
 **Table:** `accounting_supplier_invoices` · `accounting_supplier_invoice_detail_items` · other cost/discount
 
-**PM source:** `purchase-invoice-requirement-okt2025.md` v1.1 (29 Okt 2025)
+**PM source:** `purchase-invoice-requirement-okt2025.md` v1.1 (29 Okt 2025)  
+**Change req:** COA Additional Cost & Discount editable per transaksi (2026-07)
 
 **Payment downstream:** [Account Payment](../accounting-supplier-payment/requirement.md)
 
@@ -31,6 +32,7 @@ status: review
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft AS-IS codebase |
 | 2.0 | 2026-07-05 | QA - Yemima | Full PM merge v1.1, journal/VAT shift, dynamic cost, UI/calc detail, inbound & payment relasi, gaps §19–§21 |
+| 2.1 | 2026-07-10 | QA - Yemima | COA Additional Cost/Discount **editable** per baris di level PI (§8.3–§8.6); journal pakai COA transaksi; cross-ref master OC/OD, PO, COA |
 
 ---
 
@@ -264,7 +266,7 @@ grandTotal.after_vat  = subTotal.after_vat  + totalOtherCost - totalOtherDiscoun
 
 ---
 
-## 8. Additional Cost & Discount (Dynamic — PM v1.1)
+## 8. Additional Cost & Discount (Dynamic — PM v1.1 + COA override)
 
 ### 8.1 PM concept
 
@@ -274,19 +276,81 @@ User **memilih** Other Cost / Other Discount dari PO untuk invoice **ini** atau 
 - Barang + Cost
 - Cost saja (barang sudah ditagih di PI sebelumnya)
 
-### 8.2 AS-IS implementation
+### 8.2 AS-IS implementation (insert / source)
 
 | Mechanism | Detail |
 |-----------|--------|
-| **Auto on first line add** | `firstOrCreate` `SupplierInvoiceOtherCost/OtherDiscount` from PO line's PO header costs — sets PO `prepared_to_invoice=true` |
-| **Manual select from PO** | `OtherCostSelectFromPO.vue` / `OtherDiscountSelectFromPO.vue` — multiselect `supplychain/purchase-order/outstanding-other-costs/select2` filtered by supplier, currency, PO ids |
-| **Manual entry** | `OtherCostForm` — amount, description, other_cost_id |
+| **Auto on first line add** | `firstOrCreate` `SupplierInvoiceOtherCost/OtherDiscount` from PO line's PO header costs — sets PO `prepared_to_invoice=true`; `expense_coa_id` di-copy dari PO line |
+| **Manual select from PO** | `OtherCostSelectFromPO.vue` / `OtherDiscountSelectFromPO.vue` — multiselect outstanding filtered by supplier, currency, PO ids |
+| **Manual entry** | `OtherCostForm` / `OtherDiscountForm` — label master, amount, description; default `expense_coa_id` dari master |
 | **On approve** | PO flags → `processed_to_invoice=true`, `prepared_to_invoice=false` |
 | **On PI delete** | PO flags reset |
 
 **GAP-PI-14:** PM describes explicit tick-box per cost line; AS-IS uses multiselect add + auto-first-line — functionally similar but UI differs.
 
 **Over-bill guard:** Amount cannot exceed PO other cost/disc remaining (validate on store).
+
+### 8.3 COA editable per baris (Change Req 2026-07)
+
+**Background:** COA default dari Master Other Cost/Discount (atau warisan PO) sering perlu di-override per transaksi tanpa mengubah master — mis. freight biasanya ke COA 5100, tapi untuk PI tertentu dialokasikan ke COA lain.
+
+**Edit window:** Override COA hanya selama PI **belum approved** (`can_update = true`). Setelah approved, kolom COA read-only.
+
+| Aspek | Ref dari PO | Ref dari Master Other Cost/Disc |
+|-------|-------------|----------------------------------|
+| Label Other Cost/Disc | **Locked** | **Locked** (tidak ganti label setelah insert) |
+| Amount | **Locked** (harus sama dengan PO) | **Editable** (≥ 0) |
+| Description | Editable | Editable (max 150) |
+| **COA** | **Editable** | **Editable** |
+
+Default value kolom COA = COA yang ter-assign di label master (atau yang di-copy dari PO line saat insert). Jika user tidak mengubah, behavior journal sama seperti sebelumnya.
+
+### 8.4 Acceptance Criteria — kolom COA
+
+| ID | Kriteria | Status |
+|----|----------|--------|
+| AC-COA-01 | Kolom **COA** di datatable Section Additional Cost — semua baris (PO + master) | ✅ FE `OtherCost.vue` + `CoaSelect` |
+| AC-COA-02 | Kolom **COA** di datatable Section Additional Discount — sama | ✅ FE `OtherDiscount.vue` + `CoaSelect` |
+| AC-COA-03 | Default COA = master / PO line `expense_coa_id` | ✅ |
+| AC-COA-04 | Opsi COA dari Master COA via `GET accounting/chart-of-account/select2/child` — **tanpa filter class**; hanya **active** + **leaf** (child) | ✅ Verified codebase |
+| AC-COA-05 | Baris dari PO: Amount & Label locked; COA tetap bisa diubah | ✅ `checkInvalidModified` + update `expense_coa_id` |
+| AC-COA-06 | Journal approve memakai `expense_coa_id` **di baris PI** (bukan re-read master) | ✅ `JournalProcess::supplierInvoiceAutoJournal` |
+| AC-COA-07 | Setelah PI approved: COA tidak bisa diubah | ✅ `can_update` gate |
+
+### 8.5 Opsi COA — batasan teknis (VERIFY: CODEBASE)
+
+Endpoint: `accounting/chart-of-account/select2/child` (`ChartOfAccountController@select2Child` + FE `CoaSelect.vue`).
+
+| Filter | Berlaku? | Catatan |
+|--------|----------|---------|
+| COA Class | **Tidak** | Seluruh class boleh — beda dari master Other Cost/Disc yang membatasi class |
+| Active only (`status = 1`) | **Ya** | |
+| Leaf / child only | **Ya** | Parent (punya child di `coa_trees`) dikecualikan |
+| Company scope | **Ya** | Global scope company pada `ChartOfAccount`; COA terpilih bisa di-resolve `withoutCompanyScope` untuk display |
+| Owned-by match saat approve | **Ya** | Journal gagal jika `expense_coa.owned_by` ≠ PI `owned_by` |
+
+> **Implikasi QA:** Di PI, user bisa pilih COA class yang **tidak** diizinkan di form Master Other Cost/Disc. Itu **by design** untuk override transaksi. Pastikan COA tetap leaf + milik company yang sama agar approve tidak gagal.
+
+### 8.6 Test Scenario — COA override
+
+| # | Skenario | Expected |
+|---|----------|----------|
+| T01 | Buka PI dengan Additional Cost dari PO | Kolom COA muncul; default = COA dari PO/master |
+| T02 | Edit COA baris dari PO | COA tersimpan; Amount & Label tetap locked |
+| T03 | Edit COA baris dari Master Other Cost | COA tersimpan; Amount tetap editable |
+| T04 | Cek opsi COA di dropdown | Active + leaf; **tanpa** batasan class |
+| T05 | Approve PI setelah COA di-override | Journal Dr/Cr memakai COA yang dipilih user |
+| T06 | Approve tanpa ubah COA | Journal memakai COA default (no regression) |
+| T07 | Additional Discount (PO + master) | Perilaku identik §8.3 |
+| T08 | Coba ubah COA setelah approved | Field disabled / API reject modify |
+
+### 8.7 Open Items — COA override
+
+| # | Item | Status |
+|---|------|--------|
+| OI-COA-01 | Audit Log PI: apakah override `expense_coa_id` tampil Old/New sebagai code, name, atau `code \| name`? | **Partial** — entity Auditable + `transformAudit` format `code \| name`; konfirmasi tampilan UI Audit slideover |
+| OI-COA-02 | Duplicate / reverse (credit note) PI: apakah COA override ikut ter-copy atau reset ke master? | **Open** — konfirmasi PM |
+| OI-COA-03 | Validasi API `expense_coa_id` saat update: saat ini `nullable` di FormRequest — apakah perlu enforce exists + leaf + owned_by di store/update (bukan hanya saat approve)? | **Open** — tech debt |
 
 ---
 
@@ -305,10 +369,12 @@ User **memilih** Other Cost / Other Discount dari PO untuk invoice **ini** atau 
 |--------|-----|-------|
 | **Debit** | Product **Unbilled Goods** | `qty_in_base × each_price_after_discount_before_vat × PO.exchange_rate` |
 | **Debit** | **Tax COA** (per PO tax line) | Pro-rata `vat_amount` on invoiced qty |
-| **Debit** | Other cost **expense COA** | `amount_primary_currency` |
-| **Credit** | Other discount **expense COA** | `amount_primary_currency` |
+| **Debit** | Other cost COA = baris PI `expense_coa_id` | `amount_primary_currency` |
+| **Credit** | Other discount COA = baris PI `expense_coa_id` | `amount_primary_currency` |
 | **Credit/Debit** | Company **Exchange Diff. COA** | Net exchange gain/loss |
 | **Credit** | **Account Payable** (supplier) | Balancing: total debit − credits − exchange |
+
+> **COA override:** Jurnal **tidak** membaca ulang COA dari Master Other Cost/Discount. Sumber = `accounting_supplier_invoice_other_costs.expense_coa_id` / `accounting_supplier_invoice_other_discounts.expense_coa_id` pada saat approve.
 
 **Journal header:** type `"Purchase Invoice"`, auto-approved, primary currency, date = PI transaction date.
 
@@ -472,6 +538,9 @@ Full AP spec: [accounting-supplier-payment/requirement.md §10–§12](../accoun
 8. Payment approve → processed_to_payment on PI  
 9. Block duplicate inbound line on same PI  
 10. Export with details succeeds  
+11. **Override COA** Additional Cost (PO + master) sebelum approve → journal pakai COA baru  
+12. **Override COA** Additional Discount → journal credit pakai COA baru  
+13. Setelah approved, kolom COA tidak editable  
 
 ---
 
@@ -479,9 +548,12 @@ Full AP spec: [accounting-supplier-payment/requirement.md §10–§12](../accoun
 
 | Menu | Relasi |
 |------|--------|
-| [Purchase Order](../supplychain-purchase-order/requirement.md) | Price, tax, other cost/disc source |
+| [Purchase Order](../supplychain-purchase-order/requirement.md) | Price, tax, other cost/disc source; amount locked saat di-PI |
 | [Purchase Inbound](../supplychain-new-purchase-inbound/requirement.md) | Outstanding source; Unbilled Goods accrual |
 | [Account Payment](../accounting-supplier-payment/requirement.md) | Pelunasan AP |
+| [Master Other Cost](../omni-other-cost/requirement.md) | Label + default COA; COA bisa di-override di PI |
+| [Master Other Discount](../omni-other-discount/requirement.md) | Label + default COA; COA bisa di-override di PI |
+| [COA / Chart of Account](../accounting-chart-of-account/) | Sumber opsi COA override (`select2/child`) |
 | [Product COA Group](../accounting-product-coa-group/) | Unbilled Goods, Tax COA |
 | [General Company](../generalsetting-general-company/) | AP COA, Exchange Diff COA |
 

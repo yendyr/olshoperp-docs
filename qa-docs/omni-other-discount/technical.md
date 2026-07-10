@@ -146,14 +146,14 @@ Lihat [requirement.md §4.4](./requirement.md).
 
 ## 8. Related QA Docs
 
-| Menu | Slug |
-|------|------|
-| Other Cost (pasangan) | `omni-other-cost` |
-| Instant Settlement | `accounting-settlement-upload` |
-| Purchase Order | `supplychain-purchase-order` |
-| Customer Invoice | `accounting-customer-invoice` |
-| Supplier Invoice | `accounting-supplier-invoice` |
-| Sales Order General | `sales-order-general` |
+| Menu | Slug | Catatan |
+|------|------|---------|
+| Other Cost (pasangan) | `omni-other-cost` | |
+| Instant Settlement | `accounting-settlement-upload` | |
+| Purchase Order | `supplychain-purchase-order` | |
+| Customer Invoice | `accounting-customer-invoice` | |
+| Supplier Invoice | `accounting-supplier-invoice` | COA default dari master; **override editable** di PI sebelum approve |
+| Sales Order General | `sales-order-general` | |
 
 ## 9. COA class limits (perbedaan vs Other Cost)
 

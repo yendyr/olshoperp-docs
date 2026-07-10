@@ -5,7 +5,7 @@ Menu **Other Discount** (Finance Accounting → Master). Menu pasangan: [Other C
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | draft |
-| Requirement | [requirement.md](./requirement.md) (v1.0) | PM, QA | review |
+| Requirement | [requirement.md](./requirement.md) (v1.1) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
 
 **Maintenance owner:** QA — Yemima

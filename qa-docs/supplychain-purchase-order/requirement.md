@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.1
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-07-10
 owner: QA - Yemima
 status: review
 ---
@@ -30,6 +30,7 @@ status: review
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft (AS-IS codebase auto-analysis) |
 | 2.0 | 2026-07-05 | QA - Yemima | Full rewrite: merge PM requirement v1.0, import/export/print, pricing formulas, UI buttons, gaps §19–§20 |
 | 2.1 | 2026-07-05 | QA - Yemima | GAP clarifications; import §12 expanded; §21 Pending Items Major |
+| 2.2 | 2026-07-10 | QA - Yemima | Clarifikasi: COA Other Cost/Disc di PO = default; di PI bisa di-override; koreksi posisi jurnal PI |
 
 ---
 
@@ -313,13 +314,18 @@ Bulk add multiselect: qty default **1**, unit stock, `latestPrice()`, auto taxes
 
 - Tidak masuk perhitungan PPN per baris.
 - Recalculate `grand_total_before_vat` / `grand_total_after_vat`.
-- COA dipakai di penjurnalan **Purchase Invoice** (posisi **Kredit**).
+- COA dari master di-copy ke line PO, lalu ke PI sebagai **default**.
+- Di **Purchase Invoice**, COA baris Additional Cost **bisa di-override** sebelum approve; Amount dari PO **locked**. Lihat [PI §8.3](../accounting-supplier-invoice/requirement.md#83-coa-editable-per-baris-change-req-2026-07).
+- Penjurnalan di PI: Other Cost → posisi **Debit** (expense COA baris PI).
 
 ---
 
 ## 8. Section Additional Disc
 
-Struktur paralel Other Cost — COA posisi **Debit** di Purchase Invoice.
+Struktur paralel Other Cost.
+
+- Di PI: COA Additional Discount **editable**; Amount dari PO **locked**.
+- Penjurnalan di PI: Other Discount → posisi **Credit**.
 
 Guard: grand total before VAT tidak boleh < 0 setelah insert/update.
 

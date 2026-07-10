@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-other-discount
 menu_name: "Other Discount"
-version: 1.0
-last_updated: 2026-06-23
+version: 1.1
+last_updated: 2026-07-10
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -66,6 +66,9 @@ A: Cek status Active, Applied to Store (harus All atau mencakup toko yang dipili
 
 **Q: Import — Applied Store isi apa?**  
 A: **Nama store**, sama seperti form manual. Bukan kode store.
+
+**Q: Apakah COA di Purchase Invoice harus sama dengan master?**  
+A: **Tidak wajib.** COA di master adalah **default**. Di Purchase Invoice, user boleh override COA per baris Additional Discount sebelum approve — tanpa mengubah master. Lihat [Purchase Invoice §8.3](../accounting-supplier-invoice/requirement.md#83-coa-editable-per-baris-change-req-2026-07).
 
 ## Troubleshooting
 

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-other-cost
 menu_name: "Other Cost"
-version: 1.2
-last_updated: 2026-06-23
+version: 1.3
+last_updated: 2026-07-10
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -128,7 +128,10 @@ A: **Ya.** Line warisan dari PO tetap ikut ke PI meski master sudah inactive.
 A: **Tidak.** Dropdown sudah filter untuk input baru; warisan dokumen tetap jalan.
 
 **Q: COA class apa yang boleh?**  
-A: Standar bisnis: **Expense** + **Other Revenue & Expenses**. Form manual saat ini hanya Expense (akan diselaraskan — task dev).
+A: Standar bisnis di **master**: **Expense** + **Other Revenue & Expenses**. Form manual saat ini hanya Expense (akan diselaraskan — task dev).
+
+**Q: Apakah COA di Purchase Invoice harus sama dengan master?**  
+A: **Tidak wajib.** COA di master adalah **default**. Di Purchase Invoice, user boleh override COA per baris Additional Cost sebelum approve — tanpa mengubah master. Lihat [Purchase Invoice §8.3](../accounting-supplier-invoice/requirement.md#83-coa-editable-per-baris-change-req-2026-07).
 
 **Q: Fitur Import — kolom Applied Store isi apa?**  
 A: **Nama store** (sama seperti picker form), dipisah koma, atau `All`. Bukan kode store.

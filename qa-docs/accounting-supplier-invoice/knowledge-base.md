@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 2.0
-last_updated: 2026-07-05
+version: 2.1
+last_updated: 2026-07-10
 owner: QA - Yemima
 status: review
 ---
@@ -86,8 +86,24 @@ Pesan error umum:
 
 **Cara tambah:**
 1. Tab **Additional Cost** / **Additional Discount**
-2. Pilih dari dropdown PO (outstanding costs) ATAU entry manual
+2. Pilih dari dropdown PO (outstanding costs) ATAU entry manual dari Master Other Cost/Disc
 3. Cost otomatis muncul saat line pertama ditambah (dari PO)
+
+### COA per baris (bisa diubah)
+
+Setiap baris punya kolom **COA** (default dari master / PO).
+
+| Sumber baris | Label | Amount | COA |
+|--------------|-------|--------|-----|
+| Dari PO | Tidak bisa diubah | Tidak bisa diubah | **Bisa diganti** |
+| Dari Master | Tidak bisa diganti setelah insert | Bisa diubah | **Bisa diganti** |
+
+- Ganti COA **hanya sebelum Approve** (status Draft/Open).
+- Override COA **tidak** mengubah Master Other Cost/Discount.
+- Saat Approve, jurnal memakai COA yang tampil di baris PI (bukan COA master jika sudah diganti).
+- Opsi COA: akun **aktif** & **leaf** dari Master COA — **tanpa** batasan class (beda dengan form master Other Cost/Disc).
+
+Detail aturan: [requirement §8.3](./requirement.md#83-coa-editable-per-baris-change-req-2026-07).
 
 ---
 

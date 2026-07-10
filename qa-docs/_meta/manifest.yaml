@@ -529,7 +529,7 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: draft
       requirement:
         file: requirement.md
         status: pending
