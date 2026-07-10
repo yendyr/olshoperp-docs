@@ -416,6 +416,40 @@ export class SystemProductPage {
     await this.page.waitForTimeout(1_000);
   }
 
+  async selectVariantTypeFromCandidates(candidates: string[]): Promise<string> {
+    for (const variantName of candidates) {
+      await this.variantTypeCombobox.click();
+      await this.page.waitForTimeout(300);
+
+      const listboxOption = this.page.getByRole('option', {
+        name: variantName,
+        exact: true,
+      });
+      const multiselectOption = this.dropdownOptions
+        .filter({ hasText: variantName })
+        .first();
+
+      if (await listboxOption.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await listboxOption.click();
+        await this.page.waitForTimeout(1_000);
+        return variantName;
+      }
+
+      if (await multiselectOption.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await multiselectOption.click();
+        await this.page.waitForTimeout(1_000);
+        return variantName;
+      }
+
+      await this.page.keyboard.press('Escape').catch(() => undefined);
+      await this.page.waitForTimeout(300);
+    }
+
+    throw new Error(
+      `Variant type tidak ditemukan. Coba salah satu dari: ${candidates.join(', ')}`,
+    );
+  }
+
   async selectVariantOptions(options: string[]): Promise<void> {
     const optionsContainer = this.page
       .locator('.multiselect')
@@ -468,6 +502,157 @@ export class SystemProductPage {
     }
   }
 
+  async enableProductBundle(): Promise<void> {
+    const label = this.setAsProductBundleLabel;
+    await label.scrollIntoViewIfNeeded();
+
+    if (await this.isProductBundleEnabled()) {
+      return;
+    }
+
+    const bundleResponse = this.page.waitForResponse(
+      (response) =>
+        response.url().includes('bill-of-material-detail/deactivate-bundle') &&
+        response.request().method() === 'POST',
+      { timeout: 90_000 },
+    );
+
+    await this.clickBundleToggleNear(label);
+    const response = await bundleResponse;
+    const body = (await response.json().catch(() => null)) as {
+      status?: { error?: number; message?: string };
+    } | null;
+
+    if (body?.status?.error) {
+      throw new Error(
+        `Enable Product Bundle gagal: ${body.status.message ?? JSON.stringify(body)}`,
+      );
+    }
+
+    await expect(this.bundleProductDisclosure).toBeVisible({ timeout: 30_000 });
+    await this.page.waitForTimeout(1_000);
+  }
+
+  async expandBundleProductPanel(): Promise<void> {
+    const disclosure = this.bundleProductDisclosure;
+    await disclosure.scrollIntoViewIfNeeded();
+
+    if (!(await this.bundleDetailProductSelect.isVisible().catch(() => false))) {
+      await disclosure.click();
+      await this.page.waitForTimeout(800);
+    }
+
+    await expect(this.bundleDetailLabel).toBeVisible({ timeout: 30_000 });
+    await expect(this.bundleDetailProductSelect).toBeVisible({ timeout: 30_000 });
+  }
+
+  async addBundleDetailProduct(sku: string): Promise<void> {
+    if (await this.isBundleDetailPresent(sku)) {
+      return;
+    }
+
+    const multiselect = this.bundleDetailMultiselect;
+    await multiselect.scrollIntoViewIfNeeded();
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.setAsProductBundleLabel.click();
+    await this.page.waitForTimeout(300);
+
+    const createResponse = this.page.waitForResponse(
+      (response) =>
+        response.url().includes('bill-of-material-detail/create-select') &&
+        response.request().method() === 'POST',
+      { timeout: 90_000 },
+    );
+
+    const select2Response = this.page.waitForResponse(
+      (response) =>
+        response.url().includes('/supplychain/product/select2?') &&
+        response.request().method() === 'GET',
+      { timeout: 30_000 },
+    );
+
+    const search = multiselect.locator('.multiselect-search').first();
+    await multiselect.click();
+    await expect(search).toBeVisible({ timeout: 10_000 });
+    await search.click({ force: true });
+    await search.fill(sku);
+    await select2Response;
+    await this.page.waitForTimeout(500);
+
+    const option = this.page
+      .locator('.multiselect-dropdown:visible .multiselect-option')
+      .filter({ hasText: sku })
+      .first();
+    await expect(option, `Opsi bundle detail "${sku}" harus ada`).toBeVisible({
+      timeout: 20_000,
+    });
+    await option.click();
+
+    const response = await createResponse;
+    const body = (await response.json().catch(() => null)) as {
+      status?: { error?: number; message?: string };
+    } | null;
+
+    if (body?.status?.error) {
+      const message = body.status.message ?? '';
+      if (/already included/i.test(message)) {
+        return;
+      }
+      throw new Error(
+        `Tambah bundle detail "${sku}" gagal: ${message || JSON.stringify(body)}`,
+      );
+    }
+
+    await this.assertSuccessToast();
+    await this.page.waitForTimeout(500);
+  }
+
+  async activateProductBundle(): Promise<void> {
+    const toggle = this.bundleActiveToggle;
+    await toggle.scrollIntoViewIfNeeded();
+
+    if (await toggle.isChecked()) {
+      return;
+    }
+
+    if (await this.bundleInvalidWarning.isVisible().catch(() => false)) {
+      throw new Error(
+        'Bundle invalid: detail bundle membutuhkan minimal 2 item atau 1 item dengan qty > 1',
+      );
+    }
+
+    const activateResponse = this.page.waitForResponse(
+      (response) =>
+        response.url().includes('bill-of-material-detail/activate-bundle') &&
+        response.request().method() === 'POST',
+      { timeout: 90_000 },
+    );
+
+    await toggle.click({ force: true });
+
+    const response = await activateResponse;
+    const body = (await response.json().catch(() => null)) as {
+      status?: { error?: number; message?: string };
+    } | null;
+
+    if (body?.status?.error) {
+      throw new Error(
+        `Activate bundle gagal: ${body.status.message ?? JSON.stringify(body)}`,
+      );
+    }
+
+    await this.assertSuccessToast();
+    await expect(toggle).toBeChecked({ timeout: 15_000 });
+  }
+
+  async assertSuccessToast(pattern = /success|berhasil|saved/i): Promise<void> {
+    const toast = this.page
+      .locator('.toastify, [class*="toast"]')
+      .filter({ hasText: pattern });
+
+    await expect(toast.first()).toBeVisible({ timeout: 30_000 });
+  }
+
   async areSkusVisibleInDatalist(skus: string[]): Promise<boolean> {
     for (const sku of skus) {
       const visible = await this.page
@@ -505,6 +690,82 @@ export class SystemProductPage {
 
   private get enableVariationsLabel(): Locator {
     return this.page.getByText('Enable Variations', { exact: true });
+  }
+
+  private get setAsProductBundleLabel(): Locator {
+    return this.page.getByText('Set as Product Bundle', { exact: true });
+  }
+
+  private get bundleProductDisclosure(): Locator {
+    return this.page.locator('[aria-current="BundleProduct"]').first();
+  }
+
+  private get bundleDetailLabel(): Locator {
+    return this.page.getByText('Bundle Detail', { exact: false }).first();
+  }
+
+  private get bundleDetailMultiselect(): Locator {
+    return this.bundleProductDisclosure
+      .locator('xpath=ancestor::div[contains(@class,"border")][1]')
+      .locator('.multiselect')
+      .last();
+  }
+
+  private get bundleDetailProductSelect(): Locator {
+    return this.bundleDetailMultiselect
+      .locator('.multiselect-search, [role="combobox"]')
+      .first();
+  }
+
+  private get bundleActiveToggle(): Locator {
+    return this.page.locator('#bundle-toggle-header');
+  }
+
+  private get bundleInvalidWarning(): Locator {
+    return this.bundleProductDisclosure.locator(
+      'font-awesome-icon, [data-icon="triangle-exclamation"]',
+    );
+  }
+
+  private async isBundleDetailPresent(sku: string): Promise<boolean> {
+    const table = this.bundleProductDisclosure.locator('table');
+    return table.getByText(sku, { exact: true }).isVisible().catch(() => false);
+  }
+
+  private async isProductBundleEnabled(): Promise<boolean> {
+    const bundleContainer = this.setAsProductBundleLabel.locator(
+      'xpath=ancestor::div[contains(@class,"border-dashed") or contains(@class,"ps-2")][1]',
+    );
+    const hasDashedBorder = await bundleContainer
+      .evaluate((el) => el.classList.contains('border-dashed'))
+      .catch(() => false);
+
+    if (hasDashedBorder) {
+      return true;
+    }
+
+    return this.bundleProductDisclosure.isVisible().catch(() => false);
+  }
+
+  private async clickBundleToggleNear(label: Locator): Promise<void> {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (await this.isProductBundleEnabled()) {
+        return;
+      }
+
+      await label.click({ force: true });
+      await this.page.waitForTimeout(700);
+
+      if (await this.isProductBundleEnabled()) {
+        return;
+      }
+
+      const box = await label.boundingBox();
+      if (box) {
+        await this.page.mouse.click(box.x - 18, box.y + box.height / 2);
+      }
+      await this.page.waitForTimeout(700);
+    }
   }
 
   private get saveAllButton(): Locator {

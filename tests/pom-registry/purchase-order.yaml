@@ -23,6 +23,12 @@ elements:
   edit_button:
     strategy: id
     value: "#updateButton"
+    notes: "Dipakai sebagai ikon show/edit pada kolom action datalist"
+
+  approve_button:
+    strategy: css
+    value: 'button[class*="approve-button"]'
+    notes: "Ikon approve di kolom action datalist (gunakan pada baris trx yang status Open)"
 
   po_code:
     strategy: id
@@ -69,6 +75,7 @@ elements:
   status_open:
     strategy: id
     value: "#open"
+    notes: "Klik radio Open memicu auto-save API; tunggu response sebelum klik Save All"
 
   save_and_next:
     strategy: role
@@ -81,3 +88,4 @@ elements:
     role: button
     name: Save All
     position: last
+    notes: "Pastikan tombol stabil/enabled setelah re-render status update"

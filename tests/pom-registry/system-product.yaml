@@ -80,3 +80,21 @@ elements:
     strategy: placeholder
     value: Choose Asset Category
     notes: Muncul kondisional jika COA Group = Fix Asset
+
+  set_as_product_bundle:
+    strategy: text
+    value: Set as Product Bundle
+
+  bundle_product_disclosure:
+    strategy: aria-current
+    value: BundleProduct
+    notes: Kotak disclosure BundleProductForm setelah toggle bundle aktif
+
+  bundle_detail_product_select:
+    strategy: composite
+    notes: Multiselect di section Bundle Detail — .multiselect-search / role=combobox (bukan placeholder DOM)
+
+  bundle_active_toggle:
+    strategy: id
+    value: "#bundle-toggle-header"
+    notes: Toggle Active bundle header — POST activate-bundle

@@ -8,6 +8,10 @@ Katalog testcase E2E/manual untuk menu **Account Receive** (Customer Payment / A
 | [TC-ARCP-002](./TC-ARCP-002.md) | Single use — Save tanpa amount ditolak | Ya |
 | [TC-ARCP-003](./TC-ARCP-003.md) | Bulk use — insert beberapa SI (checkbox + Use) dari modal Available | Ya |
 | [TC-ARCP-004](./TC-ARCP-004.md) | Bulk select — insert SI dari dropdown Select Invoice | Ya |
+| [TC-AR-BULK-APPROVE-BTN](./TC-AR-BULK-APPROVE-BTN.md) | Tombol bulk Approve inactive/active | Ya (olshoperp-docs) |
+| [TC-AR-BULK-APPROVE-001](./TC-AR-BULK-APPROVE-001.md) | Bulk approve 10 AR Open → Approved | Ya (olshoperp-docs) |
+| [TC-AR-BULK-APPROVE-002](./TC-AR-BULK-APPROVE-002.md) | Bulk approve mix Open + Approved (partial) | Ya (olshoperp-docs) |
+| [TC-AR-BULK-APPROVE-003](./TC-AR-BULK-APPROVE-003.md) | Bulk approve Draft — tombol tidak aktif | Ya (olshoperp-docs) |
 
 **Maintenance owner:** QA — Yemima
 

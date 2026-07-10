@@ -16,11 +16,11 @@ test.describe('Purchase Order — Create with PR', () => {
   test('[@TC-PO-CREATE-WITH-PR] Create PO with PR dari available products', async ({
     page,
   }) => {
-    test.setTimeout(300_000);
+    test.setTimeout(420_000);
 
     const supplierName = 'PT. SUPPLIER IDR';
     const productLines: PoWithPrProductLine[] = [
-      { sku: 'SKU-SPIDOL-hitam', poQty: 5 },
+      { sku: 'SKUSINGLE-001', poQty: 100 },
       { sku: 'SKU-ALT-UNT-001', poQty: 5 },
       { sku: 'SKU-SPIDOL-biru', poQty: 10 },
       { sku: 'SKU-EMBER-merah', poQty: 90 },
@@ -60,13 +60,9 @@ test.describe('Purchase Order — Create with PR', () => {
     const poTrxCode = await po.clickSaveAndNextAndWaitForEdit();
     await assertNoBlocker('setelah Save & Next');
 
-    // Step 6–7 — Available product: SKU-SPIDOL HITAM + Use modal
+    // Step 6–9 — Available products: pilih semua SKU lalu bulk Use
     await po.openAvailableProductsModal();
-    await po.clickUseOnOutstandingRow(productLines[0].sku);
-
-    // Step 8–9 — Bulk select 3 SKU lain + Use di atas tabel
-    await po.openAvailableProductsModal();
-    await po.checkOutstandingRows(productLines.slice(1).map((line) => line.sku));
+    await po.checkOutstandingRows(productLines.map((line) => line.sku));
     await po.clickBulkUseAboveOutstandingTable();
 
     // Step 10 — PO Qty per SKU

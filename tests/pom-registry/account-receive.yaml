@@ -1,0 +1,43 @@
+# POM Element Registry — Account Receive (Customer Payment)
+# Sumber: olshoperp-frontend Accounting/AccountReceivable/Receive/DataList.vue + DataTablesV3
+
+menu: accounting-customer-payment
+menu_name: Account Receive
+route: /accounting/customer-payment
+create_button_mode: button
+pom_helper: tests/helpers/account-receive.ts
+company_default: DEV-STG
+
+elements:
+  create_button:
+    strategy: role
+    role: button
+    name: Create
+
+  datalist_search:
+    strategy: role
+    role: searchbox
+    index: first
+
+  row_checkbox:
+    strategy: css
+    value: 'tr input[type="checkbox"]'
+    notes: Centang baris di kolom pertama (DataTables select multi)
+
+  bulk_approve_button:
+    strategy: css
+    value: 'button.bulk-approve'
+    notes: >
+      Ikon circle-check di atas tabel. UI menyembunyikan (display:none) jika
+      selectedRowsIdsOpen.length == 0 — bukan hanya disabled attribute.
+
+  bulk_approve_confirm:
+    strategy: role
+    role: button
+    name: Approve
+    notes: Modal BulkApproveDialog
+
+  bulk_approve_error_dialog:
+    strategy: text
+    value: Bulk Approve Error Details
+    notes: Muncul jika error_count > 0 dari POST /bulk-approve

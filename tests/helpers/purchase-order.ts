@@ -90,6 +90,10 @@ export class PurchaseOrderPage {
     return this.page.locator('#draft');
   }
 
+  get openStatusRadio() {
+    return this.page.locator('#open');
+  }
+
   get availableProductsLink(): Locator {
     return this.page.getByText('Available Products', { exact: true });
   }
@@ -126,6 +130,54 @@ export class PurchaseOrderPage {
     await this.withPrRadio.scrollIntoViewIfNeeded();
     await this.withPrRadio.check({ force: true });
     await expect(this.withPrRadio).toBeChecked({ timeout: 10_000 });
+  }
+
+  async selectWithoutPr(): Promise<void> {
+    await this.withoutPrRadio.scrollIntoViewIfNeeded();
+    await this.withoutPrRadio.check({ force: true });
+    await expect(this.withoutPrRadio).toBeChecked({ timeout: 10_000 });
+  }
+
+  async selectPoDetailProduct(sku: string): Promise<void> {
+    await this.expandPurchaseOrderDetail();
+    const section = this.page.locator('#PurchaseOrderDetail');
+    const multiselect = section.locator('.multiselect').first();
+
+    const createResponse = this.page.waitForResponse(
+      (response) =>
+        response.url().includes('purchase-order-detail') &&
+        response.request().method() === 'POST',
+      { timeout: 90_000 },
+    );
+
+    const combobox = multiselect.getByRole('combobox');
+    await combobox.scrollIntoViewIfNeeded();
+    await combobox.click();
+    await combobox.fill(sku);
+    await this.page.waitForTimeout(800);
+
+    const option = this.page
+      .locator('.multiselect-option:visible')
+      .filter({ hasText: sku })
+      .first();
+    await expect(option, `Opsi PO detail "${sku}" harus ada`).toBeVisible({
+      timeout: 20_000,
+    });
+    await option.click();
+    await createResponse;
+    await this.page.waitForTimeout(500);
+
+    await expect(
+      section.getByRole('row').filter({ hasText: this.skuPattern(sku) }).first(),
+      `Baris PO detail untuk ${sku} harus muncul`,
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async addPoDetailLines(lines: PoWithPrProductLine[]): Promise<void> {
+    for (const line of lines) {
+      await this.selectPoDetailProduct(line.sku);
+      await this.fillPoQtyForSku(line.sku, line.poQty);
+    }
   }
 
   async clickSaveAndNext(): Promise<void> {
@@ -182,11 +234,22 @@ export class PurchaseOrderPage {
     throw new Error('Transaction code PO-* tidak ditemukan di halaman');
   }
 
-  private outstandingTable(): Locator {
+  private outstandingPanel(): Locator {
     return this.page
-      .locator('table')
-      .filter({ has: this.page.locator('button[class*="use-button"]') })
+      .locator('div.fixed.rounded')
+      .filter({ has: this.page.getByText(/Showing \d+ to \d+ of \d+ entries/i) })
       .last();
+  }
+
+  private outstandingTable(): Locator {
+    return this.outstandingPanel()
+      .locator('table')
+      .filter({ has: this.page.getByRole('columnheader', { name: /req\. qty/i }) })
+      .first();
+  }
+
+  private outstandingSearch(): Locator {
+    return this.outstandingPanel().getByPlaceholder(/find something/i);
   }
 
   private skuPattern(sku: string): RegExp {
@@ -198,19 +261,18 @@ export class PurchaseOrderPage {
   }
 
   async clearOutstandingSearch(): Promise<void> {
-    const search = this.page.getByPlaceholder(/find something/i).last();
+    const search = this.outstandingSearch();
     if (await search.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await search.fill('');
-      await this.page.waitForTimeout(1_000);
+      await this.page.waitForTimeout(1_200);
     }
   }
 
   async openAvailableProductsModal(): Promise<void> {
     await this.expandPurchaseOrderDetail();
 
-    const useButton = this.outstandingTable()
-      .locator('button[class*="use-button"]')
-      .first();
+    const panel = this.outstandingPanel();
+    const useButton = panel.locator('button[class*="use-button"]').first();
     if (await useButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await this.clearOutstandingSearch();
       return;
@@ -231,35 +293,57 @@ export class PurchaseOrderPage {
     await outstandingResponse;
     await this.page.waitForTimeout(1_000);
 
-    await expect(this.outstandingTable()).toBeVisible({ timeout: 45_000 });
+    await expect(this.outstandingPanel()).toBeVisible({ timeout: 45_000 });
     await this.clearOutstandingSearch();
     await expect(
-      this.outstandingTable().locator('button[class*="use-button"]').first(),
+      panel.locator('button[class*="use-button"]').first(),
     ).toBeVisible({ timeout: 45_000 });
   }
 
   async searchOutstandingProducts(query: string): Promise<void> {
     await this.clearOutstandingSearch();
 
-    const search = this.page.getByPlaceholder(/find something/i).last();
+    const search = this.outstandingSearch();
     if (await search.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await search.fill(query);
-      await this.page.waitForTimeout(1_500);
-      return;
-    }
-
-    const fallback = this.page.getByRole('searchbox').last();
-    if (await fallback.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await fallback.fill(query);
       await this.page.waitForTimeout(1_500);
     }
   }
 
-  async clickUseOnOutstandingRow(sku: string): Promise<void> {
-    await this.searchOutstandingProducts(sku);
+  async findOutstandingRow(sku: string): Promise<Locator> {
+    await this.clearOutstandingSearch();
+    const panel = this.outstandingPanel();
+    const pattern = this.skuPattern(sku);
 
-    const table = this.outstandingTable();
-    const row = table.getByRole('row').filter({ hasText: this.skuPattern(sku) }).first();
+    const skuButton = panel.getByRole('button', { name: pattern }).first();
+    if (await skuButton.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      return skuButton.locator('xpath=ancestor::tr[1]');
+    }
+
+    let row = this.outstandingTable().getByRole('row').filter({ hasText: pattern }).first();
+    if (await row.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      return row;
+    }
+
+    const searchTokens = [
+      sku,
+      sku.split('-').slice(1).join('-'),
+      sku.split('-').pop() ?? sku,
+    ];
+    for (const token of searchTokens) {
+      await this.searchOutstandingProducts(token);
+      row = this.outstandingTable().getByRole('row').filter({ hasText: pattern }).first();
+      if (await row.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        return row;
+      }
+    }
+
+    await this.clearOutstandingSearch();
+    return this.outstandingTable().getByRole('row').filter({ hasText: pattern }).first();
+  }
+
+  async clickUseOnOutstandingRow(sku: string): Promise<void> {
+    const row = await this.findOutstandingRow(sku);
     await expect(row, `Baris outstanding untuk ${sku}`).toBeVisible({ timeout: 30_000 });
 
     await row.locator('button[class*="use-button"]').first().click();
@@ -275,23 +359,19 @@ export class PurchaseOrderPage {
   }
 
   async checkOutstandingRows(skus: string[]): Promise<void> {
-    const table = this.outstandingTable();
     for (const sku of skus) {
-      await this.searchOutstandingProducts(sku);
-      const row = table.getByRole('row').filter({ hasText: this.skuPattern(sku) }).first();
+      const row = await this.findOutstandingRow(sku);
       await expect(row, `Baris outstanding untuk ${sku}`).toBeVisible({ timeout: 30_000 });
       const checkbox = row.locator('input[type="checkbox"]').first();
       if (!(await checkbox.isChecked().catch(() => false))) {
         await checkbox.check({ force: true });
       }
+      await this.clearOutstandingSearch();
     }
   }
 
   async clickBulkUseAboveOutstandingTable(): Promise<void> {
-    const bulkUse = this.outstandingTable()
-      .locator('xpath=ancestor::div[contains(@class,"intro") or contains(@class,"fixed")]')
-      .locator('button.tooltip-use')
-      .first();
+    const bulkUse = this.outstandingPanel().locator('button.tooltip-use').first();
     await expect(bulkUse).toBeVisible({ timeout: 15_000 });
     await bulkUse.click();
     await waitForSuccessToast(this.page, 15_000);
@@ -318,9 +398,43 @@ export class PurchaseOrderPage {
     await expect(this.draftStatusRadio).toBeChecked({ timeout: 10_000 });
   }
 
+  async selectOpenStatus(): Promise<void> {
+    await this.openStatusRadio.scrollIntoViewIfNeeded();
+
+    const updateResponse = this.page
+      .waitForResponse(
+        (response) =>
+          /\/supplychain\/purchase-order\/\d+/.test(response.url()) &&
+          response.request().method() === 'POST',
+        { timeout: 90_000 },
+      )
+      .catch(() => null);
+
+    await this.openStatusRadio.click({ force: true });
+    await updateResponse;
+    await waitForSuccessToast(this.page, 15_000).catch(() => undefined);
+    await expect(this.openStatusRadio).toBeChecked({ timeout: 15_000 });
+    await this.page.waitForTimeout(1_500);
+  }
+
   async clickSaveAll(): Promise<void> {
-    await this.form.clickSaveAll();
-    await expect(this.form.saveAllButton).toBeEnabled({ timeout: 60_000 });
+    const saveResponse = this.page
+      .waitForResponse(
+        (response) =>
+          /\/supplychain\/purchase-order\/\d+/.test(response.url()) &&
+          ['POST', 'PUT'].includes(response.request().method()),
+        { timeout: 120_000 },
+      )
+      .catch(() => null);
+
+    const saveAll = this.page.getByRole('button', { name: 'Save All', exact: true }).last();
+    await expect(saveAll).toBeVisible({ timeout: 30_000 });
+    await expect(saveAll).toBeEnabled({ timeout: 30_000 });
+    await saveAll.scrollIntoViewIfNeeded();
+    await saveAll.click();
+
+    await saveResponse;
+    await expect(saveAll).toBeEnabled({ timeout: 90_000 });
   }
 
   async assertPoStatusDraftInDatalist(trxCode: string): Promise<void> {
@@ -328,5 +442,218 @@ export class PurchaseOrderPage {
     const row = this.page.getByRole('row').filter({ hasText: trxCode }).first();
     await expect(row).toBeVisible({ timeout: 45_000 });
     await expect(row).toContainText(/draft/i);
+  }
+
+  async assertPoStatusOpenInDatalist(trxCode: string): Promise<void> {
+    await this.searchDatalist(trxCode);
+    const row = this.page.getByRole('row').filter({ hasText: trxCode }).first();
+    await expect(row).toBeVisible({ timeout: 45_000 });
+    await expect(row).toContainText(/open/i);
+  }
+
+  async assertPoStatusApprovedInDatalist(trxCode: string): Promise<void> {
+    await this.searchDatalist(trxCode);
+    const row = this.page.getByRole('row').filter({ hasText: trxCode }).first();
+    await expect(row).toBeVisible({ timeout: 45_000 });
+    await expect(row).toContainText(/approved/i);
+  }
+
+  /**
+   * Buka PO dari datalist — tombol ikon show/edit di kolom action (`#updateButton`).
+   */
+  async openShowFromDatalistByTrxCode(trxCode: string): Promise<void> {
+    await this.openEditFromDatalistByTrxCode(trxCode);
+  }
+
+  /**
+   * Approve dari datalist — tombol ikon ceklis di kolom action.
+   */
+  async clickApproveFromDatalist(trxCode: string): Promise<void> {
+    await this.searchDatalist(trxCode);
+
+    const row = this.page.getByRole('row').filter({ hasText: trxCode }).first();
+    await expect(row).toBeVisible({ timeout: 45_000 });
+
+    const approveBtn = row.locator('button[class*="approve-button"]').first();
+    await expect(approveBtn, `Tombol approve datalist untuk ${trxCode}`).toBeVisible({
+      timeout: 30_000,
+    });
+
+    const approveResponse = this.page.waitForResponse(
+      (response) =>
+        /\/supplychain\/purchase-order\/\d+\/approve/.test(response.url()) &&
+        response.request().method() === 'POST',
+      { timeout: 90_000 },
+    );
+
+    await approveBtn.scrollIntoViewIfNeeded();
+    await approveBtn.click();
+
+    const confirmApprove = this.page.getByRole('button', { name: /^Approve$/i }).last();
+    await expect(confirmApprove).toBeVisible({ timeout: 15_000 });
+    await confirmApprove.click();
+
+    const response = await approveResponse;
+    const body = (await response.json().catch(() => null)) as {
+      status?: { error?: number; message?: string };
+    } | null;
+
+    if (!response.ok() || body?.status?.error) {
+      throw new Error(
+        `Approve PO dari datalist gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
+      );
+    }
+  }
+
+  /**
+   * Delete dari datalist — tombol ikon trash di kolom action.
+   */
+  async clickDeleteFromDatalist(trxCode: string): Promise<void> {
+    await this.searchDatalist(trxCode);
+
+    const row = this.page.getByRole('row').filter({ hasText: trxCode }).first();
+    await expect(row).toBeVisible({ timeout: 45_000 });
+
+    const deleteBtn = row.locator('button[class*="delete-button"]').first();
+    await expect(deleteBtn, `Tombol delete datalist untuk ${trxCode}`).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(deleteBtn).toBeEnabled({ timeout: 10_000 });
+
+    const confirmDelete = this.page.getByRole('button', { name: /^Delete$/i }).last();
+
+    const deleteResponse = this.page
+      .waitForResponse(
+        (response) =>
+          /\/supplychain\/purchase-order\/\d+/.test(response.url()) &&
+          response.request().method() === 'DELETE',
+        { timeout: 90_000 },
+      )
+      .catch(() => null);
+
+    await deleteBtn.scrollIntoViewIfNeeded();
+    await deleteBtn.click();
+
+    await expect(confirmDelete).toBeVisible({ timeout: 15_000 });
+    await confirmDelete.click();
+    await expect(confirmDelete).toBeHidden({ timeout: 60_000 });
+
+    const response = await deleteResponse;
+    if (response) {
+      const body = (await response.json().catch(() => null)) as {
+        status?: { error?: number; message?: string };
+      } | null;
+
+      if (!response.ok() || body?.status?.error) {
+        throw new Error(
+          `Delete PO dari datalist gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
+        );
+      }
+    }
+  }
+
+  async assertPoNotInDatalist(trxCode: string): Promise<void> {
+    await this.searchDatalist(trxCode);
+    const row = this.page.getByRole('row').filter({ hasText: trxCode });
+    await expect(row).toHaveCount(0, { timeout: 45_000 });
+  }
+
+  async openEditFromDatalistByTrxCode(trxCode: string): Promise<void> {
+    await this.searchDatalist(trxCode);
+
+    const row = this.page.getByRole('row').filter({ hasText: trxCode }).first();
+    await expect(row).toBeVisible({ timeout: 45_000 });
+
+    await this.datalist.editButton(row).click();
+    await this.page.waitForURL(PURCHASE_ORDER_EDIT_PATH_PATTERN, { timeout: 45_000 });
+    await dismissStagingBanner(this.page);
+    await expect(this.poCodeInput).toHaveValue(trxCode, { timeout: 30_000 });
+  }
+
+  /** Hapus semua baris Purchase Order Detail agar qty PR kembali ke outstanding. */
+  async deleteAllPoDetailLines(): Promise<void> {
+    await this.expandPurchaseOrderDetail();
+    const section = this.page.locator('#PurchaseOrderDetail');
+
+    for (let attempt = 0; attempt < 20; attempt++) {
+      const deleteBtn = section.locator('button.tooltip-delete, button#deleteButton').first();
+      if (!(await deleteBtn.isVisible({ timeout: 3_000 }).catch(() => false))) {
+        break;
+      }
+
+      const destroyResponse = this.page
+        .waitForResponse(
+          (response) =>
+            response.url().includes('purchase-order-detail') &&
+            response.request().method() === 'DELETE',
+          { timeout: 60_000 },
+        )
+        .catch(() => null);
+
+      await deleteBtn.scrollIntoViewIfNeeded();
+      await deleteBtn.click();
+
+      const confirmDelete = this.page.getByRole('button', { name: /^Delete$/i }).last();
+      if (await confirmDelete.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await confirmDelete.click();
+        await expect(confirmDelete).toBeHidden({ timeout: 60_000 });
+      }
+
+      await destroyResponse;
+      await waitForSuccessToast(this.page, 10_000).catch(() => undefined);
+      await this.page.waitForTimeout(1_000);
+    }
+  }
+
+  /**
+   * Kosongkan detail draft PO lalu hapus header — mengembalikan qty outstanding PR.
+   * Return false jika PO tidak ditemukan di datalist.
+   */
+  async releaseDraftPo(trxCode: string): Promise<boolean> {
+    await this.searchDatalist(trxCode);
+    const row = this.page.getByRole('row').filter({ hasText: trxCode });
+    if ((await row.count()) === 0) {
+      return false;
+    }
+
+    await this.openEditFromDatalistByTrxCode(trxCode);
+    await this.deleteAllPoDetailLines();
+    await this.clickSaveAll();
+    await this.clickDeleteFromDatalist(trxCode);
+    await this.assertPoNotInDatalist(trxCode);
+    return true;
+  }
+
+  /** Hapus draft PO yang dibuat user Playwright automation dari datalist. */
+  async deleteDraftPlaywrightPos(maxDeletes = 10): Promise<string[]> {
+    await this.gotoDatalist();
+    await this.datalist.search('Playwright', 2_000);
+
+    const deleted: string[] = [];
+
+    for (let i = 0; i < maxDeletes; i++) {
+      const draftRow = this.page
+        .getByRole('row')
+        .filter({ hasText: /playwright/i })
+        .filter({ hasText: /draft/i })
+        .first();
+
+      if (!(await draftRow.isVisible({ timeout: 5_000 }).catch(() => false))) {
+        break;
+      }
+
+      const trxMatch = (await draftRow.textContent())?.match(/PO-[A-Z0-9]+/i);
+      const trxCode = trxMatch?.[0];
+      if (!trxCode) {
+        break;
+      }
+
+      await this.releaseDraftPo(trxCode);
+      deleted.push(trxCode);
+      await this.gotoDatalist();
+      await this.datalist.search('Playwright', 2_000);
+    }
+
+    return deleted;
   }
 }

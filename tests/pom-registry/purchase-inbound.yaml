@@ -1,0 +1,93 @@
+# POM Element Registry — Purchase Inbound (BETA New Purchase Inbound)
+# Sumber: olshoperp-frontend SCM/Inbound/PurchaseInbound + OutstandingPurchaseOrderDetail.vue
+
+menu: supplychain-new-purchase-inbound
+menu_name: Purchase Inbound
+route: /supplychain/new-purchase-inbound
+create_button_mode: button
+pom_helper: tests/helpers/purchase-inbound.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: button
+    name: Create
+
+  datalist_search:
+    strategy: role
+    role: searchbox
+    index: first
+
+  transaction_code:
+    strategy: id
+    value: "#code"
+    notes: Auto-generate setelah Save & Next
+
+  transaction_date:
+    strategy: text
+    value: "Transaction Date"
+    notes: VueDatePicker format dd-MM-yyyy HH:mm:ss; fiscal period error → set 09-07-2026
+
+  supplier:
+    strategy: placeholder
+    value: "e.g: PT. ABC Indonesia"
+    notes: Multiselect; FE wajib isi sebelum Save & Next (create)
+
+  location_destination:
+    strategy: placeholder
+    value: "e.g: Seruni --> Lantai 1 --> Lorong A --> Rak A-001"
+    notes: Auto-fill dari default values form
+
+  available_purchase_order:
+    strategy: text
+    value: Available Purchase Order
+    notes: Link di section Inbound Detail (edit page)
+
+  outstanding_bulk_use:
+    strategy: css
+    value: 'button.tooltip-use'
+    notes: Bulk Use di modal outstanding PO (bulkUseInbound)
+
+  inbound_qty_input:
+    strategy: css
+    value: 'input[class*="w-24"]'
+    notes: InboundQuantity.vue — quantity_inbound_formatted per row
+
+  status_open:
+    strategy: id
+    value: "#open"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: "Save & Next"
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  show_edit_datalist:
+    strategy: css
+    value: "#updateButton"
+    notes: Kolom action datalist — buka show/edit
+
+  approve_from_show:
+    strategy: css
+    value: "button.bg-info"
+    notes: Checklist biru Tippy Approve di form edit; modal ApprovalModal → POST .../approve
+
+  bulk_delete:
+    strategy: css
+    value: "button.delete-bulk"
+    notes: Di atas table, samping bulk-approve; modal BulkDeleteDialog → DELETE bulk-delete
+
+  bulk_approve:
+    strategy: css
+    value: "button.bulk-approve"
+
+  show_deleted_data:
+    strategy: id
+    value: "#show_deleted_switch"
+    notes: Soft-delete — trx terhapus bisa tampil lagi jika switch ON

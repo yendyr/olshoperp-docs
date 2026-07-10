@@ -5,6 +5,7 @@
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | review |
 | Requirement | [requirement.md](./requirement.md) | review |
 | Technical | [technical.md](./technical.md) | review |
+| Test Cases | [test-cases/](./test-cases/) | in progress |
 
 **Menu:** Purchase Order · **Route:** `supplychain/purchase-order` · **Prefix:** `PO-`  
 **PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05)  
