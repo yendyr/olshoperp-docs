@@ -32,7 +32,7 @@ test_data:
   - field: Email runner
     value: playwright@gmail.com
   - field: Password runner
-    value: "12345678" (staging E2E — jangan commit ke production)
+    value: '"12345678" (staging E2E — jangan commit ke production)'
 steps:
   - Buka halaman login staging (`/login`).
   - Isi **Email** dan **Password** akun runner.
