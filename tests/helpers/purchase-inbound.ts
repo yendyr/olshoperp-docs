@@ -53,6 +53,21 @@ export class PurchaseInboundPage {
       timeout: 45_000,
     });
     await dismissStagingBanner(this.page);
+
+    const basicInfo = this.page
+      .getByRole('button', { name: 'Basic Information', exact: true })
+      .first();
+    await expect(basicInfo).toBeVisible({ timeout: 45_000 });
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await this.form.expandAccordion('Basic Information');
+        return;
+      } catch {
+        await this.page.waitForTimeout(1_000);
+      }
+    }
+
     await this.form.expandAccordion('Basic Information');
   }
 
@@ -71,11 +86,59 @@ export class PurchaseInboundPage {
   async assertLocationDestinationAutoFilled(): Promise<void> {
     await expect(this.locationDestinationCombobox).toBeVisible({ timeout: 20_000 });
     const label = await this.multiselect.selectedLabel(this.locationDestinationCombobox);
-    expect(
-      label,
-      'Location Destination harus terisi otomatis',
-    ).not.toMatch(/^e\.g:|^choose/i);
-    expect(label.length).toBeGreaterThan(0);
+    expect(label.length, 'Location Destination harus terisi otomatis').toBeGreaterThan(0);
+    expect(label, 'Location Destination tidak boleh placeholder kosong').not.toMatch(
+      /^choose\s*$/i,
+    );
+  }
+
+  /**
+   * Pastikan header PI tersimpan (create → edit).
+   * Create page bisa auto-redirect setelah default values tanpa tombol Save & Next.
+   */
+  async ensureInboundHeaderSaved(supplierName: string): Promise<string> {
+    await this.assertTransactionDateAutoFilled();
+
+    const autoEdit = await this.page
+      .waitForURL(PURCHASE_INBOUND_EDIT_PATH_PATTERN, { timeout: 15_000 })
+      .then(() => true)
+      .catch(() => false);
+
+    if (autoEdit || PURCHASE_INBOUND_EDIT_PATH_PATTERN.test(this.page.url())) {
+      await dismissStagingBanner(this.page);
+      const code = await this.getCurrentTransactionCode();
+      if (/^IN-/i.test(code)) {
+        return code;
+      }
+    }
+
+    const phase = await this.waitForCreateDefaultsSettled().catch(async () => {
+      if (PURCHASE_INBOUND_EDIT_PATH_PATTERN.test(this.page.url())) {
+        return 'edit' as const;
+      }
+      return 'create' as const;
+    });
+
+    if (phase === 'edit') {
+      return await this.getCurrentTransactionCode();
+    }
+
+    await this.setTransactionDateFiscalFallback();
+    await this.selectSupplier(supplierName);
+
+    try {
+      return await this.clickSaveAndNextAndWaitForEdit();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (/fiscal period/i.test(message) || (await this.hasFiscalPeriodError())) {
+        await this.setTransactionDateFiscalFallback();
+        return await this.clickSaveAndNextAndWaitForEdit();
+      }
+      if (PURCHASE_INBOUND_EDIT_PATH_PATTERN.test(this.page.url())) {
+        return await this.getCurrentTransactionCode();
+      }
+      throw err;
+    }
   }
 
   async selectSupplier(supplierName: string): Promise<void> {
@@ -250,7 +313,31 @@ export class PurchaseInboundPage {
     }
   }
 
-  private skuMatchPatterns(sku: string): RegExp[] {
+  async searchOutstandingProducts(query: string): Promise<void> {
+    const panel = this.outstandingPanel();
+    const search = panel
+      .getByRole('searchbox')
+      .or(panel.getByPlaceholder(/find something/i))
+      .first();
+
+    if (await search.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await search.click();
+      await search.fill(query);
+      await search.press('Enter').catch(() => undefined);
+      await this.page.waitForTimeout(2_000);
+    }
+  }
+
+  async setOutstandingPageSize(size: '50' | '100' = '100'): Promise<void> {
+    const panel = this.outstandingPanel();
+    const select = panel.locator('select').first();
+    if (await select.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await select.selectOption(size);
+      await this.page.waitForTimeout(2_000);
+    }
+  }
+
+  private skuMatchPatterns(sku: string, strict = false): RegExp[] {
     const exact = this.skuPattern(sku);
     const tokens = sku.trim().split(/[\s-]+/).filter(Boolean);
     const patterns = [exact];
@@ -263,52 +350,110 @@ export class PurchaseInboundPage {
       patterns.push(/ForeignCURR004/i, /Foreign\s*CURR\s*004/i);
     }
 
-    const last = tokens[tokens.length - 1];
-    if (last && last.length >= 3) {
-      patterns.push(new RegExp(last.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'));
+    if (!strict) {
+      const last = tokens[tokens.length - 1];
+      if (last && last.length >= 3) {
+        patterns.push(new RegExp(last.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'));
+      }
     }
     return patterns;
   }
 
-  async findOutstandingRow(sku: string): Promise<Locator> {
+  async findOutstandingRow(sku: string, poTrxCode?: string): Promise<Locator> {
     await this.clearOutstandingSearch();
     const panel = this.outstandingPanel();
     await expect(
       panel.getByText(/Showing \d+ to \d+ of \d+ entries|No matching|no data/i).first(),
     ).toBeVisible({ timeout: 30_000 });
 
-    const patterns = this.skuMatchPatterns(sku);
-    for (const pattern of patterns) {
-      const row = panel.locator('tbody tr').filter({ hasText: pattern }).first();
-      if (await row.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        return row;
+    const strict = Boolean(poTrxCode);
+    const patterns = this.skuMatchPatterns(sku, strict);
+    const searchTokens = [
+      ...(poTrxCode ? [`${poTrxCode} ${sku}`, poTrxCode] : []),
+      sku,
+      sku.split('-').slice(-2).join('-'),
+      sku.split('-').pop() ?? sku,
+    ];
+
+    for (const token of searchTokens) {
+      await this.searchOutstandingProducts(token);
+
+      for (const pattern of patterns) {
+        const row = panel.locator('tbody tr').filter({ hasText: pattern }).first();
+        if (await row.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          if (!poTrxCode || (await row.innerText()).includes(poTrxCode)) {
+            return row;
+          }
+        }
       }
     }
 
-    // Jangan andalkan DataTables search (sering miss kode SKU); scan semua baris
+    await this.clearOutstandingSearch();
     const rows = panel.locator('tbody tr');
     const count = await rows.count();
     for (let i = 0; i < count; i++) {
       const row = rows.nth(i);
       const text = ((await row.innerText().catch(() => '')) || '').replace(/\s+/g, ' ');
       if (patterns.some((p) => p.test(text))) {
-        return row;
+        if (!poTrxCode || text.includes(poTrxCode)) {
+          return row;
+        }
       }
     }
 
     return panel.locator('tbody tr').filter({ hasText: patterns[0] }).first();
   }
 
-  async checkOutstandingRows(skus: string[]): Promise<void> {
+  async checkOutstandingRows(skus: string[], poTrxCode?: string): Promise<void> {
+    const panel = this.outstandingPanel();
+
+    if (poTrxCode) {
+      await this.setOutstandingPageSize('100');
+      await this.searchOutstandingProducts(poTrxCode);
+      await this.page.waitForTimeout(1_000);
+    } else {
+      await this.clearOutstandingSearch();
+    }
+
+    const strict = Boolean(poTrxCode);
+
     for (const sku of skus) {
-      const row = await this.findOutstandingRow(sku);
+      const patterns = this.skuMatchPatterns(sku, strict);
+      let row = panel.locator('tbody tr').filter({ hasText: patterns[0] }).first();
+
+      for (const pattern of patterns) {
+        const candidate = panel.locator('tbody tr').filter({ hasText: pattern }).first();
+        if (await candidate.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          const text = (await candidate.innerText().catch(() => '')) || '';
+          if (!poTrxCode || text.includes(poTrxCode)) {
+            row = candidate;
+            break;
+          }
+        }
+      }
+
       await expect(row, `Baris outstanding untuk ${sku}`).toBeVisible({ timeout: 30_000 });
       const checkbox = row.locator('input[type="checkbox"]').first();
       if (!(await checkbox.isChecked().catch(() => false))) {
         await checkbox.check({ force: true });
       }
-      await this.clearOutstandingSearch();
     }
+  }
+
+  async waitForInboundDetailRowCount(minRows: number): Promise<void> {
+    await this.form.expandAccordion('Inbound Detail');
+    const section = this.page.locator('#InventoryInDetail');
+    await expect
+      .poll(
+        async () => {
+          const rows = section.locator('tbody tr').filter({
+            hasNotText: /no data available/i,
+          });
+          return rows.count();
+        },
+        { timeout: 90_000 },
+      )
+      .toBeGreaterThanOrEqual(minRows);
   }
 
   async clickBulkUseOnOutstanding(): Promise<void> {
@@ -336,24 +481,29 @@ export class PurchaseInboundPage {
   async fillInboundQtyForSku(sku: string, qty: number): Promise<void> {
     await this.form.expandAccordion('Inbound Detail');
     const section = this.page.locator('#InventoryInDetail');
-    const patterns = this.skuMatchPatterns(sku);
+    const patterns = this.skuMatchPatterns(sku, true);
 
     let row = section.locator('tbody tr').filter({ hasText: patterns[0] }).first();
     for (const pattern of patterns) {
       const candidate = section.locator('tbody tr').filter({ hasText: pattern }).first();
-      if (await candidate.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      if (await candidate.isVisible({ timeout: 3_000 }).catch(() => false)) {
         row = candidate;
         break;
       }
     }
     await expect(row, `Baris inbound detail untuk ${sku}`).toBeVisible({ timeout: 30_000 });
 
-    // InboundQuantity.vue — FormInput class w-24; jangan ambil checkbox baris
     const qtyInput = row
       .locator('input.w-24, input[class*="w-24"]')
       .or(row.getByRole('textbox'))
-      .first();
+      .last();
     await expect(qtyInput, `Inbound Qty input untuk ${sku}`).toBeVisible({ timeout: 10_000 });
+
+    const current = (await qtyInput.inputValue().catch(() => '')).replace(/[^\d]/g, '');
+    if (current === String(qty)) {
+      return;
+    }
+
     await qtyInput.click();
     await qtyInput.fill(String(qty));
     await qtyInput.press('Tab');

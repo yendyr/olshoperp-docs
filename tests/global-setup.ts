@@ -42,6 +42,15 @@ async function globalSetup(_config: FullConfig): Promise<void> {
 
   fs.mkdirSync(AUTH_DIR, { recursive: true });
 
+  const refreshAuth = process.env.OLSHOP_REFRESH_AUTH === '1';
+  if (!refreshAuth && fs.existsSync(storagePath)) {
+    // eslint-disable-next-line no-console
+    console.log(
+      `[global-setup] Skip login — pakai session existing: ${storagePath} (company: ${company.label})`,
+    );
+    return;
+  }
+
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     baseURL,

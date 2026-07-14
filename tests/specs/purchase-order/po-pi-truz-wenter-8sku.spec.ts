@@ -6,7 +6,6 @@ import {
   PoWithPrProductLine,
 } from '../../helpers/purchase-order';
 import {
-  PURCHASE_INBOUND_DATALIST_PATH,
   PurchaseInboundPage,
 } from '../../helpers/purchase-inbound';
 
@@ -89,36 +88,18 @@ test.describe.serial('PO + PI — TRUZV1 & WENTER 8 SKU', () => {
     await po.assertPoStatusApprovedInDatalist(poTrxCode);
 
     // ── Phase 2: Purchase Inbound — 1 dokumen dari approved PO ──
-    await page.goto(PURCHASE_INBOUND_DATALIST_PATH, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1_500);
+    await pi.gotoDatalist();
     await pi.openCreateForm();
-    await pi.assertTransactionDateAutoFilled();
-    const phase = await pi.waitForCreateDefaultsSettled();
-
-    if (phase === 'edit') {
-      piTrxCode = await pi.getCurrentTransactionCode();
-    } else {
-      await pi.setTransactionDateFiscalFallback();
-      await pi.selectSupplier(supplierName);
-
-      try {
-        piTrxCode = await pi.clickSaveAndNextAndWaitForEdit();
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        if (/fiscal period/i.test(message) || (await pi.hasFiscalPeriodError())) {
-          await pi.setTransactionDateFiscalFallback();
-          piTrxCode = await pi.clickSaveAndNextAndWaitForEdit();
-        } else {
-          throw err;
-        }
-      }
-    }
+    piTrxCode = await pi.ensureInboundHeaderSaved(supplierName);
     await assertNoBlocker('setelah PI header tersimpan');
 
     await pi.selectSupplier(supplierName);
     await pi.openAvailablePurchaseOrderModal();
-    await pi.checkOutstandingRows(skus);
+    await pi.checkOutstandingRows(skus, poTrxCode);
     await pi.clickBulkUseOnOutstanding();
     await assertNoBlocker('setelah PI bulk Use outstanding PO');
+    await pi.waitForInboundDetailRowCount(skus.length);
 
     for (const line of productLines) {
       await pi.fillInboundQtyForSku(line.sku, line.qty);

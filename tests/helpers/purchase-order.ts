@@ -140,18 +140,18 @@ export class PurchaseOrderPage {
 
   async selectPoDetailProduct(sku: string): Promise<void> {
     await this.expandPurchaseOrderDetail();
-    const section = this.page.locator('#PurchaseOrderDetail');
-    const multiselect = section.locator('.multiselect').first();
 
     const createResponse = this.page.waitForResponse(
       (response) =>
         response.url().includes('purchase-order-detail') &&
+        response.url().includes('bulk-use') &&
         response.request().method() === 'POST',
       { timeout: 90_000 },
     );
 
-    const combobox = multiselect.getByRole('combobox');
-    await combobox.scrollIntoViewIfNeeded();
+    const section = this.page.locator('#PurchaseOrderDetail');
+    const combobox = section.locator('.multiselect').first().getByRole('combobox');
+    await expect(combobox).toBeVisible({ timeout: 30_000 });
     await combobox.click();
     await combobox.fill(sku);
     await this.page.waitForTimeout(800);
@@ -165,7 +165,7 @@ export class PurchaseOrderPage {
     });
     await option.click();
     await createResponse;
-    await this.page.waitForTimeout(500);
+    await this.page.waitForTimeout(1_000);
 
     await expect(
       section.getByRole('row').filter({ hasText: this.skuPattern(sku) }).first(),
@@ -177,6 +177,7 @@ export class PurchaseOrderPage {
     for (const line of lines) {
       await this.selectPoDetailProduct(line.sku);
       await this.fillPoQtyForSku(line.sku, line.poQty);
+      await this.page.waitForTimeout(500);
     }
   }
 
