@@ -1,9 +1,54 @@
 import { Locator, Page, expect } from '@playwright/test';
 import { dismissStagingBanner } from './company-access';
 
-export const SYSTEM_PRODUCT_DATALIST_PATH = '/supplychain/product';
-export const SYSTEM_PRODUCT_CREATE_PATH = '/supplychain/product/create';
-export const SYSTEM_PRODUCT_EDIT_PATH_PATTERN = /\/supplychain\/product\/edit\/\d+/;
+export type ProductFormPaths = {
+  datalistPath: string;
+  createPath: string;
+  editPathPattern: RegExp;
+  /** Fragment URL API untuk POST create, e.g. `/supplychain/product` */
+  apiCreatePath: string;
+  /**
+   * Locator wait setelah buka /create.
+   * Default: `#sku`. PIC AS-IS `showGeneral=false` → pakai selector non-SKU.
+   */
+  createReadyLocator?: string;
+  /** false bila menu inventory-only tanpa tombol Create di datalist (AS-IS PIC). */
+  hasCreateButton?: boolean;
+};
+
+export const SYSTEM_PRODUCT_PATHS: ProductFormPaths = {
+  datalistPath: '/supplychain/product',
+  createPath: '/supplychain/product/create',
+  editPathPattern: /\/supplychain\/product\/edit\/\d+/,
+  apiCreatePath: '/supplychain/product',
+};
+
+export const PRODUCT_GENERAL_CONFIGURATION_PATHS: ProductFormPaths = {
+  datalistPath: '/supplychain/product-general-configuration',
+  createPath: '/supplychain/product-general-configuration/create',
+  editPathPattern: /\/supplychain\/product-general-configuration\/edit\/\d+/,
+  apiCreatePath: '/supplychain/product-general-configuration',
+};
+
+export const PRODUCT_INVENTORY_CONFIGURATION_PATHS: ProductFormPaths = {
+  datalistPath: '/supplychain/product-inventory-configuration',
+  createPath: '/supplychain/product-inventory-configuration/create',
+  editPathPattern: /\/supplychain\/product-inventory-configuration\/edit\/\d+/,
+  apiCreatePath: '/supplychain/product-inventory-configuration',
+  // AS-IS: Basic Information (#sku) di-gate showGeneral=false — form tetap load tanpa field SKU
+  createReadyLocator: 'button:has-text("Save"), button:has-text("Save All")',
+  hasCreateButton: false,
+};
+
+export const SYSTEM_PRODUCT_DATALIST_PATH = SYSTEM_PRODUCT_PATHS.datalistPath;
+export const SYSTEM_PRODUCT_CREATE_PATH = SYSTEM_PRODUCT_PATHS.createPath;
+export const SYSTEM_PRODUCT_EDIT_PATH_PATTERN = SYSTEM_PRODUCT_PATHS.editPathPattern;
+
+export const PRODUCT_GENERAL_CONFIGURATION_DATALIST_PATH =
+  PRODUCT_GENERAL_CONFIGURATION_PATHS.datalistPath;
+
+export const PRODUCT_INVENTORY_CONFIGURATION_DATALIST_PATH =
+  PRODUCT_INVENTORY_CONFIGURATION_PATHS.datalistPath;
 
 export function systemProductEditPath(productId: string | number): string {
   return `/supplychain/product/edit/${productId}`;
@@ -13,39 +58,67 @@ const SALES_CATEGORY_LABEL = 'Sales Category';
 const PRODUCT_COA_GROUP_LABEL = 'Product Coa Group';
 
 /**
- * POM umum System Product — datalist, create, edit, variant.
- * Dipakai semua skenario TC menu Master System Product.
+ * POM umum System Product / Product General Configuration —
+ * datalist, create, edit (FormProductComponent shared).
  */
 export class SystemProductPage {
-  constructor(private readonly page: Page) {}
+  private readonly paths: ProductFormPaths;
+
+  constructor(
+    private readonly page: Page,
+    paths: ProductFormPaths = SYSTEM_PRODUCT_PATHS,
+  ) {
+    this.paths = paths;
+  }
 
   async gotoDatalist(): Promise<void> {
-    await this.page.goto(SYSTEM_PRODUCT_DATALIST_PATH, {
+    await this.page.goto(this.paths.datalistPath, {
       waitUntil: 'domcontentloaded',
     });
     await dismissStagingBanner(this.page);
+    if (this.paths.hasCreateButton === false) {
+      await expect(this.page.getByRole('searchbox').first()).toBeVisible({
+        timeout: 45_000,
+      });
+      await expect(this.page.getByRole('table').first()).toBeVisible({
+        timeout: 45_000,
+      });
+      return;
+    }
     await expect(this.createButton).toBeVisible({ timeout: 45_000 });
     await expect(this.page.getByRole('table').first()).toBeVisible();
   }
 
   async openCreateForm(): Promise<void> {
     await this.createButton.click();
-    await this.page.waitForURL(/\/supplychain\/product\/create/, {
-      timeout: 45_000,
-    });
-    await expect(this.systemProductSkuInput).toBeVisible();
+    await this.page.waitForURL(
+      new RegExp(`${this.paths.createPath.replace(/\//g, '\\/')}$`),
+      { timeout: 45_000 },
+    );
+    await this.waitForCreateFormReady();
   }
 
   async gotoCreate(): Promise<void> {
-    await this.page.goto(SYSTEM_PRODUCT_CREATE_PATH, {
+    await this.page.goto(this.paths.createPath, {
       waitUntil: 'domcontentloaded',
     });
     await dismissStagingBanner(this.page);
+    await this.waitForCreateFormReady();
+  }
+
+  private async waitForCreateFormReady(): Promise<void> {
+    if (this.paths.createReadyLocator) {
+      await expect(
+        this.page.locator(this.paths.createReadyLocator).first(),
+      ).toBeVisible({ timeout: 45_000 });
+      return;
+    }
     await expect(this.systemProductSkuInput).toBeVisible({ timeout: 45_000 });
   }
 
   async gotoEdit(productId: string | number): Promise<void> {
-    await this.page.goto(systemProductEditPath(productId), {
+    const base = this.paths.datalistPath;
+    await this.page.goto(`${base}/edit/${productId}`, {
       waitUntil: 'domcontentloaded',
     });
     await dismissStagingBanner(this.page);
@@ -57,14 +130,17 @@ export class SystemProductPage {
     await this.datalistSearchInput.fill(sku);
     await this.page.waitForTimeout(1_500);
 
-    const existingSku = this.page.getByRole('link', { name: sku, exact: true });
+    const existingSku = this.page
+      .getByRole('link', { name: sku, exact: true })
+      .or(this.page.getByText(sku, { exact: true }))
+      .first();
     if (await existingSku.isVisible({ timeout: 10_000 }).catch(() => false)) {
       const editPath = await existingSku.getAttribute('href');
       if (editPath) {
         await this.page.goto(editPath, { waitUntil: 'domcontentloaded' });
       } else {
         await Promise.all([
-          this.page.waitForURL(SYSTEM_PRODUCT_EDIT_PATH_PATTERN, {
+          this.page.waitForURL(this.paths.editPathPattern, {
             timeout: 90_000,
           }),
           existingSku.click(),
@@ -73,6 +149,12 @@ export class SystemProductPage {
 
       await expect(this.saveAllButton).toBeVisible({ timeout: 45_000 });
       return 'edit';
+    }
+
+    if (this.paths.hasCreateButton === false) {
+      throw new Error(
+        `SKU "${sku}" tidak ditemukan di datalist ${this.paths.datalistPath} (menu tanpa Create). Seed product dulu via PGC/System Product.`,
+      );
     }
 
     await this.openCreateForm();
@@ -87,54 +169,116 @@ export class SystemProductPage {
   }
 
   async assertSalesCategoryAutoFilled(): Promise<void> {
-    await this.assertComboboxFilled(this.salesCategoryCombobox, SALES_CATEGORY_LABEL);
+    // Setelah autofill, search input hilang — baca .multiselect-single-label
+    await expect
+      .poll(
+        async () => {
+          const singles = this.page.locator('.multiselect-single-label:visible');
+          if ((await singles.count()) === 0) return '';
+          return ((await singles.first().textContent()) ?? '').trim();
+        },
+        {
+          timeout: 25_000,
+          message: 'Sales Category should be auto-filled',
+        },
+      )
+      .toMatch(/^(?!choose category).+/i);
   }
 
   async assertProductCoaGroupAutoFilled(): Promise<void> {
-    await this.assertComboboxFilled(
-      this.productCoaGroupCombobox,
-      PRODUCT_COA_GROUP_LABEL,
-    );
+    await expect
+      .poll(
+        async () => this.resolveProductCoaSelectedLabel(),
+        {
+          timeout: 25_000,
+          message: 'Product Coa Group should be auto-filled',
+        },
+      )
+      .toMatch(/^(?!choose product coa group).+/i);
   }
 
   async assertAndEnsureSalesCategory(expectedLabel: string): Promise<void> {
-    const combobox = this.salesCategoryCombobox;
     const pattern = this.labelToFlexiblePattern(expectedLabel);
-    const current = await this.getMultiselectSelectedLabel(combobox);
-
+    await this.assertSalesCategoryAutoFilled();
+    const singles = this.page.locator('.multiselect-single-label:visible');
+    const current = ((await singles.first().textContent()) ?? '').trim();
     if (pattern.test(current)) {
       return;
     }
 
-    await this.systemProductSkuInput.click();
-    await combobox.scrollIntoViewIfNeeded();
-    await combobox.click();
-    await expect(combobox).toHaveAttribute('aria-expanded', 'true', { timeout: 15_000 });
-
-    // List panjang — ketik "Hobbies" lalu pilih opsi exact dari master data DEV-STG.
+    // Ganti value: klik multiselect pertama (Sales Category), lalu cari opsi
+    const salesMs = this.page.locator('.multiselect').first();
+    await salesMs.click();
+    const combobox = this.page
+      .locator('[aria-placeholder="Choose Category"], .multiselect-search')
+      .first();
+    await expect(combobox).toBeVisible({ timeout: 10_000 });
     await combobox.pressSequentially('Hobbies', { delay: 80 });
     await this.page.waitForTimeout(500);
 
-    const option = this.page.getByRole('option', { name: expectedLabel, exact: true });
-    await expect(option, `Opsi Sales Category "${expectedLabel}" harus ada`).toBeVisible({
-      timeout: 15_000,
+    const option = this.page.getByRole('option', {
+      name: expectedLabel,
+      exact: true,
     });
+    await expect(
+      option,
+      `Opsi Sales Category "${expectedLabel}" harus ada`,
+    ).toBeVisible({ timeout: 15_000 });
     await option.click();
-
     await this.systemProductSkuInput.click();
     await this.page.waitForTimeout(300);
 
-    const selected = await this.getMultiselectSelectedLabel(combobox);
-    expect(selected, `Sales Category harus "${expectedLabel}"`).toMatch(pattern);
+    const selected = ((await singles.first().textContent()) ?? '').trim();
+    expect(selected, `Sales Category harus "${expectedLabel}"`).toMatch(
+      pattern,
+    );
   }
 
   async assertAndEnsureProductCoaGroup(expectedLabel: string): Promise<void> {
-    await this.assertComboboxFilled(
-      this.productCoaGroupCombobox,
-      PRODUCT_COA_GROUP_LABEL,
-    );
-    await this.ensureComboboxValue(this.productCoaGroupCombobox, expectedLabel);
+    await this.assertProductCoaGroupAutoFilled();
+    const pattern = this.labelToFlexiblePattern(expectedLabel);
+    const current = await this.resolveProductCoaSelectedLabel();
+    if (pattern.test(current)) {
+      await this.fillAssetCategoryIfRequired();
+      return;
+    }
+
+    const coaMs = this.page.locator('.multiselect').nth(1);
+    await this.systemProductSkuInput.click();
+    await coaMs.click();
+    const combobox = this.page
+      .locator(
+        '[aria-placeholder="Choose Product Coa Group"], .multiselect-search',
+      )
+      .first();
+    await expect(combobox).toBeVisible({ timeout: 10_000 });
+    await this.ensureComboboxValue(combobox, expectedLabel);
     await this.fillAssetCategoryIfRequired();
+  }
+
+  /** Baca COA terpilih — saat autofill, search input sering tidak visible. */
+  private async resolveProductCoaSelectedLabel(): Promise<string> {
+    const combobox = this.productCoaGroupCombobox;
+    if (await combobox.isVisible().catch(() => false)) {
+      const viaInput = await this.getMultiselectSelectedLabel(combobox);
+      if (
+        viaInput &&
+        !/choose product coa group/i.test(viaInput)
+      ) {
+        return viaInput;
+      }
+    }
+
+    const singles = this.page.locator('.multiselect-single-label:visible');
+    const count = await singles.count();
+    // Basic Information: [0]=Sales Category, [1]=Product Coa Group
+    if (count >= 2) {
+      return ((await singles.nth(1).textContent()) ?? '').trim();
+    }
+    if (count === 1) {
+      return ((await singles.first().textContent()) ?? '').trim();
+    }
+    return '';
   }
 
   async clearProductAliasName(): Promise<void> {
@@ -275,23 +419,29 @@ export class SystemProductPage {
   }
 
   async clickSave(): Promise<void> {
-    const saveButton = this.page
-      .getByRole('button', { name: 'Save', exact: true })
-      .last();
-    await saveButton.scrollIntoViewIfNeeded();
+    const apiFragment = this.paths.apiCreatePath;
+    const saveResponse = this.page.waitForResponse(
+      (response) => {
+        if (response.request().method() !== 'POST') return false;
+        const pathname = new URL(response.url()).pathname.replace(/\/$/, '');
+        if (apiFragment === '/supplychain/product') {
+          return pathname === '/api/supplychain/product';
+        }
+        return pathname.endsWith(apiFragment);
+      },
+      { timeout: 90_000 },
+    );
 
-    const coaLabel = await this.getMultiselectSelectedLabel(this.productCoaGroupCombobox);
+    const coaLabel = await this.resolveProductCoaSelectedLabel();
     expect(coaLabel, 'Product Coa Group harus terisi sebelum save').not.toMatch(
       /choose product coa group/i,
     );
     expect(coaLabel.length).toBeGreaterThan(0);
 
-    const saveResponse = this.page.waitForResponse(
-      (response) =>
-        response.url().includes('/api/supplychain/product') &&
-        response.request().method() === 'POST',
-      { timeout: 90_000 },
-    );
+    const saveButton = this.page
+      .getByRole('button', { name: 'Save', exact: true })
+      .last();
+    await saveButton.scrollIntoViewIfNeeded();
 
     await saveButton.click();
 
@@ -303,11 +453,167 @@ export class SystemProductPage {
 
     if (body?.status?.error) {
       throw new Error(
-        `Save System Product gagal: ${body.status.message ?? JSON.stringify(body.data ?? body)}`,
+        `Save product gagal: ${body.status.message ?? JSON.stringify(body.data ?? body)}`,
       );
     }
 
     await this.waitForBasicInformationSaved();
+  }
+
+  async fillRetailPrice(price: string): Promise<void> {
+    // Retail Price di section Product Details — jangan scroll ke Enable Variations
+    const details = this.page.getByRole('button', {
+      name: 'Product Details',
+      exact: true,
+    });
+    if (await details.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      if ((await details.getAttribute('aria-expanded')) !== 'true') {
+        await details.click();
+        await this.page.waitForTimeout(700);
+      }
+    }
+
+    const priceInput = this.page
+      .locator('#price')
+      .or(this.page.getByPlaceholder('Price Product'))
+      .first();
+    await priceInput.scrollIntoViewIfNeeded();
+    await expect(priceInput, 'Retail Price').toBeVisible({ timeout: 30_000 });
+    await priceInput.click({ force: true });
+    await priceInput.fill('');
+    await priceInput.fill(price);
+    await this.page.waitForTimeout(400);
+  }
+
+  async updateSku(sku: string): Promise<void> {
+    await this.systemProductSkuInput.fill(sku);
+    await this.systemProductSkuInput.blur();
+    await this.page.waitForTimeout(500);
+  }
+
+  async clickSaveAllForHeaderUpdate(): Promise<void> {
+    const apiFragment = this.paths.apiCreatePath.replace(/^\//, '');
+    const saveResponse = this.page
+      .waitForResponse(
+        (response) => {
+          if (!['PUT', 'POST'].includes(response.request().method())) {
+            return false;
+          }
+          const pathname = new URL(response.url()).pathname;
+          // Hindari match terlalu luas ke /product saat mode PGC
+          if (apiFragment === 'supplychain/product') {
+            return /\/api\/supplychain\/product\/\d+/.test(pathname);
+          }
+          return pathname.includes(apiFragment);
+        },
+        { timeout: 90_000 },
+      )
+      .catch(() => null);
+
+    await this.saveAllButton.scrollIntoViewIfNeeded();
+    await this.saveAllButton.click({ force: true });
+
+    const response = await saveResponse;
+    if (response) {
+      const body = (await response.json().catch(() => null)) as {
+        status?: { error?: number; message?: string };
+      } | null;
+      if (body?.status?.error) {
+        throw new Error(
+          `Save All gagal: ${body.status.message ?? `HTTP ${response.status()}`}`,
+        );
+      }
+    }
+
+    const successToast = this.page
+      .locator('.toastify, [class*="toast"]')
+      .filter({ hasText: /success|saved|berhasil/i });
+    await successToast
+      .first()
+      .waitFor({ state: 'visible', timeout: 15_000 })
+      .catch(() => undefined);
+    await this.page.waitForTimeout(800);
+  }
+
+  async assertBasicSkuFieldsVisible(): Promise<void> {
+    await expect(
+      this.systemProductSkuInput,
+      'System Product SKU harus visible di form create.',
+    ).toBeVisible({ timeout: 8_000 });
+  }
+
+  /** Buka Product Details → nested Inventory Management (hanya di menu showInventory + is_edit). */
+  private async openInventoryManagementSection(): Promise<void> {
+    const details = this.page.getByRole('button', {
+      name: 'Product Details',
+      exact: true,
+    });
+    await expect(details, 'Section Product Details').toBeVisible({
+      timeout: 30_000,
+    });
+    if ((await details.getAttribute('aria-expanded')) !== 'true') {
+      await details.click();
+      await this.page.waitForTimeout(700);
+    }
+
+    const invHeader = this.page
+      .locator('button')
+      .filter({ hasText: /^Inventory Management$/ })
+      .first();
+    await expect(invHeader, 'Subsection Inventory Management').toBeVisible({
+      timeout: 20_000,
+    });
+    if ((await invHeader.getAttribute('aria-expanded')) !== 'true') {
+      await invHeader.click();
+      await this.page.waitForTimeout(600);
+    }
+  }
+
+  /**
+   * Product Details → Inventory Management.
+   * Checklist Expired Date + days, Minimum Stock Qty.
+   */
+  async fillInventoryManagement(options: {
+    expiredDays: string;
+    minimumStockQty: string;
+  }): Promise<void> {
+    await this.openInventoryManagementSection();
+
+    // Anchor ke placeholder days — checkbox Expired Date biasanya langsung sebelum field ini
+    const daysInput = this.page.getByPlaceholder('e.g: 15').first();
+    await expect(daysInput).toBeVisible({ timeout: 15_000 });
+
+    if (await daysInput.isDisabled().catch(() => true)) {
+      const expiredCheckbox = daysInput.locator(
+        'xpath=preceding::input[@type="checkbox"][1]',
+      );
+      await expiredCheckbox.check({ force: true });
+      await expect(daysInput).toBeEnabled({ timeout: 10_000 });
+    }
+
+    await daysInput.fill(options.expiredDays);
+
+    const minStock = this.page.getByPlaceholder('Minimum Stock Qty');
+    await expect(minStock).toBeVisible({ timeout: 15_000 });
+    await minStock.fill(options.minimumStockQty);
+    await this.page.waitForTimeout(300);
+  }
+
+  async assertInventoryManagement(options: {
+    expiredDays: string;
+    minimumStockQty: string;
+  }): Promise<void> {
+    await this.openInventoryManagementSection();
+
+    const daysInput = this.page.getByPlaceholder('e.g: 15').first();
+    const minStock = this.page.getByPlaceholder('Minimum Stock Qty');
+    await expect(daysInput).toBeVisible({ timeout: 15_000 });
+    await expect(daysInput).toHaveValue(
+      new RegExp(options.expiredDays.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+    );
+    await expect(minStock).toHaveValue(
+      new RegExp(options.minimumStockQty.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+    );
   }
 
   async scrollToProductDetails(): Promise<void> {
@@ -483,14 +789,20 @@ export class SystemProductPage {
   }
 
   async searchDatalist(query: string): Promise<void> {
-    await this.gotoDatalist();
+    const search = this.datalistSearchInput;
+    if (!(await search.isVisible().catch(() => false))) {
+      await this.gotoDatalist();
+    }
     await this.datalistSearchInput.fill(query);
     await this.page.waitForTimeout(1_500);
   }
 
   async assertSkuVisibleInDatalist(sku: string): Promise<void> {
+    const link = this.page.getByRole('link', { name: sku, exact: true });
+    const text = this.page.getByText(sku, { exact: true });
     await expect(
-      this.page.getByRole('link', { name: sku, exact: true }),
+      link.or(text).first(),
+      `SKU ${sku} harus tampil di datalist`,
     ).toBeVisible({
       timeout: 45_000,
     });
@@ -810,7 +1122,38 @@ export class SystemProductPage {
       .filter({ hasNotText: 'No results found' });
   }
 
+  private get salesCategoryMultiselectRoot(): Locator {
+    return this.page
+      .locator('[class*="col-span"]')
+      .filter({
+        has: this.page.locator('label').filter({ hasText: /^Sales Category/ }),
+      })
+      .locator('.multiselect')
+      .first();
+  }
+
+  private get productCoaGroupMultiselectRoot(): Locator {
+    return this.page
+      .locator('[class*="col-span"]')
+      .filter({
+        has: this.page.locator('label').filter({ hasText: /Product Coa Group/i }),
+      })
+      .locator('.multiselect')
+      .first();
+  }
+
+  private async getSelectedLabelFromMultiselectRoot(
+    root: Locator,
+  ): Promise<string> {
+    const singleLabel = root.locator('.multiselect-single-label');
+    if (await singleLabel.isVisible().catch(() => false)) {
+      return ((await singleLabel.textContent()) ?? '').trim();
+    }
+    return ((await root.textContent()) ?? '').trim();
+  }
+
   private get salesCategoryCombobox(): Locator {
+    // Saat kosong: .multiselect-search ada. Saat filled: klik root dulu lalu search muncul.
     return this.page.locator('[aria-placeholder="Choose Category"]').first();
   }
 
@@ -856,7 +1199,9 @@ export class SystemProductPage {
     combobox: Locator,
     label: string,
   ): Promise<void> {
-    await expect(combobox, `${label} should be visible`).toBeVisible();
+    await expect(combobox, `${label} should be visible`).toBeVisible({
+      timeout: 25_000,
+    });
 
     const text = await this.getMultiselectSelectedLabel(combobox);
     expect(text, `${label} should be auto-filled`).not.toMatch(
@@ -929,7 +1274,7 @@ export class SystemProductPage {
   }
 
   private async waitForBasicInformationSaved(): Promise<void> {
-    await this.page.waitForURL(SYSTEM_PRODUCT_EDIT_PATH_PATTERN, {
+    await this.page.waitForURL(this.paths.editPathPattern, {
       timeout: 90_000,
     });
     await expect(this.saveAllButton).toBeVisible({ timeout: 45_000 });

@@ -1,0 +1,56 @@
+# POM Element Registry — Dimension & Weight Label (SCM Master)
+# Sumber: olshoperp-frontend SCM/master/DimensionAndWeight/Form.vue + DataList.vue
+# Route UI: /supplychain/dimension-and-weight-label · API: /supplychain/dimension-and-weight
+
+menu: supplychain-dimension-and-weight-label
+menu_name: Dimension & Weight Label
+route: /supplychain/dimension-and-weight-label
+create_button_mode: link
+pom_helper: tests/helpers/dimension-and-weight.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  description:
+    strategy: textarea
+    label: Description
+
+  set_as_primary:
+    strategy: label
+    value: Set as primary
+
+  active_switch:
+    strategy: label
+    value: Active
+
+  show_for_all_company:
+    strategy: label
+    value: Show for all company
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    position: last
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  edit_button:
+    strategy: id
+    value: updateButton

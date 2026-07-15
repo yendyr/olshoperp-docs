@@ -1,0 +1,72 @@
+# POM Element Registry — Stock History (SCM Report)
+# Sumber: Report/ProductMutationStock/DataList.vue
+# UI: SCM → Report → Stock History · /supplychain/product-mutation-stock
+# Manifest: supplychain-product-mutation-stock · menu_name Stock History
+# Read-only — wajib product_id + Apply sebelum datalist bermakna
+
+menu: supplychain-product-mutation-stock
+menu_name: Stock History
+route: /supplychain/product-mutation-stock
+create_button_mode: none
+pom_helper: tests/helpers/product-mutation-stock.ts
+company_default: lumicharmsid
+
+elements:
+  breadcrumb:
+    strategy: text
+    value: Stock History
+
+  product_filter:
+    strategy: aria-placeholder
+    value: Choose Product
+    note: "Required · select2-product shared with product-mutation"
+
+  warehouse_filter:
+    strategy: aria-placeholder
+    value: Filter Building
+    note: "Optional; warehouse_id=0 = all"
+
+  warehouse_level_filter:
+    strategy: aria-placeholder
+    value: Show data as
+    note: "warehouse_space_type_id"
+
+  select_period:
+    strategy: class
+    value: olshoperp-datepicker-input
+    note: "VueDatePicker range · select_periode"
+
+  apply_button:
+    strategy: role
+    value: button Apply
+
+  column_date:
+    strategy: text
+    value: Date
+
+  column_trx_code:
+    strategy: text
+    value: Trx. Code
+
+  column_receiving_process:
+    strategy: text
+    value: Receiving Process
+
+  column_product_in:
+    strategy: text
+    value: Product In
+
+  column_product_out:
+    strategy: text
+    value: Product Out
+
+  column_ending_balance:
+    strategy: text
+    value: Ending Balance
+
+notes:
+  - "TC: VIEW (shell) + FILTER (Product + Apply)."
+  - "AS-IS router: product-mutation-stock → StockHistory/DataList.vue (Stock History V2)."
+  - "Datalist API: GET supplychain/stock-history?product_id= (bukan product-mutation-stock)."
+  - "show_table=false sampai Apply; row_group warehouse_formatted."
+  - "Select2: product-mutation/select2-product|warehouse|level."

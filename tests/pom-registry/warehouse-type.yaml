@@ -1,0 +1,58 @@
+# POM Element Registry — Warehouse Level (SCM Master)
+# Sumber: olshoperp-frontend SCM/master/WarehouseType/Form.vue + DataList.vue
+# Route: /supplychain/warehouse-type (menu_name: Warehouse Level)
+
+menu: supplychain-warehouse-type
+menu_name: Warehouse Level
+route: /supplychain/warehouse-type
+create_button_mode: link
+pom_helper: tests/helpers/warehouse-type.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  name:
+    strategy: id
+    value: name
+    label: Warehouse Level Name
+
+  level:
+    strategy: id
+    value: level
+    label: Level
+
+  description:
+    strategy: id
+    value: description
+
+  active_switch:
+    strategy: label
+    value: Active
+
+  show_for_all_company:
+    strategy: label
+    value: Show for all company
+
+  show_in_reports:
+    strategy: label
+    value: Show in Reports
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    position: last
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  edit_button:
+    strategy: id
+    value: updateButton

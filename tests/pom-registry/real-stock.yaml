@@ -1,0 +1,59 @@
+# POM Element Registry — Real Time Stock (SCM Report)
+# Sumber: Report/RealStock/{DataList,DataListByLocationV2,DataListBySKUV2}.vue
+# UI: /supplychain/real-stock · breadcrumb Real Time Stock
+# Read-only — wajib pilih warehouse sebelum datalist By Location
+
+menu: supplychain-real-stock
+menu_name: Real Time Stock
+route: /supplychain/real-stock
+create_button_mode: none
+pom_helper: tests/helpers/real-stock.ts
+company_default: lumicharmsid
+
+elements:
+  breadcrumb:
+    strategy: text
+    value: Real Time Stock
+
+  tab_by_location:
+    strategy: role
+    value: tab By Location
+
+  tab_by_sku:
+    strategy: role
+    value: tab By SKU
+
+  warehouse_filter:
+    strategy: placeholder
+    value: Select one or more items to view data
+    note: "PrimeVue MultiSelect"
+
+  warehouse_level:
+    strategy: placeholder
+    value: Select warehouse level
+
+  manual_calculate:
+    strategy: text
+    value: Manual Calculate
+    note: "Visible setelah warehouse dipilih"
+
+  log_data:
+    strategy: text
+    value: Log Data
+
+  column_on_hand:
+    strategy: text
+    value: On Hand
+
+  column_ats:
+    strategy: text
+    value: ATS
+
+  column_availability:
+    strategy: text
+    value: Availability
+
+notes:
+  - "TC: VIEW (shell) + FILTER (warehouse → by-location)."
+  - "API by-location GET; by-sku POST (type_post=true)."
+  - "Manual calculate: real-stock/manual-calculate."

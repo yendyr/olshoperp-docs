@@ -1,0 +1,84 @@
+# POM Element Registry — Manual Picking List (SCM)
+# Sumber: SCM/PickingList/Form.vue + DataList.vue + AvailableWarehouse.vue
+# UI: /supplychain/manual-picking-list · prefix PL-*
+# API: supplychain/manual-picking-list · process_type = 'manual picking'
+# AS-IS: fetchDefaultValues() → auto POST create → redirect edit
+
+menu: supplychain-manual-picking-list
+menu_name: Manual Picking List
+route: /supplychain/manual-picking-list
+create_button_mode: link
+pom_helper: tests/helpers/manual-picking-list.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+    note: "Button role=link di filter-search slot"
+
+  code:
+    strategy: id
+    value: code
+    note: "Auto PL-*; disabled on edit"
+
+  name:
+    strategy: id
+    value: name
+    note: "Picking List Name; placeholder e.g: Picking List 'trx no'"
+
+  building_origin:
+    strategy: aria-placeholder
+    value: Choose Warehouse
+    note: "Label UI: Building Origin · required · auto-save watcher"
+
+  assign_to:
+    strategy: aria-placeholder
+    value: "e.g: Emily Clarke"
+    note: "Opsional · auto-save"
+
+  description:
+    strategy: placeholder
+    value: "Add description or notes..."
+    note: "Hanya Save All (bukan autosave)"
+
+  draft_radio:
+    strategy: id
+    value: draft
+
+  open_radio:
+    strategy: id
+    value: open
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "Group view default · middle-detail bulk-create"
+
+  available_products:
+    strategy: text
+    value: Available Products
+    note: "Modal → Use this Item · Transfer Qty → POST middle-detail"
+
+  transfer_qty:
+    strategy: label
+    value: Transfer Qty
+    note: "Modal Use this Item"
+
+notes:
+  - "Bukan Omni Picking List — ad-hoc; prefix PL- sama dengan auto PL."
+  - "groupView default true → DatalistDetailGroup."
+  - "Create gagal jika Building Origin NULL atau Outrack Picking belum di Warehouse Setting."
+  - "Complete Picking generate TF Internal + Stock Deduction + MPL baru."
+  - "Dipakai Location master via set-location."

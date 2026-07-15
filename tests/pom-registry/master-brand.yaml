@@ -1,0 +1,59 @@
+# POM Element Registry — Master Brand (SCM Master)
+# Sumber: SCM/master/MasterBrand/Form.vue + DataList.vue
+# UI: /supplychain/master-brand · API: supplychain/brand · table omni_brands
+# Tidak ada auto-submit fetchDefaultValues
+
+menu: supplychain-master-brand
+menu_name: Master Brand
+route: /supplychain/master-brand
+create_button_mode: link
+pom_helper: tests/helpers/master-brand.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+    note: "Button role=link di filter slot"
+
+  name:
+    strategy: id
+    value: name
+    note: "Required · placeholder e.g: Shipping Cost (AS-IS copy)"
+
+  description:
+    strategy: id
+    value: description
+    note: "nullable max 150"
+
+  active_switch:
+    strategy: label
+    value: Active
+    section_id: Brand
+    note: "Default true; autosave PUT on edit watcher"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+  form_section:
+    strategy: disclosure
+    id: Brand
+    name: Brand
+
+notes:
+  - "UI route master-brand; API resource = supplychain/brand."
+  - "is_all_company forced 0 di controller write — tidak ada toggle Show for all company di form SCM."
+  - "Dipakai System Product / Product config via select2-brand (activeFilter)."
+  - "Tidak ada unique name di validation AS-IS."

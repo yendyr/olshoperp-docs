@@ -1,0 +1,54 @@
+# POM Element Registry — Warranty (SCM Master)
+# Sumber: olshoperp-frontend SCM/master/Warranty/Form.vue + DataList.vue
+# Route/API: /supplychain/warranty
+
+menu: supplychain-warranty
+menu_name: Warranty
+route: /supplychain/warranty
+create_button_mode: link
+pom_helper: tests/helpers/warranty.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+    placeholder: "e.g: WRT001"
+
+  name:
+    strategy: id
+    value: name
+    placeholder: "e.g: 3 Month"
+
+  description:
+    strategy: id
+    value: description
+
+  active_switch:
+    strategy: label
+    value: Active
+
+  show_for_all_company:
+    strategy: label
+    value: Show for all company
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    position: last
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  edit_button:
+    strategy: id
+    value: updateButton

@@ -1,0 +1,52 @@
+# POM Element Registry — Product Interchange (SCM Master)
+# Sumber: olshoperp-frontend SCM/master/ItemInterchange/Form.vue + DataList.vue
+# Route/API: /supplychain/item-interchange
+
+menu: supplychain-item-interchange
+menu_name: Product Interchange
+route: /supplychain/item-interchange
+create_button_mode: link
+pom_helper: tests/helpers/item-interchange.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  first_product:
+    strategy: aria-placeholder
+    value: Choose First Product
+
+  second_product:
+    strategy: aria-placeholder
+    value: Choose Second Product
+
+  description:
+    strategy: id
+    value: description
+
+  show_for_all_company:
+    strategy: label
+    value: Show for all company
+
+  active_switch:
+    strategy: label
+    value: Active
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    position: last
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  edit_button:
+    strategy: id
+    value: updateButton

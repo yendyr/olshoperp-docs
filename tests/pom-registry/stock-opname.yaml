@@ -1,0 +1,65 @@
+# POM Element Registry — Stock Opname (SCM)
+# Sumber: olshoperp-frontend SCM/StockOpname/FormComponen.vue + DataListComponen.vue
+# Route/API: /supplychain/stock-opname
+
+menu: supplychain-stock-opname
+menu_name: Stock Opname
+route: /supplychain/stock-opname
+create_button_mode: link
+pom_helper: tests/helpers/stock-opname.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+    placeholder: Generated After Saved
+
+  building_origin:
+    strategy: aria-placeholder
+    value: Choose Building
+
+  description:
+    strategy: placeholder
+    value: Add description or notes...
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  status_draft:
+    strategy: id
+    value: draft
+
+  status_open:
+    strategy: id
+    value: open
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+  available_products_link:
+    strategy: text
+    value: Available Products
+
+  use_product_adjustment_qty:
+    strategy: id
+    value: quantity
+    note: "Modal Use Product — Adjustment Quantity"
+
+notes:
+  - "AS-IS: FormComponen.fetchDefaultValues() dapat auto-submit create jika warehouse default terisi."
+  - "Create minimal: Building Origin wajib; code auto SP*; detail/SKU di section Opname Detail setelah edit."
+  - "Add detail: Available Products → Use (use-button) → Adjustment Quantity → Save; atau checkbox + bulk Use."

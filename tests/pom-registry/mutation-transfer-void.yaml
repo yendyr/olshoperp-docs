@@ -1,0 +1,46 @@
+# POM Element Registry — Transfer Void (SCM)
+# Sumber: SCM/StockMutation/TransferVoid/Form.vue + DataList.vue + DatalistDetail*.vue
+# UI: /supplychain/mutation-transfer-void · breadcrumb Void / Transfer Void
+# Docs prefix TFV* · process_type=from void · origin voided_order
+
+menu: supplychain-mutation-transfer-void
+menu_name: Transfer Void
+route: /supplychain/mutation-transfer-void
+api_resource: supplychain/mutation-transfer-void
+create_button_mode: deep-link
+pom_helper: tests/helpers/mutation-transfer-void.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: deep-link
+    value: /supplychain/mutation-transfer-void/create
+    note: "Datalist tanpa Create; form Origin Multiselect di-comment AS-IS"
+
+  code:
+    strategy: id
+    value: code
+
+  destination:
+    strategy: aria-placeholder
+    value: "Choose Location"
+
+  description:
+    strategy: section-textarea
+    section_id: BasicInformation
+    note: "AS-IS: :disabled=true selalu"
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "POST mutation-transfer/{id}/mutation-transfer-middle-detail/bulk-fifo"
+
+  detail_section:
+    strategy: disclosure
+    id: DatalistDetail
+    name: Transfer Product Detail
+
+notes:
+  - "AS-IS create incomplete: Building Origin Multiselect commented out — CREATE = smoke + Open fixture."
+  - "TFV* biasanya auto-generate; store() juga tidak inject code_identifier TFV."
+  - "TC: CREATE (smoke+fixture) + UPDATE (Select Product)."

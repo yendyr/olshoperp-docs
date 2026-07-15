@@ -5,8 +5,11 @@ import { Page } from '@playwright/test';
  * bentrok dengan tombol "Closed" di datalist.
  */
 export async function dismissStagingBanner(page: Page): Promise<void> {
-  const closeButton = page.locator('button.btn-close[aria-label="Close"]');
-  if (await closeButton.isVisible().catch(() => false)) {
-    await closeButton.click();
+  const closeButton = page.locator('button.btn-close[aria-label="Close"]').first();
+  if (!(await closeButton.isVisible({ timeout: 1_500 }).catch(() => false))) {
+    return;
   }
+
+  await closeButton.click({ force: true, timeout: 5_000 }).catch(() => undefined);
+  await page.waitForTimeout(200);
 }

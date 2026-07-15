@@ -1,0 +1,91 @@
+# POM Element Registry — Stock Addition (SCM Adjustment Addition)
+# Sumber: olshoperp-frontend SCM/StockAdjustment/StockAddition/FormComponen.vue + DatalistDetail.vue
+# Route/API: /supplychain/adjustment-addition
+# UI label: Stock Addition | Code prefix: AI*
+
+menu: supplychain-adjustment-addition
+menu_name: Stock Addition
+route: /supplychain/adjustment-addition
+create_button_mode: link
+pom_helper: tests/helpers/adjustment-addition.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+    placeholder: Generated After Saved
+    note: "Auto AI* setelah save"
+
+  transaction_date:
+    strategy: label
+    value: Transaction Date
+    note: "VueDatePicker; autofill now; max today; backdate max 6 bulan"
+
+  location_destination:
+    strategy: aria-placeholder
+    value: Choose Location
+    note: "Wajib. Multiselect getWarehouseDestination select2/warehouse-destination"
+
+  description:
+    strategy: placeholder
+    value: "e.g: The Sales department is responsible"
+    note: "FormTextarea; max 150 di BE"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    note: "Hanya di create (!is_edit)"
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    tippy: Save All
+
+  status_draft:
+    strategy: id
+    value: draft
+
+  status_open:
+    strategy: id
+    value: open
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "Slot select-product-transfer; watch bulk_product_id → POST bulk-create"
+
+  in_qty:
+    strategy: column
+    value: In Qty
+    note: "PrimeDataTables inline editable (field quantity_formatted)"
+
+  detail_section:
+    strategy: disclosure
+    id: InventoryInDetail
+    name: Stock Addition Detail
+
+  basic_section:
+    strategy: disclosure
+    id: BasicInformation
+    name: Basic Information
+
+notes:
+  - "AS-IS: fetchDefaultValues() mengisi warehouse_destination lalu submit() otomatis — Create sering langsung jadi Edit."
+  - "SCM menu=scm: Approve disembunyikan; approve via Accounting Stock Addition Approval."
+  - "Supplier/COA hanya jika with_supplier / menu accounting — diluar scope TC SCM default."
+  - "Detail: Select Product → bulk-create; In Qty inline edit; delete per-row (modal_bulk_delete=false)."
+  - "Relasi: bisa auto-generated dari Stock Opname (selisih > 0) — dok auto jangan diubah sembarangan."
+  - "AS-IS lock: product yang sudah di AI status open lain → error 'is used in an open Stock Addition'."
+  - "Select Product option: SKU ada di <strong>; textContent tidak ada spasi antara SKU dan Name."

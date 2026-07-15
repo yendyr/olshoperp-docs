@@ -1,0 +1,58 @@
+# POM Element Registry — Product Ending Stock (SCM Report)
+# Sumber: Report/ProductEndingStock/{DataList,DataListByWarehouse,DataListBySKU}.vue
+# UI: SCM → Report → Product Ending Stock · /supplychain/product-ending-stock
+# Read-only — tidak ada Create / edit. Manual Calculate → real-stock/manual-calculate
+
+menu: supplychain-product-ending-stock
+menu_name: Product Ending Stock
+route: /supplychain/product-ending-stock
+create_button_mode: none
+pom_helper: tests/helpers/product-ending-stock.ts
+company_default: lumicharmsid
+
+elements:
+  breadcrumb:
+    strategy: text
+    value: Product Ending Stock
+
+  tab_by_warehouse:
+    strategy: text
+    value: By Warehouse
+    note: "Default tab · GET product-ending-stock · row_group warehouse_group_formatted"
+
+  tab_by_sku:
+    strategy: text
+    value: By SKU
+    note: "GET product-ending-stock-by-sku"
+
+  manual_calculate:
+    strategy: text
+    value: Manual Calculate
+    note: "extra_slot_button · GET real-stock/manual-calculate"
+
+  log_data:
+    strategy: text
+    value: Log Data
+    note: "Calculate Log slideover"
+
+  column_availability:
+    strategy: text
+    value: Availability
+    note: "By Warehouse visible; tooltip Old label = Stock WH"
+
+  column_unit:
+    strategy: text
+    value: Unit
+
+  column_latest_calculation:
+    strategy: text
+    value: Latest Calculation
+
+  column_status:
+    strategy: text
+    value: Status
+
+notes:
+  - "TC: VIEW (By Warehouse) + FILTER (switch By SKU)."
+  - "action_button=false; stock > 0; exclude In Transit WH."
+  - "Export async ProductEndingStockJob (by_warehouse / by_sku)."

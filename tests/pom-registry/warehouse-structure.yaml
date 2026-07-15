@@ -1,0 +1,62 @@
+# POM Element Registry — Warehouse Structure (SCM Master)
+# Sumber: olshoperp-frontend SCM/master/Warehouse/Form.vue + DataList.vue + WarehouseStructureTable.vue
+# Route: /supplychain/warehouse-structure · API: /supplychain/warehouse
+
+menu: supplychain-warehouse-structure
+menu_name: Warehouse Structure
+route: /supplychain/warehouse-structure
+create_button_mode: link
+pom_helper: tests/helpers/warehouse-structure.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  parent_group:
+    strategy: aria-placeholder
+    value: Choose Parent
+
+  type:
+    strategy: aria-placeholder
+    value: Choose Type
+
+  drop_off_switch:
+    strategy: label
+    value: Drop Off
+    note: "Visible on create only (v-show=!id)"
+
+  active_switch:
+    strategy: label
+    value: Active
+
+  show_for_all_company:
+    strategy: label
+    value: Show for all company
+    note: "Visible only when parent_id empty"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    position: last
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  edit_button:
+    strategy: id
+    value: updateButton

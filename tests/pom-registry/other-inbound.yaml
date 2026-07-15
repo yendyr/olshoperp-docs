@@ -1,0 +1,53 @@
+# POM Element Registry — Other Inbound (SCM)
+# Sumber: SCM/StockMutation/InventoryOther/{Form,DataList,DatalistDetail}.vue
+# UI: /supplychain/other-inbound · breadcrumb SCM → Inbound → Other Inbound
+# Prefix IN* · supplier_id NULL · shared mutation-inbound API for detail/approve
+
+menu: supplychain-other-inbound
+menu_name: Other Inbound
+route: /supplychain/other-inbound
+api_resource: supplychain/other-inbound
+create_button_mode: deep-link
+pom_helper: tests/helpers/other-inbound.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: deep-link
+    value: /supplychain/other-inbound/create
+    note: "Datalist tanpa Create; Form create semua field disabled + no submit (G-02)"
+
+  code:
+    strategy: id
+    value: code
+
+  transaction_date:
+    strategy: class
+    value: olshoperp-datepicker-input
+    note: "AS-IS disabled always"
+
+  warehouse_destination:
+    strategy: aria-placeholder
+    value: "e.g: Seruni --> Lantai 1 --> Lorong A --> Rak A-001"
+    note: "AS-IS disabled always"
+
+  description:
+    strategy: id
+    value: description
+    note: "AS-IS disabled always"
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "Expected via slot select-product-transfer — AS-IS missing in InventoryOther/DatalistDetail.vue"
+
+  detail_section:
+    strategy: disclosure
+    id: InventoryInDetail
+    name: Inbound Detail
+
+notes:
+  - "CREATE = smoke /create + bind existing IN* from datalist (Assembly auto-gen biasa)."
+  - "UPDATE = verify header + Inbound Detail; Select Product only if UI slot present."
+  - "Mutations/detail/approve: supplychain/mutation-inbound* (shared with Purchase Inbound)."
+  - "TC: CREATE (smoke+fixture) + UPDATE (detail/verify)."

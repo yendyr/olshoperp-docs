@@ -1,0 +1,56 @@
+# POM Element Registry — Item Category (SCM Master)
+# Sumber: olshoperp-frontend SCM/master/ItemCategory/Form.vue + DataList.vue
+
+menu: supplychain-item-category
+menu_name: Item Category
+route: /supplychain/item-category
+create_button_mode: link
+pom_helper: tests/helpers/item-category.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  parent:
+    strategy: aria-placeholder
+    value: Choose Parent
+
+  description:
+    strategy: placeholder
+    value: "e.g: This category includes electronic"
+
+  active_switch:
+    strategy: label
+    value: Active
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    position: last
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+notes: |
+  TC sering menyebut "Unit Class" — field itu TIDAK ada di Item Category.
+  Field terkait hierarki = Parent Group Name (Choose Parent), opsional.
+  Create form: tombol = Save & Next (bukan Save All). Edit: Save All.

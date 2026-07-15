@@ -1,0 +1,60 @@
+# POM Element Registry — Bundle Stock Report (SCM Report)
+# Sumber: BundleStockReport/DataList.vue + BundleStockReportTable.vue
+# UI: SCM → Report → Bundle Stock Report · route /supplychain/bundle-stock-report
+# API: GET supplychain/bundle-stock-report · select2/products
+# Read-only — tidak ada Create / edit / Soft delete
+
+menu: supplychain-bundle-stock-report
+menu_name: Bundle Stock Report
+route: /supplychain/bundle-stock-report
+create_button_mode: none
+pom_helper: tests/helpers/bundle-stock-report.ts
+company_default: lumicharmsid
+
+elements:
+  breadcrumb:
+    strategy: text
+    value: Bundle Stock Report
+    note: "SCM > Report > Bundle Stock Report"
+
+  product_filter:
+    strategy: aria-placeholder
+    value: Choose Product
+    note: "Multiselect; tippy: Select SKU to view its bundle headers. Delay 400."
+
+  column_sku:
+    strategy: text
+    value: System Product
+    note: "Header: System Product SKU + System Product Name"
+
+  column_availability:
+    strategy: text
+    value: Availability
+    note: "BomAvailQty; tooltip inbound-transfer-used-reserved"
+
+  column_ats:
+    strategy: text
+    value: ATS Qty
+    note: "visible:false default; BomAtsQty"
+
+  column_unit:
+    strategy: text
+    value: Unit
+
+  column_update_at:
+    strategy: text
+    value: Update At
+    note: "initial_order [[0, desc]]"
+
+  warehouse_selector:
+    strategy: aria-placeholder
+    value: Choose Warehouse
+    note: "showSelectWarehouse=false di halaman bundle — tidak tampil"
+
+notes:
+  - "Laporan read-only: use_button_status=false; action column false."
+  - "Data = product dengan BOM header (header_product_bom_id null, is_bom=0) — Product Bundle / sales BOM, bukan Assembly is_bom=1."
+  - "Filter product_id → hanya header yang detail_products memuat product tersebut."
+  - "Select2: GET .../select2/products?q=&product_id= · limit 25."
+  - "Tidak ada export Excel; ScmReport helper tidak dipakai."
+  - "SKU link → /supplychain/product/edit/{id} target=_blank."

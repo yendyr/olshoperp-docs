@@ -284,8 +284,24 @@ export async function prepareSession(
 
   // Tab baru + storageState dimulai di about:blank — buka staging dulu baru baca localStorage.
   await page.goto(options.targetPath, { waitUntil: 'domcontentloaded' });
+  // Beberapa menu (mis. warehouse-structure) trigger navigasi/reload ulang setelah first paint
+  await page.waitForLoadState('load').catch(() => undefined);
+  await expect(page.locator('.topbar')).toBeVisible({ timeout: 45_000 });
+  await page.waitForTimeout(500);
 
-  const activeCompany = await readActiveCompanyFromPage(page);
+  let activeCompany: { id: number; name?: string; code?: string };
+  try {
+    activeCompany = await readActiveCompanyFromPage(page);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    if (msg.includes('Execution context was destroyed')) {
+      await page.waitForLoadState('domcontentloaded').catch(() => undefined);
+      await expect(page.locator('.topbar')).toBeVisible({ timeout: 45_000 });
+      activeCompany = await readActiveCompanyFromPage(page);
+    } else {
+      throw error;
+    }
+  }
   if (activeCompany.id !== company.id) {
     await switchCompanyByCode(page, companyCode);
     await page.goto(options.targetPath, { waitUntil: 'domcontentloaded' });

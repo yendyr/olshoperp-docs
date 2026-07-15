@@ -1,0 +1,53 @@
+# POM Element Registry — Tagging (SCM Master)
+# Sumber: olshoperp-frontend SCM/master/Tagging/Form.vue + DataList.vue
+# Route/API: /supplychain/tagging
+
+menu: supplychain-tagging
+menu_name: Tagging
+route: /supplychain/tagging
+create_button_mode: link
+pom_helper: tests/helpers/tagging.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+    label: Tagging Name
+
+  description:
+    strategy: textarea
+    label: Description
+
+  active_switch:
+    strategy: label
+    value: Active
+
+  show_for_all_company:
+    strategy: label
+    value: Show for all company
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    position: last
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  edit_button:
+    strategy: id
+    value: updateButton

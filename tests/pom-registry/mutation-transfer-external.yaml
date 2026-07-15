@@ -1,0 +1,69 @@
+# POM Element Registry — External Transfer (SCM)
+# Sumber: SCM/StockMutation/TransferExternal/Form.vue + DataList.vue + DatalistDetail.vue
+# UI/API: /supplychain/mutation-transfer-external · breadcrumb External Transfer
+# type=tf external · prefix TFE* · transit in transit → delivered
+# AS-IS: fetchDefaultValues() → auto submitBasicInformation()
+
+menu: supplychain-mutation-transfer-external
+menu_name: External Transfer
+route: /supplychain/mutation-transfer-external
+api_resource: supplychain/mutation-transfer-external
+create_button_mode: link
+pom_helper: tests/helpers/mutation-transfer-external.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+    note: "Auto TFE* setelah save"
+
+  origin:
+    strategy: aria-placeholder
+    value: "Choose Origin"
+    note: "Atau Choose Building Origin on create"
+
+  destination:
+    strategy: aria-placeholder
+    value: "Choose Location"
+    note: "select2-warehouse-destination-external · butuh origin"
+
+  description:
+    strategy: section-textarea
+    section_id: BasicInformation
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "POST mutation-transfer-external/{id}/transfer-external-middle-detail/bulk-fifo"
+
+  detail_section:
+    strategy: disclosure
+    id: DatalistDetail
+    name: Product Transfer Detail
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+notes:
+  - "Beda Transfer Internal: antar building + fase transit; prefix TFE*."
+  - "fetchDefaultValues() isi origin+destination lalu auto create."
+  - "Fiscal fallback tanggal 09-07-2026 jika periode hari ini tutup."
+  - "TC: CREATE + UPDATE saja (description + Select Product digabung di UPDATE)."
+  - "Approve ship/receive (2 tahap) di luar scope CREATE/UPDATE."

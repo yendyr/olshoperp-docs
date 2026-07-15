@@ -1,0 +1,80 @@
+# POM Element Registry — Outbound External / Mutation Outbound (SCM)
+# Sumber: SCM/StockMutation/InventoryOut/Form.vue + DataList.vue + DatalistDetail.vue
+# UI: /supplychain/mutation-outbound · breadcrumb Outbound External
+# API: supplychain/mutation-outbound · prefix OT*
+# AS-IS: fetchDefaultValues() → auto submit (butuh warehouse_origin); type default other
+
+menu: supplychain-mutation-outbound
+menu_name: Outbound External
+route: /supplychain/mutation-outbound
+create_button_mode: link
+pom_helper: tests/helpers/mutation-outbound.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: placeholder
+    value: Automatically generate by system
+    note: "AS-IS: TIDAK ada id=#code. Auto OT* setelah save"
+
+  type_other:
+    strategy: id
+    value: type-other
+    note: "Default · detail Select Product untuk type other"
+
+  type_sales_order:
+    strategy: id
+    value: type-sales-order-general
+
+  building_origin:
+    strategy: aria-placeholder
+    value: "e.g: Seruni --> Lantai 1 --> Lorong A --> Rak A-001"
+    note: "Required warehouse_origin · level building→rack"
+
+  description:
+    strategy: section-textarea
+    section_id: BasicInformation
+    note: "FormTextarea tanpa id — #BasicInformation textarea"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "Available stock di origin · POST outbound-middle-detail/{id}/bulk-create"
+
+  available_products:
+    strategy: text
+    value: Available Products
+
+  detail_section:
+    strategy: disclosure
+    id: DatalistDetail
+    name: Outbound External Detail
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+notes:
+  - "Pengeluaran stok keluar gudang (bukan transfer). Prefix OT*."
+  - "fetchDefaultValues() isi warehouse_origin + type_so lalu auto submitBasicInformation()."
+  - "AS-IS typo disclosure: title Basic Informaton (missing i) — match /Basic Inform/i."
+  - "Default type_so di lumicharmsid sering sales order general (3PL) — automation switch ke Other."
+  - "Type Other: Select Product dari select2-available-products."
+  - "Type Sales Order: alur SO berbeda — automation fokus Other."
+  - "Fiscal period: tanggal hari ini bisa gagal — automation pakai fallback 09-07-2026."
+  - "Beda Stock Deduction (AO*) / Purchase Inbound (IN*)."

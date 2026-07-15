@@ -1,0 +1,57 @@
+# POM Element Registry — Product General Configuration
+# Shared FormProductComponent dengan System Product (showGeneral=true, showInventory=false)
+# QA: reuse tests/helpers/system-product.ts + PRODUCT_GENERAL_CONFIGURATION_PATHS
+
+menu: supplychain-product-general-configuration
+menu_name: Product General Configuration
+route: /supplychain/product-general-configuration
+create_button_mode: link
+pom_helper: tests/helpers/system-product.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  system_product_sku:
+    strategy: id
+    value: "#sku"
+
+  system_product_name:
+    strategy: id
+    value: "#name"
+
+  sales_category:
+    strategy: aria-placeholder
+    value: Choose Category
+
+  product_coa_group:
+    strategy: aria-placeholder
+    value: Choose Product Coa Group
+
+  retail_price:
+    strategy: id
+    value: price
+    placeholder: Price Product
+
+  save_button:
+    strategy: role
+    role: button
+    name: Save
+    position: last
+
+  save_all_button:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+notes: |
+  Blocker familiar (dari System Product):
+  - Sales Category auto-fill → assert dulu, ensure jika beda dari TC
+  - Product Coa Group: "Purchased Item" + Asset Category jika muncul
+  - clear alias/tagging jika mengganggu (opsional di PGC TC tidak wajib)
+  - Save create = "Save"; edit = "Save All"
+  - API path: /supplychain/product-general-configuration (bukan /product)

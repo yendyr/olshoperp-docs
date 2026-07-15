@@ -1,0 +1,59 @@
+# POM Element Registry — Unit (SCM Master)
+# Sumber: olshoperp-frontend SCM/master/Unit/Form.vue + DataList.vue
+
+menu: supplychain-unit
+menu_name: Unit
+route: /supplychain/unit
+create_button_mode: link
+pom_helper: tests/helpers/unit.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  unit_class:
+    strategy: aria-placeholder
+    value: Choose Unit Class
+
+  conversion_rate:
+    strategy: placeholder
+    value: "e.g: 1,234"
+
+  description:
+    strategy: textarea
+    label: Description
+
+  active_switch:
+    strategy: label
+    value: Active
+
+  show_for_all_company:
+    strategy: label
+    value: Show for all company
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    position: last
+
+  edit_button:
+    strategy: id
+    value: updateButton

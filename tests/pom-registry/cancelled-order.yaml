@@ -1,0 +1,66 @@
+# POM Element Registry — Cancelled Order (SCM Processing)
+# Sumber: Omni/Processing/CancelledOrder/DataList.vue + CancelledOrderController
+# UI: SCM → Processing → Cancelled Order · route /supplychain/cancelled-order
+# API: GET supplychain/cancelled-order (index only — no write)
+# Read-only monitoring SO void/rejected
+
+menu: supplychain-cancelled-order
+menu_name: Cancelled Order
+route: /supplychain/cancelled-order
+create_button_mode: none
+pom_helper: tests/helpers/cancelled-order.ts
+company_default: lumicharmsid
+
+elements:
+  breadcrumb:
+    strategy: text
+    value: Cancelled Order
+    note: "SCM > Processing > Cancelled Order"
+
+  searchbox:
+    strategy: role
+    role: searchbox
+    note: "DataTables find something..."
+
+  column_trx_code:
+    strategy: text
+    value: TRX. CODE
+    note: "TRX. CODE / PLATFORM ORDER · link ke SO edit"
+
+  column_customer:
+    strategy: text
+    value: CUSTOMER
+    note: "CUSTOMER / BUYER NAME"
+
+  column_payment_deadline:
+    strategy: text
+    value: PAYMENT TIME
+    note: "PAYMENT TIME / DEADLINE TIME"
+
+  column_trx_status:
+    strategy: text
+    value: TRX. STATUS
+    note: "TRX. STATUS / PLATFORM STATUS · Void | Rejected"
+
+  column_created_void:
+    strategy: text
+    value: Void Date
+    note: "Created Date / Void Date (searchBuilderTitle)"
+
+  column_processing:
+    strategy: text
+    value: Latest Processing Status
+    note: "Picking | Checking | Packing | Approved Order"
+
+  column_void_notes:
+    strategy: text
+    value: Void Notes
+    note: "cancelled from platform jika approved_by=0"
+
+notes:
+  - "Entity CancelledOrder extends SalesOrder — filter transaction_status IN (rejected, void)."
+  - "Tidak ada Create/edit/void dari menu ini; void/reject di modul Sales Order."
+  - "action_button:false; Vue component name misnamed 'Unassign Wave'."
+  - "SO link: /omni/sales-order/edit/{id} atau /businessdevelopment/sales-order-general/edit/{id}."
+  - "customer_name_formatted bug AS-IS jika customer relation ada (tampil -)."
+  - "send_to_wave_button:true di FE tetapi tidak ada row action write."

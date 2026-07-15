@@ -1,0 +1,85 @@
+# POM Element Registry — Stock Deduction (SCM Adjustment Deduction)
+# Sumber: olshoperp-frontend SCM/StockAdjustment/StockDeduction/Form.vue + AvailableWarehouse.vue
+# Route/API: /supplychain/adjustment-deduction
+# UI label: Stock Deduction | Code prefix: AO*
+
+menu: supplychain-adjustment-deduction
+menu_name: Stock Deduction
+route: /supplychain/adjustment-deduction
+create_button_mode: link
+pom_helper: tests/helpers/adjustment-deduction.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: placeholder
+    value: Automatically generate by system
+    note: "AS-IS: TIDAK ada id=#code (beda dari Addition). Auto AO* setelah save"
+
+  transaction_date:
+    strategy: label
+    value: Transaction Date
+
+  building_origin:
+    strategy: aria-placeholder
+    value: "e.g: Seruni --> Lantai 1 --> Lorong A --> Rak A-001"
+    note: "Wajib warehouse_origin. select2/warehouse-origin"
+
+  description:
+    strategy: section-textarea
+    section_id: BasicInformation
+    note: "FormTextarea tanpa placeholder — pakai #BasicInformation textarea"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  status_draft:
+    strategy: id
+    value: draft
+
+  status_open:
+    strategy: id
+    value: open
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+  available_products_link:
+    strategy: text
+    value: Available Products
+
+  use_product_quantity:
+    strategy: id
+    value: quantity
+    note: "Modal Use Product — outbound_quantity"
+
+  detail_section:
+    strategy: disclosure
+    id: TransactionDetails
+    name: Stock Deduction Detail
+
+  basic_section:
+    strategy: disclosure
+    id: BasicInformation
+    name: Basic Information
+
+notes:
+  - "AS-IS: fetchDefaultValues() isi warehouse_origin lalu submit() otomatis."
+  - "SCM: Approve disembunyikan; approve via Accounting adjustment-deduction."
+  - "Detail utama: Available Products → Use (use-buttonavailableProductIvOut) → Quantity → Save."
+  - "bulkUseIvOut=true untuk bulk Use dari checkbox."
+  - "Prefix code AO*. Filter: warehouse_destination null, warehouse_origin not null."
+  - "Beda dari Addition: Origin (bukan Destination), Available Products (bukan hanya Select Product), Out Qty."

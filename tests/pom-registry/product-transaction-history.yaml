@@ -1,0 +1,56 @@
+# POM Element Registry — Product Transaction History (SCM Report)
+# Sumber: Report/ProductTransactionHistory/DataList.vue (+ PR/PO/Mutation tabs)
+# UI: SCM → Report → Product Transaction History · /supplychain/product-transaction-history
+# API: supplychain/item-transaction-history/*
+# Read-only dashboard + detail tabs — tidak ada Create
+
+menu: supplychain-product-transaction-history
+menu_name: Product Transaction History
+route: /supplychain/product-transaction-history
+create_button_mode: none
+pom_helper: tests/helpers/product-transaction-history.ts
+company_default: lumicharmsid
+
+elements:
+  product_filter:
+    strategy: aria-placeholder
+    value: Choose Product
+    note: "select2 item-transaction-history/select2-product; delay 400"
+
+  start_date:
+    strategy: placeholder
+    value: Choose Start Date
+
+  end_date:
+    strategy: placeholder
+    value: Choose End Date
+
+  status_filter:
+    strategy: aria-placeholder
+    value: Choose Status
+    note: "All=0 · Approved Only=1"
+
+  kpi_product_information:
+    strategy: text
+    value: Product Information
+
+  kpi_day_count:
+    strategy: text
+    value: Day Count
+
+  tab_pr:
+    strategy: text
+    value: Purchase Requisition
+
+  tab_po:
+    strategy: text
+    value: Purchase Order
+
+  tab_mutation:
+    strategy: text
+    value: Mutation
+
+notes:
+  - "TC: VIEW (shell+KPI) + FILTER (Choose Product → data + tab Mutation)."
+  - "KPI: GET item-transaction-history/data."
+  - "AS-IS breadcrumb link to product-mutation — bug FE; automation pakai URL path."

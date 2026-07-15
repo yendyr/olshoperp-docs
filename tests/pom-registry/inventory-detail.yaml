@@ -1,0 +1,76 @@
+# POM Element Registry — Inventory Detail (SCM Report)
+# Sumber: SCM/Report/InventoryDetail/DataList.vue + InventoryDetailController
+# UI: SCM → Report → Inventory Detail · route /supplychain/inventory-detail
+# API: GET supplychain/inventory-detail?warehouse_space_type= (+ filter=)
+# Read-only report — wajib warehouse space type (default Building)
+
+menu: supplychain-inventory-detail
+menu_name: Inventory Detail
+route: /supplychain/inventory-detail
+create_button_mode: none
+pom_helper: tests/helpers/inventory-detail.ts
+company_default: lumicharmsid
+
+elements:
+  breadcrumb:
+    strategy: text
+    value: Inventory Detail
+    note: "SCM > Report > Inventory Detail"
+
+  warehouse_level_select:
+    strategy: css
+    value: "select.box, select"
+    note: "FormSelect v-model warehouse_space_type_id; options dari select2-warehouse-level; default Building"
+
+  learn_more:
+    strategy: text
+    value: Learn more
+
+  card_total_availability:
+    strategy: text
+    value: Total Availability
+    note: "Quick filter card idx=0 · all-stock-product-sku"
+
+  card_out_of_stock:
+    strategy: text
+    value: Out of Stock
+    note: "Quick filter card idx=1"
+
+  card_warning:
+    strategy: text
+    value: Warning
+    note: "Quick filter card idx=2 · min stock / near expiry"
+
+  card_transit:
+    strategy: text
+    value: Transit
+    note: "Quick filter card idx=3 · qty in transit"
+
+  column_sku:
+    strategy: text
+    value: System Product
+    note: "SKU + Name"
+
+  column_warehouse:
+    strategy: text
+    value: Warehouse
+
+  column_reserved_tf:
+    strategy: text
+    value: Reserved TF
+
+  column_availability:
+    strategy: text
+    value: Availability
+    note: "On hand - Reserved Out - Reserved TF"
+
+  column_unit:
+    strategy: text
+    value: Primary Unit
+
+notes:
+  - "Tabel hanya render jika warehouse_space_type_id != '' (auto dari Building atau first level)."
+  - "Tidak ada Create/adjust stok dari menu ini."
+  - "Export Excel async via export-excel + InventoryDetailTempJob."
+  - "Select2: GET .../select2-warehouse-level (level 1-20 yang ON di master)."
+  - "filter_active di FE dipakai di template; comment di data() — Vue tetap set saat watch/filterStock."

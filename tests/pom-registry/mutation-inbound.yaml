@@ -1,0 +1,67 @@
+# POM Element Registry — Purchase Inbound / Mutation Inbound (SCM)
+# Sumber: SCM/StockMutation/InventoryIn/Form.vue + DataList.vue + DatalistDetail.vue
+# UI: /supplychain/mutation-inbound · breadcrumb Purchase Inbound
+# API: supplychain/mutation-inbound · prefix IN*
+# AS-IS: fetchDefaultValues() → auto submit (butuh supplier+warehouse)
+
+menu: supplychain-mutation-inbound
+menu_name: Purchase Inbound
+route: /supplychain/mutation-inbound
+create_button_mode: link
+pom_helper: tests/helpers/mutation-inbound.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+    note: "Auto IN*; disabled on edit"
+
+  supplier:
+    strategy: aria-placeholder
+    value: "e.g: PT. ABC Indonesia"
+    note: "Required · select2 hanya supplier dengan approved PO"
+
+  location_destination:
+    strategy: aria-placeholder
+    value: "e.g: Seruni --> Lantai 1 --> Lorong A --> Rak A-001"
+    note: "Required · level 20 (leaf) only"
+
+  description:
+    strategy: id
+    value: description
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "Outstanding PO products · bulk-fifo"
+
+  available_purchase_order:
+    strategy: text
+    value: Available Purchase Order
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+notes:
+  - "Bukan new-purchase-inbound (BETA). Menu klasik Inventory In."
+  - "Draft/Open radio di Form di-comment AS-IS — status defaults BE."
+  - "Supplier wajib sebelum create; tippy: Shows only suppliers with approved POs."
+  - "Fiscal period: tanggal hari ini bisa gagal — automation pakai fallback 09-07-2026."
+  - "Beda Other Inbound (tanpa supplier)."

@@ -1,0 +1,69 @@
+# POM Element Registry — Processing Location (SCM master)
+# Sumber: olshoperp-frontend SCM/master/Location/Form.vue + DataList.vue
+# UI title: Processing Location · route /supplychain/location
+# API: supplychain/location · table scm_locations
+
+menu: supplychain-location
+menu_name: Location
+route: /supplychain/location
+create_button_mode: link
+pom_helper: tests/helpers/location.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: placeholder
+    value: "e.g: ES001"
+    note: "AS-IS: tanpa id=#code; required max 50 unique/company"
+
+  name:
+    strategy: placeholder
+    value: "e.g: East Side"
+    note: "AS-IS: tanpa id=#name; required max 50"
+
+  description:
+    strategy: placeholder
+    value: "e.g: The individual works from a specific location"
+    note: "max 150"
+
+  active_switch:
+    strategy: label
+    value: Active
+    section_id: ProcessingLocation
+    note: "Default true on create"
+
+  show_for_all_company:
+    strategy: label
+    value: Show for all company
+    section_id: ProcessingLocation
+    note: "v-show=own_data; default false"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+  form_section:
+    strategy: disclosure
+    id: ProcessingLocation
+    name: Processing Location
+
+notes:
+  - "UI document title / accordion: Processing Location (bukan 'Location' saja)."
+  - "Tidak ada auto-submit fetchDefaultValues."
+  - "Dipakai Failed Ship + Manual Picking List (set-location / select2)."
+  - "Soft delete; Show deleted di datalist."

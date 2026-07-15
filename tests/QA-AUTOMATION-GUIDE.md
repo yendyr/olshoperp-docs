@@ -25,7 +25,31 @@ Staging: https://staging.olshoperp.com
 | System Product | `pom-registry/system-product.yaml` | `helpers/system-product.ts` | Ya |
 | Purchase Requisition | `pom-registry/purchase-requisition.yaml` | `helpers/purchase-requisition.ts` | Ya |
 | Pricelist Category | `pom-registry/pricelist-category.yaml` | `helpers/pricelist-category.ts` | Ya |
-| Purchase Order | `pom-registry/purchase-order.yaml` | `helpers/purchase-order.ts` | Smoke only |
+| Purchase Order | `pom-registry/purchase-order.yaml` | `helpers/purchase-order.ts` | Smoke + form |
+| Stock Opname | `pom-registry/stock-opname.yaml` | `helpers/stock-opname.ts` | Ya |
+| Stock Addition | `pom-registry/adjustment-addition.yaml` | `helpers/adjustment-addition.ts` | Ya |
+| Stock Deduction | `pom-registry/adjustment-deduction.yaml` | `helpers/adjustment-deduction.ts` | Ya |
+| Assembly | `pom-registry/assembly.yaml` | `helpers/assembly.ts` | Ya |
+| Location | `pom-registry/location.yaml` | `helpers/location.ts` | Ya |
+| Bundle Stock Report | `pom-registry/bundle-stock-report.yaml` | `helpers/bundle-stock-report.ts` | Ya (VIEW+FILTER) |
+| Cancelled Order | `pom-registry/cancelled-order.yaml` | `helpers/cancelled-order.ts` | Ya (VIEW+SEARCH) |
+| Inventory Detail | `pom-registry/inventory-detail.yaml` | `helpers/inventory-detail.ts` | Ya (VIEW+FILTER) |
+| Manual Picking List | `pom-registry/manual-picking-list.yaml` | `helpers/manual-picking-list.ts` | Ya |
+| Master Brand | `pom-registry/master-brand.yaml` | `helpers/master-brand.ts` | Ya |
+| Purchase Inbound | `pom-registry/mutation-inbound.yaml` | `helpers/mutation-inbound.ts` | Ya |
+| Outbound External | `pom-registry/mutation-outbound.yaml` | `helpers/mutation-outbound.ts` | Ya |
+| Transfer Internal | `pom-registry/mutation-transfer-internal.yaml` | `helpers/mutation-transfer-internal.ts` | Ya |
+| External Transfer | `pom-registry/mutation-transfer-external.yaml` | `helpers/mutation-transfer-external.ts` | Ya |
+| Transfer Broken (Scrap) | `pom-registry/mutation-transfer-scrap.yaml` | `helpers/mutation-transfer-scrap.ts` | Ya |
+| Transfer Void | `pom-registry/mutation-transfer-void.yaml` | `helpers/mutation-transfer-void.ts` | Ya |
+| Other Inbound | `pom-registry/other-inbound.yaml` | `helpers/other-inbound.ts` | Ya |
+| Product Ending Stock | `pom-registry/product-ending-stock.yaml` | `helpers/product-ending-stock.ts` | Ya (VIEW+FILTER) |
+| Product Mutation History | `pom-registry/product-mutation.yaml` | `helpers/product-mutation.ts` | Ya (VIEW+FILTER) |
+| Stock History | `pom-registry/product-mutation-stock.yaml` | `helpers/product-mutation-stock.ts` | Ya (VIEW+FILTER) |
+| Product Transaction History | `pom-registry/product-transaction-history.yaml` | `helpers/product-transaction-history.ts` | Ya (VIEW+FILTER) |
+| QC Procedure | `pom-registry/qc-procedure.yaml` | `helpers/qc-procedure.ts` | Ya |
+| Real Time Stock | `pom-registry/real-stock.yaml` | `helpers/real-stock.ts` | Ya (VIEW+FILTER) |
+| Sales Return (SCM) | `pom-registry/sales-returns.yaml` | `helpers/sales-returns.ts` | Ya |
 
 ---
 
@@ -98,6 +122,22 @@ Tolong:
 4. Run: npm run test:tc -- "@TC-XXX"
 5. Laporkan PASS/FAIL
 ```
+
+**Shortcut (cukup sebut menu):**
+
+```
+buat skenario + automate [nama-menu]
+```
+
+atau hanya: `adjustment-addition` / `stock-opname` / dll.
+
+Agent wajib (berlaku seterusnya):
+1. Baca `qa-docs/{menu}/requirement.md` + FE form jika BUILD
+2. Tulis TC **CREATE** + **UPDATE** di `qa-docs/.../test-cases/` — gabung ubah header + tambah detail (jika sama dokumen/konteks) ke **satu** TC-UPDATE; jangan buat TC-DETAIL / TC-UPDATE-detail terpisah. Menu **report/read-only** → TC-VIEW (+ TC-FILTER)
+3. Update **kamus elemen** `tests/pom-registry/{slug}.yaml`
+4. Helper `tests/helpers/{slug}.ts` + spec serial di `tests/specs/`
+5. Run di `lumicharmsid` → update `test_result` di TC
+6. Summary **WH + 1H** + **fungsi menu** (apa kegunaan bisnis dari hasil testing / requirement)
 
 ### 3. Aturan emas
 

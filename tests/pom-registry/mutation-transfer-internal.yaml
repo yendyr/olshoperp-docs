@@ -1,0 +1,69 @@
+# POM Element Registry — Transfer Internal (SCM)
+# Sumber: SCM/StockMutation/Transfer/Form.vue + DataList.vue + DatalistDetail.vue
+# UI: /supplychain/mutation-transfer-internal · breadcrumb Transfer Internal
+# API: supplychain/mutation-transfer · type=tf internal · prefix TFI*
+# AS-IS: fetchDefaultValues() → auto submitBasicInformation()
+
+menu: supplychain-mutation-transfer-internal
+menu_name: Transfer Internal
+route: /supplychain/mutation-transfer-internal
+api_resource: supplychain/mutation-transfer
+create_button_mode: link
+pom_helper: tests/helpers/mutation-transfer-internal.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+    note: "Auto TFI* setelah save"
+
+  origin:
+    strategy: aria-placeholder
+    value: "Choose Origin"
+    note: "Atau Choose Building Origin on create · level ≤20"
+
+  destination:
+    strategy: aria-placeholder
+    value: "Choose Location"
+    note: "Depend origin · select2-warehouse-destination type=internal"
+
+  description:
+    strategy: section-textarea
+    section_id: BasicInformation
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "POST mutation-transfer/{id}/mutation-transfer-middle-detail/bulk-fifo"
+
+  detail_section:
+    strategy: disclosure
+    id: DatalistDetail
+    name: Product Transfer Detail
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+notes:
+  - "UI path mutation-transfer-internal; API resource mutation-transfer."
+  - "fetchDefaultValues() isi origin+destination lalu auto create."
+  - "Draft/Open radio di Form di-comment AS-IS."
+  - "Fiscal fallback tanggal 09-07-2026 jika periode hari ini tutup."
+  - "TC: CREATE + UPDATE saja (description + Select Product digabung di UPDATE)."

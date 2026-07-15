@@ -1,0 +1,55 @@
+# POM Element Registry — QC Procedure (SCM Master)
+# Sumber: master/ReceivingInspectionTemplate/{DataList,Form,DatalistDetail}.vue
+# UI: /supplychain/qc-procedure · breadcrumb SCM → Master → QC Procedure
+# API: supplychain/qc-procedure · nested qc-procedure-detail
+
+menu: supplychain-qc-procedure
+menu_name: QC Procedure
+route: /supplychain/qc-procedure
+create_button_mode: link
+pom_helper: tests/helpers/qc-procedure.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    value: link Create
+    note: "Button variant=create role=link"
+
+  code:
+    strategy: placeholder
+    value: QCCHK
+    note: "Required; store max 15"
+
+  name:
+    strategy: placeholder
+    value: Default checking instruction untuk checker
+    note: "Instruction Name; max 50"
+
+  description:
+    strategy: section-textarea
+    section_id: BasicInformation
+
+  active:
+    strategy: label
+    value: Active
+
+  sequence:
+    strategy: placeholder
+    value: Sequence
+    note: "Detail; numeric 1–30 unique"
+
+  activity:
+    strategy: placeholder
+    value: Input Activity name
+    note: "Detail store max 30"
+
+  detail_section:
+    strategy: disclosure
+    id: ProcedureDetail
+    name: Procedure Detail
+
+notes:
+  - "TC: CREATE + UPDATE (header + Procedure Detail digabung)."
+  - "Create Save (bukan Save & Next); edit Save All."
+  - "appliedProduct datalist AS-IS selalu 0."

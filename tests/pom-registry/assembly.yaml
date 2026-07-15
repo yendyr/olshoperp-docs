@@ -1,0 +1,105 @@
+# POM Element Registry — Assembly (SCM Work Order)
+# Sumber: olshoperp-frontend SCM/master/Assembly/Form.vue + DatalistDetail.vue
+# UI route: /supplychain/assembly
+# API: /supplychain/work-order
+# Prefix code: AS*
+
+menu: supplychain-assembly
+menu_name: Assembly
+route: /supplychain/assembly
+api_resource: supplychain/work-order
+create_button_mode: link
+pom_helper: tests/helpers/assembly.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+    placeholder: Automatically generate by system
+    note: "Auto AS* setelah save"
+
+  transaction_date:
+    strategy: label
+    value: Transaction Date
+    note: "Default dateTimeNow(); autofill"
+
+  building_origin:
+    strategy: aria-placeholder
+    value: Choose Building Origin
+    note: "warehouse_id; level building + WIP & FG configured"
+
+  start_date:
+    strategy: label
+    value: Start Date
+    note: "Default dateTimeNow(); >= transaction_date"
+
+  type:
+    strategy: aria-placeholder
+    value: Choose type
+    note: "Options: Production|Service|Assembly|Other; default data()=Assembly"
+
+  description:
+    strategy: placeholder
+    value: Add description or notes...
+
+  progress_status:
+    strategy: label
+    value: Progress Status
+    note: "Read-only display"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  status_draft:
+    strategy: id
+    value: draft
+
+  status_open:
+    strategy: id
+    value: open
+    note: "Open butuh >=1 detail; trigger generateTrasfer() / TFI"
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "Header BOM Active only → POST work-order/{id}/bulk-fifo"
+
+  qty:
+    strategy: column
+    value: QTY
+    note: "PrimeDataTables inline editable (quantity_formatted); integer-only; PUT work-order/{id}/work-order-detail"
+
+  detail_section:
+    strategy: disclosure
+    id: ProductDetails
+    name: Assembly Detail
+
+  basic_section:
+    strategy: disclosure
+    id: BasicInformation
+    name: Basic Information
+
+notes:
+  - "AS-IS: fetchDefaultValues() set warehouse_id lalu submit() otomatis — Create sering langsung Edit."
+  - "type default 'Assembly' di data(); start_date & transaction_date default now."
+  - "UI route assembly ≠ API work-order — assert URL assembly, wait POST/PUT work-order."
+  - "Detail: hanya SKU Header BOM Active + Composition Rule; unique FG per WO."
+  - "Jangan set Open tanpa detail — A-21. Approve generate TFI+Outbound+Inbound async."
+  - "Setelah ada detail: warehouse_id / transaction_date / start_date terkunci."

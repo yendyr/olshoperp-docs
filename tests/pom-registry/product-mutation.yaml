@@ -1,0 +1,57 @@
+# POM Element Registry — Product Mutation History (SCM Report)
+# Sumber: Report/ProductMutation/DataList.vue
+# UI: SCM → Report → Product Mutation History · /supplychain/product-mutation
+# Manifest label: Dev - Product Mutation History
+# Read-only — wajib product_id sebelum datalist
+
+menu: supplychain-product-mutation
+menu_name: Product Mutation History
+route: /supplychain/product-mutation
+create_button_mode: none
+pom_helper: tests/helpers/product-mutation.ts
+company_default: lumicharmsid
+
+elements:
+  breadcrumb:
+    strategy: text
+    value: Product Mutation History
+
+  product_filter:
+    strategy: aria-placeholder
+    value: Choose Product
+    note: "Required; select2-product?calculating=true; delay 400"
+
+  apply_button:
+    strategy: role
+    value: button Apply
+    note: "click_select — watch product_id juga auto-apply"
+
+  manual_calculation:
+    strategy: text
+    value: manual calculation of ending balance
+    note: "GET product-mutation/calculation"
+
+  column_date:
+    strategy: text
+    value: Date
+
+  column_stock_mutation:
+    strategy: text
+    value: stock mutation
+
+  column_product_in:
+    strategy: text
+    value: Product In
+
+  column_product_out:
+    strategy: text
+    value: Product Out
+
+  column_ending_balance:
+    strategy: text
+    value: Ending Balance
+
+notes:
+  - "TC: VIEW (shell) + FILTER (Choose Product → history)."
+  - "Datalist v-if product_id; filter mutasi IN/OT/AI/TF/PT/AO."
+  - "Export via product-mutation-stock type=product-mutation-history."

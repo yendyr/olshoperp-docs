@@ -1,0 +1,73 @@
+# POM Element Registry — Transfer Broken / Transfer Scrap (SCM)
+# Sumber: SCM/StockMutation/TransferScrap/Form.vue + DataList.vue
+# Detail reuse: Transfer/DatalistDetail.vue (is_scrap=true)
+# UI: /supplychain/mutation-transfer-scrap · breadcrumb Transfer Broken
+# API: supplychain/mutation-transfer-scrap · process_type=scrap · prefix TFS*
+# AS-IS: TIDAK ada fetchDefaultValues auto-create
+
+menu: supplychain-mutation-transfer-scrap
+menu_name: Transfer Broken
+route: /supplychain/mutation-transfer-scrap
+api_resource: supplychain/mutation-transfer-scrap
+create_button_mode: deep-link
+pom_helper: tests/helpers/mutation-transfer-scrap.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: deep-link
+    value: /supplychain/mutation-transfer-scrap/create
+    note: "AS-IS: DataList TIDAK punya tombol Create — open via URL"
+
+  code:
+    strategy: id
+    value: code
+    note: "Auto TFS* setelah save"
+
+  origin:
+    strategy: aria-placeholder
+    value: "Choose Building Origin"
+
+  destination:
+    strategy: aria-placeholder
+    value: "Choose Location"
+    note: "Harus virtual scrap (process_group=scrap) under parent"
+
+  description:
+    strategy: section-textarea
+    section_id: BasicInformation
+    note: "AS-IS: disabled when is_edit — isi hanya di create"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "POST mutation-transfer-scrap/{id}/transfer-scrap-middle-detail/bulk-fifo"
+
+  detail_section:
+    strategy: disclosure
+    id: DatalistDetail
+    name: Product Transfer Detail
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+notes:
+  - "UI label Transfer Broken; requirement title Broken (Transfer Scrap)."
+  - "AS-IS: datalist tanpa tombol Create — create via /create deep-link."
+  - "AS-IS BE: store() scrap belum pass code_identifier TFS → manual create sering TFI*."
+  - "TFS* biasanya auto-generate dari External Transfer broken qty receive."
+  - "Tidak ada fetchDefaultValues auto-create — wajib Origin + Destination Scrap + Save & Next."
+  - "Description locked on edit (is_edit) — UPDATE fokus Select Product / status Open."
+  - "Fiscal fallback tanggal 09-07-2026 jika periode hari ini tutup."
+  - "TC: CREATE + UPDATE saja (detail digabung di UPDATE)."

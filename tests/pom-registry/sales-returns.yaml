@@ -1,0 +1,66 @@
+# POM Element Registry — Sales Return (SCM Gudang)
+# Sumber: SCM/SalesReturn/{DataList,Form}.vue + Accounting/Return/SalesReturn/*
+# UI: /supplychain/sales-returns · breadcrumb SCM → Inbound → Sales Return
+# API: POST/PATCH accounting/sales-returns · datalist omnichannel/sales-returns
+# Prefix SR-* · dual-menu dengan accounting-sales-return (Finance Complete)
+
+menu: supplychain-sales-returns
+menu_name: Sales Return
+route: /supplychain/sales-returns
+api_resource: accounting/sales-returns
+create_button_mode: none
+pom_helper: tests/helpers/sales-returns.ts
+company_default: lumicharmsid
+
+elements:
+  scan_order_input:
+    strategy: form-input
+    note: "FormInput di ScanForm (tanpa #id) — sibling Submit"
+
+  submit_scan:
+    strategy: role
+    value: button Submit
+
+  warehouse_destination:
+    strategy: aria-placeholder
+    value: "Select WH Location"
+    note: "WarehouseSelect is-return + has-scrap + level-under-building"
+
+  cctv_location:
+    strategy: aria-placeholder
+    value: "Select CCTV Location"
+    note: "LocationSelect default placeholder"
+
+  platform_pill:
+    strategy: text
+    value: "Sales Platform Returns"
+    note: "Toggle without_used platform list"
+
+  sync_button:
+    strategy: tippy
+    value: "Bulk Sync Sales Return Platform"
+
+  restock_qty:
+    strategy: header
+    value: "Restock Qty"
+    note: "NumberSpinner — auto-save PATCH debounce ~1200ms"
+
+  lost_items:
+    strategy: header
+    value: "Lost Items"
+
+  broken_items:
+    strategy: header
+    value: "Broken Items"
+
+  continue_action:
+    strategy: tippy
+    value: "Continue Sales Return"
+    note: "Edit open SR — stock_mutation_id"
+
+notes:
+  - "CREATE = pilih WH+CCTV → scan SO (platform refund) → POST accounting/sales-returns → edit."
+  - "Fallback CREATE: smoke shell + bind open SR* dari datalist jika tidak ada SO eligible."
+  - "UPDATE = Restock Qty (+/−) → PATCH details → toast Waiting for Finance (SCM)."
+  - "Complete tombol hanya di Accounting — SCM fromScm=true menyembunyikan approve."
+  - "TC: CREATE + UPDATE (detail qty merged ke UPDATE)."

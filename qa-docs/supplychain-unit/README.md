@@ -7,6 +7,7 @@ Menu **Unit** (Supply Chain — Master Data).
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | review |
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
+| Test Cases | [test-cases/](./test-cases/) | QA | draft |
 
 **Route UI:** `/supplychain/unit`  
 **Maintenance owner:** QA — Yemima
