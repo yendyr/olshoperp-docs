@@ -2,27 +2,22 @@
 doc_type: requirement
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 2.1
-last_updated: 2026-07-10
+version: 3.0
+last_updated: 2026-07-15
 owner: QA - Yemima
-status: review
+status: draft
+aliases: [PI, purchase invoice, purchase invoice docs, supplier invoice, faktur beli, tagihan supplier]
 ---
 
 # Purchase Invoice — Requirement Documentation
 
 **Modul:** Finance & Accounting / Account Payable  
-**Prefix transaksi:** `PI-`  
-**Audience:** PM, Finance, Operations, QA, Support, Developer  
-**Status:** AS-IS verified against codebase per 2026-07-10
-
+**Prefix:** `PI-`  
+**Audience:** PM, Finance, QA  
 **UI route:** `/accounting/supplier-invoice`  
-**API base:** `{VITE_API_URL}accounting/supplier-invoice`  
-**Table:** `accounting_supplier_invoices` · `accounting_supplier_invoice_detail_items` · other cost/discount
+**SoT:** `purchase-invoice-source-of-truth.md` v3.0 (15 Jul 2026)
 
-**PM source:** `purchase-invoice-requirement-okt2025.md` v1.1 (29 Okt 2025)  
-**Change req:** COA Additional Cost & Discount editable per transaksi (2026-07)
-
-**Payment downstream:** [Account Payment](../accounting-supplier-payment/requirement.md)
+Downstream: [Account Payment](../accounting-supplier-payment/requirement.md)
 
 ---
 
@@ -30,598 +25,289 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2026-06-19 | QA - Yemima | Initial draft AS-IS codebase |
-| 2.0 | 2026-07-05 | QA - Yemima | Full PM merge v1.1, journal/VAT shift, dynamic cost, UI/calc detail, inbound & payment relasi, gaps §19–§21 |
-| 2.1 | 2026-07-10 | QA - Yemima | COA Additional Cost/Discount **editable** per baris di level PI (§8.3–§8.6); journal pakai COA transaksi; cross-ref master OC/OD, PO, COA |
+| 2.2 | 2026-07-11 | QA - Yemima | Compliance qa-docs-standard (baseline; sebagian perilaku tidak akurat — lihat v3.0) |
+| 3.0 | 2026-07-15 | QA - Yemima | Rewrite dari SoT v3.0: Void → Pending Items; gap registry PI-01/02/03; currency lock 1 rule; cost/disc auto-select + stuck risk; return Billed + Debit Note; print Resolved per SoT |
 
 ---
 
 ## 1. Ringkasan Eksekutif
 
-**Purchase Invoice (PI)** mencatat pengakuan **Account Payable** ke supplier atas barang yang sudah **Purchase Inbound approved**. PI adalah titik:
+Purchase Invoice (PI) adalah dokumen pengakuan **Account Payable** ke supplier atas barang yang sudah diterima (Purchase Inbound approved). Value transaksi bersumber utama dari Purchase Order; eligible to invoice hanya barang yang punya inbound approved. PI memicu pengakuan PPN Masukan dan biaya/diskon tambahan dari PO, lalu menjadi dasar pelunasan di Account Payment.
 
-1. **Pengakuan PPN Masukan** (VAT In) — dipindah dari Inbound ke PI (revamp Okt 2025)
-2. **Clearing Unbilled Goods** — membalik akun perantara dari GRN
-3. **Dasar pelunasan** di menu **Account Payment**
+| Kebutuhan bisnis | Jawaban PI |
+|------------------|------------|
+| No double invoicing | Outstanding qty = inbound − prepared/processed invoice − prepared/processed return |
+| Harga & tax dari PO | Line price/tax di-copy dari PO — tidak edit manual DPP |
+| Partial invoicing | Bulk/single per SKU; Additional Cost/Disc bisa ditunda (remove baris) |
+| Multi-currency | Max 1 foreign currency + local per PI (satu rule untuk SKU & cost/disc) |
+| AP recognition | Approve → jurnal Dr Unbilled Goods + Tax + Cost / Cr AP + Disc |
 
-| Kebutuhan Bisnis | Bagaimana PI Menjawab |
-|------------------|----------------------|
-| No double invoicing | `prepared_to_invoice_quantity` / `processed_to_invoice_quantity` per inbound detail |
-| Harga dari PO | Line price/tax copied from PO — tidak edit manual DPP |
-| Partial invoicing | Bulk/single/group inbound; dynamic Other Cost/Disc per invoice |
-| Multi-currency | Currency + exchange rate; exchange diff journal |
-| AP recognition | Approve → journal Dr Unbilled Goods + Tax + Cost / Cr AP |
-
-### 1.1 Rantai procurement (hulu → hilir)
+### 1.1 Rantai proses
 
 ```mermaid
 flowchart LR
-    PO[Purchase Order approved] --> GRN[Purchase Inbound approved]
-    GRN -->|"Dr Inventory/Assets Cr Unbilled Goods DPP only"| STK[ItemStock]
-    GRN --> PI[Purchase Invoice]
-    PI -->|"Dr Unbilled Goods + VAT + Cost Cr AP"| JRNL[Journal]
+    PO[Purchase Order] --> INB[Purchase Inbound Approved]
+    INB --> PI[Purchase Invoice]
     PI --> PAY[Account Payment]
-    PAY -->|"Dr AP Cr Bank"| CLR[Payment cleared]
+    PI --> RET[Purchase Return Billed]
+    RET --> DN[Debit Note]
 ```
 
 ---
 
 ## 2. Prasyarat
 
-| # | Prasyarat | Validasi AS-IS |
-|---|-----------|----------------|
-| 1 | **Inbound approved** | Outstanding query: inbound with approvals; status approved/processed |
-| 2 | **Purchase Order** | Inbound detail linked `purchase_order_detail_id` — harga, tax, other cost/disc source |
-| 3 | **Supplier** | Same supplier on PI header & inbound; select2 filtered suppliers with inbound |
-| 4 | **Currency match** | PO `currency_id` = PI `currency_id` — error if different |
-| 5 | **Inbound date < PI date** | `inbound.transaction_date < PI.transaction_date` |
-| 6 | **Product COA** | Unbilled Goods, Tax COA, AP COA configured per product/supplier/company |
+| Prasyarat | Sumber | Catatan |
+|-----------|--------|---------|
+| Purchase Order approved | Menu Purchase Order | SKU, harga, tax, Additional Cost/Disc |
+| Purchase Inbound approved | Menu Purchase Inbound | SKU eligible hanya dari inbound approved |
+| Supplier | Master General Company | Dropdown filter: supplier yang punya referensi inbound **status apapun** (termasuk draft) — lihat GAP-PI-03 |
+| Product COA (Unbilled Goods, Tax, AP) | Product COA Group / Company | Wajib sebelum approve |
 
 ---
 
-## 3. Siklus Status Transaksi
+## 3. Siklus Status
 
 ```mermaid
 stateDiagram-v2
     [*] --> draft: Create auto/manual
-    draft --> open: User radio Open
+    draft --> open: User pilih Open
     open --> approved: Approve
     open --> rejected: Reject
-    approved --> void: Void intent
-    approved --> processed: Intended via payment AS-IS gap
-    processed --> closed: Close
+    rejected --> draft: User edit lalu Save
+    approved --> [*]
 ```
 
-| Status | Definisi | Edit? | Approve? |
-|--------|----------|-------|----------|
-| **draft** | Default create | Yes | No — must switch to **open** |
-| **open** | Ready for approval | Yes | Yes |
-| **approved** | Journal posted; AP recognized | No | No |
-| **rejected** | Approver reject | FE shows as draft radio | — |
-| **void** | From approved (UI) | No | — |
-| **processed** | PM: partial payment context | — | **Rarely set on PI header** (GAP-PI-03) |
-| **closed** | Requires `processed` | — | GAP-PI-03 |
+| Status | Kondisi | Editable? | Tombol |
+|--------|---------|-----------|--------|
+| **Draft** | Default create; juga hasil Rejected setelah edit+Save | Ya | Save & Next / Save All, Delete |
+| **Open** | User pilih manual — syarat Approve | Ya | Save All, Approve, Reject, Delete |
+| **Rejected** | Approver Reject saat Open | Ya — setelah edit+Save → Draft | Save All, Delete |
+| **Approved** | Approve; jurnal terbit | Tidak | Print, Show only |
 
-**Approval:** single level seeded (`approval => 1`).
+**Tidak ada** status Void, Processed, atau Closed pada implementasi yang dipakai user. Siklus berhenti di Approved. Lihat §9.1 Pending Items.
 
 ---
 
 ## 4. Datalist
 
-**Komponen:** `SupplierInvoice/DataList.vue`  
-**API:** `GET accounting/supplier-invoice`
+| Kolom | Default visible | Sumber | Keterangan |
+|-------|-----------------|--------|------------|
+| Trx Code \| Trx Date | Ya | Header | Prefix `PI-` |
+| Due Date | Ya | Header | Manual |
+| Supplier | Ya | Header | — |
+| Supplier's Ref | Ya | Header | Referensi faktur/dokumen supplier |
+| Desc | Ya | Header | — |
+| Trx Ref | Ya | Detail agregat | Nomor inbound; multi dipisah koma; clickable ke show inbound |
+| Curr / Exchange | Ya | Header | — |
+| Net Purchase Invoice | Ya | §6 Totals | — |
+| Trx Status | Ya | Header | Draft / Open / Rejected / Approved |
+| Created by \| at | Ya | Audit | — |
+| Action | Ya | — | Edit/Show, Approve/Reject, Delete |
 
-| Kolom | Field |
-|-------|-------|
-| Trx Code / Date | `code_formatted` |
-| Due Date | `due_date_formatted` |
-| Supplier | `supplier_name_formatted` |
-| Supplier's REF. | `supplier_reference_document` |
-| Description | `description` (truncate) |
-| Trx Ref | `reference_formatted` — inbound codes (max 2 links FE) |
-| Currency | `currency.code` |
-| Exchange Rate | `exchange_rate_formatted` |
-| **Net Purchase Invoice** | `grand_total_after_vat_formatted` |
-| Trx Status | `transaction_status` |
+**Fitur:** Global Search, Advanced Filter, Show Deleted, Column Show/Hide, Export with/without detail (mengikuti filter aktif).
 
-**Toolbar:** bulk delete, bulk approve, export (with/without details), show deleted, advanced filter.
+**Action rules:** Edit selama unapproved; Show saja jika Approved. Approve/Reject hanya Open. Delete hanya unapproved.
 
-**Row actions:** Update; Delete (non-approved); Approve; Close (if `processed`); Void (if `can_void` — often hidden in list).
-
----
-
-## 5. Header — Field & Validasi
-
-| Field | PM | AS-IS |
-|-------|-----|-------|
-| **Transaction Code** | Auto PI | Auto `PI` prefix if blank; unique per company |
-| **Transaction Date** | Tanggal pengakuan hutang/jurnal | Required; fiscal period; FE min **6 months** backdate |
-| **Supplier** | Wajib; punya inbound belum ditagih | Required; select2 suppliers with approved/processed inbound |
-| **Currency & Exchange Rate** | Wajib | Required; lock if details exist |
-| **Due Date** | Auto from TOP, editable | Nullable — **no auto TOP calc from supplier master** (GAP-PI-06) |
-| **Tax Invoice No** | Optional/required by setting | `supplier_reference_document` or separate field — verify FE label "Supplier's Reference" |
-| **Description** | Optional | max 150 |
-| **Term and Condition** | — | CKEditor max 2000 (codebase-only) |
-| **Attachment** | — | File upload with extension validation |
-| **Draft / Open** | — | Radio side panel before approve |
-
-**Update lock** (if detail/other cost/discount exists): supplier, currency, exchange rate, transaction date cannot change.
-
-**Create quirk (AS-IS):** `fetchDefaultValues()` may auto-submit create on first visit — draft PI created immediately (GAP-PI-08).
+**Create UX (auto-save):** Transaction Date = now; Currency = primary; Exchange Rate = 1 (disabled jika primary). Supplier auto-fill dari PI terakhir user — jika user belum pernah punya PI, autosave gagal dan wajib isi field wajib manual dulu.
 
 ---
 
-## 6. Detail Items — Outstanding Inbound
+## 5. Form & Field
 
-### 6.1 Sumber data
+### 5.1 Basic Information
 
-**API outstanding:** `GET accounting/supplier-invoice/{id}/outstanding-inbound` (and group variant)
+| Field | Wajib? | Default | Sumber | Validasi |
+|-------|--------|---------|--------|----------|
+| Transaction Code | Ya | Auto `PI-` | System | Unique per company |
+| Transaction Date | Ya | Now | — | — |
+| Due Date | Tidak | Null | — | Manual — belum auto dari TOP supplier (§9.1) |
+| Currency | Ya | Primary | Master Currency | — |
+| Exchange Rate | Ya | 1 | — | Disabled jika primary; editable jika foreign |
+| Supplier | Ya | — | Supplier dengan referensi inbound (status apapun) | Quirk GAP-PI-03 |
+| Supplier's Reference | Tidak | Null | — | Label UI = Supplier's Reference |
+| Description | Tidak | Null | — | — |
+| Term and Condition | Tidak | Null | — | — |
+| Attachment | Tidak | — | — | Upload dokumen pendukung |
 
-| Filter | Rule |
-|--------|------|
-| Inbound | **Approved** (has approvals) |
-| Supplier | = PI supplier |
-| Currency | PO currency = PI currency |
-| Date | Inbound date **<** PI transaction date |
-| Qty sisa | `processed_to_invoice_quantity < quantity_in_base_unit` |
-| Type | Not inventory adjustment / return inbound |
+Header **locked** jika sudah ada detail item.
 
-### 6.2 Kolom outstanding panel
+### 5.2 Detail — Inbound Transaction
 
-SKU, Product, Inbound ref, PO ref, Qty inbound, **Max invoice qty** (`invoiceBalance()`), Prepared/Processed invoice status, Return qty status.
+Modal menampilkan SKU dari PO yang inbound-nya sudah approved.
 
-### 6.3 UI actions — Inbound Transaction panel
+**Aksi insert:**
+- **Single Use** — modal qty (default = outstanding, editable, tidak boleh melebihi outstanding)
+- **Bulk Use** — multi-select; qty default = seluruh outstanding per baris
+- Outstanding 0 tapi masih ada Prepared → Action teks **"Already Prepared"**; baris hilang dari modal setelah full Processed
 
-| Action | Behavior |
-|--------|----------|
-| **Bulk Use** | Checkbox multi-select → `POST …/details/bulk` with `inbound_detail_ids` |
-| **Single Use** | Modal "Use this to Invoice" — edit qty → `POST …/details` |
-| **Group inbound** | Select whole inbound header → `store_group` API |
-| **Toggle group view** | `DatalistOutstandingGroup` vs flat outstanding |
-
-### 6.4 Qty validation
+**Outstanding qty (base unit):**
 
 ```
-invoiceBalance() = quantity_in_base_unit
-                 - prepared_to_invoice_quantity
-                 - processed_to_invoice_quantity
-                 - (return quantities)
+Outstanding = Inbound Qty
+  − (Invoice Prepared + Invoice Processed)
+  − (Return Prepared + Return Processed)
 ```
 
-| Event | Field update |
-|-------|--------------|
-| Add line | `prepared_to_invoice_quantity` ↑ on inbound detail |
-| Delete line / delete PI | `prepared_to_invoice_quantity` ↓ |
-| Approve PI | prepared ↓, `processed_to_invoice_quantity` ↑ |
+Tampilan mengikuti primary unit; validasi selalu di base unit.
 
-**Messages:**
-- `Invoice Qty must not exceed Inbound Qty after deducting Returned Qty.`
-- `The data you selected is already included in this purchase invoice detail.`
-- `Can't use Purchase Order with different currency.`
+**Grid setelah insert:** Inbound Code, Name, PO Code|Date, SKU|Name, Qty, Unit, Unit Price, Discount, DPP, VAT, PO Total, Invoice Total, Exchange Gain, Action (delete).
 
-### 6.5 Detail grid columns (after add)
+### 5.3 Additional Cost & Discount
 
-PO ref, SKU/Name, Invoice Qty, Unit, Unit Price, Discount %, **DPP**, VAT %, PO Total, **Invoice Total**, Exchange Gain (if foreign).
+| Field | Wajib? | Default | Catatan |
+|-------|--------|---------|---------|
+| Select Cost/Disc | Ya | — | Master active ATAU Other Cost/Disc di PO (tampil nomor PO) |
+| Nominal | Ya | Dari master/PO | **Disabled** jika sumber PO |
+| Description | Tidak | — | — |
+| COA | Ya | Master/PO | Editable selama unapproved; opsi active + bukan parent, tanpa batasan class |
 
-**PM:** DPP tidak editable manual — **AS-IS:** prices copied from PO via `getDetailPriceAndTax()` — user cannot override unit price on line.
+**Auto-select dari PO:** begitu SKU dari suatu PO di-insert, **seluruh** Other Cost/Discount PO tersebut otomatis masuk. User remove baris yang tidak ditagih sekarang (partial per baris cost). Risiko stuck: GAP-PI-02.
 
----
+**Exchange Diff** muncul jika cost/disc dari PO dan currency PO beda dari PI.
 
-## 7. Perhitungan Harga & Totals
+### 5.4 Totals
 
-### 7.1 Line-level (from PO)
+| Baris | Sumber |
+|-------|--------|
+| Total Products | Σ Invoice Total baris |
+| Disc Products | Σ discount baris |
+| Total VAT | Σ VAT baris |
+| Total Additional Cost / Disc | Σ header cost / disc |
+| **Net Purchase Invoice** | Products − Disc + VAT + Cost − Disc tambahan |
+| Net (IDR) | Net × Exchange Rate header |
 
-Copied/stored per `SupplierInvoiceDetailItem`:
+Jika baris pajak `coefficient = true`, DPP yang diakumulasi ke Total Products memakai DPP coefficient (lebih kecil) agar total akhir sesuai tarif efektif (mis. 12% dikenakan sebagai 11%).
 
-| Field | Meaning |
-|-------|---------|
-| `invoice_each_price_before_discount_before_vat` | Unit before discount, before VAT |
-| `invoice_each_price_after_discount_before_vat` | Unit after discount, before VAT (DPP unit) |
-| `invoice_each_price_after_discount_after_vat` | Unit after discount, after VAT |
-| `invoice_discount` | Discount % from PO |
-| `vat` / `fake_vat` / `vat_included` | Tax from PO pivot |
+### 5.5 Approval & Audit
 
-**Formulas (`SupplierInvoiceDetailItem`):**
-
-```
-invoice_total (before VAT) = invoice_quantity × invoice_each_price_after_discount_before_vat
-invoice_vat_total          = invoice_total × vat / 100
-invoice_total_after_vat    = invoice_quantity × invoice_each_price_after_discount_after_vat
-DPP column display         = invoice_quantity × each_dpp
-```
-
-### 7.2 Exchange difference (foreign currency)
-
-When PO exchange rate ≠ PI exchange rate:
-
-```
-exchangeDifference = (PO.exchange_rate - PI.exchange_rate) × qty × price
-```
-
-Posted to company **Exchange Diff. COA** on journal (`SupplierInvoicePrice::exchangeDifference`).
-
-### 7.3 Header grand total (`SupplierInvoicePrice::grandTotal`)
-
-```
-subTotal.before_vat = Σ line (qty × each_price_after_discount_before_vat)
-subTotal.after_vat  = Σ line (qty × each_price_after_discount_after_vat)
-
-grandTotal.before_vat = subTotal.before_vat + totalOtherCost - totalOtherDiscount
-grandTotal.after_vat  = subTotal.after_vat  + totalOtherCost - totalOtherDiscount
-```
-
-**Persisted:** `grand_total_before_vat`, `grand_total_after_vat`
-
-### 7.4 FE Totals panel (`Form.vue`)
-
-| Row | Source |
-|-----|--------|
-| Total Products (+ DPP tooltip) | `totalProduct` breakdown |
-| Disc Products | Sum line discounts |
-| Total VAT | Sum line VAT |
-| Total Additional Cost / Disc | Header other cost − other discount |
-| **Net Purchase Invoice** | `grand_total_after_vat` (+ primary currency conversion if foreign) |
-
-**PM validation:** Invoice total cannot be negative — enforce on approve/grandTotal calc.
+Approval Log: siapa/kapan approve. Audit Log: seluruh perubahan data PI.
 
 ---
 
-## 8. Additional Cost & Discount (Dynamic — PM v1.1 + COA override)
+## 6. How It Works
 
-### 8.1 PM concept
+### 6.1 Partial invoicing per SKU
 
-User **memilih** Other Cost / Other Discount dari PO untuk invoice **ini** atau menunda ke PI berikutnya (partial invoicing):
+Eligible qty = qty inbound approved, dikurangi yang sudah/sedang ditagih dan retur. Qty di PI draft = **Prepared**; setelah approve → **Processed**. Sisa outstanding untuk PI berikutnya turun sesuai qty yang sudah diproses.
 
-- Barang saja
-- Barang + Cost
-- Cost saja (barang sudah ditagih di PI sebelumnya)
+### 6.2 Multi-unit
 
-### 8.2 AS-IS implementation (insert / source)
+Validasi selalu di base unit. Contoh: 1 Box = 10 Pieces; invoice 2 Box → prepared 20 pieces.
 
-| Mechanism | Detail |
-|-----------|--------|
-| **Auto on first line add** | `firstOrCreate` `SupplierInvoiceOtherCost/OtherDiscount` from PO line's PO header costs — sets PO `prepared_to_invoice=true`; `expense_coa_id` di-copy dari PO line |
-| **Manual select from PO** | `OtherCostSelectFromPO.vue` / `OtherDiscountSelectFromPO.vue` — multiselect outstanding filtered by supplier, currency, PO ids |
-| **Manual entry** | `OtherCostForm` / `OtherDiscountForm` — label master, amount, description; default `expense_coa_id` dari master |
-| **On approve** | PO flags → `processed_to_invoice=true`, `prepared_to_invoice=false` |
-| **On PI delete** | PO flags reset |
+### 6.3 Currency lock — satu rule, dua mode
 
-**GAP-PI-14:** PM describes explicit tick-box per cost line; AS-IS uses multiselect add + auto-first-line — functionally similar but UI differs.
+Berlaku untuk SKU detail **dan** Additional Cost/Disc: **tidak boleh 2 foreign currency berbeda dalam 1 PI**; local selalu boleh.
 
-**Over-bill guard:** Amount cannot exceed PO other cost/disc remaining (validate on store).
+| Header PI | Mekanisme |
+|-----------|-----------|
+| Local (IDR) | Boleh local bebas. Foreign pertama (mis. USD) masuk → foreign lain (EUR) ditolak; selanjutnya hanya IDR atau USD |
+| Foreign (USD) | Lock dari awal: hanya local atau currency sama dengan header |
 
-### 8.3 COA editable per baris (Change Req 2026-07)
+### 6.4 Additional Cost/Disc partial & auto-select
 
-**Background:** COA default dari Master Other Cost/Discount (atau warisan PO) sering perlu di-override per transaksi tanpa mengubah master — mis. freight biasanya ke COA 5100, tapi untuk PI tertentu dialokasikan ke COA lain.
+Insert SKU PO → semua baris cost/disc PO ikut ter-select. User remove yang ditunda. Trigger opsi lagi di PI berikutnya membutuhkan outstanding SKU dari PO/supplier yang sama — lihat GAP-PI-02.
 
-**Edit window:** Override COA hanya selama PI **belum approved** (`can_update = true`). Setelah approved, kolom COA read-only.
+### 6.5 Jurnal saat Approve
 
-| Aspek | Ref dari PO | Ref dari Master Other Cost/Disc |
-|-------|-------------|----------------------------------|
-| Label Other Cost/Disc | **Locked** | **Locked** (tidak ganti label setelah insert) |
-| Amount | **Locked** (harus sama dengan PO) | **Editable** (≥ 0) |
-| Description | Editable | Editable (max 150) |
-| **COA** | **Editable** | **Editable** |
+Dr Unbilled Goods (balik kredit inbound) + Dr Tax (jika ada, COA dari setting tax PO) + Dr Additional Cost (COA baris) — Cr Additional Discount (COA baris) + Cr Account Payable.
 
-Default value kolom COA = COA yang ter-assign di label master (atau yang di-copy dari PO line saat insert). Jika user tidak mengubah, behavior journal sama seperti sebelumnya.
+Contoh: Products 8.738,74 + VAT 961,26 + Cost 144,50 − Disc 86,00 = Net **9.758,50** (× kurs → local).
 
-### 8.4 Acceptance Criteria — kolom COA
+### 6.6 Exchange Gain/Loss
 
-| ID | Kriteria | Status |
-|----|----------|--------|
-| AC-COA-01 | Kolom **COA** di datatable Section Additional Cost — semua baris (PO + master) | ✅ FE `OtherCost.vue` + `CoaSelect` |
-| AC-COA-02 | Kolom **COA** di datatable Section Additional Discount — sama | ✅ FE `OtherDiscount.vue` + `CoaSelect` |
-| AC-COA-03 | Default COA = master / PO line `expense_coa_id` | ✅ |
-| AC-COA-04 | Opsi COA dari Master COA via `GET accounting/chart-of-account/select2/child` — **tanpa filter class**; hanya **active** + **leaf** (child) | ✅ Verified codebase |
-| AC-COA-05 | Baris dari PO: Amount & Label locked; COA tetap bisa diubah | ✅ `checkInvalidModified` + update `expense_coa_id` |
-| AC-COA-06 | Journal approve memakai `expense_coa_id` **di baris PI** (bukan re-read master) | ✅ `JournalProcess::supplierInvoiceAutoJournal` |
-| AC-COA-07 | Setelah PI approved: COA tidak bisa diubah | ✅ `can_update` gate |
+Selisih = PO Total (local) − Invoice Total (local). Minus = laba (Cr Exchange Gain); plus = rugi (Dr). Berlaku baris detail dan cost/disc dari PO currency beda.
 
-### 8.5 Opsi COA — batasan teknis (VERIFY: CODEBASE)
+### 6.7 Return setelah PI Approved
 
-Endpoint: `accounting/chart-of-account/select2/child` (`ChartOfAccountController@select2Child` + FE `CoaSelect.vue`).
-
-| Filter | Berlaku? | Catatan |
-|--------|----------|---------|
-| COA Class | **Tidak** | Seluruh class boleh — beda dari master Other Cost/Disc yang membatasi class |
-| Active only (`status = 1`) | **Ya** | |
-| Leaf / child only | **Ya** | Parent (punya child di `coa_trees`) dikecualikan |
-| Company scope | **Ya** | Global scope company pada `ChartOfAccount`; COA terpilih bisa di-resolve `withoutCompanyScope` untuk display |
-| Owned-by match saat approve | **Ya** | Journal gagal jika `expense_coa.owned_by` ≠ PI `owned_by` |
-
-> **Implikasi QA:** Di PI, user bisa pilih COA class yang **tidak** diizinkan di form Master Other Cost/Disc. Itu **by design** untuk override transaksi. Pastikan COA tetap leaf + milik company yang sama agar approve tidak gagal.
-
-### 8.6 Test Scenario — COA override
-
-| # | Skenario | Expected |
-|---|----------|----------|
-| T01 | Buka PI dengan Additional Cost dari PO | Kolom COA muncul; default = COA dari PO/master |
-| T02 | Edit COA baris dari PO | COA tersimpan; Amount & Label tetap locked |
-| T03 | Edit COA baris dari Master Other Cost | COA tersimpan; Amount tetap editable |
-| T04 | Cek opsi COA di dropdown | Active + leaf; **tanpa** batasan class |
-| T05 | Approve PI setelah COA di-override | Journal Dr/Cr memakai COA yang dipilih user |
-| T06 | Approve tanpa ubah COA | Journal memakai COA default (no regression) |
-| T07 | Additional Discount (PO + master) | Perilaku identik §8.3 |
-| T08 | Coba ubah COA setelah approved | Field disabled / API reject modify |
-
-### 8.7 Open Items — COA override
-
-| # | Item | Status |
-|---|------|--------|
-| OI-COA-01 | Audit Log PI: apakah override `expense_coa_id` tampil Old/New sebagai code, name, atau `code \| name`? | **Partial** — entity Auditable + `transformAudit` format `code \| name`; konfirmasi tampilan UI Audit slideover |
-| OI-COA-02 | Duplicate / reverse (credit note) PI: apakah COA override ikut ter-copy atau reset ke master? | **Open** — konfirmasi PM |
-| OI-COA-03 | Validasi API `expense_coa_id` saat update: saat ini `nullable` di FormRequest — apakah perlu enforce exists + leaf + owned_by di store/update (bukan hanya saat approve)? | **Open** — tech debt |
+Pakai Purchase Return tipe **Billed** (bukan Unbilled). Tidak potong AP langsung; menerbitkan **Debit Note** untuk potong tagihan berikutnya di Account Payment.
 
 ---
 
-## 9. Penjurnalan saat Approve (PM v1.1 + AS-IS)
+## 7. Validasi
 
-### 9.1 Konsep (revamp Okt 2025)
-
-| Tahap | PPN | Jurnal inti |
-|-------|-----|-------------|
-| **Purchase Inbound** | **Tidak** | Dr Inventory/Assets/Op.Expense · Cr **Unbilled Goods** (DPP/net only) |
-| **Purchase Invoice** | **Ya — trigger VAT In** | Dr **Unbilled Goods** + **Tax** + **Other Cost** · Cr **AP** + **Other Discount** + Exchange diff |
-
-### 9.2 Matriks jurnal PI (`JournalProcess::supplierInvoiceAutoJournal`)
-
-| Posisi | COA | Nilai |
-|--------|-----|-------|
-| **Debit** | Product **Unbilled Goods** | `qty_in_base × each_price_after_discount_before_vat × PO.exchange_rate` |
-| **Debit** | **Tax COA** (per PO tax line) | Pro-rata `vat_amount` on invoiced qty |
-| **Debit** | Other cost COA = baris PI `expense_coa_id` | `amount_primary_currency` |
-| **Credit** | Other discount COA = baris PI `expense_coa_id` | `amount_primary_currency` |
-| **Credit/Debit** | Company **Exchange Diff. COA** | Net exchange gain/loss |
-| **Credit** | **Account Payable** (supplier) | Balancing: total debit − credits − exchange |
-
-> **COA override:** Jurnal **tidak** membaca ulang COA dari Master Other Cost/Discount. Sumber = `accounting_supplier_invoice_other_costs.expense_coa_id` / `accounting_supplier_invoice_other_discounts.expense_coa_id` pada saat approve.
-
-**Journal header:** type `"Purchase Invoice"`, auto-approved, primary currency, date = PI transaction date.
-
-**Not:** PI does **not** debit Inventory again — clears Unbilled Goods accrual from inbound.
-
-### 9.3 Contoh angka (PM)
-
-Barang DPP 90,090.09 + PPN 9,909.91; Other Cost 10,000; Other Disc 5,000 → **AP Credit 105,000**
-
-### 9.4 Approve sequence
-
-1. Cache lock 30s `approval_supplier_invoice`
-2. Fiscal period; min 1 detail
-3. Set `account_payable_coa_id`
-4. `approve()` — status + approval log
-5. Inbound: prepared↓ processed↑
-6. PO other cost/disc: processed flags
-7. `supplierInvoiceAutoJournal()`
+| # | Kondisi | Behavior |
+|---|---------|----------|
+| 1 | Edit Basic Info setelah ada detail | Ditolak — header locked |
+| 2 | Insert SKU/cost/disc foreign currency kedua yang beda | Ditolak (§6.3) |
+| 3 | Qty to Invoice melewati Outstanding | Ditolak |
+| 4 | Qty inbound full processed di Invoice | Return Unbilled tidak bisa atas SKU inbound ini |
+| 5 | Qty inbound full processed di Return Unbilled | SKU tidak bisa lagi di PI |
+| 6 | Approve tanpa ≥1 detail, atau Product COA kosong | Approve gagal |
+| 7 | Amount cost/disc sumber PO | Non-editable — tidak bisa over-bill secara struktural |
 
 ---
 
-## 10. Relasi Purchase Inbound (detail)
+## 8. Relasi Menu Lain
 
-| Aspek | Rule |
-|-------|------|
-| **Eligible inbound** | Approved/processed GRN; same supplier & currency |
-| **Double invoicing** | Blocked via prepared + processed qty caps |
-| **Reference link** | Datalist TRX REF → `/supplychain/mutation-inbound/edit/{id}` (legacy route; BETA inbound same backend) |
-| **Return after invoice** | Purchase Return cuts **AP**, not Unbilled Goods (PM downstream — cross-ref return docs) |
-| **Qty fields** | See [Purchase Inbound v2.0](../supplychain-new-purchase-inbound/requirement.md) — `prepared_to_grn` vs `processed_to_invoice` independent chains |
-
-**Inbound journal (reminder):** DPP only — see PI §9.1 and [GRN §11](../supplychain-new-purchase-inbound/requirement.md#11-accounting--journal-as-is).
-
----
-
-## 11. Relasi Account Payment (detail)
-
-Full doc: [accounting-supplier-payment/requirement.md](../accounting-supplier-payment/requirement.md)
-
-### 11.1 PI → Payment outstanding
-
-Approved PI appears in **Account Payment** outstanding when:
-
-```
-grand_total_after_vat > processed_to_payment_amount
-status ∈ {approved, processed}
-supplier = payment supplier
-payment.transaction_date ≥ invoice.transaction_date
+```mermaid
+flowchart TB
+    PO[Purchase Order] --> INB[Purchase Inbound]
+    INB --> PI[Purchase Invoice]
+    PI --> PAY[Account Payment]
+    PI --> RETB[Purchase Return - Billed]
+    RETB --> DN[Debit Note]
+    DN --> PAY
+    INB --> RETU[Purchase Return - Unbilled]
 ```
 
-**API:** `PaymentController@queryOutstandingSupplierInvoice`
-
-### 11.2 Payment allocation fields on PI
-
-| Field | Meaning |
-|-------|---------|
-| `prepared_to_payment_amount` | Reserved by draft/open payment lines |
-| `processed_to_payment_amount` | Finalized on payment **approve** |
-| `invoice_remaining_after_vat` | `grand_total_after_vat - prepared - processed` |
-
-### 11.3 Lifecycle coupling
-
-| PI state | Payment state | Effect on PI outstanding |
-|----------|---------------|--------------------------|
-| Approved, no payment | — | Full `grand_total_after_vat` outstanding |
-| Payment draft/open | `prepared_to_payment_amount` ↑ | Outstanding reduced by prepared |
-| Payment approved | `processed_to_payment_amount` ↑ | Outstanding reduced permanently |
-| Partial payment | — | PI stays approved; remaining outstanding |
-| Full payment | processed = grand total | Fully paid |
-
-### 11.4 Void / edit guards (PM vs AS-IS)
-
-| PM rule | AS-IS |
-|---------|-------|
-| Approved PI immutable | ✓ update blocked |
-| Cannot void if payment exists | **Partial** — void UI exists but **no payment check** + void doesn't reverse journal (GAP-PI-02) |
-| Cancel payment first to void PI | **Not enforced in code** |
-
-### 11.5 Payment journal (downstream)
-
-On payment approve: `JournalProcess::supplierPaymentAutoJournal`:
-- **Dr** Account Payable (per PI allocation)
-- **Cr** Cash/Bank and/or **Debit Note** (multi-source)
-- Exchange diff + Cash diff + Adjustment lines
-
-Full AP spec: [accounting-supplier-payment/requirement.md §10–§12](../accounting-supplier-payment/requirement.md#10-penjurnalan-saat-approve)
-
-**Show PI from payment form:** `GET accounting/supplier-payment/supplier-invoice/{id}` → delegates PI show.
+| Menu | Peran |
+|------|-------|
+| [Purchase Order](../supplychain-purchase-order/requirement.md) | Sumber SKU, harga, tax, cost/disc |
+| [Purchase Inbound](../supplychain-new-purchase-inbound/requirement.md) | Eligible SKU; bridge prepared/processed qty |
+| [Account Payment](../accounting-supplier-payment/requirement.md) | Pelunasan; PI approved → outstanding |
+| Purchase Return Billed | Retur setelah PI; hasilkan Debit Note |
+| Purchase Return Unbilled | Mutually exclusive dengan qty full invoiced |
+| [Master Other Cost](../omni-other-cost/requirement.md) / [Other Discount](../omni-other-discount/requirement.md) | Label + default COA |
+| [Chart of Account](../accounting-chart-of-account/) | Opsi COA override |
 
 ---
 
-## 12. UI/UX — Halaman Form
+## 9. Gap Registry
 
-### 12.1 Layout & navigasi
+| ID | Deskripsi | Dampak | Status |
+|----|-----------|--------|--------|
+| GAP-PI-01 | Print PI dulu memuat template PO, bukan PI | Operator tidak bisa cetak dokumen resmi | **Resolved** (per SoT) — `[VERIFY: CODEBASE]` method print masih type-hint PurchaseOrder |
+| GAP-PI-02 | Additional Cost/Disc dari PO bisa permanen tidak bisa ditagih jika SKU sumber sudah full invoiced/return sebelum semua baris cost dipilih — trigger opsi terikat outstanding SKU PO yang sama | Sebagian nilai Other Cost/Disc PO "hilang" operasional | **Open** — dikomunikasikan ke end user; verifikasi mekanisme detail `[VERIFY: CODEBASE]` |
+| GAP-PI-03 | Filter Supplier header (inbound status apapun) ≠ filter SKU eligibility (harus approved) — modal kosong jika supplier hanya punya inbound draft | Membingungkan operator baru | **Resolved (Accepted)** — konfirmasi lead tech, tidak diperbaiki |
 
-**Sidenav sections:** Basic Information → Product to Invoiced → Additional Cost → Additional Discount → Approval Log → Audit
+### 9.1 Pending Items — belum matang
 
-**Side panel (sticky):** Draft/Open radio · Save All · Approve · Void · Close
+Bukan gap teknis fitur existing; user **tidak** bisa memakai fitur ini.
 
-### 12.2 Tombol utama
-
-| Tombol | Kondisi | Aksi |
-|--------|---------|------|
-| **Save & Next** | Create | Save header → redirect edit |
-| **Save All** | Edit + `can_update` | PATCH header |
-| **Approve** | Open + `can_approve` + ≥1 detail | POST approve |
-| **Void** | Approved + `can_void` | VoidDialog → approve void |
-| **Print** | Edit | GET print — **broken** (GAP-PI-01) |
-| **Inbound Transaction** | Edit | Overlay outstanding panel |
-
-### 12.3 Auto UX behaviors
-
-- First load draft/open → auto-scroll to `#ProducttoInvoiced`
-- Totals panel visible after save (dashed border summary)
-- Rejected API status → FE radio shows **draft**
-- Foreign currency → show converted primary amount in totals
-
----
-
-## 13. Import / Export / Print
-
-| Feature | AS-IS |
-|---------|-------|
-| **Export Excel** | ✓ async `SupplierInvoiceExportJob`; with/without details; chunk 100 |
-| **Import** | ❌ No PI import (GAP-PI-05) |
-| **Print PDF** | ❌ Route calls **PurchaseOrder** PDF template (GAP-PI-01) |
-
----
-
-## 14. Void / Delete / Close
-
-| Action | When | Reversal |
-|--------|------|----------|
-| **Delete** | Not approved | Revert inbound prepared; delete lines; reset PO cost flags |
-| **Void** | Approved (UI) | Status only via `approve(AS_VOID)` — **no** inbound/journal reversal (GAP-PI-02) |
-| **Close** | `processed` status | `approve(AS_CLOSED)` — rarely reachable (GAP-PI-03) |
-
----
-
-## 15. Do's & Don'ts
-
-| ✅ Do | ❌ Don't |
-|-------|----------|
-| Match PI currency to PO/inbound | Invoice inbound from different currency PO |
-| Approve only from **open** | Approve while draft |
-| Configure Unbilled Goods + Tax + AP COA before approve | Expect VAT journal at inbound |
-| Select only uninvoiced inbound qty | Double-invoice same inbound line |
-| Complete payment before expecting void cleanup | Rely on void to auto-reverse payment |
-
----
-
-## 16. Acceptance Criteria (QA smoke)
-
-1. Create PI → add inbound line → prepared_to_invoice on GRN detail  
-2. Approve → processed_to_invoice; journal Dr Unbilled Goods + Tax; Cr AP  
-3. Grand total = lines + cost − discount  
-4. Foreign PO/PI rate diff → exchange diff journal line  
-5. Other cost from PO → appears on approve journal debit  
-6. Partial other cost on PI 1, remainder on PI 2  
-7. Approved PI in Account Payment outstanding  
-8. Payment approve → processed_to_payment on PI  
-9. Block duplicate inbound line on same PI  
-10. Export with details succeeds  
-11. **Override COA** Additional Cost (PO + master) sebelum approve → journal pakai COA baru  
-12. **Override COA** Additional Discount → journal credit pakai COA baru  
-13. Setelah approved, kolom COA tidak editable  
-
----
-
-## 17. Relasi Menu
-
-| Menu | Relasi |
+| Item | Status |
 |------|--------|
-| [Purchase Order](../supplychain-purchase-order/requirement.md) | Price, tax, other cost/disc source; amount locked saat di-PI |
-| [Purchase Inbound](../supplychain-new-purchase-inbound/requirement.md) | Outstanding source; Unbilled Goods accrual |
-| [Account Payment](../accounting-supplier-payment/requirement.md) | Pelunasan AP |
-| [Master Other Cost](../omni-other-cost/requirement.md) | Label + default COA; COA bisa di-override di PI |
-| [Master Other Discount](../omni-other-discount/requirement.md) | Label + default COA; COA bisa di-override di PI |
-| [COA / Chart of Account](../accounting-chart-of-account/) | Sumber opsi COA override (`select2/child`) |
-| [Product COA Group](../accounting-product-coa-group/) | Unbilled Goods, Tax COA |
-| [General Company](../generalsetting-general-company/) | AP COA, Exchange Diff COA |
+| **Void** | Belum matang (requirement + codebase). Siklus berhenti di Approved — tidak ada jalur void yang bisa dipakai user. Kode sisa (`can_void`, dialog) **deprecated** sebagai dokumentasi perilaku. |
+| **Due Date otomatis dari TOP supplier** | Belum — Due Date murni manual |
+| **Status Processed / Closed** | Ideal untuk konsistensi modul & relasi Payment; saat ini belum ada |
 
 ---
 
-## 19. Gaps — PM vs AS-IS
+## 10. FAQ
 
-| ID | Topik | PM / Expected | AS-IS | Status |
-|----|-------|---------------|-------|--------|
-| GAP-PI-01 | Print PI PDF | Working print | Controller loads **PO** PDF | **Broken** |
-| GAP-PI-02 | Void reverses AP/inbound | Full reversal | Void status only; no qty/journal rollback | **Not implemented** |
-| GAP-PI-03 | PI `processed` on partial pay | Outstanding status | Header rarely set `processed` | **Partial** |
-| GAP-PI-04 | Void blocked if payment | Must cancel payment first | No payment guard on void | **Not implemented** |
-| GAP-PI-05 | Import PI | — | No import routes | **N/A** |
-| GAP-PI-06 | Due date from supplier TOP | Auto calculate | Manual due_date only | **Not implemented** |
-| GAP-PI-07 | Tax Invoice No field | Dedicated FP field | May map to supplier reference | **Verify UI** |
-| GAP-PI-08 | Create page behavior | Explicit save | Auto-submit on default values | **UX quirk** |
-| GAP-PI-09 | Supplier tooltip | Accurate | Says "draft inbound"; API needs **approved** | **UI drift** |
-| GAP-PI-10 | `rejected` vs `declined` | Consistent | Approve sets rejected; canApprove checks declined | **Code inconsistency** |
-| GAP-PI-11 | Negative invoice total | Block | Verify grandTotal validation | **Verify QA** |
-| GAP-PI-12 | Return after invoice | Cut AP not Unbilled | Purchase Return module — cross-test | **Separate menu** |
-| GAP-PI-13 | Account Payment docs | Complete | Payment QA docs pending until v2.0 | **Addressed this commit** |
-| GAP-PI-14 | Dynamic cost tick UI | Checkbox per cost | Multiselect from PO | **UI differs — OK functionally** |
+**Q: Kenapa supplier tidak muncul di dropdown create?**  
+A: Hanya muncul jika punya referensi Purchase Inbound (status apapun, termasuk draft).
 
-### 19.1 GAP-PI-01 — Print (detail)
+**Q: Supplier terpilih tapi modal Inbound Transaction kosong?**  
+A: Dropdown boleh draft; SKU baru muncul jika inbound **Approved**. Perilaku accepted (GAP-PI-03), bukan bug.
 
-`GET accounting/supplier-invoice/{id}/print` → `SupplierInvoiceController@print` loads PurchaseOrder view — FE expects PI PDF. Operator cannot print official PI from system.
+**Q: Kenapa tidak bisa 2 mata uang asing berbeda dalam 1 PI?**  
+A: Aturan sistem — max 1 foreign + local, agar selisih kurs tidak kacau.
 
-### 19.2 GAP-PI-02 — Void (detail)
+**Q: Sebagian Other Cost PO tidak muncul lagi di PI berikutnya?**  
+A: Kemungkinan SKU PO sudah full invoice/return. Lihat GAP-PI-02.
 
-Void from approved does not:
-- Decrement `processed_to_invoice_quantity` on inbound
-- Reset PO `processed_to_invoice` on other costs
-- Reverse/auto-void journal entry
+**Q: Bisa void PI yang sudah approved?**  
+A: Belum. Fitur belum tersedia. Approve keliru → koordinasi manual.
 
-Finance must manual adjust or use unapprove (dev/local only).
+**Q: PPN dijurnal kapan?**  
+A: Saat Approve PI, bukan saat inbound.
 
----
+**Q: Retur setelah PI approved?**  
+A: Purchase Return tipe **Billed** → Debit Note → potong tagihan berikutnya (bukan potong AP langsung).
 
-## 20. Dev Follow-ups
-
-| ID | Item |
-|----|------|
-| DEV-PI-01 | Fix print to use SupplierInvoice template |
-| DEV-PI-02 | Void: reverse inbound qty + journal + block if payment |
-| DEV-PI-03 | Set PI `processed` when partial payment approved |
-| DEV-PI-04 | Auto due_date from supplier payment terms |
-| DEV-PI-05 | Remove create-page auto-submit |
-| DEV-PI-06 | Align rejected/declined status constants |
-
----
-
-## 21. Pending Items — Major
-
-| ID | Severity | Stakeholder | Pertanyaan | AS-IS |
-|----|----------|-------------|------------|-------|
-| **P-PI-01** | 🔴 **Highest** | **Finance + Dev** | **Void PI harus reverse inbound + journal?** (GAP-PI-02) | Void cosmetic only |
-| **P-PI-02** | 🔴 **Major** | **Ops** | **Fix Print PI?** (GAP-PI-01) | 404/wrong document |
-| **P-PI-03** | 🔴 **Major** | **Finance** | **Block void if payment exists?** (GAP-PI-04) | Not enforced |
-| **P-PI-04** | 🟡 Medium | **PM** | Auto due date from TOP? (GAP-PI-06) | Manual only |
-| **P-PI-05** | 🟡 Medium | **QA** | PI `processed` status semantics vs payment (GAP-PI-03) | Unclear lifecycle |
-
-**Confirmed OK (PM v1.1):**
-
-- VAT at PI not inbound ✓  
-- Dynamic other cost/disc partial invoicing ✓ (multiselect)  
-- Dr Unbilled Goods clears inbound accrual ✓  
-- Double invoicing blocked ✓  
+**Q: Total Products lebih kecil dari hitungan manual?**  
+A: Jika pajak coefficient true, DPP terakumulasi versi coefficient (lebih kecil) agar total sesuai aturan PPN.
 
 ---
 

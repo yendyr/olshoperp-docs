@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.3
-last_updated: 2026-06-26
+version: 2.4
+last_updated: 2026-07-15
 owner: QA - Yemima
 status: review
 legacy_sources:
@@ -28,6 +28,7 @@ legacy_sources:
 | 2.1 | 2026-06-26 | QA - Yemima | Klarifikasi PM: scan SO, tracking qty FS, settlement per-baris, relasi Sales Return |
 | 2.2 | 2026-06-26 | QA - Yemima | Deep check eligibility invoice/outbound, pill Sales Platform Returns, gap approve G-05 |
 | 2.3 | 2026-06-26 | QA - Yemima | Cross-menu stock flow: relasi TF internal, picking/checking/packing/DO, order, settlement, SR |
+| 2.4 | 2026-07-15 | QA - Yemima | Relasi Sales Platform (Return bucket, Failed Ship Status, flow vs Sales Return) |
 
 ---
 
@@ -477,7 +478,7 @@ flowchart TB
 | Menu | Relasi |
 |------|--------|
 | [Instant Settlement](../accounting-settlement-upload/README.md) | Block + qty adjustment |
-| Sales Order Platform/General | Sumber data; qty failed ship di detail |
+| Sales Order Platform/General | Sumber data; qty failed ship di detail — Platform canonical: [omni-sales-platform](../omni-sales-platform/requirement.md) |
 | Delivery Order | Prasyarat approved; sumber outstanding lines |
 | Transfer Internal | Tahap wave→3PL + hasil FS |
 | Stock Deduction | Lost qty |
@@ -488,6 +489,29 @@ flowchart TB
 | Transaction History | Referensi mutasi FS |
 
 ---
+
+## 7.0 Relasi Sales Platform
+
+**Peran Failed Ship terhadap Sales Platform:**
+
+| Aspek | Perilaku |
+|-------|----------|
+| Trigger | SO platform sudah di jalur kirim/shipped; barang gagal atau perlu dikembalikan **sebelum/sekitar** outbound penuh |
+| Feedback ke SP detail | Kolom **Failed Ship Status** = prepared (FS belum approve) / processed (FS approved) |
+| Feedback ke SP datalist | Bucket **Return** jika ada FS dan/atau Sales Return |
+| Pill **Sales Platform Returns** di index FS | Filter platform return yang **belum** outbound penuh — kontras dengan pill Sales Return (boleh sudah outbound) |
+
+```mermaid
+flowchart LR
+    SP[Sales Platform SO] --> DO[DO / Ship]
+    DO --> FS[Failed Ship]
+    FS --> STAT[Failed Ship Status di detail SP]
+    FS --> BUCK[Return bucket SP]
+    SP --> SR[Sales Return Platform]
+    SR --> BUCK
+```
+
+Detail operasional SP: [omni-sales-platform §7.1](../omni-sales-platform/requirement.md).
 
 ## 7.1 Relasi Sales Return — aturan qty
 

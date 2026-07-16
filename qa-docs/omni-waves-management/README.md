@@ -24,4 +24,4 @@ Menu **Waves Management** (Supply Chain / Omni) — konfigurasi wave untuk menge
 | [Picking Process](../omni-picking-process/README.md) | Approve transfer wave (hidden TF) |
 | [Picking List](../omni-picking-list/README.md) | Generate picklist dari wave — **menu berbeda** |
 | [Warehouse Binding](../omni-warehouse-binding/README.md) | WH process filter wave |
-| [Dev - Sales Platform](../sales-order-general/README.md) | SO masuk MIX wave default |
+| [Dev - Sales Platform](../omni-sales-platform/README.md) | SO masuk MIX wave default |

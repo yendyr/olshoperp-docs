@@ -302,13 +302,50 @@ menus:
         - olshoperp-frontend/src/pages/Omni/master/WarehouseBinding/**/*
       frontend: []
 
-  sales-order-general:
+  omni-sales-platform:
     menu_name: "Dev - Sales Platform"
-    path: sales-order-general
+    path: omni-sales-platform
     module: OmniChannel
     menu_links:
       - omni/sales-order
-      - businessdevelopment/all-sales-order
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/SalesOrderController.php
+        - Modules/OmniChannel/Http/Controllers/SalesOrderApprovalController.php
+        - Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php
+        - Modules/OmniChannel/Http/Controllers/FailedSalesOrderController.php
+        - Modules/OmniChannel/Http/Controllers/SalesOrderSyncLogController.php
+        - Modules/OmniChannel/Http/Controllers/TransferSummaryController.php
+        - Modules/OmniChannel/Logics/SalesOrder/SalesOrderValidationLogic.php
+        - Modules/OmniChannel/Services/OmniShopeeService.php
+        - Modules/OmniChannel/Services/OmniLazadaService.php
+        - Modules/OmniChannel/Services/OmniTikTokService.php
+        - Modules/OmniChannel/Services/Traits/ManagesShopeeBooking.php
+        - Modules/OmniChannel/Jobs/SalesOrderAutoApproveJob.php
+        - Modules/OmniChannel/Jobs/CheckOrderFlagsJob.php
+        - app/Console/Commands/SalesOrderAutoApprove.php
+        - app/Console/Commands/SalesOrderErrorApprove.php
+      frontend:
+        - olshoperp-frontend/src/pages/Omni/SalesOrder/**/*
+
+  sales-order-general:
+    menu_name: "Dev - Sales Order"
+    path: sales-order-general
+    module: OmniChannel
+    menu_links:
       - businessdevelopment/sales-order-general
     owner: QA - Yemima
     docs:
@@ -331,9 +368,33 @@ menus:
         - Modules/OmniChannel/Jobs/CheckOrderFlagsJob.php
         - app/Console/Commands/ScreeningErrorFlagStockSalesOrderCommand.php
         - olshoperp-frontend/src/pages/**/SalesOrderGeneral/**/*
-        - olshoperp-frontend/src/pages/Omni/SalesOrder/**/*
-        - olshoperp-frontend/src/pages/BusinessDevelopment/Report/AllSalesOrder/**/*
       frontend: []
+
+  all-sales-order:
+    menu_name: "All Sales Order"
+    path: all-sales-order
+    module: BusinessDevelopment
+    menu_links:
+      - businessdevelopment/all-sales-order
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/BusinessDevelopment/Http/Controllers/*AllSalesOrder*
+        - Modules/OmniChannel/Http/Controllers/SalesOrderController.php
+      frontend:
+        - olshoperp-frontend/src/pages/BusinessDevelopment/Report/AllSalesOrder/**/*
 
   accounting-account-payable-report:
     menu_name: "Account Payable Report"
@@ -1212,13 +1273,13 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: review
+        status: draft
       requirement:
         file: requirement.md
-        status: review
+        status: draft
       technical:
         file: technical.md
-        status: review
+        status: draft
     legacy_sources:
       []
     code_globs:
@@ -1366,10 +1427,10 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: review
+        status: draft
       requirement:
         file: requirement.md
-        status: review
+        status: draft
       technical:
         file: technical.md
         status: draft
@@ -1378,7 +1439,13 @@ menus:
     code_globs:
       backend:
         - Modules/Accounting/Http/Controllers/JournalController.php
+        - Modules/Accounting/Http/Controllers/JournalDetailController.php
         - Modules/Accounting/Entities/Journal.php
+        - Modules/Accounting/Entities/JournalDetail.php
+        - Modules/Accounting/Import/JournalImport.php
+        - Modules/Accounting/Jobs/JournalImportJob.php
+        - app/Helpers/Accounting/JournalProcess.php
+        - app/Helpers/Accounting/JournalReport.php
         - Modules/Accounting/Routes/api.php
         - olshoperp-frontend/src/pages/Accounting/Journal/**/*
       frontend: []

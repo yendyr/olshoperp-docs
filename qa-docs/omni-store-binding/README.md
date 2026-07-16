@@ -23,7 +23,8 @@ Menu **Store** (Omni Channel) — registrasi toko marketplace/offline, OAuth aut
 |------|--------|
 | [Warehouse Binding](../omni-warehouse-binding/README.md) | Mapping WH platform ↔ WH sistem per store (Process/Stock/Return) |
 | [Manage Platform Product](../manage-platform-product/README.md) | Sync & bind produk per store |
-| [Dev - Sales Platform](../sales-order-general/README.md) | Sync order platform, import SO General (store Others) |
+| [Dev - Sales Platform](../omni-sales-platform/README.md) | Sync order platform |
+| [Dev - Sales Order](../sales-order-general/README.md) | Import SO General (store Others) |
 | [Waves Management](../omni-waves-management/README.md) | Wave filter by store |
 | [Instant Settlement](../accounting-settlement-upload/README.md) | COA & cash/bank store untuk Approve settlement |
 | [Settlement Mapping](../accounting-settlement-mapping/README.md) | Mapping kolom settlement per platform/store |

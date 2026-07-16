@@ -1,12 +1,7 @@
-# Sales Order General (Internal) — Dokumentasi
+# Dev - Sales Order (Internal) — Dokumentasi
 
-Menu terkait sales order internal, platform, dan view gabungan.
-
-| Menu UI | Route | Cakupan doc |
-|---------|-------|-------------|
-| Dev - Sales Order | `/businessdevelopment/sales-order-general` | SO internal (general) |
-| **All Sales Order** | `/businessdevelopment/all-sales-order` | View gabungan general + platform |
-| **Dev - Sales Platform** | `/omni/sales-order` | SO marketplace |
+Menu **Dev - Sales Order** — CRUD/import SO **internal** (`type_sales_order = general`).  
+Route: `/businessdevelopment/sales-order-general`
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
@@ -14,16 +9,25 @@ Menu terkait sales order internal, platform, dan view gabungan.
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | draft |
 
-**Maintenance owner:** QA — Yemima
+**Version docs folder:** ikut frontmatter requirement (2.4+) · **Last structural split:** 2026-07-15
 
-**Latest:** Benchmark COGS v1.1 sumber (2026-07-09) · §11 Benchmark COGS detail order (2026-07-05) · §10 Bundle proporsi · §8–§9 Failed Process
+## Peran (independen)
+
+| Menu | Doc | Independen? |
+|------|-----|-------------|
+| **Dev - Sales Order** (ini) | SO internal: manual, import, POS | Ya |
+| [Dev - Sales Platform](../omni-sales-platform/) | SO marketplace sync | Ya |
+| [All Sales Order](../all-sales-order/) | Gabungan monitoring + tools lintas tipe | Sintesis 1+2 |
+
+## Changelog (struktural)
+
+| Date | Changes |
+|------|---------|
+| 2026-07-15 | Scope folder dipersempit: hanya Dev Sales Order; ASO & SP dipisah folder |
 
 ## Legacy sources
 
 - [_legacy/old_sales-order-general-requirement.md](../_legacy/old_sales-order-general-requirement.md)
-- [_legacy/old_sales-order-import-bulk-improvement.md](../_legacy/old_sales-order-import-bulk-improvement.md) — merged ke [technical.md](./technical.md) §5 (TO-BE)
+- [_legacy/old_sales-order-import-bulk-improvement.md](../_legacy/old_sales-order-import-bulk-improvement.md)
 
-## Route & code
-
-- FE: `/businessdevelopment/sales-order-general`
-- BE: `Modules/BusinessDevelopment/` + `Modules/OmniChannel/` (sales order controllers)
+**Maintenance owner:** QA — Yemima

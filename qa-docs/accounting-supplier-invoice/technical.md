@@ -2,16 +2,18 @@
 doc_type: technical
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 2.1
-last_updated: 2026-07-10
+version: 3.0
+last_updated: 2026-07-15
 owner: QA - Yemima
-status: review
+status: draft
+aliases: [PI technical, supplier invoice API, purchase invoice code]
 ---
 
 # Purchase Invoice — Technical Documentation
 
 **API prefix:** `accounting/supplier-invoice`  
-**Module:** `Modules/Accounting`
+**Module:** `Modules/Accounting`  
+**Behavior SoT:** [requirement.md](./requirement.md) v3.0
 
 ---
 
@@ -21,20 +23,19 @@ status: review
 
 | Layer | Path |
 |-------|------|
-| Routes | `Modules/Accounting/Routes/components/supplier-invoice.php` |
+| Routes | `Modules/Accounting/Routes/api.php` (prefix `supplier-invoice`) |
 | Controller | `Modules/Accounting/Http/Controllers/SupplierInvoiceController.php` |
-| Detail items | `SupplierInvoiceDetailItemController.php` |
-| Other cost | `SupplierInvoiceOtherCostController.php` |
+| Detail items | `Modules/Accounting/Http/Controllers/SupplierInvoiceDetailItemController.php` |
+| Other cost | `Modules/Accounting/Http/Controllers/SupplierInvoiceOtherCostController.php` |
 | Other discount | `Modules/Accounting/Http/Controllers/SupplierInvoiceOtherDiscountController.php` |
-| FormRequest OC/OD | `SupplierInvoiceOtherCostRequest`, `SupplierInvoiceOtherDiscountRequest` |
 | Model header | `Modules/Accounting/Entities/SupplierInvoice.php` |
-| Model detail | `SupplierInvoiceDetailItem.php` |
+| Model detail | `Modules/Accounting/Entities/SupplierInvoiceDetailItem.php` |
 | Model OC/OD | `SupplierInvoiceOtherCost`, `SupplierInvoiceOtherDiscount` |
+| Tax lines | `Modules/Accounting/Entities/SupplierInvoiceTax.php` (`coefficient`) |
 | Pricing | `Modules/Accounting/Services/SupplierInvoicePrice.php` |
 | Journal | `app/Helpers/Accounting/JournalProcess.php` → `supplierInvoiceAutoJournal()` |
 | COA select2 | `ChartOfAccountController@select2Child` |
 | Export | `SupplierInvoiceExportJob` |
-| FormRequest header | `StoreSupplierInvoiceRequest`, `UpdateSupplierInvoiceRequest` |
 
 ### Frontend
 
@@ -44,38 +45,33 @@ status: review
 | List | `src/pages/Accounting/AccountPayable/SupplierInvoice/DataList.vue` |
 | Form | `Form.vue` |
 | Outstanding | `DatalistOutstanding.vue`, `DatalistOutstandingGroup.vue` |
-| Other cost grid | `OtherCost.vue` — kolom COA via `CoaSelect` |
-| Other discount grid | `OtherDiscount.vue` — kolom COA via `CoaSelect` |
-| Other cost PO select | `OtherCostSelectFromPO.vue` |
-| Other discount PO select | `OtherDiscountSelectFromPO.vue` |
-| Shared COA picker | `src/pages/Accounting/components/CoaSelect.vue` → `accounting/chart-of-account/select2/child` |
+| Other cost/disc | `OtherCost.vue`, `OtherDiscount.vue` + `CoaSelect.vue` |
+| PO select | `OtherCostSelectFromPO.vue`, `OtherDiscountSelectFromPO.vue` |
 | Detail grid | `DetailItemDataList.vue` |
 
-### Account Payment (cross-ref)
+### Cross-module
 
-| Layer | Path |
-|-------|------|
-| Controller | `PaymentController.php`, `PaymentDetailController.php` |
-| FE | `src/pages/Accounting/AccountPayable/SupplierPayment/` |
+| Area | Path |
+|------|------|
+| Payment outstanding | Payment / SupplierPayment controllers |
+| Debit Note (post Billed return) | `DebitNoteController` — bridging return → payment |
 
 ---
 
-## 2. API Routes ( utama )
+## 2. API Routes (utama)
 
 | Method | Path | Action |
 |--------|------|--------|
-| GET | `accounting/supplier-invoice` | Index |
-| POST | `accounting/supplier-invoice` | Store |
-| GET | `accounting/supplier-invoice/{id}` | Show |
-| PATCH | `accounting/supplier-invoice/{id}` | Update |
-| DELETE | `accounting/supplier-invoice/{id}` | Destroy |
-| POST | `accounting/supplier-invoice/{id}/approve` | Approve |
-| GET | `accounting/supplier-invoice/{id}/outstanding-inbound` | Outstanding flat |
-| GET | `accounting/supplier-invoice/{id}/outstanding-inbound-group` | Outstanding grouped |
-| POST | `accounting/supplier-invoice/{id}/details` | Add line |
-| POST | `accounting/supplier-invoice/{id}/details/bulk` | Bulk add |
-| POST | `accounting/supplier-invoice/{id}/details/group` | Group add |
-| GET | `accounting/supplier-invoice/{id}/print` | Print (**broken — PO template**) |
+| GET/POST | `accounting/supplier-invoice` | Index / Store |
+| GET/PATCH/DELETE | `accounting/supplier-invoice/{id}` | Show / Update / Destroy |
+| POST | `accounting/supplier-invoice/{id}/approve` | Approve / Reject (`AS_APPROVED`, `AS_REJECTED`; `AS_VOID` still in Rule::in — **immature**, see §9) |
+| GET | `…/{id}/outstanding-invoice` | Outstanding flat |
+| GET | `…/{id}/outstanding-invoice-group` | Outstanding grouped |
+| POST | `…/supplier-invoice-detail-item` | Add line |
+| POST | `…/supplier-invoice-detail-item-bulk` | Bulk add |
+| POST | `…/supplier-invoice-detail-item/create/group` | Group add |
+| GET | `…/{id}/print` | Print — `[VERIFY: CODEBASE]` vs SoT GAP-PI-01 Resolved (method still typed `PurchaseOrder` + PO PDF view) |
+| GET | `select2/supplier` | Supplier dropdown (inbound ref any status) |
 
 ---
 
@@ -85,56 +81,44 @@ status: review
 
 | Column | Notes |
 |--------|-------|
-| `code` | PI prefix |
-| `transaction_date`, `due_date` | |
+| `code`, `transaction_date`, `due_date` | `due_date` nullable, no TOP auto-calc |
 | `supplier_id`, `currency_id`, `exchange_rate` | Lock after details |
-| `grand_total_before_vat`, `grand_total_after_vat` | From `SupplierInvoicePrice` |
-| `prepared_to_payment_amount`, `processed_to_payment_amount` | Payment allocation |
+| `grand_total_before_vat`, `grand_total_after_vat` | From pricing service |
+| `prepared_to_payment_amount`, `processed_to_payment_amount` | Payment bridge |
 | `account_payable_coa_id` | Set on approve |
-| `transaction_status` | draft/open/approved/... |
-| `supplier_reference_document` | Supplier ref / tax invoice |
+| `transaction_status` | draft / open / approved / rejected (no user-facing void/processed/closed) |
+| `supplier_reference_document` | Supplier's Reference |
 
 ### `accounting_supplier_invoice_detail_items`
 
 | Column | Notes |
 |--------|-------|
-| `mutation_inbound_detail_item_id` | FK inbound detail |
+| `mutation_inbound_detail_item_id` / inbound detail FK | Qty bridge |
 | `purchase_order_detail_id` | Price source |
-| `invoice_quantity` | In invoice UOM |
-| `invoice_quantity_in_base_unit` | Base UOM |
-| Price fields | Copied from PO via `getDetailPriceAndTax()` |
+| `invoice_quantity`, `invoice_quantity_in_base_unit` | Validation in base unit |
+| Price + `vat` / `fake_vat` | Copied from PO |
+| Tax child rows | `coefficient` on tax entity |
 
-### Inbound qty bridge (`supplychain_mutation_inbound_detail_items`)
+### Inbound qty bridge
 
-| Column | PI usage |
-|--------|----------|
+| Column / accessor | Usage |
+|-------------------|-------|
 | `prepared_to_invoice_quantity` | Reserved on add line |
 | `processed_to_invoice_quantity` | Finalized on PI approve |
+| Return prepared/processed | Subtracted in `invoiceBalance()` — see INV-PI-01 |
 
-**Balance:** `invoiceBalance()` on inbound detail model.
+### PO other cost flags
 
-### PO other cost flags (`supplychain_purchase_order_other_costs`)
+| Column | Usage |
+|--------|-------|
+| `prepared_to_invoice` / `processed_to_invoice` | Linked ↔ billed on PI |
 
-| Column | PI usage |
-|--------|----------|
-| `prepared_to_invoice` | Set when cost linked to draft PI |
-| `processed_to_invoice` | Set on PI approve |
-
-### PI other cost / discount (`accounting_supplier_invoice_other_costs` / `_other_discounts`)
+### PI OC/OD
 
 | Column | Notes |
 |--------|-------|
-| `other_cost_id` / `other_discount_id` | FK master |
-| `other_cost_name` / `other_discount_name` | Snapshot label |
-| `expense_coa_id` | **COA transaksi** — default dari master/PO; **editable** sebelum approve |
-| `purchase_order_other_cost_id` / `_discount_id` | Null = entry dari master; filled = dari PO (amount locked) |
-| `amount`, `description` | Amount locked jika dari PO |
-
-**Update rules (`SupplierInvoiceOtherCostController@update` / OtherDiscount):**
-
-- Jika dari PO (`purchase_order_*_id` set): `checkInvalidModified` menolak ubah label & amount; **mengizinkan** ubah `expense_coa_id` + description
-- Jika dari master: amount/description/`expense_coa_id` boleh diubah
-- Gate: `$supplier_invoice->can_update` (false setelah approved)
+| `expense_coa_id` | Editable until approved; journal reads row value |
+| `purchase_order_other_*_id` | Set = from PO (amount locked) |
 
 ---
 
@@ -142,153 +126,171 @@ status: review
 
 **Class:** `SupplierInvoicePrice`
 
-```php
-// grandTotal
-subTotal.before_vat = Σ (invoice_quantity × invoice_each_price_after_discount_before_vat)
-subTotal.after_vat  = Σ (invoice_quantity × invoice_each_price_after_discount_after_vat)
-grandTotal.before_vat = subTotal.before_vat + totalOtherCost - totalOtherDiscount
-grandTotal.after_vat  = subTotal.after_vat  + totalOtherCost - totalOtherDiscount
+```
+subTotal.before_vat = Σ (qty × each_after_discount_before_vat)
+subTotal.after_vat  = Σ (qty × each_after_discount_after_vat)
+grandTotal = subTotal + totalOtherCost − totalOtherDiscount
 ```
 
-**Exchange diff:** `(PO.exchange_rate - PI.exchange_rate) × qty × unit_price` → journal line.
+**Coefficient tax:** if tax `coefficient` true, DPP accumulated into FE Total Products uses coefficient DPP (smaller) so effective VAT rate matches policy.
 
-**Line pricing source:** `PurchaseOrderDetail::getDetailPriceAndTax()` — includes discount %, VAT, fake_vat, vat_included.
+**Exchange diff:** PO local total − Invoice local total → Exchange Gain (Cr) / Loss (Dr); also on PO-sourced OC/OD with currency mismatch.
+
+**Line pricing:** `PurchaseOrderDetail::getDetailPriceAndTax()`.
 
 ---
 
 ## 5. Approve Flow
 
-**Controller:** `SupplierInvoiceController@approve`
+```mermaid
+sequenceDiagram
+    participant FE as Frontend
+    participant C as SupplierInvoiceController
+    participant Cache as Cache add 30s
+    participant PI as SupplierInvoice
+    participant IB as Inbound detail
+    participant PO as PO other cost/disc
+    participant JP as JournalProcess
 
-1. `Cache::lock('approval_supplier_invoice_{id}', 30)`
-2. Validate: status open, fiscal period, ≥1 detail
-3. `$supplierInvoice->approve()` — status + approval log
-4. For each detail: inbound `prepared↓ processed↑`
-5. PO other costs/discounts: `processed_to_invoice=true`
-6. `JournalProcess::supplierInvoiceAutoJournal($supplierInvoice)`
-
-### Journal lines (`supplierInvoiceAutoJournal`)
-
-| Dr/Cr | COA | Amount basis |
-|-------|-----|--------------|
-| Dr | Unbilled Goods (product) | qty_base × DPP_unit × PO_rate |
-| Dr | Tax COA | pro-rata VAT on qty |
-| Dr | **`$other_cost->expense_coa_id`** (baris PI) | primary amount |
-| Cr | **`$other_discount->expense_coa_id`** (baris PI) | primary amount |
-| Dr/Cr | Exchange diff COA | net diff |
-| Cr | Account Payable | balance |
-
-Approve juga memvalidasi `expense_coa.owned_by == PI.owned_by` untuk setiap baris OC/OD.
-
----
-
-## 6. Outstanding Inbound Query
-
-Filters in controller/repository:
-
-- Inbound approved (has approval records)
-- Same `supplier_id`, PO currency = PI currency
-- `transaction_date` inbound < PI date
-- `processed_to_invoice_quantity < quantity_in_base_unit`
-- Exclude adjustment/return types
-
----
-
-## 7. Account Payment Integration
-
-### Outstanding PI query
-
-`PaymentController@queryOutstandingSupplierInvoice`:
-
-```sql
--- conceptual
-WHERE status IN ('approved','processed')
-  AND grand_total_after_vat > processed_to_payment_amount + prepared_to_payment_amount (outstanding calc)
-  AND supplier_id = payment.supplier_id
-  AND transaction_date <= payment.transaction_date
+    FE->>C: POST approve
+    C->>Cache: Cache::add approval key
+    alt lock held
+        Cache-->>C: fail
+        C-->>FE: in progress
+    else acquired
+        C->>C: fiscal period, ≥1 detail
+        C->>PI: set account_payable_coa_id
+        C->>PI: approve() status + log
+        loop each detail
+            C->>IB: prepared↓ processed↑
+        end
+        C->>PO: processed_to_invoice=true
+        C->>JP: supplierInvoiceAutoJournal()
+        C->>Cache: forget key
+        C-->>FE: success
+    end
 ```
 
-### Payment detail save
+**Transaction:** `approveSupplierInvoice()` in single `DB::beginTransaction` — status, inbound qty, PO flags, journal rollback together.
 
-Updates PI `prepared_to_payment_amount` on payment detail store/update/delete.
-
-### Payment approve
-
-`processed_to_payment_amount` += allocated amount; `prepared` adjusted.
-
-**Gap:** PI header `transaction_status` not auto-updated to `processed` on partial pay.
-
-### Reverse lookup
-
-`GET accounting/supplier-payment/supplier-invoice/{id}` → show PI from payment context.
+**Journal:** Dr Unbilled Goods + Tax + OC (`expense_coa_id`) · Cr AP + OD + exchange. Validates `expense_coa.owned_by == PI.owned_by`.
 
 ---
 
-## 8. Validation Highlights
+## 6. Invariants
+
+| ID | Invariant |
+|----|-----------|
+| INV-PI-01 | `prepared_to_invoice + processed_to_invoice + prepared_to_return + processed_to_return ≤ inbound qty_base` per inbound detail |
+| INV-PI-02 | `Σ Dr = Σ Cr` on `supplierInvoiceAutoJournal` |
+| INV-PI-03 | Max one distinct foreign currency across detail SKU **and** OC/OD in a PI; local always allowed |
+| INV-PI-04 | PO-sourced OC/OD: amount & label immutable; `expense_coa_id` + description mutable until approved |
+| INV-PI-05 | At approve: `expense_coa` is leaf (no children), active, `owned_by == PI.owned_by` |
+| INV-PI-06 | `prepared_to_payment + processed_to_payment ≤ grand_total_after_vat` |
+
+---
+
+## 7. Failure Modes & Transaction Boundary
+
+| Failure | Scope | Behavior |
+|---------|-------|----------|
+| Concurrent approve | Pre-TX | `Cache::add` fail → error; no DB change |
+| Fiscal closed / empty detail / missing Product COA | Pre-TX or mid journal | Error; approve TX rolled back if inside transaction |
+| Exception mid-`approveSupplierInvoice` | Single TX | Full rollback |
+| OC/OD PO stuck (GAP-PI-02) | Product | If SKU fully processed in invoice/return before all PO costs billed, options may not reappear — `[VERIFY: CODEBASE]` for exact filter |
+| Void path | Immature | `can_void` / VoidDialog / `AS_VOID` still in code; datalist often `render_void: false`. **Not** a supported user flow (Pending Items SoT) |
+| Print | Route exists | `[VERIFY: CODEBASE]` vs SoT Resolved — `@print` still loads PO DomPDF view |
+
+---
+
+## 8. Data Lifecycle (PO → GRN → PI → Payment / Return)
+
+| Stage | Document | Flag / field | Meaning |
+|-------|----------|--------------|---------|
+| PO | Other cost/disc | `prepared_to_invoice` | Linked to draft PI |
+| PO | Other cost/disc | `processed_to_invoice` | Billed on approved PI |
+| GRN | Inbound detail | `prepared_to_invoice_quantity` | Reserved by draft PI line |
+| GRN | Inbound detail | `processed_to_invoice_quantity` | Finalized on PI approve |
+| GRN | Inbound detail | return prepared/processed | Cuts invoice outstanding |
+| PI | Header | `prepared` / `processed_to_payment_amount` | AP allocation |
+| PI → Return Billed | Purchase Return | — | Issues Debit Note (not direct AP cut) |
+| DN → Payment | Debit Note | — | Source on Account Payment |
+
+Business rules: [requirement §6–§8](./requirement.md).
+
+---
+
+## 9. Outstanding Inbound Query
+
+Filters (controller / balance):
+
+- Inbound approved (has approvals)
+- Same `supplier_id`; currency rules per INV-PI-03
+- Inbound date before PI date
+- `invoiceBalance()` less than equal remaining (invoice + return prepared/processed)
+- Exclude adjustment / return inbound types
+
+Supplier select2: inbound reference **any** status — intentional quirk (GAP-PI-03 Accepted).
+
+---
+
+## 10. Validation Highlights
 
 | Rule | Location |
 |------|----------|
-| Unique code per company | Store/Update request |
-| Fiscal period | Approve middleware |
-| Invoice qty ≤ invoiceBalance | Detail store |
-| Currency match PO | Detail store |
-| No duplicate inbound line on same PI | Detail store |
-| Cannot update header fields if details exist | Update request |
-| Other cost amount ≤ PO remaining | OtherCost store |
-| PO-sourced OC/OD: cannot change label/amount | `checkInvalidModified` |
-| PO-sourced OC/OD: **may** change `expense_coa_id` | OtherCost/OtherDiscount `@update` |
-| `expense_coa_id` FormRequest | `nullable` (OI-COA-03 — enforce leaf/owner di API masih open) |
-| COA owned_by match company | Journal approve |
+| Unique code / fiscal | Store-update / approve |
+| Qty ≤ invoiceBalance (base) | Detail store/update |
+| Currency lock one foreign | Detail + OC/OD store `[VERIFY: CODEBASE]` exact message path |
+| Header lock if details exist | Update request |
+| PO OC/OD amount locked | `checkInvalidModified` |
+| `expense_coa_id` FormRequest | Often nullable until approve (OI-style debt) |
+| COA owned_by | Journal approve |
 
 ---
 
-## 9. Frontend Behaviors
+## 11. Frontend Behaviors
 
-| Behavior | File |
-|----------|------|
-| Auto-submit create | `Form.vue` — `fetchDefaultValues()` |
-| Totals computed | API show includes `grand_total_*`, FE `totalProduct` |
-| Outstanding overlay | `DatalistOutstanding.vue` |
-| PO cost multiselect | `OtherCostSelectFromPO.vue` → `supplychain/purchase-order/outstanding-other-costs/select2` |
-| **Inline COA edit** | `OtherCost.vue` / `OtherDiscount.vue` → `CoaSelect` → PUT `.../other-costs/{id}` |
-| Amount locked if PO ref | `:disabled="data.purchase_order_other_cost !== null"` |
-| Print | Calls print API — wrong PDF backend |
-| Min backdate 6 months | Date picker config |
+| Behavior | File / note |
+|----------|-------------|
+| Auto-submit create + supplier last-PI fill | `Form.vue` `fetchDefaultValues()` |
+| Void UI remnant | `VoidDialog` + `can_void` — not productized |
+| Inline COA edit | `OtherCost.vue` / `OtherDiscount.vue` → `CoaSelect` |
+| Auto OC/OD on first SKU from PO | Detail store → firstOrCreate / bulk from PO |
+| Outstanding overlay | `DatalistOutstanding*.vue` |
+| Print call | Hits print API |
 
-### COA select2 filter (`CoaSelect` → `select2/child`)
+### COA select2
 
-- Active (`status=1`)
-- Leaf only (exclude parents in `coa_trees`)
-- **No** COA class filter
-- Company-scoped list; selected id can load without company scope for display
+Active + leaf only; **no** class filter; company scope.
 
 ---
 
-## 10. Tests & QA Notes
+## 12. Tests & QA Notes
 
 | Area | Suggestion |
 |------|------------|
-| Approve journal | Feature test: assert Dr Unbilled Goods + Tax, Cr AP |
-| Qty bridge | Assert prepared/processed on inbound detail |
-| Payment allocation | Integration: payment approve updates PI processed_to_payment |
-| Void | Document expected failure — no reversal today |
-| Print | Assert 200 + correct view name (currently fails expectation) |
-| Exchange diff | Foreign PO + different PI rate |
-| **COA override** | Update `expense_coa_id` on OC/OD → approve → journal `coa_id` matches override |
-| **COA default** | No override → journal matches master/PO COA |
-| **PO lock** | PUT amount on PO-sourced line → 4xx; PUT `expense_coa_id` → 200 |
+| Approve journal | Assert Dr Unbilled + Tax, Cr AP; Σ=0 |
+| Qty + return | Assert balance after invoice AND return qty |
+| Currency lock | Second foreign SKU or OC rejected |
+| Auto OC/OD + GAP-PI-02 | Invoice all SKU without selecting remaining PO cost → options gone |
+| Coefficient | Total Products uses coefficient DPP |
+| Payment bridge | Approve payment updates `processed_to_payment` |
+| Print | Assert correct PI view name (SoT says fixed; verify against current `@print`) |
 
 ---
 
-## 11. Known Issues (code)
+## 13. Known Issues (code)
 
 | ID | Issue |
 |----|-------|
-| GAP-PI-01 | `print()` uses PurchaseOrder PDF |
-| GAP-PI-02 | Void no inbound/journal reversal |
-| GAP-PI-03 | `processed` status not set from payment |
-| GAP-PI-08 | Create auto-submit |
-| GAP-PI-10 | `rejected` vs `declined` in canApprove |
+| GAP-PI-01 | SoT **Resolved**; code `@print` still PO-shaped — `[VERIFY: CODEBASE]` |
+| GAP-PI-02 | PO OC/OD may stick if SKU fully processed first — Open |
+| GAP-PI-03 | Supplier any-status vs eligible approved — Accepted |
+| Pending Void | FE/BE remnants; not user-supported lifecycle |
+| Pending Due Date TOP | Manual only |
+| Pending Processed/Closed | Not set from payment on PI header |
+
+Full registry: [requirement §9](./requirement.md#9-gap-registry).
 
 ---
 

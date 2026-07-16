@@ -30,7 +30,9 @@ Menu **General Company** (alias: Master Customer, Customer, Master Supplier, Sup
 
 | Menu | Hubungan |
 |------|----------|
-| [Sales Order General](../sales-order-general/README.md) | Default Shipper autofill; Default Customer saat clone dari platform |
+| [Dev - Sales Order](../sales-order-general/README.md) | Default Shipper autofill |
+| [Dev - Sales Platform](../omni-sales-platform/README.md) | Default Customer saat clone / create dari platform |
+| [All Sales Order](../all-sales-order/README.md) | Create gabungan memakai default yang sama |
 | [Instant Settlement](../accounting-settlement-upload/README.md) | Shipper → rantai DO → WH 3PL |
 | [Purchase Order](../supplychain-purchase-order/README.md) | Supplier, alamat primary, currency & payment type default |
 | [Internal Company](../generalsetting-internal-company/README.md) | Pola nested CRUD (contact/address/document) sama |

@@ -16,6 +16,7 @@ Menu **Sales Return** — operasi gudang + shared API dengan Finance.
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-07-15 | 2.1 | Relasi Sales Platform (Return bucket, flow vs Failed Ship) |
 | 2026-07-05 | 2.0 | Full rewrite: PM requirement merge, COGS 7 Mei, dual-menu, gaps §19–§21 |
 | 2026-06-19 | 1.0 | Initial draft AS-IS |
 
@@ -45,6 +46,8 @@ Menu **Sales Return** — operasi gudang + shared API dengan Finance.
 ## Related menus
 
 - [Failed Ship](../supplychain-failed-ship/README.md) — pre-settlement failures
+- [Sales Platform](../omni-sales-platform/README.md) — SO marketplace; Return bucket
+- [All Sales Order](../all-sales-order/README.md) — gabungan monitoring
+- [Dev - Sales Order](../sales-order-general/README.md) — source SO internal
 - [Sales Return Approval (Finance)](../accounting-sales-return/README.md) — Complete & journals
 - [Credit Note](../accounting-credit-note/README.md) — auto dari SR billed
-- [Sales Order General](../sales-order-general/README.md) — source SO internal

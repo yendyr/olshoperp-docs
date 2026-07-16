@@ -46,7 +46,9 @@ Menu **Benchmark COGS** (Finance Accounting → Report) — nilai acuan HPP per 
 
 ## Related menus
 
-- [sales-order-general](../sales-order-general/) — kolom detail SO + auto-approval §11
+- [sales-order-general](../sales-order-general/) — kolom detail SO general + auto-approval §11
+- [omni-sales-platform](../omni-sales-platform/) — snapshot Benchmark COGS di SO platform + prevent auto-approve
+- [all-sales-order](../all-sales-order/) — lihat flag lintas tipe
 - [supplychain-stock-opname](../supplychain-stock-opname/) — default harga surplus · sumber opname IN
 - [supplychain-adjustment-addition](../supplychain-adjustment-addition/) — sumber stock addition manual
 - [accounting-opening-stock](../accounting-opening-stock/) — sumber opening stock

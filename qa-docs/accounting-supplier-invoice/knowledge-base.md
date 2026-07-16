@@ -2,10 +2,11 @@
 doc_type: knowledge-base
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 2.1
-last_updated: 2026-07-10
+version: 3.0
+last_updated: 2026-07-15
 owner: QA - Yemima
-status: review
+status: draft
+aliases: [PI, purchase invoice, supplier invoice, faktur beli, tagihan supplier, hutang supplier]
 ---
 
 # Purchase Invoice — Knowledge Base (Operator)
@@ -17,12 +18,13 @@ status: review
 
 ## 1. Apa itu Purchase Invoice?
 
-Purchase Invoice (PI) adalah dokumen **pengakuan hutang** ke supplier setelah barang sudah **diterima (Purchase Inbound approved)**. PI:
+Purchase Invoice (PI) adalah dokumen **pengakuan hutang resmi** ke supplier setelah barang sudah **diterima** (Purchase Inbound disetujui). PI:
 
 - Menagihkan barang yang sudah masuk gudang
-- **Mencatat PPN Masukan** (VAT) — tidak lagi di saat inbound
-- Memindahkan saldo dari **Unbilled Goods** ke **Account Payable**
+- Mencatat **PPN Masukan** (pajak pembelian yang bisa dikreditkan) — tidak lagi di saat barang masuk
+- Memindahkan saldo dari utang sementara (**Unbilled Goods**) ke **Account Payable**
 - Menjadi dasar **Account Payment** (pelunasan)
+- Setelah approved, retur memakai Purchase Return tipe **Billed** (hasilnya **Debit Note**)
 
 **Kode transaksi:** `PI-XXXXX`
 
@@ -32,177 +34,151 @@ Purchase Invoice (PI) adalah dokumen **pengakuan hutang** ke supplier setelah ba
 
 | ✅ Buat PI jika | ❌ Jangan buat PI jika |
 |----------------|------------------------|
-| Inbound sudah **Approved** | Inbound masih draft/open |
-| Supplier & mata uang sama dengan PO/inbound | Mata uang PO berbeda dengan PI |
-| Tanggal PI **setelah** tanggal inbound | Inbound belum ada |
-| COA Unbilled Goods, Tax, AP sudah di-setup | Product COA belum lengkap |
+| Inbound sudah **Approved** | Hanya punya inbound draft — supplier bisa muncul di dropdown tapi barang belum bisa dipilih |
+| Ada outstanding qty yang belum ditagih / diretur | Qty inbound sudah habis ditagih atau diretur |
+| Product COA (Unbilled Goods, Tax, AP) sudah di-setup | COA produk belum lengkap — Approve akan gagal |
+| Mata uang sesuai aturan (maks. 1 asing + lokal) | Mau campur 2 mata uang asing berbeda dalam 1 PI |
 
 ---
 
 ## 3. Alur kerja standar
 
+Setelah inbound disetujui, buat PI untuk mengakui hutang (termasuk PPN) ke supplier. Happy path:
+
+```mermaid
+flowchart TD
+    A["Accounting → Purchase Invoice → Create"] --> B["Isi / cek header"]
+    B --> C["Pilih status Open"]
+    C --> D["Inbound Transaction\npilih barang outstanding"]
+    D --> E["Cek Additional Cost / Discount"]
+    E --> F["Cek panel Total"]
+    F --> G["Save All → Approve"]
+    G --> H["Account Payment\natau Debit Note bila retur"]
 ```
-1. Buka Accounting → Purchase Invoice → Create
-2. Isi Supplier, Tanggal, Mata Uang, Kurs (Due Date opsional)
-3. Pilih status Open (bukan Draft) sebelum approve
-4. Klik "Inbound Transaction" → pilih barang outstanding
-   - Bulk Use (checkbox) ATAU Single Use (modal qty)
-5. (Opsional) Tambah Additional Cost / Discount dari PO
-6. Cek Total panel — Net Purchase Invoice
-7. Save All → Approve
-8. Lanjut Account Payment untuk bayar supplier
-```
+
+**Keterangan langkah:**
+
+- **Create / header:** isi Supplier, Tanggal, Mata Uang, Kurs. Opsional: **Supplier's Reference** (nomor faktur/dokumen supplier), **Due Date** (isi manual — belum otomatis dari termin supplier). Saat Create, sistem bisa auto-simpan draft; Supplier sering terisi dari PI terakhir Anda. Jika belum pernah punya PI, isi field wajib (termasuk Supplier) manual dulu.
+- **Status Open:** wajib sebelum Approve (bukan Draft).
+- **Inbound Transaction:** pakai **Bulk Use** (banyak baris sekaligus) atau **Single Use** (isi qty per baris lewat modal). Hanya barang dari inbound **Approved** yang muncul.
+- **Additional Cost / Discount:** otomatis ikut dari PO saat SKU ditambah — hapus baris yang ingin ditunda ke PI berikutnya.
+- **Panel Total:** cek **Net Purchase Invoice** sebelum approve.
+- **Setelah Approve:** lanjut **Account Payment** untuk pelunasan; jika ada retur setelah PI approved, pakai Purchase Return tipe **Billed** (hasilnya **Debit Note**).
 
 ---
 
 ## 4. Panel Inbound Transaction
 
-Tombol **Inbound Transaction** (icon box) membuka panel outstanding.
+Panel ini menampilkan barang dari PO yang inbound-nya sudah disetujui — hanya itu yang boleh ditagih.
 
 | Fitur | Cara pakai |
 |-------|------------|
-| **Bulk Use** | Centang beberapa baris → Bulk Use |
-| **Single Use** | Klik baris → modal → isi Invoice Qty → Save |
-| **Group** | Pilih seluruh inbound sekaligus (group view) |
+| **Bulk Use** (pilih banyak baris sekaligus) | Centang baris → Bulk Use; qty default = seluruh sisa |
+| **Single Use** (isi qty per baris) | Klik baris → modal → Quantity to Invoice → Save |
+| **Already Prepared** | Sisa qty 0 tapi masih dipesan transaksi belum final — tunggu proses selesa |
 
-**Max Invoice Qty** = qty inbound − yang sudah disiapkan/diproses invoice − retur.
+**Sisa qty yang bisa ditagih** = qty barang masuk dikurangi yang sudah/sedang ditagih dan yang sudah/sedang diretur (hitungan di unit dasar; tampilan bisa unit lain seperti Box).
 
-Pesan error umum:
-- *"Invoice Qty must not exceed Inbound Qty..."* — kurangi qty
-- *"already included in this purchase invoice"* — baris sudah ada di PI ini
-- *"different currency"* — PO beda mata uang
+Pesan umum: qty melebihi sisa → kurangi; baris sudah di PI ini → pilih baris lain; mata uang asing kedua berbeda → tidak diizinkan.
 
 ---
 
 ## 5. Additional Cost & Discount
 
-**Dynamic allocation (Okt 2025):** Biaya/diskon PO tidak harus ditagih sekaligus.
+Biaya/diskon PO tidak harus ditagih sekaligus — supaya Anda bisa tagih barang dulu, freight di PI berikutnya.
 
-| Skenario | Contoh |
-|----------|--------|
-| Barang saja | PI 1: tagih qty barang; cost ditunda |
-| Barang + cost | PI 1: barang + freight |
-| Cost saja | PI 2: freight saja (barang sudah PI 1) |
+Begitu Anda menambah SKU dari suatu PO, **semua** biaya/diskon PO itu otomatis masuk. Hapus baris yang belum ingin ditagih sekarang; sisa bisa di PI berikutnya **selama masih ada SKU outstanding** dari PO yang sama.
 
-**Cara tambah:**
-1. Tab **Additional Cost** / **Additional Discount**
-2. Pilih dari dropdown PO (outstanding costs) ATAU entry manual dari Master Other Cost/Disc
-3. Cost otomatis muncul saat line pertama ditambah (dari PO)
+| Sumber baris | Nama / Nominal | COA |
+|--------------|----------------|-----|
+| Dari PO | Nama & nominal terkunci | Boleh diganti sebelum Approve |
+| Dari Master | Nominal bisa diubah | Boleh diganti sebelum Approve |
 
-### COA per baris (bisa diubah)
+- Ganti COA hanya sebelum Approve. Override **tidak** mengubah master.
+- Opsi COA: akun aktif yang **tidak punya sub-akun** (hati-hati — langsung memengaruhi jurnal).
+- Jika PO currency beda dari PI, kolom selisih kurs bisa muncul di baris cost/disc.
 
-Setiap baris punya kolom **COA** (default dari master / PO).
-
-| Sumber baris | Label | Amount | COA |
-|--------------|-------|--------|-----|
-| Dari PO | Tidak bisa diubah | Tidak bisa diubah | **Bisa diganti** |
-| Dari Master | Tidak bisa diganti setelah insert | Bisa diubah | **Bisa diganti** |
-
-- Ganti COA **hanya sebelum Approve** (status Draft/Open).
-- Override COA **tidak** mengubah Master Other Cost/Discount.
-- Saat Approve, jurnal memakai COA yang tampil di baris PI (bukan COA master jika sudah diganti).
-- Opsi COA: akun **aktif** & **leaf** dari Master COA — **tanpa** batasan class (beda dengan form master Other Cost/Disc).
-
-Detail aturan: [requirement §8.3](./requirement.md#83-coa-editable-per-baris-change-req-2026-07).
+**Catatan:** kalau semua SKU PO sudah habis ditagih/diretur sebelum semua baris cost dipilih, sebagian cost bisa tidak muncul lagi di PI berikutnya. Itu perilaku sistem yang sudah diinformasikan — koordinasikan sebelum closing PO.
 
 ---
 
 ## 6. Tombol & status
 
-| Tombol | Kapan muncul | Fungsi |
-|--------|--------------|--------|
-| **Save & Next** | Halaman create | Simpan header |
-| **Save All** | Edit, belum approved | Simpan perubahan |
-| **Approve** | Status Open + ada detail | Posting jurnal + AP |
-| **Void** | Sudah approved | Batalkan (⚠️ lihat §9) |
-| **Print** | Edit | ⚠️ Saat ini **tidak berfungsi** dengan benar |
-| **Draft / Open** | Side panel | Harus **Open** sebelum approve |
+| Tombol | Kapan | Fungsi |
+|--------|-------|--------|
+| **Save & Next / Save All** | Belum approved | Simpan header / perubahan |
+| **Approve** | Status Open + ada detail | Posting jurnal + hutang |
+| **Reject** | Status Open | Kembali ke alur edit (setelah save → Draft) |
+| **Delete** | Belum approved | Hapus transaksi |
+| **Print** | Setelah bisa akses cetak | Cetak dokumen PI |
+| **Draft / Open** | Side panel | Harus **Open** sebelum Approve |
 
-**Status:**
-- **Draft** — masih edit, belum siap approve
-- **Open** — siap approve
-- **Approved** — jurnal sudah jalan; tidak bisa edit
-- **Rejected** — ditolak approver; tampil sebagai draft di UI
+**Status yang dipakai:** Draft → Open → Approved; atau Open → Rejected (lalu edit+Save → Draft). Setelah **Approved**, tidak bisa diubah. **Void / Processed / Closed belum tersedia** untuk user.
 
 ---
 
-## 7. Panel Total (kanan bawah)
+## 7. Panel Total
 
 | Baris | Arti |
 |-------|------|
-| Total Products | Σ harga baris (DPP) |
-| Disc Products | Total diskon baris |
-| Total VAT | Total PPN baris |
-| Additional Cost / Disc | Biaya & diskon header |
-| **Net Purchase Invoice** | Total yang jadi hutang (termasuk PPN) |
+| Total Products | Total harga barang (sebelum pajak efektif di baris) |
+| Disc Products | Diskon baris barang |
+| Total VAT | Total PPN |
+| Additional Cost / Disc | Biaya & diskon tambahan |
+| **Net Purchase Invoice** | Total jadi hutang (termasuk PPN), dalam currency PI |
+| Net (IDR) | Konversi ke mata uang lokal perusahaan |
 
-Mata uang asing: angka konversi ke mata uang primary company ditampilkan di bawah.
-
----
-
-## 8. Hubungan dengan Purchase Inbound
-
-| Inbound | PI |
-|---------|-----|
-| Barang masuk gudang | Tagihan resmi ke supplier |
-| Jurnal: Dr Inventory Cr **Unbilled Goods** (DPP saja) | Jurnal: Dr **Unbilled Goods** + **PPN** Cr **AP** |
-| Tidak ada PPN di inbound | PPN di PI |
-
-**Qty tracking:** Setiap baris inbound punya batas berapa qty yang masih bisa di-invoice. Setelah PI approve, qty inbound ter-mark **processed to invoice**.
-
-Detail teknis: [requirement §10](./requirement.md#10-relasi-purchase-inbound-detail)
+Jika ada baris pajak dengan setting coefficient, angka Total Products bisa terlihat lebih kecil dari hitungan DPP “penuh” — itu disengaja agar total akhir sesuai aturan PPN yang berlaku.
 
 ---
 
-## 9. Hubungan dengan Account Payment
+## 8. Hubungan dengan menu lain
 
-Setelah PI **Approved**, muncul di **Account Payment → Outstanding Invoice**.
+**Purchase Inbound** mencatat barang masuk (utang sementara). **PI** adalah tagihan resmi (termasuk PPN) ke supplier.
 
-| Langkah | Efek |
-|---------|------|
-| Buat AP, alokasi ke PI | `prepared_to_payment` naik |
-| Approve AP | `processed_to_payment` naik; hutang berkurang |
-| Bayar penuh | Outstanding PI = 0 |
+**Account Payment** — setelah PI Approved, muncul di daftar outstanding untuk dilunasi. Bisa pakai Cash/Bank dan/atau Debit Note.
 
-**Multi-source:** AP bisa bayar pakai **Cash/Bank** + **Debit Note** (potongan retur). Total source harus = total detail sebelum approve.
-
-Detail lengkap: [Account Payment requirement](../accounting-supplier-payment/requirement.md)
-
-**Penting:** Void AP (MVP) belum tersedia — UI void ada tapi tidak berfungsi (GAP-PAY-VOID-01).
+**Retur setelah PI Approved** — pakai Purchase Return tipe **Billed**. Hasilnya **Debit Note** (saldo ke supplier untuk potong tagihan berikutnya), bukan potong hutang PI secara langsung.
 
 ---
 
-## 10. Troubleshooting
+## 9. Troubleshooting
 
 | Gejala | Penyebab | Solusi |
 |--------|----------|--------|
-| Supplier tidak muncul | Tidak ada inbound approved | Approve inbound dulu |
-| Outstanding kosong | Currency/date mismatch | Samakan currency; PI date > inbound date |
-| Approve gagal — COA | Unbilled Goods / Tax / AP kosong | Setup Product COA Group |
-| Approve gagal — fiscal | Periode tutup | Ubah tanggal atau buka periode |
-| Total negatif | Discount > subtotal | Kurangi discount/cost |
-| Print salah/kosong | Bug template | Export Excel sementara (GAP-PI-01) |
-| Void tidak kembalikan qty | Bug void | Hubungi dev; jangan void sembarangan (GAP-PI-02) |
-| PI auto-terbuat saat buka create | Auto-submit create | Hapus draft atau lanjut edit (GAP-PI-08) |
+| Supplier tidak di dropdown | Belum ada referensi inbound sama sekali | Buat/approve inbound dulu |
+| Supplier dipilih, modal kosong | Inbound masih draft | Approve inbound dulu (bukan bug) |
+| Outstanding kosong / qty 0 | Sudah full tagih atau retur | Cek PI/return lain untuk SKU yang sama |
+| Approve gagal | COA Unbilled Goods / Tax / AP kosong, atau tidak ada detail | Lengkapi Product COA Group; pastikan ada baris |
+| Cost dari PO tidak muncul lagi | SKU PO sudah full invoice/return | Koordinasi sebelum closing; lihat FAQ cost stuck |
+| Tidak bisa 2 foreign currency | Aturan sistem | Satu PI = max 1 asing + lokal |
+| Nominal cost tidak bisa diubah | Sumber dari PO | By design — locked |
+| Mau void PI approved | Fitur belum tersedia | Koordinasi manual dengan tim terkait |
 
 ---
 
-## 11. FAQ
+## 10. FAQ
 
-**Q: Apakah harga bisa diubah di PI?**  
+**Q: Harga bisa diubah di PI?**  
 A: Tidak. Harga & PPN mengikuti PO.
 
-**Q: Bisa partial invoice per inbound?**  
-A: Ya — isi Invoice Qty < Max Qty.
+**Q: Partial invoice boleh?**  
+A: Ya — isi qty di bawah sisa outstanding.
 
 **Q: PPN kapan dijurnal?**  
 A: Saat **Approve PI**, bukan saat inbound.
 
-**Q: Satu PI bisa beberapa inbound?**  
-A: Ya — bulk use dari beberapa GRN.
+**Q: Due date otomatis dari termin supplier?**  
+A: Belum — isi manual. Fitur otomatis belum tersedia.
 
-**Q: Due date otomatis dari TOP supplier?**  
-A: Belum — isi manual (GAP-PI-06).
+**Q: Supplier's Reference untuk apa?**  
+A: Nomor faktur pajak / dokumen dari supplier (opsional); tampil di daftar sebagai Supplier's Ref.
+
+**Q: Bisa void PI approved?**  
+A: Belum. Fitur belum matang. Jika salah approve, koordinasikan secara manual.
+
+**Q: Retur setelah PI approved?**  
+A: Purchase Return **Billed** → Debit Note → dipakai di payment berikutnya.
 
 ---
 

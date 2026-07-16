@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.0
-last_updated: 2026-07-05
+version: 2.1
+last_updated: 2026-07-15
 owner: QA - Yemima
 status: review
 ---
@@ -34,6 +34,7 @@ status: review
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft AS-IS codebase |
 | 2.0 | 2026-07-05 | QA - Yemima | Full rewrite: merge PM requirement, D&W COGS 7 Mei, dual-menu flow, gaps §19–§21 |
+| 2.1 | 2026-07-15 | QA - Yemima | Relasi Sales Platform (Return bucket, flow vs Failed Ship) |
 
 ---
 
@@ -387,12 +388,35 @@ Messages: `Data already approved.` · `Data approval process is in progress. Ple
 
 | Menu | Relasi |
 |------|--------|
-| [Failed Ship](../supplychain-failed-ship/requirement.md) | Pre-outbound failures |
-| [Sales Order](../sales-order-general/requirement.md) | Source transaction |
+| [Failed Ship](../supplychain-failed-ship/requirement.md) | Pre-outbound / shipping failures; qty FS mengurangi room return |
+| [Sales Platform](../omni-sales-platform/requirement.md) | SO marketplace sumber return; Return bucket + Failed Ship Status |
+| [All Sales Order](../all-sales-order/requirement.md) | Monitoring gabungan general + platform |
+| [Sales Order](../sales-order-general/requirement.md) | SO internal / Dev Sales Order |
 | [Customer Invoice](../accounting-customer-invoice/) | Price, tax, billed/unbilled |
 | [Credit Note](../accounting-credit-note/README.md) | Auto-generated billed returns |
 | [Warehouse Setting](../supplychain-setting/) | Return Location WH |
 | [Sales Return Configuration](../omni-global-setting/) | Auto-approve duration |
+
+### Relasi Sales Platform (detail)
+
+```mermaid
+flowchart TD
+    SO[SO Platform di Sales Platform] -->|refund/cancel platform| SRP[Sales Return Platform]
+    SO -->|gagal kirim fisik| FS[Failed Ship]
+    SRP --> BUCKET[Return bucket di Sales Platform]
+    FS --> BUCKET
+    SRP -->|datalist pill| LIST[Boleh order sudah outbound + ref invoice]
+    FS -->|pill Returns| FSP[Fokus belum outbound penuh]
+```
+
+| Aspek | Peran Sales Return vs SP |
+|-------|--------------------------|
+| Eligibility | Platform return biasanya setelah outbound (`processed_to_out_quantity`); jika belum outbound → arahkan Failed Ship |
+| Feedback SP | Memicu bucket **Return**; status dokumen SR independen dari Invoice Status di detail SP |
+| Sync | `POST omnichannel/sales-returns/sync` menarik retur dari marketplace ke daftar platform |
+| Qty | Tidak melebihi outbound residual setelah FS + return prepared/processed |
+
+Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/requirement.md).
 
 ---
 

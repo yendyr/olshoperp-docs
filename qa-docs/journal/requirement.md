@@ -3,241 +3,167 @@ doc_type: requirement
 menu: journal
 menu_name: "Journal"
 version: 1.1
-last_updated: 2026-07-09
+last_updated: 2026-07-15
 owner: QA - Yemima
-status: review
----
-# Journal
-
-Public Link: https://www.notion.so/Journal-2f4bf961929280048694dff2f3a85638?source=copy_link
-
-### Dokumentasi Requirement: Journal
-
-**Versi:** 1.0
-**Tanggal:** Mei 2026
-**Modul:** Finance Accounting / Journal
-**Status:** Active
-
+status: draft
+aliases: [journal, accounting journal, jurnal, GL journal, jurnal akuntansi]
 ---
 
-## 1. Overview & Tujuan
+# Journal — Requirement Documentation
 
-Menu Journal digunakan untuk mencatat seluruh transaksi jurnal akuntansi — baik yang dibuat secara manual oleh user maupun yang ter-generate otomatis oleh sistem dari relasi transaksi lain (Sales Invoice, Outbound, Stock Addition, AR, dll).
+**Modul:** Finance & Accounting  
+**Audience:** PM, Finance, QA  
+**UI route:** `/accounting/journal`  
+**SoT:** `accounting-journal-source-of-truth.md` v1.1 (10 Jul 2026)
 
-Journal yang berstatus **Approved** adalah satu-satunya journal yang masuk ke laporan keuangan (GL, Trial Balance, Balance Sheet, Profit & Loss).
+Hanya journal **Approved** yang masuk laporan keuangan (GL, Trial Balance, Balance Sheet, P&L).
 
 ---
 
-## 2. Tipe Journal
+## 0. Metadata & Changelog
 
-Kolom **Type** di datalist mengidentifikasi asal/sumber journal:
-
-| Type | Keterangan |
-| --- | --- |
-| Assembly Inbound | Journal dari flow transaksi Assembly Inbound (stock in barang jadi) |
-| Warehouse Stock Outbound | Journal dari proses outbound — bisa dari flow order maupun stock out internal (as expense) |
-| Stock Adjustment (Deduction) | Journal dari Stock Deduction — termasuk stock opname yang mengurangi stock |
-| Stock Adjustment (Addition) | Journal dari Stock Addition — termasuk stock opname yang menambah stock |
-| Sales Invoice | Journal dari transaksi Sales Invoice |
-| Manual Journal Entry | Journal dibuat manual oleh user |
-| Payment from Customer | Journal dari transaksi AR / Account Receive (penerimaan piutang) |
-| Purchase Return | Journal dari transaksi Purchase Return |
-| Credit Note | Journal dari transaksi Credit Note (uang muka/deposit dari customer) |
-| Debit Note | Journal dari transaksi Debit Note (pembayaran uang muka ke supplier) |
-| Warehouse Stock Inbound | Journal dari transaksi Inbound yang berasal dari Purchase Order |
-| Purchase Invoice | Journal dari transaksi Purchase Invoice |
-| Payment to Supplier | Journal dari transaksi Account Payment / pembayaran ke supplier |
-
-> **Catatan Trx Ref:** Untuk journal yang ter-generate dari transaksi turunan, Trx Ref merujuk ke transaksi langsung yang menerbitkan journal — bukan transaksi paling upstream. Contoh: Stock Opname yang mengurangi stock → generate Stock Deduction → Trx Ref journal = nomor Stock Deduction, bukan nomor Stock Opname.
-> 
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0 | 2026-05 | QA - Yemima | Initial — 13 tipe journal, import multi-currency, export advanced, auto-generate |
+| 1.1 | 2026-07-15 | QA - Yemima | SoT v1.1: auto-generate value 0 tetap terbit detail COA (bukan header-only); GAP-JRN-01 backfill historical |
 
 ---
 
-## 3. Halaman Datalist
+## 1. Ringkasan Eksekutif
 
-### 3.1 Kolom Datalist
+Journal mencatat seluruh transaksi jurnal akuntansi — manual maupun auto-generate dari transaksi lain (Sales Invoice, Purchase Invoice, Outbound, Stock Addition/Deduction, AR, AP, dll). Audience utama: Finance/Accounting.
 
-| Kolom | Keterangan | Default Visible |
-| --- | --- | --- |
-| Trx Code | Trx Date | Nomor transaksi journal + tanggal transaksi | true |
-| Type | Tipe journal sesuai list di Section 2 | true |
-| Description | Deskripsi dari header journal (Basic Information) | true |
-| Curr | Currency yang digunakan | true |
-| Exchange Rate | Nilai kurs transaksi | true |
-| Total | Total amount journal | true |
-| Trx Ref | Nomor transaksi referensi jika ter-generate by system. `-` jika journal manual | true |
-| Trx Status | Status terakhir: Draft / Open / Approved / Rejected | true |
-| Created at | Created by | Timestamp & user yang membuat | true |
-
-> Kolom yang default visible = false bisa diaktifkan melalui fitur Column Show & Hide.
-> 
-
-### 3.2 Fitur Datalist
-
-**Show Deleted Data**
-
-- Checkbox di atas datalist — default: unchecked
-- Jika dicentang: tampilkan semua data (aktif + terhapus)
-- Data terhapus: kolom Action hanya menampilkan text `deleted`, tidak ada tombol apapun
-
-**Column Show & Hide**
-
-- Fitur standar di semua datalist
-- User bisa toggle visibility kolom sesuai kebutuhan
-- Kolom yang default hidden bisa diaktifkan dari sini
-- Preferensi tersimpan per user
-
-**Export**
-
-Terdapat 2 scope export:
-
-*Export Basic:*
-
-- Hanya export data yang tampil di active page datalist (bukan semua data)
-- Tanpa detail journal — hanya data header
-
-*Export Advanced:*
-
-- Export sesuai filter yang aktif. Jika tidak ada filter → export ALL data
-- Sub-opsi 1 — **With Details:** data ter-export dengan detail journal per transaksi. Jumlah row based on baris detail journal. Data header di-repeat di setiap row yang berasal dari transaksi yang sama
-- Sub-opsi 2 — **Without Details:** hanya export data header journal (1 row per transaksi)
-- Sub-opsi 3 — **This Page Only:** export data yang tampil di active page datalist saat user klik export. Definisi "this page" = jumlah data terakhir yang tampil berdasarkan last config user (misal user ubah page size ke 50 → export 50 data, bukan default 20)
-
-**Import**
-
-- Lihat Section 7 — Fitur Import Journal
-
----
-
-## 4. Status Lifecycle
-
-```
-DRAFT → OPEN → APPROVED
-             ↘ REJECTED
+```mermaid
+flowchart LR
+    SI[Sales Invoice] --> JRN[Journal]
+    PI[Purchase Invoice] --> JRN
+    OUT[Outbound] --> JRN
+    SA[Stock Addition / Deduction] --> JRN
+    AR[Account Receive] --> JRN
+    AP[Account Payment] --> JRN
+    MAN[Manual Entry] --> JRN
+    JRN --> RPT[GL / Trial Balance / Balance Sheet / P&L]
 ```
 
-| Status | Keterangan |
-| --- | --- |
-| Draft | Transaksi baru dibuat / sedang diedit |
-| Open | Siap untuk di-approve |
-| Approved | Final — masuk ke semua laporan keuangan (GL, Trial Balance, Balance Sheet, P&L) |
-| Rejected | Ditolak — tidak bisa di-reverse ke status sebelumnya kecuali user edit transaksi journalnya, maka status rejected akan berubah menjadi DRAFT lagi |
+---
 
-> Journal yang ter-generate otomatis by system langsung berstatus **Approved**.
-> 
+## 2. Prasyarat
+
+| Prerequisite | Sumber | Catatan |
+|--------------|--------|---------|
+| Master COA aktif | Chart of Account | Hanya COA child (bukan parent) |
+| Master Currency aktif | Master Currency | Minimal 1 primary currency |
+| Fiscal Period aktif | Master Fiscal Period | Transaction Date harus dalam periode aktif — jika tidak, auto-save gagal |
+| Master Store (opsional) | Store tipe Platform & Others, Active | Hanya jika journal terkait store |
 
 ---
 
-## 5. Halaman Create / Edit Journal
+## 3. Siklus Status
 
-### 5.1 Auto-Create Behavior
-
-Ketika user klik **Create**, sistem langsung menampilkan section Basic Information + Ledger Detail sekaligus dalam 1 halaman — **tanpa perlu save Basic Information terlebih dahulu** — selama semua required field di Basic Information sudah terpenuhi.
-
-### 5.2 Section Basic Information
-
-| Field | Status | Default | Keterangan |
-| --- | --- | --- | --- |
-| Transaction Code | Required | Auto-generate by system | Bisa diubah. Harus unique. |
-| Transaction Date | Required | Datetime now | Jika date now belum ada Fiscal Period yang aktif → auto-save tidak bisa berjalan karena trx date tidak memenuhi requirement. User harus input date yang masuk dalam fiscal period yang aktif. |
-| Store | Optional | NULL | Dari Master Store tipe Platform & Others yang statusnya Active |
-| Transaction Reference | Optional | NULL | Freetext |
-| Currency | Required | Primary currency (dari Master Currency) | Opsi: Master Currency yang Active |
-| Exchange Rate | Required | `1` jika primary currency (disabled). Editable jika foreign currency — default value ikut rate primary currency | Field disabled jika currency = primary currency |
-| Description | Required | `Default System` jika ter-generate by system. Kosong jika manual | Freetext |
-| Select Files to Upload | Optional | — | Attach file eksternal pendukung transaksi |
-
-### 5.3 Section Ledger Detail / Journal Detail
-
-**Input fields di atas datatable:**
-
-| Field | Status | Keterangan |
-| --- | --- | --- |
-| Select Account | Required | Dari Master COA yang Active. Hanya COA terkecil/child — bukan parent |
-| Debit | Conditional Required | Numeric. Wajib diisi jika Credit kosong |
-| Credit | Conditional Required | Numeric. Wajib diisi jika Debit kosong |
-| Description | Optional | Freetext — deskripsi tambahan untuk baris COA ini |
-| Button Save | — | Insert row ke datatable detail journal |
-
-**Kolom datatable detail journal:**
-
-| Kolom | Keterangan | Posisi |
-| --- | --- | --- |
-| Account | COA Code + Name | Kiri |
-| Foreign | Nilai foreign currency (hanya tampil jika currency bukan primary) | Sebelum Debit & Credit |
-| Debit | Nilai debit | — |
-| Credit | Nilai kredit | — |
-| Description | Deskripsi baris | — |
-| Action | Tombol Edit & Delete | Paling kanan |
-
-**Action di datatable detail:**
-
-- **Edit** → buka modal kecil untuk edit: Account, Debit/Credit, Description
-- **Delete** → hapus row dari datatable
-
-**Summary di bawah datatable:**
-
-```
-                              Debit           Credit
-Total Amount          USD 10.000       USD 10.000
-Equivalent in IDR     IDR 172.000.000  IDR 172.000.000
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> Open
+    Open --> Approved
+    Open --> Rejected
+    Approved --> [*]
+    Rejected --> [*]
 ```
 
-- Total Amount: akumulasi total per kolom Debit & Credit, dalam currency yang digunakan
-- Equivalent in IDR: konversi ke IDR = `Total Amount × Exchange Rate`
+| Status | Kondisi | Editable? | Tombol |
+|--------|---------|-----------|--------|
+| **Draft** | Baru / masih diedit | Ya | Save All, radio Draft/Open |
+| **Open** | User pilih Open, siap Approve | Ya (header + detail) | Save All, Approve, radio Draft/Open |
+| **Approved** | Approve | Tidak | — (final) |
+| **Rejected** | Reject dari Open | Tidak — tidak bisa reverse | — (final) |
 
-### 5.4 Sidebar Kanan (Halaman Edit/Show)
-
-| Elemen | Keterangan |
-| --- | --- |
-| Basic Information | Jump ke section Basic Information |
-| Ledger Detail | Jump ke section Ledger Detail |
-| Approval | Menampilkan data approval: kapan di-approve & by siapa |
-| Audit Log | Menampilkan seluruh history perubahan data journal |
-| Radio button Draft / Open | Switch status antara Draft dan Open |
-| Save All | Simpan semua perubahan |
-| Approve | Hanya muncul jika status = **Open** |
+Auto-generate by system: **langsung Approved**, skip Draft dan Open.
 
 ---
 
-## 6. Auto-Generate Journal by System
+## 4. Datalist
 
-Journal yang ter-generate otomatis dari relasi transaksi lain memiliki behavior berikut:
+| Kolom | Sumber | Default visible | Keterangan |
+|-------|--------|-----------------|------------|
+| Trx Code / Trx Date | Header | Ya | Nomor + tanggal |
+| Type | Header | Ya | Salah satu dari 13 tipe (§6.2) |
+| Description | Header | Ya | — |
+| Curr / Exchange Rate | Header | Ya | — |
+| Total | Detail | Ya | Total amount |
+| Trx Ref | Sistem | Ya | Nomor transaksi langsung penerbit; `-` jika manual |
+| Trx Status | Header | Ya | Draft / Open / Approved / Rejected |
+| Created at / by | Audit | Ya | — |
 
-### 6.1 Data yang Otomatis Terisi
+**Fitur:** Show Deleted (deleted hanya text di Action); Column Show/Hide; Export Basic (active page, header only); Export Advanced — With Details / Without Details / This Page Only (ikuti filter aktif). Import: §6.3.
+
+---
+
+## 5. Form & Field
+
+### 5.1 Basic Information
+
+| Field | Wajib? | Default | Sumber | Validasi |
+|-------|--------|---------|--------|----------|
+| Transaction Code | Ya | Auto | — | Bisa diubah; unique |
+| Transaction Date | Ya | Now | — | Harus Fiscal Period aktif |
+| Store | Tidak | NULL | Store Platform & Others, Active | — |
+| Transaction Reference | Tidak | NULL | Freetext | — |
+| Currency | Ya | Primary | Master Currency Active | — |
+| Exchange Rate | Ya | 1 (disabled jika primary) | — | Editable jika foreign |
+| Description | Ya | `Default System` (auto) / kosong (manual) | — | — |
+| Attachment | Tidak | — | — | File eksternal |
+
+Create: Basic Information + Ledger Detail dalam **1 halaman** — tidak perlu save header terpisah selama required terpenuhi.
+
+### 5.2 Ledger Detail — Input
+
+| Field | Wajib? | Sumber | Catatan |
+|-------|--------|--------|---------|
+| Select Account | Ya | COA Active, child only | Parent ditolak |
+| Debit | Conditional | — | Wajib jika Credit kosong |
+| Credit | Conditional | — | Wajib jika Debit kosong |
+| Description | Tidak | — | Per baris |
+
+### 5.3 Ledger Detail — Datatable
+
+Account (code + name) · Foreign (jika non-primary) · Debit · Credit · Description · Action (Edit modal / Delete).
+
+### 5.4 Summary
+
+Total Amount = Σ Debit / Σ Credit dalam currency transaksi. Equivalent in IDR = Total × Exchange Rate.
+
+### 5.5 Sidebar (Edit/Show)
+
+Jump Basic Information / Ledger Detail · Approval log · Audit Log · Radio Draft/Open · Save All · Approve (hanya Open).
+
+---
+
+## 6. How It Works
+
+### 6.1 Auto-Create UI
+
+Klik Create → langsung form header + detail. Tidak ada step simpan Basic Information terpisah.
+
+### 6.2 Auto-Generate by System
 
 | Field | Nilai |
-| --- | --- |
-| Description | Otomatis by system (bukan dari input user) |
+|-------|-------|
+| Description | Auto by system |
 | Status | Langsung **Approved** |
-| Trx Date | Sama dengan Trx Date referensi transaksinya |
-| Created by | User yang melakukan **approve** transaksi referensinya (bukan creator transaksi) |
-| Created at | Timestamp saat journal ter-insert ke sistem |
-| Approved by | **System** (bukan user) |
-| Approved at | Sama dengan Created at |
+| Trx Date | = Trx Date transaksi referensi |
+| Created by | User yang **approve** transaksi referensi (bukan creator) |
+| Created at | Timestamp insert journal |
+| Approved by | System |
+| Approved at | = Created at |
 
-### 6.2 Trx Ref
+**Trx Ref** = transaksi **langsung** yang menerbitkan journal, bukan upstream paling jauh. Contoh: Stock Opname → Stock Deduction → Journal → Trx Ref = nomor Stock Deduction.
 
-- Terisi dengan nomor transaksi yang langsung menerbitkan journal
-- Bukan transaksi paling upstream
-
-**Contoh:**
-
-```
-Stock Opname → generate → Stock Deduction → generate → Journal
-Trx Ref journal = nomor Stock Deduction (bukan nomor Stock Opname)
-```
-
-### 6.3 Relasi Transaksi yang Generate Journal
-
-| Transaksi | Tipe Journal yang Terbit |
-| --- | --- |
+| Transaksi sumber | Tipe Journal |
+|------------------|--------------|
 | Sales Invoice | Sales Invoice |
-| Outbound (dari order) | Warehouse Stock Outbound |
-| Outbound (as expense/internal) | Warehouse Stock Outbound |
+| Outbound (order / expense / internal) | Warehouse Stock Outbound |
 | Stock Addition | Stock Adjustment (Addition) |
 | Stock Deduction | Stock Adjustment (Deduction) |
-| Stock Remapping (approve) | Stock Adjustment (Deduction) + Stock Adjustment (Addition) — auto per baris; Trx Ref journal = nomor **AO/AI** langsung |
 | Account Receive (AR) | Payment from Customer |
 | Account Payment (AP) | Payment to Supplier |
 | Purchase Invoice | Purchase Invoice |
@@ -247,123 +173,129 @@ Trx Ref journal = nomor Stock Deduction (bukan nomor Stock Opname)
 | Assembly Inbound | Assembly Inbound |
 | Purchase Order Inbound | Warehouse Stock Inbound |
 
-### 6.4 Instant Settlement — journal yang terbit
+#### Auto-generate value 0 (berlaku sejak 10 Jul 2026)
 
-Saat batch **Instant Settlement** selesai di-approve, sistem mem-posting journal otomatis (via `JournalProcess`) untuk:
+**Sebelum:** transaksi sumber amount 0 (mis. PO unit price 0 → Purchase Inbound) → journal Approved, header + Trx Ref lengkap, **detail kosong** (hindari sampah GL).
 
-| Tahap settlement | Tipe journal (contoh) | Trigger |
-|------------------|----------------------|---------|
-| Approve Sales Invoice hasil generate | Sales Invoice | Job approve SI settlement |
-| Approve Outbound hasil generate | Warehouse Stock Outbound | Job approve OB settlement |
-| Approve AR hasil generate | Payment from Customer | Job approve AR settlement |
+**Sesudah (request end user):** tetap terbit **header + detail** sesuai config COA tipe transaksi, value 0 ditampilkan apa adanya (Dr 0 / Cr 0). Berlaku **generik** untuk semua tipe di tabel di atas, bukan hanya Inbound.
 
-Journal gagal → counter error di grid settlement + **retry** (batch atau per `settlement_id`); SI/OB approved **tidak di-rollback**. Outbound bisa punya **warnings** (`zero_prevention`) — lihat doc settlement §11.
+`[VERIFY: CODEBASE]` — journal lama (header-only sebelum 10 Jul 2026): apakah di-backfill detail, atau historical as-is → GAP-JRN-01.
 
-## Relasi Instant Settlement
+### 6.3 Import
 
-**Dampak ke menu ini:** Settlement adalah salah satu **pemicu utama** auto journal (SI, OB, AR) dalam satu batch. Trx Ref journal = nomor dokumen langsung (SI/OB/AR), bukan kode file upload settlement.
+| Kolom | Wajib? | Aturan |
+|-------|--------|--------|
+| Row Number | Ya | Integer; sama = 1 journal |
+| Transaction Date | Ya | DD-MM-YYYY; time = waktu import |
+| Description | Tidak | Header |
+| Memo | Ya | Deskripsi per baris COA |
+| COA Code | Ya | Active, child only |
+| Debit / Credit | Conditional | Salah satu wajib; tidak boleh keduanya |
+| Currency | Ya | Code Active; default template IDR |
+| Exchange | Ya | Numeric; default 1 |
+| Reference | Tidak | Freetext |
 
-**Prasyarat dari menu ini agar settlement lolos:** COA aktif & child valid; fiscal period terbuka; Product COA Group + Settlement Mapping lengkap agar baris jurnal terbentuk.
+Grouping: Row Number sama = 1 transaksi (bisa ratusan baris COA). **All-or-Nothing** — 1 error → seluruh file ditolak; semua error dikumpulkan. Post-import: status default **Open** (tidak auto-approve).
 
-**Independensi:** Journal manual di menu ini **tidak** terhubung ke settlement. Journal auto hasil settlement mengikuti aturan §6.1 (Approved by System, non-editable).
+### 6.4 Multi-Currency
 
-**Detail alur bulk:** [Instant Settlement](../accounting-settlement-upload/requirement.md) — progress journal, retry, Out Journal warnings.
-
-Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/requirement.md#10-relasi-menu--integrasi).
-
----
-
-## 7. Fitur Import Journal
-
-### 7.1 Struktur Template Excel
-
-| Kolom | Status | Warna Header | Aturan |
-| --- | --- | --- | --- |
-| Row Number | Required | 🔴 Merah | Integer. Row Number sama = 1 transaksi journal |
-| Transaction Date | Required | 🔴 Merah | Format DD-MM-YYYY. Time = waktu saat import dijalankan |
-| Description | Optional | Hitam | Deskripsi header journal |
-| Memo | Required | 🔴 Merah | Deskripsi per baris COA (sebelumnya "Description") |
-| COA Code | Required | 🔴 Merah | Code COA Active, hanya child COA |
-| Debit | Conditional Required | 🔴 Merah | Numeric. Wajib jika Credit kosong |
-| Credit | Conditional Required | 🔴 Merah | Numeric. Wajib jika Debit kosong |
-| Currency | Required | 🔴 Merah | Code currency dari Master Currency Active. Default template: `IDR` |
-| Exchange | Required | 🔴 Merah | Numeric. Default template: `1` |
-| Reference | Optional | Hitam | Freetext referensi tambahan |
-
-### 7.2 Grouping Logic
-
-- Row Number yang sama = 1 transaksi journal
-- 1 Row Number bisa memuat ratusan baris COA — tidak ada batasan maksimal
-- Row Number berbeda = transaksi journal berbeda
-- 1 file bisa berisi multiple Row Number (multiple transaksi sekaligus)
-
-### 7.3 Validasi Import
-
-| Kategori | Skenario | Pesan Error |
-| --- | --- | --- |
-| Required Field | Kolom wajib kosong | `Row [X]: [Column Name] cannot be empty.` |
-| Row Number | Non-numeric | `Row [X]: Row Number must be a numeric value.` |
-| Transaction Date | Format bukan DD-MM-YYYY | `Row [X]: Invalid date format. Please use DD-MM-YYYY.` |
-| COA Code | Tidak ditemukan / Inactive | `Row [X]: COA Code [Code] not found or inactive.` |
-| COA Code | Parent COA | `Row [X]: COA Code [Code] is a parent account. Only child accounts are allowed.` |
-| Debit & Credit | Keduanya kosong | `Row [X]: Either Debit or Credit must be filled.` |
-| Debit & Credit | Keduanya diisi | `Row [X]: Debit and Credit cannot both be filled in the same row.` |
-| Debit / Credit | Non-numeric | `Row [X]: [Column Name] must be a numeric value.` |
-| Currency | Tidak ditemukan / Inactive | `Row [X]: Currency Code [Code] not found or inactive.` |
-| Exchange | Non-numeric | `Row [X]: Exchange must be a numeric value.` |
-| Balance | Total Debit ≠ Total Credit per Row Number | `Journal [Row Number]: Total Debit and Credit must be equal.` |
-
-**Prinsip:** All-or-Nothing — 1 error → seluruh file ditolak. Semua error dikumpulkan sekaligus.
-
-### 7.4 Post-Import
-
-- Status default: **Open** — tidak auto-approve
-- Time Transaction Date: waktu saat import dijalankan
-
-### 7.5 Multi-Currency via Import
-
-- Currency diinput menggunakan Code
-- Jika foreign currency → di GL Report tampil dalam IDR (`amount × exchange rate`)
-- Di halaman show/edit journal → tampil 2 nilai: foreign amount + IDR equivalent
+Input pakai Code. Foreign: GL tetap IDR (amount × rate). Show/edit tampil foreign + IDR equivalent.
 
 ---
 
-## 8. Aturan Reporting
+## 7. Validasi
 
-| Kondisi | Masuk ke Laporan? |
-| --- | --- |
-| Status Draft | Tidak |
-| Status Open | Tidak |
-| Status Approved | Ya — GL, Trial Balance, Balance Sheet, P&L |
-| Status Rejected | Tidak |
+### 7.1 Create/Edit Manual
+
+| # | Kondisi | Behavior |
+|---|---------|----------|
+| 1 | COA parent | Tidak bisa disimpan |
+| 2 | Debit dan Credit kosong | Tidak bisa disimpan |
+| 3 | Debit dan Credit keduanya terisi | Tidak bisa disimpan |
+| 4 | Total Debit ≠ Total Credit | Approve diblokir |
+| 5 | Transaction Date di luar Fiscal Period aktif | Auto-save gagal |
+| 6 | Transaction Code duplikat | Tidak bisa disimpan |
+
+`[VERIFY: CODEBASE]` — auto-generate pasca 10 Jul dengan Dr=0 dan Cr=0: apakah validasi #2 di-bypass (0 dianggap “terisi eksplisit”, bukan kosong).
+
+### 7.2 Import — error messages
+
+| # | Skenario | Message |
+|---|----------|---------|
+| 1 | Kolom wajib kosong | `Row [X]: [Column Name] cannot be empty.` |
+| 2 | Row Number non-numeric | `Row [X]: Row Number must be a numeric value.` |
+| 3 | Date format invalid | `Row [X]: Invalid date format. Please use DD-MM-YYYY.` |
+| 4 | COA not found/inactive | `Row [X]: COA Code [Code] not found or inactive.` |
+| 5 | COA parent | `Row [X]: COA Code [Code] is a parent account. Only child accounts are allowed.` |
+| 6 | Debit & Credit kosong | `Row [X]: Either Debit or Credit must be filled.` |
+| 7 | Debit & Credit keduanya | `Row [X]: Debit and Credit cannot both be filled in the same row.` |
+| 8 | Debit/Credit non-numeric | `Row [X]: [Column Name] must be a numeric value.` |
+| 9 | Currency invalid | `Row [X]: Currency Code [Code] not found or inactive.` |
+| 10 | Exchange non-numeric | `Row [X]: Exchange must be a numeric value.` |
+| 11 | Unbalanced per Row Number | `Journal [Row Number]: Total Debit and Credit must be equal.` |
 
 ---
 
-## 9. Validasi & Constraint
+## 8. Relasi Menu Lain
 
-| Rule | Detail |
-| --- | --- |
-| COA yang bisa dipilih | Hanya COA Active & child (bukan parent) — di create manual maupun import |
-| Balance journal | Total Debit harus = Total Credit sebelum bisa di-approve |
-| Trx Code | Unique — bisa diubah selama belum Approved |
-| Fiscal Period | Transaction Date harus masuk dalam Fiscal Period yang aktif |
-| Debit & Credit | Dalam 1 row: harus salah satu diisi, tidak boleh keduanya kosong atau keduanya diisi |
-| Auto-generated journal | Tidak bisa diedit — langsung Approved, non-editable |
-
----
-
-## 10. Changelog
-
+```mermaid
+flowchart TB
+    COA[Master COA] --> JRN[Journal]
+    CUR[Master Currency] --> JRN
+    FP[Fiscal Period] --> JRN
+    ST[Master Store] --> JRN
+    SI[Sales Invoice] --> JRN
+    PI[Purchase Invoice] --> JRN
+    OUT[Outbound] --> JRN
+    SA[Stock Addition/Deduction] --> JRN
+    AR[Account Receive] --> JRN
+    AP[Account Payment] --> JRN
+    PR[Purchase Return] --> JRN
+    CN[Credit Note] --> JRN
+    DN[Debit Note] --> JRN
+    ASM[Assembly Inbound] --> JRN
+    POI[PO Inbound] --> JRN
+    JRN --> GL[GL / Trial Balance / Balance Sheet / P&L]
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Mei 2026 — v1.0 Initial Documentation
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[Doc]    Initial full documentation menu Journal
-[New]    13 tipe journal terdokumentasi
-[New]    Fitur Import Journal dengan multi-currency support
-[New]    Export Advanced: with/without detail, this page only
-[New]    Auto-generate journal behavior dari relasi transaksi
-[Rule]   Hanya journal Approved yang masuk ke laporan keuangan
-[Rule]   Auto-generated journal: Created by = approver
-         reference trx, Approved by = System
-```
+
+| Menu | Peran |
+|------|-------|
+| Master COA / Currency / Fiscal Period / Store | Prasyarat & atribut journal |
+| SI, PI, Outbound, Stock Adj, AR, AP, Return, CN, DN, Assembly, PO Inbound | Penerbit auto-generate |
+| GL / TB / BS / P&L | Konsumen journal Approved |
+
+---
+
+## 9. Gap Registry
+
+| ID | Deskripsi | Dampak | Status |
+|----|-----------|--------|--------|
+| GAP-JRN-01 | Belum konfirmasi: journal auto-generate lama (header-only, sebelum 10 Jul 2026) di-backfill detail atau dibiarkan historical | Inkonsistensi data lama vs baru untuk laporan komparatif | **Open** |
+
+---
+
+## 10. FAQ
+
+**Q: Kenapa journal sekarang muncul detail value 0, sebelumnya kosong?**  
+A: Sejak 10 Jul 2026, auto-generate tetap menampilkan detail COA + value meskipun amount sumber 0.
+
+**Q: Auto-generate bisa diedit?**  
+A: Tidak — langsung Approved dan non-editable.
+
+**Q: Trx Ref bukan nomor transaksi paling awal?**  
+A: Trx Ref = transaksi langsung penerbit, bukan upstream (mis. Stock Deduction, bukan Stock Opname).
+
+**Q: Approve tidak bisa meski Debit/Credit terisi?**  
+A: Total Debit harus sama Total Credit di keseluruhan journal.
+
+**Q: Import ditolak semua padahal 1 baris salah?**  
+A: All-or-Nothing — 1 error menolak seluruh file.
+
+---
+
+## Related Documents
+
+| Doc | Path |
+|-----|------|
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
+| Technical | [technical.md](./technical.md) |

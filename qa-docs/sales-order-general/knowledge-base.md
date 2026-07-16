@@ -80,7 +80,9 @@ Kolom **Failed Process** muncul saat pill merah **Failed Process** diklik di:
 
 **AS-IS:** Hover icon hanya menampilkan pesan error — **belum** ada timestamp "Last checked".
 
-**TO-BE (planned):** Tombol **Re-check Failed Process** di All Sales Order + tooltip Last checked. Detail: [requirement.md §9](./requirement.md#9-improvement-to-be--re-check-failed-process--log).
+**AS-IS (2026-07-15):** Tombol **Recheck failed process** ada di **All Sales Order**. Hover icon bisa menampilkan Last Checked (waktu update error). Masih ada residual vs §9 penuh — lihat [all-sales-order](../all-sales-order/requirement.md).
+
+**TO-BE (planned residual):** Last Checked per icon, log UI dedicated, cooldown/retention policy. Detail: [requirement.md §9](./requirement.md#9-improvement-to-be--re-check-failed-process--log).
 
 ### Cara flag hilang (AS-IS)
 

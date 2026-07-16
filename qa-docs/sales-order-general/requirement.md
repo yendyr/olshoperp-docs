@@ -60,11 +60,13 @@ legacy_sources:
 
 ### Menu terkait di UI
 
-| Menu | Route | Peran |
-|------|-------|-------|
-| **Dev - Sales Order** | `/businessdevelopment/sales-order-general` | CRUD utama SO internal |
-| **All Sales Order** | `/businessdevelopment/all-sales-order` | View gabungan general + platform |
-| **Dev - Sales Platform** | `/omni/sales-order` | SO marketplace (bukan general) — untuk perbandingan |
+| Menu | Route | Peran | Doc |
+|------|-------|-------|-----|
+| **Dev - Sales Order** | `/businessdevelopment/sales-order-general` | CRUD utama SO **internal** (menu ini) | Folder ini |
+| **Dev - Sales Platform** | `/omni/sales-order` | SO marketplace — **independen** | [omni-sales-platform](../omni-sales-platform/requirement.md) |
+| **All Sales Order** | `/businessdevelopment/all-sales-order` | Gabungan general + platform | [all-sales-order](../all-sales-order/requirement.md) |
+
+> Failed Process TO-BE / Re-check: trigger utama didokumentasikan di [All Sales Order](../all-sales-order/requirement.md); detail flag engine tetap di SP + §8–§9 folder ini.
 
 ### Entitas data utama
 
@@ -674,6 +676,9 @@ Keduanya adalah **satu entitas** (`omni_sales_orders`) dengan flag `type_sales_o
 | Penjualan retail di toko fisik | **General** — via POS |
 | Lihat semua order tanpa peduli tipe | **All Sales Order** |
 
+Dokumen lengkap Sales Platform (sync, booking, pills, auto-approve, 6 icon): [omni-sales-platform/requirement.md](../omni-sales-platform/requirement.md).  
+View gabungan + konsistensi lintas tipe: [all-sales-order/requirement.md](../all-sales-order/requirement.md).
+
 ### 6.3 Hubungan data antar tipe
 
 ```mermaid
@@ -853,7 +858,7 @@ Icon dirender oleh `SalesOrder::renderErrorFlags()` — tooltip memakai class `t
 | Artisan `screening:error-flag-stock-sales-order` | Hanya `stock-error` — **daily 04:00 WIB** |
 | Unassign Wave → **Refresh Availability Stock** | Hanya `stock-error` — scope order di Unassign Wave saja |
 
-**Gap AS-IS:** Tidak ada tombol re-check manual di All Sales Order / Sales Platform. Flag tidak realtime; user tidak tahu kapan terakhir dievaluasi.
+**Gap AS-IS (updated 2026-07-15):** Tombol **Recheck failed process** **sudah ada** di **All Sales Order** (bukan di Dev Sales Platform list). Detail residual vs TO-BE §9: [all-sales-order §5.4](../all-sales-order/requirement.md#54-re-check-failed-process--as-is-vs-to-be-sog-9).
 
 ### 8.4 Acceptance Criteria AS-IS
 

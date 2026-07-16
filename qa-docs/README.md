@@ -47,7 +47,7 @@ docs/qa-docs/
 
 | Modul | Jumlah menu | Contoh slug |
 |-------|-------------|-------------|
-| OmniChannel | 12 | [manage-platform-product](./manage-platform-product/), [sales-order-general](./sales-order-general/) |
+| OmniChannel | 12 | [manage-platform-product](./manage-platform-product/), [omni-sales-platform](./omni-sales-platform/), [sales-order-general](./sales-order-general/), [all-sales-order](./all-sales-order/) |
 | Accounting | 42 | [journal](./journal/), [general-ledger](./general-ledger/) |
 | SupplyChain | 55 | [system-product](./system-product/), [bill-of-material](./bill-of-material/) |
 | Gate | 3 | [gate-user](./gate-user/), [gate-role](./gate-role/) |
@@ -60,7 +60,9 @@ Menu dengan konten lengkap (review/draft):
 | [manage-platform-product](./manage-platform-product/) | Manage Platform Product | review | review | review |
 | [general-ledger](./general-ledger/) | General Ledger Report | review | draft | draft |
 | [journal](./journal/) | Journal | review | review | draft |
-| [sales-order-general](./sales-order-general/) | Dev - Sales Platform | review | review | draft |
+| [omni-sales-platform](./omni-sales-platform/) | Dev - Sales Platform | review | review | review |
+| [sales-order-general](./sales-order-general/) | Dev - Sales Order | review | review | draft |
+| [all-sales-order](./all-sales-order/) | All Sales Order | review | review | review |
 | [system-product](./system-product/) | System Product | review | draft | draft |
 | [bill-of-material](./bill-of-material/) | Bill of Material | review | review | draft |
 | [random-sku](./random-sku/) | Random SKU (cross-menu) | review | review | draft |

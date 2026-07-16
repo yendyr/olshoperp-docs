@@ -21,7 +21,7 @@
 | 3 | Checking Process | [requirement.md](../omni-checking-process/requirement.md#relasi-failed-ship) |
 | 4 | Packing Process | [requirement.md](../omni-packing-process/requirement.md#relasi-failed-ship) |
 | 5 | Delivery Order & Collecting | [technical.md](../supplychain-delivery-order/technical.md#8-relasi-failed-ship--collecting--shipped-3pl) |
-| 6 | Sales Order | [requirement.md](../sales-order-general/requirement.md) |
+| 6 | Sales Order / Sales Platform / All SO | [sales-order-general](../sales-order-general/requirement.md) · [omni-sales-platform](../omni-sales-platform/requirement.md) · [all-sales-order](../all-sales-order/requirement.md) |
 | 7 | Instant Settlement | [requirement.md](../accounting-settlement-upload/requirement.md) |
 | 8 | Sales Return | [README.md](../accounting-sales-return/README.md) |
 

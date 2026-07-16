@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.5
-last_updated: 2026-06-23
+version: 1.6
+last_updated: 2026-07-15
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -21,6 +21,7 @@ legacy_sources: []
 | 1.3 | 2026-06-23 | QA - Yemima | Matriks Fase 2 cross-reference (fulfillment chain, journal, master) |
 | 1.4 | 2026-06-23 | QA - Yemima | Matriks Fase 3 — shipper, system product, check/pack chain |
 | 1.5 | 2026-06-23 | QA - Yemima | §4.6 Template General — kolom `OC:`/`OD:` + filter Applied Store (master Other Cost/Discount) |
+| 1.6 | 2026-07-15 | QA - Yemima | Booking unmatched (`platform_order_id` null) tidak match IS — cross-ref SP GAP-BOOK-01 |
 
 **Nama lain menu:** Upload Settlement, Settlement Order, Order Settled, Platform Settlement, Settlement Platform, Platform Settled.
 
@@ -623,6 +624,8 @@ Dua kolom progress (5 + 4 tahap) + badge `In Progress X% - About N minutes remai
 
 #### Platform Others — key order
 SO General: match by **`code`** (internal order number). `platform_order_id` opsional/kosong. SO Platform: match by **`platform_order_id`** sebagai universal key ke marketplace.
+
+**Booking Shopee unmatched:** SO Platform dengan `platform_order_id` **NULL** (tampil `-` di Sales Platform) **tidak** bisa di-match dari file settlement → *"Unable to find order"*. Tunggu match `order_sn` / Platform Order ID terisi. Approve booking amount 0 **tidak** auto-generate SI — lihat [Sales Platform §3b / GAP-BOOK-01](../omni-sales-platform/requirement.md).
 
 #### Fitur standar (confirmed)
 Export DataList async, Audit log (`Log Data`), bulk approve guard — pola standar PrimeDataTables OlshopERP.
