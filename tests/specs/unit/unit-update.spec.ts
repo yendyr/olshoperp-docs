@@ -7,7 +7,7 @@ import { UNIT_DATALIST_PATH, UnitPage } from '../../helpers/unit';
  * Company: lumicharmsid (153)
  */
 test.describe('Unit — Update', () => {
-  test('[@TC-UPDATE-unit] Update Code/Name + Show for all company', async ({
+  test('[@TC-UNIT-002] Update Code/Name + Show for all company', async ({
     page,
   }) => {
     test.setTimeout(240_000);

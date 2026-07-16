@@ -20,7 +20,7 @@ test.describe.serial('Product Ending Stock — View then Filter', () => {
     });
   });
 
-  test('[@TC-VIEW-product-ending-stock] By Warehouse + kolom Availability', async ({
+  test('[@TC-PENDSTK-001] By Warehouse + kolom Availability', async ({
     page,
   }) => {
     const report = new ProductEndingStockPage(page);
@@ -32,7 +32,7 @@ test.describe.serial('Product Ending Stock — View then Filter', () => {
     expect(rowCount).toBeGreaterThanOrEqual(0);
   });
 
-  test('[@TC-FILTER-product-ending-stock] Tab By SKU + kolom On hand/ATS', async ({
+  test('[@TC-PENDSTK-002] Tab By SKU + kolom On hand/ATS', async ({
     page,
   }) => {
     const report = new ProductEndingStockPage(page);

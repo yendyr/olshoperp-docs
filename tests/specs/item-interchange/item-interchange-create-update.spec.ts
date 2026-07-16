@@ -30,7 +30,7 @@ test.describe.serial('Product Interchange — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-product-interchange] Create interchange CHARM↔TTK black', async ({
+  test('[@TC-ITEMINT-001] Create interchange CHARM↔TTK black', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -81,7 +81,7 @@ test.describe.serial('Product Interchange — Create then Update', () => {
     created = true;
   });
 
-  test('[@TC-UPDATE-product-interchange] Update second product + description', async ({
+  test('[@TC-ITEMINT-002] Update second product + description', async ({
     page,
   }) => {
     test.setTimeout(300_000);

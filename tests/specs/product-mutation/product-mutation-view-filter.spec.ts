@@ -20,7 +20,7 @@ test.describe.serial('Product Mutation History — View then Filter', () => {
     });
   });
 
-  test('[@TC-VIEW-product-mutation] Shell Product filter + no Create', async ({
+  test('[@TC-PMUT-001] Shell Product filter + no Create', async ({
     page,
   }) => {
     const report = new ProductMutationPage(page);
@@ -28,7 +28,7 @@ test.describe.serial('Product Mutation History — View then Filter', () => {
     await report.assertReadOnlyShell();
   });
 
-  test('[@TC-FILTER-product-mutation] Choose Product → history columns', async ({
+  test('[@TC-PMUT-002] Choose Product → history columns', async ({
     page,
   }) => {
     const report = new ProductMutationPage(page);

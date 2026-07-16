@@ -17,7 +17,7 @@ test.describe.serial('Real Time Stock — View then Filter', () => {
     });
   });
 
-  test('[@TC-VIEW-real-stock] Shell By Location + warehouse filter', async ({
+  test('[@TC-REALSTK-001] Shell By Location + warehouse filter', async ({
     page,
   }) => {
     const report = new RealStockPage(page);
@@ -25,7 +25,7 @@ test.describe.serial('Real Time Stock — View then Filter', () => {
     await report.assertReadOnlyShell();
   });
 
-  test('[@TC-FILTER-real-stock] Warehouse → On Hand/ATS columns', async ({
+  test('[@TC-REALSTK-002] Warehouse → On Hand/ATS columns', async ({
     page,
   }) => {
     const report = new RealStockPage(page);

@@ -20,7 +20,7 @@ test.describe.serial('Assembly — Create then Update then Detail', () => {
     });
   });
 
-  test('[@TC-CREATE-assembly] Create Assembly header', async ({ page }) => {
+  test('[@TC-ASMBLY-001] Create Assembly header', async ({ page }) => {
     test.setTimeout(300_000);
 
     const as = new AssemblyPage(page);
@@ -48,7 +48,7 @@ test.describe.serial('Assembly — Create then Update then Detail', () => {
     await as.assertInDatalist(createdCode, createDescription.slice(0, 20));
   });
 
-  test('[@TC-UPDATE-assembly] Update description (stay Draft)', async ({
+  test('[@TC-ASMBLY-002] Update description (stay Draft)', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -69,7 +69,7 @@ test.describe.serial('Assembly — Create then Update then Detail', () => {
     await as.assertInDatalist(createdCode, updateDescription.slice(0, 20));
   });
 
-  test('[@TC-UPDATE-assembly-detail] Add Finish Goods (Header BOM)', async ({
+  test('[@TC-ASMBLY-003] Add Finish Goods (Header BOM)', async ({
     page,
   }) => {
     test.setTimeout(300_000);

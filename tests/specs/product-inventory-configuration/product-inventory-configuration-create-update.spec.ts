@@ -19,7 +19,7 @@ import {
 test.describe.serial('Product Inventory Configuration — Create then Update', () => {
   let createdSku = '';
 
-  test('[@TC-CREATE-product-inventory-configuration] Seed via PGC, appear on PIC datalist', async ({
+  test('[@TC-PINVCFG-001] Seed via PGC, appear on PIC datalist', async ({
     page,
   }) => {
     test.setTimeout(360_000);
@@ -69,7 +69,7 @@ test.describe.serial('Product Inventory Configuration — Create then Update', (
     createdSku = sku;
   });
 
-  test('[@TC-UPDATE-product-inventory-configuration] Inventory Management ED + min stock', async ({
+  test('[@TC-PINVCFG-002] Inventory Management ED + min stock', async ({
     page,
   }) => {
     test.setTimeout(360_000);

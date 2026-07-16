@@ -25,7 +25,7 @@ test.describe.serial('Sales Return — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-sales-returns] Scan SO create or bind open SR', async ({
+  test('[@TC-SALRET-001] Scan SO create or bind open SR', async ({
     page,
   }) => {
     const sr = new SalesReturnsPage(page);
@@ -90,7 +90,7 @@ test.describe.serial('Sales Return — Create then Update', () => {
     }
   });
 
-  test('[@TC-UPDATE-sales-returns] Restock Qty auto-save', async ({ page }) => {
+  test('[@TC-SALRET-002] Restock Qty auto-save', async ({ page }) => {
     test.skip(
       !createdSrCode,
       'Skip UPDATE — tidak ada SR open/fixture dari CREATE',

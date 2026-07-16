@@ -14,8 +14,8 @@
 
 | TC | File | Status |
 |----|------|--------|
-| TC-CREATE-warranty | [test-cases/TC-CREATE-warranty.md](./test-cases/TC-CREATE-warranty.md) | passed |
-| TC-UPDATE-warranty | [test-cases/TC-UPDATE-warranty.md](./test-cases/TC-UPDATE-warranty.md) | passed |
+| TC-WARRANT-001 | [test-cases/TC-WARRANT-001.md](./test-cases/TC-WARRANT-001.md) | passed |
+| TC-WARRANT-002 | [test-cases/TC-WARRANT-002.md](./test-cases/TC-WARRANT-002.md) | passed |
 
 Spec: `tests/specs/warranty/warranty-create-update.spec.ts`  
 Company: `lumicharmsid` (153)

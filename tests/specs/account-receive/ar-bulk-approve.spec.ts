@@ -40,7 +40,7 @@ test.describe.serial('Account Receive — Bulk Approve (DEV-STG)', () => {
   const tc3Draft = ['RC-5TNMT9CH', 'RC-5TNYSCE1'];
   const tc3Filter = 'RC-5TN';
 
-  test('[@TC-AR-BULK-APPROVE-BTN] Tombol Approve inactive tanpa seleksi, active setelah pilih Open', async ({
+  test('[@TC-AR-BULK-APPROVE-004] Tombol Approve inactive tanpa seleksi, active setelah pilih Open', async ({
     page,
   }) => {
     test.setTimeout(180_000);

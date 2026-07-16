@@ -21,7 +21,7 @@ test.describe.serial('Warranty — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-warranty] Create new Warranty', async ({ page }) => {
+  test('[@TC-WARRANT-001] Create new Warranty', async ({ page }) => {
     test.setTimeout(180_000);
 
     const warranty = new WarrantyPage(page);
@@ -43,7 +43,7 @@ test.describe.serial('Warranty — Create then Update', () => {
     createdName = name;
   });
 
-  test('[@TC-UPDATE-warranty] Update Code + Name dari create', async ({
+  test('[@TC-WARRANT-002] Update Code + Name dari create', async ({
     page,
   }) => {
     test.setTimeout(180_000);

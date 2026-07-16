@@ -27,7 +27,7 @@ test.describe.serial('Item Category — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-item-category] Create Item Category CAT029 / Baterai AAA', async ({
+  test('[@TC-ITEMCAT-001] Create Item Category CAT029 / Baterai AAA', async ({
     page,
   }) => {
     test.setTimeout(180_000);
@@ -52,7 +52,7 @@ test.describe.serial('Item Category — Create then Update', () => {
     createdName = name;
   });
 
-  test('[@TC-UPDATE-item-category] Update Item Category dari hasil create', async ({
+  test('[@TC-ITEMCAT-002] Update Item Category dari hasil create', async ({
     page,
   }) => {
     test.setTimeout(180_000);

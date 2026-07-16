@@ -27,7 +27,7 @@ test.describe.serial('Warehouse Level — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-warehouse-level] Create Warehouse Level Rungkut / Level 88', async ({
+  test('[@TC-WHTYPE-001] Create Warehouse Level Rungkut / Level 88', async ({
     page,
   }) => {
     test.setTimeout(180_000);
@@ -58,7 +58,7 @@ test.describe.serial('Warehouse Level — Create then Update', () => {
     createdLevel = level;
   });
 
-  test('[@TC-UPDATE-warehouse-level] Update Name + Level dari hasil create', async ({
+  test('[@TC-WHTYPE-002] Update Name + Level dari hasil create', async ({
     page,
   }) => {
     test.setTimeout(180_000);

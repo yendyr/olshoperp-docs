@@ -22,7 +22,7 @@ test.describe.serial('Transfer Internal — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-mutation-transfer-internal] Create Transfer Internal header', async ({
+  test('[@TC-MTIN-001] Create Transfer Internal header', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -51,7 +51,7 @@ test.describe.serial('Transfer Internal — Create then Update', () => {
     await tfi.assertInDatalist(createdCode, createDescription.slice(0, 16));
   });
 
-  test('[@TC-UPDATE-mutation-transfer-internal] Update description + Select Product', async ({
+  test('[@TC-MTIN-002] Update description + Select Product', async ({
     page,
   }) => {
     test.setTimeout(300_000);

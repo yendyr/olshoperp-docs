@@ -20,7 +20,7 @@ test.describe.serial('Product Transaction History — View then Filter', () => {
     });
   });
 
-  test('[@TC-VIEW-product-transaction-history] Shell filters + KPI + tabs', async ({
+  test('[@TC-PTHIST-001] Shell filters + KPI + tabs', async ({
     page,
   }) => {
     const report = new ProductTransactionHistoryPage(page);
@@ -28,7 +28,7 @@ test.describe.serial('Product Transaction History — View then Filter', () => {
     await report.assertReadOnlyShell();
   });
 
-  test('[@TC-FILTER-product-transaction-history] Choose Product → KPI + Mutation', async ({
+  test('[@TC-PTHIST-002] Choose Product → KPI + Mutation', async ({
     page,
   }) => {
     const report = new ProductTransactionHistoryPage(page);

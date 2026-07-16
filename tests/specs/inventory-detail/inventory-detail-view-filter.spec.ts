@@ -18,7 +18,7 @@ test.describe.serial('Inventory Detail — View then Filter', () => {
     });
   });
 
-  test('[@TC-VIEW-inventory-detail] Buka report + level Building + kolom', async ({
+  test('[@TC-INVDET-001] Buka report + level Building + kolom', async ({
     page,
   }) => {
     test.setTimeout(240_000);
@@ -36,7 +36,7 @@ test.describe.serial('Inventory Detail — View then Filter', () => {
     expect(rowCount).toBeGreaterThanOrEqual(0);
   });
 
-  test('[@TC-FILTER-inventory-detail] Card Out of Stock → filter=', async ({
+  test('[@TC-INVDET-002] Card Out of Stock → filter=', async ({
     page,
   }) => {
     test.setTimeout(240_000);

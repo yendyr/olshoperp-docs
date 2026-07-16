@@ -22,7 +22,7 @@ test.describe.serial('External Transfer — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-mutation-transfer-external] Create External Transfer header', async ({
+  test('[@TC-MTEX-001] Create External Transfer header', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -51,7 +51,7 @@ test.describe.serial('External Transfer — Create then Update', () => {
     await tfe.assertInDatalist(createdCode, createDescription.slice(0, 16));
   });
 
-  test('[@TC-UPDATE-mutation-transfer-external] Update description + Select Product', async ({
+  test('[@TC-MTEX-002] Update description + Select Product', async ({
     page,
   }) => {
     test.setTimeout(300_000);

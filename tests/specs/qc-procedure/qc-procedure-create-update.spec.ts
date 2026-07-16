@@ -24,7 +24,7 @@ test.describe.serial('QC Procedure — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-qc-procedure] Create QC Procedure header', async ({
+  test('[@TC-QCPROC-001] Create QC Procedure header', async ({
     page,
   }) => {
     const qc = new QcProcedurePage(page);
@@ -46,7 +46,7 @@ test.describe.serial('QC Procedure — Create then Update', () => {
     await qc.assertInDatalist(createdCode);
   });
 
-  test('[@TC-UPDATE-qc-procedure] Update header + Procedure Detail', async ({
+  test('[@TC-QCPROC-002] Update header + Procedure Detail', async ({
     page,
   }) => {
     expect(createdCode, 'Harus ada code dari CREATE').toBeTruthy();

@@ -23,7 +23,7 @@ test.describe('Stock Opname — Add Available Product + Qty', () => {
     });
   });
 
-  test(`[@TC-UPDATE-stock-opname-detail] ${TARGET_CODE} add available product + qty`, async ({
+  test(`[@TC-SOPNAME-003] ${TARGET_CODE} add available product + qty`, async ({
     page,
   }) => {
     test.setTimeout(300_000);

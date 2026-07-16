@@ -14,7 +14,7 @@ test.describe('Assembly — Update Detail QTY', () => {
     });
   });
 
-  test(`[@TC-UPDATE-assembly-detail] ${TARGET_CODE} set QTY=${TARGET_QTY}`, async ({
+  test(`[@TC-ASMBLY-003] ${TARGET_CODE} set QTY=${TARGET_QTY}`, async ({
     page,
   }) => {
     test.setTimeout(300_000);

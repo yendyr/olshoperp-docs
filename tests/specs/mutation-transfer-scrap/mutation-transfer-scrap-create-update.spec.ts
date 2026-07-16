@@ -22,7 +22,7 @@ test.describe.serial('Transfer Broken — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-mutation-transfer-scrap] Create Transfer Broken header', async ({
+  test('[@TC-MTSCR-001] Create Transfer Broken header', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -55,7 +55,7 @@ test.describe.serial('Transfer Broken — Create then Update', () => {
     }
   });
 
-  test('[@TC-UPDATE-mutation-transfer-scrap] Update status + Select Product', async ({
+  test('[@TC-MTSCR-002] Update status + Select Product', async ({
     page,
   }) => {
     test.setTimeout(300_000);

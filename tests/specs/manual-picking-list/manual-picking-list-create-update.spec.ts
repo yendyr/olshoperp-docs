@@ -22,7 +22,7 @@ test.describe.serial('Manual Picking List — Create then Update then Detail', (
     });
   });
 
-  test('[@TC-CREATE-manual-picking-list] Create Manual PL header', async ({
+  test('[@TC-MPL-001] Create Manual PL header', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -50,7 +50,7 @@ test.describe.serial('Manual Picking List — Create then Update then Detail', (
     await mpl.assertInDatalist(createdCode, createDescription.slice(0, 20));
   });
 
-  test('[@TC-UPDATE-manual-picking-list] Update description + Open', async ({
+  test('[@TC-MPL-002] Update description + Open', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -76,7 +76,7 @@ test.describe.serial('Manual Picking List — Create then Update then Detail', (
     await mpl.assertInDatalist(createdCode, updateDescription.slice(0, 20));
   });
 
-  test('[@TC-UPDATE-manual-picking-list-detail] Add Available Product + Qty', async ({
+  test('[@TC-MPL-003] Add Available Product + Qty', async ({
     page,
   }) => {
     test.setTimeout(300_000);

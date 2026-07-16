@@ -32,7 +32,7 @@ test.describe.serial('Warehouse Structure — Create then Update', () => {
     await page.waitForTimeout(1_500);
   });
 
-  test('[@TC-CREATE-warehouse-structure] Create Rack Rungkut + Drop Off', async ({
+  test('[@TC-WHSTR-001] Create Rack Rungkut + Drop Off', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -61,7 +61,7 @@ test.describe.serial('Warehouse Structure — Create then Update', () => {
     createdName = name;
   });
 
-  test('[@TC-UPDATE-warehouse-structure] Update Code dari hasil create', async ({
+  test('[@TC-WHSTR-002] Update Code dari hasil create', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -75,7 +75,7 @@ test.describe.serial('Warehouse Structure — Create then Update', () => {
      * child code = `{code} - Drop OFF` (mengandung spasi) → ditolak observer.
      * Jadi update Code tidak bisa dijalankan pada warehouse Drop Off parent.
      * Automation: buat WH sekunder tanpa Drop Off, lalu update Code-nya.
-     * (create+drop-off verification sudah di TC-CREATE.)
+     * (create+drop-off verification sudah di TC-WHSTR-001.)
      */
     const stamp = Date.now().toString().slice(-6);
     const sourceCode = `RACK01-Gubeng-${stamp}`;

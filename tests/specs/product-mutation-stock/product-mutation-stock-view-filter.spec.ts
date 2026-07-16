@@ -20,7 +20,7 @@ test.describe.serial('Stock History — View then Filter', () => {
     });
   });
 
-  test('[@TC-VIEW-product-mutation-stock] Shell filters + no Create', async ({
+  test('[@TC-PMUTSTK-001] Shell filters + no Create', async ({
     page,
   }) => {
     const report = new ProductMutationStockPage(page);
@@ -28,7 +28,7 @@ test.describe.serial('Stock History — View then Filter', () => {
     await report.assertReadOnlyShell();
   });
 
-  test('[@TC-FILTER-product-mutation-stock] Product + Apply → columns', async ({
+  test('[@TC-PMUTSTK-002] Product + Apply → columns', async ({
     page,
   }) => {
     const report = new ProductMutationStockPage(page);

@@ -12,9 +12,10 @@
 
 | TC | File | Status |
 |----|------|--------|
-| TC-CREATE-stock-opname | [test-cases/TC-CREATE-stock-opname.md](./test-cases/TC-CREATE-stock-opname.md) | passed |
-| TC-UPDATE-stock-opname | [test-cases/TC-UPDATE-stock-opname.md](./test-cases/TC-UPDATE-stock-opname.md) | passed |
+| TC-SOPNAME-001 | [test-cases/TC-SOPNAME-001.md](./test-cases/TC-SOPNAME-001.md) | passed |
+| TC-SOPNAME-002 | [test-cases/TC-SOPNAME-002.md](./test-cases/TC-SOPNAME-002.md) | passed |
+| TC-SOPNAME-003 | [test-cases/TC-SOPNAME-003.md](./test-cases/TC-SOPNAME-003.md) | passed |
+| TC-SOPNAME-004 | [test-cases/TC-SOPNAME-004.md](./test-cases/TC-SOPNAME-004.md) | passed |
 
-Spec: `tests/specs/stock-opname/stock-opname-create-update.spec.ts`  
-Company: `lumicharmsid` (153)  
-Scope: **header** Create/Update (bukan Opname Detail qty).
+Spec: `tests/specs/stock-opname/`  
+Company: `lumicharmsid` (153)

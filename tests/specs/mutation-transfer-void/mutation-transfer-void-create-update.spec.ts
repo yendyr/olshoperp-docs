@@ -20,7 +20,7 @@ test.describe.serial('Transfer Void — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-mutation-transfer-void] Create page smoke + bind Open TFV', async ({
+  test('[@TC-MTVOD-001] Create page smoke + bind Open TFV', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -54,7 +54,7 @@ test.describe.serial('Transfer Void — Create then Update', () => {
     }
   });
 
-  test('[@TC-UPDATE-mutation-transfer-void] Update status + Select Product', async ({
+  test('[@TC-MTVOD-002] Update status + Select Product', async ({
     page,
   }) => {
     test.setTimeout(300_000);

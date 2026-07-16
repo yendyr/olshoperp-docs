@@ -23,7 +23,7 @@ test.describe.serial('Outbound External — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-mutation-outbound] Create Outbound External header', async ({
+  test('[@TC-MUTOUT-001] Create Outbound External header', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -58,7 +58,7 @@ test.describe.serial('Outbound External — Create then Update', () => {
     );
   });
 
-  test('[@TC-UPDATE-mutation-outbound] Update description + Select Product', async ({
+  test('[@TC-MUTOUT-002] Update description + Select Product', async ({
     page,
   }) => {
     test.setTimeout(300_000);

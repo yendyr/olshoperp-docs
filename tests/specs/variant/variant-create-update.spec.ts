@@ -23,7 +23,7 @@ test.describe.serial('Variant Group — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-variant] Create Variant Group Color + options', async ({
+  test('[@TC-VAR-001] Create Variant Group Color + options', async ({
     page,
   }) => {
     test.setTimeout(180_000);
@@ -55,7 +55,7 @@ test.describe.serial('Variant Group — Create then Update', () => {
     keptOptions = ['Red', 'Blue'];
   });
 
-  test('[@TC-UPDATE-variant] Update Code/Name + hapus satu option', async ({
+  test('[@TC-VAR-002] Update Code/Name + hapus satu option', async ({
     page,
   }) => {
     test.setTimeout(180_000);

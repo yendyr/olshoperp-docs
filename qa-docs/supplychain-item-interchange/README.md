@@ -14,8 +14,8 @@
 
 | TC | File | Status |
 |----|------|--------|
-| TC-CREATE-product-interchange | [test-cases/TC-CREATE-product-interchange.md](./test-cases/TC-CREATE-product-interchange.md) | passed |
-| TC-UPDATE-product-interchange | [test-cases/TC-UPDATE-product-interchange.md](./test-cases/TC-UPDATE-product-interchange.md) | passed |
+| TC-ITEMINT-001 | [test-cases/TC-ITEMINT-001.md](./test-cases/TC-ITEMINT-001.md) | passed |
+| TC-ITEMINT-002 | [test-cases/TC-ITEMINT-002.md](./test-cases/TC-ITEMINT-002.md) | passed |
 
 Spec: `tests/specs/item-interchange/item-interchange-create-update.spec.ts`  
 Company: `lumicharmsid` (153)

@@ -20,7 +20,7 @@ test.describe.serial('Master Brand — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-master-brand] Create Brand baru', async ({ page }) => {
+  test('[@TC-BRAND-001] Create Brand baru', async ({ page }) => {
     test.setTimeout(180_000);
 
     const brand = new MasterBrandPage(page);
@@ -37,7 +37,7 @@ test.describe.serial('Master Brand — Create then Update', () => {
     await brand.assertInDatalist(createdName);
   });
 
-  test('[@TC-UPDATE-master-brand] Update Name + Description', async ({
+  test('[@TC-BRAND-002] Update Name + Description', async ({
     page,
   }) => {
     test.setTimeout(180_000);

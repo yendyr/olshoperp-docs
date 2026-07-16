@@ -25,7 +25,7 @@ test.describe.serial('Stock Addition — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-adjustment-addition] Create Stock Addition header', async ({
+  test('[@TC-ADJADD-001] Create Stock Addition header', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -53,7 +53,7 @@ test.describe.serial('Stock Addition — Create then Update', () => {
     await aa.assertInDatalist(createdCode, createDescription.slice(0, 20));
   });
 
-  test('[@TC-UPDATE-adjustment-addition] Update description + Open status', async ({
+  test('[@TC-ADJADD-002] Update description + Open status', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -82,7 +82,7 @@ test.describe.serial('Stock Addition — Create then Update', () => {
     await aa.assertInDatalist(createdCode, updateDescription.slice(0, 20));
   });
 
-  test('[@TC-UPDATE-adjustment-addition-detail] Add product + In Qty', async ({
+  test('[@TC-ADJADD-003] Add product + In Qty', async ({
     page,
   }) => {
     test.setTimeout(300_000);

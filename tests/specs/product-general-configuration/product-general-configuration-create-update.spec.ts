@@ -28,7 +28,7 @@ test.describe.serial('Product General Configuration — Create then Update', () 
     });
   });
 
-  test('[@TC-CREATE-product-general-configuration] Create single SKU-KABEL', async ({
+  test('[@TC-PGENCFG-001] Create single SKU-KABEL', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -82,7 +82,7 @@ test.describe.serial('Product General Configuration — Create then Update', () 
     createdName = name;
   });
 
-  test('[@TC-UPDATE-product-general-configuration] Update SKU + Retail Price', async ({
+  test('[@TC-PGENCFG-002] Update SKU + Retail Price', async ({
     page,
   }) => {
     test.setTimeout(360_000);

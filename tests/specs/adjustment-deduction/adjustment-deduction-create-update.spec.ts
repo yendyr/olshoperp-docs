@@ -22,7 +22,7 @@ test.describe.serial('Stock Deduction — Create then Update then Detail', () =>
     });
   });
 
-  test('[@TC-CREATE-adjustment-deduction] Create Stock Deduction header', async ({
+  test('[@TC-ADJDED-001] Create Stock Deduction header', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -50,7 +50,7 @@ test.describe.serial('Stock Deduction — Create then Update then Detail', () =>
     await ad.assertInDatalist(createdCode, createDescription.slice(0, 20));
   });
 
-  test('[@TC-UPDATE-adjustment-deduction] Update description + Open status', async ({
+  test('[@TC-ADJDED-002] Update description + Open status', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -75,7 +75,7 @@ test.describe.serial('Stock Deduction — Create then Update then Detail', () =>
     await ad.assertInDatalist(createdCode, updateDescription.slice(0, 20));
   });
 
-  test('[@TC-UPDATE-adjustment-deduction-detail] Add Available Product + Qty', async ({
+  test('[@TC-ADJDED-003] Add Available Product + Qty', async ({
     page,
   }) => {
     test.setTimeout(300_000);

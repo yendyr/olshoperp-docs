@@ -22,7 +22,7 @@ test.describe.serial('Other Inbound — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-other-inbound] Create page smoke + bind existing IN', async ({
+  test('[@TC-OINB-001] Create page smoke + bind existing IN', async ({
     page,
   }) => {
     const oi = new OtherInboundPage(page);
@@ -53,7 +53,7 @@ test.describe.serial('Other Inbound — Create then Update', () => {
     }
   });
 
-  test('[@TC-UPDATE-other-inbound] Verify edit + Inbound Detail / Select Product', async ({
+  test('[@TC-OINB-002] Verify edit + Inbound Detail / Select Product', async ({
     page,
   }) => {
     test.skip(

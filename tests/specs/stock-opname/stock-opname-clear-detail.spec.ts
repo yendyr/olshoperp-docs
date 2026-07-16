@@ -19,7 +19,7 @@ test.describe('Stock Opname — Clear Opname Detail', () => {
     });
   });
 
-  test(`[@TC-UPDATE-stock-opname-clear-detail] ${TARGET_CODE} hapus semua product detail`, async ({
+  test(`[@TC-SOPNAME-004] ${TARGET_CODE} hapus semua product detail`, async ({
     page,
   }) => {
     test.setTimeout(300_000);

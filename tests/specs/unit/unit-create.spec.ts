@@ -8,7 +8,7 @@ import { UNIT_DATALIST_PATH, UnitPage } from '../../helpers/unit';
  * Credentials: playwright@gmail.com
  */
 test.describe('Unit — Create', () => {
-  test('[@TC-CREATE-unit] Create new unit BOX / Box Besar', async ({ page }) => {
+  test('[@TC-UNIT-001] Create new unit BOX / Box Besar', async ({ page }) => {
     test.setTimeout(180_000);
 
     await prepareSession(page, {

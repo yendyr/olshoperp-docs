@@ -133,11 +133,30 @@ atau hanya: `adjustment-addition` / `stock-opname` / dll.
 
 Agent wajib (berlaku seterusnya):
 1. Baca `qa-docs/{menu}/requirement.md` + FE form jika BUILD
-2. Tulis TC **CREATE** + **UPDATE** di `qa-docs/.../test-cases/` — gabung ubah header + tambah detail (jika sama dokumen/konteks) ke **satu** TC-UPDATE; jangan buat TC-DETAIL / TC-UPDATE-detail terpisah. Menu **report/read-only** → TC-VIEW (+ TC-FILTER)
+2. Tulis TC di `qa-docs/.../test-cases/` **ikut rule naming 13** (lihat § Naming TC di bawah) — skenario create/update/view/filter boleh di **judul**, bukan di `tc_code`. Gabung ubah header + detail (satu dokumen/konteks) ke **satu** TC update; jangan pecah TC detail terpisah kecuali benar-benar flow berbeda. Menu report/read-only → skenario view (+ filter) sebagai TC terpisah bernomor.
 3. Update **kamus elemen** `tests/pom-registry/{slug}.yaml`
-4. Helper `tests/helpers/{slug}.ts` + spec serial di `tests/specs/`
+4. Helper `tests/helpers/{slug}.ts` + spec serial di `tests/specs/` dengan tag `@TC-{PREFIX}-{NNN}` yang **sama** dengan `tc_code` di file TC
 5. Run di `lumicharmsid` → update `test_result` di TC
 6. Summary **WH + 1H** + **fungsi menu** (apa kegunaan bisnis dari hasil testing / requirement)
+
+### 2A. Naming TC (WAJIB — ikut `.cursor/rules/13-test-case-format.mdc`)
+
+| Tahap | File | `tc_code` |
+|-------|------|-----------|
+| TC baru | `TC-{PREFIX}-DRAFT-{YYYYMMDDHHmmss}.md` | `PENDING-{timestamp}` |
+| Setelah `#renumber-tc` | `TC-{PREFIX}-{NNN}.md` | `TC-{PREFIX}-{NNN}` |
+
+- `{PREFIX}` — dari TC bernomor di folder yang sama; jika folder kosong, derive dari menu slug (contoh: `supplychain-adjustment-addition` → `ADJADD`, `accounting-customer-payment` → `ARCP`)
+- Spec Playwright: `test('[@TC-{PREFIX}-{NNN}] …')` — **harus match** `tc_code`
+- Setelah buat DRAFT: QA lead jalankan `#renumber-tc` (atau `#renumber-tc {menu-slug}`)
+
+| ✅ Benar | ❌ Dilarang |
+|---------|-------------|
+| `TC-ADJADD-DRAFT-20260715120000.md` → `TC-ADJADD-001` | `TC-CREATE-adjustment-addition` |
+| `TC-SOPNAME-002` | `TC-UPDATE-stock-opname-detail` |
+| `@TC-LOC-001` di spec | `@TC-CREATE-location` / `@TC-VIEW-*` / `@TC-FILTER-*` sebagai `tc_code` |
+
+Judul/summary boleh menyebut Create/Update/View/Filter — **bukan** bagian dari `tc_code`.
 
 ### 3. Aturan emas
 
@@ -145,8 +164,9 @@ Agent wajib (berlaku seterusnya):
 |-----------|----------|
 | Panggil method POM di spec | Tulis `page.locator('div.xxx')` di spec |
 | Baca `pom-registry/*.yaml` untuk nama elemen | Pakai POM generator extension mentah |
-| Run scoped `-g "@TC-XXX"` | Run full suite untuk satu TC |
+| Run scoped `-g "@TC-{PREFIX}-{NNN}"` | Run full suite untuk satu TC |
 | Expected dari `requirement.md` | Tebak expected dari pengalaman ERP lain |
+| Nama file + `tc_code` = `TC-{PREFIX}-{NNN}` (setelah renumber) | `TC-CREATE-*` / `TC-UPDATE-*` / `TC-VIEW-*` / `TC-FILTER-*` sebagai kode |
 
 ---
 
@@ -166,7 +186,8 @@ Checklist menu baru:
 - [ ] `tests/pom-registry/{slug}.yaml`
 - [ ] `tests/helpers/{slug}.ts` (pakai `shared/`)
 - [ ] Smoke di `tests/specs/smoke/pom-smoke.spec.ts`
-- [ ] Minimal 1 TC + spec dengan tag `@TC-XXX`
+- [ ] Minimal 1 TC bernama `TC-{PREFIX}-DRAFT-{timestamp}` (lalu `#renumber-tc`) + spec tag `@TC-{PREFIX}-{NNN}`
+- [ ] **Jangan** pakai `TC-CREATE-*` / `TC-UPDATE-*` / `TC-VIEW-*` / `TC-FILTER-*` sebagai `tc_code`
 
 ---
 

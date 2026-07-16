@@ -20,7 +20,7 @@ test.describe.serial('Cancelled Order — View then Search', () => {
     });
   });
 
-  test('[@TC-VIEW-cancelled-order] Buka list Void/Rejected read-only', async ({
+  test('[@TC-CANORD-001] Buka list Void/Rejected read-only', async ({
     page,
   }) => {
     test.setTimeout(180_000);
@@ -38,7 +38,7 @@ test.describe.serial('Cancelled Order — View then Search', () => {
     expect(rowCount).toBeGreaterThanOrEqual(0);
   });
 
-  test('[@TC-SEARCH-cancelled-order] Search SO code / status void', async ({
+  test('[@TC-CANORD-002] Search SO code / status void', async ({
     page,
   }) => {
     test.setTimeout(180_000);

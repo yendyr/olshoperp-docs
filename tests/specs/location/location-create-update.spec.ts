@@ -20,7 +20,7 @@ test.describe.serial('Location — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-location] Create Processing Location', async ({ page }) => {
+  test('[@TC-LOC-001] Create Processing Location', async ({ page }) => {
     test.setTimeout(180_000);
 
     const loc = new LocationPage(page);
@@ -41,7 +41,7 @@ test.describe.serial('Location — Create then Update', () => {
     createdName = name;
   });
 
-  test('[@TC-UPDATE-location] Update Code + Name dari create', async ({
+  test('[@TC-LOC-002] Update Code + Name dari create', async ({
     page,
   }) => {
     test.setTimeout(180_000);

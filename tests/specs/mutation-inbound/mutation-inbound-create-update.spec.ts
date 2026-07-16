@@ -24,7 +24,7 @@ test.describe.serial('Purchase Inbound — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-mutation-inbound] Create Purchase Inbound header', async ({
+  test('[@TC-MUTIN-001] Create Purchase Inbound header', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -56,7 +56,7 @@ test.describe.serial('Purchase Inbound — Create then Update', () => {
     );
   });
 
-  test('[@TC-UPDATE-mutation-inbound] Update description + Select Product', async ({
+  test('[@TC-MUTIN-002] Update description + Select Product', async ({
     page,
   }) => {
     test.setTimeout(300_000);

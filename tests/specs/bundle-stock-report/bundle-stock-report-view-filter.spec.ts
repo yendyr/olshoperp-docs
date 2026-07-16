@@ -18,7 +18,7 @@ test.describe.serial('Bundle Stock Report — View then Filter', () => {
     });
   });
 
-  test('[@TC-VIEW-bundle-stock-report] Buka laporan + kolom Availability', async ({
+  test('[@TC-BSR-001] Buka laporan + kolom Availability', async ({
     page,
   }) => {
     test.setTimeout(180_000);
@@ -37,7 +37,7 @@ test.describe.serial('Bundle Stock Report — View then Filter', () => {
     expect(sampleSku).toBeTruthy();
   });
 
-  test('[@TC-FILTER-bundle-stock-report] Filter Choose Product → product_id', async ({
+  test('[@TC-BSR-002] Filter Choose Product → product_id', async ({
     page,
   }) => {
     test.setTimeout(180_000);

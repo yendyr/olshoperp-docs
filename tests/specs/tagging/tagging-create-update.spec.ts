@@ -21,7 +21,7 @@ test.describe.serial('Tagging — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-tagging] Create new Tagging', async ({ page }) => {
+  test('[@TC-TAG-001] Create new Tagging', async ({ page }) => {
     test.setTimeout(180_000);
 
     const tagging = new TaggingPage(page);
@@ -43,7 +43,7 @@ test.describe.serial('Tagging — Create then Update', () => {
     createdName = name;
   });
 
-  test('[@TC-UPDATE-tagging] Update Code + Name dari create', async ({
+  test('[@TC-TAG-002] Update Code + Name dari create', async ({
     page,
   }) => {
     test.setTimeout(180_000);

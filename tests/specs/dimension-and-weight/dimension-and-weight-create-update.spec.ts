@@ -25,7 +25,7 @@ test.describe.serial('Dimension & Weight Label — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-dimension-weight-label] Create DW label', async ({
+  test('[@TC-DWL-001] Create DW label', async ({
     page,
   }) => {
     test.setTimeout(180_000);
@@ -49,7 +49,7 @@ test.describe.serial('Dimension & Weight Label — Create then Update', () => {
     createdName = name;
   });
 
-  test('[@TC-UPDATE-dimension-weight-label] Update Code + Name dari create', async ({
+  test('[@TC-DWL-002] Update Code + Name dari create', async ({
     page,
   }) => {
     test.setTimeout(180_000);

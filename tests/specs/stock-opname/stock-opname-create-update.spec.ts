@@ -27,7 +27,7 @@ test.describe.serial('Stock Opname — Create then Update', () => {
     });
   });
 
-  test('[@TC-CREATE-stock-opname] Create Stock Opname header', async ({
+  test('[@TC-SOPNAME-001] Create Stock Opname header', async ({
     page,
   }) => {
     test.setTimeout(300_000);
@@ -55,7 +55,7 @@ test.describe.serial('Stock Opname — Create then Update', () => {
     await so.assertInDatalist(createdCode, createDescription.slice(0, 20));
   });
 
-  test('[@TC-UPDATE-stock-opname] Update description + Open status', async ({
+  test('[@TC-SOPNAME-002] Update description + Open status', async ({
     page,
   }) => {
     test.setTimeout(300_000);
