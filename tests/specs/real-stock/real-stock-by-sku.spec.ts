@@ -16,7 +16,7 @@ test.describe.serial('Real Time Stock — By SKU', () => {
     });
   });
 
-  test('[@TC-VIEW-real-stock-by-sku] Shell By SKU + WH/Sales/ALL', async ({
+  test('[@TC-REALSTK-005] Shell By SKU + WH/Sales/ALL', async ({
     page,
   }) => {
     const report = new RealStockPage(page);
@@ -25,7 +25,7 @@ test.describe.serial('Real Time Stock — By SKU', () => {
     await report.assertBySkuShell();
   });
 
-  test('[@TC-FILTER-real-stock-by-sku] Mode ALL → by-sku columns', async ({
+  test('[@TC-REALSTK-006] Mode ALL → by-sku columns', async ({
     page,
   }) => {
     const report = new RealStockPage(page);

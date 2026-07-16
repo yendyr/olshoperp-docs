@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: TC-VIEW-real-stock-by-sku
+tc_code: TC-REALSTK-005
 menu: supplychain-real-stock
 menu_name: "Real Time Stock"
 title: "By SKU — shell WH/Sales/ALL + Buildings Multiselect"
@@ -34,6 +34,6 @@ test_result:
   report_url: null
 ---
 
-# TC-VIEW-real-stock-by-sku
+# TC-REALSTK-005
 
 Tab **By SKU** — pivot stok per SKU × warehouse columns (dynamic).

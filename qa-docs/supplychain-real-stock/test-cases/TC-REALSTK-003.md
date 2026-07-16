@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: TC-VIEW-real-stock-by-location
+tc_code: TC-REALSTK-003
 menu: supplychain-real-stock
 menu_name: "Real Time Stock"
 title: "By Location — shell + Multiselect warehouse"
@@ -34,6 +34,6 @@ test_result:
   report_url: null
 ---
 
-# TC-VIEW-real-stock-by-location
+# TC-REALSTK-003
 
 Tab **By Location** — stok per warehouse location (On Hand, ATS, Availability).

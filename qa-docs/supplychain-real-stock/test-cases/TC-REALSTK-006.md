@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: TC-FILTER-real-stock-by-sku
+tc_code: TC-REALSTK-006
 menu: supplychain-real-stock
 menu_name: "Real Time Stock"
 title: "By SKU — mode ALL → datalist + Latest Calculation"
@@ -35,6 +35,6 @@ test_result:
   report_url: null
 ---
 
-# TC-FILTER-real-stock-by-sku
+# TC-REALSTK-006
 
 API: `POST`/`GET` `supplychain/real-stock/by-sku` (type_post=true) · mode ALL tanpa warehouse_id.

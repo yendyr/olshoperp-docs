@@ -16,7 +16,7 @@ test.describe.serial('Real Time Stock — By Location', () => {
     });
   });
 
-  test('[@TC-VIEW-real-stock-by-location] Shell By Location + Multiselect WH', async ({
+  test('[@TC-REALSTK-003] Shell By Location + Multiselect WH', async ({
     page,
   }) => {
     const report = new RealStockPage(page);
@@ -24,7 +24,7 @@ test.describe.serial('Real Time Stock — By Location', () => {
     await report.assertByLocationShell();
   });
 
-  test('[@TC-FILTER-real-stock-by-location] Warehouse → On Hand/ATS columns', async ({
+  test('[@TC-REALSTK-004] Warehouse → On Hand/ATS columns', async ({
     page,
   }) => {
     const report = new RealStockPage(page);

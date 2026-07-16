@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: TC-FILTER-real-stock-by-location
+tc_code: TC-REALSTK-004
 menu: supplychain-real-stock
 menu_name: "Real Time Stock"
 title: "By Location — pilih warehouse → On Hand/ATS"
@@ -36,6 +36,6 @@ test_result:
   report_url: null
 ---
 
-# TC-FILTER-real-stock-by-location
+# TC-REALSTK-004
 
 API: `GET supplychain/real-stock/by-location?warehouse_id=`
