@@ -1,6 +1,8 @@
 node_modules/
 playwright-report/
 test-results/
+# Console capture dari Tee-Object saat agent run Playwright (bukan artifact resmi)
+test-results-*.log
 playwright/.cache/
 tests/.auth/
 .env

@@ -54,6 +54,7 @@ elements:
     value: Availability
 
 notes:
-  - "TC: VIEW (shell) + FILTER (warehouse → by-location)."
-  - "API by-location GET; by-sku POST (type_post=true)."
-  - "Manual calculate: real-stock/manual-calculate."
+  - "TC dipisah per tab: By Location + By SKU (masing-masing VIEW+FILTER)."
+  - "By Location: GET by-location?warehouse_id= · placeholder Select one or more items."
+  - "By SKU: POST by-sku · WH/Sales perlu Buildings (max 5) · mode ALL tanpa WH."
+  - "Manual calculate hanya di By Location setelah warehouse dipilih."
