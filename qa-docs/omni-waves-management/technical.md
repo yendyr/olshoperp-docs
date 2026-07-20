@@ -2,182 +2,239 @@
 doc_type: technical
 menu: omni-waves-management
 menu_name: "Waves Management"
-version: 1.0
-last_updated: 2026-06-19
+version: 2.0
+last_updated: 2026-07-20
 owner: QA - Yemima
 status: draft
-related_docs:
-  - ./knowledge-base.md
-  - ./requirement.md
+aliases: [waves management API, GenerateWaveJob, wave automation technical]
 ---
 
 # Waves Management — Technical Documentation
 
-> **Status: DRAFT** — Dokumentasi AS-IS pertama (2026-06-19). Belum melalui review QA/PM.
-
-## 1. Architecture Overview
-
-```mermaid
-flowchart TB
-    subgraph Frontend["WavesManagement/"]
-        DL[DataList.vue]
-        FM[Form.vue]
-        SF[SettingForm.vue]
-        DSO[DatalistSO.vue]
-        DPL[DatalistPickingList.vue]
-    end
-
-    subgraph API
-        WC[WaveController]
-        WSC[WaveSettingController]
-    end
-
-    subgraph Services
-        WS[WaveService]
-    end
-
-    subgraph Jobs
-        GWJ[GenerateWaveJob]
-        RWJ[RevertWaveJob]
-        GPJ[GeneratePicklistByWaveJob]
-    end
-
-    subgraph Tables
-        WAVES[("omni_waves")]
-        WDSO[("omni_wave_detail_so")]
-    end
-
-    DL --> WC
-    FM --> WC
-    WC --> WS
-    WS --> GWJ
-    GWJ --> WDSO
-    WC --> RWJ
-```
+**API prefix:** `omnichannel/wave` (+ SupplyChain wave transfer routes)  
+**Module:** `Modules/OmniChannel` + `Modules/SupplyChain` (transfer path)  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.0  
+**Defaults:** MIX = `Wave::getDefaultWave()` (`id=1`); MIX-TF = `code=MIX-TF`
 
 ---
 
-## 2. Frontend File Map
+## 1. File Map
 
-**Root:** `olshoperp-frontend/src/pages/Omni/WavesManagement/`
+### Backend — Sales Order / automation
 
-| File | Role | Key API |
-|------|------|---------|
-| `DataList.vue` | Grid wave + start/pause + WH filter | `GET omnichannel/wave` |
-| `Form.vue` | Create/edit wave rules | `POST/PUT omnichannel/wave` |
-| `components/SettingForm.vue` | Wave automation settings | `wave-setting` resource |
-| `DatalistSO.vue` | SO dalam wave (slideover) | `GET wave/{wave}/so-detail` |
-| `DatalistProduct.vue` | Product breakdown | `wave/{id}/product-detail` |
-| `DatalistPickingList.vue` | Picklist per wave | picklist endpoints |
+| Layer | Path |
+|-------|------|
+| Controller | `Modules/OmniChannel/Http/Controllers/WaveController.php` |
+| Setting | `Modules/OmniChannel/Http/Controllers/WaveSettingController.php` |
+| Service | `Modules/OmniChannel/Services/WaveService.php` (`findMatchingWave`, `moveToWave`, `addToDefaultWave`) |
+| Picklist SO | `Modules/OmniChannel/Services/PicklistService.php` |
+| Job distribute | `Modules/OmniChannel/Jobs/GenerateWaveJob.php` |
+| Job revert | `Modules/OmniChannel/Jobs/RevertWaveJob.php` |
+| Job picklist | `GeneratePicklistByWaveJob`, `GeneratePicklistByWaveAndSOJob` |
+| Command | `app/Console/Commands/GenerateWave.php` (`wave:generate`) |
+| Schedule | `app/Console/Kernel.php` — cron `*/{generate_every}` |
+| Entities | `Wave`, `WaveSetting`, `WaveGenerateStatus`, `WaveDetailSO` |
+| Picklist API | `Modules/OmniChannel/Http/Controllers/TransferPickingController.php` |
 
-**DataList query params:** `wave_type` = `sales order` | `transfer`, `warehouse_id` filter
+### Backend — Transfer
 
----
+| Layer | Path |
+|-------|------|
+| Approve → wave | `Modules/SupplyChain/Jobs/TransferApproveToWaveJob.php` |
+| Wave → PL | `Modules/SupplyChain/Jobs/TransferWaveToPickingListJob.php` |
+| Service | `Modules/SupplyChain/Services/WaveTransferService.php` |
+| Detail/PL API | `Modules/SupplyChain/Http/Controllers/WaveDetailTransferController.php` |
+| Entity | `Modules/SupplyChain/Entities/WaveDetailTransfer.php` |
+| Seeder | `Modules/SupplyChain/Database/Seeders/WaveDefaultTransferSeeder.php` |
 
-## 3. Backend File Map
+**Legacy/dead:** `WaveTransferService::arrangeWaveSO`, `MoveBufferToWaveJob` (`@deprecated`), buffer-based priority matching untuk transfer.
 
-| File | Role |
+### Frontend
+
+| Path | Role |
 |------|------|
-| `WaveController.php` | CRUD, index, start/pause, revert, select2 filters |
-| `WaveService.php` | `findMatchingWave`, `moveToWave`, `start`, `pause` |
-| `Jobs/GenerateWaveJob.php` | Batch distribute SO to waves |
-| `Jobs/RevertWaveJob.php` | Revert SO to MIX |
-| `Entities/Wave.php` | Model, constants `WAVE_TYPE_*` |
-| `Entities/WaveGenerateStatus.php` | Automation state singleton |
-| `Entities/WaveDetailSO.php` | Pivot SO ↔ wave |
-| `WaveDefaultSeeder.php` | Seed MIX wave id=1 |
+| `olshoperp-frontend/src/pages/Omni/WavesManagement/DataList.vue` | Tabs SO/Transfer, revert, WH filter |
+| `Form.vue` | Create/edit |
+| `components/SettingForm.vue` | Toggle + interval |
+| `DatalistSO.vue` | Slideover SO / transfer detail |
+| `DatalistPickingList.vue` | Transfer PL list |
+| `DatalistProduct.vue` | Specific products |
 
 ---
 
-## 4. API Routes
+## 2. API Routes (utama)
+
+Prefix `/api/omnichannel/` kecuali dicatat. Auth: `auth:sanctum` + `auth_verified`.
 
 | Method | Path | Action |
 |--------|------|--------|
-| GET | `omnichannel/wave` | index (datalist) |
-| POST | `omnichannel/wave` | store |
-| GET/PUT/DELETE | `omnichannel/wave/{wave}` | show/update/destroy |
-| POST | `omnichannel/wave/generate/start` | start automation |
-| POST | `omnichannel/wave/generate/pause` | pause automation |
-| POST | `omnichannel/wave/revert-all` | revert all SO |
-| GET | `omnichannel/wave/select2/platform` | platform filter |
-| GET | `omnichannel/wave/select2/store` | store filter |
-| GET | `omnichannel/wave/select2/warehouse` | WH process filter |
-| GET | `omnichannel/wave/select2/filter-warehouse` | header WH filter |
-| GET | `omnichannel/wave/{wave}/so-detail` | SO in wave |
-| GET | `omnichannel/wave/{wave}/transfer-detail` | Transfers in wave |
-| POST | `omnichannel/transfer-picking/generate-picklist` | generate picklist |
+| GET/POST | `wave` | Index / Store |
+| GET/PUT/PATCH/DELETE | `wave/{wave}` | Show / Update / Destroy |
+| GET | `wave/{wave}/audit` | Audit |
+| POST | `wave/generate/start` | Start automation |
+| POST | `wave/generate/pause` | Pause |
+| POST | `wave/revert-all` | Revert (tanpa cek pause — GAP-WM-05) |
+| GET | `wave/{wave}/so-detail` | SO di wave |
+| GET | `wave/select2/*` | Platform/store/warehouse/rack/shipper/product/label |
+| GET/POST | `wave-setting` | Interval + expose `automated_distribution` / `revert_status` |
+| POST | `transfer-picking/generate-picklist` | PL single wave |
+| POST | `transfer-picking/bulk-generate-picklist` | Bulk PL |
+| GET | **`supplychain/wave/{wave}/transfer-detail`** | Transfer di wave (FE pakai ini) |
+| GET | **`supplychain/wave/{wave}/picking-list`** | PL transfer |
+
+Catatan: route `omnichannel/wave/{wave}/transfer-detail` ada di routing Omni — method controller perlu dicek; FE memakai endpoint SupplyChain. `[VERIFY: CODEBASE]` dead Omni route.
 
 ---
 
-## 5. Database Schema
+## 3. Database — Key Tables
 
-**Primary:** [omni_waves.md](../../db-schema/omni_channel/omni_waves.md)
+### `omni_waves`
 
-| Column | Purpose |
-|--------|---------|
-| `priority` | Sort order; NULL = inactive |
-| `minimum_order` | Min SO count threshold |
+| Column | Notes |
+|--------|-------|
+| `name`, `priority` (nullable) | Comment: bigger = less important; NULL + `scopeActiveWave` |
+| `minimum_order` | Display di list SO; **tidak** dipakai `GenerateWaveJob` (GAP-WM-02) |
+| `so_condition` | `all` / `any` |
+| `product_condition` | `all` / `any` / `exact match` |
+| Picklist rules | `grouped_by` JSON, `max_order_each_picking_list`, `min/max_qty_sku`, `min/max_qty_product`, dims/weight |
 | `wave_type` | `sales order` / `transfer` |
-| `so_condition` | `all` / `any` filter logic |
-| `product_condition` | Product match rules |
-| `grouped_by` | JSON: store/shipper/platform |
-| `wave_label_group_id` | Label group filter |
+| `wave_label_group_id` | Label group |
 
-**Detail tables:**
+### Automation / membership
 
-| Table | FK |
-|-------|-----|
-| `omni_wave_detail_platforms` | `wave_id`, `platform_id` |
-| `omni_wave_detail_stores` | `wave_id`, `store_id` |
-| `omni_wave_detail_warehouses` | `wave_id`, `warehouse_id` |
-| `omni_wave_detail_so` | `wave_id`, `sales_order_id` |
-| `omni_wave_detail_transfers` | `wave_id`, `stock_mutation_id` |
+| Table | Role |
+|-------|------|
+| `omni_wave_setting` | Global: `generate_every`, `generate_delay`, `validation_operation` AND/OR |
+| `omni_wave_generate_statuses` | `started` / `starting` / `paused` / `pausing` |
+| `omni_wave_detail_s_os` | SO ↔ wave |
+| `scm_wave_detail_transfers` | Transfer ↔ wave |
+| Detail filters | `omni_wave_detail_platforms|stores|warehouses|racks|shippers|products` |
+
+**Bukan** toggle ini: `gs_order_process_settings.process_to_wave` (gate Unassign Wave).
 
 ---
 
-## 6. GenerateWaveJob Pipeline
+## 4. Matching (`WaveService::findMatchingWave`)
+
+1. Kumpulkan dari SO: `platform_id`, `store_id`, `wh_process_id`, rack dari mutation origin, shipper via shipping bind, root `product_id`.
+2. Iterasi wave collection (**tanpa `orderBy('priority')`** — GAP-WM-01).
+3. Order criteria (`so_condition`): platform **selalu**; store/building/rack/shipper hanya jika wave punya rows (rack/shipper = partial overlap).
+4. Product criteria: empty list → true; else any / all / exact match.
+5. Gabung order+product dengan `WaveSetting.validation_operation` (`and`/`or`).
+6. First match wins → `moveToWave(MIX → selected)`.
+
+Transfer live path: **selalu** MIX-TF; tidak pakai matching priority.
+
+---
+
+## 5. Flow utama
 
 ```mermaid
 sequenceDiagram
-    participant Sched as Scheduler / Trigger
-    participant Job as GenerateWaveJob
-    participant WS as WaveService
-    participant SO as SalesOrder
-    participant WDSO as WaveDetailSO
+  participant FE as SettingForm/DataList
+  participant API as WaveController
+  participant Cron as wave:generate
+  participant Job as GenerateWaveJob
+  participant WS as WaveService
 
-    Sched->>Job: dispatch sales_order_ids, wave_ids
-    Job->>Job: load waves with filters
-    Job->>Job: load sales_orders with details
-    loop each sales_order
-        Job->>WS: findMatchingWave
-        alt match found
-            Job->>WS: moveToWave SO, MIX, selected_wave
-            WS->>WDSO: upsert pivot
-        end
-    end
+  FE->>API: POST generate/start
+  API->>API: WaveGenerateStatus=started
+  Cron->>Cron: skip if paused / isGenerating / isReverting
+  Cron->>Job: batch SO in MIX + delay
+  Job->>WS: findMatchingWave
+  WS->>WS: moveToWave MIX to matched
 ```
 
-**WaveService::start():**
+**Revert:** `POST revert-all` → chunk `RevertWaveJob` → `moveToWave(current → MIX)`. FE poll `revert_status`.
 
-```php
-Wave::generate_status()->update(['status' => STATUS_STARTED]);
-```
-
-**WaveService::pause():**
-
-```php
-// Error if already PAUSING/PAUSED
-$status->update(['status' => STATUS_PAUSED]);
-```
+**Transfer:** Approve TF + `with_picking_list` → `TransferApproveToWaveJob` → MIX-TF → `TransferWaveToPickingListJob`.
 
 ---
 
-## 7. createTransferWave (cross-reference)
+## 6. Invariants
 
-`WaveController::createTransferWave($warehouse_process)` — dipanggil dari Warehouse Binding, bukan dari UI Waves Management langsung. Membuat hidden `StockMutationTransfer` per wave untuk setiap WH process.
+| ID | Assertion |
+|----|-----------|
+| INV-WM-01 | MIX / MIX-TF tidak editable/deletable via UI normal |
+| INV-WM-02 | Edit/delete custom wave hanya jika generate status paused (+ delete: no SO detail) |
+| INV-WM-03 | Pause tidak auto-revert (call revert di `pause()` di-comment) |
+| INV-WM-04 | Satu company: max satu generate batch dan satu revert batch aktif |
+| INV-WM-05 | Matching SO = first hit only; order tidak di-split multi-wave |
+| INV-WM-06 | Transfer + PL selalu ke MIX-TF lalu picklist |
+| INV-WM-07 | Keanggotaan SO hanya pindah antar wave — tidak “hilang” dari `wave_detail_so` tanpa tujuan |
 
 ---
 
-## 8. Related db-schema
+## 7. Validation Highlights
 
-- [omni_waves.md](../../db-schema/omni_channel/omni_waves.md)
+- Store wajib di form; silang platform/store/WH/rack/shipper di store/update.
+- Start/pause via `WaveGenerateStatus`.
+- Revert: **tidak** validasi paused di backend (GAP-WM-05).
+- Generate picklist SO: skip wave / SO `is_instant_processing` di job bulk.
+
+---
+
+## 8. Frontend Behaviors
+
+- Tabs SO vs Transfer; SettingForm bind start/pause + `generate_every`.
+- Revert button: UI disable saat reverting; **tidak** hard-block oleh toggle ON (selaras GAP-WM-05).
+- Choose Warehouse scopes aggregate counts per pill.
+- Transfer detail/PL: panggil `supplychain/wave/...`.
+- Tab Transfer kolom “Qty Total” → distinct SKU (GAP-WM-06).
+
+---
+
+## 9. Failure Modes & Transaction Boundary
+
+| Mode | Behavior |
+|------|----------|
+| Matching exception | Log + rollback; SO tetap MIX |
+| Revert exception per chunk | Log; batch lanjut chunk lain |
+| Concurrent generate | `Wave::isGenerating` → company skip |
+| Concurrent revert | Generate skip; FE disable |
+| `addToDefaultWave` stock fail | MySQL 1644 → validation no stock |
+| `moveToWave` | Per-SO transaction; reparent mutation details |
+| Picklist empty | Error no orders |
+
+Race lock company: `[VERIFY: CODEBASE]` selain `job_batches` name uniqueness.
+
+---
+
+## 10. Data Lifecycle
+
+| Flag / membership | Hulu | Waves Management | Hilir |
+|-------------------|------|------------------|-------|
+| `WaveDetailSO` | Unassign / Skip → MIX | Distribute → priority; Revert → MIX | Generate PL / Picking |
+| Wave filter products | Form Assign Specific Product | Matching product_condition | — |
+| WH / Shipping binding | Master binding | Validasi form + matching building/shipper | Perubahan binding bisa invalidasi wave existing |
+| `WaveDetailTransfer` | TF approve + PL flag | MIX-TF | Picking list transfer |
+
+---
+
+## 11. Tests & QA Notes
+
+- Cover: start/pause gate edit, matching any/all/exact, revert partial failure, transfer→MIX-TF→PL.
+- Regresi gaps: priority order (WM-01), `minimum_order` ignored (WM-02), NULL priority (WM-03), revert tanpa pause (WM-05), Transfer column labels (WM-06).
+- Ubah response/aggregates → update mock FE bila ada.
+
+---
+
+## 12. Known Issues
+
+| GAP | Technical note |
+|-----|----------------|
+| GAP-WM-01 | `GenerateWaveJob` load waves tanpa `orderBy('priority')` |
+| GAP-WM-02 | `minimum_order` hanya di formatting list |
+| GAP-WM-03 | `scopeActiveWave` ada; generate path tidak konsisten memakainya |
+| GAP-WM-04 | `min_qty_sku` di PicklistService |
+| GAP-WM-05 | `revertWave()` tanpa cek `WaveGenerateStatus` |
+| GAP-WM-06 | FE Transfer “Qty Total” = `sku_total_formatted` (distinct product) |
+
+---
+
+## 13. Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-07-20 | Rewrite SoT + file map transfer/automation/gaps |
+| 1.0 | 2026-06-19 | Initial AS-IS draft |

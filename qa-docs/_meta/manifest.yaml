@@ -1841,21 +1841,30 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: draft
       requirement:
         file: requirement.md
-        status: pending
+        status: draft
       technical:
         file: technical.md
-        status: pending
+        status: draft
       user-guide:
         file: user-guide.md
-        status: pending
+        status: draft
     legacy_sources:
-      []
+      - order-process-source-of-truth.md
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/OmniChannel/Http/Controllers/TransferSummaryController.php
+        - Modules/OmniChannel/Http/Controllers/TransferPickingController.php
+        - Modules/OmniChannel/Http/Controllers/SalesOrderAwbController.php
+        - Modules/OmniChannel/Services/PicklistService.php
+        - Modules/OmniChannel/Jobs/SalesOrderDownloadAwbJob.php
+        - Modules/OmniChannel/Entities/GetResiLog.php
+        - Modules/OmniChannel/Entities/OrderProcessActionLog.php
+        - app/Console/Commands/Cleanup/CleanupAwbCommand.php
+      frontend:
+        - olshoperp-frontend/src/pages/Omni/Processing/Summary/**/*
 
   omni-skip-processing:
     menu_name: "Skip Processing"
@@ -1867,21 +1876,31 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: draft
       requirement:
         file: requirement.md
-        status: pending
+        status: draft
       technical:
         file: technical.md
-        status: pending
+        status: draft
       user-guide:
         file: user-guide.md
-        status: pending
+        status: draft
     legacy_sources:
-      []
+      - omni-skip-processing-sot.md
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/OmniChannel/Http/Controllers/TransferSummaryController.php
+        - Modules/OmniChannel/Http/Controllers/SkipProcessingLogController.php
+        - Modules/OmniChannel/Services/ProcessingService.php
+        - Modules/OmniChannel/Traits/Processing/SkipProcessTrait.php
+        - Modules/OmniChannel/Traits/Processing/DeliveryOrderProcessTrait.php
+        - Modules/OmniChannel/Traits/Processing/ProcessHelperTrait.php
+        - Modules/OmniChannel/Jobs/SkipProcessingJob.php
+        - Modules/OmniChannel/Jobs/SkipProcessingRetryJob.php
+        - Modules/SupplyChain/Entities/SkipProcessingLog.php
+      frontend:
+        - olshoperp-frontend/src/pages/Omni/Processing/SkipProcessing/**/*
 
   omni-skip-wave-process:
     menu_name: "Skip Wave Process"
@@ -1893,21 +1912,29 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: draft
       requirement:
         file: requirement.md
-        status: pending
+        status: draft
       technical:
         file: technical.md
-        status: pending
+        status: draft
       user-guide:
         file: user-guide.md
-        status: pending
+        status: draft
     legacy_sources:
-      []
+      - skip-wave-process-sot.md
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/OmniChannel/Http/Controllers/SkipWaveProcessController.php
+        - Modules/OmniChannel/Import/SkipWaveProcessImport.php
+        - Modules/OmniChannel/Jobs/SkipWaveProcessImportJob.php
+        - Modules/OmniChannel/Jobs/SkipWaveProcessJob.php
+        - Modules/OmniChannel/Logics/SkipWave/SkipWaveLogic.php
+        - Modules/OmniChannel/Services/ProcessingService.php
+        - app/Console/Commands/SalesOrder/SkipWaveDispatchCommand.php
+      frontend:
+        - olshoperp-frontend/src/pages/Omni/Processing/SkipWaveProcess/**/*
 
   omni-unassign-wave:
     menu_name: "Unassign Wave"
@@ -1962,17 +1989,21 @@ menus:
         status: draft
       user-guide:
         file: user-guide.md
-        status: pending
+        status: draft
     legacy_sources:
-      []
+      - waves-management-source-of-truth.md
     code_globs:
       backend:
         - Modules/OmniChannel/Http/Controllers/WaveController.php
+        - Modules/OmniChannel/Http/Controllers/WaveSettingController.php
         - Modules/OmniChannel/Jobs/GenerateWaveJob.php
+        - Modules/OmniChannel/Jobs/RevertWaveJob.php
         - Modules/OmniChannel/Services/WaveService.php
+        - Modules/OmniChannel/Services/PicklistService.php
+        - Modules/SupplyChain/Jobs/TransferApproveToWaveJob.php
+        - Modules/SupplyChain/Services/WaveTransferService.php
+      frontend:
         - olshoperp-frontend/src/pages/Omni/WavesManagement/**/*
-      frontend: []
-
   random-sku:
     menu_name: "Random SKU"
     path: random-sku
