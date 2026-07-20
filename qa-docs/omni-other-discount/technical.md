@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-other-discount
 menu_name: "Other Discount"
-version: 1.0
-last_updated: 2026-06-23
+version: 1.2
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: review
 related_docs:
@@ -18,7 +18,7 @@ related_docs:
 
 Master Other Discount adalah CRUD master data di modul **OmniChannel** (route prefix `omnichannel`), dipakai lintas modul Accounting & Supply Chain sebagai referensi potongan/diskon. Data di `omni_other_discounts` dengan pivot `omni_other_discount_pivots`.
 
-Struktur **mirror** [Other Cost](../omni-other-cost/technical.md); perbedaan utama: validasi **COA class** (§9).
+Struktur **mirror** [Other Cost](../omni-other-cost/technical.md); COA scope **sama** (update 17 Jul 2026): semua class TO-BE + child-only.
 
 ```
 Vue Form/DataList
@@ -94,7 +94,7 @@ Prefix: `/api/omnichannel/other-discount`
 | PUT | `/other-discount/{id}` | `update` |
 | DELETE | `/other-discount/{id}` | `destroy` (soft) |
 | GET | `/other-discount/select2` | Active OD select2 |
-| GET | `/other-discount/select2-expense` | COA select2 (AS-IS: Expense only) |
+| GET | `/other-discount/select2-expense` | COA leaf select2 (AS-IS: Expense + ORev; TO-BE: all class) |
 | GET | `/other-discount/{id}/audit` | Audit log |
 | POST | `/other-discount/import` | Excel import |
 | GET | `/other-discount/import-history` | Import history |
@@ -138,7 +138,7 @@ Prefix: `/api/omnichannel/other-discount`
 |-------|--------|
 | Headers | `Code`, `Name`, `Other Discount COA`, `Applied Store`, `Description` |
 | Applied Store | `parseAppliedStoreInput()` — **store name**, `ALL`, case-insensitive |
-| COA AS-IS | `ALLOWED_COA_CLASSES`: Expense, Other Revenue & Expenses |
+| COA AS-IS | `ALLOWED_COA_CLASSES`: Expense, Other Revenue & Expenses — **TO-BE: hapus** (O-08) |
 | Mode | All-or-nothing |
 | Owner check | Tidak ada (IMP-05) |
 
@@ -155,18 +155,18 @@ Lihat [requirement.md §4.4](./requirement.md).
 | Supplier Invoice | `accounting-supplier-invoice` | COA default dari master; **override editable** di PI sebelum approve |
 | Sales Order General | `sales-order-general` | |
 
-## 9. COA class limits (perbedaan vs Other Cost)
+## 9. COA scope (sama Other Cost — update 17 Jul 2026)
 
-| Channel | Other Discount (AS-IS) | Other Discount (TO-BE) | Other Cost (TO-BE) |
-|---------|------------------------|------------------------|-------------------|
-| Form `select2-expense` | Expense only | Revenue + ORev + COGS | Expense + ORev |
-| Import | Expense + ORev | Revenue + ORev + COGS | Expense + ORev |
-| API save | Leaf + owner only | — | — |
+| Channel | AS-IS (verified) | TO-BE |
+|---------|------------------|-------|
+| Form `select2-expense` | Expense **atau** Other Revenue & Expenses + leaf | **Semua class** + leaf (**O-08**) |
+| Import | Expense + ORev | Hapus allow-list (**O-08**) |
+| API save | Leaf + owner only (no class check) | Pertahankan |
 
-**File:** `OtherDiscountController@select2Child_expense` L343–345; `OtherDiscountImport::ALLOWED_COA_CLASSES` L37–40.
+**File:** `OtherDiscountController@select2Child_expense`; `OtherDiscountImport::ALLOWED_COA_CLASSES`.
 
-**Task:** O-08 — selaraskan form + import ke class diskon (bukan Expense).
+**VERIFY:** mirror [Other Cost technical §9](../omni-other-cost/technical.md#9-coa-scope-update-17-jul-2026) — enforcement child-only di dropdown + save + import; parent = `CoaTree.parent_id`; Active + owned_by di select2; tidak ada hardcode class jurnal untuk OD.
 
 ## 10. Known Technical Debt
 
-Lihat [requirement.md §5](./requirement.md) — O-08 (COA class), O-01 (no space), O-05 (export Applied to Store), IMP-02–06, O-14 (error message copy).
+Lihat [requirement.md §5](./requirement.md) — O-08 (all-class COA), O-01 (no space), O-05 (export Applied to Store), IMP-02–06, O-14 (error message copy).

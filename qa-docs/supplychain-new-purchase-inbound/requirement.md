@@ -2,23 +2,22 @@
 doc_type: requirement
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 2.1
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: review
+aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI]
 ---
 
 # Purchase Inbound (GRN) — Requirement Documentation
 
 **Modul:** Supply Chain Management (SCM) / Inventory / Inbound  
 **Prefix transaksi:** `IN-`  
-**Audience:** PM, Operations (Gudang), QA, Support, Developer  
-**Status:** AS-IS verified against codebase per 2026-07-05
+**Audience:** PM, Operations (Gudang), QA  
+**Status:** AS-IS verified (compliance pass 2026-07-17)
 
 **UI route (BETA):** `/supplychain/new-purchase-inbound`  
 **UI route (legacy):** `/supplychain/mutation-inbound` — same API, UI lama  
-**API base:** `{VITE_API_URL}supplychain/mutation-inbound`  
-**Entity:** `StockMutationInbound` → `scm_stock_mutations` · detail → `scm_inbound_mutation_details`
 
 **PM sources:** `purchase-inbound-requirement.md` v1.0 (14 Jan 2026) · COLLI BETA v2.0 (27 Mar 2026) · COLLI v2.1 (8 Apr 2026)
 
@@ -33,12 +32,21 @@ status: review
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft AS-IS codebase |
 | 2.0 | 2026-07-05 | QA - Yemima | Full PM merge: standard GRN + COLLI BETA, journal, import, gaps §19–§21 |
 | 2.1 | 2026-07-05 | QA - Yemima | §11.1 Product COA Group type: Service (no stock), Fix Asset (Assets debit) |
+| 2.2 | 2026-07-17 | QA - Yemima | Compliance qa-docs-standard: Prasyarat/FAQ; Mermaid rantai; trim path/class; user-guide |
 
 ---
 
 ## 1. Ringkasan Eksekutif
 
 **Purchase Inbound (GRN)** mencatat penerimaan barang ke gudang berdasarkan **Purchase Order (PO) approved/processed**. Mendukung partial receiving, serial/batch/expired, import Excel, dan fitur **COLLI** (kemasan fisik koli) di menu BETA.
+
+```mermaid
+flowchart LR
+    PO[PO Approved] --> GRN[Purchase Inbound]
+    GRN --> STK[Stok + Unbilled Goods]
+    GRN --> PI[Purchase Invoice]
+    PI --> PAY[Account Payment]
+```
 
 | Kebutuhan Bisnis | Bagaimana GRN Menjawab |
 |------------------|------------------------|
@@ -58,6 +66,17 @@ status: review
 Datalist BETA: query `from_menu=newInobound` (typo preserved) — link edit ke route BETA.
 
 ---
+
+
+## 1.2 Prasyarat
+
+| Prasyarat | Sumber | Catatan |
+|-----------|--------|---------|
+| PO approved/processed + sisa qty | Purchase Order | Tanggal PO sebelum tanggal GRN |
+| Supplier punya PO outstanding | Select2 supplier | Tanpa PO → dropdown kosong |
+| Warehouse fisik tanpa sub | Master warehouse | Leaf / no_child |
+| Product COA Group lengkap | Product COA Group | Inventory/Assets/OpEx + Unbilled Goods per type |
+| Fiscal period terbuka | Accounting period | Trx date ≤ today |
 
 ## 2. Siklus Status Transaksi
 
@@ -86,13 +105,10 @@ stateDiagram-v2
 
 ## 3. Datalist (Halaman Depan)
 
-**Komponen:** `PurchaseInbound/DataList.vue`  
-**API:** `GET supplychain/mutation-inbound`
-
 | Kolom | Keterangan |
 |-------|------------|
 | **Trx Code / Date** | Link edit; prefix `IN` |
-| **Location Destination** | Gudang penerima (leaf WH) |
+| **Location Destination** | Gudang penerima (tanpa sub-gudang) |
 | **Supplier** | Supplier header |
 | **Trx Ref** | PO codes dari detail lines |
 | **Qty** | Total qty received |
@@ -121,10 +137,10 @@ stateDiagram-v2
 | **Transaction Code** | Auto `IN` prefix on create |
 | **Transaction Date** | Required; **≤ today**; fiscal period active; PM: backdate max **6 bulan** (FE tooltip) |
 | **Supplier** | Required; select2 hanya supplier dengan PO **approved/processed** |
-| **Location (Warehouse)** | Required; leaf level ≤ 20 (`under_31`, `no_child`) |
+| **Location (Warehouse)** | Required; gudang fisik tanpa sub-gudang |
 | **Description** | Optional, max 150 |
 | **Transaction Status** | `open` (default) or `draft` |
-| **Attachments** | Optional; `config('upload.size.file')` |
+| **Attachments** | Optional; ukuran sesuai config upload |
 
 **Update lock** (jika sudah ada detail): supplier, warehouse, transaction date **tidak bisa diubah**.
 
@@ -133,8 +149,6 @@ stateDiagram-v2
 ---
 
 ## 5. Outstanding PO Selection (Source)
-
-**API:** `GET mutation-inbound/{id}/mutation-inbound-detail/outstanding`
 
 | Filter | Rule |
 |--------|------|
@@ -189,7 +203,7 @@ stateDiagram-v2
 
 ## 7. Inbound Detail Section (Keranjang)
 
-**Views:** toggle **Group view** (`DatalistDetailGroup`) vs flat (`DatalistDetail`)
+**Views:** toggle **Group view** vs flat.
 
 | Feature | AS-IS |
 |---------|-------|
@@ -197,7 +211,7 @@ stateDiagram-v2
 | Global search | In detail grid |
 | Select Product shortcut | From same PO supplier |
 | Delete / bulk delete | Revert `prepared_to_grn_quantity` |
-| Max rows | `config('general.max_child_10000')` = **10000** |
+| Max rows | **10000** |
 
 **After approve:** kolom PO Reference Code/Date ditambahkan.
 
@@ -217,8 +231,6 @@ stateDiagram-v2
 
 ### 8.2 UI — kolom "COLLI & Inbound Qty"
 
-**Komponen:** `InboundColly.vue` inside `DatalistDetailGroup.vue`
-
 ```
 Baris atas:  [Jumlah Koli] COLLI @ [Isi Koli] [Unit dropdown]
 Baris bawah: [Inbound Qty] [Unit dropdown]
@@ -233,14 +245,14 @@ Baris bawah: [Inbound Qty] [Unit dropdown]
 | Inbound qty | Auto = `qty_in_colly × qty_each_colly`; unit locked to colli unit |
 | colli = 0 | Manual inbound qty mode (standard) |
 
-**Auto-fill isi colli (PM 8 Apr):** `StockMutationInboundMiddleDetailController@latest_colly` — last middle detail same `product_id`, any status, converted to current unit, `floor()`.
+**Auto-fill isi colli (PM 8 Apr):** dari transaksi COLLI terakhir SKU yang sama (unit dikonversi, dibulatkan ke bawah). Detail API: [technical §8](./technical.md#8-po-qty--colli).
 
 ### 8.4 Stock ID generation — Background Job
 
 | Phase | Behavior |
 |-------|----------|
 | Approve click | Header → **approved**; stock generation **deferred** if middle detail exists |
-| Job | `ApproveInboundJob` → chunks `GenerateItemStockChunkJob` (200 rows/chunk) |
+| Job | Background job chunked (200 rows/chunk) |
 | Colli stock | 1 ItemStock per koli; `is_colly` flag on ItemStock |
 | Progress | `Item Stock Status` column % on datalist |
 | **Job fail** | Toast error; status reverted to **open**; stock/journal rolled back; user can **Re-approve** |
@@ -253,14 +265,7 @@ Baris bawah: [Inbound Qty] [Unit dropdown]
 
 ## 9. Import Excel
 
-**Endpoint:** `POST mutation-inbound/{id}/mutation-inbound-detail/upload`
-
-| Import type | Class |
-|-------------|-------|
-| Standard | `StockMutationInboundImport` |
-| **COLLI** | `StockMutationInboundColliImport` |
-
-**Template COLLI:** `/files/Template-Import-Inbound-colli.xlsx`
+Import standard atau COLLI (template colli). Class/path: [technical §10](./technical.md#10-import--config).
 
 ### 9.1 Standard columns (PM)
 
@@ -291,20 +296,20 @@ Includes colli qty + colli isi; rule: `Inbound Qty = Colli × Colli Qty`
 ### 10.1 Pre-checks
 
 - Auth `approval` policy
-- Cache lock `approval_process_inbound` 60s
+- Cache lock approve 60s
 - Fiscal period
 - Min 1 detail
 - Max 10000 details
-- Warehouse leaf validation
+- Warehouse tanpa sub-gudang
 - No import in progress
-- Async job not running (`cekMutationApprovalStatus` — 20 min timeout)
+- Async job not running (timeout ~20 min)
 
 ### 10.2 Approve paths
 
 | Path | When | Result |
 |------|------|--------|
-| **Sync** | No middle detail / standard lines | `ItemStockMutation::approveInbound()` inline |
-| **Async** | Middle detail (COLLI) exists | `ApproveInboundJob` → `"Approval in progress, please wait a moment."` |
+| **Sync** | No middle detail / standard lines | Approve inline |
+| **Async** | Middle detail (COLLI) exists | Background job → pesan *Approval in progress* |
 
 ### 10.3 Reject
 
@@ -317,16 +322,14 @@ Includes colli qty + colli isi; rule: `Inbound Qty = Colli × Colli Qty`
 | PO detail | `prepared_to_grn` ↓, `processed_to_grn` ↑ |
 | PO header | → `processed` (partial) or `complete` (full all lines) |
 | ItemStock | Created per detail/colli |
-| Journal | `JournalProcess::stockInboundAutoJournal` |
+| Journal | Auto-journal Unbilled Goods |
 | Inspection | Auto RIR from template on header update |
 
 ---
 
 ## 11. Accounting / Journal (AS-IS)
 
-**Config:** `config('accounting.auto-journal.inbound-with-unbilled-goods')` = **true** (default)
-
-**Method:** `JournalProcess::stockInboundAutoJournal()` · Amount = `each_price_before_vat × quantity_in_base_unit` (harga murni, **tanpa VAT**).
+**Config:** inbound-with-unbilled-goods = **true** (default). Amount = harga sebelum VAT × qty base (**tanpa VAT**). Detail: [technical §9](./technical.md#9-journal--product-coa-group-type).
 
 ### 11.1 Product COA Group type — stok & jurnal
 
@@ -345,7 +348,7 @@ SKU dengan Product COA Group type **`Service`** adalah **jasa** — tidak punya 
 
 | Aspek | AS-IS |
 |-------|-------|
-| **Stock ID** | **Tidak dibuat** — `ItemStockMutation::approveInbound()` skip jika `productCoaGroup->type == 'Service'` |
+| **Stock ID** | **Tidak dibuat** — skip untuk type Service |
 | **GRN detail** | Baris detail tetap ada (qty, PO link, prepared/processed GRN di PO) |
 | **Jurnal** | Debit **Operational Expense** (bukan Inventory); Credit **Unbilled Goods** |
 | **COA wajib** | Operational Expense + Unbilled Goods terkonfigurasi di Product COA Group |
@@ -375,7 +378,7 @@ Fix Asset:               Dr Assets         / Cr Unbilled Goods  + Stock ID (is_f
 Service:                 Dr Op. Expense    / Cr Unbilled Goods  (no Stock ID)
 ```
 
-**Code refs:** `ItemStockMutation::approveInbound` L401 (`type != 'Service'`) · `JournalProcess::stockInboundAutoJournal` L257–294 (`Fix Asset` → Assets; Service → Operational Expense).
+Implementasi: [technical §9](./technical.md#9-journal--product-coa-group-type).
 
 ### 11.2 Aturan jurnal umum
 
@@ -398,7 +401,7 @@ If config `inbound-with-unbilled-goods` = **false** → Credit **Account Payable
 |--------|-------|
 | **Delete** (open) | ✓ Reverts `prepared_to_grn_quantity` |
 | **Delete detail** | Blocked if linked colli (`qty_in_colly > 0`) or has children |
-| **Void** (approved) | UI `VoidDialog` posts `approval_status=void` — **BE rejects** (only approved/rejected accepted) — **GAP-PI-01** |
+| **Void** (approved) | UI void ada; backend **menolak** — **GAP-PI-01** |
 | **Close** | `can_closed` needs `processed` header — GRN never reaches it — **GAP-PI-02** |
 | **Unapprove** | `GET unapprove` — **development/local only** |
 
@@ -491,10 +494,13 @@ flowchart LR
 
 **Eligibility for PI outstanding:** inbound approved; same supplier/currency; inbound date < PI date; `invoiceBalance() > 0`.
 
-Full spec: [Purchase Invoice requirement §10–§11](../accounting-supplier-invoice/requirement.md#10-relasi-purchase-inbound-detail)
+Full spec: [Purchase Invoice requirement](../accounting-supplier-invoice/requirement.md).
+
+| Menu | Relasi |
+|------|--------|
 | [System Product](../system-product/requirement.md) | Batch/serial/expired flags |
 | [Master Unit](../supplychain-unit/requirement.md) | Unit conversion |
-| [Other Inbound](../supplychain-other-inbound/) | Same controller family, no supplier/PO |
+| [Other Inbound](../supplychain-other-inbound/) | Inbound non-PO (keluarga controller sama) |
 
 ---
 
@@ -518,15 +524,8 @@ Full spec: [Purchase Invoice requirement §10–§11](../accounting-supplier-inv
 
 ## 20. Dev Follow-ups
 
-| ID | Item |
-|----|------|
-| DEV-PI-01 | Wire void/close in `StockMutationInboundController@approve` or remove UI |
-| DEV-PI-02 | Fix `ClosedDialog` to send `closed` not `void` |
-| DEV-PI-03 | Production unapprove policy |
-| DEV-PI-04 | Fix `from_menu=newInobound` typo |
-| DEV-PI-05 | Journal/deep links to `new-purchase-inbound/edit` |
+DEV-PI-01…05 (void/close wiring, ClosedDialog, unapprove policy, typo from_menu, journal deep links): [technical §14 Known Issues](./technical.md#14-known-issues).
 
----
 
 ## 21. Pending Items — Major
 
@@ -547,11 +546,30 @@ Full spec: [Purchase Invoice requirement §10–§11](../accounting-supplier-inv
 
 ---
 
+
+## 22. FAQ
+
+**Q: Supplier tidak muncul?**  
+A: Belum ada PO approved/processed untuk supplier itu.
+
+**Q: Void GRN approved?**  
+A: Belum berfungsi (GAP-PI-01 / P-PI-01) — UI ada, backend menolak.
+
+**Q: PPN di GRN?**  
+A: Tidak — di Purchase Invoice (GAP-PI-05 confirmed OK).
+
+**Q: COLLI job gagal?**  
+A: Status kembali Open; approve ulang setelah cek notifikasi.
+
+**Q: Service vs Fix Asset?**  
+A: Service = tanpa Stock ID + jurnal OpEx. Fix Asset = Stock ID + jurnal Assets.
+
 ## Related Documents
 
 | Doc | Path |
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | Legacy UI menu | [../supplychain-mutation-inbound/README.md](../supplychain-mutation-inbound/README.md) |
 | Purchase Order | [../supplychain-purchase-order/requirement.md](../supplychain-purchase-order/requirement.md) |

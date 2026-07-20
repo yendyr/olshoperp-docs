@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-other-cost
 menu_name: "Other Cost"
-version: 1.3
-last_updated: 2026-07-10
+version: 1.5
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -16,7 +16,7 @@ sections:
 
 ## 1. Apa itu Master Other Cost?
 
-**Master Other Cost** adalah daftar jenis biaya tambahan (selain harga barang utama) yang dipakai di transaksi seperti Purchase Order, Sales Order, Purchase Invoice, dan Sales Invoice. Setiap jenis biaya dihubungkan ke **satu akun COA (Expense)** agar jurnal otomatis benar saat transaksi di-approve.
+**Master Other Cost** adalah daftar jenis biaya tambahan (selain harga barang utama) yang dipakai di transaksi seperti Purchase Order, Sales Order, Purchase Invoice, dan Sales Invoice. Setiap jenis biaya dihubungkan ke **satu akun COA (leaf / child)** agar jurnal otomatis benar saat transaksi di-approve.
 
 Contoh: biaya klaim selisih ongkir, biaya packing tambahan, atau biaya administrasi.
 
@@ -27,7 +27,7 @@ Contoh: biaya klaim selisih ongkir, biaya packing tambahan, atau biaya administr
 | Istilah | Arti |
 |---------|------|
 | Other Cost | Biaya tambahan di luar harga produk |
-| Other Cost COA | Akun buku besar (COA) tipe **Expense** tempat biaya ini dicatat |
+| Other Cost COA | Akun buku besar (COA) tempat biaya ini dicatat — **semua class** boleh, wajib **child** (bukan parent) |
 | Applied Store | Toko tipe **Others (General)** yang boleh memakai jenis biaya ini |
 | All Stores | Semua toko Others yang aktif — termasuk toko baru yang ditambahkan kemudian |
 | Active | Status aktif; biaya inactive tidak muncul di transaksi **baru** |
@@ -37,7 +37,7 @@ Contoh: biaya klaim selisih ongkir, biaya packing tambahan, atau biaya administr
 
 ### Bisa
 - Membuat, mengedit, dan menghapus (soft delete) jenis biaya lain-lain
-- Menghubungkan setiap biaya ke satu COA Expense (akun paling detail / leaf)
+- Menghubungkan setiap biaya ke satu COA **leaf** (akun paling detail) — **semua COA class**
 - Mengatur biaya berlaku untuk **semua toko Others** atau **toko tertentu saja**
 - Menonaktifkan biaya tanpa menghapus data transaksi lama
 - Melihat riwayat perubahan di **Audit Log** (halaman Edit)
@@ -58,7 +58,7 @@ Contoh: biaya klaim selisih ongkir, biaya packing tambahan, atau biaya administr
 1. Buka **FA → Master → Other Cost**.
 2. Klik **Create**.
 3. Isi **Code** (unik, tanpa spasi — disarankan) dan **Name**.
-4. Pilih **Other Cost COA** — hanya akun Expense aktif yang muncul.
+4. Pilih **Other Cost COA** — hanya COA **child** (leaf) aktif milik company; **semua class** (setelah O-08; AS-IS masih Expense / Other Revenue & Expenses).
 5. Atur **Applied Store**:
    - **All Stores** — berlaku untuk semua toko Others aktif (default).
    - **Applied Store** — pilih satu atau lebih toko secara manual.
@@ -128,7 +128,7 @@ A: **Ya.** Line warisan dari PO tetap ikut ke PI meski master sudah inactive.
 A: **Tidak.** Dropdown sudah filter untuk input baru; warisan dokumen tetap jalan.
 
 **Q: COA class apa yang boleh?**  
-A: Standar bisnis di **master**: **Expense** + **Other Revenue & Expenses**. Form manual saat ini hanya Expense (akan diselaraskan — task dev).
+A: **Semua COA Class** (TO-BE). Yang wajib: akun **child** (bukan parent), Active, milik company. Form/import AS-IS masih memfilter Expense + Other Revenue & Expenses — akan dibuka semua class (task O-08).
 
 **Q: Apakah COA di Purchase Invoice harus sama dengan master?**  
 A: **Tidak wajib.** COA di master adalah **default**. Di Purchase Invoice, user boleh override COA per baris Additional Cost sebelum approve — tanpa mengubah master. Lihat [Purchase Invoice §8.3](../accounting-supplier-invoice/requirement.md#83-coa-editable-per-baris-change-req-2026-07).

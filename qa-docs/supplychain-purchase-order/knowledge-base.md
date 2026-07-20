@@ -2,15 +2,16 @@
 doc_type: knowledge-base
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.2
-last_updated: 2026-07-10
+version: 2.3
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: review
-audience: operator
+aliases: [PO, purchase order, pembelian, pesanan pembelian, outstanding PR]
 ---
 
 # Purchase Order — Knowledge Base
 
+**Audience:** Operator, Support  
 **Path:** SCM → **Purchase Order** (`/supplychain/purchase-order`)  
 **Prefix dokumen:** `PO-`
 
@@ -18,23 +19,47 @@ audience: operator
 
 ## 1. Apa itu Purchase Order?
 
-**Purchase Order (PO)** adalah pesanan pembelian resmi ke **supplier**. PO bisa dibuat **With PR** (dari Purchase Requisition) atau **Without PR** (produk langsung). Setelah PO **disetujui**, barang diterima lewat **Purchase Inbound**.
+**Purchase Order (PO)** adalah pesanan pembelian resmi ke **supplier**. PO bisa dibuat **With PR** (dari Purchase Requisition) atau **Without PR** (produk langsung). Setelah PO **disetujui**, barang diterima lewat **Purchase Inbound**, lalu ditagih di **Purchase Invoice**.
 
 ---
 
-## 2. Alur singkat
+## 2. Kapan dipakai?
 
-1. Buat PO → pilih **With PR** atau **Without PR** → isi supplier, currency, kurs
-2. Tambah **Detail** (dari outstanding PR atau pilih produk)
-3. (Opsional) Other Cost / Other Discount — COA dari master ikut ke PI sebagai default; di PI COA bisa diganti sebelum approve (amount dari PO tetap locked)
-4. Set status **Open** → **Approve**
-5. Buat **Purchase Inbound** dari PO approved
-6. Saat semua qty diterima → **Complete**; atau **Close** manual jika sisa qty tidak dilanjutkan
-7. Buat **Purchase Invoice** dari inbound — tagih barang ± Additional Cost/Disc
+| ✅ Buat PO jika | ❌ Jangan buat PO jika |
+|-----------------|------------------------|
+| Ada kebutuhan beli ke supplier (dengan atau tanpa PR) | Supplier belum lengkap accounting setting — tidak muncul di daftar |
+| With PR: masih ada sisa qty PR outstanding | Qty PR sudah habis / PR sudah closed-complete |
+| Without PR: produk aktif dengan COA group | Produk bundle / random (tidak bisa dipilih) |
 
 ---
 
-## 3. Status — arti untuk operator
+## 3. Alur kerja standar
+
+Setelah kebutuhan beli jelas, buat PO lalu approve agar bisa diterima di inbound.
+
+```mermaid
+flowchart TD
+    A["SCM → Purchase Order → Create"] --> B["Pilih With PR / Without PR"]
+    B --> C["Isi supplier, currency, kurs"]
+    C --> D["Tambah Detail\n(+ Cost/Disc opsional)"]
+    D --> E["Status Open → Approve"]
+    E --> F["Purchase Inbound"]
+    F --> G["Complete atau Closed"]
+    G --> H["Purchase Invoice"]
+```
+
+**Keterangan langkah:**
+
+- **Create:** pilih tipe With/Without PR; isi supplier, mata uang, kurs. Create biasanya mulai status **Open**.
+- **Detail:** With PR → ambil dari outstanding PR; Without PR → pilih produk. Opsional: Additional Cost / Discount (nominal ikut ke PI; di PI COA masih bisa diganti sebelum approve).
+- **Approve:** status harus **Open** + minimal 1 baris detail.
+- **Inbound:** setelah approved, buat Purchase Inbound.
+- **Selesai:** **Complete** (otomatis jika semua qty diterima) atau **Closed** (manual dari Processed jika sisa tidak dilanjutkan).
+- **Invoice:** tagih di Purchase Invoice dari inbound.
+
+---
+
+## 4. Status — arti untuk operator
 
 | Status | Arti | Bisa ubah data? |
 |--------|------|-----------------|
@@ -49,24 +74,24 @@ audience: operator
 
 > **Complete vs Closed:** keduanya artinya proses PO **selesai** untuk sisa inbound — trigger berbeda.
 >
-> **Kapan pakai Closed?** Saat PO sudah **Processed** (sudah pernah terima barang sebagian via Inbound), tapi supplier **tidak akan kirim sisa qty**. Klik Closed → Inbound baru untuk sisa qty **ditolak sistem**.
+> **Kapan pakai Closed?** Saat PO sudah **Processed** (sudah pernah terima barang sebagian), tapi supplier **tidak akan kirim sisa**. Klik Closed → Inbound baru untuk sisa qty **ditolak sistem**.
 
 ---
 
-## 4. Tipe PO
+## 5. Tipe PO
 
 | Tipe | Kapan dipakai |
 |------|---------------|
 | **With PR** | Pembelian berdasarkan PR yang sudah approved/processed |
 | **Without PR** | Pembelian langsung tanpa PR |
 
-Tipe **tidak bisa diubah** di form jika sudah ada baris detail. Import Excel bisa mengubah flag `with_pr` (hati-hati).
+Tipe **tidak bisa diubah** di form jika sudah ada baris detail. Import Excel bisa mengubah tipe PO (hati-hati — sesuaikan file dengan tipe yang diinginkan).
 
 ---
 
-## 5. Tombol & fungsi UI
+## 6. Tombol & fungsi UI
 
-### 5.1 Form create / edit (sidebar)
+### 6.1 Form create / edit (sidebar)
 
 | Tombol / aksi | Fungsi |
 |---------------|--------|
@@ -74,86 +99,62 @@ Tipe **tidak bisa diubah** di form jika sudah ada baris detail. Import Excel bis
 | **Save All** | Simpan header (Draft/Open dari radio) |
 | **Approve** | Setujui — hanya status **Open**, min 1 detail |
 | **Print** (ikon) | Unduh PDF PO |
-| **Void** (ikon) | Batalkan PO **Approved** (belum ada inbound/processed) |
+| **Void** (ikon) | Batalkan PO **Approved** (belum ada inbound) |
 | **Closed** (ikon) | Tutup PO **Processed** — sisa qty tidak dilanjutkan |
-| **Radio Draft / Open** | Pilih sebelum save; create selalu mulai **Open** di backend |
+| **Radio Draft / Open** | Pilih sebelum save; create biasanya mulai **Open** |
 
-### 5.2 Section Detail
+### 6.2 Section Detail
 
 | Tombol / aksi | Fungsi |
 |---------------|--------|
 | **Available Product** | Modal outstanding PR (With PR) atau daftar produk (Without PR) |
 | **Use** (per baris modal) | Buka form input qty, harga, unit, VAT |
-| **Allocate Full Qty Clearing** | Isi sisa qty PR sekaligus (With PR, qty desimal) |
+| **Allocate Full Qty Clearing** | Isi sisa qty PR sekaligus (With PR) |
 | **Import Detail** | Upload Excel massal |
-| **Export Detail** | Download detail PO (xlsx/csv) |
-| Edit inline | PO Qty, Unit, Unit Price (sebelum approved) |
-| Edit modal | Diskon, VAT, warranty, delivery date |
-| Delete baris | Hapus detail (revert qty PR jika With PR) |
+| **Export Detail** | Download detail PO |
+| Edit / Delete baris | Sebelum approved |
 
-### 5.3 Datalist row actions
+### 6.3 Datalist row actions
 
 | Aksi | Kapan |
 |------|-------|
-| Edit | Draft, Open, Rejected |
+| Edit / Delete | Draft, Open, Rejected |
 | Approve | Open |
-| Delete | Draft, Open, Rejected |
 | Void | **Approved** (bukan draft/open) |
 | Closed | **Processed** |
 | Print | Semua status |
 
-**Penting:** Untuk batalkan PO yang masih draft/open → **Delete**, bukan Void.
+**Penting:** batalkan PO yang masih draft/open → **Delete**, bukan Void.
 
 ---
 
-## 6. Import detail — panduan operator
+## 7. Import detail — panduan operator
 
-### Template
-
-Download dari panel import:
-- **With PR:** `Template-Import-PO-With-PR.xlsx`
-- **Without PR:** `Template-Import-PO-Without-PR.xlsx`
-
-> Jika file tidak tersedia — laporkan ke IT (asset belum di-deploy).
-
-### Kolom (baris 1 = header — jangan ubah label B–H)
+Download template dari panel import (With PR / Without PR). Jika file tidak tersedia (404) — buat Excel manual mengikuti kolom di bawah, atau minta IT deploy template.
 
 | Kolom | Isi | Wajib? |
 |-------|-----|--------|
-| A | Kode PR (contoh `PR-xxx`) — **semua baris** isi atau **semua kosong** | Wajib jika With PR |
+| A | Kode PR — **semua baris** isi atau **semua kosong** | Wajib jika With PR |
 | B | System Product SKU | **Ya** |
 | C | PO Qty (> 0) | **Ya** |
 | D | Unit (kode exact) | **Ya** |
 | E | Unit Price (≥ 1) | **Ya** |
 | F | Disc. (%) | Opsional |
 | G | Description | Opsional |
-| H | Required Delivery Date (format **Excel date**, bukan ketik manual) | Opsional |
+| H | Required Delivery Date (**Excel date**, bukan ketik teks) | Opsional |
 
-VAT & warranty **tidak** ada di template — sistem isi otomatis dari master product.
+VAT & warranty **tidak** di template — sistem isi otomatis.
 
-### Download template (penting)
-
-Tombol download mengarah ke `/files/Template-Import-PO-With-PR.xlsx` — **file ini belum di-deploy** di server FE (404). Buat manual ikuti kolom di atas, atau minta IT menambahkan file template.
-
-### Aturan penting
-
-- Maksimal **500 baris** detail per PO
-- **Satu baris salah** di fase validasi → **seluruh file batal** — perbaiki lalu upload ulang
-- Tipe import (ada/tidak PR Code di baris 2) harus **match** dengan detail PO yang sudah ada
-- Bundle / Random SKU ditolak
-
-### Setelah import
-
-Cek **Import Log** jika gagal. PR **Rejected** → PO jadi **Draft**.
+**Aturan:** maks **500** baris; **satu baris salah** di validasi awal → **seluruh file batal**; tipe file harus cocok dengan detail PO yang sudah ada; bundle/random ditolak.
 
 ---
 
-## 7. Basic Information — tips
+## 8. Basic Information — tips
 
 | Field | Tips |
 |-------|------|
 | Supplier | Hanya muncul jika accounting setting **100% lengkap** |
-| Currency / Payment | Auto dari supplier saat pilih supplier |
+| Currency / Payment | Auto dari supplier saat dipilih |
 | Exchange Rate | Default **1** — ubah manual untuk mata uang asing |
 | Your Ref | Max 50 karakter |
 
@@ -161,32 +162,32 @@ Setelah ada detail, **tanggal, supplier, currency, payment** terkunci.
 
 ---
 
-## 8. Troubleshooting
+## 9. Troubleshooting
 
 | Gejala | Penyebab | Solusi |
 |--------|----------|--------|
 | Supplier tidak muncul | Accounting belum lengkap | Lengkapi di General Company |
 | Tidak bisa approve | Status Draft / belum Open | Set **Open** + save |
-| Reject tidak langsung approve | Flow reject → draft | Set **Open** + save |
+| Setelah reject sulit approve | Flow reject → draft | Set **Open** + save lagi |
 | Void tidak muncul | PO masih draft/open | Gunakan **Delete** |
-| Void gagal "prepared at purchase" | Sudah ada inbound | Tidak bisa void — gunakan Close jika processed |
-| Closed tidak muncul | PO masih approved (belum inbound) | Buat inbound dulu → **Processed** |
+| Void gagal (sudah prepared) | Sudah ada inbound | Tidak bisa void — Close jika processed |
+| Closed tidak muncul | Belum pernah inbound | Buat inbound dulu → **Processed** |
 | Import type not match | File With PR vs PO Without PR | Kosongkan detail atau sesuaikan file |
 | Kurs invalid | Currency primer tapi rate ≠ 1 | Set rate = 1 |
-| PR tidak muncul di outstanding | PR closed/complete atau qty habis | Cek status PR |
+| PR tidak muncul | PR closed/complete atau qty habis | Cek status PR |
 
 ---
 
-## 9. FAQ
+## 10. FAQ
 
 **Q: Apakah qty boleh desimal?**  
-A: Input manual: **bilangan bulat**. Import: boleh int/double > 0.
+A: Input manual: **bilangan bulat**. Import: boleh angka > 0 (termasuk desimal).
 
 **Q: Berapa maksimal baris detail?**  
 A: **500** baris.
 
 **Q: Apakah void mengembalikan qty ke PR?**  
-A: **Belum** — void approved PO saat ini **tidak revert** `processed_to_po` di PR (known gap). Delete detail sebelum approve akan revert `prepared_to_po`.
+A: **Belum** — void PO approved saat ini **tidak** mengembalikan qty yang sudah dikunci di PR. Hapus detail sebelum approve akan mengembalikan qty yang masih direservasi.
 
 **Q: Apakah print PDF sama dengan Net Purchase di layar?**  
 A: **Belum selalu** — print **tidak include** Other Cost/Discount.
@@ -197,7 +198,9 @@ A: **Belum selalu** — print **tidak include** Other Cost/Discount.
 
 | Doc | Path |
 |-----|------|
+| User Guide | [user-guide.md](./user-guide.md) |
 | Requirement | [requirement.md](./requirement.md) |
 | Technical | [technical.md](./technical.md) |
 | Purchase Requisition | [../supplychain-purchase-requisition/knowledge-base.md](../supplychain-purchase-requisition/knowledge-base.md) |
-| Purchase Inbound | `supplychain/new-purchase-inbound` (BETA) / `mutation-inbound` (legacy) | [GRN v2.0](../supplychain-new-purchase-inbound/requirement.md) |
+| Purchase Inbound | [../supplychain-new-purchase-inbound/knowledge-base.md](../supplychain-new-purchase-inbound/knowledge-base.md) |
+| Purchase Invoice | [../accounting-supplier-invoice/knowledge-base.md](../accounting-supplier-invoice/knowledge-base.md) |

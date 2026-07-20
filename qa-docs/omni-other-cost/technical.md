@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-other-cost
 menu_name: "Other Cost"
-version: 1.3
-last_updated: 2026-06-23
+version: 1.5
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: review
 related_docs:
@@ -93,7 +93,7 @@ Prefix: `/api/omnichannel/other-cost` (middleware `auth:sanctum`, `auth_verified
 | PUT | `/other-cost/{id}` | `update` |
 | DELETE | `/other-cost/{id}` | `destroy` (soft) |
 | GET | `/other-cost/select2` | Active OC select2 |
-| GET | `/other-cost/select2-expense` | COA Expense leaf select2 |
+| GET | `/other-cost/select2-expense` | COA leaf select2 (AS-IS: Expense + ORev; TO-BE: all class) |
 | GET | `/other-cost/{id}/audit` | Audit log datatable |
 | POST | `/other-cost/import` | Excel import |
 | GET | `/other-cost/import-history` | Import history |
@@ -137,18 +137,37 @@ Tidak ada FormRequest — validasi inline di `OtherCostController@store` / `@upd
 
 ### 6.2 COA select2 (`select2Child_expense`)
 
-```289:306:Modules/OmniChannel/Http/Controllers/OtherCostController.php
+AS-IS: exclude parent via `CoaTree`, filter class Expense **atau** Other Revenue & Expenses, `status=1`, `owned_by` = company.
+
+```304:324:Modules/OmniChannel/Http/Controllers/OtherCostController.php
     public function select2Child_expense(Request $request)
     {
-        // ...
+        $selectParent = CoaTree::where('parent_id', '<>', null)
+                            ->where('status', 1)
+                            ->groupBy('parent_id')
+                            ->pluck('parent_id')
+                            ->all();
         $query = ChartOfAccount::withoutCompanyScope()
+                                // ...
                                 ->whereNotIn('id', $selectParent)
                                 ->where('owned_by', getToken()->company_id ?? null)
                                 ->whereHas('chart_of_account_class', function ($class) {
-                                    $class->where('name', 'Expense');
+                                    $class->where(function ($n) {
+                                        $n->where('name', 'Expense')
+                                        ->orWhere('name', 'Other Revenue & Expenses');
+                                    });
                                 })
                                 ->where('status', 1);
 ```
+
+**TO-BE (O-08):** hapus `whereHas` class filter — biarkan semua class; pertahankan exclude parent + Active + owned_by.
+
+### 6.2b COA save / import — leaf enforcement
+
+| Channel | Class check | Leaf check |
+|---------|-------------|------------|
+| `store` / `update` | Tidak ada | `CoaTree::where('parent_id', $coaId)->first()` → error `Selected COA must be smallest COA code.` |
+| Import | AS-IS allow-list Expense+ORev | `CoaTree::where('parent_id', $coa->id)->exists()` → `is parent COA.` |
 
 ### 6.3 Applied to Store + Settlement filter
 
@@ -205,20 +224,32 @@ Tidak ada dedicated export class. `DataTablesV3.exportActivePageOnly()` — kolo
 | Sales Order General | `sales-order-general` | |
 | Other Discount | `omni-other-discount` | |
 
-## 9. COA class limits (per channel)
+## 9. COA scope (update 17 Jul 2026)
 
-| Channel | Allowed classes | Endpoint / file |
-|---------|-----------------|-----------------|
-| Form dropdown | Expense only | `OtherCostController@select2Child_expense` |
-| Import (AS-IS) | Expense + Other Revenue & Expenses | `OtherCostImport::ALLOWED_COA_CLASSES` |
-| API save | No explicit class check after pick | `store` / `update` — leaf + owner only |
+| Channel | AS-IS (verified) | TO-BE |
+|---------|------------------|-------|
+| Form dropdown | Expense **atau** Other Revenue & Expenses + leaf | **Semua class** + leaf (**O-08**) |
+| Import | `ALLOWED_COA_CLASSES` = Expense, ORev | Hapus allow-list (**O-08**) |
+| API save | No class check — leaf + owner | Pertahankan |
+
+**Child vs parent:** parent = id muncul sebagai `parent_id` di `CoaTree` (punya child). Bukan flag di `ChartOfAccount`.
+
+**VERIFY findings (update req §10 — 17 Jul 2026):**
+
+| # | Item | Hasil |
+|---|------|-------|
+| 1 | Enforcement child-only | **Dropdown + backend save + import** — bukan dropdown-only |
+| 2 | Definisi parent | `CoaTree.parent_id` group — lihat `select2Child_expense` |
+| 3 | Active + owned_by | Confirmed di select2 (`status=1`, `owned_by` company) |
+| 4 | Jurnal hardcode class | Tidak ditemukan asumsi class hardcode untuk OC di path jurnal Accounting (posting pakai COA id dari line/master) |
+| 5 | Leaf → parent setelah dipakai | Entry existing tetap simpan FK; **edit/re-save** master menjalankan ulang leaf check → akan gagal jika COA sudah jadi parent |
 
 ## 10. Import — AS-IS audit (QA v1.3)
 
 Lihat [requirement.md §4.4](./requirement.md). Applied Store by **`store_name`** — **correct AS-IS** (bukan store code).
 
-Sisa gap utama: IMP-02 (company scope store), IMP-03 (COA `owned_by`), IMP-04–06.
+Sisa gap utama: IMP-02 (company scope store), IMP-03 (COA `owned_by`), IMP-04–06, **O-08** (hapus class filter).
 
 ## 11. Known Technical Debt
 
-Lihat [requirement.md §5 Open Items](./requirement.md) — FormRequest refactor (O-12), `expense_coa_id` di update rules (O-09), inactive bypass store API (O-07), export Applied to Store (O-05).
+Lihat [requirement.md §5 Open Items](./requirement.md) — O-08 (all-class COA), FormRequest (O-12), `expense_coa_id` update rules (O-09), export Applied to Store (O-05).

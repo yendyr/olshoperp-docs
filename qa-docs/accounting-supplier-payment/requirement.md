@@ -2,22 +2,21 @@
 doc_type: requirement
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.1
-last_updated: 2026-07-06
+version: 2.2
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: review
+aliases: [Account Payment docs, AP payment, pembayaran hutang, PY]
 ---
 
 # Account Payment — Requirement Documentation
 
 **Modul:** Finance & Accounting / Account Payable  
-**Prefix transaksi:** `PY-` (AS-IS; PM menyebut `PY` atau manual unique)  
-**Audience:** PM, Finance, Operations, QA, Support, Developer  
-**Status:** AS-IS verified against codebase per 2026-07-06
+**Prefix transaksi:** `PY-`  
+**Audience:** PM, Finance, QA  
+**Status:** AS-IS verified (compliance pass 2026-07-17)
 
 **UI route:** `/accounting/supplier-payment`  
-**API base:** `{VITE_API_URL}accounting/supplier-payment`  
-**Table:** `accounting_payments` (type `Payment to Supplier`) · `accounting_payment_details` · `accounting_payment_detail_funds` · `accounting_payment_detail_deposits` · `accounting_payment_detail_adjustments`
 
 **PM source:** `account-payment-requirement.md` (29 Okt 2025 MVP) + Import AP Relational (Apr 2026)
 
@@ -31,6 +30,7 @@ status: review
 |---------|------|--------|---------|
 | 2.0 | 2026-07-05 | QA - Yemima | Initial v2.0 — PI allocation, journal, gaps |
 | 2.1 | 2026-07-06 | QA - Yemima | Full PM merge: multi-source (Cash/Bank + DN), sections A–E, balancing, formulas, import AP, relasi DN/Cash-Bank/PI/PR, gaps §19–§21 |
+| 2.2 | 2026-07-17 | QA - Yemima | Compliance qa-docs-standard: stateDiagram, Validasi, FAQ; trim path/class; user-guide |
 
 ---
 
@@ -85,14 +85,24 @@ flowchart TB
 | 1 | **Supplier** terdaftar | Required header |
 | 2 | **PI Approved** dengan outstanding > 0 | Outstanding query |
 | 3 | **General Company Setting** — AP COA supplier | Journal on approve |
-| 4 | **Exchange Diff. COA** & **Cash Diff. COA** company | Required by `supplierPaymentAutoJournal` |
-| 5 | **Cash/Bank account** aktif (jika pakai kas) | Master `CompanyDetailBank` |
-| 6 | **Debit Note Approved** (jika pakai DN) | `queryAvailableDebitNote` |
-| 7 | **Fiscal period** aktif untuk transaction date | `validate_fiscal_period` |
+| 4 | **Exchange Diff. COA** & **Cash Diff. COA** company | Required on approve journal |
+| 5 | **Cash/Bank account** aktif (jika pakai kas) | Master rekening company |
+| 6 | **Debit Note Approved** (jika pakai DN) | Query DN available |
+| 7 | **Fiscal period** aktif untuk transaction date | Validasi fiscal |
 
 ---
 
 ## 3. Siklus Status Transaksi
+
+```mermaid
+stateDiagram-v2
+    [*] --> draft: Create draft
+    [*] --> open: Create open
+    draft --> open: User set Open
+    open --> approved: Approve (balanced)
+    open --> rejected: Reject
+    approved --> [*]
+```
 
 | Status | Edit header/detail? | Approve? |
 |--------|---------------------|----------|
@@ -108,9 +118,6 @@ flowchart TB
 
 ## 4. Datalist
 
-**Komponen:** `Payment/DataList.vue`  
-**API:** `GET accounting/supplier-payment`
-
 Kolom standar: Trx Code, Date, Supplier, Currency, Exchange Rate, Grand Total, Status, actions.
 
 **Toolbar:** bulk delete/approve, export, **Import Log** (header import AP), show deleted, advanced filter.
@@ -121,12 +128,12 @@ Kolom standar: Trx Code, Date, Supplier, Currency, Exchange Rate, Grand Total, S
 
 | Field | PM | AS-IS |
 |-------|-----|-------|
-| **Transaction Code** | Auto prefix PY; bisa manual unique | `generateCode(..., 'PY')` via `SupplierPayment` |
+| **Transaction Code** | Auto prefix PY; bisa manual unique | Auto generate PY |
 | **Transaction Date** | Default now; no future; backdate max **6 bulan**; fiscal period | FE `min = now-6mo`, `max-now`; BE fiscal validate |
 | **Supplier** | Wajib; filter supplier punya PI approved | Select2 suppliers with outstanding PI |
 | **Transaction Currency** | Default IDR (primary) | `currency_id` required |
 | **Exchange Rate** | Wajib; default 1 untuk IDR | Required |
-| **Description** | Optional max 250 | CKEditor / textarea (codebase may allow >250 — verify) |
+| **Description** | Optional max 250 | Textarea — `[VERIFY: CODEBASE]` max length |
 | **Attachment** | File upload bukti | `FormAttachment` |
 | **Draft / Open** | Radio side panel | Same pattern as PI |
 
@@ -152,7 +159,6 @@ Jika user ubah `supplier`, `currency_id`, `exchange_rate`, `transaction_date` sa
 
 ## 6. Section B — Payment Source (Sumber Dana)
 
-**Komponen:** `PaymentSource.vue`  
 User dapat multiple rows: **Cash/Bank** dan/atau **Debit Note**.
 
 **Validasi umum:** Currency source = **Transaction Currency** header.
@@ -164,7 +170,7 @@ User dapat multiple rows: **Cash/Bank** dan/atau **Debit Note**.
 | Master | `CompanyDetailBank` → `chart_of_account_id` |
 | Modal columns | Type (cash/bank), Label, Bank Name, Account Number, **Balance** |
 | Amount input | Tidak boleh > **available balance** |
-| Bulk use | `POST .../cash-bank-account/bulk-use` — alokasi full available per akun |
+| Bulk use | Alokasi full available per akun terpilih |
 
 **Balance calculation (AS-IS):**
 
@@ -529,21 +535,34 @@ Cross-ref: [accounting-purchase-return/knowledge-base.md](../accounting-purchase
 
 ## 17. Acceptance Criteria (QA smoke)
 
-1. Create AP → add cash source + PI detail → prepared on PI  
-2. Approve balanced → journal Dr AP Cr Bank; PI processed_to_payment ↑  
-3. Unbalanced approve → error balancing message  
-4. Cash amount > balance → insufficient funds error  
-5. DN as source → prepared_to_use on DN; Cr deposit COA on journal  
-6. Full clearing PI → cash_difference column populated  
-7. Exchange diff when PI rate ≠ payment rate  
-8. Adjustment row → appears on journal  
-9. Header lock when details exist  
-10. Import template download + valid file → OPEN AP records  
-11. Partial pay → second AP clears remainder  
+Create+cash+PI → approve balanced · unbalanced reject · cash>balance reject · DN source · full clearing cash_diff · forex · header lock · import OPEN · partial then second pay.
 
----
+
+## 17.5 Validasi (ringkas)
+
+| # | Kondisi | Behavior |
+|---|---------|----------|
+| 1 | Header edit saat ada source/detail/adj | Ditolak — clear details dulu |
+| 2 | Total Source ≠ Total Detail | Approve gagal balancing |
+| 3 | Amount kas > saldo tersedia | Ditolak |
+| 4 | Amount DN > sisa DN | Ditolak |
+| 5 | Currency currency ≠ header currency | Ditolak |
+| 6 | Approve tanpa source atau tanpa PI detail | Approve gagal |
+| 7 | Status bukan Open | Tidak bisa Approve |
+| 8 | Fiscal closed / tanggal future | Ditolak |
+| 9 | Import non-IDR / import paralel | Ditolak / antri |
+
+Detail pesan & formula: [technical §8–§11](./technical.md).
 
 ## 18. Relasi Menu
+
+```mermaid
+flowchart LR
+    PI[Purchase Invoice] --> PAY[Account Payment]
+    DN[Debit Note] --> PAY
+    PR[Purchase Return] --> DN
+    PAY --> JRN[Journal / Bank]
+```
 
 | Menu | Relasi |
 |------|--------|
@@ -575,15 +594,8 @@ Cross-ref: [accounting-purchase-return/knowledge-base.md](../accounting-purchase
 
 ## 20. Dev Follow-ups
 
-| ID | Item |
-|----|------|
-| DEV-PAY-01 | Remove or fix Void UI — align with MVP (no void) or implement reversal |
-| DEV-PAY-02 | Fix DN bulk-clearing URL in `PaymentSource.vue` for supplier |
-| DEV-PAY-03 | Wire PR → PI `prepared/processed_to_amount_return` OR document DN-only path |
-| DEV-PAY-04 | Set PI `processed` when fully paid |
-| DEV-PAY-05 | Align outstanding SQL with prepared amounts |
+DEV-PAY-01…05 (void UI, DN bulk URL, PR wiring, PI processed status, outstanding SQL): [technical §14](./technical.md#14-known-issues).
 
----
 
 ## 21. Pending Items — Major
 
@@ -595,18 +607,24 @@ Cross-ref: [accounting-purchase-return/knowledge-base.md](../accounting-purchase
 | **P-PAY-04** | 🟡 Medium | **PM** | Smart Settlement Adjustment parity dengan Import AR? | Open |
 | **P-PAY-05** | 🟡 Medium | **Ops** | DN deleted after AP open — invalidate AP? | Open |
 
-**Confirmed OK (PM Okt 2025):**
-
-- Multi-source Cash/Bank + DN ✓  
-- Balancing source = detail on approve ✓  
-- Cash/bank balance check ✓  
-- Header lock when details exist ✓  
-- Exchange diff journal ✓  
-- Allocate Full PI clearing ✓  
-- Adjustment section ✓  
-- Void excluded MVP — **UI still present** ⚠️  
+**Confirmed OK:** multi-source, balancing, cash balance check, header lock, exchange diff, allocate full, adjustment. Void excluded MVP — **UI still present** ⚠️.
 
 ---
+
+
+## 22. FAQ
+
+**Q: Kenapa approve gagal balancing?**  
+A: Total Payment Source harus sama persis dengan Total Detail.
+
+**Q: Void payment approved?**  
+A: MVP tidak tersedia; UI ada tapi API broken (GAP-PAY-VOID-01 / P-PAY-01).
+
+**Q: Partial payment?**  
+A: Ya — sisa PI bisa dibayar di payment berikutnya.
+
+**Q: Bulk DN clearing error?**  
+A: Bug FE URL (GAP-PAY-DN-CLEAR) — pakai single DN add.
 
 ## Related Documents
 
@@ -614,4 +632,5 @@ Cross-ref: [accounting-purchase-return/knowledge-base.md](../accounting-purchase
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | Purchase Invoice | [../accounting-supplier-invoice/requirement.md](../accounting-supplier-invoice/requirement.md) |

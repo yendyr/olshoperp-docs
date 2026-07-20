@@ -2,10 +2,11 @@
 doc_type: knowledge-base
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.1
-last_updated: 2026-07-06
+version: 2.2
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: review
+aliases: [AP payment, Account Payment, pembayaran hutang, PY, pelunasan supplier]
 ---
 
 # Account Payment — Knowledge Base (Operator)
@@ -18,7 +19,7 @@ status: review
 
 ## 1. Apa itu Account Payment?
 
-Account Payment (AP) adalah transaksi **pembayaran hutang** ke supplier. Hutang berasal dari **Purchase Invoice** yang sudah approved.
+Account Payment adalah transaksi **pembayaran hutang** ke supplier. Hutang berasal dari **Purchase Invoice** yang sudah approved.
 
 Pembayaran bisa memakai:
 - **Cash/Bank** — uang keluar dari rekening
@@ -27,28 +28,47 @@ Pembayaran bisa memakai:
 
 ---
 
-## 2. Alur kerja standar
+## 2. Kapan dipakai?
 
-```
-1. Accounting → Account Payment → Create
-2. Isi Supplier, Tanggal, Mata Uang, Kurs
-3. Status Open
-4. Section Payment Source → tambah Cash/Bank dan/atau Debit Note
-5. Section Detail → Outstanding PI → pilih invoice → isi To Be Paid
-6. (Opsional) Adjustment — biaya admin bank, rounding
-7. Pastikan Total Source = Total Detail (harus balance)
-8. Save All → Approve
-```
-
-**Penting:** Sebelum approve, **jumlah sumber dana harus sama persis** dengan jumlah alokasi PI.
+| ✅ Buat payment jika | ❌ Jangan jika |
+|---------------------|----------------|
+| Ada PI approved dengan sisa hutang | PI masih draft / belum approved |
+| Rekening kas/bank aktif (jika bayar tunai) | Saldo rekening tidak cukup |
+| DN approved tersedia (jika potong DN) | Mau void payment approved — fitur belum tersedia |
+| Setting company (AP COA, Exchange Diff, Cash Diff) lengkap | Periode fiskal tutup |
 
 ---
 
-## 3. Section Payment Source
+## 3. Alur kerja standar
+
+Setelah PI approved, bayar hutang lewat Account Payment.
+
+```mermaid
+flowchart TD
+    A["Accounting → Account Payment → Create"] --> B["Isi Supplier, Tanggal, Mata Uang"]
+    B --> C["Status Open"]
+    C --> D["Payment Source\nCash/Bank dan/atau DN"]
+    D --> E["Outstanding PI\nisi To Be Paid"]
+    E --> F["Cek Source = Detail"]
+    F --> G["Save All → Approve"]
+```
+
+**Keterangan langkah:**
+
+- **Create:** isi Supplier, Tanggal, Mata Uang, Kurs. Set status **Open**.
+- **Payment Source:** tambah Cash/Bank dan/atau Debit Note.
+- **Detail:** pilih PI outstanding → isi **To Be Paid** (sebagian atau penuh).
+- **Adjustment (opsional):** biaya admin bank, rounding.
+- **Balance wajib:** Total Source harus **sama persis** dengan Total Detail sebelum Approve.
+- **Approve:** jurnal otomatis; hutang PI berkurang.
+
+---
+
+## 4. Section Payment Source
 
 ### Cash / Bank
 - Pilih rekening dari master
-- **Balance** menampilkan saldo tersedia (dari jurnal approved)
+- **Balance** menampilkan saldo tersedia
 - Amount tidak boleh melebihi saldo
 - **Bulk Use** — isi otomatis saldo penuh per akun terpilih
 
@@ -59,25 +79,24 @@ Pembayaran bisa memakai:
 
 ---
 
-## 4. Section Outstanding Purchase Invoice
+## 5. Section Outstanding Purchase Invoice
 
 | Kolom | Arti |
 |-------|------|
 | TOTAL | Net Purchase Invoice |
 | OUTSTANDING | Sisa hutang |
 | STATUS | Prepared = sedang di payment lain; Paid = lunas |
-| PURCHASE RETURN | Link retur terkait (jika ada) |
-| DEBIT NOTE | Link DN terkait PI (jika ada) |
+| PURCHASE RETURN / DEBIT NOTE | Link terkait (jika ada) |
 
 **Use (single):** Modal → isi To Be Paid → Save  
-**Allocate Full Amount:** Lunasi penuh sisa outstanding sekaligus  
+**Allocate Full Amount:** Lunasi penuh sisa outstanding  
 **Bulk Use:** Tambah banyak PI sekaligus  
 
-**Already Prepared:** PI sedang dipakai payment draft/open lain — tunggu approve/batalkan payment tersebut.
+**Already Prepared:** PI sedang dipakai payment draft/open lain — tunggu approve atau batalkan payment tersebut.
 
 ---
 
-## 5. Section Detail & Totals
+## 6. Section Detail & Totals
 
 | Kolom | Arti |
 |-------|------|
@@ -91,27 +110,18 @@ Pembayaran bisa memakai:
 
 ---
 
-## 6. Hubungan dengan menu lain
+## 7. Hubungan dengan menu lain
 
-### Purchase Invoice
-- PI approved muncul di outstanding
-- Setelah AP approve → hutang PI berkurang (`processed_to_payment`)
-
-### Debit Note
-- DN bisa jadi **sumber dana** (ganti kas keluar)
-- DN sering dari **Purchase Return** atau kelebihan bayar
-
-### Purchase Return
-- Retur barang → bisa generate DN
-- DN dipakai di AP berikutnya sebagai potongan
-
-### Cash / Bank
-- Saldo rekening dari jurnal historis
-- AP approve → **Credit** rekening bank di jurnal
+| Menu | Peran |
+|------|-------|
+| **Purchase Invoice** | Sumber hutang; setelah approve, sisa hutang berkurang |
+| **Debit Note** | Bisa jadi sumber dana (ganti kas keluar) |
+| **Purchase Return** | Sering menghasilkan DN untuk potongan |
+| **Cash / Bank** | Saldo rekening; approve → credit rekening di jurnal |
 
 ---
 
-## 7. Import massal
+## 8. Import massal
 
 Datalist → **Import Log** → upload Excel 3 sheet (Bank Mutation · Detail · Adjustment).
 
@@ -121,7 +131,7 @@ Datalist → **Import Log** → upload Excel 3 sheet (Bank Mutation · Detail ·
 
 ---
 
-## 8. Troubleshooting
+## 9. Troubleshooting
 
 | Gejala | Penyebab | Solusi |
 |--------|----------|--------|
@@ -129,12 +139,12 @@ Datalist → **Import Log** → upload Excel 3 sheet (Bank Mutation · Detail ·
 | Insufficient balance | Kas tidak cukup | Kurangi amount atau ganti rekening |
 | PI tidak muncul | Sudah lunas / supplier beda / tanggal | Cek outstanding & filter |
 | Header tidak bisa edit | Sudah ada detail | Hapus semua detail dulu |
-| Void tidak jalan | MVP void belum aktif | Jangan approve jika belum yakin (GAP-PAY-VOID-01) |
+| Void tidak jalan | Fitur belum tersedia | Jangan approve jika belum yakin |
 | DN clearing bulk error | Bug URL FE | Pakai single DN add manual |
 
 ---
 
-## 9. FAQ
+## 10. FAQ
 
 **Q: Bisa bayar sebagian PI?**  
 A: Ya — partial payment; sisa bisa dibayar di AP berikutnya.
@@ -143,7 +153,7 @@ A: Ya — partial payment; sisa bisa dibayar di AP berikutnya.
 A: Ya — multiple rows di Payment Source.
 
 **Q: Void payment approved?**  
-A: PM MVP: **tidak tersedia**. UI void ada tapi tidak berfungsi dengan benar.
+A: Belum tersedia untuk dipakai. UI void ada tapi tidak berfungsi dengan benar — teliti sebelum approve.
 
 **Q: Due date PI?**  
 A: Informasi di outstanding; tidak memblok payment.
@@ -154,6 +164,7 @@ A: Informasi di outstanding; tidak memblok payment.
 
 | Doc | Path |
 |-----|------|
+| User Guide | [user-guide.md](./user-guide.md) |
 | Requirement | [requirement.md](./requirement.md) |
 | Technical | [technical.md](./technical.md) |
 | Purchase Invoice | [../accounting-supplier-invoice/knowledge-base.md](../accounting-supplier-invoice/knowledge-base.md) |

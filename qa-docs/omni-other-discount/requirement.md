@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-other-discount
 menu_name: "Other Discount"
-version: 1.1
-last_updated: 2026-07-10
+version: 1.2
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -17,13 +17,14 @@ legacy_sources: []
 |---------|------|--------|---------|
 | 1.0 | 2026-06-23 | QA - Yemima | Konsolidasi requirement PM + verifikasi AS-IS codebase; selaraskan jawaban konsisten dengan [Other Cost](../omni-other-cost/requirement.md) |
 | 1.1 | 2026-07-10 | QA - Yemima | Cross-ref: COA di Master = **default** untuk PI; override COA per baris di Purchase Invoice (§6) |
+| 1.2 | 2026-07-17 | QA - Yemima | COA scope **sama Other Cost**: semua class + child-only (update req 17 Jul); O-08 = hapus filter class |
 
 **Nama lain menu:** Other Discount, Master Other Discount  
 **UI route:** `/omni/other-discount`  
 **API prefix:** `omnichannel/other-discount/*`  
 **Modul:** Finance Accounting → Master  
 **Tabel utama:** `omni_other_discounts`  
-**Menu pasangan:** [Master Other Cost](../omni-other-cost/requirement.md) — struktur & behavior identik kecuali **COA class** (§3.2).
+**Menu pasangan:** [Master Other Cost](../omni-other-cost/requirement.md) — struktur & behavior identik; **COA scope sekarang sama** (semua class + child-only).
 
 ---
 
@@ -39,7 +40,7 @@ Setiap record baru otomatis memiliki `owned_by` = **company yang sedang login** 
 |-------|------------|----------------|
 | Tujuan | Biaya **tambahan** (menambah nilai) | Potongan/**diskon** (mengurangi nilai) |
 | Settlement header | `OC: {code}` | `OD: {code}` |
-| **COA class (TO-BE)** | Expense + Other Revenue & Expenses | **Revenue** + Other Revenue & Expenses + **Cost Of Goods Sold** |
+| **COA scope (TO-BE)** | Semua class + child-only | **Sama** — semua class + child-only |
 | Struktur field, Applied Store, import, audit | Identik | Identik |
 
 ### 1.2 Diagram relasi
@@ -85,7 +86,7 @@ flowchart TB
 | A-10 | Code required, unique per company (`owned_by`), **max 50 karakter** | ✅ |
 | A-11 | Code tidak boleh mengandung spasi | ❌ **Task dev** (O-01) |
 | A-12 | `owned_by` = company login saat create | ✅ |
-| A-13 | Other Discount COA: leaf, active; class sesuai §3.2 | ⚠️ AS-IS form masih Expense only — O-08 |
+| A-13 | Other Discount COA: leaf (child-only), active, **semua COA Class** | ⚠️ AS-IS form/import masih filter class — O-08 |
 | A-14 | Active default Yes; inactive tidak di dropdown transaksi **baru** | ✅ (dropdown) |
 | A-15 | Warisan PO→PI / SO→SI: line inactive tetap ikut | ✅ |
 | A-16 | Data soft-deleted: **view only**, tidak bisa edit | ✅ |
@@ -109,7 +110,7 @@ flowchart TB
 
 ## 3. Validasi & Rules
 
-> Jawaban konsisten dengan [Other Cost](../omni-other-cost/requirement.md) kecuali §3.2 COA class.
+> Jawaban konsisten dengan [Other Cost](../omni-other-cost/requirement.md) termasuk §3.2 COA scope (update 17 Jul 2026).
 
 ### 3.1 Master Create/Update
 
@@ -119,30 +120,25 @@ flowchart TB
 | V-02 | `name` | `required`, `max:50` | |
 | V-03 | `expense_coa_id` | `required` | Nama kolom legacy — isinya COA diskon |
 | V-04 | `description` | Tidak ada `max` di create API; `max:150` di update | **Task dev** (O-03) — selaraskan create |
-| V-05 | COA leaf | Tidak boleh punya child | `Selected COA must be smallest COA code.` |
+| V-05 | COA leaf (child-only) | Tidak boleh punya child di `CoaTree` | `Selected COA must be smallest COA code.` |
+| V-05b | COA class | **Semua class diperbolehkan** (TO-BE) | AS-IS form/import masih filter — O-08 |
 | V-06 | Owner COA | COA `owned_by` harus match company login (`getToken()->company_id`) | Pesan error masih menyebut "other cost owner" — O-14 |
 | V-07 | `status` | Default Yes dari FE | |
 | V-08 | Namespace Code | Unique **per menu** (`omni_other_discounts`) — **terpisah** dari Other Cost | Code sama boleh ada di OC & OD |
 
-### 3.2 COA — limitasi per channel (**perbedaan utama vs Other Cost**)
+### 3.2 COA — scope class & child-only (update 17 Jul 2026)
 
-**Standar bisnis (TO-BE) — Other Discount:**
+**Standar bisnis (TO-BE) — sama Other Cost:** **Semua COA Class** diperbolehkan. Rule **child-only** tetap. Open item lama “apakah scope OD beda dari OC?” → **resolved: tidak beda**.
 
-| Class yang diizinkan |
-|---------------------|
-| **Revenue** |
-| **Other Revenue & Expenses** |
-| **Cost Of Goods Sold** |
+| Channel | COA Class (AS-IS verified) | TO-BE |
+|---------|----------------------------|-------|
+| **Form UI** (`select2-expense`) | **Expense** atau **Other Revenue & Expenses** (sama OC) | **Semua class** — hapus filter (**O-08**) |
+| **Import Excel** | Expense + Other Revenue & Expenses | **Semua class** — hapus allow-list (**O-08**) |
+| **API save** | Tidak cek class — leaf + owner only | Pertahankan |
 
-**Other Cost (referensi):** Expense + Other Revenue & Expenses — lihat [omni-other-cost §3.2](../omni-other-cost/requirement.md).
+**Child-only:** parent = id di `CoaTree.parent_id`. Enforcement: dropdown + `store`/`update` + import.
 
-| Channel | COA Class (AS-IS) | TO-BE |
-|---------|-------------------|-------|
-| **Form UI** (`select2-expense`) | Hanya **Expense** | **Revenue** + **Other Revenue & Expenses** + **COGS** — **task dev O-08** |
-| **Import Excel** | Expense + Other Revenue & Expenses | Selaras standar bisnis di atas — **task dev O-08** |
-| **API save** | Tidak cek class name — leaf + owner only | Andalkan dropdown/import setelah O-08 |
-
-Filter lain (semua channel): leaf, `status=1`, `owned_by` = company login.
+Filter lain (tidak berubah): leaf, `status=1`, `owned_by` = company login.
 
 ### 3.3 Applied to Store
 
@@ -196,7 +192,7 @@ Validasi inline di `OtherDiscountController` — technical debt refactor ke Form
 |-------|-------|----------|
 | UI Import / Template | Belum ada | AC 1–2 |
 | Applied Store | **Store name** atau `All` | ✅ Selaras |
-| COA class import | Expense + ORev (sama OC) | **O-08** — harus Revenue + ORev + COGS |
+| COA class import | Expense + ORev (sama OC) | **O-08** — hapus filter; semua class |
 | Import mode | All-or-nothing | I-01 |
 | Other Discount Owner check | Import tidak cek (sama OC) | IMP-05 |
 
@@ -213,8 +209,9 @@ Validasi inline di `OtherDiscountController` — technical debt refactor ke Form
 ### AC 4 — Validasi Other Discount COA
 
 - Input = **Code COA**
-- Class: **Revenue**, **Other Revenue & Expenses**, atau **Cost Of Goods Sold** (TO-BE)
+- **Semua COA Class** diperbolehkan (TO-BE — hapus allow-list)
 - Child account only
+- AS-IS masih menolak class di luar Expense/ORev — dihapus bersama O-08
 
 ### AC 5 — Applied Store
 
@@ -234,7 +231,7 @@ Identik [Other Cost §4 AC 5](../omni-other-cost/requirement.md) — **nama stor
 | IMP-06 | Medium | All-or-nothing | |
 | IMP-07 | Low | `row_number` null di log | |
 | IMP-08 | Low | Code uniqueness case-insensitive (import) vs case-sensitive (manual) | |
-| IMP-COA | **High** | Import allow **Expense** — seharusnya Revenue/ORev/COGS (O-08) | `ALLOWED_COA_CLASSES` |
+| IMP-COA | **High** | Import masih allow-list Expense+ORev — TO-BE: **hapus** filter class (O-08) | `ALLOWED_COA_CLASSES` |
 
 #### Checklist test API
 
@@ -245,8 +242,9 @@ Header: `Code | Name | Other Discount COA | Applied Store | Description`
 | T-API-01 | Valid, Applied Store kosong | Success, no pivot |
 | T-API-02 | Applied Store = `ALL` | `is_all_stores=1` + pivot semua Others |
 | T-API-03 | Nama store valid | Success |
-| T-API-07 | COA class **Expense** | AS-IS: lolos — **TO-BE: gagal** (O-08) |
-| T-API-07b | COA class **Revenue** leaf | AS-IS: **gagal** — **TO-BE: lolos** (O-08) |
+| T-API-07 | COA class **Asset** (leaf, active) | AS-IS: **gagal** (class filter) — **TO-BE: lolos** (O-08) |
+| T-API-07b | COA class **Expense** leaf | AS-IS & TO-BE: **lolos** (class tetap boleh) |
+| T-API-07c | COA **parent** | AS-IS & TO-BE: **gagal** (child-only) |
 
 ---
 
@@ -261,7 +259,7 @@ Header: `Code | Name | Other Discount COA | Applied Store | Description`
 | O-05 | Export kolom Applied to Store | **Task dev** | Sama OC |
 | O-06 | Import UI + fix IMP-02–05 + O-08 | **In progress** | |
 | O-07 | Enforce active di store API | **Closed** | Sama OC |
-| O-08 | **COA class Other Discount** — Revenue + ORev + COGS (form + import) | **Task dev** | **Perbedaan utama vs Other Cost** |
+| O-08 | Hapus filter **COA class** di form + import — **semua class**; child-only tetap (**sama Other Cost**) | **Task dev** | Update 17 Jul; beda class vs OC **resolved: tidak beda** |
 | O-09 | `expense_coa_id` di rules `update()` | Low | Tech debt |
 | O-10 | Highlight mapping platform jika OD inactive | **Issue raised** | Sama OC |
 | O-11 | Applied to Store scope | **Closed** | Settlement Others only |
@@ -285,7 +283,7 @@ Header: `Code | Name | Other Discount COA | Applied Store | Description`
 
 **AR/AP:** Other Discount muncul **via Customer Invoice / Supplier Invoice** (line `accounting_*_other_discounts`), bukan field master langsung di header AR/AP.
 
-> **Catatan PI (v2.1):** Override COA di Additional Discount PI tidak mengubah master. Class COA di form master tetap dibatasi (TO-BE: Revenue / ORev / COGS); di PI override memakai `select2/child` **tanpa** batasan class (hanya active + leaf).
+> **Catatan PI (v2.1):** Override COA di Additional Discount PI tidak mengubah master. TO-BE master: semua class + child-only (**sama Other Cost**); di PI override memakai `select2/child` tanpa batasan class (active + leaf).
 
 ---
 
@@ -294,6 +292,7 @@ Header: `Code | Name | Other Discount COA | Applied Store | Description`
 - **Policy:** `OtherDiscountPolicy` → `MainPolicy`
 - **Prasyarat create:** Company login + COA `owned_by` match (V-06)
 - **Global setting terpisah:** `OtherDiscountOwner` (`omni_other_discount_owners`) — untuk platform order automation; **bukan** gate create master (berbeda dari pesan error di controller)
+- **COA:** Master Chart of Account — **semua class**, child-only (TO-BE O-08)
 
 ---
 
@@ -304,7 +303,7 @@ Header: `Code | Name | Other Discount COA | Applied Store | Description`
 3. Soft delete → Show Deleted → Edit read-only.
 4. All Stores → settlement template → header `OD: {code}`.
 5. Import: Applied Store pakai **nama store**, bukan kode.
-6. COA: verifikasi O-08 — Revenue leaf harus bisa dipilih setelah fix.
+6. **COA scope (O-08):** setelah fix — leaf dari class selain Expense/ORev (mis. Asset/Revenue) bisa dipilih; parent ditolak.
 
 ---
 

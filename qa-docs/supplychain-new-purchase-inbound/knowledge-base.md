@@ -2,67 +2,62 @@
 doc_type: knowledge-base
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 2.1
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: review
-audience: operator
-sections:
-  core: [what-is, workflow, colli, ui-buttons, import, troubleshooting, faq]
+aliases: [GRN, goods receipt, purchase inbound, barang masuk, COLLI, receiving]
 ---
 
 # Purchase Inbound (GRN) — Knowledge Base
 
+**Audience:** Operator gudang, Support  
+**Path:** Supply Chain → Inbound → **BETA - New Purchase Inbound** (`/supplychain/new-purchase-inbound`)  
+**Prefix dokumen:** `IN-`
+
+> Menu **Purchase Inbound** lama memakai backend yang sama — UI berbeda; BETA punya fitur **COLLI**.
+
+---
+
 ## 1. Apa itu Purchase Inbound?
 
-**Purchase Inbound** (GRN — Goods Receipt Note) mencatat **barang masuk ke gudang** dari supplier berdasarkan **Purchase Order** yang sudah disetujui.
-
-| Item | Nilai |
-|------|-------|
-| Menu (BETA) | Supply Chain → Inbound → **BETA - New Purchase Inbound** |
-| Route | `/supplychain/new-purchase-inbound` |
-| Kode dokumen | `IN-…` |
-| API | `supplychain/mutation-inbound` |
-
-> Menu **Purchase Inbound** lama (`/supplychain/mutation-inbound`) memakai API yang sama — UI berbeda.
+**Purchase Inbound** (GRN — Goods Receipt Note) mencatat **barang masuk ke gudang** dari supplier berdasarkan **Purchase Order** yang sudah disetujui. Setelah di-approve, stok masuk (kecuali jasa) dan jurnal utang sementara (Unbilled Goods) terbit. Pajak/PPN **tidak** dicatat di sini — di Purchase Invoice.
 
 ---
 
 ## 2. Kapan dipakai?
 
-- Barang dari supplier sudah datang fisik ke gudang.
-- Ada **PO approved/processed** dengan sisa qty belum diterima.
-- **Setelah PO approve** — bukan saat PR saja.
+| ✅ Buat GRN jika | ❌ Jangan buat GRN jika |
+|------------------|-------------------------|
+| Barang fisik sudah datang | Hanya punya PR — belum ada PO approved |
+| Ada PO **approved/processed** dengan sisa qty | PO sudah closed/void / qty habis |
+| Product COA Group sudah lengkap | COA kosong — Approve akan gagal |
+| Supplier punya PO outstanding | Mau terima barang tanpa referensi PO (pakai menu lain) |
 
 ---
 
-## 3. Alur operator
+## 3. Alur kerja standar
 
-### Step 1 — Buat header
+Setelah PO disetujui dan barang datang, buat GRN untuk mencatat penerimaan.
 
-1. Klik **Create**.
-2. Isi **Supplier** (hanya yang punya PO outstanding).
-3. Pilih **Warehouse** tujuan (gudang fisik level terendah).
-4. Set **Transaction Date** (≤ hari ini, dalam periode fiskal aktif).
-5. Simpan sebagai **Open** (atau Draft dulu).
+```mermaid
+flowchart TD
+    A["Inbound → BETA New Purchase Inbound → Create"] --> B["Isi Supplier, Gudang, Tanggal"]
+    B --> C["Outstanding PO\nBulk / Single Use"]
+    C --> D["Cek qty / batch / serial\n(+ COLLI opsional)"]
+    D --> E["Approve"]
+    E --> F["Stok + jurnal\nPO Processed/Complete"]
+    F --> G["Purchase Invoice"]
+```
 
-### Step 2 — Tambah barang dari PO
+**Keterangan langkah:**
 
-1. Panel **Outstanding PO** — cari SKU/PO.
-2. **Bulk Use** — pilih banyak baris, qty auto max sisa PO.
-3. **Single Use** — modal untuk input detail (batch, serial, expired).
-4. Atau **Select Product** — shortcut tambah 1 SKU.
-
-### Step 3 — Isi detail keranjang
-
-- Edit **Inbound Qty**, unit, batch, lokasi di tabel.
-- Validasi: qty tidak boleh melebihi **sisa PO**.
-- Produk serial: 1 baris per 1 pcs (max 50 sekaligus).
-
-### Step 4 — Approve
-
-1. Klik **Approve** — stok masuk + jurnal otomatis.
-2. PO partial → status **Processed**; full semua baris → **Complete**.
+- **Create:** Supplier hanya yang punya PO outstanding; gudang = fisik tanpa sub-gudang; tanggal ≤ hari ini + periode fiskal aktif.
+- **Outstanding PO:** Bulk Use (banyak baris, qty = sisa), Single Use (detail batch/serial/expired), atau Select Product.
+- **Keranjang:** qty tidak boleh melebihi sisa PO. Setelah ada detail, supplier/gudang/tanggal terkunci.
+- **COLLI (opsional):** Group view → isi jumlah koli + isi per koli; qty inbound otomatis. Tanpa COLLI (0) → isi qty manual.
+- **Approve:** stok + jurnal. PO partial → Processed; semua baris penuh → Complete.
+- **Lanjut:** tagih di Purchase Invoice (termasuk PPN).
 
 ---
 
@@ -70,14 +65,12 @@ sections:
 
 Untuk barang dikemas per **koli** (box/pallet):
 
-1. Aktifkan **Group view** di detail section.
-2. Kolom **COLLI & Inbound Qty**:
-   - Atas: `10 COLLI @ 5 [Unit]`
-   - Bawah: Inbound Qty (auto = 10 × 5 = 50)
-3. **Isi per Colli** auto dari transaksi terakhir SKU yang sama.
+1. Aktifkan **Group view** di detail.
+2. Isi **jumlah koli** dan **isi per koli** — Inbound Qty otomatis = koli × isi.
+3. Isi per koli sering terisi dari transaksi terakhir SKU yang sama (atau 1 jika melebihi sisa).
 4. Saat Approve — sistem buat **1 Stock ID per koli** (background job).
-5. Pantau kolom **Item Stock Status** di datalist (% progress).
-6. Jika gagal → notifikasi error → status kembali Open → **Approve ulang**.
+5. Pantau **Item Stock Status** di daftar (% progress).
+6. Jika gagal → notifikasi → status kembali Open → **Approve ulang**.
 
 **Tanpa COLLI (colli = 0):** input Inbound Qty manual seperti biasa.
 
@@ -88,24 +81,21 @@ Untuk barang dikemas per **koli** (box/pallet):
 | Tombol | Fungsi |
 |--------|--------|
 | **Create** | Header GRN baru |
-| **Approve** | Post stok + jurnal (open only) |
-| **Reject** | Tolak dokumen open |
-| **Delete** | Hapus draft/open (revert qty prepared di PO) |
-| **Export** | Excel with/without details |
-| **Import** | Upload Excel (standard atau template colli) |
-| **Print** | PDF GRN |
-| **Print RIR** | Receiving Inspection Report |
-| **Allocate Full Qty** | Ambil sisa PO penuh (modal) — atasi selisih desimal unit |
+| **Approve** | Post stok + jurnal (hanya Open) |
+| **Reject** | Tolak dokumen Open |
+| **Delete** | Hapus draft/open (kembalikan qty reserved di PO) |
+| **Export / Import** | Excel (standard atau template colli) |
+| **Print / Print RIR** | PDF GRN / Receiving Inspection Report |
+| **Allocate Full Qty** | Ambil sisa PO penuh (modal) — bantu selisih desimal unit |
 
 ---
 
 ## 6. Import Excel
 
-Template:
-- Standard — kolom PO, SKU, Qty, Unit, (+ batch/serial/expired)
-- **Colli** — `Template-Import-Inbound-colli.xlsx`
+- **Standard** — PO, SKU, Qty, Unit (+ batch/serial/expired)
+- **Colli** — template colli (qty = koli × isi)
 
-Aturan: PO harus approved, SKU harus ada di PO, qty ≤ sisa.
+Aturan: PO approved, SKU ada di PO, qty ≤ sisa, supplier cocok.
 
 ---
 
@@ -113,24 +103,14 @@ Aturan: PO harus approved, SKU harus ada di PO, qty ≤ sisa.
 
 | Rule | Detail |
 |------|--------|
-| Supplier lock | Tidak bisa ganti supplier/WH/tanggal jika sudah ada detail |
+| Header lock | Tidak bisa ganti supplier/gudang/tanggal jika sudah ada detail |
 | Qty cap | Tidak melebihi sisa PO per baris |
-| Expired | Wajib jika product flag ON |
-| Batch | Wajib jika product default batch ON |
-| Serial | Auto SN atau input manual |
-| Pajak | **Tidak** di GRN — di Supplier Invoice |
-| Jurnal | By Product COA Group type — lihat tabel di bawah |
-| **Service** | **Tidak** generate Stock ID — jasa |
-| **Fix Asset** | Generate Stock ID + jurnal Dr **Assets** / Cr Unbilled Goods |
-| **Purchased/Manufactured** | Generate Stock ID + jurnal Dr **Inventory** / Cr Unbilled Goods |
-
-### Jurnal per Product COA Group type
-
-| Type | Stock ID? | Debit | Credit |
-|------|-----------|-------|--------|
-| Purchased / Manufactured Item | ✅ | Inventory | Unbilled Goods |
-| Fix Asset | ✅ | **Assets** | Unbilled Goods |
-| Service | ❌ | Operational Expense | Unbilled Goods |
+| Expired / Batch | Wajib jika flag produk ON |
+| Serial | 1 baris per 1 pcs; max 50 sekaligus |
+| Pajak | **Tidak** di GRN — di Purchase Invoice |
+| **Service** | **Tidak** generate Stock ID — jurnal biaya operasional |
+| **Fix Asset** | Stock ID + jurnal Debit **Assets** |
+| **Barang biasa** | Stock ID + jurnal Debit **Inventory** |
 
 ---
 
@@ -141,33 +121,33 @@ Aturan: PO harus approved, SKU harus ada di PO, qty ≤ sisa.
 | Supplier kosong | Tidak ada PO approved | Approve PO dulu |
 | Qty exceed outstanding | Input > sisa PO | Kurangi qty / cek GRN lain |
 | Approve: no detail | Keranjang kosong | Tambah baris dari outstanding |
-| Approve: COA error | Product COA Group incomplete | Lengkapi Inventory + Unbilled Goods |
+| Approve: COA error | Product COA Group incomplete | Lengkapi akun produk + Unbilled Goods |
 | COLLI stuck loading | Background job | Tunggu / cek Item Stock Status; re-approve jika error |
-| Cannot delete detail | Linked colli | Hapus colli dulu atau edit colli=0 |
-| PO sudah closed | Sisa qty di-close manual | Tidak bisa inbound sisa |
-| Void tidak jalan | Bug UI | Hubungi dev — void belum wired di API |
+| Cannot delete detail | Sudah linked colli | Hapus/edit colli dulu |
+| PO sudah closed | Sisa di-close manual | Tidak bisa inbound sisa |
+| Void tidak jalan | Fitur belum berfungsi | Hubungi admin/dev |
 
 ---
 
 ## 9. FAQ
 
 **Q: Beda BETA vs Purchase Inbound lama?**  
-A: BETA punya fitur **COLLI** + UI baru. Backend sama.
+A: BETA punya **COLLI** + UI baru. Backend sama.
 
 **Q: Partial receiving?**  
 A: Ya — beberapa GRN per PO sampai qty penuh.
 
 **Q: Kapan PO complete?**  
-A: Otomatis saat semua baris PO fully received (processed_to_grn = order qty).
+A: Otomatis saat semua baris PO sudah diterima penuh.
 
-**Q: Apakah GRN posting VAT?**  
-A: Tidak. VAT di **Supplier Invoice**.
+**Q: Apakah GRN posting PPN?**  
+A: Tidak. PPN di **Purchase Invoice**.
 
-**Q: SKU type Service — ada Stock ID?**  
-A: **Tidak.** Jasa tidak generate stok; jurnal Dr Operational Expense / Cr Unbilled Goods.
+**Q: SKU Service — ada Stock ID?**  
+A: **Tidak.** Jasa tidak generate stok; jurnal biaya operasional + Unbilled Goods.
 
-**Q: SKU type Fix Asset — jurnal beda?**  
-A: Ya. Dr **Assets** (bukan Inventory), Cr Unbilled Goods — tetap generate Stock ID dengan flag fix asset.
+**Q: SKU Fix Asset?**  
+A: Tetap ada Stock ID; jurnal Debit **Assets** (bukan Inventory).
 
 **Q: Random SKU bisa inbound?**  
 A: Tidak.
@@ -178,5 +158,8 @@ A: Tidak.
 
 | Doc | Path |
 |-----|------|
+| User Guide | [user-guide.md](./user-guide.md) |
 | Requirement | [requirement.md](./requirement.md) |
+| Technical | [technical.md](./technical.md) |
 | Purchase Order | [../supplychain-purchase-order/knowledge-base.md](../supplychain-purchase-order/knowledge-base.md) |
+| Purchase Invoice | [../accounting-supplier-invoice/knowledge-base.md](../accounting-supplier-invoice/knowledge-base.md) |

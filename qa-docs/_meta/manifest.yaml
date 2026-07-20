@@ -4,7 +4,7 @@
 # Field `status` must match frontmatter `status` in each doc file.
 
 version: 1
-last_updated: 2026-07-05
+last_updated: 2026-07-17
 
 menus:
   manage-platform-product:
@@ -24,6 +24,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       - _legacy/old_platform-product-binding-glossary.md
       - _legacy/old_platform-product-sync-newrequirement.md
@@ -57,6 +60,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -81,6 +87,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -107,6 +116,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -132,6 +144,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -156,6 +171,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -182,6 +200,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -207,6 +228,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -231,6 +255,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -257,6 +284,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -291,6 +321,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     menu_links:
       - omni/warehouse-binding
     owner: QA - Yemima
@@ -319,6 +352,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -358,6 +394,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       - _legacy/old_sales-order-general-requirement.md
       - _legacy/old_sales-order-import-bulk-improvement.md
@@ -387,6 +426,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -413,6 +455,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -435,6 +480,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -459,6 +507,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -481,6 +532,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -505,6 +559,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -527,6 +584,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -551,6 +611,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -567,17 +630,29 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: draft
       requirement:
         file: requirement.md
-        status: pending
+        status: draft
       technical:
         file: technical.md
+        status: draft
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
     code_globs:
-      backend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/CashBankReconciliationController.php
+        - Modules/Accounting/Http/Controllers/CashBankReconciliationDetailController.php
+        - Modules/Accounting/Import/CashBankReconciliationDetailImportData.php
+        - Modules/Accounting/Entities/CashBankReconciliation.php
+        - Modules/Accounting/Entities/CashBankReconciliationDetail.php
+        - Modules/Accounting/Entities/CashBankReconciliationDetailImport.php
+        - Modules/Accounting/Jobs/CashBankReconciliationExportJob.php
+        - Modules/Accounting/Routes/api.php
+        - olshoperp-frontend/src/pages/Accounting/CashBankReconcile/**/*
       frontend: []
 
   accounting-chart-of-account:
@@ -596,6 +671,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -620,6 +698,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -643,6 +724,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -659,18 +743,31 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
+      user-guide:
+        file: user-guide.md
+        status: draft
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/CreditNoteController.php
+        - Modules/Accounting/Http/Controllers/CreditNoteDetailFundController.php
+        - Modules/Accounting/Http/Controllers/PaymentController.php
+        - Modules/Accounting/Http/Controllers/PaymentDetailFundController.php
+        - Modules/Accounting/Entities/CreditNote.php
+        - Modules/Accounting/Import/CreditNoteImport.php
+        - app/Helpers/Accounting/JournalProcess.php
+        - app/Helpers/SupplyChain/ItemStockMutation.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/CreditNote/**/*
+        - olshoperp-frontend/src/stores/project/CreditNote/**/*
 
   accounting-customer-invoice:
     menu_name: "Sales Invoice"
@@ -689,6 +786,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -717,6 +817,9 @@ menus:
         status: draft
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
       test_cases:
         path: test-cases/
@@ -759,6 +862,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -781,6 +887,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -805,6 +914,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -827,6 +939,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -851,6 +966,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -873,6 +991,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -897,6 +1018,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -920,6 +1044,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -957,6 +1084,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -980,6 +1110,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1009,6 +1142,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1025,18 +1161,26 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: draft
       requirement:
         file: requirement.md
-        status: pending
+        status: draft
       technical:
         file: technical.md
-        status: pending
+        status: draft
+      user-guide:
+        file: user-guide.md
+        status: draft
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/ProfitLossController.php
+        - Modules/Accounting/Entities/ProfitLossOld.php
+        - Modules/Accounting/Policies/ProfitLossOldPolicy.php
+        - app/Helpers/Accounting/JournalReport.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Report/ProfitLossV1/**
 
   accounting-purchase-return:
     menu_name: "Purchase Return"
@@ -1054,6 +1198,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -1078,6 +1225,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1100,6 +1250,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -1124,6 +1277,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1155,6 +1311,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1178,6 +1337,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1211,6 +1373,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1233,6 +1398,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -1257,6 +1425,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1279,6 +1450,9 @@ menus:
         status: draft
       technical:
         file: technical.md
+        status: draft
+      user-guide:
+        file: user-guide.md
         status: draft
     legacy_sources:
       []
@@ -1314,6 +1488,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: draft
     legacy_sources:
       []
     code_globs:
@@ -1355,6 +1532,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1378,6 +1558,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1406,6 +1589,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       - _legacy/old_general-ledger-requirement.md
     code_globs:
@@ -1434,6 +1620,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       - _legacy/old_Journal-Requirement.md
     code_globs:
@@ -1467,6 +1656,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1504,6 +1696,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1545,6 +1740,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       - _legacy/old_bill-of-material.md
     code_globs:
@@ -1572,6 +1770,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1594,6 +1795,9 @@ menus:
         status: draft
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -1618,6 +1822,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1640,6 +1847,9 @@ menus:
         status: pending
       technical:
         file: technical.md
+        status: pending
+      user-guide:
+        file: user-guide.md
         status: pending
     legacy_sources:
       []
@@ -1664,6 +1874,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1687,6 +1900,9 @@ menus:
       technical:
         file: technical.md
         status: pending
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1703,18 +1919,29 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: draft
       requirement:
         file: requirement.md
-        status: pending
+        status: draft
       technical:
         file: technical.md
-        status: pending
+        status: draft
+      user-guide:
+        file: user-guide.md
+        status: draft
     legacy_sources:
-      []
+      - unassign-waves-source-of-truth.md
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/OmniChannel/Http/Controllers/UnassignWaveController.php
+        - Modules/OmniChannel/Http/Controllers/UnassignWaveLogController.php
+        - Modules/OmniChannel/Jobs/SOApproveToWave.php
+        - Modules/OmniChannel/Logics/UnassignWave/MoveToDefaultWaveLogic.php
+        - Modules/OmniChannel/Services/WaveService.php
+        - Modules/OmniChannel/Entities/UnassignWave.php
+        - Modules/OmniChannel/Entities/UnassignWaveLog.php
+      frontend:
+        - olshoperp-frontend/src/pages/Omni/UnassignWave/**/*
 
   omni-waves-management:
     menu_name: "Waves Management"
@@ -1733,6 +1960,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1761,6 +1991,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       - _legacy/old_random-sku-requirement.md
     code_globs:
@@ -1789,6 +2022,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1817,6 +2053,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1845,6 +2084,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1879,6 +2121,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1909,6 +2154,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1937,6 +2185,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1960,6 +2211,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -1990,6 +2244,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2023,6 +2280,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2052,6 +2312,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2081,6 +2344,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2109,6 +2375,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2137,6 +2406,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2177,6 +2449,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2206,6 +2481,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2238,6 +2516,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2267,6 +2548,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2297,6 +2581,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2326,6 +2613,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2355,6 +2645,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2384,6 +2677,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: draft
     legacy_sources:
       []
     code_globs:
@@ -2420,6 +2716,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2449,6 +2748,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2477,6 +2779,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2508,6 +2813,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2539,6 +2847,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2557,6 +2868,7 @@ menus:
     module: SupplyChain
     menu_links:
       - supplychain/product-mutation-stock
+      - supplychain/stock-history
     owner: QA - Yemima
     docs:
       knowledge-base:
@@ -2568,6 +2880,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2575,8 +2890,15 @@ menus:
         - Modules/SupplyChain/Http/Controllers/ProductMutationController.php
         - Modules/SupplyChain/Jobs/MutationSummaryPerWhTempJob.php
         - Modules/SupplyChain/Jobs/MutationSummaryPerWhExportJob.php
+        - Modules/SupplyChain/Jobs/CalculateEndingBalance.php
+        - Modules/SupplyChain/Jobs/CalculateEndingBalancePerWarehouse.php
+        - Modules/SupplyChain/Jobs/CalculateEndingBalancePerBuilding.php
         - Modules/SupplyChain/Entities/ItemStockProductMutationStock.php
+        - Modules/SupplyChain/Entities/MutationSummary.php
         - Modules/SupplyChain/Routes/api.php
+        - app/Helpers/SupplyChain/StockAfterApproveHandler.php
+        - app/Helpers/SupplyChain/StockEndingBalanceHelper.php
+        - app/Console/Commands/CalculateStockEndingBalance.php
         - olshoperp-frontend/src/pages/SCM/Report/ProductMutationStock/**/*
         - olshoperp-frontend/src/pages/SCM/Report/StockHistory/**/*
       frontend: []
@@ -2598,6 +2920,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2608,6 +2933,24 @@ menus:
         - Modules/SupplyChain/Routes/api.php
         - olshoperp-frontend/src/pages/SCM/Report/ProductTransactionHistory/**/*
       frontend: []
+
+draftpending
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/PurchaseOrderController.php
+        - Modules/SupplyChain/Http/Controllers/PurchaseOrderDetailController.php
+        - Modules/SupplyChain/Http/Controllers/PurchaseOrderOtherCostController.php
+        - Modules/SupplyChain/Http/Controllers/PurchaseOrderOtherDiscountController.php
+        - Modules/SupplyChain/Import/PurchaseOrderWithPrImport.php
+        - Modules/SupplyChain/Import/PurchaseOrderWithoutPrImport.php
+        - Modules/SupplyChain/Entities/PurchaseOrder.php
+        - Modules/SupplyChain/Entities/PurchaseOrderDetail.php
+        - app/Helpers/SupplyChain/PurchaseOrderPrice.php
+        - app/Helpers/SupplyChain/PurchaseOrderDetailPrice.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/PurchaseOrder/**
 
   supplychain-purchase-order:
     menu_name: "Purchase Order"
@@ -2626,6 +2969,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: draft
     legacy_sources:
       []
     code_globs:
@@ -2660,6 +3006,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2688,6 +3037,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2718,6 +3070,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2748,6 +3103,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2785,6 +3143,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2815,6 +3176,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2847,6 +3211,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2870,6 +3237,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2899,6 +3269,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2928,6 +3301,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2958,6 +3334,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -2987,6 +3366,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -3017,6 +3399,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -3048,6 +3433,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -3076,6 +3464,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       []
     code_globs:
@@ -3106,6 +3497,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       - _legacy/old_system-product-requirement.md
     code_globs:
@@ -3141,6 +3535,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources: []
     code_globs:
       backend:
@@ -3170,6 +3567,9 @@ menus:
       technical:
         file: technical.md
         status: review
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources: []
     code_globs:
       backend:
@@ -3199,6 +3599,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       - Modules/AI/docs/kb-assistant.md
     code_globs:
@@ -3231,6 +3634,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources:
       - Modules/AI/docs/kb-assistant.md
     code_globs:
@@ -3262,6 +3668,9 @@ menus:
       technical:
         file: technical.md
         status: final
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources: []
     code_globs:
       backend:
@@ -3295,6 +3704,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources: []
     code_globs:
       backend:
@@ -3322,6 +3734,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources: []
     code_globs:
       backend:
@@ -3349,6 +3764,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources: []
     code_globs:
       backend:
@@ -3376,6 +3794,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources: []
     code_globs:
       backend:
@@ -3403,6 +3824,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources: []
     code_globs:
       backend:
@@ -3432,6 +3856,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
       test_cases:
         path: test-cases/
         status: review
@@ -3471,6 +3898,9 @@ menus:
       technical:
         file: technical.md
         status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
     legacy_sources: []
     code_globs:
       backend:

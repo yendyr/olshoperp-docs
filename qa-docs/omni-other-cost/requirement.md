@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-other-cost
 menu_name: "Other Cost"
-version: 1.4
-last_updated: 2026-07-10
+version: 1.5
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -20,6 +20,7 @@ legacy_sources: []
 | 1.2 | 2026-06-23 | QA - Yemima | Konfirmasi PM atas open items; audit import AS-IS vs TO-BE (§4.4); cross-ref menu konsumen |
 | 1.3 | 2026-06-23 | QA - Yemima | Koreksi: Applied Store import pakai **store name** (bukan code) — selaras codebase & form manual; batalkan IMP-01 |
 | 1.4 | 2026-07-10 | QA - Yemima | Cross-ref: COA di Master = **default** untuk PI; override COA per baris di Purchase Invoice (§6) |
+| 1.5 | 2026-07-17 | QA - Yemima | COA scope: **semua class** + child-only (update req 17 Jul 2026); O-08 = hapus filter class form+import |
 
 **Nama lain menu:** Other Cost, Master Other Cost  
 **UI route:** `/omni/other-cost`  
@@ -80,7 +81,7 @@ flowchart TB
 | A-10 | Code required, unique per company (`owned_by`), **max 50 karakter** | ✅ |
 | A-11 | Code tidak boleh mengandung spasi | ❌ **Task dev** (O-01) |
 | A-12 | `owned_by` = company login saat create | ✅ |
-| A-13 | Other Cost COA: leaf, active, class **Expense** (form) — TO-BE selaraskan + Other Revenue & Expenses | ✅ AS-IS / ❌ O-08 task |
+| A-13 | Other Cost COA: leaf (child-only), active, **semua COA Class** | ⚠️ AS-IS form/import masih filter class — O-08 |
 | A-14 | Active default Yes; inactive tidak di dropdown transaksi **baru** | ✅ (dropdown) |
 | A-15 | Warisan PO→PI / SO→SI: line inactive tetap ikut | ✅ |
 | A-16 | Data soft-deleted: **view only**, tidak bisa edit | ✅ |
@@ -112,9 +113,10 @@ flowchart TB
 | V-02 | `name` | `required`, `max:50` | |
 | V-03 | `expense_coa_id` | `required` (create); diproses di update tanpa entry di rules array | Lihat O-09 |
 | V-04 | `description` | Tidak ada `max` di form API | **Task dev** (O-03) — TO-BE max 150 |
-| V-05 | COA leaf | Tidak boleh punya child | `Selected COA must be smallest COA code.` |
+| V-05 | COA leaf (child-only) | Tidak boleh punya child di `CoaTree` | `Selected COA must be smallest COA code.` |
 | V-06 | Other Cost Owner | Global setting harus ada | `Configure global setting in section other cost owner.` |
 | V-07 | COA `owned_by` | Harus match company login | |
+| V-05b | COA class | **Semua class diperbolehkan** (TO-BE) — tidak ada filter class | AS-IS form/import masih filter — O-08 |
 | V-08 | `status` | Default Yes dari FE | |
 
 **Manual test O-03 (description max 150 di form):**
@@ -125,17 +127,24 @@ flowchart TB
 4. **AS-IS expected:** request lolos (tidak ada error) — gap terdokumentasi.
 5. **TO-BE expected:** error validasi `max:150` di response API + pesan di form.
 
-### 3.2 COA — limitasi per channel
+### 3.2 COA — scope class & child-only (update 17 Jul 2026)
 
-**Standar bisnis (TO-BE):** Class yang diizinkan = **Expense** + **Other Revenue & Expenses** (sama seperti import).
+**Standar bisnis (TO-BE):** **Semua COA Class** diperbolehkan. Rule **child-only** (leaf) **tetap berlaku** — sudah confirmed sejak requirement sebelumnya, bukan requirement baru. Scope class yang berubah: dari filter class tertentu → terbuka untuk semua class.
 
-| Channel | COA Class (AS-IS) | TO-BE |
-|---------|-------------------|-------|
-| **Form UI** (`select2-expense`) | Hanya **Expense** | Tambah **Other Revenue & Expenses** — **task dev O-08** |
-| **Import Excel** | Expense + Other Revenue & Expenses | ✅ Selaras standar |
-| **API save** | Tidak cek class name — leaf + owner only | Pertahankan; andalkan dropdown/import |
+| Channel | COA Class (AS-IS verified) | TO-BE |
+|---------|----------------------------|-------|
+| **Form UI** (`select2-expense`) | **Expense** atau **Other Revenue & Expenses** | **Semua class** — hapus filter class (**O-08**) |
+| **Import Excel** | Expense + Other Revenue & Expenses (`ALLOWED_COA_CLASSES`) | **Semua class** — hapus allow-list (**O-08**) |
+| **API save** (`store`/`update`) | Tidak cek class — leaf + owner only | Pertahankan (tidak perlu class check) |
 
-Filter lain (semua channel): leaf, `status=1`, `owned_by` = company login.
+**Child-only (confirmed + verified codebase):**
+
+- Definisi parent: COA yang `id`-nya muncul sebagai `parent_id` di `CoaTree` (punya child).
+- Enforcement: dropdown exclude parent **dan** `store`/`update` reject parent **dan** import reject parent — bukan dropdown-only.
+
+Filter lain (tidak berubah oleh update ini): `status=1` (Active), `owned_by` = company login — confirmed di select2.
+
+**Data existing:** tidak perlu migrate; pelebaran class tidak membuat data lama invalid.
 
 ### 3.3 Applied to Store
 
@@ -230,15 +239,15 @@ Setup massal Master Other Cost via Excel: template standar, validasi ketat COA &
 COA valid jika **semua** terpenuhi:
 
 - Wajib diisi; input = **Code COA**
-- Class: **Expense** atau **Other Revenue & Expenses**
-- **Child account** (bukan parent)
+- **Semua COA Class** diperbolehkan (TO-BE — hapus allow-list class)
+- **Child account** (bukan parent) — wajib
 
 | Skenario | Error Message |
 |----------|---------------|
 | Kosong | `Row [X]: Other Cost COA cannot be empty.` |
 | Tidak ditemukan | `Row [X]: COA Code [Code] not found in master data.` |
-| Class tidak diizinkan | `Row [X]: COA Code [Code] class is not allowed. Only Expense and Other Revenue & Expenses are permitted.` |
-| Parent account | `Row [X]: COA Code [Code] is a parent account. Only child accounts are allowed.` |
+| Class tidak diizinkan | **AS-IS only** (Expense/ORev) — **TO-BE: pesan ini dihapus** bersama allow-list (O-08) |
+| Parent account | `Row [X]: COA Code [Code] is a parent account. Only child accounts are allowed.` (AS-IS copy: `is parent COA.`) |
 
 ### AC 5 — Validasi Applied Store
 
@@ -382,7 +391,7 @@ Gunakan file xlsx dengan header persis: `Code | Name | Other Cost COA | Applied 
 | O-05 | Export kolom Applied to Store (+ Active, Created) | **Task dev** | |
 | O-06 | Import UI + template download + fix IMP-02–05 | **In progress** | §4 + §4.4 |
 | O-07 | Enforce active di store API | **Closed** | Dropdown filter cukup; warisan PO→PI accepted |
-| O-08 | Form COA: tambah **Other Revenue & Expenses** | **Task dev** | Selaraskan dengan import |
+| O-08 | Hapus filter **COA class** di form select2 + import (`ALLOWED_COA_CLASSES`) — buka **semua class**; child-only tetap | **Task dev** | Update req 17 Jul 2026; class scope final; OD sama |
 | O-09 | `expense_coa_id` di rules `update()` | Low / tech debt | §3.7 |
 | O-10 | Highlight mapping platform jika OC inactive | **Issue raised** | Settlement platform behavior confirmed |
 | O-11 | Applied to Store scope | **Closed** | Hanya settlement Others/General |
@@ -404,7 +413,7 @@ Gunakan file xlsx dengan header persis: `Code | Name | Other Cost COA | Applied 
 
 **Prasyarat bersama:** Other Cost harus **active** untuk muncul di dropdown transaksi baru & template settlement. Inactive tetap valid untuk line warisan.
 
-> **Catatan PI (v2.1):** Mengubah COA di Master Other Cost **tidak** mengubah baris PI yang sudah tersimpan. Sebaliknya, override COA di PI **tidak** mengubah master. Class COA di form master tetap dibatasi (Expense / ORev); di PI override memakai `select2/child` **tanpa** batasan class (hanya active + leaf).
+> **Catatan PI (v2.1):** Mengubah COA di Master Other Cost **tidak** mengubah baris PI yang sudah tersimpan. Sebaliknya, override COA di PI **tidak** mengubah master. TO-BE master: semua class + child-only; di PI override sudah memakai `select2/child` tanpa batasan class (active + leaf).
 
 ---
 
@@ -412,7 +421,7 @@ Gunakan file xlsx dengan header persis: `Code | Name | Other Cost COA | Applied 
 
 - **Policy:** `OtherCostPolicy` → `MainPolicy`
 - **Prasyarat create:** Other Cost Owner global setting (V-06)
-- **COA:** Master Chart of Account — class Expense + Other Revenue & Expenses (TO-BE selaraskan di form)
+- **COA:** Master Chart of Account — **semua class**, child-only (TO-BE O-08)
 
 ---
 
@@ -423,6 +432,7 @@ Gunakan file xlsx dengan header persis: `Code | Name | Other Cost COA | Applied 
 3. All Stores → template settlement General → header `OC: {code}`.
 4. Warisan: PO + OC → inactive OC → buat PI dari PO → line OC tetap ada.
 5. Import API: jalankan T-API-01–10 di §4.4 sebelum UI go-live.
+6. **COA scope (O-08):** setelah fix — dropdown menampilkan leaf dari class selain Expense/ORev (mis. Asset); parent tidak muncul; submit parent via API ditolak.
 
 ---
 

@@ -2,23 +2,21 @@
 doc_type: requirement
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.2
-last_updated: 2026-07-10
+version: 2.3
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: review
+aliases: [PO requirement, purchase order docs, pembelian, PO validation]
 ---
 
 # Purchase Order — Requirement Documentation
 
 **Modul:** Supply Chain Management (SCM) / Procurement  
 **Prefix transaksi:** `PO-`  
-**Audience:** PM, Operations, QA, Support, Developer  
-**Status:** AS-IS verified against codebase per 2026-07-05
+**Audience:** PM, Operations, QA  
+**Status:** AS-IS verified against codebase (compliance pass 2026-07-17)
 
 **UI route:** `/supplychain/purchase-order`  
-**API base:** `{VITE_API_URL}supplychain/purchase-order`  
-**Tables:** `scm_purchase_orders` · `scm_purchase_order_details` · approvals · other costs/discounts · import/export logs
-
 **PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05)
 
 ---
@@ -31,6 +29,7 @@ status: review
 | 2.0 | 2026-07-05 | QA - Yemima | Full rewrite: merge PM requirement v1.0, import/export/print, pricing formulas, UI buttons, gaps §19–§20 |
 | 2.1 | 2026-07-05 | QA - Yemima | GAP clarifications; import §12 expanded; §21 Pending Items Major |
 | 2.2 | 2026-07-10 | QA - Yemima | Clarifikasi: COA Other Cost/Disc di PO = default; di PI bisa di-override; koreksi posisi jurnal PI |
+| 2.3 | 2026-07-17 | QA - Yemima | Compliance qa-docs-standard: Prasyarat/FAQ; trim import teknis ke technical; hapus §20 DEV (rumah technical); stateDiagram |
 
 ---
 
@@ -55,32 +54,39 @@ status: review
 
 ---
 
+
+## 1.2 Prasyarat
+
+| Prasyarat | Sumber | Catatan |
+|-----------|--------|---------|
+| Supplier accounting lengkap | General Company | Select2 filter — tidak 100% → tidak muncul |
+| With PR: PR approved/processed + sisa qty | Purchase Requisition | Tanggal PR sebelum tanggal PO |
+| Without PR: produk aktif + COA group | System Product | Bukan bundle/random |
+| Currency + exchange rate | Master Currency | Rate default 1; foreign diubah manual |
+| Fiscal period terbuka | Accounting period | Validasi store/approve |
+
 ## 2. Siklus Status Transaksi
 
 ### 2.1 Diagram (AS-IS)
 
 ```mermaid
-flowchart TD
-    A[Create PO] --> B[OPEN]
-    B --> C{User radio Draft/Open}
-    C --> D[DRAFT]
-    D --> C
-    B --> E{Approve}
-    E -->|Yes| F[APPROVED]
-    E -->|Reject| G[REJECTED]
-    G --> H[Edit + save]
-    H --> D
-    F --> I[Inbound partial]
-    I --> J[PROCESSED]
-    J --> K{Semua qty inbound approved?}
-    K -->|Ya| L[COMPLETE]
-    J --> M{User klik Closed}
-    M --> N[CLOSED]
-    F --> O{Void approved - no GRN}
-    O --> P[VOID]
-    B --> Q[DELETE soft]
-    D --> Q
-    G --> Q
+stateDiagram-v2
+    [*] --> open: Create
+    open --> draft: User pilih Draft
+    draft --> open: User pilih Open
+    open --> approved: Approve
+    open --> rejected: Reject
+    rejected --> draft: Edit + Save
+    approved --> processed: Inbound partial
+    processed --> complete: Full inbound
+    processed --> closed: User Closed
+    approved --> void: Void (no GRN)
+    open --> [*]: Delete
+    draft --> [*]: Delete
+    rejected --> [*]: Delete
+    complete --> [*]
+    closed --> [*]
+    void --> [*]
 ```
 
 ### 2.2 Definisi status
@@ -116,16 +122,8 @@ Tombol **Closed** muncul saat PO status **`processed`** — artinya **sudah ada*
 | Inbound baru | Tidak perlu (sudah full) | **Diblok** — error `"Document purhase order has been closed."` |
 | Use case bisnis | Supplier kirim semua | Supplier **tidak akan kirim sisa** / procurement putuskan stop receiving |
 
-```mermaid
-flowchart LR
-    APPROVED -->|"Inbound partial"| PROCESSED
-    PROCESSED -->|"Inbound full qty"| COMPLETE
-    PROCESSED -->|"User Closed"| CLOSED
-    CLOSED --> BLOCK["Inbound baru ditolak"]
-    COMPLETE --> DONE["Selesai natural"]
-```
 
-**Catatan vs PM doc:** PM menulis Closed dari **approved** + partial inbound. Di codebase, inbound partial **mengubah status ke processed dulu** — jadi tombol Closed **bukan** dari approved murni, melainkan setelah minimal satu kali GRN. **Ini bukan bug** — desain AS-IS: Close = tutup sisa qty yang **belum** diterima setelah sudah pernah inbound.
+**Catatan:** PM dokumen menyebut Closed dari approved+partial; AS-IS inbound partial → **processed** dulu, baru Closed. Bukan bug — Close = stop sisa setelah pernah inbound.
 
 ### 2.4 Draft vs Open
 
@@ -152,7 +150,7 @@ flowchart LR
 
 ## 3. Datalist — Kolom & Fitur
 
-### 3.1 Kolom (AS-IS — `DataList.vue`)
+### 3.1 Kolom (AS-IS)
 
 | Kolom | Visible default | Keterangan |
 |-------|-----------------|------------|
@@ -342,11 +340,9 @@ Guard: grand total before VAT tidak boleh < 0 setelah insert/update.
 | Total Additional Disc | Σ other discounts |
 | **Net Purchase** | `grand_total_after_vat` = subtotal after VAT + Other Cost − Other Disc |
 
-**Helper:** `PurchaseOrderPrice::grandTotal()`
-
 ### 9.1 Rumus per baris (DPP / VAT / Total)
 
-Via `PurchaseOrderDetailPrice::withTax()`:
+Perhitungan baris (DPP / VAT):
 
 | Kondisi | Perhitungan |
 |---------|-------------|
@@ -365,36 +361,33 @@ Pivot tax disimpan di `scm_purchase_order_detail_tax`.
 | Informasi | AS-IS |
 |-----------|-------|
 | Log | Slideover **Approval** |
-| Approve/Reject | `ApprovalModal` — **Description** opsional (max 150) |
-| Level | **Single-level** (`gate_menus.approval = 1`) |
+| Approve/Reject | Modal approval — **Description** opsional (max 150) |
+| Level | **Single-level** |
 | Eligibility | Tab **Approval Eligibility** |
-| Void / Closed | `VoidDialog` / `ClosedDialog` — description opsional |
+| Void / Closed | Dialog Void / Closed — description opsional |
 
-**Catatan:** `can_approve` juga cek status `declined` / `partially_approved` (multi-level legacy); reject set **`rejected`** bukan `declined`.
+**Catatan:** approve eligibility masih punya sisa cek status legacy multi-level; reject set status **rejected**.
 
 ---
 
 ## 11. Section Audit Log
 
-`GET purchase-order/{id}/audit` — header, detail (incl. soft-deleted), attachments, other costs/discounts.
+Audit menampilkan header, detail (termasuk soft-deleted), attachments, other costs/discounts.
 
 ---
 
 ## 12. Import Detail Purchase Order
 
-### 12.1 Ringkasan teknis
+### 12.1 Ringkasan perilaku
 
 | Item | Nilai AS-IS |
 |------|-------------|
-| Upload API | `POST purchase-order/{id}/purchase-order-detail/upload` |
-| Class aktif | `PurchaseOrderWithPrImport` **only** |
-| Class tidak aktif | `PurchaseOrderWithoutPrImport` (**commented out** di `uploadFilePo`) |
-| Deteksi With/Without PR | Baris 2 (Excel row 2), kolom A: terisi → `with_pr=1`; kosong → `with_pr=0` |
-| Side effect tipe | Import sukses → `PurchaseOrder.with_pr` **di-overwrite** sesuai file |
-| Max baris | **500** (`general.max_child_500`) |
-| Re-upload | `isReupload=1` → soft-delete semua detail existing dulu |
-| VAT saat import | Auto dari product purchase tax pivot jika `auto_add_transaction=1` |
-| Warranty import | Hardcoded `"1"` di job — tidak dari kolom Excel |
+| Deteksi With/Without PR | Baris 2 kolom A: terisi → With PR; kosong → Without PR |
+| Side effect tipe | Import sukses **overwrite** flag tipe PO sesuai file |
+| Max baris | **500** |
+| Re-upload | Bisa ganti semua detail existing |
+| VAT / warranty | Auto dari master produk (bukan kolom Excel) |
+| Wiring teknis | Class/import job/API: [technical §9](./technical.md#9-import-detail) |
 
 ### 12.2 Template Excel — struktur file
 
@@ -423,14 +416,11 @@ Satu file fleksibel — **mode With PR vs Without PR** ditentukan oleh isi kolom
 | **G** | `Description` | Opsional | Freetext max ~150 | Remark baris detail |
 | **H** | `Required Delivery Date` | Opsional | **Excel serial date** (integer) — bukan string `DD/MM/YYYY` | `required_delivery_date` — dikonversi `(cell - 25569) × 86400` |
 
-**Kolom yang TIDAK ada di template** (di-set sistem saat import):
-- VAT % / Include-Exclude → dari product tax pivot + supplier auto_add rules
-- Warranty → default `1`
-- PR detail ID → derived dari kolom A + B
+VAT / warranty / PR detail ID **tidak** di template — diisi sistem saat import.
 
-### 12.4 Template Without PR (class tidak aktif — referensi codebase)
+### 12.4 Template Without PR (belum aktif)
 
-Jika `PurchaseOrderWithoutPrImport` di-enable nanti, header kolom A = **`Product ID`** (integer), bukan PR Code. Kolom B–H sama. Max baris class ini: **100** (`max_child`) — **inkonsisten** dengan With PR (500).
+Mode Without PR via class terpisah **belum di-wire**. Jika diaktifkan nanti: kolom A = Product ID; batas baris historis **100** (inkonsisten vs 500). Lihat GAP-PO-04 / technical.
 
 ### 12.5 Validasi file-level
 
@@ -444,38 +434,30 @@ Jika `PurchaseOrderWithoutPrImport` di-enable nanti, header kolom A = **`Product
 | F-06 | existing + import > **500** | "Cannot add more than 500 details to this transaction." |
 | F-07 | Campuran baris With/Without PR dalam 1 file | PR Number empty per baris (lihat §12.2) |
 
-### 12.6 Validasi per baris (lengkap)
+### 12.6 Validasi per baris (ringkas)
 
-| # | Field | Kondisi gagal | Pesan Import Log |
-|---|-------|---------------|------------------|
-| R-01 | PR Code | With PR mode, kosong | `Row {n}: Purchase Requisition code is required.` |
-| R-02 | PR Code | Tidak ditemukan | `Row {n}: Purchase Requisition code '{code}' not found.` |
-| R-03 | SKU | Kosong | `Row {n}: Product SKU is required.` |
-| R-04 | SKU | Not found | `Row {n}: System Product SKU '{sku}' not found in System Product.` |
-| R-05 | SKU | Bundle | `Row {n}: This product already has a relation in product bundling.` |
-| R-06 | SKU | Random | `Row {n}: Cannot add stock random product.` |
-| R-07 | PO Qty | Kosong | `Row {n}: PO Qty is required.` |
-| R-08 | PO Qty | Bukan int/double | `Row {n}: '{val}' Invalid qty type...` |
-| R-09 | PO Qty | ≤ 0 | `Row {n}: '{val}' The transfer quantity field must be greater than 0.` |
-| R-10 | Unit | Kosong | `Row {n}: Unit is required.` |
-| R-11 | Unit | Ada di master tapi bukan unit product | `Row {n}: Unit '{code}' is not associated with this product.` |
-| R-12 | Unit | Tidak ada di master | `Row {n}: Unit '{code}' not found.` |
-| R-13 | Unit Price | Kosong | `Row {n}: Unit Price is required.` |
-| R-14 | Unit Price | Bukan int/double | `Row {n}: '{val}' Invalid price type...` |
-| R-15 | Unit Price | < 1 | `Row {n}: '{val}' The price field must be at least 1.` |
-| R-16 | Disc. | Bukan int/double | `Row {n}: '{val}' Invalid disc type...` |
-| R-17 | Disc. | < 0 | `Row {n}: '{val}' The disc field must be at least 0.` |
-| R-18 | Delivery Date | Bukan Excel integer | `Row {n}: '{val}' The format of the date you entered is incorrect.` |
-| R-19 | PR + SKU | PR valid tapi SKU tidak match baris PR outstanding | Job/store gagal — message dari `PurchaseOrderDetailController@store` |
+Kategori gagal yang sering muncul di Import Log:
 
-**With PR — resolve PR detail:** `pullNextPrDetail(pr_id, product_id)` — first outstanding line matching product.
+| Area | Contoh kondisi gagal |
+|------|----------------------|
+| PR Code | Kosong (mode With PR), tidak ditemukan |
+| SKU | Kosong, tidak ditemukan, bundle, random |
+| PO Qty | Kosong, bukan angka, ≤ 0 |
+| Unit | Kosong, tidak ada di master, tidak terkait produk |
+| Unit Price | Kosong, bukan angka, < 1 |
+| Disc. | Bukan angka, < 0 |
+| Delivery Date | Bukan Excel serial date |
+| PR + SKU | PR valid tapi SKU tidak di outstanding PR |
+
+Pesan exact per baris (R-01…R-19) & resolve PR detail: [technical §9](./technical.md#9-import-detail).
+
 
 ### 12.7 All-or-nothing vs partial
 
 | Fase | Perilaku |
 |------|----------|
 | **Pre-validation (sync)** | Semua baris dicek di `collection()`. **Satu error → 0 job → 0 insert.** |
-| **Job queue (async)** | Satu job per baris → `importProcess()` → `PurchaseOrderDetailController@store(import:true)`. Job gagal → log row; sibling sukses **tetap ada**. |
+| **Job queue (async)** | Satu job per baris. Job gagal → log row; sibling yang sukses **tetap ada**. |
 
 Import dari header **rejected** → status **draft**. Batch selesai → recalc grand totals.
 
@@ -485,25 +467,11 @@ Tidak merge — baris valid = baris detail baru (bisa duplikat SKU).
 
 ### 12.9 Download template (GAP-PO-05)
 
-FE (`DatalistDetail.vue`) mengarahkan download ke:
+Tombol download mengarah ke file static With-PR / Without-PR di `/files/…`. **AS-IS:** aset sering **404** — operator buat manual (§12.3) atau IT deploy. Detail path: [technical §1](./technical.md#1-file-map).
 
-| Tipe PO di form | URL download |
-|---------------|--------------|
-| With PR | `{APP_FE_URL}/files/Template-Import-PO-With-PR.xlsx` |
-| Without PR | `{APP_FE_URL}/files/Template-Import-PO-Without-PR.xlsx` |
+### 12.10 Monitoring import
 
-**AS-IS:** kedua file **tidak ada** di repo `olshoperp-frontend/public/files/` — tombol download menghasilkan **404**. Operator harus buat manual mengikuti §12.3 atau minta IT deploy asset. Lihat §19 GAP-PO-05.
-
-### 12.10 Endpoint monitoring
-
-| Method | Path |
-|--------|------|
-| POST | `purchase-order/{id}/purchase-order-detail/upload` |
-| GET | `purchase-order-detail/progress/{id}` |
-| GET | `purchase-order-detail/{id}/import-log/detail` |
-| GET | `purchase-order-detail/{id}/import-history` |
-
-Detail teknis: [technical.md §8](./technical.md#8-import-detail).
+Progress, import log, dan history tersedia di API import — lihat [technical §2 & §9](./technical.md).
 
 ---
 
@@ -511,7 +479,7 @@ Detail teknis: [technical.md §8](./technical.md#8-import-detail).
 
 ### 13.1 Export detail (single PO)
 
-`GET purchase-order/{id}/show/export-excel?type=1|2`
+Export detail single PO (excel/csv):
 
 Kolom: System Product SKU, Stok WH, Req Qty, Po Qty, Unit, Unit Price, Discount, VAT, Total Price
 
@@ -523,13 +491,13 @@ Kolom: System Product SKU, Stok WH, Req Qty, Po Qty, Unit, Unit Price, Discount,
 | **Without Details** | Header only (~11 kolom) |
 | **This Page Only** | Filter halaman aktif |
 
-Async via `PurchaseOrderDetailExportJob` → tab Export File.
+Async job → tab Export File.
 
 ---
 
 ## 14. Print Detail
 
-**Output:** PDF (`print.blade.php`)
+**Output:** PDF
 
 **Header:** Supplier, currency, your ref, PO number, dates, company logo/NPWP, QR = PO code.
 
@@ -555,10 +523,10 @@ Async via `PurchaseOrderDetailExportJob` → tab Export File.
 | V-08 | Close | **Processed** + approval privilege |
 | V-09 | Delete header | **draft, open, rejected** |
 | V-10 | Edit | Blocked approved/processed/complete/closed/void |
-| V-11 | Max detail | **500** rows (`max_child_500`) |
+| V-11 | Max detail | **500** rows |
 | V-12 | Fiscal period | create/update/approve |
 | V-13 | Approval | Single-level; reject description opsional |
-| V-14 | Qty manual | Integer (`ctype_digit`) — import allows int/double > 0 |
+| V-14 | Qty manual | Integer — import allows angka > 0 (termasuk desimal) |
 | V-15 | Grand total | Other cost/disc cannot make total before VAT < 0 |
 
 ---
@@ -584,46 +552,21 @@ Cross-ref PR: [supplychain-purchase-requisition requirement §2.3](../supplychai
 | Event | PR effect AS-IS |
 |-------|-----------------|
 | Detail delete (pre-approve) | `prepared_to_po_quantity` **decrement** ✓ |
-| Header delete | **Bug:** formula salah — should decrement, not subtract (`DEV-PO-02`) |
+| Header delete | **Bug:** formula revert prepared salah (`DEV-PO-02`) |
 | **Void approved PO** | **`processed_to_po_quantity` TIDAK di-revert** (`GAP-PO-01`) |
 | Approve PO With PR | `processed_to_po_quantity` increment; PR bisa → **complete** |
 
 ---
 
-## 17. Do's and Don'ts
+## 17. Do's and Don'ts (ringkas)
 
-### Do's
+**Do:** lengkapi accounting supplier; set Open sebelum Approve; ubah kurs foreign manual; Closed hanya jika sisa qty memang tidak dilanjutkan.  
+**Don't:** void PO processed; expect Void dari draft/open (pakai Delete); import file dengan baris error; andalkan print untuk total termasuk Other Cost/Disc.
 
-- Lengkapi Accounting Setting supplier sebelum buat PO
-- Set **Open** sebelum Approve (terutama setelah reject)
-- Ubah **Exchange Rate manual** untuk foreign currency (default tetap 1)
-- Pakai **Allocate Full Qty Clearing** untuk sisa qty PR desimal (With PR)
-- **Closed** manual hanya jika yakin sisa qty tidak akan di-inbound
+## 18. Acceptance Criteria (AS-IS)
 
-### Don'ts
+Create open + With/Without PR · supplier filter · outstanding/Single Use · pricing + Other Cost/Disc · single-level approval · complete/closed · import max 500 · export/print · GRN drives processed/complete.
 
-- Jangan void PO yang sudah **processed** — sistem block
-- Jangan expect Void dari draft/open — gunakan **Delete**
-- Jangan import file dengan baris error — pre-validation all-or-nothing
-- Jangan andalkan print PDF untuk total final termasuk Other Cost — print **exclude** other cost/disc
-
----
-
-## 18. Acceptance Criteria
-
-- [x] Create → **open**; type With/Without PR
-- [x] Supplier filter accounting complete; exchange rate rules
-- [x] With PR outstanding panel + Single Use modal + unit conversion
-- [x] Without PR direct product select
-- [x] DPP/VAT/Total per pricing helper; Totals section grand total
-- [x] Other Cost / Other Discount + grand total recalc
-- [x] Single-level approval + optional reject description
-- [x] PO selesai: **complete** (auto inbound) atau **closed** (manual)
-- [x] Import: template B–H headers; max **500**; With PR class only
-- [x] Export detail & advanced; print PDF
-- [x] GRN drives processed/complete/revert approved
-
----
 
 ## 19. Gap PM vs AS-IS — penjelasan
 
@@ -632,21 +575,15 @@ Cross-ref PR: [supplychain-purchase-requisition requirement §2.3](../supplychai
 | **GAP-PO-01** | Void PO → qty PR kembali available | Void **tidak revert** `processed_to_po_quantity` | **Not implemented** | → **Pending Major P-PO-01** (Finance) |
 | **GAP-PO-02** | Void draft/open/rejected (0 inbound) | Void hanya **approved**; draft/open → **Delete** | **Design differs — confirmed OK** | PM expectation tidak match; AS-IS by design |
 | **GAP-PO-03** | Closed dari **approved** partial inbound | Closed dari **processed** | **Bukan gap fungsional** | Partial inbound ubah status ke **processed** dulu. Tombol Close = stop sisa inbound (§2.3.1) |
-| **GAP-PO-04** | Import Without PR aktif | `PurchaseOrderWithoutPrImport` commented out | **Not wired** | Satu class With PR handle both modes via kolom A; detail §12 |
-| **GAP-PO-05** | Template xlsx tersedia | File **404** di `public/files/` | **Asset missing** | Lihat penjelasan §19.1 |
+| **GAP-PO-04** | Import Without PR aktif | Class Without PR tidak di-wire | **Not wired** | Mode Without PR via kolom A kosong; detail §12 / technical |
+| **GAP-PO-05** | Template xlsx tersedia | File **404** di FE `/files/` | **Asset missing** | Lihat penjelasan §19.1 |
 | **GAP-PO-06** | Print = Net Purchase layar | Print **exclude** Other Cost/Disc | **Incomplete print** | → **Pending Major P-PO-02** (End user) |
 | **GAP-PO-07** | Type PO locked setelah create | Import overwrite `with_pr`; BE update tidak lock | **Partial gap** | Lihat penjelasan §19.2 |
 
 ### 19.1 GAP-PO-05 — Template file missing (detail)
 
-**Apa maksudnya:**
+Link download template di panel Import mengarah ke asset static yang **sering belum di-deploy** (404). Workaround: Excel manual (§12.3). Perbaikan: deploy 2 file template atau generate dinamis di FE. Path/detail: [technical §1](./technical.md#1-file-map).
 
-1. Di UI PO Detail, tombol **Download Template** memanggil `handleDownloadTemplate()` → browser fetch `/files/Template-Import-PO-With-PR.xlsx` (atau Without PR).
-2. File tersebut **harus** ada sebagai static asset di frontend repo: `olshoperp-frontend/public/files/`.
-3. **Faktual di repo:** folder `public/files/` punya template menu lain (Other Cost, Deduction, dll.) tapi **tidak ada** `Template-Import-PO-With-PR.xlsx` maupun `Template-Import-PO-Without-PR.xlsx`.
-4. **Dampak operator:** klik download → **404 Not Found** — tidak dapat file contoh resmi; harus rakit Excel manual ikuti §12.3.
-5. **Upload tetap bisa jalan** jika user buat file sendiri dengan header exact — backend tidak butuh file template di server.
-6. **Yang perlu dilakukan dev:** buat 2 file xlsx (baris 1 header B–H), commit ke `public/files/`, atau ganti FE ke generate template dinamis.
 
 ### 19.2 GAP-PO-07 — Type PO bisa berubah (detail)
 
@@ -656,51 +593,50 @@ Cross-ref PR: [supplychain-purchase-requisition requirement §2.3](../supplychai
 |---------|----------------|
 | **UI form** | Radio With/Without PR **disabled** (`disable_relation_pr=true`) jika PO **sudah punya detail** — user tidak bisa klik ganti tipe |
 | **API update** | `PUT purchase-order/{id}` **masih terima** field `with_pr` — **tidak ada** guard "reject if details exist" (beda dengan supplier/currency yang di-lock) |
-| **Import sukses** | `PurchaseOrderWithPrImport` **overwrite** `with_pr` di header berdasarkan deteksi kolom A file |
+| **Import sukses** | Import **overwrite** flag tipe PO di header berdasarkan deteksi kolom A file |
 
-**Skenario risiko:**
-
-1. PO dibuat **Without PR** → user import file yang kolom A berisi PR Code → header jadi **With PR** meski UI radio terkunci.
-2. PO sudah punya detail Without PR → user import file With PR → error **"type of import not match"** (guard di `uploadFilePo`).
-3. PO kosong detail → import file bisa set `with_pr` tanpa interaksi radio.
-
-**PM expect:** tipe fixed setelah create. **AS-IS:** tipe fixed di UI tapi **bisa drift via import/API**.
+**Risiko:** import file With PR ke PO Without PR (kosong detail) bisa overwrite tipe meski radio UI terkunci; jika sudah ada detail + tipe mismatch → error type not match. **PM expect:** tipe fixed setelah create. **AS-IS:** UI lock, API/import bisa drift.
 
 ---
 
-## 20. Dev Team — Technical Follow-ups
+## 20. Dev follow-ups
 
-| ID | Temuan | Klasifikasi |
-|----|--------|-------------|
-| DEV-PO-01 | Void approved PO tidak decrement PR `processed_to_po_quantity` | Bug logic |
-| DEV-PO-02 | Header `destroy()` PR revert formula salah (L732–734) | Bug |
-| DEV-PO-03 | `can_approve` cek `declined` tapi reject set `rejected` | Inconsistency |
-| DEV-PO-04 | `isFullAlocated` FE tidak dibaca backend | Dead param |
-| DEV-PO-05 | Print unit column hanya dari PR detail | Without PR UX |
-| DEV-PO-06 | Enable `PurchaseOrderWithoutPrImport` + template files | Feature wiring |
-| DEV-PO-07 | `PurchaseOrderWithoutPrImport` max **100** vs With PR **500** — inconsistent | Config |
+Daftar DEV-PO-* (void PR qty, destroy formula, print unit, Without PR import wiring, max_child unify): [technical §15 Known Issues](./technical.md#15-known-issues).
 
-Detail: [technical.md §15](./technical.md#15-dev-team--technical-follow-ups)
-
----
 
 ## 21. Pending Items — Major (diskusi stakeholder)
 
-Item di bawah **bukan** sekadar dev bug — butuh keputusan bisnis sebelum implementasi.
+Butuh keputusan bisnis sebelum implementasi:
 
 | ID | Priority | Stakeholder | Item | Konteks AS-IS | Keputusan dibutuhkan |
 |----|----------|-------------|------|---------------|---------------------|
 | **P-PO-01** | 🔴 **Highest** | **Finance + Procurement** | **Void PO harus revert qty PR?** (GAP-PO-01) | Saat PO With PR di-**void** setelah approve, `processed_to_po_quantity` di PR **tidak dikembalikan** — PR tetap "terkunci" seolah qty masih di PO. Delete detail pre-approve revert `prepared_to_po` ✓ | Apakah void PO wajib release qty ke PR outstanding? Impact: PR status, laporan open commitment, audit trail PR→PO |
 | **P-PO-02** | 🔴 **Major** | **End user / Procurement** | **Print PDF harus sama dengan Net Purchase di layar?** (GAP-PO-06) | Layar form: Net Purchase = detail + VAT + **Other Cost** − **Other Disc**. Print PDF: Sub Total / VAT / Grand Total **hanya dari detail lines** — Other Cost/Disc **tidak tampil** | Apakah printout resmi ke supplier/internal harus mirror Totals section? Atau print hanya ringkasan barang? |
-| **P-PO-03** | 🟡 Medium | **Dev + QA** | Deploy template import xlsx (GAP-PO-05) | Download template 404 — operator tidak punya file resmi | IT deploy 2 file ke `public/files/` atau FE generate template |
+| **P-PO-03** | 🟡 Medium | **Dev + QA** | Deploy template import xlsx (GAP-PO-05) | Download template 404 — operator tidak punya file resmi | IT deploy 2 file template atau FE generate template |
 | **P-PO-04** | 🟡 Medium | **PM + Dev** | Lock `with_pr` di backend + import (GAP-PO-07) | UI lock tapi API/import bisa ubah tipe | Apakah `with_pr` immutable setelah first detail / setelah create? |
-| **P-PO-05** | 🟡 Medium | **Dev** | Enable `PurchaseOrderWithoutPrImport` (GAP-PO-04) | Without PR import via class terpisah (Product ID col A) disabled | Satu class cukup atau perlu split + unify max 500? |
+| **P-PO-05** | 🟡 Medium | **Dev** | Enable import Without PR terpisah (GAP-PO-04) | Mode class terpisah disabled | Satu alur cukup atau perlu split + unify max 500? |
 
-**Confirmed — tidak perlu pending:**
-- **GAP-PO-02** — Void draft/open via Delete, bukan Void action ✓
-- **GAP-PO-03** — Closed dari **processed** = intentional; tujuan stop sisa inbound (§2.3.1) ✓
+**Confirmed OK (bukan pending):** GAP-PO-02 (Void draft/open = Delete); GAP-PO-03 (Closed dari processed intentional).
 
 ---
+
+
+## 22. FAQ
+
+**Q: Kenapa supplier tidak muncul?**  
+A: Accounting setting supplier belum 100% lengkap di General Company.
+
+**Q: Setelah reject, kenapa belum bisa approve?**  
+A: Reject + save → Draft. Set **Open** lagi sebelum Approve.
+
+**Q: Void vs Delete?**  
+A: Draft/Open/Rejected → **Delete**. Approved (belum inbound) → **Void**.
+
+**Q: Void mengembalikan qty PR?**  
+A: Belum (GAP-PO-01 / P-PO-01) — butuh keputusan Finance + Procurement.
+
+**Q: Print beda dengan Net Purchase layar?**  
+A: Print belum include Other Cost/Disc (GAP-PO-06 / P-PO-02).
 
 ## Related Documents
 
@@ -708,6 +644,7 @@ Item di bawah **bukan** sekadar dev bug — butuh keputusan bisnis sebelum imple
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | Purchase Requisition | [../supplychain-purchase-requisition/requirement.md](../supplychain-purchase-requisition/requirement.md) |
 | Other Cost | [../omni-other-cost/requirement.md](../omni-other-cost/requirement.md) |
 | Supplier Invoice | [../accounting-supplier-invoice/requirement.md](../accounting-supplier-invoice/requirement.md) |

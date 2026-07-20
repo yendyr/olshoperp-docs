@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-other-discount
 menu_name: "Other Discount"
-version: 1.1
-last_updated: 2026-07-10
+version: 1.2
+last_updated: 2026-07-17
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -13,7 +13,7 @@ audience: operator
 
 ## Ringkasan
 
-**Master Other Discount** mendefinisikan jenis **potongan/diskon** dan COA-nya. Struktur dan cara pakainya **sama** dengan [Other Cost](../omni-other-cost/knowledge-base.md), kecuali jenis COA yang boleh dipilih (akun diskon/penjualan, bukan akun biaya).
+**Master Other Discount** mendefinisikan jenis **potongan/diskon** dan COA-nya. Struktur dan cara pakainya **sama** dengan [Other Cost](../omni-other-cost/knowledge-base.md). Scope COA juga **sama**: **semua class**, wajib akun **child** (leaf).
 
 **Lokasi menu:** FA → Master → Other Discount  
 **Route:** `/omni/other-discount`
@@ -29,7 +29,7 @@ audience: operator
 |-------|--------|---------|
 | Code | Ya | Unik per company; max 50 karakter; **boleh sama** dengan Code di Other Cost (menu terpisah) |
 | Name | Ya | |
-| Other Discount COA | Ya | Akun **leaf** aktif — class: Revenue, Other Revenue & Expenses, atau COGS (standar bisnis) |
+| Other Discount COA | Ya | Akun **leaf** aktif — **semua COA class** (TO-BE; AS-IS form/import masih Expense + Other Revenue & Expenses) |
 | Active | Ya | Default Yes |
 | Applied to Store | Tidak | All Stores atau pilih toko Others aktif |
 | Description | Tidak | Max 150 karakter |
@@ -56,7 +56,7 @@ Identik Other Cost:
 ## FAQ
 
 **Q: Bedanya dengan Other Cost?**  
-A: Other Cost = biaya tambahan (menambah nilai). Other Discount = potongan (mengurangi nilai). COA yang boleh dipilih **berbeda** — lihat requirement §3.2.
+A: Other Cost = biaya tambahan (menambah nilai). Other Discount = potongan (mengurangi nilai). Scope COA **sama**: semua class, wajib child (leaf).
 
 **Q: Code boleh sama dengan Other Cost?**  
 A: **Ya.** Masing-masing menu punya daftar master sendiri.

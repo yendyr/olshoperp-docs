@@ -1,23 +1,33 @@
-# Credit Note — Dokumentasi
+# Credit Note — Dokumentasi QA
 
-Menu **Credit Note** (Accounting).
+Menu **Credit Note** (Accounting / Account Receivable).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | pending |
-| Requirement | requirement.md | PM, QA | pending |
-| Technical | technical.md | Developer | pending |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
+
+**SoT:** `accounting-credit-note-source-of-truth.md` v1.0 (17 Jul 2026)  
+**User-guide:** v1.0 · `source_version` 1.0  
+**Version (3 layer):** 1.0 · **Last updated:** 2026-07-17
+
+## Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2026-07-17 | Docs awal dari SoT v1.0: konsep CN/Payment, import all-or-nothing, auto Sales Return billed, AR deposit, gaps CN-01–04; user-guide v1.0 |
+
+## Related menus
+
+| Menu | Link |
+|------|------|
+| Sales Invoice | [../accounting-customer-invoice/](../accounting-customer-invoice/) — trx ref / billed |
+| Sales Return Approval | [../accounting-sales-return/](../accounting-sales-return/) — auto-generate CN billed |
+| Sales Return (SC) | [../supplychain-sales-returns/](../supplychain-sales-returns/) — qty/nilai retur |
+| Account Receive | [../accounting-customer-payment/](../accounting-customer-payment/) — pakai CN sebagai deposit |
+| Journal | [../journal/](../journal/) — auto journal approve |
+| Store Binding | [../omni-store-binding/](../omni-store-binding/) — Deposit COA Platform |
 
 **Maintenance owner:** QA — Yemima
-
-## Relasi Sales Return
-
-Credit Note dapat **auto-generate** saat Finance **Complete** Sales Return type **Billed** (`processed_to_payment_amount > 0` pada Customer Invoice).
-
-| Aspek | Detail |
-|-------|--------|
-| Trigger | `POST accounting/sales-returns/{id}/approve` → `generateCreditNoteFromReturn` |
-| Type billed | Invoice sudah ada payment |
-| Type unbilled | Jurnal Sales/AR — **bukan** Credit Note |
-
-Detail alur: [Sales Return requirement §7](../supplychain-sales-returns/requirement.md#72-pov-finance--complete-post-approve) · [Sales Return Approval](../accounting-sales-return/requirement.md)
