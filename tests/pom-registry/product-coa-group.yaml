@@ -1,0 +1,62 @@
+# POM Element Registry — Product COA Group (FA Master)
+# Sumber: Accounting/master/ProductCoaGroup/{DataList,Form}.vue
+
+menu: accounting-product-coa-group
+menu_name: Product COA Group
+route: /accounting/product-coa-group
+create_path: /accounting/product-coa-group/create
+edit_path: /accounting/product-coa-group/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/product-coa-group.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  section:
+    strategy: id
+    value: BasicInformation
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  type:
+    strategy: aria-placeholder
+    value: Choose Option
+
+  description:
+    strategy: id
+    value: description
+
+  set_as_default:
+    strategy: label
+    value: Set as Default System Product
+
+  active:
+    strategy: label
+    value: Active
+
+  coa_sales:
+    strategy: aria-placeholder
+    value: Choose Sales COA
+
+  coa_cogs:
+    strategy: aria-placeholder
+    value: Choose COGS COA
+
+  coa_inventory:
+    strategy: aria-placeholder
+    value: Choose Inventory COA
+
+notes:
+  - "Type=Purchased Item → binding list wajib (kecuali Return Expense)."
+  - "Automation matikan Set as Default agar tidak overwrite default company."
+  - "Description = automation playwright."

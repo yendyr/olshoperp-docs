@@ -10,3 +10,4 @@
 | TC-ARCP-002 | Single use — Save tanpa paid amount ditolak | review | ✅ | 2026-06-26 |
 | TC-ARCP-003 | Bulk use — insert beberapa SI dari modal Available (checkbox + Use) | review | ✅ | 2026-06-26 |
 | TC-ARCP-004 | Bulk select — insert SI dari dropdown Select Invoice | review | ✅ | 2026-06-26 |
+| TC-ARCP-005 | CREATE — Supplier China + Available SI + Bank BCA 001 + Approve (warm-up CBR) | draft | ✅ | 2026-07-23 |

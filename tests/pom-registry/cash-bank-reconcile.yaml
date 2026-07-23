@@ -1,0 +1,58 @@
+# POM Element Registry — Cash/Bank Reconcile (CBR)
+# Sumber: olshoperp-frontend Accounting/CashBankReconcile/*
+
+menu: accounting-cash-bank-reconcile
+menu_name: Cash/Bank Reconcile
+route: /accounting/cash-bank-reconcile
+create_path: /accounting/cash-bank-reconcile/create
+edit_path: /accounting/cash-bank-reconcile/edit/:id
+create_button_mode: auto
+pom_helper: tests/helpers/cash-bank-reconcile.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: auto
+    notes: Button role=link → /create (bukan auto-POST)
+
+  period:
+    strategy: placeholder
+    value: Choose Period Date
+    note: PrimeVue DatePicker range (VueDatePicker wrapper)
+
+  cash_bank_account:
+    strategy: aria-placeholder
+    value: Choose Cash Bank Account
+
+  description:
+    strategy: placeholder
+    value: Add description or notes...
+
+  draft_radio:
+    strategy: id
+    value: draft
+
+  open_radio:
+    strategy: id
+    value: open
+
+  save_and_next:
+    strategy: text
+    value: Save & Next
+
+  bank_statement_section:
+    strategy: id
+    value: BankStatement
+
+  bank_statement_file_input:
+    strategy: css
+    value: 'input[type="file"]'
+    scope: '#BankStatement'
+    note: "Hidden; setInputFiles → POST …/general-ledger-bank-statement/upload"
+
+notes:
+  - "Description = automation playwright."
+  - "Period tidak boleh overlap akun yang sama (delete draft automation dulu)."
+  - "Create = manual form /create → Save & Next → edit."
+  - "Open = PUT only_transaction_status."
+  - "Import fixture: tests/fixtures/cbr/bank-statement-ar-received-16000.xlsx"

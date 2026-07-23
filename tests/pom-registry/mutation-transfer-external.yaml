@@ -36,6 +36,7 @@ elements:
   description:
     strategy: section-textarea
     section_id: BasicInformation
+    note: "Standing rule automation: isi tepat 'automation playwright'"
 
   save_and_next:
     strategy: role
@@ -66,4 +67,7 @@ notes:
   - "fetchDefaultValues() isi origin+destination lalu auto create."
   - "Fiscal fallback tanggal 09-07-2026 jika periode hari ini tutup."
   - "TC: CREATE + UPDATE saja (description + Select Product digabung di UPDATE)."
-  - "Approve ship/receive (2 tahap) di luar scope CREATE/UPDATE."
+  - "Approve ship/receive (2 tahap) — receive di Transfer Inbound; ship dipakai fixture TC-TIB-*."
+  - "Available Products bulk Use → POST mutation-transfer-detail-ext/bulk-fifo (selain Select Product middle-detail)."
+  - "Cross-menu inbound: qa-docs/supplychain-transfer-inbound/test-cases/ (TC-TIB-001/002)."
+  - "Standing rule Description: selalu 'automation playwright' (TE + TI fixture / future automations)."

@@ -1,11 +1,13 @@
 # Cash/Bank Account — Dokumentasi
 
-Menu **Cash/Bank Account** (Accounting).
+Menu **Cash/Bank Account** (Accounting / FA Master).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | pending |
+| Test Cases | [test-cases/](./test-cases/) | QA | draft (TC-CBA-001…004) |
+| Knowledge Base | knowledge-base.md | Operator | pending |
 | Requirement | requirement.md | PM, QA | pending |
 | Technical | technical.md | Developer | pending |
 
-**Maintenance owner:** QA — Yemima
+**UI route AS-IS:** `/accounting/company-detail-bank`  
+**Maintenance owner:** QA — Cursor

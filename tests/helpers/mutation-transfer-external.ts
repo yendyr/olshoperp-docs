@@ -14,7 +14,8 @@ export const MUTATION_TRANSFER_EXTERNAL_EDIT_PATH_PATTERN =
  *
  * UI+API: /supplychain/mutation-transfer-external · prefix TFE*
  * Origin + Destination · Select Product → transfer-external-middle-detail/bulk-fifo
- * Transit: in transit → delivered (approve 2 tahap — di luar scope CREATE/UPDATE).
+ * Transit: in transit → delivered (approve 2 tahap).
+ * Ship approve + Available Products bulk dipakai fixture Transfer Inbound (TC-TIB-*).
  */
 export class MutationTransferExternalPage {
   readonly datalist: OlshopDatalist;
@@ -414,5 +415,364 @@ export class MutationTransferExternalPage {
       tableRow,
       `Product ${token} harus ada di Product Transfer Detail table`,
     ).toBeVisible({ timeout: 45_000 });
+  }
+
+  /** Pilih Origin yang mengandung fragment (mis. Gayungsari). */
+  async selectOriginContaining(fragment: string): Promise<string> {
+    await this.expandBasicInformation();
+    await this.multiselect.open(this.originCombobox);
+    await this.originCombobox.fill(fragment).catch(async () => {
+      await this.originCombobox.pressSequentially(fragment, { delay: 40 });
+    });
+    await this.page.waitForTimeout(900);
+    const option = this.multiselect
+      .visibleOptions()
+      .filter({ hasText: new RegExp(fragment, 'i') })
+      .first();
+    await expect(option, `Origin containing ${fragment}`).toBeVisible({
+      timeout: 30_000,
+    });
+    const text = ((await option.textContent()) ?? '').trim();
+    await option.click();
+    await this.page.waitForTimeout(1_000);
+    return text;
+  }
+
+  /** Pilih Location Destination yang mengandung fragment (mis. Tunjungan Plaza). */
+  async selectDestinationContaining(fragment: string): Promise<string> {
+    await this.expandBasicInformation();
+    await this.multiselect.open(this.destinationCombobox);
+    await this.destinationCombobox.fill(fragment).catch(async () => {
+      await this.destinationCombobox.pressSequentially(fragment, {
+        delay: 40,
+      });
+    });
+    await this.page.waitForTimeout(900);
+    const option = this.multiselect
+      .visibleOptions()
+      .filter({ hasText: new RegExp(fragment, 'i') })
+      .first();
+    await expect(option, `Destination containing ${fragment}`).toBeVisible({
+      timeout: 30_000,
+    });
+    const text = ((await option.textContent()) ?? '').trim();
+    await option.click();
+    await this.page.waitForTimeout(800);
+    return text;
+  }
+
+  get availableProductsLink(): Locator {
+    return this.page.getByText('Available Products', { exact: true }).first();
+  }
+
+  availableProductsPanel(): Locator {
+    // Teleport panel dari Form.vue (AvailableWarehouse DataTables)
+    return this.page
+      .locator('div.fixed.rounded.drop-shadow-md')
+      .filter({ has: this.page.locator('button.tooltip-use, table') })
+      .first();
+  }
+
+  async openAvailableProductsModal(): Promise<void> {
+    await this.expandProductTransferDetail();
+    await this.availableProductsLink.scrollIntoViewIfNeeded();
+
+    const availableResponse = this.page
+      .waitForResponse(
+        (response) =>
+          /available_item_warehouse|available_products/i.test(response.url()) &&
+          response.request().method() === 'GET',
+        { timeout: 60_000 },
+      )
+      .catch(() => null);
+
+    await this.availableProductsLink.click();
+    await availableResponse;
+    await this.page.waitForTimeout(1_500);
+
+    const panel = this.availableProductsPanel();
+    await expect(panel, 'Panel Available Products').toBeVisible({
+      timeout: 45_000,
+    });
+  }
+
+  private availableSearchInput(): Locator {
+    const panel = this.availableProductsPanel();
+    return panel
+      .getByRole('searchbox')
+      .or(panel.locator('input[type="search"]'))
+      .or(panel.getByPlaceholder(/find something|search/i))
+      .first();
+  }
+
+  /**
+   * Available Products → satu SKU per Use (search DataTable reset pilihan bulk).
+   * POST mutation-transfer-detail-ext/bulk-fifo per SKU.
+   */
+  private async useAvailableProductBySku(sku: string): Promise<void> {
+    await this.openAvailableProductsModal();
+    const panel = this.availableProductsPanel();
+
+    const search = this.availableSearchInput();
+    if (await search.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await search.click({ clickCount: 3 });
+      await search.fill('');
+      await search.fill(sku);
+      await search.press('Enter').catch(() => undefined);
+      await this.page.waitForTimeout(2_200);
+    }
+
+    const row = panel
+      .locator('table tbody tr')
+      .filter({
+        hasText: new RegExp(
+          sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+          'i',
+        ),
+      })
+      .filter({ hasNotText: /No matching records|no data available/i })
+      .first();
+    await expect(row, `Available product ${sku}`).toBeVisible({
+      timeout: 45_000,
+    });
+
+    const checkbox = row.locator('input[type="checkbox"]').first();
+    await checkbox.check({ force: true });
+    await this.page.waitForTimeout(400);
+
+    const bulkUse = panel
+      .locator('button.tooltip-use')
+      .filter({ hasText: /Use/i })
+      .first();
+    await expect(bulkUse, `Tombol Use ${sku}`).toBeVisible({
+      timeout: 15_000,
+    });
+
+    // UI Available Products punya 2 tombol Use (bulk header + per-row).
+    // Endpoint juga bisa berubah per build, jadi jangan hard-bind ke 1 URL saja.
+    const maybePost = this.page
+      .waitForResponse(
+        (response) =>
+          response.request().method() === 'POST' &&
+          /transfer-external|mutation-transfer/i.test(response.url()),
+        { timeout: 25_000 },
+      )
+      .catch(() => null);
+
+    await bulkUse.click();
+    await maybePost;
+
+    // Prefer assert hasil di detail table; jika belum masuk, fallback klik Use di baris produk.
+    const appearedAfterBulk = await this.detailRowBySku(sku)
+      .isVisible({ timeout: 12_000 })
+      .catch(() => false);
+
+    if (!appearedAfterBulk) {
+      const rowUse = row
+        .locator('button')
+        .filter({ hasText: /^Use$/i })
+        .first();
+      if (await rowUse.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        const maybePostRow = this.page
+          .waitForResponse(
+            (response) =>
+              response.request().method() === 'POST' &&
+              /transfer-external|mutation-transfer/i.test(response.url()),
+            { timeout: 25_000 },
+          )
+          .catch(() => null);
+        await rowUse.click();
+        await maybePostRow;
+      }
+    }
+
+    await waitForSuccessToast(this.page, 15_000).catch(() => undefined);
+    await this.page.waitForTimeout(1_000);
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.mouse.click(8, 8).catch(() => undefined);
+    await this.page.waitForTimeout(800);
+    await this.assertDetailHasProduct(sku);
+  }
+
+  /**
+   * Available Products → satu SKU per Use (search DataTable reset pilihan bulk).
+   */
+  async bulkUseAvailableProductsBySkus(skus: string[]): Promise<void> {
+    for (const sku of skus) {
+      await this.useAvailableProductBySku(sku);
+    }
+  }
+
+  /** Cek apakah semua SKU tampil di Available Products (tanpa Use). */
+  async areSkusInAvailableProducts(skus: string[]): Promise<boolean> {
+    try {
+      await this.openAvailableProductsModal();
+      const panel = this.availableProductsPanel();
+
+      for (const sku of skus) {
+        const search = this.availableSearchInput();
+        if (await search.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          await search.click({ clickCount: 3 });
+          await search.fill('');
+          await search.fill(sku);
+          await search.press('Enter').catch(() => undefined);
+          await this.page.waitForTimeout(2_000);
+        }
+
+        const row = panel
+          .locator('table tbody tr')
+          .filter({
+            hasText: new RegExp(
+              sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+              'i',
+            ),
+          })
+          .filter({ hasNotText: /No matching records|no data available/i })
+          .first();
+
+        if (!(await row.isVisible({ timeout: 8_000 }).catch(() => false))) {
+          await this.page.keyboard.press('Escape').catch(() => undefined);
+          return false;
+        }
+      }
+
+      await this.page.keyboard.press('Escape').catch(() => undefined);
+      await this.page.mouse.click(8, 8).catch(() => undefined);
+      return true;
+    } catch {
+      await this.page.keyboard.press('Escape').catch(() => undefined);
+      return false;
+    }
+  }
+
+  detailRowBySku(sku: string): Locator {
+    const escaped = sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return this.page
+      .locator(
+        '#DatalistDetail .p-datatable-tbody tr, #DatalistDetail tbody tr',
+      )
+      .filter({ hasText: new RegExp(escaped, 'i') })
+      .locator('visible=true')
+      .first();
+  }
+
+  /** Ubah Qty Transfered di Product Transfer Detail (inline). */
+  async setTransferQtyForSku(sku: string, qty: number): Promise<void> {
+    await this.expandProductTransferDetail();
+    const row = this.detailRowBySku(sku);
+    await expect(row, `Detail row ${sku}`).toBeVisible({ timeout: 45_000 });
+
+    const qtyInput = row
+      .locator('input[type="text"]:visible')
+      .first()
+      .or(row.locator('td').nth(2).locator('input').first());
+
+    await expect(qtyInput, `Qty Transfered input ${sku}`).toBeVisible({
+      timeout: 20_000,
+    });
+
+    const current = (await qtyInput.inputValue().catch(() => '')).replace(
+      /[^\d.]/g,
+      '',
+    );
+    if (current === String(qty) || Number(current) === qty) {
+      return;
+    }
+
+    const saveResponse = this.page
+      .waitForResponse(
+        (response) =>
+          /transfer-external-middle-detail|mutation-transfer-detail-ext/.test(
+            response.url(),
+          ) &&
+          ['PUT', 'POST', 'PATCH'].includes(response.request().method()),
+        { timeout: 60_000 },
+      )
+      .catch(() => null);
+
+    await qtyInput.click({ clickCount: 3 });
+    await qtyInput.fill(String(qty));
+    await qtyInput.press('Tab');
+    await saveResponse;
+    await waitForSuccessToast(this.page, 10_000).catch(() => undefined);
+    await this.page.waitForTimeout(800);
+  }
+
+  /**
+   * Approve ship (Transfer External) — checklist biru + ApprovalModal.
+   * Setelah sukses: transit in transit → dokumen muncul di Transfer Inbound.
+   * Retry jika backend masih menghitung ending stock.
+   */
+  async clickApproveShip(): Promise<void> {
+    const maxAttempts = 6;
+    let lastError = '';
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      if (attempt > 1) {
+        await this.page.keyboard.press('Escape').catch(() => undefined);
+        await this.page.waitForTimeout(12_000);
+      }
+
+      const approveBtn = this.page
+        .locator('button.bg-info.border-info')
+        .filter({
+          has: this.page.locator('.fa-check-double, [class*="check-double"]'),
+        })
+        .or(this.page.locator('button.bg-info.border-info').last())
+        .first();
+
+      await approveBtn.scrollIntoViewIfNeeded();
+      await expect(approveBtn, 'Tombol Approve (ship)').toBeVisible({
+        timeout: 45_000,
+      });
+      await approveBtn.click();
+
+      const confirmApprove = this.page
+        .getByRole('button', { name: /^Approve$/i })
+        .last();
+      await expect(confirmApprove).toBeVisible({ timeout: 15_000 });
+
+      const approveResponse = this.page.waitForResponse(
+        (response) =>
+          /mutation-transfer-external\/\d+\/approve/.test(response.url()) &&
+          response.request().method() === 'POST',
+        { timeout: 120_000 },
+      );
+
+      const redirected = this.page
+        .waitForURL(/\/supplychain\/mutation-transfer-external\/?$/, {
+          timeout: 120_000,
+        })
+        .catch(() => undefined);
+
+      await confirmApprove.click();
+
+      const response = await approveResponse;
+      const body = (await response.json().catch(() => null)) as {
+        status?: { error?: number | string; message?: string };
+      } | null;
+
+      const errMsg = String(body?.status?.message ?? '');
+      if (response.ok() && !Number(body?.status?.error ?? 0)) {
+        await redirected;
+        await waitForSuccessToast(this.page, 10_000).catch(() => undefined);
+        await dismissStagingBanner(this.page);
+        return;
+      }
+
+      lastError = errMsg || `HTTP ${response.status()}`;
+      if (
+        !/calculating the ending stock/i.test(lastError) ||
+        attempt >= maxAttempts
+      ) {
+        throw new Error(
+          `Approve External Transfer gagal: ${lastError}`,
+        );
+      }
+    }
+
+    throw new Error(
+      `Approve External Transfer gagal setelah ${maxAttempts} percobaan: ${lastError}`,
+    );
   }
 }

@@ -243,41 +243,80 @@ export class SystemProductPage {
       return;
     }
 
-    const coaMs = this.page.locator('.multiselect').nth(1);
+    // Select via labeled root — avoid ambiguous .multiselect.nth / nested filter.
+    const coaRoot = this.productCoaGroupMultiselectRoot;
     await this.systemProductSkuInput.click();
-    await coaMs.click();
-    const combobox = this.page
-      .locator(
-        '[aria-placeholder="Choose Product Coa Group"], .multiselect-search',
-      )
+    await coaRoot.scrollIntoViewIfNeeded();
+    await coaRoot.click();
+
+    const search = coaRoot.locator('.multiselect-search').first();
+    await expect(search).toBeVisible({ timeout: 10_000 });
+
+    const searchToken = expectedLabel.replace(/&/g, '').trim();
+    await search.fill('').catch(() => undefined);
+    await search.pressSequentially(searchToken, { delay: 50 });
+    await this.page.waitForTimeout(500);
+
+    const scopedOption = coaRoot
+      .locator('.multiselect-option:visible')
+      .filter({ hasText: pattern })
       .first();
-    await expect(combobox).toBeVisible({ timeout: 10_000 });
-    await this.ensureComboboxValue(combobox, expectedLabel);
+    const globalOption = this.page
+      .getByRole('option', { name: pattern })
+      .first();
+
+    if (await scopedOption.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await scopedOption.click();
+    } else {
+      await expect(
+        globalOption,
+        `Opsi Product Coa Group "${expectedLabel}" harus ada`,
+      ).toBeVisible({ timeout: 15_000 });
+      await globalOption.click();
+    }
+
+    await this.systemProductSkuInput.click();
+    await this.page.waitForTimeout(300);
+
+    const selected = await this.resolveProductCoaSelectedLabel();
+    expect(
+      selected,
+      `Product Coa Group harus "${expectedLabel}" setelah dipilih`,
+    ).toMatch(pattern);
+
     await this.fillAssetCategoryIfRequired();
   }
 
   /** Baca COA terpilih — saat autofill, search input sering tidak visible. */
   private async resolveProductCoaSelectedLabel(): Promise<string> {
+    const viaRoot = await this.getSelectedLabelFromMultiselectRoot(
+      this.productCoaGroupMultiselectRoot,
+    );
+    if (viaRoot && !/choose product coa group/i.test(viaRoot)) {
+      // Hindari baca konten dropdown penuh (opsi list)
+      const single = this.productCoaGroupMultiselectRoot.locator(
+        '.multiselect-single-label',
+      );
+      if (await single.isVisible().catch(() => false)) {
+        return ((await single.textContent()) ?? '').trim();
+      }
+      if (viaRoot.length < 80) {
+        return viaRoot;
+      }
+    }
+
     const combobox = this.productCoaGroupCombobox;
     if (await combobox.isVisible().catch(() => false)) {
       const viaInput = await this.getMultiselectSelectedLabel(combobox);
       if (
         viaInput &&
-        !/choose product coa group/i.test(viaInput)
+        !/choose product coa group/i.test(viaInput) &&
+        viaInput.length < 80
       ) {
         return viaInput;
       }
     }
 
-    const singles = this.page.locator('.multiselect-single-label:visible');
-    const count = await singles.count();
-    // Basic Information: [0]=Sales Category, [1]=Product Coa Group
-    if (count >= 2) {
-      return ((await singles.nth(1).textContent()) ?? '').trim();
-    }
-    if (count === 1) {
-      return ((await singles.first().textContent()) ?? '').trim();
-    }
     return '';
   }
 
@@ -1123,21 +1162,24 @@ export class SystemProductPage {
   }
 
   private get salesCategoryMultiselectRoot(): Locator {
+    // Nearest col-span ancestor of the Sales Category label (not a parent that wraps both fields).
     return this.page
-      .locator('[class*="col-span"]')
-      .filter({
-        has: this.page.locator('label').filter({ hasText: /^Sales Category/ }),
-      })
+      .locator('label')
+      .filter({ hasText: /^Sales Category/ })
+      .locator(
+        'xpath=ancestor::div[contains(@class,"col-span")][1]',
+      )
       .locator('.multiselect')
       .first();
   }
 
   private get productCoaGroupMultiselectRoot(): Locator {
     return this.page
-      .locator('[class*="col-span"]')
-      .filter({
-        has: this.page.locator('label').filter({ hasText: /Product Coa Group/i }),
-      })
+      .locator('label')
+      .filter({ hasText: /Product Coa Group/i })
+      .locator(
+        'xpath=ancestor::div[contains(@class,"col-span")][1]',
+      )
       .locator('.multiselect')
       .first();
   }

@@ -1,0 +1,24 @@
+# POM — Sales Invoice (Customer Invoice)
+menu: accounting-customer-invoice
+menu_name: Sales Invoice
+route: /accounting/customer-invoice
+create_button_mode: link
+pom_helper: tests/helpers/sales-invoice.ts
+company_default: lumicharmsid
+
+elements:
+  customer:
+    strategy: aria-placeholder
+    value: Choose Customer
+  outstanding_so_link:
+    strategy: text
+    value: Outstanding Sales Order
+  code:
+    strategy: id
+    value: code
+
+notes:
+  - "Create auto-POST default values → redirect edit."
+  - "Field UI = Customer (user menyebut supplier china)."
+  - "Outstanding SO = Teleport panel + bulkUseSalesInvoice → bulk-use-outstanding-sales-order."
+  - "Description = automation playwright."

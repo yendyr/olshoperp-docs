@@ -1,0 +1,51 @@
+# POM Element Registry — Cash/Bank Account (FA Master)
+# Sumber: Accounting/master/CashBankAccount/{DataList,Form}.vue
+# UI route AS-IS: /accounting/company-detail-bank
+
+menu: accounting-company-detail-bank
+menu_name: Cash/Bank Account
+route: /accounting/company-detail-bank
+create_path: /accounting/company-detail-bank/create
+edit_path: /accounting/company-detail-bank/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/company-detail-bank.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  section:
+    strategy: id
+    value: AccountDetail
+
+  type:
+    strategy: aria-placeholder
+    value: Choose Type
+
+  label:
+    strategy: id
+    value: label
+
+  currency:
+    strategy: aria-placeholder
+    value: Choose Currency
+
+  coa:
+    strategy: aria-placeholder
+    value: Choose COA
+
+  description:
+    strategy: id
+    value: description
+
+  active:
+    strategy: label
+    value: Active
+
+notes:
+  - "Label max 30 chars."
+  - "COA Assets leaf belum terikat company_detail_bank lain."
+  - "Description = automation playwright."

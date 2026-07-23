@@ -1,0 +1,60 @@
+# POM Element Registry — Tax (FA Master)
+# Sumber: Accounting/master/Tax/{DataList,Form}.vue
+
+menu: accounting-tax
+menu_name: Tax
+route: /accounting/tax
+create_path: /accounting/tax/create
+edit_path: /accounting/tax/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/tax.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  section:
+    strategy: id
+    value: Tax
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  purchase_coa:
+    strategy: aria-placeholder
+    value: Choose COA
+    note: "scoped under Purchase COA label · Activa"
+
+  sales_coa:
+    strategy: aria-placeholder
+    value: Choose COA
+    note: "scoped under Sales COA label · Passiva"
+
+  tariff:
+    strategy: css
+    value: "#Tax input[type=number]"
+
+  description:
+    strategy: id
+    value: description
+
+  coefficient:
+    strategy: label
+    value: Coefficient 11/12
+
+  active:
+    strategy: label
+    value: Active
+
+notes:
+  - "Description = automation playwright."
+  - "Coefficient OFF pada create agar tariff editable (11)."
+  - "Jangan set Default Tax POS pada automation create."

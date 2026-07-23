@@ -42,6 +42,18 @@ export class AdjustmentAdditionPage {
     );
   }
 
+  get transactionDateInput(): Locator {
+    return this.page
+      .locator('input.olshoperp-datepicker-input, input.p-datepicker-input')
+      .first()
+      .or(
+        this.page
+          .getByRole('combobox')
+          .filter({ hasText: /\d{2}-\d{2}-\d{4}/ })
+          .first(),
+      );
+  }
+
   get draftRadio(): Locator {
     return this.page.locator('#draft');
   }
@@ -165,8 +177,210 @@ export class AdjustmentAdditionPage {
     return optionText;
   }
 
+  /** Pilih Location Destination yang mengandung fragment (mis. Gayungsari). */
+  async selectLocationContaining(fragment: string): Promise<string> {
+    await this.expandBasicInformation();
+    const root = this.page
+      .locator('div')
+      .filter({
+        has: this.page.getByText('Location Destination', { exact: false }),
+      })
+      .locator('.multiselect')
+      .first();
+
+    let combobox = this.locationCombobox;
+    if (!(await combobox.isVisible().catch(() => false))) {
+      await root.click();
+      combobox = root.locator('.multiselect-search').first();
+      await expect(combobox).toBeVisible({ timeout: 10_000 });
+    }
+
+    await this.multiselect.open(combobox);
+    await combobox.fill(fragment).catch(async () => {
+      await combobox.pressSequentially(fragment, { delay: 40 });
+    });
+    await this.page.waitForTimeout(900);
+    const option = this.page
+      .locator('.multiselect-option:visible')
+      .filter({ hasNotText: 'No results found' })
+      .filter({ hasText: new RegExp(fragment, 'i') })
+      .first();
+    await expect(option, `Location containing ${fragment}`).toBeVisible({
+      timeout: 30_000,
+    });
+    const text = ((await option.textContent()) ?? '').trim();
+    await option.click();
+    await this.page.waitForTimeout(800);
+    return text;
+  }
+
+  /**
+   * Seed stok di Location Destination via Stock Addition + approve Accounting.
+   * Dipakai fixture Transfer Inbound (AUTO-SKU* di Gayungsari).
+   */
+  async seedApprovedStockAtLocation(opts: {
+    locationFragment: string;
+    skus: string[];
+    qty: number;
+    description?: string;
+  }): Promise<string> {
+    const description = opts.description ?? 'automation playwright';
+    await this.gotoDatalist();
+    const mode = await this.openCreateForm();
+    await this.selectLocationContaining(opts.locationFragment);
+    await this.setTransactionDateFiscalFallback().catch(() => undefined);
+    await this.fillDescription(description);
+
+    if (mode === 'create') {
+      await this.clickSaveAndNextAndWaitForEdit();
+    } else {
+      await this.clickSaveAllAndWait();
+    }
+
+    for (const sku of opts.skus) {
+      await this.addProductViaSelectProduct(sku);
+      await this.setInQtyOnDetailRow(sku, opts.qty);
+    }
+
+    await this.setStatusOpen().catch(() => undefined);
+    await this.clickSaveAllAndWait();
+    const code = await this.readGeneratedCode();
+    await this.approveViaAccountingMenu(code);
+    return code;
+  }
+
+  /** Buka Stock Addition Approval (Accounting) lalu Approve dokumen AI*. */
+  async approveViaAccountingMenu(code: string): Promise<void> {
+    await this.page.goto('/accounting/adjustment-inbound', {
+      waitUntil: 'domcontentloaded',
+    });
+    await dismissStagingBanner(this.page);
+    await expect(this.page.getByRole('table').first()).toBeVisible({
+      timeout: 45_000,
+    });
+
+    await this.datalist.searchInput.fill('');
+    await this.page.waitForTimeout(600);
+    await this.datalist.search(code, 2_000);
+
+    const row = this.page.getByRole('row').filter({ hasText: code }).first();
+    await expect(row, `Stock Addition Approval ${code}`).toBeVisible({
+      timeout: 60_000,
+    });
+
+    const codeLink = row
+      .getByRole('link', { name: code, exact: true })
+      .or(row.locator('a[href*="/accounting/adjustment-inbound/edit/"]'))
+      .first();
+
+    if (await codeLink.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      const href = await codeLink.getAttribute('href');
+      if (href) {
+        await this.page.goto(href, { waitUntil: 'domcontentloaded' });
+      } else {
+        await codeLink.click();
+      }
+    } else {
+      const editBtn = this.datalist.editButton(row).first();
+      await expect(editBtn).toBeVisible({ timeout: 30_000 });
+      await editBtn.click();
+    }
+
+    await expect(this.page).toHaveURL(
+      /\/accounting\/adjustment-inbound\/edit\/\d+/,
+      { timeout: 45_000 },
+    );
+    await dismissStagingBanner(this.page);
+
+    const approveBtn = this.page
+      .getByRole('button', { name: /Approve Now/i })
+      .or(
+        this.page.locator('button.bg-info.border-info').filter({
+          has: this.page.locator('.fa-check-double, [class*="check-double"]'),
+        }),
+      )
+      .or(this.page.getByRole('button', { name: /^Approve$/i }))
+      .first();
+
+    await approveBtn.scrollIntoViewIfNeeded();
+    await expect(approveBtn, 'Tombol Approve (Accounting AI)').toBeVisible({
+      timeout: 45_000,
+    });
+    await approveBtn.click();
+
+    const confirmApprove = this.page
+      .getByRole('button', { name: /^Approve$/i })
+      .last();
+    await expect(confirmApprove).toBeVisible({ timeout: 15_000 });
+
+    const approveResponse = this.page.waitForResponse(
+      (response) =>
+        /adjustment-inbound\/\d+\/approve/.test(response.url()) &&
+        response.request().method() === 'POST',
+      { timeout: 120_000 },
+    );
+
+    const redirected = this.page
+      .waitForURL(/\/accounting\/adjustment-inbound\/?$/, { timeout: 120_000 })
+      .catch(() => undefined);
+
+    await confirmApprove.click();
+    const response = await approveResponse;
+    const body = (await response.json().catch(() => null)) as {
+      status?: { error?: number | string; message?: string };
+    } | null;
+    if (!response.ok() || Number(body?.status?.error ?? 0)) {
+      throw new Error(
+        `Approve Stock Addition gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
+      );
+    }
+    await redirected;
+    await waitForSuccessToast(this.page, 10_000).catch(() => undefined);
+    // Ending stock recalc setelah approve AI — beri waktu sebelum TE approve ship.
+    await this.page.waitForTimeout(5_000);
+  }
+
   async fillDescription(text: string): Promise<void> {
     await this.descriptionInput.fill(text);
+  }
+
+  /**
+   * Set tanggal fiscal fallback agar stok seed terlihat di Available Products TE
+   * (filter: latest_mutation.transaction_date <= TE.transaction_date).
+   */
+  async setTransactionDateFiscalFallback(): Promise<void> {
+    const targetDisplay = '09-07-2026 12:00:00';
+    const dpInput = this.transactionDateInput;
+    if (!(await dpInput.isVisible({ timeout: 8_000 }).catch(() => false))) {
+      return;
+    }
+    if (await dpInput.isDisabled().catch(() => false)) {
+      return;
+    }
+    await dpInput.click({ clickCount: 3 });
+    await dpInput.fill(targetDisplay);
+    await dpInput.press('Enter');
+    await dpInput.blur();
+    await this.page.keyboard.press('Escape');
+    await this.page.waitForTimeout(800);
+
+    const shown = (await dpInput.inputValue().catch(() => '')).trim();
+    if (!shown.startsWith('09-07-2026')) {
+      await this.page.evaluate((value) => {
+        const input = document.querySelector(
+          'input.olshoperp-datepicker-input, input.p-datepicker-input',
+        ) as HTMLInputElement | null;
+        if (!input || input.disabled) return;
+        input.focus();
+        input.value = value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+        );
+        input.blur();
+      }, targetDisplay);
+      await this.page.waitForTimeout(800);
+    }
   }
 
   async clickSaveAndNextAndWaitForEdit(): Promise<void> {

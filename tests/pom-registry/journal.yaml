@@ -1,0 +1,64 @@
+# POM Element Registry — Journal (FA)
+# Sumber: Accounting/Journal/{DataList,Form,DatalistDetail}.vue
+
+menu: journal
+menu_name: Journal
+route: /accounting/journal
+create_path: /accounting/journal/create
+edit_path: /accounting/journal/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/journal.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  basic_information:
+    strategy: id
+    value: BasicInformation
+
+  store:
+    strategy: id
+    value: store_id
+    note: "PrimeVue MultiSelect chip · Choose Store"
+
+  description:
+    strategy: id
+    value: description
+
+  draft_radio:
+    strategy: id
+    value: draft
+
+  open_radio:
+    strategy: id
+    value: open
+
+  ledger_section:
+    strategy: id
+    value: LedgerDetail
+
+  account:
+    strategy: aria-placeholder
+    value: Choose Account
+
+  debit_create:
+    strategy: id
+    value: debit_create
+
+  credit_create:
+    strategy: id
+    value: credit_create
+
+  ledger_save:
+    strategy: tippy
+    value: Save
+    note: "icon button di col-span-1 inline create"
+
+notes:
+  - "Create auto-POST → edit. Description = automation playwright."
+  - "Open radio auto update(status)."
+  - "Ledger POST accounting/journal-detail."

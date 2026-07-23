@@ -17,6 +17,7 @@ execution_company:
 related_menus:
   - supplychain-mutation-transfer-internal
   - supplychain-warehouse-structure
+  - supplychain-transfer-inbound
 preconditions:
   - "User login: playwright@gmail.com / 12345678."
   - "Company: lumicharmsid (153)."
@@ -53,3 +54,12 @@ test_result:
 - Spec: `@TC-MTEX-001`
 - Helper: `tests/helpers/mutation-transfer-external.ts`
 - `fetchDefaultValues()` dapat auto-submit create.
+
+## Cross-menu — Transfer Inbound
+
+Header TE (Origin + Destination) adalah **fixture** untuk receive di **Transfer Inbound** (`supplychain-transfer-inbound`).
+
+Fixture inbound aktif (staging lumicharmsid): **`TFE-5TU41QH5`** — sudah Approve ship / in transit.
+Skenario receive (satu TC): Search + Show → Broken/Lost → Approve — lihat `qa-docs/supplychain-transfer-inbound/test-cases/TC-TIB-001.md`.
+
+**Description (standing rule automation):** isi field Description dengan tepat `automation playwright` (berlaku TE header + approval note TI / automation mendatang).

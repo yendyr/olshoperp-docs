@@ -1,43 +1,38 @@
 # POM Element Registry — Account Receive (Customer Payment)
-# Sumber: olshoperp-frontend Accounting/AccountReceivable/Receive/DataList.vue + DataTablesV3
+# Sumber: olshoperp-frontend Accounting/AccountReceivable/Receive/*
 
 menu: accounting-customer-payment
 menu_name: Account Receive
 route: /accounting/customer-payment
-create_button_mode: button
+create_button_mode: auto
 pom_helper: tests/helpers/account-receive.ts
-company_default: DEV-STG
+company_default: lumicharmsid
 
 elements:
   create_button:
-    strategy: role
-    role: button
-    name: Create
+    strategy: auto
+    notes: Link/Button Create → fetchDefaultValues auto-POST → edit
 
-  datalist_search:
-    strategy: role
-    role: searchbox
-    index: first
+  customer:
+    strategy: aria-placeholder
+    value: Select Customer
 
-  row_checkbox:
-    strategy: css
-    value: 'tr input[type="checkbox"]'
-    notes: Centang baris di kolom pertama (DataTables select multi)
+  available_si_link:
+    strategy: text
+    value: Available Sales Invoice
+
+  cash_bank:
+    strategy: aria-placeholder
+    value: Select Cash/Bank
+    scope: '#receiveDestination'
 
   bulk_approve_button:
     strategy: css
     value: 'button.bulk-approve'
-    notes: >
-      Ikon circle-check di atas tabel. UI menyembunyikan (display:none) jika
-      selectedRowsIdsOpen.length == 0 — bukan hanya disabled attribute.
 
-  bulk_approve_confirm:
-    strategy: role
-    role: button
-    name: Approve
-    notes: Modal BulkApproveDialog
-
-  bulk_approve_error_dialog:
-    strategy: text
-    value: Bulk Approve Error Details
-    notes: Muncul jika error_count > 0 dari POST /bulk-approve
+notes:
+  - "Description = automation playwright."
+  - "Available SI = Dialog + DataTablesV3 checkbox + Use → customer-payment-detail-bulk."
+  - "Cash/Bank = modal checkbox + Use → cash-bank-account/bulk-use."
+  - "Approve = radio #open → tombol check-double → modal Approve."
+  - "Sebelum approve: amount Receiving Destination = paid amount detail SI."

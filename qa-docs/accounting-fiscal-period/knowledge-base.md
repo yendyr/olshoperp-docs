@@ -1,39 +1,28 @@
----
-doc_type: knowledge-base
-menu: accounting-fiscal-period
-menu_name: "Fiscal Period"
-version: 1.0
-last_updated: 2026-06-23
-owner: QA - Yemima
-status: draft
-audience: operator
----
-
 # Fiscal Period — Knowledge Base
 
-> **DRAFT** — Ringkasan operator + relasi Instant Settlement. Konten lengkap menu masih disusun.
+## Fungsi menu
 
-## Ringkasan
+Master **Fiscal Period** menentukan rentang tanggal aktif untuk transaksi FA. Transaksi hanya boleh jatuh pada period yang **Open**.
 
-Menu **Fiscal Period** mengatur periode akuntansi buka/tutup. Transaksi dengan tanggal di luar periode aktif ditolak sistem.
+## Route
 
-| Item | Nilai |
-|------|-------|
-| Menu | Accounting → Fiscal Period |
-| Route UI | `/accounting/fiscal-period` |
+- Datalist: `/accounting/fiscal-period`
+- Create: `/accounting/fiscal-period/create`
+- Edit: `/accounting/fiscal-period/edit/:id`
 
-## Relasi Instant Settlement (operator)
+## Field utama
 
-| Yang perlu Anda tahu | Penjelasan singkat |
-|----------------------|-------------------|
-| Kapan dicek | Saat upload settlement & saat approve/generate dokumen |
-| Gejala periode tutup | Error fiscal period — upload atau approve gagal |
-| Solusi | Buka periode yang sesuai atau sesuaikan tanggal settlement |
+| Field | Wajib | Catatan |
+|-------|-------|---------|
+| Name | Ya | Bebas, max 50 |
+| Start Date / End Date | Ya | UI `dd-MM-yyyy`; API `yyyy-MM-dd` |
+| Description | Tidak | Max 150 |
 
-**Detail:** [Instant Settlement](../accounting-settlement-upload/requirement.md)
+## Uniqueness
 
-## Status dokumentasi
+Tidak unik per nama/bulan. Backend menolak **overlap** tanggal: *"The selected date is already in use."*
 
-- Knowledge Base: **draft** (cross-ref Fase 2)
-- Requirement: [requirement.md](./requirement.md) — **draft**
-- Technical: **pending**
+## Target automation
+
+Periode **Desember 2024**: Name `December 2024`, Start `01-12-2024`, End `31-12-2024`.
+Idempotent: search dulu; create hanya jika belum ada period yang cover Dec 2024.

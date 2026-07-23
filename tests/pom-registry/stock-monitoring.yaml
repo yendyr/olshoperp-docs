@@ -1,0 +1,43 @@
+# POM Element Registry — Dev - Stock Monitoring (SCM Report)
+# Sumber: Report/StockMonitoring/DataList.vue + StockMonitoringTable.vue
+# UI: /supplychain/stock-monitoring · breadcrumb Stock Monitoring
+# Read-only — wajib pilih warehouse sebelum datalist render
+
+menu: supplychain-stock-monitoring
+menu_name: "Dev - Stock Monitoring"
+route: /supplychain/stock-monitoring
+detail_route: /supplychain/stock-monitoring/{item_stock_id}
+create_button_mode: none
+pom_helper: tests/helpers/stock-monitoring.ts
+company_default: lumicharmsid
+
+elements:
+  breadcrumb:
+    strategy: text
+    value: Stock Monitoring
+
+  warehouse_filter:
+    strategy: aria-placeholder
+    value: Choose Warehouse
+    note: "@vueform/multiselect select2 warehouse"
+
+  apply_button:
+    strategy: text
+    value: Apply
+
+  latest_calculation:
+    strategy: text
+    value: Latest Calculation
+
+  column_availability:
+    strategy: text
+    value: Availability
+
+  availability_link:
+    strategy: css
+    value: "p.available.text-blue-700"
+
+notes:
+  - "AS-IS: fetchTableType() ++dataTableComponentKey di mount — #main-content bisa tampil sebelum warehouse."
+  - "Gate UI: Choose Warehouse + Apply; watcher warehouse_id auto click_select."
+  - "Klik Availability → modal colli breakdown (modal-available API)."

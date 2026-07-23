@@ -1,0 +1,55 @@
+# POM Element Registry — Other Cost (Omni / FA Master)
+# Sumber: Omni/master/OtherCost/{DataList,Form}.vue
+
+menu: omni-other-cost
+menu_name: Other Cost
+route: /omni/other-cost
+create_path: /omni/other-cost/create
+edit_path: /omni/other-cost/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/other-cost.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  section:
+    strategy: id
+    value: OtherCost
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  expense_coa:
+    strategy: aria-placeholder
+    value: Choose Other Cost COA
+    note: "Expense COA only"
+
+  all_stores_radio:
+    strategy: id
+    value: radio-all-stores
+
+  applied_store_radio:
+    strategy: id
+    value: radio-applied-store
+
+  description:
+    strategy: id
+    value: description
+
+  active:
+    strategy: label
+    value: Active
+
+notes:
+  - "Description = automation playwright."
+  - "Default All Stores pada create."
+  - "Edit: watcher expense_coa_id + status auto-save — jangan ubah di TC update."

@@ -1,0 +1,45 @@
+# POM Element Registry — Fiscal Period (FA Master)
+# Sumber: Accounting/master/FiscalPeriod/{DataList,Form}.vue
+
+menu: accounting-fiscal-period
+menu_name: Fiscal Period
+route: /accounting/fiscal-period
+create_path: /accounting/fiscal-period/create
+edit_path: /accounting/fiscal-period/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/fiscal-period.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  section:
+    strategy: id
+    value: FiscalPeriod
+
+  name:
+    strategy: id
+    value: name
+
+  period_start:
+    strategy: css
+    value: "#FiscalPeriod input.olshoperp-datepicker-input"
+    note: "nth(0) · display dd-MM-yyyy · model yyyy-MM-dd"
+
+  period_end:
+    strategy: css
+    value: "#FiscalPeriod input.olshoperp-datepicker-input"
+    note: "nth(1)"
+
+  description:
+    strategy: css
+    value: "#FiscalPeriod textarea"
+
+notes:
+  - "Target automation: December 2024 = 01-12-2024 … 31-12-2024."
+  - "Description = automation playwright."
+  - "Idempotent create: skip jika date range overlap sudah ada."
+  - "Uniqueness = date overlap, bukan unique name."

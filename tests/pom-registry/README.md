@@ -39,7 +39,8 @@ Kamus selector Playwright per menu OlshopERP. **Dibuat dari source Vue**, bukan 
 | `mutation-inbound.yaml` | Purchase Inbound | Full POM + TC |
 | `mutation-outbound.yaml` | Outbound External | Full POM + TC |
 | `mutation-transfer-internal.yaml` | Transfer Internal | Full POM + TC |
-| `mutation-transfer-external.yaml` | External Transfer | Full POM + TC |
+| `mutation-transfer-external.yaml` | External Transfer | Full POM + TC (+ fixture ship untuk TI) |
+| `transfer-inbound.yaml` | Transfer Inbound | Full POM + TC (cross-menu TE: Gayungsari→Tunjungan, Broken/Lost) |
 | `mutation-transfer-scrap.yaml` | Transfer Broken (Scrap) | Full POM + TC |
 | `mutation-transfer-void.yaml` | Transfer Void | Full POM + TC |
 | `other-inbound.yaml` | Other Inbound | Full POM + TC |

@@ -1,0 +1,68 @@
+# POM Element Registry — COA / Chart of Account (FA Master)
+# Sumber: Accounting/master/COA/{DataList,Form}.vue
+# UI: /accounting/chart-of-account
+
+menu: accounting-chart-of-account
+menu_name: COA
+route: /accounting/chart-of-account
+create_path: /accounting/chart-of-account/create
+edit_path: /accounting/chart-of-account/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/chart-of-account.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  section:
+    strategy: id
+    value: ChartOfAccount
+
+  code:
+    strategy: id
+    value: code
+    note: "placeholder e.g: COA001"
+
+  name:
+    strategy: id
+    value: name
+    note: "placeholder e.g: Cash and Bank"
+
+  parent:
+    strategy: aria-placeholder
+    value: Choose Parent
+
+  class:
+    strategy: aria-placeholder
+    value: Choose Class
+    note: "disabled when Parent set"
+
+  description:
+    strategy: placeholder
+    value: "e.g: This chart of account describe for cash and bank or something else."
+
+  active_switch:
+    strategy: label
+    value: Active
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  edit_button:
+    strategy: id
+    value: updateButton
+
+notes:
+  - "Description wajib automation playwright pada create/update."
+  - "Create tanpa Parent agar Class bisa dipilih."
+  - "Soft delete / import tidak di-cover gelombang pertama."

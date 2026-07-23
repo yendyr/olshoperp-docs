@@ -14,7 +14,8 @@ automated_spec: "tests/specs/mutation-transfer-external/mutation-transfer-extern
 execution_company:
   id: 153
   code: lumicharmsid
-related_menus: []
+related_menus:
+  - supplychain-transfer-inbound
 preconditions:
   - "Dokumen dari TC-MTEX-001 (serial); masih can_update; origin punya stock."
 test_data:
@@ -44,3 +45,9 @@ test_result:
 - Spec: `@TC-MTEX-002` (satu TC — description + Select Product).
 - Detail API: `POST mutation-transfer-external/{id}/transfer-external-middle-detail/bulk-fifo`.
 - Assert: row visible di `#DatalistDetail` table.
+
+## Cross-menu — Transfer Inbound
+
+Dokumen TE yang sudah Approve ship masuk datalist **Transfer Inbound**.
+Fixture receive aktif: **`TFE-5TU41QH5`** (`TC-TIB-001`).
+Description (standing rule): `automation playwright`.

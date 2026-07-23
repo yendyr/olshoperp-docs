@@ -1,0 +1,25 @@
+# POM — Account Payment (Supplier Payment)
+menu: accounting-supplier-payment
+menu_name: Account Payment
+route: /accounting/supplier-payment
+create_button_mode: link
+pom_helper: tests/helpers/account-payment.ts
+company_default: lumicharmsid
+
+elements:
+  supplier:
+    strategy: aria-placeholder
+    value: Select supplier
+  cash_bank:
+    strategy: aria-placeholder
+    value: Select Cash/Bank
+  outstanding_pi_link:
+    strategy: text
+    value: Outstanding Purchase Invoice
+
+notes:
+  - "Description = automation playwright."
+  - "Cash/Bank = checkbox modal + Use (bulkUseButton)."
+  - "Outstanding PI = teleport panel + bulkUsePurchaseInvoice Use."
+  - "Approve = radio #open → tombol check-double → modal Approve."
+  - "Sebelum approve: amount source harus = paid amount detail PI."

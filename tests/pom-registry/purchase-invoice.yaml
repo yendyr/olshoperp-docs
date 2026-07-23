@@ -1,0 +1,31 @@
+# POM — Purchase Invoice (Supplier Invoice)
+# Sumber: Accounting/AccountPayable/SupplierInvoice/**
+
+menu: accounting-supplier-invoice
+menu_name: Purchase Invoice
+route: /accounting/supplier-invoice
+create_button_mode: link
+pom_helper: tests/helpers/purchase-invoice.ts
+company_default: lumicharmsid
+
+elements:
+  supplier:
+    strategy: aria-placeholder
+    value: Choose Supplier
+  description:
+    strategy: id
+    value: description
+  inbound_transaction_link:
+    strategy: text
+    value: Inbound Transaction
+  outstanding_modal:
+    strategy: css
+    value: "[child-modal]"
+  bulk_use:
+    strategy: css
+    value: "button.tooltip-use"
+    note: "teks Use di toolbar outstanding"
+
+notes:
+  - "Description = automation playwright."
+  - "Setelah Use → Save All. Status create = Draft."

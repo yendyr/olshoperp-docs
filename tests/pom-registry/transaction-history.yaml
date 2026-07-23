@@ -1,0 +1,56 @@
+# POM Element Registry — BETA - Transaction History (SCM Report)
+# Sumber: Report/TransactionHistory/DataList.vue
+# UI: /supplychain/transaction-history · breadcrumb BETA - Transaction History
+# Read-only — datalist load tanpa wajib filter; Apply rebuild query
+
+menu: supplychain-transaction-history
+menu_name: "BETA - Transaction History"
+route: /supplychain/transaction-history
+create_button_mode: none
+pom_helper: tests/helpers/transaction-history.ts
+company_default: lumicharmsid
+
+elements:
+  breadcrumb:
+    strategy: text
+    value: BETA - Transaction History
+
+  building_filter:
+    strategy: placeholder
+    value: Filter Building
+    note: "PrimeVue MultiSelect · GET real-stock/select2-warehouse"
+
+  period_filter:
+    strategy: text
+    value: Select Period
+    note: "VueDatePicker range → select_periode"
+
+  type_filter:
+    strategy: placeholder
+    value: Filter Transaction Type
+    note: "PrimeVue MultiSelect static options"
+
+  apply_button:
+    strategy: text
+    value: Apply
+
+  column_date:
+    strategy: text
+    value: Date
+
+  column_trx_code:
+    strategy: text
+    value: Trx. Code
+
+  column_type:
+    strategy: text
+    value: Type
+
+  column_product:
+    strategy: text
+    value: Product
+
+notes:
+  - "Beda dari product-transaction-history (ItemTransactionHistoryController + ScmReport)."
+  - "Export FE path /export mismatch BE export-excel — tidak di-cover TC inti."
+  - "Stock Opname type dikomentari di FE."

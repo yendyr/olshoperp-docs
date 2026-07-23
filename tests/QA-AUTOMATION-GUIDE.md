@@ -40,6 +40,7 @@ Staging: https://staging.olshoperp.com
 | Outbound External | `pom-registry/mutation-outbound.yaml` | `helpers/mutation-outbound.ts` | Ya |
 | Transfer Internal | `pom-registry/mutation-transfer-internal.yaml` | `helpers/mutation-transfer-internal.ts` | Ya |
 | External Transfer | `pom-registry/mutation-transfer-external.yaml` | `helpers/mutation-transfer-external.ts` | Ya |
+| Transfer Inbound | `pom-registry/transfer-inbound.yaml` | `helpers/transfer-inbound.ts` | Ya (cross-menu TE) |
 | Transfer Broken (Scrap) | `pom-registry/mutation-transfer-scrap.yaml` | `helpers/mutation-transfer-scrap.ts` | Ya |
 | Transfer Void | `pom-registry/mutation-transfer-void.yaml` | `helpers/mutation-transfer-void.ts` | Ya |
 | Other Inbound | `pom-registry/other-inbound.yaml` | `helpers/other-inbound.ts` | Ya |
@@ -138,6 +139,7 @@ Agent wajib (berlaku seterusnya):
 4. Helper `tests/helpers/{slug}.ts` + spec serial di `tests/specs/` dengan tag `@TC-{PREFIX}-{NNN}` yang **sama** dengan `tc_code` di file TC
 5. Run di `lumicharmsid` → update `test_result` di TC
 6. Summary **WH + 1H** + **fungsi menu** (apa kegunaan bisnis dari hasil testing / requirement)
+7. **Description fields** (Transfer External header dan field Description di flow terkait / automation mendatang): isi tepat `automation playwright` — jangan stamp/random text
 
 ### 2A. Naming TC (WAJIB — ikut `.cursor/rules/13-test-case-format.mdc`)
 

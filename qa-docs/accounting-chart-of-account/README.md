@@ -7,6 +7,7 @@ Menu **COA** (Accounting).
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | draft |
 | Requirement | requirement.md | PM, QA | pending |
 | Technical | technical.md | Developer | pending |
+| Test Cases | [test-cases/](./test-cases/) | QA | draft (TC-COA-001…004) |
 
 **Last updated:** 2026-07-10 — catatan konsumen Purchase Invoice (COA override Additional Cost/Discount).
 

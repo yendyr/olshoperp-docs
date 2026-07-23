@@ -1,0 +1,54 @@
+# POM Element Registry — Other Discount (Omni / FA Master)
+# Sumber: Omni/master/OtherDiscount/{DataList,Form}.vue
+
+menu: omni-other-discount
+menu_name: Other Discount
+route: /omni/other-discount
+create_path: /omni/other-discount/create
+edit_path: /omni/other-discount/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/other-discount.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  section:
+    strategy: id
+    value: OtherDiscount
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  expense_coa:
+    strategy: aria-placeholder
+    value: Choose Other Discount COA
+
+  all_stores_radio:
+    strategy: id
+    value: radio-all-stores
+
+  applied_store_radio:
+    strategy: id
+    value: radio-applied-store
+
+  description:
+    strategy: id
+    value: description
+
+  active:
+    strategy: label
+    value: Active
+
+notes:
+  - "Description = automation playwright."
+  - "Create default is_all_stores=false — automation set All Stores."
+  - "API: omnichannel/other-discount"

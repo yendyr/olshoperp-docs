@@ -1,0 +1,64 @@
+# POM Element Registry — Transfer Inbound (SCM)
+# Sumber: TransferExternal/Form.vue + DataList.vue (meta.transferInbound) + DatalistDetail(Group).vue
+# UI: /supplychain/transfer-inbound · API shared: supplychain/mutation-transfer-external?transfer_inbound=true
+# Entity sama dengan External Transfer (type=tf external); fokus receive di destination
+# Broken Items → broken_quantity · Lost Items → missing_quantity · Approve → transit receive
+
+menu: supplychain-transfer-inbound
+menu_name: Transfer Inbound
+route: /supplychain/transfer-inbound
+api_resource: supplychain/mutation-transfer-external
+create_button_mode: none
+pom_helper: tests/helpers/transfer-inbound.ts
+company_default: lumicharmsid
+related_pom: tests/pom-registry/mutation-transfer-external.yaml
+
+elements:
+  datalist_search:
+    strategy: role
+    role: searchbox
+    note: "Search by Transfer External trx code (TFE*)"
+
+  show_button:
+    strategy: id
+    value: updateButton
+    note: "Tippy content Show — buka /transfer-inbound/edit/{id}"
+
+  code:
+    strategy: id
+    value: code
+    note: "Kode sama dengan External Transfer (TFE*)"
+
+  detail_section:
+    strategy: disclosure
+    id: DatalistDetail
+    name: Product Transfer Detail
+
+  broken_items:
+    strategy: column
+    field: broken_quantity_formatted
+    select_name: Broken Items
+    note: "Editable saat is_in_transit && is_inbound"
+
+  lost_items:
+    strategy: column
+    field: missing_quantity_formatted
+    select_name: Lost Items
+    note: "Editable saat is_in_transit && is_inbound"
+
+  approve_button:
+    strategy: role
+    role: button
+    name: Approve
+    note: "variant=approve saat transferInbound + in transit; POST .../approve + transit"
+
+notes:
+  - "Tidak ada Create — hanya filter view in transit/delivered dari External Transfer."
+  - "Fixture: buat + approve ship di mutation-transfer-external dulu."
+  - "update-received: POST transfer-external-middle-detail/update-received."
+  - "Broken > 0 butuh scrap warehouse parent di destination."
+  - "Redirect setelah approve inbound → supplychain/transfer-inbound."
+  - "Cross-menu TC: qa-docs/supplychain-transfer-inbound/test-cases/ + TE notes."
+  - "Fixture TE aktif: TFE-5TU41QH5 (in transit)."
+  - "Description / approval note: 'automation playwright' (standing rule)."
+  - "SKU staging: AUTO-SKU001 / AUTO-SKU002 (tanpa hyphen tengah)."
