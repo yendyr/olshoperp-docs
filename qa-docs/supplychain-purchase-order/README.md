@@ -10,7 +10,8 @@ Menu **Purchase Order** (Supply Chain / Procurement).
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
 
 **SoT / PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05)  
-**3 layer version:** 2.3 · **User-guide:** v1.0 · `source_version` 2.3 · **Last updated:** 2026-07-17
+**Rounding SoT:** `dpp-vat-rounding-calculation.md` (23 Jul 2026)  
+**3 layer version:** 2.5 · **User-guide:** v1.2 · `source_version` 2.5 · **Last updated:** 2026-07-23
 
 ## Changelog
 
@@ -21,6 +22,8 @@ Menu **Purchase Order** (Supply Chain / Procurement).
 | 2.1 | 2026-07-05 | GAP clarifications; Pending Items Major; import expanded |
 | 2.2 | 2026-07-10 | Cross-ref PI COA override; koreksi posisi jurnal Other Cost/Disc |
 | 2.3 | 2026-07-17 | Compliance qa-docs-standard (5-file); trim requirement; technical invariants/failure modes; tambah user-guide v1.0 |
+| 2.4 | 2026-07-22 | DPP/VAT: detail ↔ Totals konsisten (truncate 4dp × qty, ETM-15313); GAP-PO-08 sort residual; UG v1.1 |
+| 2.5 | 2026-07-23 | Rounding SoT: variable DPP/VAT, tie ±1 sen, rantai jurnal Inbound→PI; GAP-PO-09; UG v1.2 |
 
 ## Related menus
 

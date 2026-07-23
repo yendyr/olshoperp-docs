@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.4
-last_updated: 2026-07-15
+version: 2.5
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
 legacy_sources:
@@ -29,6 +29,7 @@ legacy_sources:
 | 2.2 | 2026-06-26 | QA - Yemima | Deep check eligibility invoice/outbound, pill Sales Platform Returns, gap approve G-05 |
 | 2.3 | 2026-06-26 | QA - Yemima | Cross-menu stock flow: relasi TF internal, picking/checking/packing/DO, order, settlement, SR |
 | 2.4 | 2026-07-15 | QA - Yemima | Relasi Sales Platform (Return bucket, Failed Ship Status, flow vs Sales Return) |
+| 2.5 | 2026-07-23 | QA - Yemima | Tambah user-guide v1.0; sync README 5-file + KB compliance |
 
 ---
 
@@ -614,6 +615,7 @@ Detail operasional SP: [omni-sales-platform §7.1](../omni-sales-platform/requir
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | Transfer Internal | [supplychain-mutation-transfer-internal/technical.md](../supplychain-mutation-transfer-internal/technical.md) |
 | Picking Process | [omni-picking-process/requirement.md](../omni-picking-process/requirement.md) |
 | Checking Process | [omni-checking-process/requirement.md](../omni-checking-process/requirement.md) |

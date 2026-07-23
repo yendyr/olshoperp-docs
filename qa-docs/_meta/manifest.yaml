@@ -4,7 +4,7 @@
 # Field `status` must match frontmatter `status` in each doc file.
 
 version: 1
-last_updated: 2026-07-17
+last_updated: 2026-07-23
 
 menus:
   manage-platform-product:
@@ -277,16 +277,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -393,10 +393,10 @@ menus:
         status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       - _legacy/old_sales-order-general-requirement.md
       - _legacy/old_sales-order-import-bulk-improvement.md
@@ -428,7 +428,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2277,7 +2277,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: draft
     legacy_sources:
       []
     code_globs:

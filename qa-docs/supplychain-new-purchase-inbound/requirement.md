@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 2.2
-last_updated: 2026-07-17
+version: 2.3
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
 aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI]
@@ -14,7 +14,7 @@ aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI]
 **Modul:** Supply Chain Management (SCM) / Inventory / Inbound  
 **Prefix transaksi:** `IN-`  
 **Audience:** PM, Operations (Gudang), QA  
-**Status:** AS-IS verified (compliance pass 2026-07-17)
+**Status:** AS-IS verified (rounding cross-ref 23 Jul 2026)
 
 **UI route (BETA):** `/supplychain/new-purchase-inbound`  
 **UI route (legacy):** `/supplychain/mutation-inbound` — same API, UI lama  
@@ -33,6 +33,7 @@ aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI]
 | 2.0 | 2026-07-05 | QA - Yemima | Full PM merge: standard GRN + COLLI BETA, journal, import, gaps §19–§21 |
 | 2.1 | 2026-07-05 | QA - Yemima | §11.1 Product COA Group type: Service (no stock), Fix Asset (Assets debit) |
 | 2.2 | 2026-07-17 | QA - Yemima | Compliance qa-docs-standard: Prasyarat/FAQ; Mermaid rantai; trim path/class; user-guide |
+| 2.3 | 2026-07-23 | QA - Yemima | Cross-ref Rounding SoT PO: basis harga GRN = `each_price_before_vat`; VAT hanya di PI |
 
 ---
 
@@ -330,6 +331,16 @@ Includes colli qty + colli isi; rule: `Inbound Qty = Colli × Colli Qty`
 ## 11. Accounting / Journal (AS-IS)
 
 **Config:** inbound-with-unbilled-goods = **true** (default). Amount = harga sebelum VAT × qty base (**tanpa VAT**). Detail: [technical §9](./technical.md#9-journal--product-coa-group-type).
+
+**Sumber harga:** dari PO `each_price_before_vat` (hasil kalkulasi DPP/VAT PO — unit max 4dp). Lihat [PO Rounding SoT §9](../supplychain-purchase-order/requirement.md#91-variable--presisi-sot-23-jul-2026). **VAT tidak** di-post di GRN.
+
+**Setelah PI approve:** jurnal PI **clear** Unbilled Goods + Debit VAT + Credit AP — [PI §5.6](../accounting-supplier-invoice/requirement.md#56-penjurnalan-pi--relasi-inbound-as-is).
+
+```mermaid
+flowchart LR
+  PO[PO price before VAT] --> GRN[GRN Dr Inventory Cr Unbilled]
+  GRN --> PI[PI Dr Unbilled + VAT Cr AP]
+```
 
 ### 11.1 Product COA Group type — stok & jurnal
 

@@ -1,31 +1,31 @@
 ---
 doc_type: technical
 menu: sales-order-general
-menu_name: "Sales Order General (Internal)"
-version: 1.3
-last_updated: 2026-07-09
+menu_name: "Dev - Sales Order"
+version: 3.1
+last_updated: 2026-07-22
 owner: QA - Yemima
-status: draft
-related_docs:
-  - ./knowledge-base.md
-  - ./requirement.md
+status: review
+aliases: [SO General technical, sales order import, SalesOrderImportSheet1, Fulfillment Mode, Import Non-Processed]
 ---
 
-# Sales Order General — Technical Documentation
+# Dev - Sales Order (Sales Order General) — Technical Documentation
 
-## 0. Metadata & Changelog
-
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2026-06-19 | QA - Yemima | AS-IS import + merge bulk improvement TO-BE |
-| 1.1 | 2026-07-02 | QA - Yemima | §7 Failed Process AS-IS file map + §8 Re-check TO-BE design |
-| 1.2 | 2026-07-05 | QA - Yemima | §9 Bundle proporsi · §10 Benchmark COGS file map |
-| 1.3 | 2026-07-09 | QA - Yemima | §10 cross-ref Benchmark COGS v1.1 perluasan sumber |
-
-**Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB  
 **Type:** `type_sales_order = general`  
-**UI routes:** `/businessdevelopment/sales-order-general`, `/businessdevelopment/all-sales-order`, `/omni/sales-order` (Dev - Sales Platform)  
-**API prefix:** `/api/omnichannel/sales-order/*`
+**UI:** `/businessdevelopment/sales-order-general`  
+**API prefix:** `/api/omnichannel/sales-order/*`  
+**Behavior:** [requirement.md](./requirement.md) v3.1  
+**Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB
+
+---
+
+## 0. Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.3 | 2026-07-09 | Bundle / benchmark COGS file map |
+| 3.0 | 2026-07-22 | Rewrite SoT v1.0: file map, import AS-IS, invariants, failure modes |
+| 3.1 | 2026-07-22 | TO-BE: dual import channels + Non-Processed OB/SI pipeline; GAP-SOG-07…12 |
 
 ---
 
@@ -35,370 +35,221 @@ related_docs:
 flowchart LR
     subgraph Input
         M[Manual Form]
-        I[Excel Import 2-sheet]
+        I[Excel Import]
         P[POS]
     end
     subgraph Core
-        SO[SalesOrder header]
-        SOD[SalesOrderDetail]
-        OC[Other Cost/Discount]
+        SO[omni_sales_orders]
+        SOD[details]
+        OC[other cost/disc]
+        OI[other infos]
     end
     subgraph Fulfillment
-        W[Wave]
-        DO[Delivery Order]
-        OB[Outbound]
+        W[Wave] --> PR[Processing] --> DO[Delivery Order] --> OB[Outbound]
     end
     subgraph Finance
-        INV[Customer Invoice]
-        STL[Settlement]
+        INV[Customer Invoice] --> PAY[Settlement/Payment]
     end
-    M & I & P --> SO
-    SO --> SOD & OC
-    SO --> W --> DO --> OB --> INV
-    STL --> INV
+    M & I & P --> SO --> SOD & OC & OI
+    SO --> W --> PR --> DO --> OB --> INV --> PAY
 ```
 
-**Entity:** `SalesOrderGeneral` extends `SalesOrder` (policy/menu scoping only).
-
-**Tables:** `omni_sales_orders`, `omni_sales_order_details`, `omni_sales_order_other_costs`, `omni_sales_order_other_discounts`, `omni_sales_order_other_infos`, `omni_sales_order_import_histories`, `omni_sales_order_import_logs`.
+`SalesOrderGeneral` extends `SalesOrder` — policy/menu scoping only. Shared table dengan Platform.
 
 ---
 
-## 2. Frontend File Map
+## 2. File Map
 
-| File | Role |
+### Backend
+
+| Role | Path |
 |------|------|
-| `olshoperp-frontend/src/pages/BusinessDevelopment/SalesOrderGeneral/DataList.vue` | CRUD + import UI |
-| `olshoperp-frontend/src/pages/BusinessDevelopment/SalesOrderGeneral/Form.vue` | Create/edit SO |
-| `olshoperp-frontend/src/pages/BusinessDevelopment/Report/AllSalesOrder/DataList.vue` | Combined view + import + PillButtons Failed Process |
-| `olshoperp-frontend/src/pages/Omni/SalesOrder/DataList.vue` | Dev - Sales Platform datalist + Failed Process |
-| `olshoperp-frontend/src/pages/Omni/SalesOrder/components/PillButtons.vue` | Pills: Failed Process, Failed Sync, Ready to Process |
-| `src/utils/imports.ts` | Import history columns |
-| `src/components/project/DataTables/ImportFileTable.vue` | Import progress |
+| Entity | `Modules/OmniChannel/Entities/SalesOrder.php`, `…/SalesOrderDetail.php`, other cost/discount/info |
+| Subclass policy | `Modules/BusinessDevelopment/Entities/SalesOrderGeneral.php` |
+| CRUD / list / import API | `Modules/OmniChannel/Http/Controllers/SalesOrderController.php` |
+| Approve | `Modules/OmniChannel/Http/Controllers/SalesOrderApprovalController.php` |
+| Detail lines | `Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php` |
+| Import orchestrator | `Modules/OmniChannel/Import/SalesOrderImport.php` |
+| Sheet 1 / Sheet 2 | `SalesOrderImportSheet1.php`, `SalesOrderImportSheet2.php` |
+| Detail import | `SalesOrderImportDetailImport.php` / `SalesOrderDetailImport.php` |
+| Jobs | `SalesOrderImportJob`, `SalesOrderImportFinalizeJob`, `StoreSOBasedStockJob`, wave/skip processing jobs |
+| History / log | `SalesOrderImportHistory`, `SalesOrderImportHistoryDetail`, `ImportSoLog` |
+| Temp import | `SalesOrderImportTemHeader`, `SalesOrderImportTemDetail` |
+| Config | `config/general.php` → `max_child`; `config/omni.php` → `approve_so.approve_with_validation` |
 
-**Router:** `businessdevelopment_sales-order-general_index`, `businessdevelopment_all-sales-order_index`
+### Frontend
 
----
-
-## 3. Backend File Map
-
-| File | Role |
+| Role | Path |
 |------|------|
-| `Modules/OmniChannel/Http/Controllers/SalesOrderController.php` | CRUD, `error_flags_formatted`, `failedProcess()`, `validateOrderDetails()` |
-| `Modules/OmniChannel/Entities/SalesOrder.php` | `renderErrorFlags()`, `getErrors()`, `dataListRelations()` |
-| `Modules/OmniChannel/Entities/SalesOrderDetailError.php` | Detail-level error flags (`omni_sales_order_detail_errors`) |
-| `Modules/OmniChannel/Concerns/CanManageOrderDetailError.php` | `addError()`, `removeError()`, `clearError()` |
-| `Modules/OmniChannel/Jobs/CheckOrderFlagsJob.php` | Post-approve platform validation flags |
-| `app/Console/Commands/ScreeningErrorFlagStockSalesOrderCommand.php` | Daily auto-clear `stock-error` |
-| `Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php` | Detail lines, detail import |
-| `Modules/OmniChannel/Import/SalesOrderImport.php` | Import orchestrator |
-| `Modules/OmniChannel/Import/SalesOrderImportSheet1.php` | Sheet 1 parse + validate (sync today) |
-| `Modules/OmniChannel/Import/SalesOrderImportSheet2.php` | Sheet 2 other cost/discount |
-| `Modules/OmniChannel/Import/SalesOrderDetailImport.php` | Per-SO detail import |
-| `Modules/OmniChannel/Jobs/SalesOrderImportJob.php` | 1 job = 1 SO group |
-| `Modules/OmniChannel/Jobs/StoreSOBasedStockJob.php` | Batch finally — recalc SO stock |
-| `Modules/BusinessDevelopment/Entities/SalesOrderGeneral.php` | Subclass for policy |
-| `Modules/OmniChannel/Entities/SalesOrderImportHistory.php` | Import session |
-| `Modules/OmniChannel/Entities/ImportSoLog.php` | Per-row error log |
-
-**Config:** `config/general.php` → `max_child = 100`
+| Datalist General | `olshoperp-frontend/src/pages/BusinessDevelopment/SalesOrderGeneral/DataList.vue` |
+| Form / Detail | `Form.vue`, `DatalistDetail.vue` |
+| ASO list | `…/Report/AllSalesOrder/DataList.vue` |
+| PillButtons (ASO/SP) | `src/pages/Omni/SalesOrder/components/PillButtons.vue` |
+| Import columns | `src/utils/imports.ts`, `ImportFileTable.vue` |
 
 ---
 
-## 4. Import — AS-IS (Current Implementation)
-
-### 4.1 Flow
-
-```
-POST upload (.xlsx/.xls)
-  → SalesOrderImportHistory (status: processing)
-  → Parse Sheet 1 + Sheet 2 — SYNCHRONOUS in HTTP request
-  → On validation fail → import_status = failed
-  → On success → Bus::batch(SalesOrderImportJob[]) per order group
-  → Each job: SalesOrderController@store + detail per line
-  → Batch finally: StoreSOBasedStockJob
-  → Update history counts
-```
-
-**Progress:** `GET omnichannel/sales-order/progress` (~95% during batch, ~5% stock calc)
-
-### 4.2 Order grouping key
-
-`Customer + Store + Transaction Date + Platform Order ID + Shipper Service Code + Tracking Number`
-
-### 4.3 Limits (AS-IS)
-
-| Rule | Value |
-|------|-------|
-| Max detail per order | 100 (`limitDetail` + `max_child`) |
-| File format | `.xlsx`, `.xls` |
-| Max rows file | No hard cap |
-| Concurrent import | 1 active batch per company |
-| SO status after import | `open` |
-| Approve during import | Blocked (`so_general_import_{so_id}` cache) |
-
-### 4.4 API (import)
+## 3. API Routes (import & list)
 
 | Method | Path | Role |
 |--------|------|------|
-| POST | `omnichannel/sales-order/upload` | Upload Excel |
-| GET | `omnichannel/sales-order/progress` | Progress polling |
-| GET | `omnichannel/sales-order/import-history` | History list |
-| GET | `omnichannel/sales-order/import-history-detail/{id}` | Per-SKU detail |
-| GET | `omnichannel/sales-order/import-log` | Row-level errors |
-| GET | `omnichannel/sales-order/export?type=general` | Download template |
+| POST | `omnichannel/sales-order/get?type=general` | Datalist |
+| POST | `omnichannel/sales-order/upload?type=general` | Bulk import |
+| GET | `omnichannel/sales-order/progress` | Import progress |
+| GET | `omnichannel/sales-order/import-history` | History |
+| GET | `omnichannel/sales-order/import-history-detail/{id}` | Success SO codes |
+| GET | `omnichannel/sales-order/import-log` | Row errors (`id_table` = `general`) |
+| GET | `omnichannel/sales-order/filter-process-status?type=general` | Carousel counts |
+| GET | `omnichannel/sales-order/pill-count?type=…` | ASO/SP pills |
+| POST | `omnichannel/sales-order/{id}/approve` | Approve |
+| GET | `omnichannel/sales-order/export?type=general` | Template |
 
-### 4.5 Known AS-IS issues
-
-| Issue | Cause |
-|-------|-------|
-| ~2.000 rows stuck at 0% | Full parse in HTTP thread → timeout before jobs dispatch |
-| No Horizon jobs visible | Request dies before `Bus::batch` |
-| Old history → failed on new upload | Stale batch cleanup marks previous `failed` |
-| No export failed orders | Feature not implemented |
+ASO list: `businessdevelopment/all-sales-order/get?type=all` (shared column engine).
 
 ---
 
-## 5. Import Bulk Improvement — TO-BE (Design Spec)
+## 4. Database — Key Tables
 
-> Merged from legacy `old_sales-order-import-bulk-improvement.md`. **Not yet implemented.**
+| Table | Role |
+|-------|------|
+| `omni_sales_orders` | Header (`type_sales_order`, `platform_order_id`, `transaction_status`, flags) |
+| `omni_sales_order_details` | Lines; qty/price; `processed_to_out_quantity`, DO/invoice qty flags |
+| `omni_sales_order_other_costs` / `_other_discounts` | OC/OD |
+| `omni_sales_order_other_infos` | Tracking, COD, booking fields |
+| `omni_sales_order_import_histories` | Import session + counters + `url_row_failed` |
+| `omni_sales_order_import_history_details` | Success rows (SKU / SO code) |
+| `omni_import_so_logs` | Row-level errors |
 
-### 5.1 Goals
+---
 
-| ID | Goal |
-|----|------|
-| G1 | Handle ≥5.000 rows per file without stuck |
-| G2 | 1 order = 1 Horizon job |
-| G3 | Partial success — valid orders proceed if others fail |
-| G4 | Error reports include Excel row numbers |
-| G5 | Export failed orders in re-importable template format |
-
-### 5.2 Target architecture
+## 5. Import — AS-IS Flow
 
 ```mermaid
-flowchart TD
-    A[Upload file → storage] --> B[Create history processing]
-    B --> C[Dispatch SalesOrderImportParseJob async]
-    C --> D[Chunked parse Sheet 1 + 2]
-    D --> E{"Per order valid?"}
-    E -->|Yes| F[SalesOrderImportJob per order]
-    E -->|No| G[Log failed + row numbers]
-    F --> H[Create SO + details]
-    H --> I[Update progress]
-    G --> I
-    I --> J[Batch finally: StoreSOBasedStockJob]
-    J --> K[status: success / partial_success / failed]
+sequenceDiagram
+    participant FE as Vue
+    participant API as SalesOrderController
+    participant Excel as SalesOrderImport
+    participant Q as Queue
+    participant Job as SalesOrderImportJob
+    FE->>API: POST upload
+    API->>API: create history processing
+    API->>Excel: Excel::import (chunk 500, sync HTTP)
+    Excel->>Excel: Sheet1 validate+group / Sheet2 OC-OD
+    Excel->>Excel: finalize → temp tables
+    Excel->>Q: dispatch job per SO
+    Q->>Job: store header + details
+    Job->>Job: increment jobs_completed
+    Job->>Q: FinalizeJob → stock calc + history status
 ```
 
-**Key change:** HTTP returns in <10s; parsing moves to queue (`SalesOrderImportParseJob`).
+**Grouping key:** Customer + Store + Transaction Date + Platform Order ID + Shipper + Tracking.  
+**SO status after import:** `open`, `is_import = 1`.  
+**Progress:** ~95% jobs, ~5% `StoreSOBasedStockJob`.
 
-### 5.3 Validation rules (TO-BE)
+Known AS-IS issues → [requirement §9](./requirement.md) GAP-SOG-01…06 (HTTP sync parse, log wipe, soft-delete PO ID, etc.).
 
-- **Order-level atomic failure:** 1 invalid row → entire order fails (no partial SO)
-- **>100 detail lines:** entire order fails with row range message
-- **File-level failure:** corrupt template → entire session `failed` immediately
+### 5.1 Dual import channels + Non-Processed pipeline (TO-BE)
 
-### 5.4 Proposed API additions
+| Channel | UI label | Gate | Downstream |
+|---------|----------|------|------------|
+| `processed` | **Import Processed** | Store `fulfillment_mode = processed` | Existing import → open → wave path |
+| `non_processed` | **Import Non-Processed** | Store `fulfillment_mode = non_processed` | Stock check (reuse Send to Default Waves / WH process hierarchy) → Outbound + Sales Invoice auto-approve |
 
-| Method | Path | Role |
-|--------|------|------|
-| GET | `import-history/{id}/orders` | Order-level success/fail list |
-| GET | `import-history/{id}/export-failed` | Re-importable Excel |
+**Non-Processed dates:** Outbound `trx_date = order_date + 10s`; Sales Invoice `trx_date = outbound_date + 10s`.  
+**COA guard:** every COA on auto journals OB & SI vs Approved Cash/Bank Reconcile period overlap → rollback order (see GAP-CBR-08 / GAP-SOG-10).  
+**Retry:** mirror Skip Wave Process technical retry.  
+**UI:** Skip Wave–like progress/log `[VERIFY: CODEBASE]` until implemented.  
+**Parity:** same two buttons on All Sales Order FE.
 
-### 5.5 Proposed schema changes
-
-**`omni_sales_order_import_histories`:** `total_so_failed`, `total_order`, `processed_order`, `parse_status`, `failure_reason`
-
-**Order-level tracking:** extend `import_history_details` or new `import_history_orders` with `group_key`, `first_row_number`, `last_row_number`, `row_numbers` (json)
-
-### 5.6 New jobs (proposal)
-
-| Job | Role |
-|-----|------|
-| `SalesOrderImportParseJob` | Async chunked Excel read + order grouping |
-| `SalesOrderImportFailedExport` | Generate failed-order Excel |
-
-### 5.7 QA test scenarios (TO-BE)
-
-| # | Scenario | Expected |
-|---|----------|----------|
-| TS-1 | 5.000 rows, 50 orders | Progress >0%, Horizon shows jobs |
-| TS-2 | Order 101 SKU lines | Order fails; others succeed → `partial_success` |
-| TS-3 | Export failed → fix → re-import | Fixed orders succeed |
+Store field: [omni-store-binding technical §5.1](../omni-store-binding/technical.md).
 
 ---
 
-## 7. Failed Process — AS-IS (Technical)
+## 6. Invariants
 
-### 7.1 Data model
-
-| Tabel / relasi | Level | Isi |
-|----------------|-------|-----|
-| `omni_sales_order_detail_errors` | Per detail (morph) | JSON `errors`: `{ "bind-error": "...", "stock-error": "..." }` |
-| `omni_sales_order_errors` (`error_info`) | Per order | JSON `error` — shipping, warehouse, stock order-level |
-| `SalesOrder::getErrors()` | Aggregate | Merge `error_info` + reduce `detail_error_flags` |
-
-**AS-IS gap:** Tidak ada kolom `last_checked_at` per flag.
-
-### 7.2 API (AS-IS)
-
-| Method | Path | Role |
-|--------|------|------|
-| POST/GET | `omnichannel/sales-order/get?failed_process=true` | Datalist + kolom `error_flags_formatted` |
-| POST | `businessdevelopment/all-sales-order/get?failed_process=true` | All Sales Order (proxy ke SalesOrderController) |
-| GET | `omnichannel/sales-order/failed-process` | Counter pill Failed Process |
-| GET | `omnichannel/unassign-wave/refresh-stock` | Manual stock re-check (**Unassign Wave only**) |
-
-### 7.3 Rendering pipeline
-
-```
-SalesOrderController@index
-  → addColumn('error_flags_formatted')
-  → if failed_process=false → return '-'
-  → $row->getErrors()
-  → Store::getStockWH() → warehouse-error jika empty
-  → SalesOrder::renderErrorFlags($id, $flag, $message, $color)
-  → HTML tooltip-function-text + fa-solid icon
-```
-
-Flag → icon mapping: `SalesOrder::renderErrorFlags()` (`bind-error` → `link-slash`, `coa-error` → `share-nodes`, `stock-error` → `boxes-stacked`, `warehouse-error` → `warehouse`).
-
-### 7.4 Scheduled & manual refresh (AS-IS)
-
-| Mechanism | Schedule / trigger | Scope | Flags |
-|-----------|-------------------|-------|-------|
-| `screening:error-flag-stock-sales-order` | Daily 04:00 WIB | Semua SO dengan stock-error | `stock-error` only |
-| `CheckOrderFlagsJob` | Post platform approve | 1 SO | All approve validation flags |
-| `UnassignWaveController@refreshStock` | Manual button | Unassign Wave list | `stock-error` |
-| `ProductBindingObserver` | On bind/unbind | Related orders | `bind-error` |
+| ID | Invariant |
+|----|-----------|
+| INV-SOG-01 | `count(details) ≤ 100` per SO |
+| INV-SOG-02 | Qty integer `> 0`; price `≥ 0` |
+| INV-SOG-03 | `platform_order_id` / tracking unique among non-void SO |
+| INV-SOG-04 | Import Processed SO: `transaction_status = open` and `is_import = 1` |
+| INV-SOG-05 | `processed_to_out_quantity ≤ sales_order_quantity` per detail |
+| INV-SOG-06 | Store platform for general = `PL_OTHER` |
+| INV-SOG-07 | Draft never approved |
+| INV-SOG-08 | ATS = on_hand − outstanding_so − reserved_out after recalculate |
+| INV-SOG-09 | First outbound approve without existing invoice qty → exactly one auto-approved Customer Invoice |
+| INV-SOG-10 | TO-BE: Import channel must match store `fulfillment_mode` or order fails (others continue) |
+| INV-SOG-11 | TO-BE: Non-Processed success → SO approved + not eligible for wave/processing |
+| INV-SOG-12 | TO-BE: Any SKU stock fail → entire order rolled back (no partial SO) |
 
 ---
 
-## 8. Re-check Failed Process — TO-BE (Design Spec)
+## 7. Validation Highlights
 
-> Merged dari requirement §9. **Not yet implemented.**
-
-### 8.1 Target architecture
-
-```mermaid
-flowchart TD
-    A[User klik Re-check Failed Process] --> B[Create batch log session]
-    B --> C[Bus::batch RecheckFailedProcessJob per SO]
-    C --> D1[Job SO-001]
-    C --> D2[Job SO-002]
-    C --> DN[Job SO-N]
-    D1 --> E[Evaluate bind / COA / stock / warehouse granular]
-    E --> F[Update flags + last_checked per icon]
-    F --> G[Aggregate log per store]
-    G --> H[Enable tombol kembali]
-```
-
-### 8.2 Proposed API
-
-| Method | Path | Role |
-|--------|------|------|
-| POST | `businessdevelopment/all-sales-order/recheck-failed-process` | Dispatch batch (all orders) |
-| GET | `businessdevelopment/all-sales-order/recheck-failed-process/progress` | Batch progress + disable/enable button |
-| GET | `businessdevelopment/all-sales-order/recheck-failed-process/logs` | Log grouped per store |
-
-### 8.3 Proposed jobs
-
-| Job | Role |
-|-----|------|
-| `RecheckFailedProcessBatchJob` | Orchestrator — collect all SO ids, dispatch `Bus::batch` |
-| `RecheckFailedProcessOrderJob` | 1 SO — reuse logic dari `validateOrderDetails()` + warehouse check; granular `addError`/`removeError`; partial failure tracking |
-
-**Reuse candidates:** `SalesOrderController@validateOrderDetails()`, `Store::getProcessWH()` / `getStockWH()`, `CanManageOrderDetailError::removeError()`.
-
-### 8.4 Proposed schema changes
-
-**Option A — extend detail errors JSON:**
-
-```json
-{
-  "stock-error": "Insufficient stock",
-  "_meta": {
-    "stock-error": { "last_checked_at": "2026-06-23T14:32:05+07:00" }
-  }
-}
-```
-
-**Option B — tabel baru `omni_sales_order_failed_process_checks`:** `sales_order_id`, `flag`, `last_checked_at`, `last_result` (ok/failed), `last_error`.
-
-**Log table (proposal):** `bd_all_sales_order_recheck_logs` — batch_id, store_id, triggered_at, triggered_by, success_count, failed_summary, started_at, ended_at.
-
-### 8.5 Frontend (TO-BE)
-
-| File | Change |
-|------|--------|
-| `AllSalesOrder/DataList.vue` | Tombol Re-check + progress message + log modal |
-| `SalesOrder/DataList.vue` | Tooltip Last Checked (konsumsi API `error_flags_formatted` terbaru) |
-| `SalesOrder::renderErrorFlags()` | Append Last checked ke tooltip `value` |
-
-### 8.6 Horizon & locking
-
-- Pattern mirip export lock: `Cache::lock('recheck_failed_process_{company_id}')` selama batch aktif
-- Progress: poll `recheck-failed-process/progress` atau reuse batch ID Laravel `Bus::batch`
+- Header/detail/approve/import: inline di controller (lihat requirement §7).  
+- Import Sheet1: formula reject; fiscal period; store `PL_OTHER`; cross-chunk PO/tracking index.  
+- Soft-deleted SO still can block platform order ID on re-import if query does not exclude trashed — GAP related.  
+- `bootImport` master lookup from **first chunk only** — risk for rows after chunk 500 (GAP capacity).
 
 ---
 
-## 9. Product Bundle — Proporsi Harga (file map)
+## 8. Frontend Behaviors
 
-**Requirement:** [requirement.md §10](./requirement.md#10-product-bundle--proporsi-harga-price-before-vat) · **System Product §11:** [../system-product/requirement.md](../system-product/requirement.md#11-bundle-pricing-distribution-sales-order--to-be)
-
-| Layer | File | Fungsi |
-|-------|------|--------|
-| **Distribusi harga (canonical)** | `Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php` | `pickBundleChildren()` — basis `price_before_vat`, alokasi `% × header_price`, create child detail/random + tree |
-| **Deprecated** | Same controller | `pickChildsForSalesOrder()` — retail gross; `@deprecated` |
-| **Modal payload** | Same controller | `so_general_parent_bundle()` — kolom retail, bundle_price, bundle_price_before_vat, dpp, vat, total |
-| **Platform sync bundle** | `OmniTikTokService.php`, `OmniShopeeService.php` | Memanggil `pickBundleChildren()` saat header bundle |
-| **Parent tax hide (FE)** | `olshoperp-frontend/.../FormProductComponent.vue` | Accordion Accounting & Tax `v-if="!enable_bundle"` |
-| **Modal UI** | `olshoperp-frontend/src/components/project/DataTables/PrimeDataTables.vue` | Tooltip + tabel Detail Bundle (TO-BE: rename Order Price → Bundle Price; hide Price Before VAT default) |
-| **Tax on child** | `SalesOrderDetail` + `SalesOrderTax` morph | `dpp_value`, `vat_amount` per child line |
-| **HPP auto-approve** | ETM-12890 / ETM-12947 (ref requirement) | Compare Price Before VAT komponen vs Benchmark COGS parent |
-
-**DB (child lines):** `omni_sales_order_details` + `omni_sales_order_detail_trees.parent_id` → header bundle; tax pivot via `sales_order_detail_tax`.
+| Behavior | Notes |
+|----------|-------|
+| Create | `default-values` → POST create → redirect edit |
+| Carousel | `filter-process-status?type=general` + filter `sales_order_process_status` |
+| ASO upload | Still `upload?type=general` |
+| Processing icons | `formatAvailabilityAndProcessStatus` (TransferSummary) |
+| Import UI | Dual actions: **Import Processed** / **Import Non-Processed** + history/log (Non-Processed progress TO-BE Skip Wave–like) |
 
 ---
 
-## 10. Benchmark COGS — Detail Order (file map)
+## 9. Failure Modes & Transaction Boundary
 
-**Requirement:** [requirement.md §11](./requirement.md#11-benchmark-cogs--price-before-vat-detail-order) · **Master menu:** [../accounting-product-benchmark-price/technical.md](../accounting-product-benchmark-price/technical.md)
-
-| Layer | File | Fungsi |
-|-------|------|--------|
-| Master COGS | `ProductBenchmarkPriceJob.php` | Highest/Last Inbound dari 4 sumber v1.1 (PO, Addition, Opname IN, Opening Stock) — lihat [benchmark technical §4](../accounting-product-benchmark-price/technical.md#43-getbenchmarkpriceproduct_id-start30daysago-endtoday) |
-| Snapshot create | `SalesOrderDetail.php`, `SalesOrderDetailRandom.php` | `handleBenchmarkCogsOnCreating()` |
-| Platform bind | `OmniChannel/Http/Controllers/ProductController.php` | Set `benchmark_cogs` on bind |
-| Auto-approve | `SalesOrderDetailController::updateAutoApproveFlagForSalesOrder()` | `prevent_auto_approve` flag |
-| Observer | `SalesOrderDetailPriceObserver.php` | Re-run on price/qty/product/benchmark change |
-| UI flag | `Concerns/CanManageOrderDetailError.php` | Dollar icon below benchmark |
-| Datalist BE | `SalesOrderDetailController` | `price_before_vat_formatted`, `benchmark_cogs_formatted` |
-| Datalist FE General | `SalesOrderGeneral/DatalistDetail.vue` | Hidden columns default |
-| Datalist FE Platform | `Omni/SalesOrder/DatalistDetail.vue` | Hidden columns default |
-| Export | `SalesOrderGeneralExportAll.php`, `SalesOrderPlatformExport.php` | Include `benchmark_cogs` |
-
-**Known gap (GAP-BM-05):** auto-approve compares `each_price_after_vat_primary_currency`, not Price Before VAT.
+| Failure | Boundary / expected |
+|---------|---------------------|
+| HTTP timeout during parse | No jobs; history may stay `processing` until next upload (GAP-SOG-01/02) |
+| Concurrent approve | Cache lock ~60s |
+| Approve during import | Cache `so_general_import_{so_id}` |
+| Job fails mid-order | Soft-delete SO if detail errors after header created; PO ID may remain “taken” |
+| Sheet2 error after Sheet1 | `parent->hasError` may not stop `finalize()` dispatch — verify/fix |
+| Multiple FinalizeJob | Race on `jobs_completed` without finalize flag |
 
 ---
 
-## 6. Cross-References
+## 10. Data Lifecycle
 
-| Topic | Doc |
-|-------|-----|
-| Business rules & import columns | [requirement.md](./requirement.md) §4 |
-| Operator guide | [knowledge-base.md](./knowledge-base.md) |
-| Platform SO comparison | [requirement.md](./requirement.md) §6 |
-| Failed Process AS-IS & TO-BE | [requirement.md](./requirement.md) §8–§9 |
-| Bundle proporsi Price Before VAT | [requirement.md](./requirement.md) §10 · [technical.md](./technical.md) §9 |
-| Benchmark COGS detail order | [requirement.md](./requirement.md) §11 · [technical.md](./technical.md) §10 · [accounting-product-benchmark-price](../accounting-product-benchmark-price/requirement.md) |
+| Flag / qty | Moves when |
+|------------|------------|
+| Outstanding SO | Open/approved pre-wave → wave moves to reserved |
+| `prepared_to_do` / `processed_to_do` | DO create/approve |
+| `processed_to_out` | Outbound approve → may trigger invoice qty |
+| Settlement chain | Outbound → invoice → payment → journal if incomplete |
+| `is_instant_processing` | Scheduler skip-processing eligibility |
+| Void → Duplicate | Clone resets relations; new unique tracking / PO ID |
 
 ---
 
-## Related Documents
+## 11. Tests & QA Notes
 
-| Doc | Path |
-|-----|------|
-| Requirement | [requirement.md](./requirement.md) |
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
-| Legacy import improvement source | [../_legacy/old_sales-order-import-bulk-improvement.md](../_legacy/old_sales-order-import-bulk-improvement.md) |
+- No dedicated automated tests for `SalesOrderImport*` found at rewrite time — add feature tests for grouping, max 100, soft success, chunk lookup.  
+- Staging repro: compare detail lines per `platform_order_id` after partial import (detail swap risk under parallel jobs).
+
+---
+
+## 12. Known Issues (GAP refs)
+
+| GAP | Technical note |
+|-----|----------------|
+| GAP-SOG-01/05 | Move parse to queue; raise HTTP timeout workaround not enough |
+| GAP-SOG-02 | Cleanup on upload only |
+| GAP-SOG-03/06 | Order-level atomic failure + history detail per group |
+| GAP-SOG-04 | Implement failed export; persist logs per `history_id` |
+| GAP-SOG-07…12 | Dual import + Non-Processed OB/SI pipeline, CBR COA guard, Skip Wave UX/retry — see requirement §9 |
+
+---
+
+## Related
+
+[requirement.md](./requirement.md) · [knowledge-base.md](./knowledge-base.md) · [user-guide.md](./user-guide.md) · [all-sales-order/technical.md](../all-sales-order/technical.md)

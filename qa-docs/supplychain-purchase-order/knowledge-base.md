@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.3
-last_updated: 2026-07-17
+version: 2.5
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
 aliases: [PO, purchase order, pembelian, pesanan pembelian, outstanding PR]
@@ -175,6 +175,8 @@ Setelah ada detail, **tanggal, supplier, currency, payment** terkunci.
 | Import type not match | File With PR vs PO Without PR | Kosongkan detail atau sesuaikan file |
 | Kurs invalid | Currency primer tapi rate ≠ 1 | Set rate = 1 |
 | PR tidak muncul | PR closed/complete atau qty habis | Cek status PR |
+| Σ DPP detail ≠ Total DPP tippy | Bug precision / data lama | Escalate QA/dev — harus sama setelah ETM-15313 |
+| Total baris ≠ Unit×Qty (selisih 0,01) | Rounding tie DPP+VAT (qty ganjil) | Bukan “random float”; lihat FAQ rounding — escalate jika akumulasi besar |
 
 ---
 
@@ -191,6 +193,15 @@ A: **Belum** — void PO approved saat ini **tidak** mengembalikan qty yang suda
 
 **Q: Apakah print PDF sama dengan Net Purchase di layar?**  
 A: **Belum selalu** — print **tidak include** Other Cost/Discount.
+
+**Q: DPP di grid detail harus sama dengan Total DPP di panel Totals?**  
+A: **Ya.** Keduanya memakai rumus yang sama (unit DPP max 4 desimal × qty, lalu dibulatkan 2 desimal). Selisih kecil (mis. 0,03) antar detail vs tippy = defect / data belum di-recalc.
+
+**Q: Kenapa Total harga baris bisa beda 0,01 dari Unit Price × Qty?**  
+A: Untuk PPN **include**, DPP dan VAT dihitung per unit (4 desimal) lalu masing-masing × qty dan dibulatkan. Pada qty tertentu (bukan kelipatan 10/100/1000), kedua sisi bisa “tie” pembulatan → total kelebihan/kekurangan **1 sen**. Qty 500/1000 sering kebetulan aman — bukan jaminan bebas selisih.
+
+**Q: Apakah PPN dicatat saat terima barang (Inbound)?**  
+A: **Tidak.** Inbound menjurnal harga sebelum PPN ke Unbilled Goods. PPN masuk di **Purchase Invoice**.
 
 ---
 

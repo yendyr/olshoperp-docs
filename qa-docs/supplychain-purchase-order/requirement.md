@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.3
-last_updated: 2026-07-17
+version: 2.5
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
 aliases: [PO requirement, purchase order docs, pembelian, PO validation]
@@ -14,10 +14,11 @@ aliases: [PO requirement, purchase order docs, pembelian, PO validation]
 **Modul:** Supply Chain Management (SCM) / Procurement  
 **Prefix transaksi:** `PO-`  
 **Audience:** PM, Operations, QA  
-**Status:** AS-IS verified against codebase (compliance pass 2026-07-17)
+**Status:** AS-IS verified against codebase (DPP/VAT rounding SoT 23 Jul 2026)
 
 **UI route:** `/supplychain/purchase-order`  
-**PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05)
+**PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05)  
+**Rounding SoT:** `dpp-vat-rounding-calculation.md` (23 Jul 2026)
 
 ---
 
@@ -30,6 +31,8 @@ aliases: [PO requirement, purchase order docs, pembelian, PO validation]
 | 2.1 | 2026-07-05 | QA - Yemima | GAP clarifications; import §12 expanded; §21 Pending Items Major |
 | 2.2 | 2026-07-10 | QA - Yemima | Clarifikasi: COA Other Cost/Disc di PO = default; di PI bisa di-override; koreksi posisi jurnal PI |
 | 2.3 | 2026-07-17 | QA - Yemima | Compliance qa-docs-standard: Prasyarat/FAQ; trim import teknis ke technical; hapus §20 DEV (rumah technical); stateDiagram |
+| 2.4 | 2026-07-22 | QA - Yemima | DPP/VAT precision: detail & Totals memakai truncate 4dp × qty (`ETM-15313`); AC konsistensi; GAP-PO-08 sort residual |
+| 2.5 | 2026-07-23 | QA - Yemima | SoT rounding DPP/VAT (variable, tie ±1 sen, regresi qty non-kelipatan); rantai PO→Inbound→PI jurnal |
 
 ---
 
@@ -275,8 +278,8 @@ Endpoint outstanding: `GET purchase-order-detail/outstanding?purchase_order_id={
 | Unit | ✅ | Konversi qty otomatis saat ganti unit |
 | Unit Price | ✅ | |
 | Disc (%) | ❌ | Hanya via modal Edit |
-| DPP | — | Sum pivot `dpp_amount` |
-| VAT | — | Sum pivot `vat_amount` |
+| DPP | — | `truncateAndRound(each_dpp_after_discount × order_quantity)` — **bukan** sum pivot `dpp_amount` |
+| VAT | — | `truncateAndRound(each_vat × order_quantity)` |
 | Total Price | — | `price_after_vat` |
 | Action Edit/Delete | — | Hanya jika `can_update`; bundle child: edit ✓ delete ✗ |
 
@@ -333,26 +336,72 @@ Guard: grand total before VAT tidak boleh < 0 setelah insert/update.
 
 | Field | Kalkulasi AS-IS |
 |-------|-----------------|
-| Total Products | Σ(`each_price_before_discount_before_vat × order_quantity`) — tooltip bisa tampilkan Total DPP |
-| Disc Products | Σ diskon produk per baris |
-| Total VAT | Σ VAT per baris |
+| Total Products | `PurchaseOrderPrice::totalProduct` — Σ `roundHalfDown(truncateDecimal(each_price_before_discount_before_vat, 4) × qty)` |
+| Disc Products | Σ diskon produk per baris (pola truncate 4dp × qty yang sama) |
+| Total DPP (tooltip) | Σ baris DPP — **= Σ kolom DPP detail** (bukan `Grand÷1,11` sekali putar) |
+| Total VAT | Σ baris VAT — **= Σ kolom VAT detail** |
 | Total Additional Cost | Σ other costs |
 | Total Additional Disc | Σ other discounts |
 | **Net Purchase** | `grand_total_after_vat` = subtotal after VAT + Other Cost − Other Disc |
 
-### 9.1 Rumus per baris (DPP / VAT / Total)
+**AC — konsistensi display (ETM-15313):**
 
-Perhitungan baris (DPP / VAT):
+- Σ DPP / VAT kolom detail **wajib sama** tippy Totals (selisih 0,01+ antar keduanya = defect display).
+- Unit DPP/VAT disimpan max **4 desimal**; total uang **2 desimal** (`roundHalfDown` setelah × qty).
 
-| Kondisi | Perhitungan |
-|---------|-------------|
-| VAT **Exclude** | `each_tax = each_price_after_discount_before_vat × rate` |
-| VAT **Include** | Back-calculate base dari harga after VAT |
-| **Coefficient** tax | Rate dipaksa **11%** untuk kalkulasi jika `tax.coefficient = true` |
-| **DPP** | `each_dpp = each_tax / fake_rate` (fake_rate = sum pivot % / 100) |
-| **Total Price** | `price_after_vat = each_dpp + each_tax` per qty |
+### 9.1 Variable & presisi (SoT 23 Jul 2026)
 
-Pivot tax disimpan di `scm_purchase_order_detail_tax`.
+| Variable | Formula (konsep, VAT **Include** 11%) | Presisi |
+|----------|----------------------------------------|---------|
+| Unit Price | Input | Biasanya integer Rupiah |
+| Disc % | Input | Integer persen AS-IS FE `[VERIFY]` — jangan asumsikan desimal |
+| Net Unit Price | `Unit × (100 − Disc) / 100` | 2dp clean jika Unit & Disc integer |
+| DPP / unit | Net / 1,11 (atau via `each_tax / fake_rate` di code) | **4dp** `truncateDecimal` |
+| VAT / unit | **Komplemen:** Net − DPP/unit (bukan % independen) | **4dp** |
+| DPP total | DPP/unit × Qty → round uang | **2dp** `roundHalfDown` |
+| VAT total | VAT/unit × Qty → round uang | **2dp** |
+| Total Price baris | DPP total + VAT total | **2dp** |
+
+**Identitas 4dp:** DPP/unit + VAT/unit = Net Unit Price (karena komplemen). Setelah rounding **per sisi** ke 2dp, Total Price bisa **≠** Net × Qty sebesar **±0,01** (rounding tie).
+
+**AS-IS code:** `PurchaseOrderDetailPrice::withTax` + `truncateDecimal` / `roundHalfDown` — lihat [technical §5](./technical.md#5-pricing--decimal-precision-etm-15313). Mode uang = **half-down** pada titik 0,5 (bukan half-up klasik).
+
+### 9.2 Rounding tie (±1 sen) — sumber selisih terverifikasi konsep
+
+Dipicu kombinasi Unit + Disc + **Qty bukan kelipatan 10/100/1000** (contoh 25, 75, 175). Qty 500/1000 sering “kebetulan aman” — **bukan** bukti bebas bug.
+
+**Referensi manual (VAT include 11%, Disc 0, Qty 25, Unit 38.000):**
+
+| Step | Nilai |
+|------|-------|
+| Net | 38.000 |
+| DPP/unit (4dp) | 34.234,2342 |
+| VAT/unit (4dp) | 3.765,7658 |
+| DPP×25 sebelum round | 855.855,8550 |
+| VAT×25 sebelum round | 94.144,1450 |
+| Jumlah sebelum round | **950.000,0000** (= 38.000×25) |
+| Setelah round tiap sisi ke 2dp | Total Price bisa **950.000,01** (half-up) atau **949.999,99** (half-down AS-IS) |
+
+Case sama dengan Disc **5%** integer pada Unit 40.000 → Net tetap 38.000 (clean); sumber error **bukan** tahap Net, melainkan tie di DPP/VAT total.
+
+**Do regression:** wajib include Qty non-kelipatan. **Don't** anggap lulus hanya dari case Qty 500/1000.
+
+### 9.3 Rantai ke Inbound & Purchase Invoice
+
+```mermaid
+flowchart LR
+  PO[PO line DPP/VAT 4dp + total 2dp] --> GRN[Inbound GRN]
+  GRN -->|"Dr Inventory/… Cr Unbilled<br/>amount = price before VAT × qty"| UB[Unbilled Goods]
+  GRN --> PI[Purchase Invoice]
+  PI -->|"Dr Unbilled + VAT Cr AP"| GL[Journal PI]
+```
+
+| Menu | Apa yang diwariskan / di-jurnal |
+|------|----------------------------------|
+| [Inbound](../supplychain-new-purchase-inbound/requirement.md) | Harga **sebelum VAT** dari PO (`each_price_before_vat`) → stok + jurnal Unbilled; **tanpa** baris VAT |
+| [Purchase Invoice](../accounting-supplier-invoice/requirement.md) | Warisi DPP/VAT unit PO; tampilkan ulang; jurnal clear Unbilled + Debit VAT + Credit AP |
+
+Pivot tax (`dpp_amount` / `vat_amount`) diisi helper truncate-first. Sort kolom DPP masih `SUM(dpp_amount)` — **GAP-PO-08**.
 
 ---
 
@@ -579,6 +628,8 @@ Create open + With/Without PR · supplier filter · outstanding/Single Use · pr
 | **GAP-PO-05** | Template xlsx tersedia | File **404** di FE `/files/` | **Asset missing** | Lihat penjelasan §19.1 |
 | **GAP-PO-06** | Print = Net Purchase layar | Print **exclude** Other Cost/Disc | **Incomplete print** | → **Pending Major P-PO-02** (End user) |
 | **GAP-PO-07** | Type PO locked setelah create | Import overwrite `with_pr`; BE update tidak lock | **Partial gap** | Lihat penjelasan §19.2 |
+| **GAP-PO-08** | Sort kolom DPP/VAT = nilai tampilan | `orderColumn` masih `SUM(dpp_amount)` / `SUM(vat_amount)` | **Residual** | Display sudah Path B; sort masih pivot — bisa beda urutan vs angka tampil |
+| **GAP-PO-09** | Total Price baris = Net × Qty pada rounding tie | DPP total + VAT total tiap sisi di-round 2dp | **Open / SoT** | Qty non-kelipatan (mis. 25) → ±0,01 vs Net×Qty; regresi wajib — lihat §9.2 |
 
 ### 19.1 GAP-PO-05 — Template file missing (detail)
 
@@ -615,6 +666,8 @@ Butuh keputusan bisnis sebelum implementasi:
 | **P-PO-03** | 🟡 Medium | **Dev + QA** | Deploy template import xlsx (GAP-PO-05) | Download template 404 — operator tidak punya file resmi | IT deploy 2 file template atau FE generate template |
 | **P-PO-04** | 🟡 Medium | **PM + Dev** | Lock `with_pr` di backend + import (GAP-PO-07) | UI lock tapi API/import bisa ubah tipe | Apakah `with_pr` immutable setelah first detail / setelah create? |
 | **P-PO-05** | 🟡 Medium | **Dev** | Enable import Without PR terpisah (GAP-PO-04) | Mode class terpisah disabled | Satu alur cukup atau perlu split + unify max 500? |
+| **P-PO-06** | 🟡 Medium | **Dev + QA** | Samakan sort DPP/VAT dengan rumus tampilan (GAP-PO-08) | Sort `SUM(dpp_amount)` vs cell `each_dpp × qty` | Sort order bisa “salah” relatif ke angka yang user lihat |
+| **P-PO-07** | 🟡 Medium | **Finance + Dev** | Kebijakan rounding tie DPP+VAT (GAP-PO-09) | ±1 sen pada Total Price vs Net×Qty | Apakah kompensasi 1 sisi, round-last, atau terima + dokumentasikan? |
 
 **Confirmed OK (bukan pending):** GAP-PO-02 (Void draft/open = Delete); GAP-PO-03 (Closed dari processed intentional).
 

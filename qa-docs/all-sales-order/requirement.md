@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.1
-last_updated: 2026-07-15
+version: 1.2
+last_updated: 2026-07-22
 owner: QA - Yemima
 status: review
-aliases: [all sales order, ASO, gabungan SO, laporan all sales order]
+aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode]
 ---
 
 # All Sales Order — Requirement Documentation
@@ -14,9 +14,8 @@ aliases: [all sales order, ASO, gabungan SO, laporan all sales order]
 **Modul:** BusinessDevelopment (+ OmniChannel shared engine)  
 **UI route:** `/businessdevelopment/all-sales-order`  
 **Audience:** PM, Ops, Finance, QA  
-**Status:** AS-IS (+ residual Re-check vs TO-BE historis SOG §9)
 
-> **Bukan** menu create master. All Sales Order = **window gabungan** atas dua sumber independen: [Dev - Sales Platform](../omni-sales-platform/requirement.md) dan [Dev - Sales Order](../sales-order-general/requirement.md). Perilaku per tipe SO **harus selaras** dengan doc sumber masing-masing.
+> **Bukan** menu create master. All Sales Order = **window gabungan** atas [Dev - Sales Platform](../omni-sales-platform/requirement.md) dan [Dev - Sales Order](../sales-order-general/requirement.md) **v3.1**. Perilaku per tipe SO **harus selaras** dengan doc sumber. Dual import general: **Import Processed** / **Import Non-Processed** (gate [Store Fulfillment Mode](../omni-store-binding/requirement.md)).
 
 ---
 
@@ -24,9 +23,9 @@ aliases: [all sales order, ASO, gabungan SO, laporan all sales order]
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-07-22 | QA - Yemima | TO-BE: dual import Processed/Non-Processed (paritas SOG v3.1); cross-ref Store Fulfillment Mode |
 | 1.1 | 2026-07-15 | QA - Yemima | GAP-ASO-01: tombol Recheck AS-IS verified; residual O-01…O-03 |
 | 1.0 | 2026-07-15 | QA - Yemima | Split folder; sintesis platform + general; peran ASO |
-
 
 ---
 
@@ -48,6 +47,7 @@ flowchart LR
 | **Recheck failed process** | Tombol di ActionButtons ASO saja (bukan di Dev Sales Platform list) |
 | Edit Other Info booking (platform) | Form ASO / link edit — aturan field → SP SoT booking |
 | Create | Route create memakai pola SO General (store Others / defaults) |
+| Import Excel (general) | **Import Processed** & **Import Non-Processed** — paritas [SOG §6.3](../sales-order-general/requirement.md); template sama; gate Fulfillment Mode store |
 
 ---
 
@@ -94,7 +94,7 @@ Filter carousel process status memakai `filter-process-status?type=all`.
 | Error flag column | Muncul saat pill Failed Process | [SP §5.2](../omni-sales-platform/requirement.md) + [SOG §8](../sales-order-general/requirement.md) |
 | Edit form | `from-all-sales-order=true`; field bergantung tipe | General form vs platform read-mostly |
 | Booking Other Info | Edit booking fields untuk unmatched booking | [SP booking](../omni-sales-platform/requirement.md) — manual edit di ASO, bukan form SP |
-| Import Excel | Available (tipe general) | [SOG §4 Import](../sales-order-general/requirement.md) |
+| Import Excel | **Import Processed** + **Import Non-Processed** (TO-BE paritas SOG) | [SOG §6.3](../sales-order-general/requirement.md) |
 | Export | Export file ASO + opsi with/without details | Shared export engine |
 
 ---
@@ -176,7 +176,8 @@ flowchart TB
 | Menu | Fungsi terhadap ASO |
 |------|---------------------|
 | Dev - Sales Platform | Sumber baris platform; sync & booking rules |
-| Dev - Sales Order | Sumber baris general; import & CRUD |
+| Dev - Sales Order | Sumber baris general; CRUD; dual import Processed/Non-Processed |
+| Store | Fulfillment Mode gate untuk import general |
 | Failed Ship / Sales Return | Cabang Return pada order platform di ASO |
 | Waves / Processing | Pipeline setelah approve |
 | Instant Settlement / SI | Downstream finance |
@@ -188,6 +189,7 @@ flowchart TB
 | ID | Deskripsi | Status |
 |----|-----------|--------|
 | **GAP-ASO-01** | Re-check: tombol + batch AS-IS ada; residual = Last Checked per-icon, log UI (O-01), cooldown (O-02), retention (O-03), scope lebih sempit vs “all OPEN” | Partial — §5.4 |
+| **GAP-ASO-02** | Dual import **Import Processed** / **Import Non-Processed** harus paritas UI+API dengan Dev - Sales Order (SOG GAP-SOG-07…) | Open (TO-BE) |
 | **GAP-APR-01** | Auto-approve cron mengabaikan toggle/delay — berdampak baris platform di ASO | Open — [SP gaps](../omni-sales-platform/requirement.md) |
 
 ---

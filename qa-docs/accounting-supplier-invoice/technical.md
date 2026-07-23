@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.0
-last_updated: 2026-07-15
+version: 3.3
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: draft
 aliases: [PI technical, supplier invoice API, purchase invoice code]
@@ -88,6 +88,8 @@ aliases: [PI technical, supplier invoice API, purchase invoice code]
 | `account_payable_coa_id` | Set on approve |
 | `transaction_status` | draft / open / approved / rejected (no user-facing void/processed/closed) |
 | `supplier_reference_document` | Supplier's Reference |
+| `supplier_invoice_amount` | **TO-BE** nullable decimal — Supplier's Invoice Amount (§5.1b req) |
+| `invoice_diff` / computed | **TO-BE** — boleh kolom tersimpan atau computed di response (`supplier_invoice_amount − net`) |
 
 ### `accounting_supplier_invoice_detail_items`
 
@@ -122,25 +124,26 @@ aliases: [PI technical, supplier invoice API, purchase invoice code]
 
 ---
 
-## 4. Pricing Service
+## 4. Pricing Service & decimal precision (ETM-15313 + Rounding SoT 23 Jul)
 
-**Class:** `SupplierInvoicePrice`
+**Helpers:** `truncateDecimal` (4dp), `roundHalfDown` (2dp money, half-down at 0.5), `truncateAndRound`.
 
-```
-subTotal.before_vat = Σ (qty × each_after_discount_before_vat)
-subTotal.after_vat  = Σ (qty × each_after_discount_after_vat)
-grandTotal = subTotal + totalOtherCost − totalOtherDiscount
-```
+**Class:** `SupplierInvoicePrice::totalProduct` — Σ per line (Path B). **Bukan** `Grand÷1,11`.
 
-**Coefficient tax:** if tax `coefficient` true, DPP accumulated into FE Total Products uses coefficient DPP (smaller) so effective VAT rate matches policy.
+**Line compute:** `SupplierInvoiceDetailPrice::withTax` — truncate unit dulu.  
+**Inherit:** `getDetailPriceAndTax` copy `each_dpp_*` / prices dari PO; else recalc + truncate.
 
-**Exchange diff:** PO local total − Invoice local total → Exchange Gain (Cr) / Loss (Dr); also on PO-sourced OC/OD with currency mismatch.
+**Datalist:** `truncateAndRound(each_dpp_after_discount × invoice_quantity)`.
 
-**Line pricing:** `PurchaseOrderDetail::getDetailPriceAndTax()`.
+**Rounding tie (GAP-PI-05 / GAP-PO-09):** DPP+VAT komplemen di 4dp; round terpisah ke 2dp → Total bisa **±0,01** vs Net×Qty. Warisan angka PO ke PI & ke `vat_amount` yang di-prorate jurnal.
+
+**Coefficient tax:** DPP coefficient ke Total Products jika `coefficient` true.
+
+**Exchange diff:** PO local − Invoice local → Exchange Gain/Loss; juga OC/OD beda currency.
 
 ---
 
-## 5. Approve Flow
+## 5. Approve Flow & Journal (Inbound → PI)
 
 ```mermaid
 sequenceDiagram
@@ -173,7 +176,32 @@ sequenceDiagram
 
 **Transaction:** `approveSupplierInvoice()` in single `DB::beginTransaction` — status, inbound qty, PO flags, journal rollback together.
 
-**Journal:** Dr Unbilled Goods + Tax + OC (`expense_coa_id`) · Cr AP + OD + exchange. Validates `expense_coa.owned_by == PI.owned_by`.
+**`JournalProcess::supplierInvoiceAutoJournal` amounts (AS-IS):**
+
+| Entry | Formula |
+|-------|---------|
+| Dr Unbilled Goods | `invoice_quantity_in_base_unit × invoice_each_price_after_discount_before_vat × PO exchange_rate` |
+| Dr Tax COA | `(PO vat_amount / PO order_qty_base × PO exchange_rate) × invoice_qty_base` |
+| Dr/Cr OC/OD | Amount primary / foreign per baris (`expense_coa_id`) |
+| Cr Account Payable | Balancing total debit |
+| Exchange pieces | Diff kurs PO vs PI |
+
+**Prior Inbound journal:** Dr Inventory/Assets/OpEx · Cr Unbilled = **price before VAT × qty** (no VAT) — [inbound §9](../supplychain-new-purchase-inbound/technical.md#9-journal--product-coa-group-type). PI **clears** Unbilled + books VAT + AP.
+
+Validates `expense_coa.owned_by == PI.owned_by`.
+
+### 5.1 Supplier's Invoice Amount → Cash Diff (**TO-BE**)
+
+| Step | Detail |
+|------|--------|
+| Storage | `supplier_invoice_amount` on `accounting_supplier_invoices` (nullable) |
+| Diff | `diff = supplier_invoice_amount − Net Purchase Invoice` (currency PI, 2dp) |
+| Prereq | `CompanyCoaSetting.cash_difference_coa_id` wajib jika diff ≠ 0 |
+| Journal (diff > 0) | Dr `cash_difference_coa_id` · Cr AP — amount = diff; **tambahan** di `supplierInvoiceAutoJournal` |
+| Fase 1 | Tolak `supplier_invoice_amount < net` (P-PI-SIA-01) |
+| FE | Basic Information input + read-only Invoice Diff; helper text per requirement §5.1b |
+
+Bukan Exchange Diff (kurs). Jangan campur dengan `exchange_gain_local_currency` line items.
 
 ---
 
@@ -289,6 +317,7 @@ Active + leaf only; **no** class filter; company scope.
 | Pending Void | FE/BE remnants; not user-supported lifecycle |
 | Pending Due Date TOP | Manual only |
 | Pending Processed/Closed | Not set from payment on PI header |
+| GAP-PI-06 | Supplier's Invoice Amount + Cash Diff journal — **TO-BE** (req §5.1b / §5.6b) |
 
 Full registry: [requirement §9](./requirement.md#9-gap-registry).
 

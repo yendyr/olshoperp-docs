@@ -2,23 +2,31 @@
 doc_type: technical
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.1
-last_updated: 2026-07-15
+version: 1.2
+last_updated: 2026-07-22
 owner: QA - Yemima
 status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
+  - ../sales-order-general/technical.md
 ---
 
 # All Sales Order — Technical Documentation
 
 **UI:** `/businessdevelopment/all-sales-order`  
 **API list:** `businessdevelopment/all-sales-order`  
-**Shared Omni:** `omnichannel/sales-order/*` (`type=all` / general endpoints)
+**Shared Omni:** `omnichannel/sales-order/*` (`type=all` / general endpoints)  
+**Behavior:** [requirement.md](./requirement.md) v1.2 · import general → [SOG technical §5.1](../sales-order-general/technical.md)
 
 ---
 
+## 0. Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.2 | 2026-07-22 | TO-BE dual import Processed/Non-Processed parity with SOG |
+| 1.1 | 2026-07-15 | Recheck / shared engine notes |
 ## 1. File Map
 
 | Path | Role |
@@ -44,7 +52,7 @@ FE pills: `PillButtons.vue` dengan `type="all"`.
 | GET | `omnichannel/sales-order/filter-process-status?type=all` | Carousel buckets |
 | GET | `omnichannel/sales-order/pill-count?type=all` | Pill counters |
 | GET | `omnichannel/sales-order/sync-one-so` | Sync baris platform |
-| POST | `omnichannel/sales-order/upload?type=general` | Import (general) |
+| POST | `omnichannel/sales-order/upload?type=general` | Import general — TO-BE dual channel Processed / Non-Processed (same as SOG) |
 | GET | `omnichannel/sales-order/revalidate-flags` | Progress/lock status Recheck |
 | POST | `omnichannel/sales-order/revalidate-flags` | Dispatch batch Recheck |
 

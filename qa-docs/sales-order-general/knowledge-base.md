@@ -1,110 +1,148 @@
 ---
 doc_type: knowledge-base
 menu: sales-order-general
-menu_name: "Sales Order General (Internal)"
-version: 1.1
-last_updated: 2026-07-02
+menu_name: "Dev - Sales Order"
+version: 3.1
+last_updated: 2026-07-22
 owner: QA - Yemima
 status: review
-audience: operator
-sections:
-  core: [what-is, lifecycle, import, failed-process, faq]
+aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed]
 ---
 
-# Sales Order General — Knowledge Base
+# Dev - Sales Order — Knowledge Base
 
-## 1. Apa itu Sales Order General?
+**Siapa yang baca:** operator Busdev/Ops, support  
+**Menu:** Business Development → **Dev - Sales Order**  
+**Route:** `/businessdevelopment/sales-order-general`
 
-Sales Order **General** adalah pesanan penjualan **internal** (bukan dari marketplace). Dibuat lewat input manual, import Excel, atau POS.
+Layar gabungan: **All Sales Order**. Marketplace: **Dev - Sales Platform**.  
+Mode toko: **Fulfillment Mode** di master **Store** (**Processed** / **Non Processed**).
 
-**Menu:** Dev - Sales Order (`/businessdevelopment/sales-order-general`)
+---
+
+## 1. Apa itu & kenapa penting
+
+**Dev - Sales Order** mencatat **pesanan penjualan internal** (telepon/WA, B2B, Excel, POS) — bukan sync Shopee/Lazada/TikTok.
+
+Ada **dua jalur setelah import**, tergantung Fulfillment Mode store: masuk proses gudang penuh, atau langsung keluar barang + tagihan.
+
+---
 
 ## 2. Kapan dipakai?
 
 | Kebutuhan | Cara |
 |-----------|------|
-| Penjualan B2B/offline | Buat manual → isi customer & produk |
-| Banyak order dari Excel | Import 2 sheet (header+detail + biaya/diskon) |
-| Kasir toko | POS (otomatis jadi SO general) |
+| Penjualan B2B / offline | Create manual → lengkapi customer & produk |
+| Banyak order + proses gudang | **Import Processed** (store harus **Processed**) |
+| Banyak order tanpa proses gudang | **Import Non-Processed** (store harus **Non Processed**) |
+| Kasir toko | Point of Sales (jalur Non-Processed POS = nanti) |
+| Lihat general + marketplace | **All Sales Order** (tombol import sama) |
 
-## 3. Siklus status
+---
 
+## 3. Alur kerja standar
+
+```mermaid
+flowchart TD
+    A[Buat / Import / POS] --> B{Jenis import?}
+    B -->|Import Processed| C[Open lalu Approve]
+    C --> D[Antrian gudang]
+    D --> E[Ambil sampai siap kirim]
+    E --> F[Surat jalan]
+    F --> G[Barang keluar]
+    G --> H[Tagihan]
+    B -->|Import Non-Processed| I[Cek stok gudang proses store]
+    I --> J[Barang keluar + tagihan otomatis]
+    B -->|Manual / POS| C
 ```
-Draft/Open → Approve → Wave → Picking → Delivery → Outbound → Invoice
-```
 
-- **Approve** memicu proses gudang (wave assignment)
-- **Invoice** terbentuk saat outbound approve atau settlement
+**Keterangan langkah:**
 
-## 4. Import Excel (ringkas)
+1. **Create** — buat draft lalu buka edit.  
+2. **Import Processed** — hasil **Open**; lanjut Approve → antrian gudang (sering perlu Unassign/Skip Wave).  
+3. **Import Non-Processed** — sistem cek stok di gudang proses **store order itu**; jika OK buat barang keluar + tagihan otomatis (tanpa wave–ship).  
+4. Store salah mode vs tombol → order itu gagal; order lain di file bisa lanjut.  
+5. Template Excel **sama** untuk kedua tombol.
 
-### Template
+🎬 [Interactive demo akan ditambahkan di sini]
 
-Download dari tombol Export/Template di datalist — file 2 sheet:
+### Arti status (ringkas)
 
-1. **Sheet 1** — header + detail produk (satu baris = satu SKU per order)
-2. **Sheet 2** — other cost & discount (by Platform Order ID)
+| Status | Artinya | Bisa diedit? |
+|--------|---------|--------------|
+| Draft | Baru disusun | Ya |
+| Open | Siap review & approve (hasil Import Processed) | Ya |
+| Approved | Disetujui / final (termasuk Non-Processed sukses) | Tidak |
+| Rejected / Closed / Void | Ditolak / ditutup / dibatalkan | Tidak |
 
-### Aturan penting
+---
+
+## 4. Import Excel (operator)
+
+### Dua tombol
+
+| Tombol | Store harus | Setelah sukses |
+|--------|-------------|----------------|
+| **Import Processed** | **Processed** | Open → Approve → proses gudang |
+| **Import Non-Processed** | **Non Processed** | Progress job (mirip Skip Wave) → outbound + invoice otomatis |
+
+Atur mode di **Omni → Store → Fulfillment Mode** dulu.
+
+### Template (tidak berubah)
+
+1. **Sheet 1** — tanggal, customer, store, referensi, kurir, tracking, SKU, qty, unit, harga.  
+2. **Sheet 2** (opsional) — biaya/diskon tambahan.
 
 | Rule | Nilai |
 |------|-------|
-| Max SKU per order | **100 baris** |
-| Format file | `.xlsx` / `.xls` |
-| Status SO hasil import | **Open** (siap approve) |
-| Grouping 1 order | Customer + Store + Tanggal + Platform Order ID + Shipper + Tracking |
+| Max SKU per order | **100** |
+| Format | `.xlsx` / `.xls` |
+| Gabung 1 order | Customer + Store + Tanggal + Platform Order ID + Shipper + Tracking |
+| Store | Tipe **Others** + mode sesuai tombol |
+| Rumus Excel | Ditolak |
 
 ### Jika import gagal
 
-1. Buka **Import History** di datalist
-2. Klik sesi import → lihat **Import Log** (nomor baris + pesan error)
-3. Perbaiki file Excel → upload ulang
+1. Cek **Import History** / log (Non-Processed: log progress mirip Skip Wave).  
+2. Mismatch mode store ↔ tombol → ganti store/mode atau ganti tombol.  
+3. Non-Processed stok kurang → seluruh order gagal; lihat SKU mana yang kosong.  
+4. File sangat besar bisa stuck — pecah file (batasan sistem).
 
-> **Catatan:** Import file besar (>~2.000 baris) saat ini bisa stuck — improvement sedang direncanakan (lihat technical.md §5).
+---
 
-## 5. Failed Process (icon error di datalist)
+## 5. Yang sering bikin bingung
 
-Kolom **Failed Process** muncul saat pill merah **Failed Process** diklik di:
+| Gejala | Penyebab umum | Solusi |
+|--------|---------------|--------|
+| Order gagal “mode” / fulfillment | Store Processed diunggah lewat Non-Processed (atau sebaliknya) | Samakan tombol dengan Fulfillment Mode store |
+| Setelah Approve belum masuk gudang | Setting tidak auto-wave | Unassign / Skip Wave di SCM |
+| Invoice tidak muncul setelah Approve (Processed) | Memang tidak saat Approve | Tunggu outbound / settlement |
+| Non-Processed gagal stok | Stok di hierarki gudang proses store kurang | Isi stok / kurangi qty / ganti store |
+| Create langsung ke edit | By design | Lengkapi di halaman edit |
 
-- **Dev - Sales Platform** (`/omni/sales-order`)
-- **All Sales Order** (`/businessdevelopment/all-sales-order`)
+---
 
-### Icon yang umum muncul
+## 6. Istilah → bahasa sehari-hari
 
-| Icon | Arti | Tindakan operator |
-|------|------|-------------------|
-| 🔗 merah (link-slash) | Produk platform belum di-bind ke System Product | Bind di Platform Product |
-| 🔀 orange (share-nodes) | COA produk belum lengkap | Set COA di System Product |
-| 📦 merah (boxes-stacked) | Stok tidak cukup di gudang proses | Cek ATS / inbound / tunggu stok |
-| 🏭 biru (`#2F6495`, warehouse) | Store belum punya Warehouse Process | Set di Omni Settings / Warehouse Binding |
+| Istilah | Artinya |
+|---------|---------|
+| Fulfillment Mode | Di Store: **Processed** (lewat gudang) atau **Non Processed** (langsung keluar + tagih) |
+| Import Processed / Non-Processed | Dua tombol upload Excel |
+| Platform Order ID | Nomor referensi luar + kunci gabung baris |
+| Wave | Antrian gudang sebelum ambil barang |
+| Outbound | Bukti barang keluar |
+| Sales Invoice | Tagihan customer |
 
-**AS-IS:** Hover icon hanya menampilkan pesan error — **belum** ada timestamp "Last checked".
+---
 
-**AS-IS (2026-07-15):** Tombol **Recheck failed process** ada di **All Sales Order**. Hover icon bisa menampilkan Last Checked (waktu update error). Masih ada residual vs §9 penuh — lihat [all-sales-order](../all-sales-order/requirement.md).
+## 7. FAQ singkat
 
-**TO-BE (planned residual):** Last Checked per icon, log UI dedicated, cooldown/retention policy. Detail: [requirement.md §9](./requirement.md#9-improvement-to-be--re-check-failed-process--log).
+**Bedanya dengan All Sales Order?** Satu layar general + marketplace; tombol import sama.  
+**POS ikut Non-Processed?** Belum — requirement berikutnya.  
+**Max detail?** 100 baris per pesanan.
 
-### Cara flag hilang (AS-IS)
+## Referensi
 
-| Kondisi | Cara hilang |
-|---------|-------------|
-| Unbinded Product | Bind produk platform |
-| Unavailable Stock | Stok tersedia + screening harian 04:00 WIB, atau Refresh Stock di **Unassign Wave** |
-| COA not set | Lengkapi COA produk |
-| No Warehouse Process | Konfigurasi warehouse process store |
-
-> **Bukan Failed Ship:** Menu Failed Ship (SCM) untuk order COD gagal kirim pasca-shipped — berbeda dari Failed Process di datalist SO.
-
-## 6. FAQ
-
-**Q: Beda dengan Sales Order Platform?**  
-A: SO Platform dari sync marketplace (Shopee/TikTok). SO General dibuat manual/import internal.
-
-**Q: Bisa approve langsung setelah import?**  
-A: Ya, SO import status Open — bisa langsung approve jika data lengkap.
-
-**Q: Kapan Customer Invoice terbentuk?**  
-A: Saat outbound approve, settlement upload, atau manual di menu Sales Invoice — bukan otomatis saat approve SO.
-
-**Q: Platform Order ID wajib?**  
-A: Tidak wajib untuk semua skenario, tapi dipakai untuk grouping import & referensi eksternal.
+- [requirement.md](./requirement.md) · [technical.md](./technical.md) · [user-guide.md](./user-guide.md)  
+- Store: [../omni-store-binding/knowledge-base.md](../omni-store-binding/knowledge-base.md)  
+- ASO: [../all-sales-order/knowledge-base.md](../all-sales-order/knowledge-base.md)

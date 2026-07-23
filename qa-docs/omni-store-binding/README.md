@@ -1,15 +1,24 @@
 # Store — Dokumentasi
 
-Menu **Store** (Omni Channel) — registrasi toko marketplace/offline, OAuth authorize, konfigurasi gudang & COA, sinkronisasi produk/order/warehouse, dan pricelist per store.
+Menu **Store** (Omni Channel) — registrasi toko marketplace/offline, OAuth authorize, konfigurasi gudang & COA, sinkronisasi produk/order/warehouse, pricelist per store, dan (TO-BE) **Fulfillment Mode** — gate dual import Dev - Sales Order.
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, ops | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA, Dev | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, ops | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA, Dev | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 
 **Maintenance owner:** QA — Yemima  
-**Versi dokumen:** 2.0 (2026-06-25) — konsolidasi requirement bisnis + verifikasi codebase
+**Versi dokumen (3 layer):** 2.1 (2026-07-22) — TO-BE **Fulfillment Mode** (`GAP-ST-FM-01`)  
+**User-guide:** v1.0 · `source_version` 2.1
+
+## Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-06-25 | Konsolidasi requirement bisnis + verifikasi codebase AS-IS |
+| 2.1 | 2026-07-22 | TO-BE: kolom **Fulfillment Mode** (Processed/Non Processed) — gate dual import Dev - Sales Order; `GAP-ST-FM-01`; tambah `user-guide.md` |
 
 ## Route & code
 
@@ -24,7 +33,8 @@ Menu **Store** (Omni Channel) — registrasi toko marketplace/offline, OAuth aut
 | [Warehouse Binding](../omni-warehouse-binding/README.md) | Mapping WH platform ↔ WH sistem per store (Process/Stock/Return) |
 | [Manage Platform Product](../manage-platform-product/README.md) | Sync & bind produk per store |
 | [Dev - Sales Platform](../omni-sales-platform/README.md) | Sync order platform |
-| [Dev - Sales Order](../sales-order-general/README.md) | Import SO General (store Others) |
+| [Dev - Sales Order](../sales-order-general/README.md) | Import SO General (store Others); TO-BE gate dual import Processed/Non-Processed via Fulfillment Mode |
+| [All Sales Order](../all-sales-order/README.md) | Window gabungan general + platform |
 | [Waves Management](../omni-waves-management/README.md) | Wave filter by store |
 | [Instant Settlement](../accounting-settlement-upload/README.md) | COA & cash/bank store untuk Approve settlement |
 | [Settlement Mapping](../accounting-settlement-mapping/README.md) | Mapping kolom settlement per platform/store |

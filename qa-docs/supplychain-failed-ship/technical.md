@@ -2,13 +2,14 @@
 doc_type: technical
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.3
-last_updated: 2026-06-26
+version: 2.5
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
+  - ./user-guide.md
 ---
 
 # Failed Ship — Technical Documentation
@@ -453,5 +454,6 @@ Detail bisnis: [requirement.md §3](./requirement.md#3-pergerakan-stok-order--wa
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Requirement | [requirement.md](./requirement.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | DB schema | `docs/db-schema/supply_chain/scm_stock_mutations.md` |
 | API routes | `docs/api/supply_chain/routes.md` |

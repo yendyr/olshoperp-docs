@@ -2,10 +2,10 @@
 doc_type: knowledge-base
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.0
-last_updated: 2026-06-25
+version: 2.1
+last_updated: 2026-07-22
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 sections:
   core: [what-is, glossary, can-cannot, faq, help]
@@ -14,7 +14,7 @@ sections:
 
 # Store — Knowledge Base
 
-> **Status: DRAFT** — v2.0 (2026-06-25). Menggabungkan SOP operator dengan verifikasi codebase.
+> **Status: REVIEW** — v2.1 (2026-07-22) menambahkan penjelasan **Fulfillment Mode** (§4.6) — fitur ini masih dalam tahap penyiapan, belum aktif di sistem. Konten SOP operator lain (v2.0, 2026-06-25) tetap berlaku.
 
 ## 1. Apa itu Store?
 
@@ -48,6 +48,7 @@ Store adalah **prasyarat** sebelum Manage Platform Product, sync order platform,
 | Product Sync % | Progress sync produk awal; hijau jika ≥97% |
 | Can Sync Order | Ya jika product sync ≥97% (`initial_sync_product_completed`) |
 | Product Onboarding | Antrian sync otomatis: Waiting → In Progress → Completed |
+| Fulfillment Mode *(segera hadir)* | Pengaturan toko: **Processed** (pesanan lewat proses gudang) atau **Non Processed** (pesanan langsung kirim tanpa proses gudang) |
 
 ## 3. Yang Bisa / Tidak Bisa Dilakukan
 
@@ -117,6 +118,28 @@ Jika warehouse tidak muncul di dropdown → buka **Supply Chain → Warehouse**,
 | **Bulk Sync Product/SO** | DataList toolbar | Multi-select store authorized |
 
 Tombol disabled (loading) saat job sync sedang berjalan — tunggu sampai selesai.
+
+### 4.6 Fulfillment Mode — cara pesanan diproses (segera hadir)
+
+> **Catatan:** Fitur ini masih disiapkan, belum aktif — bagian ini menjelaskan rencana cara kerjanya.
+
+Setiap toko akan punya pengaturan **Fulfillment Mode**: apakah pesanannya perlu diproses lewat gudang (picking, packing, dst.) atau langsung dikirim tanpa proses gudang.
+
+| Opsi | Artinya | Siapa yang bisa pilih |
+|------|---------|------------------------|
+| **Processed** | Pesanan tetap lewat proses gudang seperti biasa | Semua toko (default); satu-satunya opsi untuk toko marketplace |
+| **Non Processed** | Pesanan langsung lompat ke pengiriman & tagihan, tanpa antre gudang | Hanya toko **Others** (offline/manual) |
+
+Kalau kamu ganti pengaturan ini, perubahan hanya berlaku untuk pesanan **baru** — pesanan yang sudah ada tetap ikut jalur lama.
+
+```mermaid
+flowchart TD
+    A[Import pesanan] --> B{Toko Processed atau Non Processed?}
+    B -->|Processed| C[Lewat proses gudang seperti biasa]
+    B -->|Non Processed| D[Langsung kirim + tagihan otomatis]
+```
+
+Saat import, kamu pilih apakah meng-import untuk toko Processed atau Non Processed — sistem menolak kalau toko yang dipilih tidak sesuai. Kolom & filter Fulfillment Mode akan muncul di daftar toko. Detail cara import ada di dokumentasi **Dev - Sales Order** ([knowledge-base](../sales-order-general/knowledge-base.md)). Membuat pesanan manual/POS dengan jalur otomatis ini belum termasuk rencana saat ini.
 
 ## 5. UI — Tombol & Toggle (Referensi Cepat)
 
@@ -215,6 +238,9 @@ A: Tidak. Store dibuat satu per satu via form Create.
 
 **Q: Kenapa Tokopedia tidak ada di dropdown Create?**  
 A: Platform legacy — store Tokopedia existing masih bisa diedit; create baru tidak didukung di UI saat ini.
+
+**Q: Apa itu Fulfillment Mode?**  
+A: Pengaturan Processed/Non Processed di §4.6 — masih tahap penyiapan, belum aktif.
 
 ## 10. Relasi Instant Settlement (operator)
 

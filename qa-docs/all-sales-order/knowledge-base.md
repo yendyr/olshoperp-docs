@@ -2,17 +2,16 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.2
-last_updated: 2026-07-15
+version: 1.3
+last_updated: 2026-07-22
 owner: QA - Yemima
 status: review
-audience: operator
-aliases: [all sales order, lihat semua order, gabungan sales order]
+aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed]
 ---
 
 # All Sales Order — Knowledge Base
 
-Satu daftar untuk **semua** sales order: order toko online (Sales Platform) dan order internal (Dev - Sales Order).
+Satu daftar untuk **semua** sales order: marketplace (**Dev - Sales Platform**) dan internal (**Dev - Sales Order**).
 
 ---
 
@@ -20,19 +19,18 @@ Satu daftar untuk **semua** sales order: order toko online (Sales Platform) dan 
 
 Pakai All Sales Order bila Anda perlu:
 
-- Melihat order marketplace **dan** internal dalam satu layar
-- Mengecek Failed Process lintas tipe order
-- Menjalankan **Recheck failed process** (cek ulang icon error massal)
-- Menyunting info booking Shopee yang belum punya nomor order (Other Information)
-- Export gabungan / import order internal (pola sama Dev Sales Order)
-
-**Bukan** pengganti dua menu sumber:
+- Melihat order marketplace **dan** internal dalam satu layar  
+- Mengecek Failed Process lintas tipe  
+- Menjalankan **Recheck failed process**  
+- Export gabungan  
+- Import order internal dengan **Import Processed** atau **Import Non-Processed** (sama seperti Dev - Sales Order)
 
 | Untuk keperluan | Buka menu |
 |-----------------|-----------|
-| Sync toko, Log Data, booking pipeline marketplace | **Dev - Sales Platform** |
-| Buat/import order internal lengkap | **Dev - Sales Order** |
-| Monitoring gabungan + Recheck failed process | **All Sales Order** (halaman ini) |
+| Sync toko / booking marketplace | **Dev - Sales Platform** |
+| Atur Fulfillment Mode store | **Store** |
+| Detail aturan import internal | **Dev - Sales Order** |
+| Monitoring gabungan + Recheck + import dual | **All Sales Order** |
 
 ---
 
@@ -43,26 +41,22 @@ flowchart TD
     A[Buka All Sales Order] --> B{Cari order}
     B --> C[Lihat status & ikon proses]
     C --> D{Ada error?}
-    D -->|Ya| E[Pill Failed Process / perbaiki master]
-    D -->|Tidak| F[Lanjut waves / kirim sesuai tipe]
+    D -->|Ya| E[Pill Failed Process / perbaiki]
+    D -->|Tidak| F[Lanjut sesuai tipe]
     A --> G[Create] --> H[Form Dev Sales Order]
+    A --> I[Import Processed / Non-Processed]
     A --> R[Recheck failed process] --> E
 ```
 
 **Keterangan:**
 
-- Baris **platform** mengikuti aturan Sales Platform (sync, binding, auto-approve).
-- Baris **general** mengikuti aturan Dev Sales Order (manual/import).
-- Ikon error dan Processing Status artinya sama dengan di Sales Platform.
+- Baris **platform** → aturan Sales Platform.  
+- Baris **general** → aturan Dev Sales Order (termasuk Fulfillment Mode).  
+- **Import Processed** / **Import Non-Processed**: template sama; store harus mode yang cocok. Detail: [Dev Sales Order KB](../sales-order-general/knowledge-base.md).
 
 ### Recheck failed process
 
-Tombol **Recheck failed process** ada di halaman ini (bukan di daftar Dev Sales Platform).
-
-- Memeriksa ulang flag error order yang **sudah Approved** dan belum/sedang antre Unassign Wave.
-- Saat proses jalan, tombol disabled: *"Re-check is in progress…"*
-- Setelah selesai, hover icon error bisa menampilkan **Last Checked** (waktu update error).
-- Tidak terbatas filter tabel yang sedang aktif — sistem memproses kandidat sesuai aturan di atas.
+Tombol ada di halaman ini (bukan di list Dev Sales Platform). Memeriksa ulang flag error order Approved yang belum/sedang antre Unassign Wave.
 
 ---
 
@@ -70,17 +64,14 @@ Tombol **Recheck failed process** ada di halaman ini (bukan di daftar Dev Sales 
 
 | Gejala | Solusi |
 |--------|--------|
-| Order marketplace tidak muncul | Cek sync di Sales Platform / Failed Synchronize |
-| Error flag muncul | Hover ikon → perbaiki binding/COA/stok/gudang seperti di Sales Platform |
-| Perlu buat order manual | Create di ASO atau langsung Dev Sales Order |
-| Edit booking | Gunakan form dari ASO (Other Information), bukan form list Sales Platform |
-| Booking belum punya Platform Order ID | Boleh edit & pantau di sini; **jangan** harap Instant Settlement berhasil sampai Order ID terisi — detail: [Sales Platform KB § Booking](../omni-sales-platform/knowledge-base.md#4-booking-shopee) |
-| Tombol Recheck disabled lama | Tunggu batch selesai; refresh halaman; hubungi admin jika lock macet |
-| Tidak menemukan tombol Recheck di Sales Platform | By design — pakai **All Sales Order** |
+| Order marketplace tidak muncul | Cek sync di Sales Platform |
+| Import gagal karena mode store | Samakan tombol dengan **Fulfillment Mode** di Store |
+| Perlu buat order manual | Create di ASO atau Dev Sales Order |
+| Tidak ada Recheck di Sales Platform | By design — pakai All Sales Order |
 
 ---
 
 ## Related
 
-- [Requirement](./requirement.md) · [Technical](./technical.md)
-- [Sales Platform](../omni-sales-platform/knowledge-base.md) · [Dev Sales Order](../sales-order-general/knowledge-base.md)
+- [requirement.md](./requirement.md) · [technical.md](./technical.md) · [user-guide.md](./user-guide.md)  
+- [Dev Sales Order](../sales-order-general/knowledge-base.md) · [Store](../omni-store-binding/knowledge-base.md)

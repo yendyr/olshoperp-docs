@@ -2,10 +2,10 @@
 doc_type: technical
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.0
-last_updated: 2026-06-25
+version: 2.1
+last_updated: 2026-07-22
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
@@ -13,7 +13,7 @@ related_docs:
 
 # Store — Technical Documentation
 
-> **Status: DRAFT** — v2.0 (2026-06-25). Verifikasi codebase menyeluruh.
+> **Status: REVIEW** — v2.1 (2026-07-22) menambahkan planned schema & invariants **Fulfillment Mode TO-BE** (§5.1, `GAP-ST-FM-01`). Verifikasi codebase AS-IS v2.0 (2026-06-25) tetap berlaku untuk seluruh bagian lain.
 
 ## 0. Metadata
 
@@ -199,6 +199,25 @@ flowchart TB
 
 ---
 
+## 5.1 Fulfillment Mode — Planned Schema & Invariants (TO-BE)
+
+> **Belum diimplementasi** — lihat §12 `GAP-ST-FM-01`. Section ini acuan sebelum development mulai, bukan hasil verifikasi codebase.
+
+| Kolom rencana | Tabel | Tipe | Catatan |
+|----------------|-------|------|---------|
+| `fulfillment_mode` `[VERIFY: CODEBASE]` | `omni_stores` | enum/string: `processed`, `non_processed` | Belum ada — perlu migration baru |
+
+**Invariants (draft — jadi acuan assertion test setelah implementasi):**
+
+- `platform.type == Platform` ⇒ `fulfillment_mode == processed` selalu — opsi lain disabled/hidden di form dan ditolak di validasi backend.
+- `platform.type == Others` ⇒ `fulfillment_mode ∈ {processed, non_processed}`.
+- Default `fulfillment_mode` untuk Others (baru maupun data existing hasil migrasi) = `processed`.
+- Perubahan `fulfillment_mode` tidak retroaktif — order yang sudah dibuat sebelum perubahan tetap ikut jalur fulfillment lama (butuh snapshot per-order, bukan live join ke store, di sisi consumer — lihat [Sales Order General technical](../sales-order-general/technical.md)).
+
+**Planned FE impact:** `DataList.vue` (kolom + filter baru), `Form.vue` (field baru, conditional visibility berdasarkan tipe platform) — lihat §2 File Map.
+
+---
+
 ## 6. Warehouse Level & `include_ats` (Show in Store)
 
 **Config** (`config/warehouse.php`):
@@ -347,6 +366,7 @@ Priority (verified `Store.php`):
 | G-05 | `coa_id` create validation commented | `StoreController@store` line ~417 |
 | G-06 | Order onboarding columns reserved unused | `omni_store_onboardings` |
 | G-07 | Sync routes outside sanctum group | `Routes/api.php` lines 58–70 |
+| `GAP-ST-FM-01` | Fulfillment Mode (`fulfillment_mode`, form, datalist, validasi) belum ada — TO-BE, lihat requirement §4.8 dan §5.1 | `omni_stores`, `Form.vue`, `DataList.vue`, `StoreController.php` |
 
 ---
 

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 2.2
-last_updated: 2026-07-17
+version: 2.3
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
 aliases: [GRN, goods receipt, purchase inbound, barang masuk, COLLI, receiving]
@@ -21,7 +21,7 @@ aliases: [GRN, goods receipt, purchase inbound, barang masuk, COLLI, receiving]
 
 ## 1. Apa itu Purchase Inbound?
 
-**Purchase Inbound** (GRN — Goods Receipt Note) mencatat **barang masuk ke gudang** dari supplier berdasarkan **Purchase Order** yang sudah disetujui. Setelah di-approve, stok masuk (kecuali jasa) dan jurnal utang sementara (Unbilled Goods) terbit. Pajak/PPN **tidak** dicatat di sini — di Purchase Invoice.
+**Purchase Inbound** (GRN — Goods Receipt Note) mencatat **barang masuk ke gudang** dari supplier berdasarkan **Purchase Order** yang sudah disetujui. Setelah di-approve, stok masuk (kecuali jasa) dan jurnal utang sementara (Unbilled Goods) terbit. Pajak/PPN **tidak** dicatat di sini — di Purchase Invoice. Nilai Unbilled memakai **harga sebelum PPN** dari PO.
 
 ---
 

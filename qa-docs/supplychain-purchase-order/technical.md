@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.3
-last_updated: 2026-07-17
+version: 2.5
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
 ---
@@ -11,7 +11,8 @@ status: review
 # Purchase Order — Technical Documentation
 
 **API prefix:** `supplychain/purchase-order`  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.3
+**Behavior SoT:** [requirement.md](./requirement.md) v2.5  
+**Rounding SoT:** `dpp-vat-rounding-calculation.md` (23 Jul 2026)
 
 ---
 
@@ -149,16 +150,44 @@ Void blocked if prepared at purchase.
 
 ---
 
-## 5. Pricing
+## 5. Pricing & decimal precision (ETM-15313 + rounding SoT 23 Jul)
 
-**Line:** `PurchaseOrderDetailPrice::withTax` — exclude/include VAT; coefficient forces 11% calc path; DPP via `each_tax / fake_rate`.
+**Helpers:** `NumberHelper::truncateDecimal` (4dp), `roundHalfDown` (money 2dp; **half-down** pada exact 0,5), `truncateAndRound`.
 
-**Grand total:** `PurchaseOrderPrice::grandTotal`  
-`before/after_vat = subTotal ± otherCost − otherDiscount`
+**Line save — `PurchaseOrderDetailPrice::withTax`:**
 
-**PI cross-ref (v2.2+):** Other Cost/Disc COA copied as default to Purchase Invoice; amount locked on PI; COA override allowed until PI approve — see [accounting-supplier-invoice](../accounting-supplier-invoice/technical.md).
+| Mode | Inti |
+|------|------|
+| Exclude | `each_tax = price × rate`; `each_price` = after discount before VAT |
+| Include | `each_tax = price × rate/(1+rate)`; base = `price/(1+rate)` |
+| Coefficient | Rate kalkulasi dipaksa **11%** jika `tax.coefficient` |
+| DPP unit | `truncateDecimal(each_tax / fake_rate, 4)` |
+| Totals line | `roundHalfDown(unit × qty)` untuk dpp / vat / price |
 
-**Print:** grand totals from **detail lines only** — excludes other cost/disc (GAP-PO-06).
+**VAT include — sifat komplemen:** pada level 4dp, DPP/unit + VAT/unit = Net. Rounding **terpisah** ke 2dp per sisi → Total Price bisa **±0,01** vs Net×Qty (GAP-PO-09). Case referensi: Unit 38000, Qty 25 → sisa `…8550` / `…1450` di 4dp sebelum uang.
+
+**Datalist detail:**
+
+| Column | Formula |
+|--------|---------|
+| DPP | `truncateAndRound(each_dpp_after_discount × order_quantity)` |
+| VAT | `truncateAndRound(each_vat × order_quantity)` |
+
+**Section Totals:** `PurchaseOrderPrice::totalProduct` = **Σ per line** (bukan `Grand÷1,11`). Invariant: Σ detail DPP/VAT = tippy Totals.
+
+**Residual sort:** `orderColumn('dpp_value')` masih `SUM(dpp_amount)` — GAP-PO-08.
+
+**Downstream valuation**
+
+| Step | Amount basis |
+|------|----------------|
+| Inbound journal | `each_price_before_vat` (dari PO) × qty base — **tanpa VAT** → Dr Inventory/… Cr Unbilled |
+| PI journal | Clear Unbilled (`invoice_each_price_after_discount_before_vat` × qty) + Debit VAT (prorate `vat_amount` PO) + Credit AP |
+
+Detail: [inbound technical §9](../supplychain-new-purchase-inbound/technical.md) · [PI technical §4–§5](../accounting-supplier-invoice/technical.md).
+
+**Grand total:** `PurchaseOrderPrice::grandTotal` = subTotal ± otherCost − otherDiscount.  
+**Print:** detail only — excludes other cost/disc (GAP-PO-06).
 
 ---
 
@@ -173,6 +202,8 @@ Void blocked if prepared at purchase.
 | INV-PO-05 | Void only from `approved` with no GRN preparation |
 | INV-PO-06 | Closed only from `processed` |
 | INV-PO-07 | With PR: on approve, PR `processed_to_po` / `prepared_to_po` balance moves; void **does not** currently reverse processed (GAP-PO-01) |
+| INV-PO-08 | Σ DPP/VAT detail display = Totals tippy (same Path B helpers) |
+| INV-PO-09 | Unit DPP/VAT storage ≤ 4dp; money totals 2dp via `roundHalfDown` |
 
 ---
 

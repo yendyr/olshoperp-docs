@@ -2,15 +2,15 @@
 doc_type: requirement
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.0
-last_updated: 2026-06-25
+version: 2.1
+last_updated: 2026-07-22
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Store — Requirement Documentation
 
-> **Status: DRAFT** — v2.0 menggabungkan requirement bisnis (23 Juni 2026) dengan verifikasi codebase AS-IS (25 Juni 2026). Item yang belum sesuai requirement ditandai di §12.
+> **Status: REVIEW** — v2.1 menambahkan requirement **TO-BE Fulfillment Mode** (belum diimplementasi di codebase — lihat §12 `GAP-ST-FM-01`). Konten AS-IS v2.0 (verifikasi codebase 25 Juni 2026) tetap berlaku untuk seluruh bagian lain.
 
 ## 0. Metadata & Changelog
 
@@ -21,10 +21,12 @@ status: draft
 | 1.2 | 2026-06-22 | QA - Yemima | Rule `sync_product` OFF (§10.7); QA E2E authorize simulation |
 | 1.3 | 2026-06-23 | QA - Yemima | Cross-reference Relasi Instant Settlement |
 | 2.0 | 2026-06-25 | QA - Yemima | Konsolidasi `store_requirement_1.md`; verifikasi codebase; §5 UI/UX tombol; §6 import terkait; §12 gap analysis |
+| 2.1 | 2026-07-22 | QA - Yemima | TO-BE: kolom **Fulfillment Mode** (Processed/Non Processed) §4.8 — gate dual import Dev - Sales Order; `GAP-ST-FM-01` |
 
 **UI route:** `/omni/store-binding`  
 **API prefix:** `omnichannel/store/*`  
-**Primary table:** `omni_stores`
+**Primary table:** `omni_stores`  
+**Cross-link TO-BE:** [Dev - Sales Order — Import bulk](../sales-order-general/requirement.md#63-import-bulk-excel-2-sheet) (dual import Processed/Non-Processed dikonsumsi di sana).
 
 ---
 
@@ -86,6 +88,7 @@ Menu **Store** adalah master data toko Omni Channel — merepresentasikan toko/c
 | A-22 | Prioritas stok sync: Fake Stock > Building Stock > Global | ✅ (lihat technical §8) |
 | A-23 | Order sync gated ≥97% product sync | ✅ `initial_sync_product_completed` |
 | A-24 | Update pricelist kategori → sync ke store terkait | ✅ via Product Pricelist menu |
+| A-25 | **(TO-BE)** Others pilih Fulfillment Mode Processed/Non Processed; Platform Processed only | 🔜 **Belum implementasi** — lihat §4.8, §12 `GAP-ST-FM-01` |
 
 ---
 
@@ -108,6 +111,9 @@ Menu **Store** adalah master data toko Omni Channel — merepresentasikan toko/c
 | V-13 | Delete: authorized+active, used in SO, is SO default | Delete | Ditolak per kondisi |
 | V-14 | Order sync manual: `initial_sync_product_completed = 1` | `SalesOrderController@synchronize` | Error jika belum ≥97% |
 | V-15 | Sync warehouse: `authorization_status = 1`, `status = 1` | `OmniChannelController@syncWarehouse` | Error reauthorize |
+| V-16 **(TO-BE)** | Non Processed hanya untuk tipe **Others** | Create/update store | Platform: opsi Non Processed disabled/hidden; hanya Processed |
+| V-17 **(TO-BE)** | Default Fulfillment Mode Others (existing & baru) = **Processed** | Create / data migrasi | Direkomendasikan; tidak auto-switch ke Non Processed |
+| V-18 **(TO-BE)** | Perubahan Fulfillment Mode tidak retroaktif | Update store | Berlaku untuk order baru saja — order existing tetap ikut mode saat dibuat |
 
 ---
 
@@ -220,6 +226,25 @@ Defense-in-depth: platform service (`OmniShopeeService`, dll.) juga guard `autho
 
 **Mengapa G-06 dicatat:** Requirement bisnis menyebut warehouse Return/Outrack/Scrap — di UI Store field ini sengaja di-hide (kemungkinan dipindah ke Warehouse Binding), tapi kode FE/BE tidak sinkron (endpoint hidup, UI mati, save di-skip).
 
+### 4.8 Fulfillment Mode (TO-BE)
+
+> **Belum diimplementasi.** Kolom `fulfillment_mode` belum ada di `omni_stores` — lihat [technical §5.1](./technical.md#51-fulfillment-mode--planned-schema--invariants-to-be) dan §12 `GAP-ST-FM-01`. Section ini mendokumentasikan requirement TO-BE sebagai acuan sebelum development mulai — **jangan** dianggap AS-IS.
+
+| Field | Label UI (locked) | Opsi (locked) | Nilai teknis |
+|-------|--------------------|----------------|--------------|
+| Fulfillment Mode | **Fulfillment Mode** | **Processed**, **Non Processed** | `processed`, `non_processed` |
+
+**Aturan bisnis:**
+
+1. Store tipe **Others** boleh pilih **Processed** atau **Non Processed**. Store tipe **Platform** hanya boleh **Processed** — opsi Non Processed disabled/hidden di form untuk Platform (lihat V-16).
+2. Default Fulfillment Mode untuk store Others (existing maupun baru) adalah **Processed** (direkomendasikan) — tidak ada auto-switch ke Non Processed (V-17).
+3. Fulfillment Mode boleh diubah kapan saja; perubahan **hanya berlaku ke order baru** yang dibuat setelah tanggal perubahan — tidak retroaktif ke order yang sudah ada (V-18).
+4. Kolom **Fulfillment Mode** + filter tampil di DataList Store (§5.1).
+5. Flag ini menggerakkan **dual import** di [Dev - Sales Order / All Sales Order](../sales-order-general/requirement.md#63-import-bulk-excel-2-sheet):
+   - **Import Processed** → store yang dipilih harus Fulfillment Mode = Processed → jalur normal wave → ship (lihat requirement Sales Order General §6.5 Fulfillment).
+   - **Import Non-Processed** → store yang dipilih harus Fulfillment Mode = Non Processed → skip proses gudang (wave/pick/pack) → auto Outbound + Sales Invoice. **Detail alur ini adalah rumah kanonik di dokumentasi Sales Order General** — tidak diduplikasi di sini.
+6. **Out of scope (belum direncanakan):** create manual/POS untuk order Non Processed dengan auto path yang sama seperti dual import — saat ini tidak termasuk cakupan TO-BE ini.
+
 ### 4.4 Auto Sync & Authorization (AS-IS vs requirement bisnis)
 
 | Kondisi | Requirement bisnis | AS-IS codebase |
@@ -260,6 +285,7 @@ Defense-in-depth: platform service (`OmniShopeeService`, dll.) juga guard `autho
 | Product Onboarding | Hidden | Waiting / In Progress / Completed |
 | Default Owner Data | Hidden | Company owner |
 | Default Sales Order | Hidden | Others default flag |
+| **Fulfillment Mode** **(TO-BE)** | 🔜 Belum ada | Processed / Non Processed; Platform selalu Processed. Advanced Filter juga tambah filter kolom ini — belum implementasi, lihat §4.8 |
 | Sync (action column) | ✅ | Icon sync per tipe — lihat §5.3 |
 | Action | ✅ | Edit, Delete, Authorize (reauthorize) |
 | Created/Updated by | ✅ | Standard audit columns |
@@ -314,6 +340,7 @@ Defense-in-depth: platform service (`OmniShopeeService`, dll.) juga guard `autho
 | Default Building Process | Level 19, `for_wh_binding`, configured WH |
 | Building Stock | Multi-select, level 19, `include_ats=1` |
 | Default Warehouse Void | Conditional (automated distribution) |
+| **Fulfillment Mode** **(TO-BE)** | Others: selectable Processed/Non Processed (default Processed); Platform: Processed only, disabled/hidden — belum implementasi, lihat §4.8 |
 
 **Section: Synchronization** (`SyncSection.vue` — **hanya Platform**)
 
@@ -461,6 +488,7 @@ flowchart TB
     STORE -->|"scope per store"| PPB
     STORE -->|"auto_download, defaults"| SOP
     STORE -->|"Others default"| SOG
+    STORE -.->|"Fulfillment Mode gate (TO-BE)"| SOG
     SOP --> WAVE
     STORE --> FS
     STORE --> SR
@@ -594,6 +622,7 @@ Lihat v1.3 §7.1 — tetap valid. Tambahan regression v2.0:
 | G-11 | `coa_id` required on create | ❌ **Commented out** | Setup incomplete forces inactive instead |
 | G-12 | Sync Warehouse non-functional | ✅ **Functional** | `WarehouseSyncJob` aktif (Shopee/Lazada/TikTok) |
 | G-13 | Notifikasi blocking antrian lintas company | ❌ **Out of scope** | Accepted — user lihat `waiting` tanpa penjelasan |
+| `GAP-ST-FM-01` | **Fulfillment Mode** (Processed/Non Processed) — field, form, datalist, validasi, gate dual import SO General | 🔜 **TO-BE — Implementation pending** | Belum ada kolom `fulfillment_mode` di `omni_stores`; FE `Form.vue`/`DataList.vue` belum update. Lihat §4.8 dan [technical §5.1](./technical.md#51-fulfillment-mode--planned-schema--invariants-to-be). Konsumen import dual mode: [Sales Order General — Gap Registry](../sales-order-general/requirement.md#9-gap-registry) |
 
 ---
 
@@ -604,6 +633,7 @@ Lihat v1.3 §7.1 — tetap valid. Tambahan regression v2.0:
 - TikTok static settlement template missing di repo
 - Building Return: re-enable UI atau deprecate endpoint?
 - Cross-owner onboarding queue — notifikasi future enhancement
+- **Fulfillment Mode (`GAP-ST-FM-01`):** belum ada scope teknis pasti (migration, endpoint, FE) — koordinasikan dengan tim Sales Order General sebelum mulai development karena dua sisi (Store sebagai master flag, SO General sebagai consumer) harus rilis bersamaan.
 
 ---
 
@@ -616,3 +646,5 @@ Lihat v1.3 §7.1 — tetap valid. Tambahan regression v2.0:
 | DB: omni_stores | [docs/db-schema/omni_channel/omni_stores.md](../../db-schema/omni_channel/omni_stores.md) |
 | Warehouse Binding | [../omni-warehouse-binding/requirement.md](../omni-warehouse-binding/requirement.md) |
 | Instant Settlement | [../accounting-settlement-upload/requirement.md](../accounting-settlement-upload/requirement.md) |
+| Dev - Sales Order (dual import Processed/Non-Processed — TO-BE) | [../sales-order-general/requirement.md](../sales-order-general/requirement.md) |
+| All Sales Order (window gabungan) | [../all-sales-order/requirement.md](../all-sales-order/requirement.md) |

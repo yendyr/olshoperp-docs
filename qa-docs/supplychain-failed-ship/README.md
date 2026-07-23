@@ -1,28 +1,39 @@
-# Failed Ship — QA Documentation
+# Failed Ship — Dokumentasi QA
 
-| Layer | File | Status |
-|-------|------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | review |
-| Requirement | [requirement.md](./requirement.md) | review |
-| Technical | [technical.md](./technical.md) | review |
+Menu **Failed Ship** (Supply Chain / OmniChannel / Accounting).
 
-**Menu:** Failed Ship · **Route UI:** `supplychain/failed-ship` · **Module:** SupplyChain + OmniChannel + Accounting
+| Dokumen | File | Audience | Status |
+|---------|------|----------|--------|
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
 
-**Sumber requirement bisnis:** `failed_ship_requirement.md` (23 Juni 2026), diverifikasi terhadap codebase per 26 Juni 2026.
+**Sumber requirement bisnis:** `failed_ship_requirement.md` (23 Juni 2026)  
+**User-guide:** v1.0 · `source_version` 2.5  
+**Version (3 layer):** 2.5 · **Last updated:** 2026-07-23
 
-**Maintenance owner:** QA — Yemima
+## Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0–2.3 | 2026-06-26 | Konsolidasi FS, eligibility, cross-menu stock flow |
+| 2.4 | 2026-07-15 | Relasi Sales Platform (Return bucket, Failed Ship Status) |
+| 2.5 / ug-1.0 | 2026-07-23 | Tambah `user-guide.md` v1.0; KB Mermaid + compliance tone; README 5-file |
 
 ## Menu terkait (pergerakan stok)
 
-| # | Menu | Doc |
-|---|------|-----|
-| 1 | Transfer Internal (audit TF virtual) | [technical.md](../supplychain-mutation-transfer-internal/technical.md#8-relasi-failed-ship--rantai-fulfillment) |
-| 2 | Picking Process | [requirement.md](../omni-picking-process/requirement.md#relasi-failed-ship) |
-| 3 | Checking Process | [requirement.md](../omni-checking-process/requirement.md#relasi-failed-ship) |
-| 4 | Packing Process | [requirement.md](../omni-packing-process/requirement.md#relasi-failed-ship) |
-| 5 | Delivery Order & Collecting | [technical.md](../supplychain-delivery-order/technical.md#8-relasi-failed-ship--collecting--shipped-3pl) |
-| 6 | Sales Order / Sales Platform / All SO | [sales-order-general](../sales-order-general/requirement.md) · [omni-sales-platform](../omni-sales-platform/requirement.md) · [all-sales-order](../all-sales-order/requirement.md) |
-| 7 | Instant Settlement | [requirement.md](../accounting-settlement-upload/requirement.md) |
-| 8 | Sales Return | [README.md](../accounting-sales-return/README.md) |
+| # | Menu | Alasan relasi |
+|---|------|---------------|
+| 1 | [Transfer Internal](../supplychain-mutation-transfer-internal/technical.md#8-relasi-failed-ship--rantai-fulfillment) | Audit TF virtual (Show Virtual) |
+| 2 | [Picking Process](../omni-picking-process/requirement.md#relasi-failed-ship) | Tahap #1 fulfillment |
+| 3 | [Checking Process](../omni-checking-process/requirement.md#relasi-failed-ship) | Tahap #2 |
+| 4 | [Packing Process](../omni-packing-process/requirement.md#relasi-failed-ship) | Tahap #3 + Collecting |
+| 5 | [Delivery Order](../supplychain-delivery-order/technical.md#8-relasi-failed-ship--collecting--shipped-3pl) | Shipped ke 3PL — prasyarat FS |
+| 6 | [Sales Order](../sales-order-general/requirement.md) | Referensi order & status FS |
+| 7 | [Instant Settlement](../accounting-settlement-upload/requirement.md) | Block FS open; qty net setelah FS |
+| 8 | [Sales Return](../accounting-sales-return/README.md) | Jalur pasca-settlement |
 
 Alur lengkap: [requirement.md §3.6](./requirement.md#36-peta-relasi-menu-fulfillment--failed-ship--settlement)
+
+**Maintenance owner:** QA — Yemima

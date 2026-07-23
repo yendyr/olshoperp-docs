@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 1.0
-last_updated: 2026-07-17
+version: 1.2
+last_updated: 2026-07-23
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.3
+source_version: 2.5
 owner: QA - Yemima
 status: draft
 ---
@@ -127,6 +127,9 @@ Yang perlu diingat:
 - **Kalau currency utama tapi kurs bukan 1**, validasi gagal.
 - **Kalau Other Cost/Disc membuat total sebelum PPN negatif**, sistem menolak.
 - **Kalau kamu mengandalkan print PDF untuk total final termasuk biaya tambahan**, angka bisa beda dari layar — print belum include Other Cost/Disc.
+- **Kalau kamu jumlahkan kolom DPP di detail**, hasilnya harus sama dengan **Total DPP** di tippy panel Totals (dan Total VAT dengan kolom VAT). Selisih kecil = laporkan ke support/QA.
+- **Kalau Total harga satu baris beda 1 sen dari harga × qty**, itu bisa dari cara sistem membulatkan DPP dan PPN terpisah (terutama qty bukan kelipatan 10/100/1000). Laporkan jika total dokumen jadi miring banyak.
+- **Kalau kamu cek PPN di jurnal terima barang (Inbound)**, PPN **belum** ada di situ — baru muncul saat **Purchase Invoice** di-approve.
 
 ---
 

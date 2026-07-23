@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 1.0
-last_updated: 2026-07-17
+version: 1.1
+last_updated: 2026-07-23
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.2
+source_version: 2.3
 owner: QA - Yemima
 status: draft
 ---
@@ -92,7 +92,7 @@ Pastikan:
 Setelah GRN **di-approve**:
 
 1. Stok masuk ke gudang (kecuali SKU **Service**).
-2. Jurnal otomatis sesuai tipe produk (Inventory / Assets / biaya operasional) ke Unbilled Goods.
+2. Jurnal otomatis sesuai tipe produk (Inventory / Assets / biaya operasional) ke Unbilled Goods — **tanpa PPN**. PPN baru saat Purchase Invoice di-approve.
 3. Qty di PO ter-update → Processed atau Complete.
 4. Lanjut **Purchase Invoice** untuk tagihan + PPN.
 5. Opsional: **Print** PDF GRN atau **Print RIR**.

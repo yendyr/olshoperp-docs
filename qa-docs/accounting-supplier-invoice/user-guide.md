@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 1.0
-last_updated: 2026-07-17
+version: 1.3
+last_updated: 2026-07-23
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.0
+source_version: 3.3
 owner: QA - Yemima
 status: draft
 ---
@@ -84,6 +84,7 @@ Pastikan ini sudah siap sebelum membuat Purchase Invoice:
 - [ ] **Akun produk** sudah lengkap (utang sementara, pajak, hutang supplier) — kalau belum, Approve nanti gagal.
 - [ ] **Supplier** yang kamu pilih punya riwayat inbound (kalau belum pernah ada inbound sama sekali, supplier tidak muncul di daftar).
 - [ ] Mata uang sudah jelas: dalam satu invoice, maksimal **satu mata uang asing** plus mata uang lokal.
+- [ ] **(TO-BE)** Kalau mau bandingkan ke invoice fisik: siapkan total nominal supplier; pastikan **Cash Diff. COA** sudah di-set di Internal Company.
 
 **Catatan penting:**
 
@@ -126,6 +127,8 @@ Ditulis dari sudut pandang yang kamu alami di layar:
 - **Kalau semua barang PO sudah habis ditagih/diretur** sebelum semua biaya/diskon dipilih, sebagian biaya bisa tidak muncul lagi di invoice berikutnya. Tagih biaya penting lebih dulu, atau koordinasikan sebelum “menutup” PO.
 - **Kalau periode fiskal sudah tutup**, Approve gagal.
 - **Kalau dua orang approve di waktu yang sama**, salah satu dapat pesan proses sedang berjalan.
+- **(TO-BE) Kalau net sistem beda sen dengan invoice fisik supplier**, isi **Supplier's Invoice Amount** di Basic Information. Selisih (Invoice Diff) akan masuk jurnal Cash Diff + tambahan hutang saat approve. Kalau dikosongkan, tidak ada pembanding.
+- **Kalau bayar di Account Payment dan ada sisa sen**, pakai **Allocate Full Amount** (sistem payment tidak menerima input desimal).
 
 ---
 
@@ -149,6 +152,7 @@ Ditulis dari sudut pandang yang kamu alami di layar:
    - Mata uang & kurs (wajib)
    - Due date (opsional — isi manual)
    - Supplier's Reference (opsional — nomor faktur/dokumen dari supplier)
+   - **Supplier's Invoice Amount** (opsional, **TO-BE**) — total nominal di invoice fisik supplier; bedakan dari Supplier's Reference (nomor dokumen)
    - Deskripsi (opsional)
 
 ### Langkah 2 — Pilih status Open
@@ -194,6 +198,7 @@ Pastikan angka masuk akal sebelum approve:
 | Total VAT | Total PPN |
 | Additional Cost / Disc | Biaya & diskon tambahan |
 | **Net Purchase Invoice** | Total hutang akhir (termasuk PPN) |
+| **Invoice Diff** (TO-BE) | Selisih Supplier's Invoice Amount − Net (jika diisi) |
 | Net (dalam mata uang lokal) | Konversi ke mata uang perusahaan |
 
 ### Langkah 6 — Simpan
@@ -204,7 +209,7 @@ Pastikan angka masuk akal sebelum approve:
 ### Langkah 7 — Approve
 
 1. Klik **Approve**.
-2. Sistem menerbitkan jurnal hutang (termasuk PPN), mengunci transaksi, dan menandai qty yang sudah ditagih.
+2. Sistem menerbitkan jurnal hutang (termasuk PPN), mengunci transaksi, dan menandai qty yang sudah ditagih. **(TO-BE)** Jika Supplier's Invoice Amount diisi dan ada selisih, jurnal juga memuat Cash Diff. COA + tambahan hutang.
 3. Setelah sukses, PI tidak bisa diedit lagi.
 
 ### Langkah 8 — Lanjutan
@@ -230,6 +235,9 @@ Pastikan angka masuk akal sebelum approve:
 - **Mau void PI yang sudah approved?** Belum bisa. Koordinasi manual.
 - **Retur setelah PI approved?** Pakai Return **Billed** → Debit Note → potong di payment berikutnya, bukan potong hutang PI secara langsung.
 - **Total Products terlihat lebih kecil dari hitungan manual?** Bisa karena aturan PPN coefficient — total akhir yang penting tetap mengikuti aturan pajak yang berlaku.
+- **Jumlah kolom DPP di detail beda dari Total DPP di tippy Totals?** Tidak boleh — laporkan ke support/QA (bug precision). Sama untuk kolom VAT vs Total VAT.
+- **Total satu baris beda 1 sen dari harga × qty?** Bisa dari pembulatan DPP & PPN terpisah (ikut dari PO). Laporkan jika total dokumen banyak yang miring. **(TO-BE)** Cocokkan ke invoice fisik lewat **Supplier's Invoice Amount**.
+- **Setelah approve PI**, jurnal otomatis: tutup Unbilled Goods (dari Inbound) + catat PPN + hutang supplier. PPN **belum** ada di jurnal terima barang.
 
 ---
 
