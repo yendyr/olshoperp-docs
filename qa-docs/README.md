@@ -31,7 +31,9 @@ docs/qa-docs/
 ├── _meta/
 │   ├── manifest.yaml          ← WAJIB dibaca agent dulu
 │   ├── MERMAID_STYLE_GUIDE.md ← standar penulisan diagram Mermaid
-│   └── templates/             ← template doc baru
+│   ├── templates/             ← template doc baru
+│   ├── proposals/             ← desain belum jadi standar (review dulu)
+│   └── shared-capabilities/   ← SF Entry global (pilot Lingo)
 ├── _legacy/                   ← reference only (jangan jadi canonical)
 ├── {menu-slug}/
 │   ├── README.md

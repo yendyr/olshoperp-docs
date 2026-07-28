@@ -332,7 +332,7 @@ Includes colli qty + colli isi; rule: `Inbound Qty = Colli × Colli Qty`
 
 **Config:** inbound-with-unbilled-goods = **true** (default). Amount = harga sebelum VAT × qty base (**tanpa VAT**). Detail: [technical §9](./technical.md#9-journal--product-coa-group-type).
 
-**Sumber harga:** dari PO `each_price_before_vat` (hasil kalkulasi DPP/VAT PO — unit max 4dp). Lihat [PO Rounding SoT §9](../supplychain-purchase-order/requirement.md#91-variable--presisi-sot-23-jul-2026). **VAT tidak** di-post di GRN.
+**Sumber harga:** dari PO `each_price_before_vat` (hasil kalkulasi DPP/VAT PO — unit max 4dp). Lihat [PO Rounding SoT §9](../supplychain-purchase-order/requirement.md#91-variable--presisi-sot-27-jul-2026). **VAT tidak** di-post di GRN. Total hutang/jurnal PI mengikuti backend exact (bukan Σ UI breakdown 2dp).
 
 **Setelah PI approve:** jurnal PI **clear** Unbilled Goods + Debit VAT + Credit AP — [PI §5.6](../accounting-supplier-invoice/requirement.md#56-penjurnalan-pi--relasi-inbound-as-is).
 

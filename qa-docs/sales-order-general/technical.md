@@ -2,11 +2,11 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.1
-last_updated: 2026-07-22
+version: 3.2
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
-aliases: [SO General technical, sales order import, SalesOrderImportSheet1, Fulfillment Mode, Import Non-Processed]
+aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulfillment Mode, Import Non-Processed, Other Cost/Disc Code]
 ---
 
 # Dev - Sales Order (Sales Order General) — Technical Documentation
@@ -14,7 +14,7 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet1, Fulf
 **Type:** `type_sales_order = general`  
 **UI:** `/businessdevelopment/sales-order-general`  
 **API prefix:** `/api/omnichannel/sales-order/*`  
-**Behavior:** [requirement.md](./requirement.md) v3.1  
+**Behavior:** [requirement.md](./requirement.md) v3.2  
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB
 
 ---
@@ -26,6 +26,7 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet1, Fulf
 | 1.3 | 2026-07-09 | Bundle / benchmark COGS file map |
 | 3.0 | 2026-07-22 | Rewrite SoT v1.0: file map, import AS-IS, invariants, failure modes |
 | 3.1 | 2026-07-22 | TO-BE: dual import channels + Non-Processed OB/SI pipeline; GAP-SOG-07…12 |
+| 3.2 | 2026-07-23 | Sheet 2 OC/OD code ambiguity AS-IS vs TO-BE fail; GAP-SOG-13 |
 
 ---
 
@@ -163,6 +164,26 @@ Known AS-IS issues → [requirement §9](./requirement.md) GAP-SOG-01…06 (HTTP
 
 Store field: [omni-store-binding technical §5.1](../omni-store-binding/technical.md).
 
+### 5.2 Sheet 2 — Other Cost/Disc Code ambiguity
+
+**File:** `Modules/OmniChannel/Import/SalesOrderImportSheet2.php`  
+**Header col 1:** `Other Cost/Disc Code` (shared).
+
+**AS-IS resolve:**
+
+```text
+otherCost = OtherCost::where(code)…
+otherDiscount = OtherDiscount::where(code)…
+master = otherCost ?? otherDiscount
+type = otherCost ? 'cost' : (otherDiscount ? 'discount' : null)
+```
+
+Jika **keduanya** ketemu → selalu `type = cost`; tidak ada error. Unique code hanya per tabel master (`uniqueCreate` di Other Cost / Other Discount controller masing-masing) — bentrok lintas master **dimungkinkan**.
+
+**TO-BE (GAP-SOG-13):** jika `$otherCost && $otherDiscount` → fail order (Platform Order ID group) + `ImportSoLog` message ambigu; jangan assign type. Attach ke Sheet1 job hanya setelah resolve unambiguous.
+
+**Invariant TO-BE:** INV-SOG-13 — Sheet 2 code must resolve to exactly one of {cost, discount} or the SO group fails.
+
 ---
 
 ## 6. Invariants
@@ -181,6 +202,7 @@ Store field: [omni-store-binding technical §5.1](../omni-store-binding/technica
 | INV-SOG-10 | TO-BE: Import channel must match store `fulfillment_mode` or order fails (others continue) |
 | INV-SOG-11 | TO-BE: Non-Processed success → SO approved + not eligible for wave/processing |
 | INV-SOG-12 | TO-BE: Any SKU stock fail → entire order rolled back (no partial SO) |
+| INV-SOG-13 | TO-BE: Sheet 2 code matching both OtherCost and OtherDiscount → SO group fails (no silent prefer) |
 
 ---
 
@@ -188,6 +210,7 @@ Store field: [omni-store-binding technical §5.1](../omni-store-binding/technica
 
 - Header/detail/approve/import: inline di controller (lihat requirement §7).  
 - Import Sheet1: formula reject; fiscal period; store `PL_OTHER`; cross-chunk PO/tracking index.  
+- Import Sheet2: shared `Other Cost/Disc Code`; AS-IS prefers OtherCost when both match — TO-BE fail (GAP-SOG-13).  
 - Soft-deleted SO still can block platform order ID on re-import if query does not exclude trashed — GAP related.  
 - `bootImport` master lookup from **first chunk only** — risk for rows after chunk 500 (GAP capacity).
 
@@ -247,6 +270,7 @@ Store field: [omni-store-binding technical §5.1](../omni-store-binding/technica
 | GAP-SOG-03/06 | Order-level atomic failure + history detail per group |
 | GAP-SOG-04 | Implement failed export; persist logs per `history_id` |
 | GAP-SOG-07…12 | Dual import + Non-Processed OB/SI pipeline, CBR COA guard, Skip Wave UX/retry — see requirement §9 |
+| GAP-SOG-13 | Sheet2: if both OtherCost & OtherDiscount match code → fail SO group (stop silent `$otherCost ?? $otherDiscount`) |
 
 ---
 

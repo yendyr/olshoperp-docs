@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.3
-last_updated: 2026-07-23
+version: 3.5
+last_updated: 2026-07-27
 owner: QA - Yemima
 status: draft
 aliases: [PI technical, supplier invoice API, purchase invoice code]
@@ -13,7 +13,8 @@ aliases: [PI technical, supplier invoice API, purchase invoice code]
 
 **API prefix:** `accounting/supplier-invoice`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v3.0
+**Behavior SoT:** [requirement.md](./requirement.md) v3.6 · [Feature Map](./feature-map.md) · [capabilities/](./capabilities/)  
+**Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)
 
 ---
 
@@ -124,7 +125,7 @@ aliases: [PI technical, supplier invoice API, purchase invoice code]
 
 ---
 
-## 4. Pricing Service & decimal precision (ETM-15313 + Rounding SoT 23 Jul)
+## 4. Pricing Service & decimal precision (ETM-15313 + Rounding SoT 27 Jul)
 
 **Helpers:** `truncateDecimal` (4dp), `roundHalfDown` (2dp money, half-down at 0.5), `truncateAndRound`.
 
@@ -133,9 +134,11 @@ aliases: [PI technical, supplier invoice API, purchase invoice code]
 **Line compute:** `SupplierInvoiceDetailPrice::withTax` — truncate unit dulu.  
 **Inherit:** `getDetailPriceAndTax` copy `each_dpp_*` / prices dari PO; else recalc + truncate.
 
-**Datalist:** `truncateAndRound(each_dpp_after_discount × invoice_quantity)`.
+**Datalist (UI 2dp):** `truncateAndRound(each_dpp_after_discount × invoice_quantity)`.
 
-**Rounding tie (GAP-PI-05 / GAP-PO-09):** DPP+VAT komplemen di 4dp; round terpisah ke 2dp → Total bisa **±0,01** vs Net×Qty. Warisan angka PO ke PI & ke `vat_amount` yang di-prorate jurnal.
+**Rounding tie (GAP-PI-05 Accepted / GAP-PO-09):** UI round independen DPP+VAT ke 2dp → Σ manual bisa **+0,01**. **Invoice Total / Net / jurnal** mengikuti backend accumulate **4dp** (exact). Jangan ubah kalkulasi untuk menutup selisih visual.
+
+**Export (TO-BE GAP-PI-07):** DPP/VAT export = **4dp** (selaras GAP-PO-10).
 
 **Coefficient tax:** DPP coefficient ke Total Products jika `coefficient` true.
 
@@ -318,6 +321,8 @@ Active + leaf only; **no** class filter; company scope.
 | Pending Due Date TOP | Manual only |
 | Pending Processed/Closed | Not set from payment on PI header |
 | GAP-PI-06 | Supplier's Invoice Amount + Cash Diff journal — **TO-BE** (req §5.1b / §5.6b) |
+| GAP-PI-05 | UI Σ DPP+VAT +0,01 — **Accepted** known behavior (27 Jul) |
+| GAP-PI-07 | Export DPP/VAT 4dp — **TO-BE** |
 
 Full registry: [requirement §9](./requirement.md#9-gap-registry).
 

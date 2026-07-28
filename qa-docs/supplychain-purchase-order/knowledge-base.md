@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.5
-last_updated: 2026-07-23
+version: 2.7
+last_updated: 2026-07-27
 owner: QA - Yemima
 status: review
 aliases: [PO, purchase order, pembelian, pesanan pembelian, outstanding PR]
@@ -175,8 +175,21 @@ Setelah ada detail, **tanggal, supplier, currency, payment** terkunci.
 | Import type not match | File With PR vs PO Without PR | Kosongkan detail atau sesuaikan file |
 | Kurs invalid | Currency primer tapi rate ≠ 1 | Set rate = 1 |
 | PR tidak muncul | PR closed/complete atau qty habis | Cek status PR |
-| Σ DPP detail ≠ Total DPP tippy | Bug precision / data lama | Escalate QA/dev — harus sama setelah ETM-15313 |
-| Total baris ≠ Unit×Qty (selisih 0,01) | Rounding tie DPP+VAT (qty ganjil) | Bukan “random float”; lihat FAQ rounding — escalate jika akumulasi besar |
+| Σ DPP detail ≠ Total DPP tippy | Bug Path A/B atau data lama | Escalate jika beda besar (~0,03+) — bukan kasus 1 sen |
+| Jumlah manual DPP+VAT kolom = Total +0,01 | Known behavior UI (rounding tie) | Normal jika Total Price / Net tetap pas; jangan “perbaiki” hitungan. Audit → export 4dp (TO-BE) |
+| Total Price / Net ≠ Unit×Qty | Seharusnya tidak (backend exact) | Escalate — bug, bukan known behavior UI |
+
+### Contoh hitung (untuk Lingo / panduan user)
+
+PPN include 11%. Angka sudah divalidasi (SoT 27 Jul 2026).
+
+| Input | DPP tampil | VAT tampil | Jumlah manual | **Total Price (acuan)** |
+|-------|------------|------------|---------------|-------------------------|
+| Unit **38.000**, Disc **0%**, Qty **25** | 855.855,86 | 94.144,15 | **950.000,01** | **950.000,00** |
+| Unit **40.000**, Disc **5%**, Qty **25** | sama | sama | **950.000,01** | **950.000,00** |
+| Unit **38.000**, Qty **1.000**, Disc 0% | — | — | = Total | **38.000.000,00** (pas) |
+
+Lingo card: [DPP & VAT di detail](../_meta/shared-capabilities/dpp-vat-breakdown-display.md) (`SF-PRICE-01`).
 
 ---
 
@@ -195,10 +208,10 @@ A: **Belum** — void PO approved saat ini **tidak** mengembalikan qty yang suda
 A: **Belum selalu** — print **tidak include** Other Cost/Discount.
 
 **Q: DPP di grid detail harus sama dengan Total DPP di panel Totals?**  
-A: **Ya.** Keduanya memakai rumus yang sama (unit DPP max 4 desimal × qty, lalu dibulatkan 2 desimal). Selisih kecil (mis. 0,03) antar detail vs tippy = defect / data belum di-recalc.
+A: Setelah ETM-15313, rumus display Path B sama. Selisih besar (~0,03+) antar kolom vs tippy = defect. **Pengecualian known behavior:** jika kamu **menjumlahkan sendiri** DPP + VAT yang tampil (2 desimal), bisa dapat **+0,01** dibanding **Total Price / Net** — itu rounding tampilan, bukan error hutang.
 
-**Q: Kenapa Total harga baris bisa beda 0,01 dari Unit Price × Qty?**  
-A: Untuk PPN **include**, DPP dan VAT dihitung per unit (4 desimal) lalu masing-masing × qty dan dibulatkan. Pada qty tertentu (bukan kelipatan 10/100/1000), kedua sisi bisa “tie” pembulatan → total kelebihan/kekurangan **1 sen**. Qty 500/1000 sering kebetulan aman — bukan jaminan bebas selisih.
+**Q: Kenapa jumlah DPP + VAT di layar bisa beda 0,01 dari Total harga baris?**  
+A: UI membulatkan DPP dan VAT **terpisah** ke 2 desimal. Total Price / Net tetap exact (= harga×qty). Contoh: Unit 38.000 × Qty 25 → DPP 855.855,86 + VAT 94.144,15 = **950.000,01** kalau dijumlah manual, tapi Total Price **950.000,00**. Sudah disetujui end user (27 Jul 2026). Export 4 desimal (TO-BE) untuk audit. Qty 500/1000 sering tidak memicu — regresi tetap pakai qty 25, 75, dll.
 
 **Q: Apakah PPN dicatat saat terima barang (Inbound)?**  
 A: **Tidak.** Inbound menjurnal harga sebelum PPN ke Unbilled Goods. PPN masuk di **Purchase Invoice**.

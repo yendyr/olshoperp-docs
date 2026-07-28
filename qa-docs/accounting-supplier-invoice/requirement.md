@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.3
-last_updated: 2026-07-23
+version: 3.6
+last_updated: 2026-07-27
 owner: QA - Yemima
 status: draft
 aliases: [PI, purchase invoice, purchase invoice docs, supplier invoice, faktur beli, tagihan supplier]
@@ -16,7 +16,7 @@ aliases: [PI, purchase invoice, purchase invoice docs, supplier invoice, faktur 
 **Audience:** PM, Finance, QA  
 **UI route:** `/accounting/supplier-invoice`  
 **SoT:** `purchase-invoice-source-of-truth.md` v3.0 (15 Jul 2026)  
-**Rounding SoT:** `dpp-vat-rounding-calculation.md` (23 Jul 2026) — warisan PO + jurnal  
+**Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final) — warisan PO + jurnal  
 **Field SoT:** `pi_supplier_invoice_amount_field.md` (22 Jul 2026) — Supplier's Invoice Amount (**TO-BE**)
 
 Downstream: [Account Payment](../accounting-supplier-payment/requirement.md)
@@ -32,6 +32,9 @@ Downstream: [Account Payment](../accounting-supplier-payment/requirement.md)
 | 3.1 | 2026-07-22 | QA - Yemima | DPP/VAT precision: detail & Totals truncate 4dp × qty (`ETM-15313`); AC konsistensi vs panel Totals |
 | 3.2 | 2026-07-23 | QA - Yemima | Rounding SoT lengkap; rantai jurnal Inbound Unbilled → PI (Dr Unbilled+VAT / Cr AP); tie ±1 sen |
 | 3.3 | 2026-07-23 | QA - Yemima | **TO-BE:** Supplier's Invoice Amount + Invoice Diff → Cash Diff. COA / AP (§5.1b, §5.6b) |
+| 3.4 | 2026-07-24 | QA - Yemima | Pilot **Feature Map** + SF Entry (shared + `capabilities/`); index sub-feature untuk Lingo-style cards |
+| 3.5 | 2026-07-27 | QA - Yemima | Feature Map dipindah ke layer/tab `feature-map.md`; label UI = Lingo click; auto-highlight lintas layer |
+| 3.6 | 2026-07-27 | QA - Yemima | Rounding SoT **final**: GAP-PI-05 Accepted (UI-only); Invoice Total/jurnal exact; export 4dp TO-BE (GAP-PI-07) |
 
 ---
 
@@ -93,9 +96,11 @@ stateDiagram-v2
 
 **Tidak ada** status Void, Processed, atau Closed pada implementasi yang dipakai user. Siklus berhenti di Approved. Lihat §9.1 Pending Items.
 
+**Feature Map (sub-feature / Lingo):** lihat tab **Feature Map** — [feature-map.md](./feature-map.md). Tidak diulang di requirement agar end-user mengakses indeks fitur dari layer yang tepat.
+
 ---
 
-## 4. Datalist
+## 4. Datalist (kolom & action)
 
 | Kolom | Default visible | Sumber | Keterangan |
 |-------|-----------------|--------|------------|
@@ -106,16 +111,14 @@ stateDiagram-v2
 | Desc | Ya | Header | — |
 | Trx Ref | Ya | Detail agregat | Nomor inbound; multi dipisah koma; clickable ke show inbound |
 | Curr / Exchange | Ya | Header | — |
-| Net Purchase Invoice | Ya | §6 Totals | — |
+| Net Purchase Invoice | Ya | §5.4 Totals · SF-TOT-01 | — |
 | Trx Status | Ya | Header | Draft / Open / Rejected / Approved |
 | Created by \| at | Ya | Audit | — |
 | Action | Ya | — | Edit/Show, Approve/Reject, Delete |
 
-**Fitur:** Global Search, Advanced Filter, Show Deleted, Column Show/Hide, Export with/without detail (mengikuti filter aktif).
+**Action rules (SF-DL-06):** Edit selama unapproved; Show saja jika Approved. Approve/Reject hanya Open. Delete hanya unapproved.
 
-**Action rules:** Edit selama unapproved; Show saja jika Approved. Approve/Reject hanya Open. Delete hanya unapproved.
-
-**Create UX (auto-save):** Transaction Date = now; Currency = primary; Exchange Rate = 1 (disabled jika primary). Supplier auto-fill dari PI terakhir user — jika user belum pernah punya PI, autosave gagal dan wajib isi field wajib manual dulu.
+**Create UX / auto-save (SF-HDR-01):** Transaction Date = now; Currency = primary; Exchange Rate = 1 (disabled jika primary). Supplier auto-fill dari PI terakhir user — jika user belum pernah punya PI, autosave gagal dan wajib isi field wajib manual dulu.
 
 ---
 
@@ -210,20 +213,25 @@ Tampilan mengikuti primary unit; validasi selalu di base unit.
 
 | Baris | Sumber |
 |-------|--------|
-| Total Products | `SupplierInvoicePrice::totalProduct` — Σ `roundHalfDown(truncateDecimal(unit price, 4) × invoice_qty)` |
-| Disc Products | Σ discount baris (pola truncate yang sama) |
-| Total DPP (tooltip) | Σ `roundHalfDown(truncateDecimal(each_dpp_after_discount, 4) × invoice_qty)` — **= Σ kolom DPP detail** |
-| Total VAT | Σ `roundHalfDown(truncateDecimal(each_vat, 4) × invoice_qty)` — **= Σ kolom VAT detail** |
+| Total Products | Σ harga produk (backend / Path B helpers) |
+| Disc Products | Σ discount baris |
+| Total DPP (tooltip) | Mengikuti akumulasi backend (presisi 4dp) — **bukan** wajib = jumlah manual kolom DPP UI 2dp |
+| Total VAT | Mengikuti akumulasi backend (presisi 4dp) |
 | Total Additional Cost / Disc | Σ header cost / disc |
-| **Net Purchase Invoice** | Products − Disc + VAT + Cost − Disc tambahan |
+| **Net Purchase Invoice / Invoice Total** | Mengikuti **backend exact** (4dp accumulate) — sumber kebenaran hutang & jurnal |
 | **Invoice Diff** (TO-BE) | Read-only: `supplier_invoice_amount − Net` jika field diisi; else kosong / 0 |
 | Net (IDR) | Net × Exchange Rate header |
 
-**Grid DPP/VAT per baris:** `truncateAndRound(each_dpp_after_discount × invoice_quantity)` / pola VAT setara — **bukan** `qty × each_dpp` accessor float penuh (pola lama pre-ETM-15313).
+**Grid DPP/VAT per baris (UI):** breakdown dibulatkan **2dp** per kolom (display only) — pola Path B / `truncateAndRound`, **bukan** Path A float penuh (pre-ETM-15313).
 
-**AC — konsistensi desimal:** Σ DPP (dan VAT) di datalist detail **wajib sama** dengan Total DPP / Total VAT di section Totals. Harga unit / DPP disimpan `decimal(21,4)`; kalikan qty setelah truncate 4dp, lalu uang 2dp.
+**AC — kebenaran total (SoT final 27 Jul 2026):**
 
-**Warisan dari PO (Rounding SoT):** PI **tidak menghitung ulang** DPP/VAT dari harga mentah kecuali fallback saat harga PO kosong — lihat [PO §9](../supplychain-purchase-order/requirement.md#91-variable--presisi-sot-23-jul-2026). Risiko **rounding tie ±1 sen** (Total ≠ Net×Qty) ikut terwariskan ke angka PI & jurnal VAT.
+- **Net / Invoice Total / kredit AP jurnal** = backend exact. **Tidak** boleh menyimpang karena rounding tie UI.
+- Σ manual kolom DPP+VAT UI 2dp boleh **+0,01** vs Total baris — **known behavior** (GAP-PI-05 Accepted), selaras [PO §9.2](../supplychain-purchase-order/requirement.md#92-rounding-tie--selisih-tampilan-ui-saja-final--accepted).
+- Path A vs Path B (~0,03 detail ≠ tippy) tetap defect (GAP-PI-04 Resolved display).
+- Export DPP/VAT **4dp** — GAP-PI-07 TO-BE.
+
+**Warisan dari PO:** PI **tidak menghitung ulang** DPP/VAT dari harga mentah kecuali fallback saat harga PO kosong — lihat [PO §9](../supplychain-purchase-order/requirement.md#91-variable--presisi-sot-27-jul-2026).
 
 Jika baris pajak `coefficient = true`, DPP yang diakumulasi ke Total Products memakai DPP coefficient (lebih kecil) agar total akhir sesuai tarif efektif (mis. 12% dikenakan sebagai 11%).
 
@@ -237,10 +245,10 @@ Alur nilai:
 
 ```mermaid
 flowchart LR
-  PO[PO: DPP/VAT unit 4dp] --> GRN[Inbound approve]
+  PO[PO: DPP/VAT unit 4dp; Total exact] --> GRN[Inbound approve]
   GRN -->|"Dr Inventory/Assets/OpEx<br/>Cr Unbilled Goods<br/>= price before VAT × qty"| UB[(Unbilled)]
   GRN --> PI[PI approve]
-  PI -->|"Dr Unbilled Goods<br/>Dr VAT COA<br/>Cr Account Payable"| GL[Journal PI]
+  PI -->|"Dr Unbilled Goods<br/>Dr VAT COA<br/>Cr Account Payable<br/>(angka backend exact)"| GL[Journal PI]
 ```
 
 | Tahap | Debit | Credit | Basis amount |
@@ -254,8 +262,7 @@ flowchart LR
 Detail Inbound: [supplychain-new-purchase-inbound § jurnal](../supplychain-new-purchase-inbound/requirement.md).  
 Implementasi: `JournalProcess::supplierInvoiceAutoJournal` — lihat [technical](./technical.md).
 
-**Catatan:** Debit Unbilled di PI mengikuti **harga sebelum VAT** (bukan kolom DPP display yang sudah di-round 2dp per line). Debit VAT mengikuti **`vat_amount` tersimpan di pivot tax PO** (hasil round line). Selisih rounding tie di PO sering memicu kebutuhan field §5.1b.
-
+**Catatan:** Debit Unbilled di PI mengikuti **harga sebelum VAT**. Debit VAT / kredit AP mengikuti akumulasi **backend** (exact) — **bukan** hasil jumlah manual breakdown UI 2dp. Selisih 1 sen di layar (Σ DPP+VAT UI) **tidak** masuk jurnal. Field §5.1b (**Supplier's Invoice Amount**) untuk selisih invoice **fisik** vs Net sistem — beda kasus dari known behavior UI.
 ### 5.6b Jurnal Invoice Diff / Cash Diff (**TO-BE**)
 
 Hanya jika `supplier_invoice_amount` terisi dan diff ≠ 0. Kasus **diff > 0** (fase 1):
@@ -272,15 +279,17 @@ Kasus **diff < 0:** lihat **P-PI-SIA-01** (belum dikunci).
 
 ## 6. How It Works
 
-### 6.1 Partial invoicing per SKU
+### 6.1 SF-PI-01 Partial invoicing per SKU
 
 Eligible qty = qty inbound approved, dikurangi yang sudah/sedang ditagih dan retur. Qty di PI draft = **Prepared**; setelah approve → **Processed**. Sisa outstanding untuk PI berikutnya turun sesuai qty yang sudah diproses.
 
-### 6.2 Multi-unit
+Card + contoh: [capabilities/sf-pi-01](./capabilities/sf-pi-01-partial-invoicing.md).
+
+### 6.2 SF-PI-02 Multi-unit
 
 Validasi selalu di base unit. Contoh: 1 Box = 10 Pieces; invoice 2 Box → prepared 20 pieces.
 
-### 6.3 Currency lock — satu rule, dua mode
+### 6.3 SF-PI-03 Currency lock — satu rule, dua mode
 
 Berlaku untuk SKU detail **dan** Additional Cost/Disc: **tidak boleh 2 foreign currency berbeda dalam 1 PI**; local selalu boleh.
 
@@ -289,21 +298,21 @@ Berlaku untuk SKU detail **dan** Additional Cost/Disc: **tidak boleh 2 foreign c
 | Local (IDR) | Boleh local bebas. Foreign pertama (mis. USD) masuk → foreign lain (EUR) ditolak; selanjutnya hanya IDR atau USD |
 | Foreign (USD) | Lock dari awal: hanya local atau currency sama dengan header |
 
-### 6.4 Additional Cost/Disc partial & auto-select
+### 6.4 SF-COST-01 Additional Cost/Disc partial & auto-select
 
 Insert SKU PO → semua baris cost/disc PO ikut ter-select. User remove yang ditunda. Trigger opsi lagi di PI berikutnya membutuhkan outstanding SKU dari PO/supplier yang sama — lihat GAP-PI-02.
 
-### 6.5 Jurnal saat Approve
+### 6.5 SF-PI-04 Jurnal saat Approve
 
 Dr Unbilled Goods (balik kredit inbound) + Dr Tax (jika ada, COA dari setting tax PO) + Dr Additional Cost (COA baris) — Cr Additional Discount (COA baris) + Cr Account Payable.
 
-Contoh: Products 8.738,74 + VAT 961,26 + Cost 144,50 − Disc 86,00 = Net **9.758,50** (× kurs → local).
+Contoh: Products 8.738,74 + VAT 961,26 + Cost 144,50 − Disc 86,00 = Net **9.758,50** (× kurs → local). Lihat juga [SF-TOT-01](./capabilities/sf-tot-01-net-purchase-invoice.md).
 
-### 6.6 Exchange Gain/Loss
+### 6.6 SF-PI-05 Exchange Gain/Loss
 
 Selisih = PO Total (local) − Invoice Total (local). Minus = laba (Cr Exchange Gain); plus = rugi (Dr). Berlaku baris detail dan cost/disc dari PO currency beda.
 
-### 6.7 Return setelah PI Approved
+### 6.7 SF-PI-06 Return setelah PI Approved
 
 Pakai Purchase Return tipe **Billed** (bukan Unbilled). Tidak potong AP langsung; menerbitkan **Debit Note** untuk potong tagihan berikutnya di Account Payment.
 
@@ -356,8 +365,9 @@ flowchart TB
 | GAP-PI-02 | Additional Cost/Disc dari PO bisa permanen tidak bisa ditagih jika SKU sumber sudah full invoiced/return sebelum semua baris cost dipilih — trigger opsi terikat outstanding SKU PO yang sama | Sebagian nilai Other Cost/Disc PO "hilang" operasional | **Open** — dikomunikasikan ke end user; verifikasi mekanisme detail `[VERIFY: CODEBASE]` |
 | GAP-PI-03 | Filter Supplier header (inbound status apapun) ≠ filter SKU eligibility (harus approved) — modal kosong jika supplier hanya punya inbound draft | Membingungkan operator baru | **Resolved (Accepted)** — konfirmasi lead tech, tidak diperbaiki |
 | GAP-PI-04 | (Historis) DPP detail = `qty × each_dpp` float vs Totals = `each_dpp_after_discount` 4dp × qty → selisih ~0,03 | Detail ≠ section Totals | **Resolved display** (ETM-15313) — pastikan data lama / layar outstanding tidak masih Path A |
-| GAP-PI-05 | Rounding tie DPP+VAT (±1 sen) warisan PO muncul di PI / jurnal VAT | Total line ≠ Net×Qty; akumulasi multi-line | **Open** — selaras GAP-PO-09; regresi Qty 25 dll. |
+| GAP-PI-05 | Σ manual DPP+VAT UI 2dp vs Invoice Total — UI round independen → +0,01 pada tie (warisan PO) | Persepsi visual; hutang/jurnal tidak kena | **Accepted — known behavior** (27 Jul 2026); selaras GAP-PO-09 |
 | GAP-PI-06 | Field Supplier's Invoice Amount + post Cash Diff / AP | Operator bandingkan invoice fisik vs net sistem | **TO-BE** — §5.1b / §5.6b; implementasi belum ada |
+| GAP-PI-07 | Export DPP/VAT pakai 4 desimal (masih 2dp seperti UI) | Audit/rekonsiliasi kurang presisi | **TO-BE** — selaras GAP-PO-10; UI tetap 2dp |
 
 ### 9.1 Pending Items — belum matang
 
@@ -407,7 +417,7 @@ A: Purchase Return tipe **Billed** → Debit Note → potong tagihan berikutnya 
 A: Jika pajak coefficient true, DPP terakumulasi versi coefficient (lebih kecil) agar total sesuai aturan PPN.
 
 **Q: Total baris beda 0,01 dari Unit×Qty?**  
-A: Rounding tie DPP+VAT (warisan PO) — lihat [PO §9.2](../supplychain-purchase-order/requirement.md#92-rounding-tie-1-sen--sumber-selisih-terverifikasi-konsep) / GAP-PI-05. Bukan random float.
+A: Jika yang beda adalah **jumlah manual DPP+VAT di layar** vs Total/Net → **known behavior UI** (GAP-PI-05 / [PO §9.2](../supplychain-purchase-order/requirement.md#92-rounding-tie--selisih-tampilan-ui-saja-final--accepted)). Jika **Invoice Total / Net** sendiri ≠ harga×qty → escalate (bug). Jurnal mengikuti Net backend.
 
 **Q: Bagaimana mencatat total invoice fisik supplier yang beda sen dengan net sistem?**  
 A: **TO-BE** — isi **Supplier's Invoice Amount** di Basic Information (§5.1b). Selisih (Invoice Diff) masuk jurnal Cash Diff. COA + tambahan AP saat approve. Jika field kosong, tidak ada pembanding.
@@ -420,5 +430,8 @@ A: **TO-BE** — isi **Supplier's Invoice Amount** di Basic Information (§5.1b)
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
+| Capability cards (pilot) | [capabilities/](./capabilities/) |
+| Shared capabilities | [../_meta/shared-capabilities/](../_meta/shared-capabilities/) |
 | Account Payment | [../accounting-supplier-payment/requirement.md](../accounting-supplier-payment/requirement.md) |
 | Purchase Inbound | [../supplychain-new-purchase-inbound/requirement.md](../supplychain-new-purchase-inbound/requirement.md) |

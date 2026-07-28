@@ -2,7 +2,7 @@
 doc_type: technical
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.5
+version: 2.6
 last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
@@ -351,7 +351,7 @@ sequenceDiagram
     Excel->>U: file in export_files
 ```
 
-**Import:** tidak ada endpoint import untuk Failed Ship.
+**Import:** AS-IS belum ada; **TO-BE** kontrak di §12.
 
 ---
 
@@ -359,9 +359,9 @@ sequenceDiagram
 
 | Ability | Method |
 |---------|--------|
-| `viewAny` | Index, outstanding lists |
+| `viewAny` | Index, outstanding lists, import log |
 | `view` | Show, approval info |
-| `create` | Store, use SO, insert detail |
+| `create` | Store, use SO, insert detail, **import** |
 | `update` | Update header, inline edit |
 | `delete` | Destroy draft/open |
 | `approval` | Approve |
@@ -378,9 +378,10 @@ sequenceDiagram
 | Router duplicate name | `create_failed-ship_form` untuk create dan set-location |
 | `refTable: 'FailedShop'` | Typo di `DataList.vue` |
 | Settlement prepared check | Header-level bukan detail-level qty |
-| **G-05** | `approve()` tidak re-cek invoice/outbound qty antara insert dan approve |
+| **G-05** | `approve()` belum re-cek settlement — **TO-BE fix** bersama Import (§12) |
 | **G-05b** | Index join per-detail vs `useSo` order-level — partial multi-SKU tampil di datalist |
 | Platform returns count vs list | `without_outbound`: count cek `prepared_to_out`, list tidak |
+| **G-07** | Import FS belum diimplementasi — lihat §12 |
 
 ---
 
@@ -445,6 +446,59 @@ Menu: [supplychain-mutation-transfer-internal](../supplychain-mutation-transfer-
 | Sales Return | `accounting-sales-return` | Jalur pasca-settlement; cap return ke outbound; mutually exclusive dengan FS pada order yang sudah settled |
 
 Detail bisnis: [requirement.md §3](./requirement.md#3-pergerakan-stok-order--wave-hingga-3pl) · [§4.0 eligibility](./requirement.md#40-prasyarat-eligibility--invoice--outbound-major)
+
+---
+
+## 12. Import Failed Ship — TO-BE (technical contract)
+
+### 12.1 Pipeline
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant API as FailedShip Import API
+    participant Q as Queue Job
+    participant Log as Import Log tables
+    participant FS as FailedShip + Details
+    U->>API: Upload xlsx (max 1000 rows)
+    API->>Log: Create batch Queued
+    API-->>U: Batch code + progress
+    Q->>Q: Wait until no active company batch
+    Q->>Q: Group rows by SO
+    loop Per SO group
+        Q->>Q: Validate header + business rules
+        alt OK
+            Q->>FS: Create FS OPEN + all SO details
+            Q->>Log: Success + FS code + row range
+        else Fail
+            Q->>Log: Failed + English message + row range
+        end
+    end
+    Q->>Log: Batch Completed
+```
+
+### 12.2 Reuse existing validation
+
+| Concern | Reuse |
+|---------|-------|
+| SO resolve | `code` OR `platform_order_id` + company (`useSo`) |
+| Settlement | `isSettled($salesOrderId)` order-level |
+| Shipped / DO date | Shipping DO approved; trx date > DO date |
+| Restock WH | `select2WarehouseDestination` / WarehouseSelect `has-scrap` filters |
+| CCTV | Active location select2 |
+| Qty cap | Outstanding = order − prepared − processed FS |
+| Bundle | Header SKU → expand like `inlineEdit`; reject child SKU in file |
+| Approve G-05 | Add settlement re-check in `FailedShipController@approve` |
+
+### 12.3 On success
+
+Header OPEN; shipper from 3PL DO; all SO details present (imported qty or 0/0/0); `created_by` = `failed_ship_by` = importer.
+
+### 12.4 Log (mirror Skip Wave UX)
+
+Suggested: `scm_failed_ship_import_logs` + `scm_failed_ship_import_log_details` (batch, SO, FS code, row_from/to, is_success, message). Upload file downloadable **24h**.
+
+English message catalog: implementer brief `failed-ship-import-e2e-implementer-brief.md`.
 
 ---
 

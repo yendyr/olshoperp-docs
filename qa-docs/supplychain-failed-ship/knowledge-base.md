@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.5
+version: 2.6
 last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
@@ -98,6 +98,8 @@ Jika form meminta lokasi CCTV:
 | **CCTV Location** | Pilih lokasi CCTV proses |
 | **Scan / input SO** | Cari order by kode internal atau platform → auto-create FS |
 | **Export** (panel slider) | Download data FS — pilih **With Details** atau **Without Details** |
+| **Import** (TO-BE) | Download template + upload Excel (max 1000 rows); antrian + progress |
+| **Log Data** (TO-BE) | Hasil import: success (nomor FS) / failed (alasan); file download ≤ 24 jam |
 | **Filter** (SearchBuilder) | Filter kolom datalist |
 | **FS Status** (klik pada baris) | Buka detail FS jika sudah ada dokumen |
 | **Sales Platform Returns** (pill) | Tabel return API marketplace untuk order **belum outbound** — kandidat arah Failed Ship, bukan Sales Return |
@@ -199,7 +201,7 @@ Di detail Sales Order, kolom **Failed Ship Status** menampilkan **Prepared** / *
    - **Without Details** — per order/header saja
 3. Tunggu job selesai → download dari daftar file export.
 
-**Import:** belum tersedia. Hanya **Export** yang ada.
+**Import:** belum tersedia di produksi. Spesifikasi lengkap di [requirement §5.5](./requirement.md#55-import-failed-ship--to-be). Setelah live: download template → isi → upload → pantau progress → cek **Log Data** (file download maks 24 jam).
 
 ---
 

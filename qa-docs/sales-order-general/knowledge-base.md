@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.1
-last_updated: 2026-07-22
+version: 3.2
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
-aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed]
+aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost Disc]
 ---
 
 # Dev - Sales Order — Knowledge Base
@@ -91,7 +91,9 @@ Atur mode di **Omni → Store → Fulfillment Mode** dulu.
 ### Template (tidak berubah)
 
 1. **Sheet 1** — tanggal, customer, store, referensi, kurir, tracking, SKU, qty, unit, harga.  
-2. **Sheet 2** (opsional) — biaya/diskon tambahan.
+2. **Sheet 2** (opsional) — kolom **Other Cost/Disc Code** + Amount (biaya atau diskon tambahan per nomor referensi order).
+
+> **Pantangan:** jangan pakai kode yang sama di master **Other Cost** dan **Other Discount**. Satu kolom template dipakai keduanya. Kalau kode bentrok di kedua master, order harus gagal import (aturan baru). Saat ini sistem bisa diam-diam memilih biaya — jangan andalkan itu; rapikan master dulu.
 
 | Rule | Nilai |
 |------|-------|
@@ -118,6 +120,7 @@ Atur mode di **Omni → Store → Fulfillment Mode** dulu.
 | Setelah Approve belum masuk gudang | Setting tidak auto-wave | Unassign / Skip Wave di SCM |
 | Invoice tidak muncul setelah Approve (Processed) | Memang tidak saat Approve | Tunggu outbound / settlement |
 | Non-Processed gagal stok | Stok di hierarki gudang proses store kurang | Isi stok / kurangi qty / ganti store |
+| Sheet 2 cost/disc “aneh” / salah jadi biaya | Kode sama ada di Other Cost dan Other Discount | Ubah salah satu kode di master; re-import. Order harus gagal jika bentrok (aturan baru) |
 | Create langsung ke edit | By design | Lengkapi di halaman edit |
 
 ---
@@ -131,7 +134,7 @@ Atur mode di **Omni → Store → Fulfillment Mode** dulu.
 | Platform Order ID | Nomor referensi luar + kunci gabung baris |
 | Wave | Antrian gudang sebelum ambil barang |
 | Outbound | Bukti barang keluar |
-| Sales Invoice | Tagihan customer |
+| Other Cost/Disc Code | Satu kolom di Sheet 2 untuk kode biaya **atau** diskon tambahan — jangan duplikat lintas kedua master |
 
 ---
 

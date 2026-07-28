@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 1.1
-last_updated: 2026-07-22
+version: 1.2
+last_updated: 2026-07-23
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.1
+source_version: 3.2
 owner: QA - Yemima
 status: review
 ---
@@ -94,6 +94,7 @@ stateDiagram-v2
 ## 5. Yang Perlu Diperhatikan
 
 - Kalau kamu pakai **Import Processed** untuk store **Non Processed** (atau sebaliknya), order itu gagal — samakan tombol dengan mode store.  
+- Kalau kamu isi Sheet 2 dengan kode yang sama di master **Other Cost** dan **Other Discount**, order itu **gagal import** — rapikan kode di master dulu (satu kolom template dipakai keduanya).  
 - Kalau kamu **Approve saat Draft** / import masih jalan, sistem menolak.  
 - Kalau qty nol/desimal, produk induk, atau lebih dari 100 baris SKU, sistem menolak.  
 - Kalau cell Excel berisi rumus, baris ditolak.  
@@ -138,6 +139,7 @@ Ikuti Point of Sales. Jalur Non-Processed penuh dari POS = requirement berikutny
 ## 7. Tips & Hal yang Sering Bikin Bingung
 
 - Template Excel **tidak berubah** — bedanya hanya tombol + mode store.  
+- Sheet 2 pakai satu kolom **Other Cost/Disc Code** — jangan duplikat kode antara master biaya dan diskon tambahan.  
 - Satu file bisa multi-store; tiap order dicek ke gudang proses **store-nya sendiri**.  
 - All Sales Order punya **tombol import yang sama**.  
 - Platform Order ID di General = referensi kamu, bukan nomor Shopee.

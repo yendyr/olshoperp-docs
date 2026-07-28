@@ -10,8 +10,8 @@ Menu **Purchase Order** (Supply Chain / Procurement).
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
 
 **SoT / PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05)  
-**Rounding SoT:** `dpp-vat-rounding-calculation.md` (23 Jul 2026)  
-**3 layer version:** 2.5 · **User-guide:** v1.2 · `source_version` 2.5 · **Last updated:** 2026-07-23
+**Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)  
+**3 layer version:** 2.7 · **User-guide:** v1.4 · `source_version` 2.7 · **Last updated:** 2026-07-27
 
 ## Changelog
 
@@ -24,6 +24,8 @@ Menu **Purchase Order** (Supply Chain / Procurement).
 | 2.3 | 2026-07-17 | Compliance qa-docs-standard (5-file); trim requirement; technical invariants/failure modes; tambah user-guide v1.0 |
 | 2.4 | 2026-07-22 | DPP/VAT: detail ↔ Totals konsisten (truncate 4dp × qty, ETM-15313); GAP-PO-08 sort residual; UG v1.1 |
 | 2.5 | 2026-07-23 | Rounding SoT: variable DPP/VAT, tie ±1 sen, rantai jurnal Inbound→PI; GAP-PO-09; UG v1.2 |
+| 2.6 | 2026-07-27 | Rounding SoT **final**: UI-only +0,01 known behavior; Total/Journal exact; export 4dp TO-BE (GAP-PO-10); UG v1.3 |
+| 2.7 | 2026-07-27 | Contoh Case 4/5 (38.000×25) di KB + UG; Lingo shared SF-PRICE-01 |
 
 ## Related menus
 

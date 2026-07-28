@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.5
-last_updated: 2026-07-23
+version: 2.6
+last_updated: 2026-07-27
 owner: QA - Yemima
 status: review
 ---
@@ -11,8 +11,8 @@ status: review
 # Purchase Order — Technical Documentation
 
 **API prefix:** `supplychain/purchase-order`  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.5  
-**Rounding SoT:** `dpp-vat-rounding-calculation.md` (23 Jul 2026)
+**Behavior SoT:** [requirement.md](./requirement.md) v2.7  
+**Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)
 
 ---
 
@@ -150,7 +150,7 @@ Void blocked if prepared at purchase.
 
 ---
 
-## 5. Pricing & decimal precision (ETM-15313 + rounding SoT 23 Jul)
+## 5. Pricing & decimal precision (ETM-15313 + Rounding SoT 27 Jul)
 
 **Helpers:** `NumberHelper::truncateDecimal` (4dp), `roundHalfDown` (money 2dp; **half-down** pada exact 0,5), `truncateAndRound`.
 
@@ -162,18 +162,22 @@ Void blocked if prepared at purchase.
 | Include | `each_tax = price × rate/(1+rate)`; base = `price/(1+rate)` |
 | Coefficient | Rate kalkulasi dipaksa **11%** jika `tax.coefficient` |
 | DPP unit | `truncateDecimal(each_tax / fake_rate, 4)` |
-| Totals line | `roundHalfDown(unit × qty)` untuk dpp / vat / price |
+| Backend accumulate | DPP/VAT total tetap pada **4dp** (komplemen → Total Price = Net×Qty exact) |
+| UI breakdown | `truncateAndRound` / format **2dp** per kolom DPP & VAT saja |
 
-**VAT include — sifat komplemen:** pada level 4dp, DPP/unit + VAT/unit = Net. Rounding **terpisah** ke 2dp per sisi → Total Price bisa **±0,01** vs Net×Qty (GAP-PO-09). Case referensi: Unit 38000, Qty 25 → sisa `…8550` / `…1450` di 4dp sebelum uang.
+**VAT include — sifat komplemen:** pada level 4dp, DPP/unit + VAT/unit = Net. Round **independen** ke 2dp **hanya di UI breakdown** → Σ manual kolom bisa **+0,01** vs Total Price (GAP-PO-09 **Accepted**). Backend / Net / Journal **tidak** kena. Case: Unit 38000, Qty 25 → UI 855.855,86 + 94.144,15 = 950.000,01; Total Price = **950.000,00**.
 
-**Datalist detail:**
+**Datalist detail (display):**
 
 | Column | Formula |
 |--------|---------|
-| DPP | `truncateAndRound(each_dpp_after_discount × order_quantity)` |
-| VAT | `truncateAndRound(each_vat × order_quantity)` |
+| DPP | `truncateAndRound(each_dpp_after_discount × order_quantity)` → **2dp UI** |
+| VAT | `truncateAndRound(each_vat × order_quantity)` → **2dp UI** |
 
-**Section Totals:** `PurchaseOrderPrice::totalProduct` = **Σ per line** (bukan `Grand÷1,11`). Invariant: Σ detail DPP/VAT = tippy Totals.
+**Section Totals / Net Purchase:** mengikuti akumulasi backend (exact). Bukan hasil jumlah manual kolom UI 2dp.  
+`[VERIFY: CODEBASE]` apakah tippy Total DPP/VAT = Σ Path B display atau format dari accumulate 4dp — perilaku yang dikunci: **Total Price / Net** = backend exact.
+
+**Export (TO-BE GAP-PO-10):** kolom DPP/VAT export = **4dp** (bukan 2dp UI). Scope format export saja — tidak ubah kalkulasi/UI.
 
 **Residual sort:** `orderColumn('dpp_value')` masih `SUM(dpp_amount)` — GAP-PO-08.
 
@@ -182,7 +186,7 @@ Void blocked if prepared at purchase.
 | Step | Amount basis |
 |------|----------------|
 | Inbound journal | `each_price_before_vat` (dari PO) × qty base — **tanpa VAT** → Dr Inventory/… Cr Unbilled |
-| PI journal | Clear Unbilled (`invoice_each_price_after_discount_before_vat` × qty) + Debit VAT (prorate `vat_amount` PO) + Credit AP |
+| PI journal | Clear Unbilled + Debit VAT + Credit AP — angka mengikuti backend exact (bukan Σ UI 2dp) |
 
 Detail: [inbound technical §9](../supplychain-new-purchase-inbound/technical.md) · [PI technical §4–§5](../accounting-supplier-invoice/technical.md).
 
@@ -202,8 +206,9 @@ Detail: [inbound technical §9](../supplychain-new-purchase-inbound/technical.md
 | INV-PO-05 | Void only from `approved` with no GRN preparation |
 | INV-PO-06 | Closed only from `processed` |
 | INV-PO-07 | With PR: on approve, PR `processed_to_po` / `prepared_to_po` balance moves; void **does not** currently reverse processed (GAP-PO-01) |
-| INV-PO-08 | Σ DPP/VAT detail display = Totals tippy (same Path B helpers) |
-| INV-PO-09 | Unit DPP/VAT storage ≤ 4dp; money totals 2dp via `roundHalfDown` |
+| INV-PO-08 | Path A vs Path B display bug resolved (ETM-15313); Σ manual UI 2dp boleh +0,01 vs Total Price (GAP-PO-09 Accepted) |
+| INV-PO-09 | Unit DPP/VAT storage ≤ 4dp; backend accumulate 4dp; UI breakdown 2dp only |
+| INV-PO-10 | Net Purchase / Total Price = backend exact (= Net×Qty pada komplemen); bukan Σ UI breakdown |
 
 ---
 
@@ -321,6 +326,8 @@ Print loads supplier, details, approvals; totals **without** other cost/disc.
 | GAP-PO-05 | Template xlsx assets missing (404) |
 | GAP-PO-06 | Print excludes Other Cost/Disc |
 | GAP-PO-07 | `with_pr` mutable via API/import despite UI lock |
+| GAP-PO-09 | UI Σ DPP+VAT 2dp +0,01 vs Total — **Accepted** known behavior (27 Jul) |
+| GAP-PO-10 | Export DPP/VAT 4dp — **TO-BE** |
 | DEV-PO-07 | Without PR import max 100 vs With PR 500 |
 
 Full gap narrative: [requirement §19–§21](./requirement.md).

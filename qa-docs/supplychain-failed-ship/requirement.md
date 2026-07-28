@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.5
+version: 2.6
 last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
@@ -30,6 +30,7 @@ legacy_sources:
 | 2.3 | 2026-06-26 | QA - Yemima | Cross-menu stock flow: relasi TF internal, picking/checking/packing/DO, order, settlement, SR |
 | 2.4 | 2026-07-15 | QA - Yemima | Relasi Sales Platform (Return bucket, Failed Ship Status, flow vs Sales Return) |
 | 2.5 | 2026-07-23 | QA - Yemima | Tambah user-guide v1.0; sync README 5-file + KB compliance |
+| 2.6 | 2026-07-23 | QA - Yemima | TO-BE Import Failed Ship (template, partial SO success, log, queue, G-05 approve) |
 
 ---
 
@@ -91,7 +92,7 @@ legacy_sources:
 
 | ID | Kriteria (TO-BE) | AS-IS | Status |
 |----|------------------|-------|--------|
-| A-16 | Re-validasi invoice/outbound/settlement saat **approve** FS | ❌ `approve()` tidak re-cek qty invoice/outbound — **GAP major** (G-05) | **GAP** |
+| A-16 | Re-validasi invoice/outbound/settlement saat **approve** FS | ❌ AS-IS gap; **TO-BE:** wajib re-cek (sama `useSo` / import) — G-05 | **TO-BE** |
 | A-17 | Restock → TF Internal 3PL → WH Destination | ✅ Approve FS transfer + `ItemStockMutation::approveTransfer` | OK |
 | A-18 | Lost → Stock Deduction dari 3PL, jurnal Return Expense | ✅ `handleMissing` + auto-approve via `StockMutationDeductionFAController` | OK |
 | A-19 | Scrap → TF Internal 3PL → WH Scrap (dari Setting WH Destination) | ✅ `getScrapWHParent(warehouse_destination)` + `handleBroken` | OK |
@@ -112,9 +113,11 @@ legacy_sources:
 | ID | Kriteria (TO-BE) | AS-IS | Status |
 |----|------------------|-------|--------|
 | A-26 | Export with/without detail (card terpisah di requirement awal) | ✅ `ExportFileTable` + `FailedShipExport` | OK |
-| A-27 | Import bulk Failed Ship | ❌ Belum ada fitur import (bukan gap implementasi v1 — memang belum dibangun) | Planned |
+| A-27 | Import bulk Failed Ship | ❌ Belum ada — **TO-BE §5.5** (template, queue, log, partial SO) | **TO-BE** |
 | A-28 | Qty FS + Return ≤ qty order per SKU | ✅ Enforced via `invoicableQuantityInBaseUnit` + cap return ke outbound qty | OK |
 | A-29 | Qty return ≤ qty outbound terakhir per SKU | ✅ `SalesReturnDetailController` + `createDetail` cap per `outbound_mutation_detail` | OK |
+| A-30 | Import: 1 SO = 1 FS; header fields konsisten; partial success per SO | TO-BE §5.5 | **TO-BE** |
+| A-31 | Import log (summary + detail) + file download max 24 jam | TO-BE §5.5.4 — pola Skip Wave Log Data | **TO-BE** |
 
 ---
 
@@ -409,8 +412,6 @@ Fitur ini **tidak ada di requirement bisnis** — dokumentasi AS-IS tambahan (li
 
 ### 5.4 Export — Format & Opsi
 
-**Tidak ada import** untuk menu Failed Ship (requirement: card terpisah, belum dikembangkan).
-
 | Opsi export | Keterangan |
 |-------------|------------|
 | With Details | Per baris produk FS |
@@ -425,11 +426,59 @@ SO Code, Platform Order, FS Code, FS Date, Order Date, Deadline Time, Store Name
 
 **Validasi export:** tidak ada validasi khusus; async batch job (`FailedShipExportJob` → `FailedShipExportExcelJob`). Progress timeout 30 menit → status reset.
 
-### 5.5 Import — belum tersedia (bukan bug)
+### 5.5 Import Failed Ship — TO-BE
 
-Requirement bisnis awal menyebutkan card **Import** terpisah (out of scope v1). **AS-IS: fitur import belum dibangun sama sekali** — tidak ada endpoint upload, template Excel, maupun job import untuk Failed Ship.
+**AS-IS:** belum ada endpoint/job/template di produksi. Spesifikasi di bawah = kontrak implementasi (PM + QA, 23 Jul 2026).
 
-Yang ada saat ini hanya **Export** (§5.4). Jika import dibuat di masa depan, validasinya harus selaras §4.1.
+#### 5.5.1 Template kolom
+
+| Kolom | Required styling | Format / validasi |
+|-------|------------------|-------------------|
+| Trx. Date | Merah + required mark | Input user `DD-MM-YYYY` → simpan `Y-m-d 00:00:00`; harus **lebih besar dari** tanggal DO (sama AS-IS `useSo`) |
+| SO Code | Merah | Kode internal **atau** platform order ID; scope **company login** |
+| Restock Location | Merah | WH **code**; validasi sama dropdown Restock (aktif, non-virtual, level under building, **has scrap**) |
+| CCTV Location | Merah | Location **code**; sumber processing location **active** |
+| SKU | Merah | System product SKU; non-bundle = SKU line; bundle = **header saja** (child ditolak) |
+| Restock Qty | Merah (mewakili min salah satu qty) | Integer ≥ 0; null = 0 |
+| Lost Item Qty | — | Integer ≥ 0; null = 0 |
+| Broken Items Qty | — | Integer ≥ 0; null = 0 |
+
+Max **1.000 baris data** per file. Baris kosong di-skip.
+
+#### 5.5.2 Aturan bisnis inti
+
+| Rule | Perilaku |
+|------|----------|
+| 1 SO = 1 FS | Wajib. Tidak boleh diubah |
+| Header binding | Dalam 1 SO: **Trx. Date + Restock Location + CCTV Location** harus identik di semua baris. Beda → gagal **seluruh SO** + row range |
+| Duplikat SKU | SKU sama dalam 1 SO di file → gagal seluruh SO |
+| Sudah ada FS | Ada dokumen FS status **apa pun** untuk SO → gagal seluruh SO |
+| Settlement | Order-level (`isSettled`): 1 SKU punya jejak invoice/outbound → gagal seluruh SO |
+| 1 baris SKU error | Gagal **seluruh SO** (bukan hanya baris itu) |
+| Partial SKU | Boleh; SKU di file: min Restock+Lost+Broken **> 0** (integer). SKU order lain ikut masuk FS dengan qty **0/0/0** |
+| Bundle | Input **SKU header**; expand ke child seperti UI. Child SKU di Excel → ditolak |
+| Shipped | Seluruh order harus Shipped (sama prasyarat scan) |
+| Status hasil | FS hasil import = **OPEN** (bukan auto-approve); `created_by` = `failed_ship_by` = importer |
+| Shipper | Auto dari WH 3PL shipping DO (tidak ada kolom di template) |
+| Cap qty | Restock+Lost+Broken ≤ **sisa outstanding** AS-IS (order − prepared − processed FS) |
+| Decimal | Ditolak |
+| Partial success | Per **SO**: SO gagal tidak menghalangi SO lain sukses |
+| Queue | Upload boleh antri; proses **1 file sampai 100%** baru file berikutnya; progress bar |
+| Approve G-05 | Import cek settlement; **approve** juga wajib re-cek settlement |
+
+#### 5.5.3 UI/UX index (pola menu terbaru)
+
+Toolbar index: **Import** (download template + upload) + **Log Data** + Export existing. Progress bar batch aktif. Pola UX selaras Skip Wave / Other Cost (slideover log, download file).
+
+#### 5.5.4 Log Data
+
+| Lapisan | Kolom / konten |
+|---------|----------------|
+| Summary batch | Batch code, uploaded by/at, file name (download **max 24 jam**), total SO success/failed, message, progress/status |
+| Detail success | SO code / platform id, FS **code**, row range, status Success |
+| Detail failed | SO code / platform id, row range, status Failed, **English** error message |
+
+Pesan error English per case: lihat brief implementator (`failed-ship-import-e2e-implementer-brief.md`).
 
 ---
 
@@ -543,10 +592,10 @@ Detail operasional SP: [omni-sales-platform §7.1](../omni-sales-platform/requir
 | G-02 | Default view outstanding | Dokumen bisnis §6.2: default **Group by Order**. AS-IS: UI aktif tidak punya toggle; V1 legacy default **Group by Product** (`groupViewAvailable: true`). Hanya beda UX default jika V1 diaktifkan. |
 | ~~G-03~~ | Tracking Prepared/Processed | **AS-IS:** kolom qty `prepared_to_failed_ship_*` / `processed_to_failed_ship_*` — goals sama dengan flag enum di dokumen bisnis. |
 | ~~G-04~~ | Settlement block vs adjust | **AS-IS sesuai PM:** block upload = cek header FS open; adjust invoice/outbound = **per baris SKU** via `invoicable_quantity` + `item_stock.available_quantity`. |
-| G-05 | **Approve FS tanpa re-cek invoice/outbound** | **MAJOR** — insert/scan/datalist sudah cek qty `prepared_to_*` / `processed_to_*`; `approve()` tidak. Lihat §4.0.3 |
+| G-05 | **Approve FS tanpa re-cek invoice/outbound** | **MAJOR / TO-BE fix** — import + `approve()` wajib re-cek settlement. Lihat §4.0.3 & §5.5 |
 | G-05b | Datalist index partial order | Order bisa tampil jika sebagian detail belum settled; scan tolak seluruh order. Lihat §4.0.4 |
 | ~~G-06~~ | FS + Return ≤ order qty | **AS-IS:** enforced via `invoicableQuantityInBaseUnit` + cap return ke outbound qty (§7.1). |
-| ~~G-07~~ | Import | Fitur **belum dibangun** (planned). Bukan ketidaksesuaian implementasi — memang tidak ada di scope v1. |
+| G-07 | Import Failed Ship | **TO-BE §5.5** — kontrak lengkap; belum diimplementasi |
 | G-08 | Pesan error void | Insert: order void dapat pesan "not approved" bukan "voided" eksplisit. |
 
 ### 8.2 Fitur codebase tambahan (tidak di dokumen bisnis awal)
@@ -590,8 +639,14 @@ Detail operasional SP: [omni-sales-platform §7.1](../omni-sales-platform/requir
 - [ ] `getScrapWHParent` — error jika scrap belum di-setting
 - [ ] Order dengan SI/Outbound open (prepared) — tidak muncul / ditolak scan
 - [ ] Order dengan SI/Outbound approved — ditolak, arahkan Sales Return
-- [ ] Approve FS setelah settlement di antara — **expected TO-BE: ditolak**; catat perilaku AS-IS (§4.0.3)
-- [ ] Pill Sales Platform Returns — hanya order tanpa outbound; kontras dengan Sales Return platform
+- [ ] Import template — required merah; max 1000 rows; integer qty
+- [ ] Import 1 SO multi-SKU header beda (Restock/CCTV/Date) → fail SO + row range
+- [ ] Import partial SKU → FS OPEN berisi semua SKU order; non-import qty 0
+- [ ] Import SO sudah FS / settled / belum shipped → fail SO; SO lain sukses
+- [ ] Import log summary + detail (FS code on success); file download ≤ 24 jam
+- [ ] Queue: file ke-2 menunggu file ke-1 100%
+- [ ] Approve setelah settlement di antara — **TO-BE ditolak** (G-05)
+- [ ] Bundle: header OK; child SKU ditolak
 - [ ] `invoicable_quantity` = order − FS − return − invoiced
 
 ---
@@ -616,6 +671,7 @@ Detail operasional SP: [omni-sales-platform §7.1](../omni-sales-platform/requir
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
 | User Guide | [user-guide.md](./user-guide.md) |
+| Import E2E (implementer) | `/Downloads/failed-ship-import-e2e-implementer-brief.md` (external brief) |
 | Transfer Internal | [supplychain-mutation-transfer-internal/technical.md](../supplychain-mutation-transfer-internal/technical.md) |
 | Picking Process | [omni-picking-process/requirement.md](../omni-picking-process/requirement.md) |
 | Checking Process | [omni-checking-process/requirement.md](../omni-checking-process/requirement.md) |

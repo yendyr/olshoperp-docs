@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.1
+last_updated: 2026-07-28
 owner: QA - Yemima
 status: draft
-aliases: [unassign wave, send to default waves, default wave queue, send wave logs, failed process wave]
+aliases: [unassign wave, send to default waves, default wave queue, send wave logs, failed process wave, processing order date]
 audience: operator
 ---
 
@@ -41,17 +41,19 @@ Happy path: order approved masuk list → cek error → kirim ke Default Wave �
 
 ```mermaid
 flowchart TD
-    A["Buka Omni → Unassign Wave"] --> B["Cek list order approved"]
-    B --> C{"Ada tanda Error Flag?"}
-    C -->|Ya| D["Perbaiki data / Refresh stok"]
-    D --> B
-    C -->|Tidak| E["Send to Default Waves\nsingle atau bulk"]
-    E --> F["Tunggu On Process selesai"]
-    F --> G["Order hilang dari list\nlanjut Waves / Picking"]
+    A["Buka Omni → Unassign Wave"] --> B["Set Processing Order Date\njika perlu"]
+    B --> C["Cek list order approved"]
+    C --> D{"Ada tanda Error Flag?"}
+    D -->|Ya| E["Perbaiki data / Refresh stok"]
+    E --> C
+    D -->|Tidak| F["Send to Default Waves\nsingle atau bulk"]
+    F --> G["Tunggu On Process selesai"]
+    G --> H["Order hilang dari list\nlanjut Waves / Picking"]
 ```
 
 **Keterangan langkah:**
 
+- **Processing Order Date:** tanggal yang dipakai sistem untuk memproses order (cek stok & dokumen gudang). Default = hari ini jam 23:59:59. Kalau order lama baru bisa diproses hari ini karena stok baru ada, **ubah tanggal ke hari proses** dulu. Nilai ini sama dengan yang di menu Skip Wave Process (satu company).
 - **Cek list:** pastikan order yang dimaksud muncul. Kalau tidak, cek status approval dan apakah sudah pernah sukses dikirim.
 - **Error Flag:** hover icon untuk tahu jenis masalah (produk belum terhubung, stok kurang, shipping, dll).
 - **Refresh Availability Stock:** khusus setelah stok digudang sudah ditambah — membersihkan tanda “stok tidak cukup”.
@@ -61,7 +63,23 @@ flowchart TD
 
 ---
 
-## 4. Pill Failed Process & Error Flag
+## 4. Processing Order Date
+
+Field date-time di **kiri** tombol **Refresh Availability Stock**.
+
+| Aturan | Artinya untuk operator |
+|--------|------------------------|
+| Satu tanggal untuk semua order yang kamu kirim | Tidak perlu set tanggal per order |
+| Shared dengan Skip Wave Process | Ubah di sini = ikut di menu itu (company yang sama) |
+| Default pertama | Hari ini, jam 23:59:59 |
+| Setelah kamu ubah | Sistem mengingat pilihan terakhir |
+| Tidak bisa simpan | Kalau tanggal jatuh di periode akuntansi yang sudah ditutup — pilih tanggal di periode terbuka |
+
+**Contoh:** Order masuk 27 Juli, stok baru ready 28 Juli → set tanggal processing ke **28 Juli** baru klik Send.
+
+---
+
+## 5. Pill Failed Process & Error Flag
 
 Pill **Failed Process** memfilter order yang bermasalah dan perlu dicek sebelum dikirim ke gudang.
 
@@ -83,13 +101,13 @@ Satu order bisa punya beberapa tanda sekaligus.
 
 ---
 
-## 5. Pill On Process to Default Waves
+## 6. Pill On Process to Default Waves
 
 Menampilkan order yang **sedang diproses** kirim ke gudang, lengkap dengan jumlah order. Pill ini dan Failed Process tidak bisa aktif bersamaan — pilih salah satu.
 
 ---
 
-## 6. Refresh Availability Stock
+## 7. Refresh Availability Stock
 
 Tombol ini **hanya** untuk masalah stok:
 
@@ -99,9 +117,11 @@ Tombol ini **hanya** untuk masalah stok:
 
 Setelah refresh sukses, baru retry **Send to Default Waves**.
 
+> Catatan: apakah cek refresh memakai tanggal Processing Order Date atau kondisi “hari ini realtime” masih dalam diskusi — ikuti hasil implementasi yang diumumkan tim.
+
 ---
 
-## 7. Send Wave Logs
+## 8. Send Wave Logs
 
 Buka **Log Data** untuk melihat histori kirim ke Default Wave: sukses/gagal, pesan error, waktu mulai/selesai, siapa yang proses.
 
@@ -110,7 +130,7 @@ Buka **Log Data** untuk melihat histori kirim ke Default Wave: sukses/gagal, pes
 
 ---
 
-## 8. Troubleshooting
+## 9. Troubleshooting
 
 | Gejala | Penyebab umum | Solusi |
 |--------|---------------|--------|
@@ -120,17 +140,22 @@ Buka **Log Data** untuk melihat histori kirim ke Default Wave: sukses/gagal, pes
 | Tombol kirim tidak bisa / abu-abu | Order sedang On Process, atau setting mematikan proses untuk tipe tertentu | Tunggu proses selesai / cek setting |
 | Sudah kirim tapi muncul lagi di list | Proses gagal di tengah | Buka Send Wave Logs, baca pesan error |
 | Stok sudah ditambah tapi masih stock error | Data stok belum di-refresh | Klik **Refresh Availability Stock** |
+| Tidak bisa ubah Processing Order Date | Tanggal di periode akuntansi tertutup | Pilih tanggal di periode yang masih terbuka |
+| Order lama gagal padahal stok baru ada | Tanggal processing masih di tanggal order lama | Set **Processing Order Date** ke tanggal stok ready |
 | Angka pill Failed Process beda dengan jumlah baris filter | Perbedaan cakupan hitungan vs filter | Percaya isi tabel setelah filter; perbaikan konsistensi sudah terdaftar |
 
 ---
 
-## 9. FAQ
+## 10. FAQ
 
 **Q: Apa bedanya Unassign Wave dengan Skip Wave Process?**  
-A: Unassign Wave = kirim ke Default Wave saja. Skip Wave Process = shortcut batch yang lanjut sampai shipped, tapi langkah wave-nya memakai aturan yang sama dan log-nya sama.
+A: Unassign Wave = kirim ke Default Wave saja. Skip Wave Process = shortcut batch yang lanjut sampai shipped, tapi langkah wave-nya memakai aturan yang sama dan log-nya sama. Keduanya share **Processing Order Date**.
 
 **Q: Harus perbaiki semua error dulu baru boleh Send?**  
 A: Ya untuk error non-stok. Untuk stok, bisa coba Refresh dulu kalau stok fisik sudah cukup.
 
 **Q: Kenapa General order saya tidak muncul?**  
 A: Cek Order Process Setting — jika proses ke wave dimatikan, hanya order Platform yang masuk list ini.
+
+**Q: Processing Order Date diubah kolega saya — kenapa ikut berubah?**  
+A: Nilai per company, bukan per user. Semua user company yang sama memakai tanggal yang sama.

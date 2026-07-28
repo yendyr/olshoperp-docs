@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 1.0
+version: 1.1
 last_updated: 2026-07-23
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.5
+source_version: 2.6
 owner: QA - Yemima
 status: draft
 ---
@@ -165,7 +165,18 @@ Ditulis dari sudut pandang yang kamu alami di layar:
 2. Pilih **With Details** (per produk) atau **Without Details** (per order/header).
 3. Tunggu job selesai → download dari daftar file export.
 
-> **Import** bulk Failed Ship belum tersedia.
+### Import data (TO-BE — setelah fitur live)
+
+1. Download **template** Import Failed Ship dari toolbar Import.
+2. Isi kolom wajib (tanggal `DD-MM-YYYY`, SO / platform order, Restock Location code, CCTV code, SKU, qty integer).
+3. Satu order = satu set Restock/CCTV/tanggal — jangan beda antar baris SKU order yang sama.
+4. Upload file (maks 1000 baris). Tunggu progress 100% sebelum upload file berikutnya.
+5. Buka **Log Data**: SO sukses menampilkan **nomor Failed Ship**; SO gagal menampilkan alasan. File upload bisa didownload **maks 24 jam**.
+6. Dokumen hasil import berstatus **Open** — cek qty lalu **Approve** manual (bukan auto-approve).
+
+> Bundle: isi **SKU header** saja, bukan komponen child. Qty desimal tidak diterima.
+
+🎬 [Interactive demo akan ditambahkan di sini]
 
 ### Pill Sales Platform Returns
 
@@ -205,4 +216,4 @@ Untuk detail lebih lanjut (QA, developer, atau operator yang mau ngulik):
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.5 — tanpa menambah fakta baru di luar sumber.*
+*Derivatif dari requirement / knowledge-base / technical v2.6 — tanpa menambah fakta baru di luar sumber.*

@@ -175,7 +175,7 @@ Business rules: [requirement.md](./requirement.md).
 | Fix Asset | Yes (`is_fix_asset`) | Assets | Unbilled Goods |
 | Service | No | Operational Expense | Unbilled Goods |
 
-**Amount:** `each_price_before_vat` (dari PO, max 4dp) × qty base — **tanpa** baris VAT. Sumber rounding: [PO technical §5](../supplychain-purchase-order/technical.md#5-pricing--decimal-precision-etm-15313--rounding-sot-23-jul).
+**Amount:** `each_price_before_vat` (dari PO, max 4dp) × qty base — **tanpa** baris VAT. Sumber rounding: [PO technical §5](../supplychain-purchase-order/technical.md#5-pricing--decimal-precision-etm-15313--rounding-sot-27-jul).
 
 Config `inbound-with-unbilled-goods=false` → Credit AP on supplier. Tax lines deferred to Purchase Invoice (`supplierInvoiceAutoJournal` clears Unbilled + Dr VAT + Cr AP).
 

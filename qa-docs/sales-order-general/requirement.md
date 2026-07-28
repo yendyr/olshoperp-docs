@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.1
-last_updated: 2026-07-22
+version: 3.2
+last_updated: 2026-07-23
 owner: QA - Yemima
 status: review
-aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed]
+aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code]
 ---
 
 # Dev - Sales Order (Sales Order General) — Requirement Documentation
@@ -15,7 +15,7 @@ aliases: [SO General, Dev Sales Order, sales order general, SO internal, import 
 **Type:** `type_sales_order = general`  
 **UI route:** `/businessdevelopment/sales-order-general`  
 **Audience:** PM, Ops, Finance, QA  
-**SoT:** `busdev-sales-order-general-source-of-truth.md` v1.0 (21 Jul 2026) + Fulfillment Mode TO-BE (22 Jul 2026)
+**SoT:** `busdev-sales-order-general-source-of-truth.md` v1.0 (21 Jul 2026) + Fulfillment Mode TO-BE (22 Jul 2026) + Sheet 2 OC/OD ambiguity (23 Jul 2026)
 
 Window gabungan: [All Sales Order](../all-sales-order/requirement.md). Platform independen: [Dev - Sales Platform](../omni-sales-platform/requirement.md).  
 Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
@@ -29,6 +29,7 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 | 2.4 | 2026-07-09 | QA - Yemima | Bundle proporsi + benchmark COGS |
 | 3.0 | 2026-07-22 | QA - Yemima | Rewrite dari SoT v1.0: datalist, status, import, ASO window, gap registry GAP-SOG-01…06 |
 | 3.1 | 2026-07-22 | QA - Yemima | TO-BE: dual import **Import Processed** / **Import Non-Processed** + Fulfillment Mode store; GAP-SOG-07…12 |
+| 3.2 | 2026-07-23 | QA - Yemima | Sheet 2: kode **Other Cost/Disc** ambigu (cost+discount sama) → order gagal import; GAP-SOG-13 |
 
 ---
 
@@ -221,7 +222,24 @@ Alur: upload → history processing → validasi sinkron (+ gate Processed) → 
 
 Sheet 1 headers (exact, case-sensitive): Transaction Date, Customer Code, Store Name, Platform Order ID, Shipper Service Code, Tracking Number, System Product SKU, Qty, Unit, Price.
 
-Sheet 2: Platform Order ID (match Sheet 1), OC/OD Code, Amount.
+Sheet 2 headers (exact): **Platform Order ID**, **Other Cost/Disc Code**, **Amount**.
+
+#### 6.3.3 Sheet 2 — Other Cost / Discount (satu kolom kode)
+
+Kolom **Other Cost/Disc Code** dipakai bersama untuk master Other Cost **dan** Other Discount. Uniqueness kode hanya **per tabel master** — kode yang sama **boleh** ada di Other Cost dan Other Discount sekaligus.
+
+| Kondisi kode di master | AS-IS (codebase) | TO-BE (keputusan produk) |
+|------------------------|------------------|---------------------------|
+| Hanya di Other Cost | Tipe = cost | Sama |
+| Hanya di Other Discount | Tipe = discount | Sama |
+| Ada di **keduanya** (kode sama) | Diam-diam pilih **cost** (`OtherCost` menang; discount diabaikan) — **bug / ambigu** | **Order terkait gagal import** — jangan tebak cost vs discount |
+| Tidak ada di keduanya | Baris gagal + log | Sama |
+| Ada tapi inactive | Baris gagal + log | Sama |
+
+**Pesan error TO-BE (rekomendasi):**  
+`Other Cost/Disc Code [{code}] matches both Other Cost and Other Discount. Resolve the duplicate code in master data or use a unique code.`
+
+**Scope gagal:** order (grouping Platform Order ID / SO) yang memakai baris Sheet 2 ambigu tersebut gagal import; order lain dalam file yang valid boleh lanjut (selaras partial-per-order). AS-IS saat ini error Sheet 2 sering menandai sesi history failed secara luas — perbaikan behavior ikut GAP-SOG-13.
 
 Batasan: max 100 detail/SO; `.xlsx/.xls`; tanpa hard cap total baris; 1 batch aktif; approve diblokir selama import Processed; formula Excel ditolak. POS/manual Non-Processed auto = **out of scope** fase ini.
 
@@ -299,6 +317,7 @@ ATS = On Hand − Outstanding SO − Reserved Out (recalculate async).
 | 32 | **Import Processed** tapi store **Non Processed** (atau sebaliknya) | Order gagal; order lain lanjut (TO-BE) |
 | 33 | Non-Processed: stok kurang di hierarki WH process store | Rollback seluruh order + log per SKU (TO-BE) |
 | 34 | Non-Processed: COA jurnal OB/SI kena CBR Approved (overlap tanggal) | Rollback order + pesan lock (TO-BE) |
+| 35 | Sheet 2: **Other Cost/Disc Code** cocok di Other Cost **dan** Other Discount | **TO-BE:** order terkait gagal import + log jelas. **AS-IS:** diam-diam jadi cost (GAP-SOG-13) |
 
 ### 7.5 Void / Close / Delete
 
@@ -359,6 +378,7 @@ flowchart TB
 | GAP-SOG-10 | Non-Processed: CBR/period-lock semua COA jurnal OB+SI | Jurnal bisa menembus period ter-reconcile (lihat GAP-CBR-08) | Open (TO-BE) |
 | GAP-SOG-11 | Non-Processed: auto-retry teknis + UI progress ala Skip Wave | UX/job gagal transient tanpa sinyal jelas | Open (TO-BE) |
 | GAP-SOG-12 | Trx date OB = order+10s; SI = outbound+10s | Konsistensi timestamp hilir | Open (TO-BE) |
+| GAP-SOG-13 | Sheet 2 `Other Cost/Disc Code`: jika kode ada di Other Cost **dan** Other Discount, AS-IS pilih cost diam-diam; TO-BE order harus gagal import + pesan ambigu | Order bisa dapat cost padahal user maksud discount (atau sebaliknya); data keuangan salah tanpa sinyal | Open (TO-BE fix) |
 
 ---
 
@@ -384,6 +404,9 @@ A: Tidak — harus General/Other.
 
 **Q: Import Processed vs Non-Processed?**  
 A: Tombol mengikuti **Fulfillment Mode** di master Store. Processed = jalur gudang seperti sekarang. Non-Processed = lewati gudang; sistem buat Outbound + Sales Invoice otomatis (setelah stok & COA lolos). Template Excel sama.
+
+**Q: Sheet 2 — kode Other Cost dan Other Discount sama?**  
+A: Kolom template satu (`Other Cost/Disc Code`). Uniqueness hanya per master. **TO-BE:** jika kode cocok di keduanya, order gagal import (jangan tebak). **AS-IS:** sistem memilih cost — jangan andalkan ini (GAP-SOG-13). Hindari kode duplikat lintas Other Cost & Other Discount.
 
 **Q: Max import?**
 A: 100 detail/SO; total baris tanpa hard cap tapi ~2.000 berisiko stuck (GAP-SOG-01).

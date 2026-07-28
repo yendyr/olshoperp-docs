@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 1.3
-last_updated: 2026-07-23
+version: 1.5
+last_updated: 2026-07-27
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.3
+source_version: 3.7
 owner: QA - Yemima
 status: draft
 ---
@@ -235,8 +235,11 @@ Pastikan angka masuk akal sebelum approve:
 - **Mau void PI yang sudah approved?** Belum bisa. Koordinasi manual.
 - **Retur setelah PI approved?** Pakai Return **Billed** → Debit Note → potong di payment berikutnya, bukan potong hutang PI secara langsung.
 - **Total Products terlihat lebih kecil dari hitungan manual?** Bisa karena aturan PPN coefficient — total akhir yang penting tetap mengikuti aturan pajak yang berlaku.
-- **Jumlah kolom DPP di detail beda dari Total DPP di tippy Totals?** Tidak boleh — laporkan ke support/QA (bug precision). Sama untuk kolom VAT vs Total VAT.
-- **Total satu baris beda 1 sen dari harga × qty?** Bisa dari pembulatan DPP & PPN terpisah (ikut dari PO). Laporkan jika total dokumen banyak yang miring. **(TO-BE)** Cocokkan ke invoice fisik lewat **Supplier's Invoice Amount**.
+- **Jumlah manual DPP + VAT di detail 1 sen lebih dari Net / Invoice Total?** Bisa — pembulatan tampilan 2 desimal. Acuan hutang = **Net**.
+  - Contoh: harga **38.000**, qty **25** → DPP **855.855,86** + VAT **94.144,15** = **950.000,01** di kalkulator, tapi **Net = 950.000,00**.
+  - Sama jika harga **40.000** + diskon **5%** (jadi 38.000) + qty **25**.
+  - Selisih besar (~0,03+) kolom vs tippy = laporkan (bug).
+- **Net / Invoice Total beda dari harga × qty?** Laporkan — tidak normal. **(TO-BE)** Cocokkan invoice fisik lewat **Supplier's Invoice Amount**.
 - **Setelah approve PI**, jurnal otomatis: tutup Unbilled Goods (dari Inbound) + catat PPN + hutang supplier. PPN **belum** ada di jurnal terima barang.
 
 ---
@@ -255,4 +258,4 @@ Untuk detail lebih lanjut (QA, developer, atau operator yang mau ngulik):
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v3.0 — tanpa menambah fakta baru di luar sumber.*
+*Derivatif dari requirement / knowledge-base / technical v3.7 — tanpa menambah fakta baru di luar sumber.*

@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.1
+last_updated: 2026-07-28
 owner: QA - Yemima
 status: draft
-aliases: [unassign wave, unassign waves, send to default waves, default wave, send wave logs]
+aliases: [unassign wave, unassign waves, send to default waves, default wave, send wave logs, processing order date]
 ---
 
 # Unassign Wave — Requirement Documentation
@@ -23,6 +23,7 @@ aliases: [unassign wave, unassign waves, send to default waves, default wave, se
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-07-28 | QA - Yemima | TO-BE: Processing Order Date manual per company (shared Skip Wave); fiscal reject; supersede sumber tanggal order+10m / now |
 | 1.0 | 2026-07-20 | QA - Yemima | Draft awal dari SoT v1.0 + verifikasi eligibility/count/send di codebase |
 
 ---
@@ -95,7 +96,8 @@ stateDiagram-v2
 | Pill **On Process to Default Waves {count}** | Filter `unassign_wave_status = in queue` + counter |
 | Global Search | Across kolom datatable |
 | Advanced Filter | Multi kondisi |
-| **Refresh Availability Stock** | Cek ulang availability stock di warehouse process; hapus flag stock error jika sudah cukup |
+| **Processing Order Date** | Date-time picker di **kiri** tombol Refresh Availability Stock. Nilai **per company**, shared dengan Skip Wave Process. Default awal = hari ini jam 23:59:59; setelah user simpan → nilai terakhir. Dipakai seluruh Send single/bulk (bukan tanggal order per baris). Tolak simpan jika tanggal di fiscal period closed/locked. Lihat §5.1 |
+| **Refresh Availability Stock** | Cek ulang availability stock di warehouse process; hapus flag stock error jika sudah cukup. **Open:** apakah cek memakai Processing Order Date atau `now` — lihat GAP-UW-04 |
 | Column show/hide | Standar datatable |
 | Export | Advanced export with/without detail |
 | **Log Data (Send Wave Logs)** | Slide right — histori send to default waves |
@@ -140,12 +142,27 @@ Fitur: global search, advanced filter, column show/hide, export advanced.
 
 ## 5. Form & Field
 
-Bukan form create/edit transaksi. Interaksi operator:
+Bukan form create/edit transaksi order. Interaksi operator:
 
-| Permukaan | Field yang bisa diinteraksi | Catatan |
-|-----------|----------------------------|---------|
-| Datalist | Checkbox, pill filter, advanced filter, action buttons | Tidak ada input transaksi baru |
-| Send Wave Logs | Read-only | Tidak ada field edit |
+| Permukaan | Field | Wajib? | Sumber | Validasi |
+|-----------|-------|--------|--------|----------|
+| Toolbar datalist | **Processing Order Date** | Ya (selalu ada nilai) | Setting company (shared Skip Wave Process) | Date-time valid; fiscal period harus open untuk tanggal tersebut; default awal = today 23:59:59 jika belum pernah di-set |
+| Datalist | Checkbox, pill filter, advanced filter, action buttons | — | — | — |
+| Send Wave Logs | Read-only | — | — | — |
+
+### 5.1 Processing Order Date (TO-BE)
+
+| Aturan | Detail |
+|--------|--------|
+| Scope | **Per company** — user di company yang sama melihat & memakai nilai yang sama; company lain independen |
+| Sync menu | Ubah di Unassign Wave = nilai di Skip Wave Process ikut (dan sebaliknya) |
+| Default awal | Belum pernah di-set → tampil **hari ini** jam **23:59:59** |
+| Persist | Setelah user mengubah & berhasil disimpan → default berikutnya = nilai terakhir (tidak reset ke now) |
+| Pemakaian | Semua Send to Default Waves (**single & bulk**) memakai tanggal ini sebagai tanggal processing — **bukan** tanggal transaksi masing-masing order |
+| Validasi stok/tanggal | Logic AS-IS **tidak berubah**; hanya **sumber tanggal** yang diganti ke field ini |
+| Fiscal | Simpan ditolak jika tanggal jatuh pada fiscal period closed/locked (atau tidak ada period open yang cover) |
+
+**Contoh:** Order trx 27 Jul 2026, stok baru ready 28 Jul → set Processing Order Date = 28 Jul 2026 23:59:59 → Send bisa jalan.
 
 ---
 
@@ -180,10 +197,13 @@ Filter + counter order `in queue`. Eksklusif dengan Failed Process di UI.
 3. Jika stock cukup → hapus flag stock error di order/detail.
 4. Error non-stock (bind, shipping, COA, dll) **tidak** dihapus.
 
+**Open (GAP-UW-04):** apakah langkah 2 memakai **Processing Order Date** (prediksi hasil Send) atau tetap kondisi **realtime (now)**.
+
 ### 6.4 Send to Default Waves — single & bulk
 
 - **Single:** Action per row.
 - **Bulk:** Checkbox → toolbar **Send to Default Waves**.
+- **Tanggal processing (TO-BE):** seluruh order dalam aksi memakai **Processing Order Date** company (§5.1), bukan tanggal order individual.
 
 Setelah klik: status → `in queue`, muncul di pill On Process. Sukses → `processed` (hilang dari list). Gagal → kembali `not in queue`; masuk Failed Process jika ada error tersimpan.
 
@@ -226,6 +246,8 @@ Skip Wave Process = shortcut batch yang menggabungkan send-to-default-wave + ski
 | V4 | Store aktif / tidak terhapus | Gagal, tercatat di log | Store inactive / Store deleted |
 | V5 | Lock per warehouse process | Tunggu antrian; bisa timeout | Lock wait timeout acquiring warehouse process lock |
 | V6 | `process_to_wave` untuk General | Tolak jika setting off | Cannot process to wave because the setting is currently off. |
+| V7 | Processing Order Date (saat simpan field) | Fiscal period harus open untuk tanggal dipilih | Pesan fiscal period closed/locked (helper standar) |
+| V8 | Sumber tanggal processing saat Send | Pakai Processing Order Date company | Tidak baca tanggal order per SO untuk path ini |
 
 ### 7.3 Validasi bulk action
 
@@ -269,6 +291,7 @@ flowchart TB
 | GAP-UW-01 | Order Failed Process karena store tanpa warehouse process bisa tampil tanpa icon Error Flag (counter pill tetap hitung) | Operator bingung kenapa masuk Failed Process tanpa icon | Open |
 | GAP-UW-02 | Counter Failed Process (`transaction_status = approved` saja) vs filter list (`approved` + `processed`) tidak identik | Angka pill bisa beda dari jumlah baris filter | Open |
 | GAP-UW-03 | Disable condition tombol Send belum sepenuhnya terdokumentasi di UI (AS-IS API: tolak jika bukan not in queue / setting off) | Test case QA perlu cover API + UI disable state | Open — sebagian terisi di §6.4 |
+| GAP-UW-04 | Error Flag / Refresh Availability Stock: belum diputus apakah cek stok memakai Processing Order Date atau `now` | Icon bisa tidak akurat memprediksi hasil Send | Open — pending PM |
 
 ---
 
@@ -283,6 +306,12 @@ A: Sering karena store belum punya warehouse process — bukan error validasi bi
 **Q: Bedanya Refresh Availability Stock vs retry Send?**  
 A: Refresh hanya membersihkan stock error jika stok sudah cukup. Error lain harus diperbaiki dulu, lalu Send ulang.
 
+**Q: Order stok baru ready setelah tanggal order — kenapa dulu tidak bisa Send?**  
+A: Tanggal processing dulu mengikuti tanggal order / eksekusi. TO-BE: set **Processing Order Date** ke tanggal stok ready, lalu Send.
+
+**Q: Ubah tanggal di Unassign Wave, Skip Wave Process ikut?**  
+A: Ya — satu setting per company.
+
 **Q: Sudah diproses tapi masih di list?**  
 A: Proses gagal → kembali not in queue. Cek Send Wave Logs.
 
@@ -295,4 +324,5 @@ A: Skip Wave = shortcut batch sampai shipped; validasi wave dan log-nya sama den
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-07-28 | Processing Order Date per company (TO-BE); GAP-UW-04 open |
 | 1.0 | 2026-07-20 | Initial dari SoT + codebase eligibility/count/send |

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.5
-last_updated: 2026-07-23
+version: 2.7
+last_updated: 2026-07-27
 owner: QA - Yemima
 status: review
 aliases: [PO requirement, purchase order docs, pembelian, PO validation]
@@ -14,11 +14,11 @@ aliases: [PO requirement, purchase order docs, pembelian, PO validation]
 **Modul:** Supply Chain Management (SCM) / Procurement  
 **Prefix transaksi:** `PO-`  
 **Audience:** PM, Operations, QA  
-**Status:** AS-IS verified against codebase (DPP/VAT rounding SoT 23 Jul 2026)
+**Status:** AS-IS + Rounding SoT **final** (disetujui end user 27 Jul 2026)
 
 **UI route:** `/supplychain/purchase-order`  
 **PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05)  
-**Rounding SoT:** `dpp-vat-rounding-calculation.md` (23 Jul 2026)
+**Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** — known behavior UI + resolusi export 4dp)
 
 ---
 
@@ -33,6 +33,8 @@ aliases: [PO requirement, purchase order docs, pembelian, PO validation]
 | 2.3 | 2026-07-17 | QA - Yemima | Compliance qa-docs-standard: Prasyarat/FAQ; trim import teknis ke technical; hapus §20 DEV (rumah technical); stateDiagram |
 | 2.4 | 2026-07-22 | QA - Yemima | DPP/VAT precision: detail & Totals memakai truncate 4dp × qty (`ETM-15313`); AC konsistensi; GAP-PO-08 sort residual |
 | 2.5 | 2026-07-23 | QA - Yemima | SoT rounding DPP/VAT (variable, tie ±1 sen, regresi qty non-kelipatan); rantai PO→Inbound→PI jurnal |
+| 2.6 | 2026-07-27 | QA - Yemima | Rounding SoT **final**: selisih 1 sen = known behavior UI only; Total/Net/Journal exact 4dp; resolusi export DPP/VAT 4dp (GAP-PO-10) |
+| 2.7 | 2026-07-27 | QA - Yemima | Contoh Case 4/5 siap Lingo/UG (SF-PRICE-01); pointer di §9.2 |
 
 ---
 
@@ -334,74 +336,81 @@ Guard: grand total before VAT tidak boleh < 0 setelah insert/update.
 
 ## 9. Section Totals
 
-| Field | Kalkulasi AS-IS |
-|-------|-----------------|
-| Total Products | `PurchaseOrderPrice::totalProduct` — Σ `roundHalfDown(truncateDecimal(each_price_before_discount_before_vat, 4) × qty)` |
-| Disc Products | Σ diskon produk per baris (pola truncate 4dp × qty yang sama) |
-| Total DPP (tooltip) | Σ baris DPP — **= Σ kolom DPP detail** (bukan `Grand÷1,11` sekali putar) |
-| Total VAT | Σ baris VAT — **= Σ kolom VAT detail** |
-| Total Additional Cost | Σ other costs |
-| Total Additional Disc | Σ other discounts |
-| **Net Purchase** | `grand_total_after_vat` = subtotal after VAT + Other Cost − Other Disc |
+| Field | Kalkulasi |
+|-------|-----------|
+| Total Products | Σ harga produk (backend / Path B helpers) |
+| Disc Products | Σ diskon produk |
+| Total DPP (tooltip) | Mengikuti akumulasi backend (presisi 4dp) — **bukan** wajib = jumlah manual kolom DPP UI 2dp |
+| Total VAT | Mengikuti akumulasi backend (presisi 4dp) |
+| Total Additional Cost / Disc | Σ other costs / discounts |
+| **Net Purchase / Total Price** | Mengikuti **backend exact** (4dp accumulate) — sumber kebenaran hutang |
 
-**AC — konsistensi display (ETM-15313):**
+**AC — kebenaran total (SoT final 27 Jul 2026):**
 
-- Σ DPP / VAT kolom detail **wajib sama** tippy Totals (selisih 0,01+ antar keduanya = defect display).
-- Unit DPP/VAT disimpan max **4 desimal**; total uang **2 desimal** (`roundHalfDown` setelah × qty).
+- **Net Purchase / Total Price / angka jurnal** = akumulasi backend pada presisi **4 desimal** (DPP+VAT komplemen → exact Net×Qty). **Tidak** boleh menyimpang karena rounding tie.
+- Kolom DPP & VAT di datalist = **tampilan** dibulatkan **2 desimal** per baris (kebiasaan Rupiah). Jika user **menjumlahkan manual** DPP+VAT yang tampil, bisa dapat **+0,01** vs Total Price baris — **known behavior**, bukan bug kalkulasi/DB.
+- Jangan “perbaiki” dengan mengubah round UI ke 4dp atau ubah rumus backend (ditolak end user). Solusi audit: **export 4dp** — §9.2b / GAP-PO-10.
 
-### 9.1 Variable & presisi (SoT 23 Jul 2026)
+### 9.1 Variable & presisi (SoT 27 Jul 2026)
 
 | Variable | Formula (konsep, VAT **Include** 11%) | Presisi |
 |----------|----------------------------------------|---------|
 | Unit Price | Input | Biasanya integer Rupiah |
-| Disc % | Input | Integer persen AS-IS FE `[VERIFY]` — jangan asumsikan desimal |
+| Disc % | Input | Integer persen AS-IS FE `[VERIFY]` |
 | Net Unit Price | `Unit × (100 − Disc) / 100` | 2dp clean jika Unit & Disc integer |
-| DPP / unit | Net / 1,11 (atau via `each_tax / fake_rate` di code) | **4dp** `truncateDecimal` |
-| VAT / unit | **Komplemen:** Net − DPP/unit (bukan % independen) | **4dp** |
-| DPP total | DPP/unit × Qty → round uang | **2dp** `roundHalfDown` |
-| VAT total | VAT/unit × Qty → round uang | **2dp** |
-| Total Price baris | DPP total + VAT total | **2dp** |
+| DPP / unit | Net / 1,11 (atau `each_tax / fake_rate`) | **4dp** storage |
+| VAT / unit | **Komplemen:** Net − DPP/unit | **4dp** storage |
+| DPP total (backend) | DPP/unit × Qty | **4dp** accumulate (tidak dibulatkan ke 2dp di storage) |
+| VAT total (backend) | VAT/unit × Qty | **4dp** accumulate |
+| Total Price (backend / UI total) | DPP total + VAT total (4dp) | Exact = Net × Qty |
+| DPP / VAT di **kolom UI** | Breakdown per baris | **2dp** display only |
 
-**Identitas 4dp:** DPP/unit + VAT/unit = Net Unit Price (karena komplemen). Setelah rounding **per sisi** ke 2dp, Total Price bisa **≠** Net × Qty sebesar **±0,01** (rounding tie).
+**Identitas 4dp:** DPP/unit + VAT/unit = Net. Akumulasi backend 4dp → Total Price exact. Round independen ke 2dp **hanya di UI breakdown**.
 
-**AS-IS code:** `PurchaseOrderDetailPrice::withTax` + `truncateDecimal` / `roundHalfDown` — lihat [technical §5](./technical.md#5-pricing--decimal-precision-etm-15313). Mode uang = **half-down** pada titik 0,5 (bukan half-up klasik).
+Helpers code: lihat [technical §5](./technical.md#5-pricing--decimal-precision-etm-15313--rounding-sot-27-jul).
 
-### 9.2 Rounding tie (±1 sen) — sumber selisih terverifikasi konsep
+### 9.2 Rounding tie — selisih tampilan UI saja (final / accepted)
 
-Dipicu kombinasi Unit + Disc + **Qty bukan kelipatan 10/100/1000** (contoh 25, 75, 175). Qty 500/1000 sering “kebetulan aman” — **bukan** bukti bebas bug.
+Dipicu Unit + Disc + **Qty bukan kelipatan 10/100/1000** (25, 75, 175…). Qty 500/1000 sering tidak memicu tie.
 
-**Referensi manual (VAT include 11%, Disc 0, Qty 25, Unit 38.000):**
+**Case referensi:** Unit 38.000, Disc 0, Qty 25 (atau Unit 40.000 Disc 5% → Net sama 38.000):
 
-| Step | Nilai |
-|------|-------|
-| Net | 38.000 |
-| DPP/unit (4dp) | 34.234,2342 |
-| VAT/unit (4dp) | 3.765,7658 |
-| DPP×25 sebelum round | 855.855,8550 |
-| VAT×25 sebelum round | 94.144,1450 |
-| Jumlah sebelum round | **950.000,0000** (= 38.000×25) |
-| Setelah round tiap sisi ke 2dp | Total Price bisa **950.000,01** (half-up) atau **949.999,99** (half-down AS-IS) |
+| Layer | DPP | VAT | Jumlah |
+|-------|-----|-----|--------|
+| Backend 4dp | 855.855,8550 | 94.144,1450 | **950.000,0000** (= Total Price / Net×Qty) |
+| UI breakdown 2dp | 855.855,86 | 94.144,15 | **950.000,01** jika dijumlah manual |
 
-Case sama dengan Disc **5%** integer pada Unit 40.000 → Net tetap 38.000 (clean); sumber error **bukan** tahap Net, melainkan tie di DPP/VAT total.
+**Status:** **Final — known behavior**, disetujui end user 27 Jul 2026. Bukan bug terbuka. DB / Section Total (Net) / Journal **tidak** kena selisih ini.
 
-**Do regression:** wajib include Qty non-kelipatan. **Don't** anggap lulus hanya dari case Qty 500/1000.
+**Contoh siap Lingo / user-guide:** angka Case di atas (38.000×25 → DPP 855.855,86 + VAT 94.144,15 vs Total 950.000,00) — card [SF-PRICE-01](../_meta/shared-capabilities/dpp-vat-breakdown-display.md); jangan ubah angka tanpa update SoT.
+
+**Do:** regresi Qty non-kelipatan tetap wajib (pastikan Total Price = Net×Qty; boleh assert Σ UI breakdown bisa +0,01).  
+**Don't:** ubah kalkulasi backend atau paksa UI 4dp untuk menutup selisih visual.
+
+### 9.2b Resolusi — export DPP/VAT 4 desimal (**TO-BE** GAP-PO-10)
+
+| Item | Keputusan |
+|------|-----------|
+| UI | Tetap **2dp** untuk DPP/VAT breakdown |
+| Backend | Tidak diubah |
+| Export PO (dan turunan PI / Journal) | Kolom DPP & VAT export = **4 desimal** (bukan 2dp) untuk audit/rekonsiliasi |
 
 ### 9.3 Rantai ke Inbound & Purchase Invoice
 
 ```mermaid
 flowchart LR
-  PO[PO line DPP/VAT 4dp + total 2dp] --> GRN[Inbound GRN]
-  GRN -->|"Dr Inventory/… Cr Unbilled<br/>amount = price before VAT × qty"| UB[Unbilled Goods]
+  PO[PO: DPP/VAT unit 4dp; Total exact] --> GRN[Inbound GRN]
+  GRN -->|"Dr Inventory/… Cr Unbilled<br/>= price before VAT × qty"| UB[Unbilled Goods]
   GRN --> PI[Purchase Invoice]
-  PI -->|"Dr Unbilled + VAT Cr AP"| GL[Journal PI]
+  PI -->|"Dr Unbilled + VAT Cr AP<br/>angka mengikuti backend"| GL[Journal PI]
 ```
 
 | Menu | Apa yang diwariskan / di-jurnal |
 |------|----------------------------------|
-| [Inbound](../supplychain-new-purchase-inbound/requirement.md) | Harga **sebelum VAT** dari PO (`each_price_before_vat`) → stok + jurnal Unbilled; **tanpa** baris VAT |
-| [Purchase Invoice](../accounting-supplier-invoice/requirement.md) | Warisi DPP/VAT unit PO; tampilkan ulang; jurnal clear Unbilled + Debit VAT + Credit AP |
+| [Inbound](../supplychain-new-purchase-inbound/requirement.md) | Harga **sebelum VAT** dari PO → stok + Unbilled; **tanpa** VAT |
+| [Purchase Invoice](../accounting-supplier-invoice/requirement.md) | Warisi unit DPP/VAT; UI breakdown 2dp; **Invoice Total / jurnal** mengikuti backend exact; export 4dp (TO-BE) |
 
-Pivot tax (`dpp_amount` / `vat_amount`) diisi helper truncate-first. Sort kolom DPP masih `SUM(dpp_amount)` — **GAP-PO-08**.
+Sort kolom DPP masih `SUM(dpp_amount)` — **GAP-PO-08**.
 
 ---
 
@@ -628,8 +637,9 @@ Create open + With/Without PR · supplier filter · outstanding/Single Use · pr
 | **GAP-PO-05** | Template xlsx tersedia | File **404** di FE `/files/` | **Asset missing** | Lihat penjelasan §19.1 |
 | **GAP-PO-06** | Print = Net Purchase layar | Print **exclude** Other Cost/Disc | **Incomplete print** | → **Pending Major P-PO-02** (End user) |
 | **GAP-PO-07** | Type PO locked setelah create | Import overwrite `with_pr`; BE update tidak lock | **Partial gap** | Lihat penjelasan §19.2 |
-| **GAP-PO-08** | Sort kolom DPP/VAT = nilai tampilan | `orderColumn` masih `SUM(dpp_amount)` / `SUM(vat_amount)` | **Residual** | Display sudah Path B; sort masih pivot — bisa beda urutan vs angka tampil |
-| **GAP-PO-09** | Total Price baris = Net × Qty pada rounding tie | DPP total + VAT total tiap sisi di-round 2dp | **Open / SoT** | Qty non-kelipatan (mis. 25) → ±0,01 vs Net×Qty; regresi wajib — lihat §9.2 |
+| **GAP-PO-08** | Sort kolom DPP/VAT = nilai tampilan | `orderColumn` masih `SUM(dpp_amount)` / `SUM(vat_amount)` | **Residual** | Display sudah Path B; sort masih pivot |
+| **GAP-PO-09** | Σ manual DPP+VAT UI 2dp = Total Price | UI round independen → +0,01 pada tie | **Accepted — known behavior** (27 Jul 2026) | Backend/Total/Journal exact 4dp; bukan bug |
+| **GAP-PO-10** | Export DPP/VAT pakai 4 desimal | Export masih 2dp seperti UI | **TO-BE** | Resolusi end user — audit/rekonsiliasi; UI tetap 2dp |
 
 ### 19.1 GAP-PO-05 — Template file missing (detail)
 
@@ -666,8 +676,9 @@ Butuh keputusan bisnis sebelum implementasi:
 | **P-PO-03** | 🟡 Medium | **Dev + QA** | Deploy template import xlsx (GAP-PO-05) | Download template 404 — operator tidak punya file resmi | IT deploy 2 file template atau FE generate template |
 | **P-PO-04** | 🟡 Medium | **PM + Dev** | Lock `with_pr` di backend + import (GAP-PO-07) | UI lock tapi API/import bisa ubah tipe | Apakah `with_pr` immutable setelah first detail / setelah create? |
 | **P-PO-05** | 🟡 Medium | **Dev** | Enable import Without PR terpisah (GAP-PO-04) | Mode class terpisah disabled | Satu alur cukup atau perlu split + unify max 500? |
-| **P-PO-06** | 🟡 Medium | **Dev + QA** | Samakan sort DPP/VAT dengan rumus tampilan (GAP-PO-08) | Sort `SUM(dpp_amount)` vs cell `each_dpp × qty` | Sort order bisa “salah” relatif ke angka yang user lihat |
-| **P-PO-07** | 🟡 Medium | **Finance + Dev** | Kebijakan rounding tie DPP+VAT (GAP-PO-09) | ±1 sen pada Total Price vs Net×Qty | Apakah kompensasi 1 sisi, round-last, atau terima + dokumentasikan? |
+| **P-PO-06** | 🟡 Medium | **Dev + QA** | Samakan sort DPP/VAT dengan rumus tampilan (GAP-PO-08) | Sort `SUM(dpp_amount)` vs cell display | Sort order bisa “salah” relatif ke angka yang user lihat |
+| **P-PO-07** | ✅ Closed | **Finance + End user** | Kebijakan rounding tie | **Accepted** known behavior UI (GAP-PO-09) | Jangan ubah backend/UI round |
+| **P-PO-08** | 🟡 Medium | **Dev** | Export DPP/VAT 4dp (GAP-PO-10) | Export PO (dan PI/Journal terkait) | Scope: format export saja |
 
 **Confirmed OK (bukan pending):** GAP-PO-02 (Void draft/open = Delete); GAP-PO-03 (Closed dari processed intentional).
 
