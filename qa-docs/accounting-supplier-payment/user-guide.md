@@ -2,19 +2,20 @@
 doc_type: user-guide
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 1.0
-last_updated: 2026-07-17
+version: 1.1
+last_updated: 2026-07-29
 source_docs: [requirement.md, knowledge-base.md, technical.md]
 source_version: 2.2
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Account Payment — Panduan Pengguna
 
 **Siapa yang baca panduan ini:** finance, AP clerk  
 **Menu di sistem:** Accounting → Account Payment  
-**Kode transaksi:** dimulai dengan `PY-`
+**Kode transaksi:** dimulai dengan `PY-`  
+**Feature Map / Lingo:** [feature-map.md](./feature-map.md)
 
 ---
 
@@ -41,7 +42,7 @@ flowchart LR
 **Versi teks (tanpa diagram):**
 
 1. Barang diterima (Inbound) lalu ditagih di **Purchase Invoice**.
-2. Bayar hutang di **Account Payment** (kas/bank dan/atau Debit Note).
+2. Bayar hutang di **Account Payment** ([kas/bank dan/atau Debit Note](#sf-lingo:SF-SRC-01)).
 3. Retur bisa menghasilkan **Debit Note** yang dipakai sebagai potongan di payment.
 
 🎬 [Interactive demo akan ditambahkan di sini]
@@ -66,7 +67,8 @@ stateDiagram-v2
 | **Approved** | Jurnal terbit, hutang berkurang | Tidak |
 | **Rejected** | Ditolak | — |
 
-> **Void payment approved belum tersedia.** Teliti sebelum Approve.
+> **Void payment approved belum tersedia.** Teliti sebelum Approve.  
+> Approve wajib [Source = Detail](#sf-lingo:SF-PAY-01) (strict balancing).
 
 ---
 
@@ -90,7 +92,7 @@ Pastikan:
 Setelah payment **di-approve**:
 
 1. Jurnal otomatis: hutang AP berkurang; kas/bank dan/atau DN terpakai.
-2. Sisa hutang di **Purchase Invoice** berkurang (partial → bisa dibayar lagi nanti).
+2. Sisa hutang di **Purchase Invoice** berkurang ([partial](#sf-lingo:SF-PAY-02) → bisa dibayar lagi nanti).
 3. DN yang dipakai: sisa DN berkurang.
 4. Import massal: hasilnya status **Open** — review dulu baru approve.
 
@@ -100,14 +102,14 @@ Setelah payment **di-approve**:
 
 ## 5. Yang Perlu Diperhatikan
 
-- **Kalau total sumber dana tidak sama dengan total alokasi PI**, Approve gagal — samakan Source dan Detail.
+- **Kalau total sumber dana tidak sama dengan total alokasi PI**, Approve gagal — samakan Source dan Detail ([Strict balancing](#sf-lingo:SF-PAY-01)).
 - **Kalau amount kas melebihi saldo rekening**, sistem menolak.
 - **Kalau amount DN melebihi sisa DN**, sistem menolak.
 - **Kalau kamu ubah header** (supplier/mata uang/tanggal) **setelah ada detail**, ditolak — hapus detail dulu.
 - **Kalau PI sedang dipakai payment lain** (Already Prepared), pilih PI lain atau selesaikan payment tersebut.
 - **Kalau mata uang sumber beda dari header**, ditolak.
 - **Kalau status masih Draft**, set **Open** dulu sebelum Approve.
-- **Kalau import Excel**, hanya **IDR**; satu import per company sekaligus; hasil **Open** untuk direview.
+- **Kalau import Excel**, hanya **IDR**; satu import per company sekaligus; hasil **Open** untuk direview ([Import](#sf-lingo:SF-IMP-01)).
 - **Kalau kamu mengandalkan Void setelah approve**, jangan — fitur belum berfungsi.
 - **Kalau bulk clearing Debit Note error**, pakai tambah DN satu per satu (bug FE).
 
@@ -130,22 +132,22 @@ Setelah payment **di-approve**:
 ### Langkah 2 — Tambah sumber dana
 
 1. Buka **Payment Source**.
-2. Tambah **Cash/Bank** (cek Balance) dan/atau **Debit Note**.
+2. Tambah [**Cash/Bank**](#sf-lingo:SF-SRC-01) (cek Balance) dan/atau [**Debit Note**](#sf-lingo:SF-SRC-01).
 3. Amount tidak boleh melebihi saldo / sisa DN.
 
 ### Langkah 3 — Alokasi ke PI
 
 1. Buka **Outstanding Purchase Invoice**.
-2. **Use** / **Allocate Full Amount** / **Bulk Use**.
-3. Isi **To Be Paid** (boleh sebagian).
+2. [**Use** / **Allocate Full Amount** / **Bulk Use**](#sf-lingo:SF-DET-01).
+3. Isi **To Be Paid** (boleh [sebagian](#sf-lingo:SF-PAY-02)).
 
 ### Langkah 4 — Adjustment (opsional)
 
-Tambah baris adjustment bila perlu (biaya admin, rounding).
+Tambah baris [**Adjustment**](#sf-lingo:SF-ADJ-01) bila perlu (biaya admin, rounding).
 
 ### Langkah 5 — Balance & Approve
 
-1. Pastikan **Total Source = Total Detail**.
+1. Pastikan **Total Source = Total Detail** ([Strict balancing](#sf-lingo:SF-PAY-01)).
 2. **Save All** → **Approve**.
 3. Cek hutang PI sudah berkurang.
 
@@ -154,7 +156,7 @@ Tambah baris adjustment bila perlu (biaya admin, rounding).
 ### Alternatif — Import massal
 
 1. Datalist → **Import Log**.
-2. Download template (3 sheet) → isi → upload.
+2. Download template (3 sheet) → isi → upload ([Import Account Payment](#sf-lingo:SF-IMP-01)).
 3. Review payment **Open** → Approve satu per satu.
 
 ---
@@ -176,6 +178,7 @@ Tambah baris adjustment bila perlu (biaya admin, rounding).
 
 | Dokumen | Isi |
 |---------|-----|
+| [feature-map.md](./feature-map.md) | Indeks sub-feature + Lingo |
 | [knowledge-base.md](./knowledge-base.md) | SOP operator, troubleshooting, FAQ |
 | [requirement.md](./requirement.md) | Aturan bisnis, validasi, gap |
 | [technical.md](./technical.md) | API, jurnal, import teknis |
@@ -184,4 +187,4 @@ Tambah baris adjustment bila perlu (biaya admin, rounding).
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.2 — tanpa menambah fakta baru di luar sumber.*
+*Derivatif dari requirement / knowledge-base / technical v2.2 — tanpa menambah fakta baru di luar sumber. Feature Map v1.0 ditautkan untuk Lingo.*

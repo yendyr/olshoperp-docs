@@ -146,6 +146,8 @@ A: Update status retur dari marketplace (refund/cancelled) ke datalist pill.
 
 | Doc | Path |
 |-----|------|
+| Feature Map | [feature-map.md](./feature-map.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | Requirement (full) | [requirement.md](./requirement.md) |
 | Finance menu | [../accounting-sales-return/knowledge-base.md](../accounting-sales-return/knowledge-base.md) |
 | Failed Ship | [../supplychain-failed-ship/knowledge-base.md](../supplychain-failed-ship/knowledge-base.md) |

@@ -2,11 +2,11 @@
 doc_type: technical
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.1
+last_updated: 2026-07-28
 owner: QA - Yemima
 status: draft
-aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic]
+aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing order date]
 ---
 
 # Skip Wave Process — Technical Documentation
@@ -14,7 +14,7 @@ aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic]
 **API prefix:** `omnichannel/transfer-summary/skip-wave-process`  
 **Module:** `Modules/OmniChannel`  
 **UI:** `/omni/skip-wave-process` · FE `@Omni/Processing/SkipWaveProcess/`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.0  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.1  
 **Batch codes:** `SW-` import · `WV-` wave · `SP-` processing
 
 ---
@@ -34,16 +34,20 @@ aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic]
 | Dispatch cron | `app/Console/Commands/SalesOrder/SkipWaveDispatchCommand.php` (`skip-wave:dispatch`) |
 | Shared wave | `Modules/OmniChannel/Jobs/SOApproveToWave.php` |
 | Shared skip | `Modules/OmniChannel/Jobs/SkipProcessingJob.php` (+ DO jobs, RetryJob) |
+| PL dates | `Modules/OmniChannel/Services/PicklistService.php` (`is_skip_process` trx date) |
 | Entities | `SkipWaveProcess`, `SkipWaveProcessUploadLog`, `SkipWaveProcessUploadLogDetail` |
+| **TO-BE setting** | `OmniSetting.processing_order_date` + shared GET/PUT + `validate_fiscal_period` |
+| **TO-BE resolver** | Helper company processing date — wire WaveService FIFO + PicklistService PL |
 
 ### Frontend
 
 | Path | Role |
 |------|------|
-| `…/SkipWaveProcess/DataList.vue` | Main list + Echo ETA |
+| `…/SkipWaveProcess/DataList.vue` | Main list + Echo ETA + **TO-BE** date picker kiri atas |
 | `SkipWaveProcessLogTable.vue` | Import logs + detail modal |
 | `SkipProcessingTransferLogTable.vue` / `SkipProcessingDoLogTable.vue` | Stage / DO drilldown |
 | Reuse | `UnassignWave/LogTables.vue`, `SkipProcessing/SkipProcessingLogTable.vue` |
+| **TO-BE** | Shared composable `useProcessingOrderDate` dengan Unassign Wave |
 
 ---
 
@@ -165,14 +169,16 @@ Hard cap: **1000** data rows. Chunks processing: 10 SO/job; DO create 100; appro
 | Upload details | File | Eligibility gate | — |
 | `unassign_wave_status` | Wave job | Wave Progress | Skip Processing eligibility |
 | Skip logs / DO | ProcessingService | Skip Processing column | Failed Ship / CI |
-| Transfer trx dates | Skip generate | AS-IS now+10s — GAP-SW-05 | Audit/report |
+| Transfer trx dates | Skip generate | **TO-BE:** PL = company Processing Order Date; cascade +10s; GAP-SW-05 superseded | Audit/report |
+| `processing_order_date` | OmniSetting | Shared UW + SW | Wave FIFO + PL |
 
 ---
 
 ## 11. Tests & QA Notes
 
 - Cover: all-or-nothing, lock conflict, cron gate global, 1000 cap, progress aggs, Echo ETA.  
-- Regresi GAP-SW-01/02/05.  
+- Cover Processing Order Date: default, persist, fiscal reject, company isolation, late-stock SO.  
+- Regresi GAP-SW-01/02; GAP-SW-05 superseded.  
 - Related docs Unassign/Skip Processing harus tetap konsisten saat ubah shared jobs.
 
 ---
@@ -183,7 +189,7 @@ Hard cap: **1000** data rows. Chunks processing: 10 SO/job; DO create 100; appro
 |-----|----------------|
 | GAP-SW-01 | ImportJob sets `is_eligible=false` if any failed row |
 | GAP-SW-02 | `SkipWaveDispatchCommand` `exists()` tanpa filter company |
-| GAP-SW-05 | Trx date logic di Skip Processing traits — basis eksekusi |
+| GAP-SW-05 | **Superseded** — implement Processing Order Date; wire `PicklistService` + `WaveService` |
 | — | ImportJob imports `SkipWaveProcessJob` but does not dispatch it |
 
 ---
@@ -192,4 +198,5 @@ Hard cap: **1000** data rows. Chunks processing: 10 SO/job; DO create 100; appro
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-07-28 | Processing Order Date; GAP-SW-05 superseded; PicklistService wire note |
 | 1.0 | 2026-07-20 | Initial dari SoT + ImportJob/cron map |

@@ -2,19 +2,20 @@
 doc_type: user-guide
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 1.1
-last_updated: 2026-07-23
+version: 1.2
+last_updated: 2026-07-28
 source_docs: [requirement.md, knowledge-base.md, technical.md]
 source_version: 2.3
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Purchase Inbound — Panduan Pengguna
 
 **Siapa yang baca panduan ini:** operator gudang, receiving, operations support  
 **Menu di sistem:** Supply Chain → Inbound → **BETA - New Purchase Inbound**  
-**Kode transaksi:** dimulai dengan `IN-`
+**Kode transaksi:** dimulai dengan `IN-`  
+**Feature Map / Lingo:** [feature-map.md](./feature-map.md)
 
 > Ada juga menu Purchase Inbound lama (tanpa COLLI). Backend sama; panduan ini untuk UI BETA.
 
@@ -44,7 +45,7 @@ flowchart LR
 
 1. **Purchase Order** sudah disetujui (atau partial processed).
 2. Barang datang → buat **Purchase Inbound** di menu ini.
-3. Setelah approve: stok masuk + jurnal Unbilled Goods.
+3. Setelah approve: stok masuk + jurnal Unbilled Goods ([tipe produk](#sf-lingo:SF-INB-03)).
 4. Tagih di **Purchase Invoice** (termasuk PPN), lalu bayar di Account Payment.
 
 🎬 [Interactive demo akan ditambahkan di sini]
@@ -69,7 +70,7 @@ stateDiagram-v2
 | **Approved** | Stok + jurnal sudah post | Tidak |
 | **Rejected** | Ditolak | Tidak (alur normal) |
 
-> Partial receiving boleh: beberapa GRN per PO. PO jadi **Processed** (sebagian) atau **Complete** (semua qty diterima).
+> [Partial receiving](#sf-lingo:SF-INB-02) boleh: beberapa GRN per PO. PO jadi **Processed** (sebagian) atau **Complete** (semua qty diterima).
 
 ---
 
@@ -97,7 +98,7 @@ Setelah GRN **di-approve**:
 4. Lanjut **Purchase Invoice** untuk tagihan + PPN.
 5. Opsional: **Print** PDF GRN atau **Print RIR**.
 
-Jika pakai **COLLI** dan job gagal: status kembali **Open**, dapat notifikasi — **Approve ulang**.
+Jika pakai **[COLLI](#sf-lingo:SF-INB-01)** dan job gagal: status kembali **Open**, dapat notifikasi — **Approve ulang**.
 
 > Void GRN yang sudah approved **belum berfungsi** di sistem saat ini. Koordinasikan dengan admin/dev jika perlu koreksi.
 
@@ -139,15 +140,17 @@ Jika pakai **COLLI** dan job gagal: status kembali **Open**, dapat notifikasi �
 
 1. Buka panel **Outstanding PO**.
 2. Pilih cara:
-   - **Bulk Use** — banyak baris, qty default = sisa.
-   - **Single Use** — isi qty, unit, batch, serial, expired.
-   - **Select Product** — shortcut satu SKU.
+   - [**Bulk Use**](#sf-lingo:SF-DET-01) — banyak baris, qty default = sisa.
+   - [**Single Use**](#sf-lingo:SF-DET-01) — isi qty, unit, batch, serial, expired.
+   - [**Select Product**](#sf-lingo:SF-DET-01) — shortcut satu SKU.
+   - [**Allocate Full Qty**](#sf-lingo:SF-DET-02) — ambil sisa penuh (bantu selisih desimal unit).
 3. Pastikan qty ≤ sisa PO.
+4. Opsional massal: [**Import Excel**](#sf-lingo:SF-IMP-01) (standard atau colli).
 
 ### Langkah 3 — COLLI (opsional)
 
 1. Aktifkan **Group view**.
-2. Isi **jumlah koli** dan **isi per koli**.
+2. Isi **jumlah koli** dan **isi per koli** ([COLLI](#sf-lingo:SF-INB-01)).
 3. Inbound Qty terisi otomatis.
 4. Kalau colli = 0 → isi qty manual seperti biasa.
 
@@ -165,7 +168,7 @@ Jika pakai **COLLI** dan job gagal: status kembali **Open**, dapat notifikasi �
 |-----------|---------|
 | Tagih supplier | **Purchase Invoice** |
 | Cetak | **Print** / **Print RIR** |
-| Partial lagi | Buat GRN baru dari sisa PO |
+| Partial lagi | Buat GRN baru dari sisa PO ([Partial receiving](#sf-lingo:SF-INB-02)) |
 
 ---
 
@@ -174,8 +177,8 @@ Jika pakai **COLLI** dan job gagal: status kembali **Open**, dapat notifikasi �
 - **Supplier kosong?** Approve PO dulu.
 - **BETA vs menu lama?** BETA = COLLI + UI baru; backend sama.
 - **Partial OK** — boleh beberapa kali terima sampai penuh.
-- **Service** = tidak ada Stock ID; jurnal biaya operasional.
-- **Fix Asset** = ada Stock ID; jurnal Debit Assets.
+- **[Service](#sf-lingo:SF-INB-03)** = tidak ada Stock ID; jurnal biaya operasional.
+- **[Fix Asset](#sf-lingo:SF-INB-03)** = ada Stock ID; jurnal Debit Assets.
 - **COLLI stuck?** Tunggu progress; kalau error, approve ulang.
 - **Void tidak jalan?** Known issue — hubungi admin/dev.
 - **Import:** PO harus approved, SKU di PO, qty ≤ sisa; ada template colli.
@@ -186,6 +189,7 @@ Jika pakai **COLLI** dan job gagal: status kembali **Open**, dapat notifikasi �
 
 | Dokumen | Isi |
 |---------|-----|
+| [feature-map.md](./feature-map.md) | Indeks sub-feature + Lingo |
 | [knowledge-base.md](./knowledge-base.md) | SOP operator, troubleshooting, FAQ |
 | [requirement.md](./requirement.md) | Aturan bisnis, validasi, gap |
 | [technical.md](./technical.md) | API, job COLLI, jurnal teknis |
@@ -194,4 +198,4 @@ Jika pakai **COLLI** dan job gagal: status kembali **Open**, dapat notifikasi �
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.2 — tanpa menambah fakta baru di luar sumber.*
+*Derivatif dari requirement / knowledge-base / technical v2.3 — tanpa menambah fakta baru di luar sumber. Feature Map v1.0 ditautkan untuk Lingo.*

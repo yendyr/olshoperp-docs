@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.1
+last_updated: 2026-07-28
 owner: QA - Yemima
 status: draft
-aliases: [skip wave process, skip wave, upload skip wave, SW batch]
+aliases: [skip wave process, skip wave, upload skip wave, SW batch, processing order date]
 ---
 
 # Skip Wave Process — Requirement Documentation
@@ -25,6 +25,7 @@ Related: [Unassign Wave](../omni-unassign-wave/requirement.md) · [Skip Processi
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-07-28 | QA - Yemima | TO-BE Processing Order Date per company (shared Unassign Wave); supersede GAP-SW-05 order+10m |
 | 1.0 | 2026-07-20 | QA - Yemima | Initial 5-file dari SoT v1.0 + verifikasi ImportJob/cron/gaps SW-01…05 |
 
 ---
@@ -109,7 +110,11 @@ Status per-order di upload detail (Success/Failed) = label hasil, bukan FSM batc
 
 ### 4.2 Fitur
 
-Global Search · Column Show/Hide · Export advanced · **Import** (download template + upload).
+| Fitur | Perilaku |
+|-------|----------|
+| **Processing Order Date** | Date-time picker di **pojok kiri atas** (posisi Create). Shared per company dengan Unassign Wave. Default awal = today 23:59:59; setelah simpan = nilai terakhir. Semua order di import batch memakai tanggal ini. Tolak simpan jika fiscal period closed/locked. Lihat §5.1 |
+| Global Search · Column Show/Hide · Export | Standar |
+| **Import** | Download template + upload |
 
 ### 4.3 Log Data — Import Logs
 
@@ -128,12 +133,27 @@ Global Search · Column Show/Hide · Export advanced · **Import** (download tem
 
 ## 5. Form & Field
 
-Bukan form transaksi — upload saja.
+Bukan form transaksi order — upload + setting tanggal processing.
 
 | Field | Wajib? | Validasi | Catatan |
 |-------|--------|----------|---------|
+| **Processing Order Date** | Ya (selalu ada nilai) | Date-time valid; fiscal period open | Per company; shared Unassign Wave — §5.1 |
 | File Import | Ya | xlsx/xls/csv; header Order No; ≥1 data; ≤1000 baris | Template 1 kolom |
 | Order No (isi file) | Ya | Found, unik, company, approved/processed, wave unassigned | Banyak baris |
+
+### 5.1 Processing Order Date (TO-BE)
+
+| Aturan | Detail |
+|--------|--------|
+| Scope | Per company; sync dengan Unassign Wave |
+| UI | Pojok kiri atas list Skip Wave Process |
+| Default awal | Today **23:59:59** jika belum pernah di-set |
+| Persist | Setelah user simpan → nilai terakhir |
+| Pemakaian | **Semua** order di batch Skip Wave (fase wave + skip sampai Shipped) memakai tanggal ini — **bukan** tanggal order individual |
+| Validasi stok/tanggal | Logic tetap; hanya sumber tanggal berubah |
+| Fiscal | Tolak simpan jika period closed/locked |
+
+**Contoh:** Order trx 27 Jul, stok ready 28 Jul → set Processing Order Date = 28 Jul → upload Skip Wave → batch bisa lanjut sampai shipped.
 
 ---
 
@@ -161,10 +181,13 @@ Cron `skip-wave:dispatch` tiap menit memicu `SkipWaveProcessJob` untuk `in_queue
 
 Reuse job/log Unassign Wave + Skip Processing. Waves Management **dilewati** (langsung processing setelah Default Wave).
 
-### 6.4 Trx date transfer
+### 6.4 Trx date transfer / tanggal processing
 
-**AS-IS:** basis waktu eksekusi + interval 10 detik antar dokumen.  
-**TO-BE:** basis trx date order + 10 menit, interval 10 detik tetap — GAP-SW-05.
+| Era | Perilaku |
+|-----|----------|
+| AS-IS (sebelum improvement) | Sebagian path basis eksekusi / `now`; PL skip process memakai `SO.transaction_date + 10 menit`; cascade dokumen berikutnya `+10 detik` |
+| TO-BE lama (GAP-SW-05) | Basis order + 10 menit — **digantikan** |
+| **TO-BE sekarang** | Basis = **Processing Order Date** company (§5.1). Interval **+10 detik** antar dokumen transfer dalam rantai skip **tetap**. Validasi stok memakai tanggal yang sama |
 
 ---
 
@@ -188,7 +211,14 @@ Ada batch aktif → baru tetap `in_queue`. Tidak ada → tertua eligible mulai.
 
 ### 7.5 Stage 2 (ringkas)
 
-WH virtual kurang · shipper tanpa 3PL · PL/CL/Packing in progress · Void — ikut aturan Skip Processing.
+WH virtual kurang · shipper tanpa 3PL · PL/CL/Packing in progress · Void — ikut aturan Skip Processing. Tanggal processing = company Processing Order Date.
+
+### 7.6 Processing Order Date (POD1–POD2)
+
+| # | Kondisi | Behavior |
+|---|---------|----------|
+| POD1 | Simpan tanggal di fiscal closed/locked | Tolak; nilai lama tetap |
+| POD2 | Stage 2 send/skip | Semua SO batch pakai POD company, bukan trx date SO |
 
 ---
 
@@ -224,7 +254,7 @@ flowchart TB
 | GAP-SW-02 | Antrian global lintas company | Open |
 | GAP-SW-03 | Sequencing batch sudah ada | Resolved |
 | GAP-SW-04 | Completed At + ETA sudah ada | Resolved |
-| GAP-SW-05 | Trx date transfer masih basis eksekusi, bukan order+10m | Open |
+| GAP-SW-05 | Trx date transfer order+10m | **Superseded** oleh Processing Order Date (§5.1 / §6.4) |
 
 ---
 
@@ -235,7 +265,9 @@ flowchart TB
 **Q: Total Order Processed < total file?** Validasi background masih jalan.  
 **Q: Download file?** Max 24 jam.  
 **Q: Lama pending?** Ada batch aktif lain (mungkin company lain — GAP-SW-02).  
-**Q: Shipped bermasalah?** Lanjut Failed Ship.
+**Q: Shipped bermasalah?** Lanjut Failed Ship.  
+**Q: Processing Order Date ikut Unassign Wave?** Ya — satu setting per company.  
+**Q: Order stok terlambat dari tanggal order?** Set Processing Order Date ke tanggal stok ready, lalu upload.
 
 ---
 
@@ -243,4 +275,5 @@ flowchart TB
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-07-28 | Processing Order Date; GAP-SW-05 superseded |
 | 1.0 | 2026-07-20 | Dari SoT v1.0 ke qa-docs-standard |

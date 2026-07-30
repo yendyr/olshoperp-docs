@@ -16,6 +16,7 @@ Menu **Purchase Invoice** (Accounting / Account Payable).
 **Shared capabilities:** [../_meta/shared-capabilities/](../_meta/shared-capabilities/)  
 **Proposal:** [../_meta/proposals/feature-map-and-capability-lingo.md](../_meta/proposals/feature-map-and-capability-lingo.md)  
 **User-guide:** v1.5 · `source_version` 3.7  
+**Help Center overview:** ID v1.1
 **Version (requirement):** 3.6 · **KB:** 3.7 · **Technical:** 3.5 · **Feature Map:** 1.1 · **Last updated:** 2026-07-27
 
 ## Changelog
@@ -28,6 +29,7 @@ Menu **Purchase Invoice** (Accounting / Account Payable).
 | 3.5b | 2026-07-27 | Feature Map → tab `feature-map.md`; Label UI = Lingo click; auto-highlight lintas layer |
 | 3.6 | 2026-07-27 | Rounding SoT **final**: GAP-PI-05 Accepted (UI-only); Invoice Total/jurnal exact; export 4dp GAP-PI-07; UG v1.4 |
 | 3.7 | 2026-07-27 | Contoh Case 4/5 di KB/UG/Lingo; SF-PRICE-01 shared; SF-TOT-01 contoh angka |
+| HC-ID 1.1 | 2026-07-29 | Help Center Purchase Invoice versi Indonesia diperbarui agar lebih ramah dan mudah dipahami pengguna |
 
 ## Related menus
 

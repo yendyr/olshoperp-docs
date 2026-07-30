@@ -7,7 +7,7 @@ status: draft
 
 ### Introduction to OlshopERP
 
-OlshopERP unifies Accounting, Sales/Omnichannel, and Supply Chain in one platform — from orders to financial reports. Open the full [Introduction](/docs/introduction).
+A unified ERP for Accounting, OmniChannel, and Supply Chain — onboarding for staff and new tenants. Open the full [Introduction](/docs/introduction).
 
 ### Help on every menu
 

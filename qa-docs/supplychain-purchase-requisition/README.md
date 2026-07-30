@@ -3,11 +3,16 @@
 | Layer | File | Status |
 |-------|------|--------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | review |
+| Feature Map | [feature-map.md](./feature-map.md) | draft |
 | Requirement | [requirement.md](./requirement.md) | review |
 | Technical | [technical.md](./technical.md) | review |
+| User Guide | [user-guide.md](./user-guide.md) | review |
+| Capability cards | [capabilities/](./capabilities/) | draft |
 
-**Menu:** Purchase Requisition · **Route:** `supplychain/purchase-requisition` · **Prefix:** `PR-`  
+**Menu:** Purchase Requisition · **Route:** `/supplychain/purchase-requisition` · **Prefix:** `PR-`  
+**Help Center overview:** [`_meta/docs-hub/menus/supplychain-purchase-requisition/`](../_meta/docs-hub/menus/supplychain-purchase-requisition/)  
 **PM source:** `purchase_requisition_requirement.md` v1.0 (2026-07-04)  
+**3 layer version:** 2.1 · **User-guide:** v1.0 · `source_version` 2.1 · **Feature Map:** 1.0 · **Last updated:** 2026-07-29  
 **Maintenance owner:** QA — Yemima
 
 ## Changelog
@@ -17,6 +22,7 @@
 | 1.0 | 2026-06-19 | Initial draft from codebase |
 | 2.0 | 2026-07-05 | Full rewrite: PM merge, import/export/print/duplicate, UI buttons, gaps §13–§18 |
 | 2.1 | 2026-07-05 | Codebase canonical (100 rows, ref 30, delete draft/open, qty int, single approval); §2.3 closure paths; import validation expanded |
+| 2.1b | 2026-07-29 | Feature Map + 5 capability cards; user-guide v1.0 (review); Help Center overview en/id |
 
 ## Related menus
 
@@ -30,7 +36,7 @@
 - PR selesai: **complete** (auto full PO qty) **atau** **closed** (manual) — keduanya tidak bisa ke PO baru
 - Max **100** detail per PR; reference max **30**; delete **draft/open** only
 - Qty manual **integer**; import qty ≥ 1 (int/double)
-- Approval **single-level** (`gate_menus.approval = 1`)
+- Approval **single-level**
 - Import: 5 kolom template; pre-validation all-or-nothing; duplicate SKU = baris baru (no merge)
 - Close manual: datalist ✅ · form ClosedDialog kirim void → **DEV-PR-01**
 
@@ -38,3 +44,5 @@
 
 - FE: `olshoperp-frontend/src/pages/SCM/PurchaseRequisition/`
 - BE: `PurchaseRequisitionController.php`, `PurchaseRequisitionDetailController.php`, `PurchaseRequisitionImport.php`
+
+> Test cases (non-canonical): [test-cases/](./test-cases/)

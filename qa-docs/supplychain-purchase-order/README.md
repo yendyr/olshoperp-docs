@@ -5,13 +5,17 @@ Menu **Purchase Order** (Supply Chain / Procurement).
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Feature Map | [feature-map.md](./feature-map.md) | Operator, QA (Lingo index) | draft |
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
-| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
+| Capability cards | [capabilities/](./capabilities/) | Lingo-style SF Entry | draft |
 
+**UI route:** `/supplychain/purchase-order`  
+**Help Center overview:** [`_meta/docs-hub/menus/supplychain-purchase-order/`](../_meta/docs-hub/menus/supplychain-purchase-order/) (`overview.en.md` / `overview.id.md`)  
 **SoT / PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05)  
 **Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)  
-**3 layer version:** 2.7 · **User-guide:** v1.4 · `source_version` 2.7 · **Last updated:** 2026-07-27
+**3 layer version:** 2.7 · **User-guide:** v1.5 · `source_version` 2.7 · **Feature Map:** 1.0 · **Last updated:** 2026-07-28
 
 ## Changelog
 
@@ -26,6 +30,9 @@ Menu **Purchase Order** (Supply Chain / Procurement).
 | 2.5 | 2026-07-23 | Rounding SoT: variable DPP/VAT, tie ±1 sen, rantai jurnal Inbound→PI; GAP-PO-09; UG v1.2 |
 | 2.6 | 2026-07-27 | Rounding SoT **final**: UI-only +0,01 known behavior; Total/Journal exact; export 4dp TO-BE (GAP-PO-10); UG v1.3 |
 | 2.7 | 2026-07-27 | Contoh Case 4/5 (38.000×25) di KB + UG; Lingo shared SF-PRICE-01 |
+| 2.7b | 2026-07-28 | Feature Map + 6 capability cards; UG v1.5 (SF tags, status review); Help Center overview en/id |
+| HC 1.1 | 2026-07-29 | Help Center overview PO diperluas (ramah end-user): tipe With/Without PR, import Excel, field reference, gaps, troubleshooting, FAQ — en + id |
+| HC 1.1a | 2026-07-30 | Help Center overview id/en — embed screenshot Lokasi Menu & Workspace (Drive hotlink) |
 
 ## Related menus
 

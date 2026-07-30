@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.1
+last_updated: 2026-07-28
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.0
+source_version: 1.1
 owner: QA - Yemima
 status: draft
 ---
@@ -62,6 +62,7 @@ flowchart LR
 
 Pastikan:
 
+- **Processing Order Date** sudah sesuai hari proses (default hari ini 23:59:59). Order lama dengan stok baru ready → set ke tanggal stok ready.
 - Order **approved** (atau processed) dan **belum** masuk Default Wave.
 - Order milik **company** yang sedang kamu login.
 - Order No **tidak duplikat** dalam satu file.
@@ -84,6 +85,8 @@ Pastikan:
 
 ## 5. Yang Perlu Diperhatikan
 
+- **Processing Order Date** di pojok kiri atas dipakai **seluruh** order dalam file — sama dengan Unassign Wave (satu company).
+- Tidak bisa simpan tanggal di periode akuntansi yang sudah ditutup.
 - Kalau **satu** Order No salah / tidak ketemu / duplikat, **seluruh file gagal** diproses — tidak ada yang lanjut.
 - Boleh upload banyak file, tapi sistem proses **satu per satu** sampai selesai.
 - Progress Wave = sudah di Default Wave; kolom Skip Processing = sudah sampai Shipped.
@@ -96,12 +99,13 @@ Pastikan:
 ## 6. Langkah-Langkah (Step by Step)
 
 1. Buka **Omni → Skip Wave Process**.
-2. Klik **Import** → download template.
-3. Isi kolom **Order No** (satu order per baris).
-4. Upload file.
-5. Cek toast / **Log Data** — pastikan import sukses.
-6. Di list utama, pantau **Wave Progress** dan **Skip Processing** sampai Completed.
-7. Jika gagal: klik **Total Order Processed** di Log Data → baca pesan per baris → perbaiki → upload ulang.
+2. Cek / set **Processing Order Date** (pojok kiri atas).
+3. Klik **Import** → download template.
+4. Isi kolom **Order No** (satu order per baris).
+5. Upload file.
+6. Cek toast / **Log Data** — pastikan import sukses.
+7. Di list utama, pantau **Wave Progress** dan **Skip Processing** sampai Completed.
+8. Jika gagal: klik **Total Order Processed** di Log Data → baca pesan per baris → perbaiki → upload ulang.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -112,8 +116,9 @@ Pastikan:
 - **Semua gagal padahal cuma 1 salah** — memang begitu (all-or-nothing).
 - **Angka Processed masih naik** — validasi masih berjalan di background.
 - **Lama Pending** — tunggu batch aktif lain selesai.
+- **Order stok terlambat** — set Processing Order Date ke tanggal stok ready.
 - **Beda Skip Processing menu** — itu untuk order yang sudah di wave, dipilih dari list.
-- **Beda Unassign Wave** — itu hanya sampai Default Wave, tidak auto sampai shipped.
+- **Beda Unassign Wave** — itu hanya sampai Default Wave, tidak auto sampai shipped; tanggal processing-nya sama.
 - **Waves Management** — tidak dipakai di jalur ini (langsung skip setelah Default Wave).
 
 ---

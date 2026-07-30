@@ -5,9 +5,14 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | review |
+| Feature Map | [feature-map.md](./feature-map.md) | Semua | draft |
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | End-user | review |
+| Capability cards | [capabilities/](./capabilities/) | Semua | draft |
 
+**Help Center:** [`_meta/docs-hub/menus/system-product/`](../_meta/docs-hub/menus/system-product/)  
+**3 layer:** v2.1 · **User Guide:** v1.0 (`source_version` 2.1) · **Feature Map:** v1.0  
 **Maintenance owner:** QA — Yemima
 
 ---
@@ -16,6 +21,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-07-29 | 2.1b | Feature Map + 6 Lingo cards; user-guide v1.0; Help Center overview en/id |
 | 2026-07-05 | 2.1 | Bundle proporsi Price Before VAT (§11), parent tax hide, GAP-SP-12 resolved |
 | 2026-07-05 | 2.0 | Full rewrite: codebase AS-IS, D&W per unit (artifact 7 Mei 2026), bundle/random/import, gaps §19–§21 |
 | 2026-06-23 | 1.0 | Initial KB draft |

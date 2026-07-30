@@ -137,3 +137,16 @@ A: Sisa saldo CN yang masih bisa dialokasikan (setelah yang sudah/sedang dipakai
 A: CN dibuat manual tanpa dokumen asal.
 
 **Field yang tidak perlu diurus operator:** ID internal, Data Owner, kolom tanggal tersembunyi untuk sort backend.
+
+---
+
+## Related Documents
+
+| Doc | Path |
+|-----|------|
+| Feature Map | [feature-map.md](./feature-map.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
+| Requirement | [requirement.md](./requirement.md) |
+| Technical | [technical.md](./technical.md) |
+| Sales Return Approval | [../accounting-sales-return/knowledge-base.md](../accounting-sales-return/knowledge-base.md) |
+| Account Receive | [../accounting-customer-payment/](../accounting-customer-payment/) |

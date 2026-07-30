@@ -235,6 +235,8 @@ A: Produk harus **Active**, stok cukup, COA Group terisi. Lihat [Instant Settlem
 
 | Doc | Path |
 |-----|------|
+| Feature Map | [feature-map.md](./feature-map.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | Requirement | [requirement.md](./requirement.md) |
 | Technical | [technical.md](./technical.md) |
 | Bill of Material | [../bill-of-material/knowledge-base.md](../bill-of-material/knowledge-base.md) |

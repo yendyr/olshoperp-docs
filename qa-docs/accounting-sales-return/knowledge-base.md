@@ -90,6 +90,9 @@ A: Bisa aktif via Global Setting Sales Return Configuration — SR open lama aut
 
 | Doc | Path |
 |-----|------|
+| Feature Map | [feature-map.md](./feature-map.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | Requirement Finance | [requirement.md](./requirement.md) |
 | Canonical (full flow) | [../supplychain-sales-returns/requirement.md](../supplychain-sales-returns/requirement.md) |
 | Failed Ship vs SR | [../supplychain-failed-ship/knowledge-base.md](../supplychain-failed-ship/knowledge-base.md) |
+| Credit Note | [../accounting-credit-note/knowledge-base.md](../accounting-credit-note/knowledge-base.md) |

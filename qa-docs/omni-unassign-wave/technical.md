@@ -2,18 +2,18 @@
 doc_type: technical
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.1
+last_updated: 2026-07-28
 owner: QA - Yemima
 status: draft
-aliases: [unassign wave API, SOApproveToWave, send wave logs technical]
+aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processing order date]
 ---
 
 # Unassign Wave — Technical Documentation
 
 **API prefix:** `omnichannel/unassign-wave`  
 **Module:** `Modules/OmniChannel`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.0  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.1  
 **Default wave:** `Wave::getDefaultWave()` → wave `id = 1` (cache `default_wave_1`)
 
 ---
@@ -38,6 +38,8 @@ aliases: [unassign wave API, SOApproveToWave, send wave logs technical]
 | Job attach | `Modules/OmniChannel/Jobs/MoveSOToWaveMixJob.php` (`dispatchSync`) |
 | Export jobs | `UnassignWaveExportExcelJob`, `UnassignWaveLogExportJob` |
 | Setting gate | `Modules/GeneralSetting/Entities/OrderProcessSetting.php` (`process_to_wave`) |
+| **TO-BE setting** | `Modules/OmniChannel/Entities/OmniSetting.php` (+ migration kolom `processing_order_date`) — shared Skip Wave |
+| **TO-BE fiscal** | `validate_fiscal_period()` di `app/Helpers/MainHelper.php` |
 
 ### Frontend
 
@@ -48,8 +50,9 @@ aliases: [unassign wave API, SOApproveToWave, send wave logs technical]
 | Logs | `olshoperp-frontend/src/pages/Omni/UnassignWave/LogTables.vue` |
 | Progress | `olshoperp-frontend/src/pages/Omni/UnassignWave/ProgressChecker.vue` |
 | Bulk/single actions | `olshoperp-frontend/src/components/project/DataTables/DataTablesV3.vue` |
+| **TO-BE** | Date-time picker di slot `#filter` kiri Refresh Availability Stock; shared composable GET/PUT processing date |
 
-Tidak ada Pinia store khusus — axios di page + DataTablesV3.
+Tidak ada Pinia store khusus AS-IS — axios di page + DataTablesV3. TO-BE: composable shared dengan Skip Wave Process.
 
 ### Cross-module (Skip Wave reuse)
 
@@ -79,6 +82,13 @@ Prefix: `/api/omnichannel/` · middleware `auth:sanctum` + `auth_verified`
 | GET | `unassign-wave/data-logs/export-*` | Log export |
 | GET | `unassign-wave/export-*` | List export |
 
+**TO-BE (shared, usulan path):**
+
+| Method | Path | Action |
+|--------|------|--------|
+| GET | `omnichannel/processing-order-date` (atau via OmniSetting) | Resolve stored / default `today 23:59:59` |
+| PUT | same | Persist + `validate_fiscal_period` + `OmniSetting::refreshCache` |
+
 Query list: `failed_process=true`, `on_process_queue=true`.
 
 ---
@@ -93,6 +103,13 @@ Query list: `failed_process=true`, `on_process_queue=true`.
 | `transaction_status` | List: `approved` **atau** `processed` |
 | `type_sales_order` | `platform` \| `general`; filtered by `process_to_wave` |
 | Detail qty | Tidak boleh ada detail dengan `prepared_to_out_quantity` / `processed_to_out_quantity` > 0 |
+
+### `omni_settings` (TO-BE)
+
+| Column | Notes |
+|--------|-------|
+| `processing_order_date` | `datetime` nullable; `NULL` = belum di-set → API kembalikan default computed |
+| `owned_by` | Company scope + cache key existing OmniSetting |
 
 ### `omni_unassign_wave_logs`
 
@@ -126,6 +143,12 @@ Query list: `failed_process=true`, `on_process_queue=true`.
 | Bus batch `so_approve_to_wave` | `allowFailures()`; `finally` reset sisa `in queue` → `not in queue` |
 | Lock | `lock:wh_process:{wh_process_id}` TTL 120s, wait 30s |
 
+**TO-BE tanggal processing:** helper resolver company (mis. `ProcessingOrderDate::forCompany`) dipakai di:
+
+- `WaveService::checkWHProcessSOGeneral` — ganti `now()` pada FIFO / `request_date`
+- `WaveService` header TF default wave — ganti `transaction_date => now()`
+- Path single + bulk send (lewat job yang sama)
+
 Optional AWB: `OmniService::shipSalesOrder` jika config `omni.shipped_at.default_wave` + platform SO — boundary rollback lihat §7.
 
 ---
@@ -136,6 +159,7 @@ Optional AWB: `OmniService::shipSalesOrder` jika config `omni.shipped_at.default
 sequenceDiagram
   participant FE as DataList/DataTablesV3
   participant API as UnassignWaveController
+  participant POD as ProcessingOrderDate
   participant Batch as Bus batch so_approve_to_wave
   participant Job as SOApproveToWave
   participant Logic as MoveToDefaultWaveLogic
@@ -143,6 +167,8 @@ sequenceDiagram
   participant WS as WaveService
   participant Log as UnassignWaveLog
 
+  FE->>API: GET/PUT processing-order-date
+  Note over API,POD: fiscal validate on PUT
   FE->>API: POST send-to-wave / bulk-send-to-wave
   API->>API: validateBundleComponents; set in queue
   API->>Batch: Bus::batch SOApproveToWave allowFailures
@@ -151,7 +177,8 @@ sequenceDiagram
   Job->>Job: Cache lock wh_process
   Job->>Logic: handle
   Logic->>Mix: dispatchSync
-  Mix->>WS: addToDefaultWave
+  Mix->>WS: addToDefaultWave using POD
+  WS->>WS: FIFO request_date=POD; TF trx_date=POD
   WS->>WS: mutations + WaveDetailSO; status processed
   Job->>Log: success; forceDelete SalesOrderError
   Note over Batch: finally: sisa in queue direset ke not in queue
@@ -172,6 +199,8 @@ sequenceDiagram
 | INV-UW-06 | Jika `process_to_wave = 0`, General SO tidak masuk list/bulk dan ditolak di single send |
 | INV-UW-07 | Satu baris `omni_unassign_wave_logs` per job attempt (per SO), bukan per UI bulk click |
 | INV-UW-08 | Sukses send force-delete `SalesOrderError` untuk SO tersebut |
+| INV-UW-09 | **TO-BE:** Send single/bulk memakai `processing_order_date` company (bukan `SO.transaction_date`) untuk FIFO + TF wave date |
+| INV-UW-10 | **TO-BE:** PUT processing date gagal jika `validate_fiscal_period` reject; nilai DB tidak berubah |
 
 ---
 
@@ -181,6 +210,8 @@ sequenceDiagram
 - Job-level: `SalesOrderValidationLogic` + stock/random di `MoveToDefaultWaveLogic`.
 - Failed Process list: `error_info` OR `detail_error_flags` OR `store_id` in warehouse-error stores.
 - Count Failed Process: filter `transaction_status = approved` **saja** (beda dari index — GAP-UW-02).
+- **TO-BE:** PUT processing date → `validate_fiscal_period`.
+- **TO-BE / open GAP-UW-04:** `refreshStock` — apakah `request_date` = POD atau `now()`.
 
 ---
 
@@ -190,6 +221,7 @@ sequenceDiagram
 - ProgressChecker: poll `processing` + `check-progress`; success = `processed`, fail = kembali `not in queue`.
 - Refresh stock: `GET refresh-stock` tanpa selection id (server-side scan eligible + stock errors).
 - Skip Wave Process page reuse `LogTables.vue`.
+- **TO-BE:** Date-time picker kiri Refresh; GET on mount; PUT on change; revert UI jika PUT gagal; shared dengan Skip Wave.
 
 ---
 
@@ -204,6 +236,7 @@ sequenceDiagram
 | `refreshStock` exception | Full DB rollback |
 | Batch finally | Selalu clear leftover `in queue` untuk SO ids batch |
 | AWB fail setelah attach wave | `[VERIFY: CODEBASE]` scope rollback vs reserve yang sudah commit |
+| PUT processing date fiscal reject | No DB write; FE revert |
 
 ---
 
@@ -214,12 +247,13 @@ sequenceDiagram
 | `unassign_wave_status` | Set `not in queue` saat approve | → `in queue` → `processed` | Guard Waves / Picking / Checking / Packing |
 | Error flags SO | Shared dengan Failed Process SO Platform/General | Ditulis saat gagal send; dihapus saat sukses | Muncul di SO list Failed Process |
 | Send Wave Logs | Trigger UW atau Skip Wave | Tulis `omni_unassign_wave_logs` | Dibaca kedua menu |
+| `processing_order_date` | OmniSetting company | Sumber tanggal Send / shared Skip Wave | TF wave + (Skip) PL cascade |
 
 ---
 
 ## 11. Tests & QA Notes
 
-- Feature coverage disarankan: eligibility filter, `process_to_wave` gate, single/bulk send, batch finally reset, refresh stock hanya clear stock errors, log per SO.
+- Feature coverage disarankan: eligibility filter, `process_to_wave` gate, single/bulk send, batch finally reset, refresh stock hanya clear stock errors, log per SO, **GET/PUT processing date + fiscal reject + company isolation**.
 - Regresi GAP-UW-02: bandingkan `count-failed-process` vs `POST index?failed_process=true` untuk SO `transaction_status = processed`.
 - Setelah ubah response shape / status wave: update mock FE di `olshoperp-frontend` jika ada.
 
@@ -232,6 +266,7 @@ sequenceDiagram
 | GAP-UW-01 | Failed filter `orWhereIn(store_id, warehouseErrorStoreIds)` tanpa wajib `error_info` → UI Error Flag kosong |
 | GAP-UW-02 | `getCountFailedProcess` pakai `TS_APPROVED` only; `index` pakai `approved` + `processed` |
 | GAP-UW-03 | UI disable vs API reject — pastikan DataTablesV3 menonaktifkan action saat `in queue` |
+| GAP-UW-04 | `refreshStock` / error flag vs Processing Order Date — pending PM |
 
 ---
 
@@ -239,4 +274,5 @@ sequenceDiagram
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-07-28 | Processing Order Date (OmniSetting + resolver + FE picker); INV-UW-09/10 |
 | 1.0 | 2026-07-20 | Initial dari SoT + codebase map |

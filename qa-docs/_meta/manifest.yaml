@@ -752,7 +752,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -1279,7 +1279,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -1490,7 +1490,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2710,7 +2710,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -3002,7 +3002,7 @@ draftpending
         status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -3039,7 +3039,7 @@ draftpending
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -3136,7 +3136,7 @@ draftpending
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -3530,7 +3530,7 @@ draftpending
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       - _legacy/old_system-product-requirement.md
     code_globs:

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.1
+last_updated: 2026-07-28
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.0
+source_version: 1.1
 owner: QA - Yemima
 status: draft
 ---
@@ -76,7 +76,8 @@ Pastikan ini sudah siap:
 - Produk di order sudah terhubung ke produk sistem, punya harga, COA, dan (jika bundle) komponen lengkap.
 - Shipping service sudah ter-bind jika dibutuhkan.
 - Store punya **gudang proses**.
-- Stok di gudang proses cukup untuk qty order.
+- Stok di gudang proses cukup untuk qty order **pada tanggal processing** yang kamu set.
+- **Processing Order Date** sudah sesuai hari proses (default = hari ini jam 23:59:59). Untuk order lama yang stoknya baru ready belakangan, ubah tanggal ke hari stok ready.
 - Untuk order **General**: setting proses ke wave masih aktif (kalau dimatikan, order General tidak muncul di sini).
 
 🎬 [Interactive demo akan ditambahkan di sini]
@@ -105,6 +106,9 @@ Ada jalur shortcut **Skip Wave Process** yang bisa memproses banyak order sekali
 
 ## 5. Yang Perlu Diperhatikan
 
+- Set **Processing Order Date** dulu sebelum Send — tanggal ini dipakai semua order yang kamu kirim (single/bulk), bukan tanggal masing-masing order.
+- Tanggal yang sama dipakai di **Skip Wave Process** (satu company). Perubahan di salah satu menu ikut ke menu lain.
+- Tidak bisa menyimpan tanggal di periode akuntansi yang sudah ditutup — pilih tanggal di periode terbuka.
 - Kalau kamu kirim order yang **sedang diproses** atau **sudah pernah sukses dikirim**, sistem menolak / tombol tidak aktif.
 - Kalau **isi bundle tidak lengkap**, sistem menolak sebelum proses jalan.
 - Kalau ada masalah data (produk belum terhubung, stok kurang, shipping, harga kosong, dll), proses gagal dan order punya tanda peringatan — perbaiki dulu baru kirim ulang.
@@ -119,15 +123,16 @@ Ada jalur shortcut **Skip Wave Process** yang bisa memproses banyak order sekali
 ## 6. Langkah-Langkah (Step by Step)
 
 1. Buka **Omni → Unassign Wave**.
-2. Cek list order. Pakai pencarian / advanced filter bila perlu.
-3. (Opsional) Aktifkan pill **Failed Process** untuk fokus ke order bermasalah.
-4. Hover kolom **Error Flag** — perbaiki data sesuai jenis tanda.
-5. Jika masalahnya stok dan stok fisik sudah ditambah: klik **Refresh Availability Stock**, lalu cek lagi apakah tanda stok hilang.
-6. Kirim satu order: klik **Send to Default Waves** di kolom Action.
-7. Atau kirim banyak: centang baris → klik **Send to Default Waves** di toolbar atas.
-8. Pantau pill **On Process to Default Waves** sampai selesai.
-9. Order sukses hilang dari list → lanjut di Waves Management / Picking.
-10. Jika gagal: buka **Log Data (Send Wave Logs)**, baca pesan error, perbaiki, ulangi dari langkah 4–7.
+2. Cek / set **Processing Order Date** (kiri tombol Refresh Availability Stock).
+3. Cek list order. Pakai pencarian / advanced filter bila perlu.
+4. (Opsional) Aktifkan pill **Failed Process** untuk fokus ke order bermasalah.
+5. Hover kolom **Error Flag** — perbaiki data sesuai jenis tanda.
+6. Jika masalahnya stok dan stok fisik sudah ditambah: klik **Refresh Availability Stock**, lalu cek lagi apakah tanda stok hilang.
+7. Kirim satu order: klik **Send to Default Waves** di kolom Action.
+8. Atau kirim banyak: centang baris → klik **Send to Default Waves** di toolbar atas.
+9. Pantau pill **On Process to Default Waves** sampai selesai.
+10. Order sukses hilang dari list → lanjut di Waves Management / Picking.
+11. Jika gagal: buka **Log Data (Send Wave Logs)**, baca pesan error, perbaiki, ulangi dari langkah 5–8.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 

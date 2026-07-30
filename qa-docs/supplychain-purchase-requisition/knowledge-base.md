@@ -211,6 +211,8 @@ A: Tidak — hanya informasi untuk procurement.
 
 | Doc | Path |
 |-----|------|
+| Feature Map | [feature-map.md](./feature-map.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | Requirement | [requirement.md](./requirement.md) |
 | Technical | [technical.md](./technical.md) |
 | Purchase Order | [../supplychain-purchase-order/knowledge-base.md](../supplychain-purchase-order/knowledge-base.md) |
