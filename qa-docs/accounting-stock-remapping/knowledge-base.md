@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-stock-remapping
 menu_name: "Stock Remapping"
-version: 1.0
-last_updated: 2026-07-09
+version: 2.0
+last_updated: 2026-07-30
 owner: QA - Yemima
 status: review
 audience: operator
@@ -14,151 +14,145 @@ sections:
 
 # Stock Remapping — Knowledge Base
 
-> **Audience:** Tim **Finance / Accounting** dan supervisor gudang yang diberi akses FA. Menu ini **bukan** menu SCM biasa — mengandung **nilai unit price** yang tidak ditampilkan ke operator gudang tanpa permission FA.
+> **Audience:** tim **Finance / Accounting** dan supervisor gudang yang diberi akses FA. Menu ini memuat **nilai harga (Unit Price)** yang tidak ditampilkan ke operator gudang biasa.
 
 ---
 
 ## 1. Apa itu Stock Remapping?
 
-**Stock Remapping** (alias **Stock Acak**) adalah transaksi untuk **memindahkan identitas stok** dari satu SKU variant ke SKU variant lain **dalam parent yang sama** — tanpa membuat Stock Deduction dan Stock Addition manual terpisah.
+**Stock Remapping** (alias **Stock Acak**) memindahkan identitas stok dari satu SKU (SKU Origin) ke SKU lain (SKU Remapped To) — tanpa perlu membuat pengurangan dan penambahan stok manual satu per satu. Sistem yang mengerjakan pergerakan stoknya otomatis saat transaksi disetujui.
 
 | Item | Nilai |
 |------|-------|
 | Menu | Finance Accounting → **Stock Remapping** |
-| Route | `/accounting/stock-remapping` |
-| Kode transaksi | Prefix **`RM-`** |
-| Use case utama | Sortir barang impor SKU acak (mixed container) menjadi variant sesungguhnya |
+| Kode transaksi | Diawali **`RM-`** |
+| Kegunaan utama | Menyortir barang impor SKU acak (mixed container) menjadi variant sesungguhnya |
 
-**Bukan ini:** Unit Conversion (konversi satuan, mis. Lusin → PCS). Stock Remapping = ubah **identitas SKU**, bukan satuan.
+**Bukan ini:** Unit Conversion (ubah satuan, mis. Lusin → PCS). Stock Remapping mengubah **identitas SKU**, bukan satuannya.
 
 ### Contoh operasional
 
 ```
-Pembelian: 1.000 pcs SKUPENSIL-acak
-Setelah sortir:
-  200 → SKUPENSIL-pink
-  300 → SKUPENSIL-blue
-  500 → SKUPENSIL-white
-
-→ 1 transaksi Stock Remapping dengan 3 baris detail
-→ sistem generate 6 dokumen (3× Deduction + 3× Addition) otomatis
+Beli 1.000 pcs SKU acak, setelah disortir:
+  200 → SKU-pink
+  300 → SKU-blue
+  500 → SKU-white
+→ 1 transaksi Stock Remapping berisi 3 baris
+→ sistem otomatis membuat pengurangan + penambahan stok untuk tiap baris
 ```
 
 ---
 
-## 2. Siapa yang pakai menu ini?
+## 2. Siapa yang memakai menu ini?
 
-| Role | Akses tipikal |
-|------|----------------|
-| **Finance / Accounting** | Full — termasuk kolom **Unit Price** dan total amount |
-| **Operasional gudang (SCM)** | **Tidak** memiliki menu ini di modul SCM — hindari exposure nilai barang |
-| **Supervisor** | Sesuai role privilege FA |
+| Peran | Akses tipikal |
+|-------|----------------|
+| Finance / Accounting | Penuh — termasuk kolom **Unit Price** & Total Amount |
+| Operator gudang biasa | **Tidak** punya menu ini — nilai barang tidak diekspos |
+| Supervisor | Sesuai privilege FA |
 
 ---
 
-## 3. Cara membuat transaksi
+## 3. Alur kerja standar
 
-### Basic Information
+```mermaid
+flowchart TD
+    A[Buka menu Stock Remapping] --> B[Isi Warehouse Origin]
+    B --> C[Tambah baris: pilih SKU Origin]
+    C --> D[Pilih SKU Remapped To + isi Qty]
+    D --> E{Baris lain?}
+    E -->|Ya| C
+    E -->|Tidak| F[Approve]
+    F --> G[Sistem buat pengurangan & penambahan stok otomatis]
+```
 
-| Field | Keterangan |
-|-------|------------|
-| Transaction Code | Auto `RM-` |
-| Transaction Date | Auto = sekarang |
-| **Warehouse Origin** | **Wajib** — autofill dari transaksi terakhir |
-| Trx Ref | Opsional |
-| Description | Opsional |
+**Keterangan langkah:**
 
-**Autosave:** Mengikuti pola Purchase Inbound — transaksi tersimpan saat create jika field wajib terisi. Jika warehouse belum pernah dipakai (NULL), sistem minta isi Warehouse Origin dulu.
+- **Warehouse Origin** (gudang asal barang) **wajib** diisi lebih dulu — sesudah ada baris, gudang ini tidak bisa diganti.
+- **SKU Origin** = barang sumber yang stoknya mau dipindah identitasnya.
+- **SKU Remapped To** = SKU tujuan hasil remap.
+- **Qty** tidak boleh melebihi stok yang tersedia untuk SKU Origin di gudang tersebut.
+- **Approve** memproses tiap baris berurutan: stok Origin berkurang dulu, lalu stok Remapped To bertambah (selisih waktu beberapa detik antara keduanya — normal).
 
-### Baris detail (Remapping Detail)
+---
 
-| Field | Editable? | Keterangan |
-|-------|-----------|------------|
-| SKU Origin | Ya | Variant asal — boleh duplikat antar baris |
-| Remapped To | Ya | Variant tujuan — 1 parent, bukan random, tidak self-remap |
-| Qty | Ya | Tidak boleh melebihi sisa stok origin |
-| Unit | Ya | Default primary unit parent |
-| **Unit Price** | **Tidak** | Otomatis dari nilai stock ID origin — **hanya tampil di FA** |
+## 4. Mengisi baris (Remapping Detail)
+
+| Kolom | Bisa diisi? | Keterangan |
+|-------|-------------|------------|
+| SKU Origin | Ya | Barang sumber. Kamu bisa memilih batch stok lewat **Available Product** (**Single Use** = pilih satu, **Bulk Use** = pilih banyak sekaligus) |
+| Remapped To | Ya | SKU tujuan — tidak boleh sama dengan Origin, bukan SKU acak |
+| Qty | Ya | Tidak boleh melebihi stok tersedia |
+| Unit | (mengikuti sistem) | Satuan pengukuran barang |
+| **Unit Price** | **Tidak** | Otomatis dari nilai stok SKU Origin — **hanya tampil di FA** |
 | Description | Ya | Opsional |
 
+> **Sedang disiapkan (peningkatan):** pilihan SKU Remapped To akan dibuka lebih luas (tidak hanya variant satu induk), asalkan **kelompok satuannya (Unit Class) sama** dengan SKU Origin; input Qty akan dipatok ke satuan dasar; dan SKU tujuan yang sama boleh dipakai di beberapa baris. Untuk sementara, sistem masih membatasi Remapped To ke variant dari induk yang sama dan satu SKU tujuan hanya sekali per transaksi.
+
 ---
 
-## 4. Aturan SKU
+## 5. Aturan SKU
 
-| Rule | Detail |
-|------|--------|
-| Tipe | Hanya **Variant** dalam 1 **Parent** |
-| Status | SKU **Active** saja |
-| COA Group | Hanya **Purchased Item** & **Manufactured Item** |
-| Random (`-random`) | **Diblok** — tidak bisa origin maupun remapped to |
+| Aturan | Detail |
+|--------|--------|
+| Status | Hanya SKU **Active** |
+| Kelompok barang | Hanya **Purchased Item** & **Manufactured Item** (Service & Asset ditolak) |
+| SKU acak (random) | **Ditolak** — tidak bisa jadi Origin maupun Remapped To |
 | Self-remap | Origin = Remapped To → **ditolak** |
-| Remapped To unik | Satu variant tujuan hanya sekali per transaksi |
 
 ---
 
-## 5. Approve — apa yang terjadi?
+## 6. Approve — apa yang terjadi?
 
-Setelah **Approve**, per baris (berurutan, tidak paralel):
+Setelah **Approve**, untuk tiap baris (berurutan, tidak bersamaan):
 
-1. **Stock Deduction** (`AO`) auto-approved — SKU Origin, qty berkurang
-2. **Stock Addition** (`AI`) auto-approved — SKU Remapped To, stock ID baru dengan **unit price sama** origin
+1. **Stok SKU Origin berkurang** (muncul sebagai dokumen di menu Adjustment Outbound).
+2. **Stok SKU Remapped To bertambah** dengan nilai harga yang sama (muncul di menu Adjustment Inbound).
 
-Trx date Addition = trx date transaksi RM **+ 10 detik** per baris.
-
-Sebelum approve, qty origin masuk kolom **`reserved`** di stock ID (stok di-hold).
+Sistem menolak Approve bila: ada barang bertipe **Service**, **Unit Price** mengandung angka desimal (harus bilangan bulat), atau **gudang asal** sedang non-aktif. Perbaiki dulu lalu Approve ulang.
 
 ---
 
-## 6. Import detail
+## 7. Import banyak baris
 
-Template **5 kolom** (tanpa Unit Price):
+Pakai template Excel **5 kolom**: **SKU Origin**, **Remapped To SKU**, **Qty**, **Unit**, **Description**.
 
-| Kolom | Wajib |
-|-------|-------|
-| SKU Origin | Ya |
-| Remapped To SKU | Ya |
-| Qty | Ya |
-| Unit | Opsional |
-| Description | Opsional |
-
-- Validasi **sequential** atas ke bawah — quota origin diakumulasi per baris
-- Partial import: baris valid tetap masuk, baris gagal di error log
-- File upload disimpan max **1 hari** untuk reproduce
+- Diproses baris demi baris. Baris yang benar tetap masuk, baris yang gagal muncul di **import log** (partial import).
+- Stok dihitung menumpuk per SKU Origin — kalau qty besar melebihi stok, urutkan yang besar dulu atau pecah ke transaksi terpisah.
 
 ---
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 | Gejala | Penyebab | Solusi |
 |--------|----------|--------|
-| Autosave gagal saat create | Warehouse Origin NULL | Isi warehouse |
-| Qty ditolak | Melebihi availability origin | Kurangi qty atau cek baris lain pakai SKU origin sama |
-| Remapped To tidak muncul | Random, self-remap, atau sudah dipakai baris lain | Pilih variant lain |
-| SKU ditolak | Inactive / Service / Asset / random | Cek master System Product & COA Group |
-| Import baris akhir gagal | Total qty melebihi stok (sequential) | Urutkan qty besar dulu atau split transaksi |
-| Tidak lihat Unit Price | Role tanpa akses FA | Menu hanya di modul Accounting |
+| Tidak bisa simpan saat create | Warehouse Origin belum diisi | Isi Warehouse Origin lebih dulu |
+| Warehouse Origin tidak bisa diganti | Sudah ada baris detail | Hapus dulu semua baris bila memang perlu ganti gudang |
+| Qty ditolak padahal stok terlihat cukup | Qty melebihi stok tersedia, atau sudah terpakai baris lain dengan SKU Origin sama | Kurangi qty atau cek baris lain |
+| SKU ditolak | Inactive / Service / Asset / random | Cek Master System Product & kelompok barang |
+| Remapped To tidak muncul / ditolak | SKU tujuan bukan dari induk yang sama, atau sudah dipakai di baris lain | Pilih SKU tujuan lain (sementara masih dibatasi satu induk) |
+| Tidak bisa Approve | Ada barang Service, Unit Price desimal, atau gudang non-aktif | Perbaiki sesuai pesan lalu Approve ulang |
+| Import baris terakhir gagal | Total qty melebihi stok (dihitung menumpuk) | Urutkan qty besar dulu atau pisah transaksi |
+| Tidak melihat Unit Price | Peran tanpa akses FA | Menu & nilai harga hanya untuk role Finance Accounting |
 
 ---
 
-## 8. FAQ
+## 9. FAQ
 
-**Q: Kenapa menu ada di Finance Accounting, bukan Supply Chain?**  
-A: Karena ada **nilai unit price** per baris. Tim gudang operasional tidak boleh melihat nilai persediaan — kontrol akses lewat modul FA.
+**Q: Kenapa menu ada di Finance Accounting, bukan Supply Chain?**
+A: Karena baris detail memuat nilai harga (Unit Price). Operator gudang biasa tidak boleh melihat nilai persediaan.
 
-**Q: Apakah sama dengan Stock Opname atau Adjustment manual?**  
-A: Tidak. Remapping khusus **ubah identitas variant** dalam 1 parent; sistem yang generate Deduction + Addition.
+**Q: Bisa remap ke SKU dari produk lain (beda induk) atau ke SKU Single/BOM/Bundle?**
+A: Itu peningkatan yang sedang disiapkan. Untuk sekarang sistem masih membatasi ke variant dari induk yang sama.
 
-**Q: Bisa remap ke parent berbeda?**  
-A: **Tidak.** Origin dan Remapped To harus variant dari **parent yang sama**.
+**Q: Bisa edit Unit Price?**
+A: Tidak — diisi otomatis dari nilai stok SKU Origin.
 
-**Q: Bisa pakai SKU `-random`?**  
-A: **Tidak** — random diblok di semua posisi. Lihat [Random SKU](../random-sku/knowledge-base.md).
+**Q: Kenapa ada jeda beberapa detik antara stok berkurang dan bertambah?**
+A: Normal — sistem memproses pengurangan dulu, lalu penambahan menyusul beberapa detik kemudian.
 
-**Q: Apakah saya bisa edit Unit Price?**  
-A: **Tidak** — diisi otomatis dari stock ID origin.
-
-**Q: Dokumen AO/AI bisa diedit manual?**  
-A: Diharuskan auto-generated dari approve Stock Remapping — jangan buat manual untuk kasus yang sama (hindari double movement).
+**Q: Dokumen pengurangan/penambahan bisa diedit manual?**
+A: Sebaiknya tidak. Dokumen itu dibuat otomatis dari Approve Stock Remapping; membuat manual untuk kasus yang sama berisiko dobel pergerakan stok.
 
 ---
 
@@ -168,4 +162,4 @@ A: Diharuskan auto-generated dari approve Stock Remapping — jangan buat manual
 |-----|------|
 | Requirement | [requirement.md](./requirement.md) |
 | Technical | [technical.md](./technical.md) |
-| Pending items | [requirement.md §15](./requirement.md#15-hal-yang-perlu-diperhatikan--pending-items) |
+| User Guide | [user-guide.md](./user-guide.md) |

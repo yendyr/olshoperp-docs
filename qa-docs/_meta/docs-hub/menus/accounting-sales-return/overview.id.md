@@ -7,6 +7,8 @@ version: 1.0
 last_updated: 2026-07-29
 status: draft
 audience: help-center
+source_type: derived
+source_ref: null
 notes: Help Center landing (Docs Page). Terpisah dari layer QA.
 ---
 

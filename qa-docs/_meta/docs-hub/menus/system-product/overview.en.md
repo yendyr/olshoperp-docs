@@ -7,7 +7,9 @@ version: 1.0
 last_updated: 2026-07-29
 status: draft
 audience: help-center
-notes: Help Center landing. Separate from QA layers.
+source_type: derived
+source_ref: null
+notes: Help Center landing. Separate from QA layers. Derived from QA docs (no user-provided source file).
 ---
 
 ## Module/Feature: System Product

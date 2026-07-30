@@ -2,19 +2,19 @@
 doc_type: requirement
 menu: generalsetting-general-company
 menu_name: "General Company"
-version: 2.2
-last_updated: 2026-06-24
+version: 2.3
+last_updated: 2026-07-30
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # General Company — Requirement Detail
 
 **Modul:** General Setting (Master Data)  
 **Audience:** PM, QA, Developer  
-**Status:** Draft — diverifikasi terhadap codebase per 2026-06-24; item **GAP** perlu keputusan PM/dev.
+**Status:** Review — diverifikasi terhadap codebase per 2026-07-30; item **GAP** perlu keputusan PM/dev.
 
-> Sumber: konsolidasi `general_company_requirement_1.md` (23 Jun 2026) + audit AS-IS backend `GeneralCompanyController` & frontend `Form.vue` / `DataListGeneralCompany.vue`.
+> Sumber: konsolidasi `general_company_requirement_1.md` (23 Jun 2026) + **Source of Truth General Company v1.0** (30 Jul 2026) + audit AS-IS backend `GeneralCompanyController` & frontend `Form.vue` / `DataListGeneralCompany.vue` / `PaymentType.vue`.
 
 ---
 
@@ -97,7 +97,7 @@ Satu baris data dapat mengaktifkan **lebih dari satu** toggle Recognize As secar
 | Show Deleted Data | ✅ | `is_show_deleted: true` |
 | Bulk delete | ✅ | Checkbox multi-select |
 | Row action (edit/delete) | ✅ | `action_button: true` |
-| **Import** | ⚠️ **GAP** | API backend ada; **belum di-wire** di datalist FE |
+| **Import** | ✅ | Backend **dan** FE sudah wired: tombol Import, download template, import history & log, progress (`ImportFileTable.vue` di `DataListGeneralCompany.vue`) — resolusi GAP-GC lama |
 | Create | ✅ | Tombol Create → `/generalsetting/general-company/create` |
 
 ### 2.3 Filter role Yes/No
@@ -385,8 +385,8 @@ Saat internal company baru dibuat (`InternalCompanyController@generateGeneralCom
 | Lapisan | Status |
 |---------|--------|
 | Backend `GeneralCompanyImport` | ✅ Implemented |
-| API routes import/history/log | ✅ |
-| UI datalist (tombol Import, download template) | ❌ **GAP — belum di FE** |
+| API routes import/history/log/progress | ✅ |
+| UI datalist (tombol Import, download template, import history & log) | ✅ **Wired** — `ImportFileTable.vue`, template `/files/Template-Import-General-Company.xlsx` |
 
 ### 13.2 Format file
 
@@ -453,6 +453,7 @@ Saat internal company baru dibuat (`InternalCompanyController@generateGeneralCom
 | GET | `/general-company/import-history` | Riwayat import |
 | GET | `/general-company/import-log` | Log error per baris |
 | GET | `/general-company/check-import-log` | Cek ada log gagal |
+| GET | `/general-company/progress` | Progress import (persen) |
 
 ---
 
@@ -494,7 +495,7 @@ Di form ada **dua kontrol terpisah** dengan validasi berbeda:
 | Business Field > 3 | save | Error |
 | Code unique | per `owned_by` | Enforced |
 
-### 14.3 Delete — apa yang benar-benar dicek (G-03)
+### 14.3 Delete — apa yang benar-benar dicek (GAP-GC-01)
 
 Method `GeneralCompanyController@destroy` hanya menjalankan **3 guard** sebelum soft-delete:
 
@@ -657,7 +658,7 @@ flowchart TB
 
 - [ ] Template header sesuai §13.3
 - [ ] Validasi COA child & exists
-- [ ] **TO-BE:** UI Import + download template di datalist
+- [x] UI Import + download template + import history/log di datalist (sudah wired)
 
 ### 17.5 Accounting
 
@@ -666,20 +667,30 @@ flowchart TB
 
 ---
 
-## 18. Known Gaps / Open Items
+## 18. Gap Registry
 
-| # | Item | Status | Catatan |
-|---|------|--------|---------|
-| G-01 | UI Import di datalist | Accepted | Backend cukup |
-| G-02 | Saldo piutang/hutang saat **Active OFF**; lock **Recognize As Customer** jika sudah dipakai transaksi | **Resolved** | §14.0–14.1; `role_customer_locked` di `show` |
-| G-03 | Delete hanya guard SO `shipper_id` + default flags | Open (manual QA) | §14.3 — dibiarkan AS-IS |
-| G-04 | **Recognize As Shipper OFF** saat masih default shipper | **TO-BE** | Active OFF sudah ditolak; toggle role Shipper OFF masih lolos |
-| G-04b | Shipper OFF saat punya shipping service | Open | Hanya dicek saat Active OFF |
-| G-05 | Auto Add VAT di SO/PO | Documented | §7.5 |
-| G-06 | Customer's Deposit = Passiva | Resolved | Selaras codebase |
-| G-07 | GST hidden di UI | Low | |
-| G-09 | Document expiry reminder | Accepted AS-IS | |
-| G-10 | Primary address saat inactive | Low | |
+ID kanonik memakai format `GAP-GC-NN` (selaras Source of Truth v1.0 & standar QA docs). Kolom **Legacy ID** menjaga jejak ke penomoran lama `G-0N`.
+
+| ID | Legacy | Deskripsi | Dampak | Status |
+|----|--------|-----------|--------|--------|
+| GAP-GC-01 | G-03 | Guard delete (soft) sempit — hanya cek company sebagai `shipper_id` di Sales Order + status default shipper/customer; Customer/Supplier yang sudah dipakai di PO/Sales Invoice/Purchase Invoice **tidak** dicek eksplisit (§14.3) | Risiko data integrity — mitra dengan histori finansial bisa terhapus | Open |
+| GAP-GC-02 | — | Guard Recognize As OFF **asimetris**: Customer OFF dicek "sudah dipakai transaksi" + saldo piutang; Supplier OFF hanya dicek saldo hutang tanpa cek pemakaian transaksi setara (§14.1) | Supplier dengan histori PO/Invoice tapi hutang lunas bisa kehilangan role tanpa proteksi | Open |
+| GAP-GC-03 | G-07 | Field **GST Number** tersedia di backend tapi sering di-comment/hidden di frontend | Operator tak bisa isi GST meski backend siap | Open — `[VERIFY: CODEBASE]` kondisi terkini |
+| GAP-GC-04 | G-04 | **Recognize As Shipper OFF** saat masih Default Shipper tidak ditolak; `is_default_shipper` hanya di-reset ke 0 (Active OFF sudah ditolak) | Default shipper bisa hilang diam-diam via toggle role | Open (TO-BE) |
+| GAP-GC-05 | G-04b | Shipper OFF saat masih punya shipping service terikat hanya dicek saat Active OFF, bukan saat toggle role Shipper OFF | Shipping service bisa menggantung tanpa shipper | Open |
+| GAP-GC-06 | G-10 | Primary address tidak auto-revoke saat address di-set Inactive | Alamat Inactive bisa tetap berstatus Primary di transaksi | Low — `[VERIFY: CODEBASE]` |
+| GAP-GC-07 | G-09 | Tidak ada job/notifikasi reminder dokumen mendekati `valid_until_date` | Tab Documents baru sebatas penyimpanan, belum reminder expiry | Accepted AS-IS |
+
+**Resolved (tidak lagi open):**
+
+| ID lama | Item | Resolusi |
+|---------|------|----------|
+| G-01 | UI Import belum di FE | **Resolved** — FE Import sudah wired (§2.2, §13.1) |
+| G-02 | Active OFF cek saldo + lock role Customer | **Resolved** — §14.0–14.1; `role_customer_locked` di `show` |
+| G-05 | Auto Add VAT di SO/PO | **Documented** — §7.5 |
+| G-06 | Customer's Deposit = Passiva | **Resolved** — selaras codebase (§7.3) |
+
+> **Catatan akurasi vs Source of Truth v1.0:** SoT §5.6 menyebut "Default PO Currency" dan "Default SO Currency" sebagai dua field currency terpisah. AS-IS codebase (`PaymentType.vue`) memakai **satu** `default_currency_id` yang dipakai bersama untuk PO & SO; yang terpisah hanya **Payment Type** (`po_payment_type` / `so_payment_type`). Dokumen ini mengikuti AS-IS (§8).
 
 ---
 
@@ -687,6 +698,7 @@ flowchart TB
 
 | Version | Date | Perubahan |
 |---------|------|-----------|
+| 2.3 | 2026-07-30 | Selaras Source of Truth v1.0: FE Import kini **wired** (resolve G-01) di datalist §2.2/§13.1 + route `progress`; §18 dijadikan **Gap Registry `GAP-GC-NN`** (mapping legacy G-0N) + GAP-GC-02 (asimetri guard Supplier OFF); catatan akurasi single-currency vs SoT; status → review |
 | 2.2 | 2026-06-24 | Implement G-02: Active OFF cek saldo; lock customer role jika sudah dipakai transaksi |
 | 2.1 | 2026-06-24 | Klarifikasi G-02/G-03/G-04; perluas §7.5 VAT transaksional SO/PO; selaraskan G-06 |
 | 2.0 | 2026-06-24 | Konsolidasi requirement PM + verifikasi codebase; tambah §13 Import, §15 UI/UX, §18 Gaps |

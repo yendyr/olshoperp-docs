@@ -2,10 +2,10 @@
 doc_type: knowledge-base
 menu: generalsetting-general-company
 menu_name: "General Company"
-version: 2.0
-last_updated: 2026-06-24
+version: 2.1
+last_updated: 2026-07-30
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 sections:
   core: [what-is, glossary, can-cannot, faq, help]
@@ -14,7 +14,7 @@ sections:
 
 # General Company — Knowledge Base
 
-> **Draft** — Diverifikasi terhadap codebase per 2026-06-24. Review PM/QA sebelum final.
+> **Review** — Diverifikasi terhadap codebase per 2026-07-30. Import sudah tersedia di layar datalist.
 
 ## 1. Apa itu General Company?
 
@@ -60,6 +60,25 @@ sections:
 
 ## 4. Cara Pakai
 
+Alur standar membuat 1 mitra baru sampai siap dipakai transaksi:
+
+```mermaid
+flowchart TD
+    A[Create General Company] --> B[Isi Code & Name]
+    B --> C[Aktifkan Recognize As: Customer/Supplier/Shipper/Manufacturer]
+    C --> D[Save & Next]
+    D --> E[Lengkapi Accounting Setting: COA per role]
+    E --> F{COA lengkap?}
+    F -->|Ya| G[Mitra muncul di dropdown transaksi]
+    F -->|Belum| E
+```
+
+**Keterangan langkah:**
+
+- **Recognize As** menentukan peran mitra — boleh lebih dari satu sekaligus (mis. Customer + Supplier).
+- **Accounting Setting** wajib lengkap untuk role terkait; kalau belum, mitra tidak muncul di pilihan transaksi (penyebab tersering "company hilang").
+- **Set as Default Customer/Shipper** opsional — dipakai autofill di Sales Order.
+
 ### 4.1 Buat partner baru
 
 1. Buka **General Company** → **Create**
@@ -83,9 +102,11 @@ Sebelum buat PO/SO/invoice pertama dengan partner tersebut:
 
 Partner tidak muncul di dropdown transaksi sampai COA lengkap.
 
-### 4.4 Import massal (via API / menunggu UI)
+### 4.4 Import massal
 
-Backend mendukung import Excel dengan template kolom: Code, Name, Recognize As (satu role), Description, dan kolom COA. **Tombol Import di layar datalist belum tersedia** — gunakan API atau tunggu update FE.
+Import Excel sudah tersedia langsung di layar datalist. Klik **Import**, unduh template lewat **Download Template** (kolom: Code, Name, Recognize As (satu role saja), Description, dan kolom COA customer/supplier), isi, lalu unggah. Pantau **Import History** dan **Import Log** untuk hasil per baris.
+
+Catatan: import bersifat all-or-nothing di tahap validasi — kalau ada baris salah, seluruh import gagal dan errornya tercatat di log. Import hanya satu role per baris; untuk multi-role, contact, address, dan document tetap lewat create/edit di UI.
 
 Detail template & validasi: [requirement.md §13](./requirement.md#13-import-general-company).
 
@@ -101,7 +122,8 @@ Detail template & validasi: [requirement.md §13](./requirement.md#13-import-gen
 | Tidak bisa inactive supplier (Active OFF) | Saldo hutang masih ada | Lunasi payable dulu |
 | Tidak bisa hapus shipper OSERP | Masih default atau dipakai SO | Set default ke shipper lain dulu |
 | Filter "Yes" tidak match | Typo filter | Ketik `yes`, `y`, atau `ye` |
-| Import gagal — template | Header/kolom tidak sesuai | Ikuti format [requirement §13](./requirement.md#133-validasi-import-as-is) |
+| Import gagal semua baris | Salah satu baris tidak valid (all-or-nothing) | Cek **Import Log**, perbaiki baris yang error, unggah ulang |
+| Import gagal — template | Header/kolom tidak sesuai | Unduh ulang **Download Template** dan ikuti formatnya |
 
 ## 6. FAQ
 
@@ -119,6 +141,9 @@ A: Data default sistem saat onboarding; default shipper agar SO langsung punya s
 
 **Q: Payment Type datang dari mana?**  
 A: Master Payment Type (`scm_payment_types`) — belum ada menu master terpisah di UI.
+
+**Q: Apakah Currency PO dan SO bisa beda?**  
+A: Tidak — satu Default Currency dipakai bersama untuk PO dan SO. Yang bisa beda hanya Payment Type (PO vs SO).
 
 **Q: Apakah ada reminder dokumen expired?**  
 A: Belum — tab Documents hanya menyimpan data.

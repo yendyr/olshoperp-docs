@@ -7,7 +7,9 @@ version: 1.0
 last_updated: 2026-07-29
 status: draft
 audience: help-center
-notes: Help Center landing. Terpisah dari layer QA.
+source_type: derived
+source_ref: null
+notes: Help Center landing. Terpisah dari layer QA. Disusun agent dari QA docs (belum ada file Help Center dari user).
 ---
 
 ## Modul/Fitur: System Product

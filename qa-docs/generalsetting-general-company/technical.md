@@ -2,10 +2,10 @@
 doc_type: technical
 menu: generalsetting-general-company
 menu_name: "General Company"
-version: 2.0
-last_updated: 2026-06-24
+version: 2.1
+last_updated: 2026-07-30
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
@@ -13,7 +13,7 @@ related_docs:
 
 # General Company — Technical Documentation
 
-> **Draft** — Diverifikasi terhadap codebase per 2026-06-24.
+> **Review** — Diverifikasi terhadap codebase per 2026-07-30 (selaras Source of Truth v1.0). FE Import kini wired.
 
 ## 1. Architecture Overview
 
@@ -37,9 +37,12 @@ flowchart LR
 |------|------|---------|
 | `DataListGeneralCompany.vue` | Index datalist | `GET generalsetting/general-company` |
 | `Form.vue` | Create/edit (shared internal & general) | `POST/PUT generalsetting/general-company` |
-| `PaymentType.vue` | Currency, payment term, PO/SO payment type | `GET/POST .../payment-type/{id}` |
+| `PaymentType.vue` | **Satu** `default_currency_id` (dipakai PO & SO) + `due_date_days` + `po_payment_type` / `so_payment_type` | `GET/POST .../payment-type/{id}` |
 | `FormDocument.vue` | Tab documents | nested document routes |
 | `DataListShipperWarehouse.vue` | Tab shipper warehouse tree | `supplychain/warehouse_shipper` |
+| `ImportFileTable.vue` | Import UI (tombol Import, download template, history, log, progress) | `POST .../import`, `GET .../import-history` · `import-log` · `check-import-log` · `progress` |
+
+> **Currency:** hanya **satu** field currency (`default_currency_id`) dipakai bersama untuk default PO & SO. Tidak ada field currency PO/SO terpisah (koreksi terhadap SoT §5.6).
 
 **Router:** `/generalsetting/general-company`, `/generalsetting/general-company/create`, `/generalsetting/general-company/edit/:id`
 
@@ -92,6 +95,7 @@ Base prefix: `/api/generalsetting` (lihat `Modules/GeneralSetting/Routes/api.php
 | GET | `/general-company/import-history` | importHistory |
 | GET | `/general-company/import-log` | importLog |
 | GET | `/general-company/check-import-log` | cekImportLog |
+| GET | `/general-company/progress` | import progress (persen) |
 
 ### 4.3 Select2 endpoints
 
@@ -230,11 +234,14 @@ Models/entities dengan FK ke General Company (`gs_companies.id`):
 
 ## 12. Known Technical Gaps
 
-Lihat [requirement.md §18](./requirement.md#18-known-gaps--open-items) — ringkas:
+Lihat [requirement.md §18 Gap Registry](./requirement.md#18-gap-registry) — ringkas:
 
-- FE import UI not wired (`DataListGeneralCompany.vue` lacks `has_import`)
-- `destroy()` only checks `SalesOrder::where('shipper_id')` (G-03 — AS-IS)
+- `destroy()` only checks `SalesOrder::where('shipper_id')` + default flags (**GAP-GC-01** — AS-IS)
+- Recognize As Supplier OFF tanpa cek pemakaian transaksi setara Customer (**GAP-GC-02**)
 - `CompanyVatSetting` tax assignment commented out in `vat()`
+- GST field hidden di FE (**GAP-GC-03**)
+
+**Resolved:** FE import UI kini wired (`DataListGeneralCompany.vue` + `ImportFileTable.vue`) — G-01 closed.
 
 **G-02 (resolved):** `GeneralCompanyController@update` — Active OFF cek outstanding customer/supplier invoice; Recognize As Customer OFF ditolak jika `isUsedAsCustomer()` (SO, Customer Invoice, Delivery Order, Credit Note, PPC Work Order). `show` mengembalikan `role_customer_locked` untuk disable toggle di `Form.vue`.
 

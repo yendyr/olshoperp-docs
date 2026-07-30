@@ -7,6 +7,8 @@ version: 1.0
 last_updated: 2026-07-28
 status: draft
 audience: help-center
+source_type: authored
+source_ref: "user-provided (Help Center content authored by user)"
 notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/technical/user-guide).
 ---
 
