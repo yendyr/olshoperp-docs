@@ -93,7 +93,9 @@ Ganti `{NAMA_MENU}` / nama menu sesuai permintaan user.
    - Contoh salah: `Pilih Product … Setelah memilih, atur Building dan Period, lalu klik Apply — tour akan lanjut otomatis…`
 10. **Jangan disable tombol Next** — `makeInteractiveSelectStep` boleh auto-advance saat seleksi valid, tapi Next harus tetap bisa diklik.
 11. **Helper datalist** — untuk master/datalist standar, prefer `makeSimpleDatalistTour({...})` agar pola step konsisten.
-    - Urutan toolbar mengikuti tampilan **kiri → kanan** (UI memakai `flex-row-reverse`): Show archived → Show deleted → Columns → Download Template → Export → Import → Log Data → Table Header → Create.
+    - Urutan toolbar: Show archived → Show deleted → Columns → **Export → Import** → Log Data → Table Header → Create.
+    - Deskripsi Export/Import: sebutkan opsi dropdown di dalam tombol (Export: With Details / Without Details / This Page Only; Import: Upload File / Download Template).
+    - Download Template terpisah hanya jika tombolnya berdiri sendiri (bukan opsi di dalam Import).
 
 ### Lokasi file FE tipikal
 

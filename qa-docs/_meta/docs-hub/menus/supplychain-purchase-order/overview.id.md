@@ -53,7 +53,7 @@ Pengelolaan data pesanan pembelian diakses lewat panel navigasi operasional:
 * **Jalur Navigasi UI:** Supply Chain Management → Procurement → Purchase Order
 * **Route UI Sistem:** `/supplychain/purchase-order`
 
-![Sidebar navigasi Supply Chain Management → Procurement → Purchase Order beserta tampilan halaman list (DataList)](https://drive.google.com/thumbnail?id=1UUXGfnh0f6enLWHyApiZYJWDFj1LDAZm&sz=w1600)
+<img src="https://lh3.googleusercontent.com/d/1Jd-0E31DwBCcPDu-opmnz4WhZW00lFmY" alt="Sidebar navigasi Supply Chain Management → Procurement → Purchase Order beserta tampilan halaman list (DataList)" referrerpolicy="no-referrer">
 
 *Sidebar SCM → Procurement → Purchase Order, beserta tampilan halaman list (DataList).*
 
@@ -135,7 +135,9 @@ stateDiagram-v2
 > 3. Pilih metode transaksi lewat radio button: **With PR** atau **Without PR**.
 > 4. Lengkapi data pendukung seperti Exchange Rate (jika mata uang asing) dan deskripsi opsional.
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Form Create Purchase Order, pilihan With PR / Without PR dan Basic Information.
+<img src="https://lh3.googleusercontent.com/d/1uMf_2unzLRh477vbWgF01vI2BKmO4Y4g" alt="Form Create Purchase Order, pilihan With PR / Without PR dan Basic Information" referrerpolicy="no-referrer">
+
+*Form Create Purchase Order, pilihan With PR / Without PR dan Basic Information.*
 
 #### Task 2: Isi Detail Baris Barang
 
@@ -145,7 +147,9 @@ stateDiagram-v2
 > 2. Pilih item lalu klik **Use** untuk menyesuaikan kuantitas, satuan, diskon baris, dan PPN. Kuantitas yang diisi manual **wajib bilangan bulat**.
 > 3. *Alternatif cepat:* Gunakan **Allocate Full Qty Clearing** untuk menyerap seluruh sisa kuantitas PR otomatis tanpa pembulatan (disarankan jika sisa berupa pecahan desimal).
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Modal Available Product (outstanding PR) dan tombol Use / Allocate Full Qty Clearing.
+<img src="https://lh3.googleusercontent.com/d/118AEJtuiOPS1Xr6a8lPPuRlQXx5DyEAl" alt="Modal Available Product (outstanding PR) dan tombol Use / Allocate Full Qty Clearing" referrerpolicy="no-referrer">
+
+*Modal Available Product (outstanding PR) dan tombol Use / Allocate Full Qty Clearing.*
 
 **Sub-Task B: Jalur Without PR**
 
@@ -153,21 +157,27 @@ stateDiagram-v2
 > 2. Pilih satu atau beberapa SKU produk aktif dari master data.
 > 3. Sistem otomatis mengatur kuantitas awal = 1 dengan satuan dasar, dan harga dari transaksi terakhir. Sesuaikan angkanya sesuai kebutuhan.
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Modal pemilihan produk langsung (Without PR).
+<img src="https://lh3.googleusercontent.com/d/1L9ZItM2PQgqZl-dZ6Rum9SOxmg5gkefd" alt="Modal pemilihan produk langsung (Without PR)" referrerpolicy="no-referrer">
+
+*Modal pemilihan produk langsung (Without PR).*
 
 #### Task 3: Biaya & Potongan Tambahan (Opsional)
 
 > 1. Buka panel **Additional Cost** atau **Additional Discount** di bawah grid barang.
 > 2. Pilih kode dari master komponen yang aktif, lalu isi nominal biaya/diskon pada kolom Amount (nilai wajib lebih dari sama dengan 0).
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Panel Additional Cost / Additional Discount.
+<img src="https://lh3.googleusercontent.com/d/1rbLzgpo42LNbVupXYNBxC1QBKO3d5iAz" alt="Panel Additional Cost / Additional Discount" referrerpolicy="no-referrer">
+
+*Panel Additional Cost / Additional Discount.*
 
 #### Task 4: Validasi Finansial dan Approve
 
 > 1. Periksa **Panel Total** untuk memastikan hitungan *DPP*, *Total VAT*, dan *Net Purchase* sudah benar.
 > 2. Pastikan status dokumen **Open**, lalu klik **Approve** untuk menerbitkan otorisasi tingkat tunggal. Dokumen akan terkunci dengan status **Approved**.
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Tombol Approve, dan tombol Void/Closed di datalist sesuai status.
+<img src="https://lh3.googleusercontent.com/d/18Ajyu17g-gnlTlqCcDHUtv2x7E3H7SPO" alt="Tombol Approve, dan tombol Void/Closed di datalist sesuai status" referrerpolicy="no-referrer">
+
+*Tombol Approve, dan tombol Void/Closed di datalist sesuai status.*
 
 ### 📥 Import Detail Massal (Excel)
 

@@ -1,0 +1,50 @@
+# POM Element Registry — Asset List (FA Report / monitoring)
+# Sumber: Accounting/Asset/AssetList/{Datalist,Detail}.vue + StockMonitoringTable.vue
+# UI: /accounting/asset-list · read-only fixed-asset stock
+
+menu: accounting-asset-list
+menu_name: Asset List
+route: /accounting/asset-list
+detail_route: /accounting/asset-list/{item_stock_id}
+create_button_mode: none
+pom_helper: tests/helpers/asset-list.ts
+company_default: lumicharmsid
+
+elements:
+  breadcrumb:
+    strategy: text
+    value: Asset List
+
+  warehouse_filter:
+    strategy: aria-placeholder
+    value: Choose Warehouse
+
+  apply_button:
+    strategy: text
+    value: Apply
+
+  latest_calculation:
+    strategy: text
+    value: Latest Calculation
+
+  column_asset_code:
+    strategy: text
+    value: Asset Code
+
+  column_unit_price:
+    strategy: text
+    value: Unit Price
+
+  availability_link:
+    strategy: css
+    value: "p.available.text-blue-700"
+
+  asset_code_link:
+    strategy: css
+    value: 'a[href*="/accounting/asset-list/"]'
+
+notes:
+  - "Filter is_fix_asset=true via API accounting/asset-list."
+  - "Detail link di kolom Asset Code (bukan SKU)."
+  - "SKU link mengarah ke /supplychain/product/edit/{id}."
+  - "Description field tidak ada di menu ini (report)."

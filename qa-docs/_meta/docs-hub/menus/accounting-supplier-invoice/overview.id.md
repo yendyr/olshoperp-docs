@@ -65,7 +65,9 @@ Halaman kelola Purchase Invoice dapat diakses melalui menu akuntansi utama.
 * **Jalur Navigasi Menu:** `Finance & Accounting` → `Account Payable` → `Purchase Invoice`
 * **Rute URL UI Sistem:** `/accounting/supplier-invoice`
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Sidebar navigasi Accounting → Purchase Invoice, dan tampilan halaman list (DataList) kosong/terisi.
+<img src="https://lh3.googleusercontent.com/d/1nKzUNDOGZEuYrG9sMruJM5JknIzvaoU5" alt="Navigasi menu & tampilan workspace — Purchase Invoice DataList" referrerpolicy="no-referrer">
+
+*Sidebar navigasi Accounting → Purchase Invoice, dan tampilan halaman list (DataList) kosong/terisi.*
 
 ---
 
@@ -122,7 +124,9 @@ stateDiagram-v2
 > 4. Tentukan **Currency** (Mata Uang). Jika memilih mata uang asing selain rupiah, masukkan angka **Exchange Rate** (Kurs) terbaru.
 > 5. Isi kolom **Due Date** secara manual jika ada kesepakatan batas waktu pembayaran.
 
-🖼️ **[PLACEHOLDER GAMBAR]** — Form Create Purchase Invoice, bagian Basic Information (Supplier, Tanggal, Mata Uang, Due Date, Supplier's Reference).
+<img src="https://lh3.googleusercontent.com/d/1JPorFy8RE3FTDHIs8_5ICVVf6vaux-ND" alt="Langkah demi langkah — Create PI Basic Information" referrerpolicy="no-referrer">
+
+*Form Create Purchase Invoice, bagian Basic Information (Supplier, Tanggal, Mata Uang, Due Date, Supplier's Reference).*
 
 #### Langkah 2: Ubah Status Dokumen ke Open
 
@@ -138,14 +142,18 @@ stateDiagram-v2
 > 2. Jika ingin memasukkan semua barang sekaligus, centang kotaknya lalu pilih **Bulk Use**. Sistem otomatis menarik seluruh sisa jumlah outstanding barang yang tersedia.
 > 3. Jika ingin mencatat kuantitas tertentu saja secara presisi, gunakan tombol **Single Use** untuk memunculkan jendela modal, ketik jumlah angkanya, lalu klik simpan.
 
-🖼️ **[PLACEHOLDER GAMBAR]** — Panel Inbound Transaction dengan tombol Bulk Use dan modal Single Use.
+<img src="https://lh3.googleusercontent.com/d/1jwFJ2Gj2vonYWbzUKIKRa38RkCehG_VR" alt="Tarik barang inbound — Panel Inbound Transaction" referrerpolicy="no-referrer">
+
+*Panel Inbound Transaction dengan tombol Bulk Use dan modal Single Use.*
 
 #### Langkah 4: Cek Ulang Biaya Tambahan & Diskon
 
 > 1. Periksa bagian kolom **Additional Cost & Discount**. Seluruh komponen biaya dari PO asal otomatis ikut ditarik ke sini saat Anda memasukkan barang.
 > 2. Hapus baris biaya atau diskon tertentu jika tagihan ongkos tersebut ingin Anda tunda pembayarannya ke dokumen PI berikutnya.
 
-🖼️ **[PLACEHOLDER GAMBAR]** — Panel Additional Cost / Discount dengan baris yang auto-terisi dari PO.
+<img src="https://lh3.googleusercontent.com/d/1SuIjApzBdcO5H2IPG_FP2HgoI3f9nOin" alt="Cek biaya & diskon tambahan — Panel Additional Cost / Discount" referrerpolicy="no-referrer">
+
+*Panel Additional Cost / Discount dengan baris yang auto-terisi dari PO.*
 
 #### Langkah 5: Validasi dan Approve Transaksi
 
@@ -153,7 +161,17 @@ stateDiagram-v2
 > 2. Klik tombol Save All untuk mengamankan data grid detail Anda.
 > 3. Klik tombol Approve untuk merilis jurnal pembukuan dan mengunci dokumen secara permanen.
 
-🖼️ **[PLACEHOLDER GAMBAR]** — Panel Total (Total Products, Total VAT, Net Purchase Invoice). 🖼️ **[PLACEHOLDER GAMBAR]** — Tombol Approve dan status transaksi berubah jadi Approved.
+<img src="https://lh3.googleusercontent.com/d/1Wt1UCAGonDAj2ek5x5TAJhslUA5S85MQ" alt="Validasi & approve — Panel Total" referrerpolicy="no-referrer">
+
+*Panel Total (Total Products, Total VAT, Net Purchase Invoice).*
+
+<img src="https://lh3.googleusercontent.com/d/1jw-QtcZCDJduaqpINnJgHz6PpIwJ110S" alt="Tombol Approve" referrerpolicy="no-referrer">
+
+*Tombol Approve.*
+
+<img src="https://lh3.googleusercontent.com/d/1B7vXSX_0N5dmIFiI7YUcT1KCx-MXIrb7" alt="Status transaksi Approved" referrerpolicy="no-referrer">
+
+*Status transaksi berubah jadi Approved.*
 
 ### 📊 Panduan Field Referensi Lengkap
 

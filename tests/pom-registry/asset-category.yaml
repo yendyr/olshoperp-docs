@@ -1,0 +1,79 @@
+# POM Element Registry — Asset Category (FA Master)
+# Sumber: Accounting/Asset/AssetCategory/{Datalist,Form}.vue
+
+menu: accounting-asset-category
+menu_name: Asset Category
+route: /accounting/asset-category
+create_path: /accounting/asset-category/create
+edit_path: /accounting/asset-category/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/asset-category.ts
+company_default: lumicharmsid
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  section:
+    strategy: id
+    value: AssetCategory
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  description:
+    strategy: css
+    value: "#AssetCategory textarea"
+
+  depreciation_method:
+    strategy: aria-placeholder
+    value: Select method
+
+  frequency_of_depreciation:
+    strategy: id
+    value: frequency_of_depreciation
+
+  total_number_of_depreciation:
+    strategy: id
+    value: total_number_of_depreciation
+
+  salvage_value_percentage:
+    strategy: id
+    value: salvage_value_percentage
+
+  depreciation_posting_date:
+    strategy: id
+    value: depreciation_posting_date
+
+  active:
+    strategy: label
+    value: Active
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  audit_log_nav:
+    strategy: text
+    value: Audit Log
+
+  bulk_delete:
+    strategy: css
+    value: button.delete-bulk
+
+  show_deleted:
+    strategy: id
+    value: show_deleted_switch
+
+notes:
+  - "Description = automation playwright."
+  - "Create memakai Save All lalu redirect ke edit (bukan Save & Next)."
+  - "Depreciation methods: Straight Line, Double Declining Balance, Written Down Value, Manual."

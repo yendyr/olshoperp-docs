@@ -53,7 +53,7 @@ You manage purchase orders from the operations navigation panel:
 * **UI navigation path:** Supply Chain Management → Procurement → Purchase Order
 * **System UI route:** `/supplychain/purchase-order`
 
-![Supply Chain Management → Procurement → Purchase Order sidebar and the list page (DataList)](https://drive.google.com/thumbnail?id=1UUXGfnh0f6enLWHyApiZYJWDFj1LDAZm&sz=w1600)
+<img src="https://lh3.googleusercontent.com/d/1Jd-0E31DwBCcPDu-opmnz4WhZW00lFmY" alt="Supply Chain Management → Procurement → Purchase Order sidebar and the list page (DataList)" referrerpolicy="no-referrer">
 
 *SCM → Procurement → Purchase Order sidebar, plus the list page (DataList).*
 
@@ -135,7 +135,9 @@ stateDiagram-v2
 > 3. Choose the transaction method with the radio button: **With PR** or **Without PR**.
 > 4. Add supporting data like Exchange Rate (for foreign currency) and an optional description.
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Create Purchase Order form, With PR / Without PR choice and Basic Information.
+<img src="https://lh3.googleusercontent.com/d/1uMf_2unzLRh477vbWgF01vI2BKmO4Y4g" alt="Create Purchase Order form, With PR / Without PR choice and Basic Information" referrerpolicy="no-referrer">
+
+*Create Purchase Order form, With PR / Without PR choice and Basic Information.*
 
 #### Task 2: Fill in the Item Details
 
@@ -145,7 +147,9 @@ stateDiagram-v2
 > 2. Pick an item and click **Use** to adjust the quantity, unit, line discount, and VAT. A manual quantity **must be a whole number**.
 > 3. *Quick option:* Use **Allocate Full Qty Clearing** to absorb the PR's entire remaining quantity automatically without rounding (recommended for leftover decimals).
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Available Product modal (PR outstanding) and the Use / Allocate Full Qty Clearing buttons.
+<img src="https://lh3.googleusercontent.com/d/118AEJtuiOPS1Xr6a8lPPuRlQXx5DyEAl" alt="Available Product modal (PR outstanding) and the Use / Allocate Full Qty Clearing buttons" referrerpolicy="no-referrer">
+
+*Available Product modal (PR outstanding) and the Use / Allocate Full Qty Clearing buttons.*
 
 **Sub-Task B: Without PR**
 
@@ -153,21 +157,27 @@ stateDiagram-v2
 > 2. Pick one or more active product SKUs from master data.
 > 3. The system sets the starting quantity to 1 with the base unit, and the price from the latest purchase. Adjust the numbers as needed.
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Direct product selection modal (Without PR).
+<img src="https://lh3.googleusercontent.com/d/1L9ZItM2PQgqZl-dZ6Rum9SOxmg5gkefd" alt="Direct product selection modal (Without PR)" referrerpolicy="no-referrer">
+
+*Direct product selection modal (Without PR).*
 
 #### Task 3: Extra Costs & Discounts (Optional)
 
 > 1. Open the **Additional Cost** or **Additional Discount** panel below the item grid.
 > 2. Pick a code from the active master list, then enter the amount in the Amount field (must be greater than or equal to 0).
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Additional Cost / Additional Discount panel.
+<img src="https://lh3.googleusercontent.com/d/1rbLzgpo42LNbVupXYNBxC1QBKO3d5iAz" alt="Additional Cost / Additional Discount panel" referrerpolicy="no-referrer">
+
+*Additional Cost / Additional Discount panel.*
 
 #### Task 4: Check the Totals and Approve
 
 > 1. Review the **Totals panel** to make sure *DPP*, *Total VAT*, and *Net Purchase* are correct.
 > 2. Make sure the status is **Open**, then click **Approve** to issue single-level authorization. The document locks as **Approved**.
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Approve button, and the Void/Closed buttons in the datalist based on status.
+<img src="https://lh3.googleusercontent.com/d/18Ajyu17g-gnlTlqCcDHUtv2x7E3H7SPO" alt="Approve button, and the Void/Closed buttons in the datalist based on status" referrerpolicy="no-referrer">
+
+*Approve button, and the Void/Closed buttons in the datalist based on status.*
 
 ### 📥 Bulk Detail Import (Excel)
 

@@ -51,7 +51,9 @@ The Purchase Invoice management interfaces are accessed via the core accounting 
 * **UI Navigation Path:** Finance & Accounting → Account Payable → Purchase Invoice  
 * **System UI Route:** /accounting/supplier-invoice
 
-> 🖼️ **Image placeholder** — Sidebar navigasi Accounting → Purchase Invoice, dan tampilan halaman list (DataList) kosong/terisi.
+<img src="https://lh3.googleusercontent.com/d/1nKzUNDOGZEuYrG9sMruJM5JknIzvaoU5" alt="Navigation & workspace — Purchase Invoice DataList" referrerpolicy="no-referrer">
+
+*Sidebar navigasi Accounting → Purchase Invoice, dan tampilan halaman list (DataList) kosong/terisi.*
 
 ## 🔄 System Workflow & Document Lifecycle
 ```mermaid
@@ -103,7 +105,9 @@ stateDiagram-v2
 > 4. Define the transaction **Currency**. If a foreign currency is selected, input the applicable **Exchange Rate**.  
 > 5. Manually populate the **Due Date** parameter if a specific deadline is required.
 
-> 🖼️ **Image placeholder** — Form Create Purchase Invoice, bagian Basic Information (Supplier, Tanggal, Mata Uang, Due Date, Supplier's Reference).
+<img src="https://lh3.googleusercontent.com/d/1JPorFy8RE3FTDHIs8_5ICVVf6vaux-ND" alt="Step-by-step — Create PI Basic Information" referrerpolicy="no-referrer">
+
+*Form Create Purchase Invoice, bagian Basic Information (Supplier, Tanggal, Mata Uang, Due Date, Supplier's Reference).*
 
 ### Task 2: Transition to Open Status
 > 1. Locate the primary status dropdown selector within the active header space.  
@@ -117,21 +121,33 @@ stateDiagram-v2
 > 2. For rapid processing, utilize **Bulk Use** by checking multiple lines; the system automatically extracts the total remaining outstanding quantities.  
 > 3. For precise control, use **Single Use** to launch a dedicated modal window, adjust the entry value, and hit save.
 
-> 🖼️ **Image placeholder** — Panel Inbound Transaction dengan tombol Bulk Use dan modal Single Use.
+<img src="https://lh3.googleusercontent.com/d/1jwFJ2Gj2vonYWbzUKIKRa38RkCehG_VR" alt="Extract inventory — Panel Inbound Transaction" referrerpolicy="no-referrer">
+
+*Panel Inbound Transaction dengan tombol Bulk Use dan modal Single Use.*
 
 ### Task 4: Audit Additional Costs & Discounts
 > 1. Review the **Additional Cost & Discount** sub-panel. Lines originating from the initial Purchase Order populate automatically upon item insertion.  
 > 2. Remove individual fee lines if they need to be deferred to a subsequent invoicing run.
 
-> 🖼️ **Image placeholder** — Panel Additional Cost / Discount dengan baris yang auto-terisi dari PO.
+<img src="https://lh3.googleusercontent.com/d/1SuIjApzBdcO5H2IPG_FP2HgoI3f9nOin" alt="Audit additional costs & discounts — Panel Additional Cost / Discount" referrerpolicy="no-referrer">
+
+*Panel Additional Cost / Discount dengan baris yang auto-terisi dari PO.*
 
 ### Task 5: Finalize and Authorize Ledger Entry
 > 1. Navigate to the **Totals Panel** and audit the summary metrics, ensuring the final calculated values line up with expectation.  
 > 2. Click Save All to secure the grid arrays.  
 > 3. Select the Approve control to seal the record and broadcast the financial journal entries.
 
-> 🖼️ **Image placeholder** — Panel Total (Total Products, Total VAT, Net Purchase Invoice).  
-> 🖼️ **Image placeholder** — Tombol Approve dan status transaksi berubah jadi Approved.
+<img src="https://lh3.googleusercontent.com/d/1Wt1UCAGonDAj2ek5x5TAJhslUA5S85MQ" alt="Finalize & authorize — Panel Total" referrerpolicy="no-referrer">
+
+*Panel Total (Total Products, Total VAT, Net Purchase Invoice).*
+<img src="https://lh3.googleusercontent.com/d/1jw-QtcZCDJduaqpINnJgHz6PpIwJ110S" alt="Tombol Approve" referrerpolicy="no-referrer">
+
+*Tombol Approve.*
+
+<img src="https://lh3.googleusercontent.com/d/1B7vXSX_0N5dmIFiI7YUcT1KCx-MXIrb7" alt="Status transaksi Approved" referrerpolicy="no-referrer">
+
+*Status transaksi berubah jadi Approved.*
 
 ## 📊 Data Attributes & Field Reference
 ### 1\. Basic Information Block

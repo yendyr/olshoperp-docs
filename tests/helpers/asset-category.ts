@@ -1,38 +1,33 @@
 import { Page, expect, Locator } from '@playwright/test';
-import { OlshopDatalist, OlshopFormActions, OlshopMultiselect } from './shared';
+import { OlshopDatalist, OlshopFormActions } from './shared';
 import { dismissStagingBanner } from './shared/staging-banner';
 import { waitForSuccessToast } from './shared/toast';
 
-export const PCG_DATALIST_PATH = '/accounting/product-coa-group';
-export const PCG_EDIT_PATH_PATTERN =
-  /\/accounting\/product-coa-group\/edit\/\d+/;
+export const ASC_DATALIST_PATH = '/accounting/asset-category';
+export const ASC_EDIT_PATH_PATTERN = /\/accounting\/asset-category\/edit\/\d+/;
 
-/** Binding wajib Purchased Item (Return Expense optional — dilewati). */
-export const PURCHASED_ITEM_COA_PLACEHOLDERS = [
-  'Choose Sales COA',
-  'Choose Sales Return COA',
-  'Choose COGS COA',
-  'Choose Inventory COA',
-  'Choose Operational Expense COA',
-  'Choose Inventory Adjustment COA',
-  'Choose Return Inventory COA',
-  'Choose Unbilled Goods COA',
-  'Choose Work In Progress COA',
-] as const;
+export type AssetCategoryFormData = {
+  code: string;
+  name: string;
+  description?: string;
+  depreciationMethodLabel?: string;
+  frequency?: number;
+  totalDepreciation?: number;
+  salvagePercent?: number;
+  postingDate?: number;
+};
 
 /**
- * POM Product COA Group (FA Master).
- * Selector: tests/pom-registry/product-coa-group.yaml
+ * POM Asset Category — FA Master.
+ * Selector: tests/pom-registry/asset-category.yaml
  */
-export class ProductCoaGroupPage {
+export class AssetCategoryPage {
   readonly datalist: OlshopDatalist;
   private readonly form: OlshopFormActions;
-  private readonly multiselect: OlshopMultiselect;
 
   constructor(private readonly page: Page) {
     this.datalist = new OlshopDatalist(page);
     this.form = new OlshopFormActions(page);
-    this.multiselect = new OlshopMultiselect(page);
   }
 
   get codeInput(): Locator {
@@ -43,36 +38,98 @@ export class ProductCoaGroupPage {
     return this.page.locator('#name');
   }
 
-  get typeCombobox(): Locator {
-    return this.multiselect.comboboxByAriaPlaceholder('Choose Option');
-  }
-
   get descriptionInput(): Locator {
-    return this.page.locator('#description');
+    return this.page.locator('#AssetCategory textarea').first();
   }
 
-  get defaultSwitch(): Locator {
-    return this.page
-      .locator('#BasicInformation div.flex')
-      .filter({
-        has: this.page.getByText('Set as Default System Product', {
-          exact: true,
-        }),
-      })
-      .locator('input[type="checkbox"]')
+  get methodMultiselect(): Locator {
+    return this.page.locator('#AssetCategory .multiselect').first();
+  }
+
+  get methodCombobox(): Locator {
+    return this.methodMultiselect
+      .locator('[aria-placeholder], .multiselect-search, .multiselect-placeholder')
+      .first()
+      .or(this.methodMultiselect);
+  }
+
+  async waitForDepreciationMethodsLoaded(): Promise<void> {
+    const ms = this.methodMultiselect;
+    await expect(ms).toBeVisible({ timeout: 30_000 });
+    await expect
+      .poll(
+        async () => {
+          const text = ((await ms.textContent()) ?? '').trim();
+          return !/Loading/i.test(text);
+        },
+        { timeout: 45_000, message: 'Depreciation methods masih Loading' },
+      )
+      .toBe(true);
+  }
+
+  async selectDepreciationMethod(label: string): Promise<void> {
+    await this.waitForDepreciationMethodsLoaded();
+    const ms = this.methodMultiselect;
+    const current = ((await ms.textContent()) ?? '').trim();
+    if (new RegExp(label, 'i').test(current)) {
+      return;
+    }
+
+    await ms.click();
+    await this.page.waitForTimeout(400);
+
+    const option = this.page
+      .locator('.multiselect-dropdown:visible .multiselect-option, .multiselect-option:visible')
+      .filter({ hasText: new RegExp(label, 'i') })
+      .filter({ hasNotText: /No results|No available/i })
       .first();
+
+    await expect(option, `Opsi method ${label}`).toBeVisible({ timeout: 20_000 });
+    await option.click();
+    await this.page.waitForTimeout(300);
+
+    await expect
+      .poll(async () => ((await ms.textContent()) ?? '').trim(), {
+        timeout: 15_000,
+        message: `Method harus jadi ${label}`,
+      })
+      .toMatch(new RegExp(label, 'i'));
+  }
+
+  get frequencyInput(): Locator {
+    return this.page.locator('#frequency_of_depreciation');
+  }
+
+  get totalDepreciationInput(): Locator {
+    return this.page.locator('#total_number_of_depreciation');
+  }
+
+  get salvageInput(): Locator {
+    return this.page.locator('#salvage_value_percentage');
+  }
+
+  get postingDateInput(): Locator {
+    return this.page.locator('#depreciation_posting_date');
   }
 
   get activeSwitch(): Locator {
     return this.page
-      .locator('#BasicInformation div.flex')
+      .locator('#AssetCategory div.flex')
       .filter({ has: this.page.getByText('Active', { exact: true }) })
       .locator('input[type="checkbox"]')
       .first();
   }
 
+  get bulkDeleteButton(): Locator {
+    return this.page.locator('button.delete-bulk').first();
+  }
+
+  get showDeletedSwitch(): Locator {
+    return this.page.locator('#show_deleted_switch');
+  }
+
   async gotoDatalist(): Promise<void> {
-    await this.datalist.gotoAndWait(PCG_DATALIST_PATH, 'link');
+    await this.datalist.gotoAndWait(ASC_DATALIST_PATH, 'link');
   }
 
   async assertDatalistShell(): Promise<void> {
@@ -80,126 +137,65 @@ export class ProductCoaGroupPage {
       timeout: 30_000,
     });
     const headers = this.datalist.table.getByRole('columnheader');
-    await expect(headers.filter({ hasText: /^code$/i }).first()).toBeVisible({
+    await expect(headers.filter({ hasText: /code/i }).first()).toBeVisible({
       timeout: 30_000,
     });
-    await expect(headers.filter({ hasText: /^name$/i }).first()).toBeVisible();
-    await expect(headers.filter({ hasText: /^type$/i }).first()).toBeVisible();
+    await expect(headers.filter({ hasText: /name/i }).first()).toBeVisible();
+    await expect(
+      headers.filter({ hasText: /depreciation method/i }).first(),
+    ).toBeVisible();
   }
 
   async openCreateForm(): Promise<void> {
     await this.datalist.clickCreate('link');
-    await this.page.waitForURL(/\/accounting\/product-coa-group\/create/, {
+    await this.page.waitForURL(/\/accounting\/asset-category\/create/, {
       timeout: 45_000,
     });
     await dismissStagingBanner(this.page);
-    await this.form.expandAccordion('Basic Information');
+    await this.form.expandAccordion('Asset Category');
     await expect(this.codeInput).toBeVisible({ timeout: 30_000 });
+    await this.waitForDepreciationMethodsLoaded();
   }
 
-  async ensureSwitch(sw: Locator, checked: boolean): Promise<void> {
+  async ensureActiveOn(): Promise<void> {
+    const sw = this.activeSwitch;
     await expect(sw).toBeVisible({ timeout: 15_000 });
-    const isOn = await sw.isChecked().catch(() => false);
-    if (isOn !== checked) {
+    if (!(await sw.isChecked().catch(() => false))) {
       await sw.click({ force: true });
-      if (checked) {
-        await expect(sw).toBeChecked({ timeout: 10_000 });
-      } else {
-        await expect(sw).not.toBeChecked({ timeout: 10_000 });
-      }
+      await expect(sw).toBeChecked({ timeout: 10_000 });
     }
   }
 
-  async selectType(typeLabel: string): Promise<void> {
-    const listResponse = this.page
-      .waitForResponse(
-        (response) =>
-          response.request().method() === 'GET' &&
-          response.url().includes('/transaction-coa-list') &&
-          response.url().includes('type_id='),
-        { timeout: 60_000 },
-      )
-      .catch(() => null);
-
-    await this.multiselect.selectOption(this.typeCombobox, typeLabel, {
-      exact: true,
-      typeToFilter: typeLabel,
-    });
-
-    await listResponse;
-    // Binding section muncul setelah type
-    await expect(
-      this.page.getByText(/COA Binding|Sales COA|Choose Sales COA/i).first(),
-    ).toBeVisible({ timeout: 45_000 });
-    await this.page.waitForTimeout(800);
-  }
-
-  /**
-   * Pastikan Multiselect COA terisi. Skip jika sudah ada nilai (prefill).
-   */
-  async ensureCoaFilled(placeholder: string): Promise<void> {
-    const combobox = this.multiselect.comboboxByAriaPlaceholder(placeholder);
-    await expect(combobox, placeholder).toBeVisible({ timeout: 30_000 });
-
-    const selected = await this.multiselect.selectedLabel(combobox);
-    if (selected && !/^choose\b/i.test(selected) && selected.length > 0) {
-      return;
-    }
-
-    await this.multiselect.open(combobox);
-    await this.page.waitForTimeout(500);
-
-    const option = this.multiselect
-      .visibleOptions()
-      .filter({ hasNotText: /No results|No available/i })
-      .first();
-    await expect(option, `Opsi untuk ${placeholder}`).toBeVisible({
-      timeout: 45_000,
-    });
-    await option.click();
-    await this.page.waitForTimeout(400);
-  }
-
-  async fillRequiredCoaBindings(): Promise<void> {
-    for (const placeholder of PURCHASED_ITEM_COA_PLACEHOLDERS) {
-      const combobox = this.page.locator(
-        `[aria-placeholder="${placeholder}"]`,
-      );
-      // Beberapa binding bisa belum render jika type beda — skip jika tidak ada
-      if ((await combobox.count()) === 0) {
-        continue;
-      }
-      await this.ensureCoaFilled(placeholder);
-    }
-  }
-
-  async fillCreatePurchasedItem(data: {
-    code: string;
-    name: string;
-    description?: string;
-  }): Promise<void> {
+  async fillCreateForm(data: AssetCategoryFormData): Promise<void> {
     await this.codeInput.fill(data.code);
     await this.nameInput.fill(data.name);
-    await this.selectType('Purchased Item');
-    await this.ensureSwitch(this.defaultSwitch, false);
-    await this.ensureSwitch(this.activeSwitch, true);
-    await this.fillRequiredCoaBindings();
     await this.descriptionInput.fill(
       data.description ?? 'automation playwright',
     );
+    await this.selectDepreciationMethod(
+      data.depreciationMethodLabel ?? 'Straight Line',
+    );
+    await this.frequencyInput.fill(String(data.frequency ?? 1));
+    await this.totalDepreciationInput.fill(
+      String(data.totalDepreciation ?? 12),
+    );
+    await this.salvageInput.fill(String(data.salvagePercent ?? 10));
+    await this.postingDateInput.fill(String(data.postingDate ?? 1));
+    await this.ensureActiveOn();
   }
 
-  async clickSaveAndNextAndWaitForEdit(): Promise<void> {
+  /** Create = Save All → redirect edit. */
+  async clickSaveAllAndWaitForEdit(): Promise<void> {
     const saveResponse = this.page.waitForResponse(
       (response) => {
         if (response.request().method() !== 'POST') return false;
         const path = new URL(response.url()).pathname;
-        return /\/accounting\/product-coa-group\/?$/.test(path);
+        return /\/accounting\/asset-categories\/?$/.test(path);
       },
-      { timeout: 120_000 },
+      { timeout: 90_000 },
     );
 
-    await this.form.clickSaveAndNext();
+    await this.form.clickSaveAll();
 
     const response = await saveResponse;
     const body = (await response.json().catch(() => null)) as {
@@ -208,45 +204,52 @@ export class ProductCoaGroupPage {
 
     if (!response.ok() || body?.status?.error) {
       throw new Error(
-        `Save Product COA Group gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
+        `Save Asset Category gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
       );
     }
 
-    await this.page.waitForURL(PCG_EDIT_PATH_PATTERN, { timeout: 45_000 });
+    await this.page.waitForURL(ASC_EDIT_PATH_PATTERN, { timeout: 45_000 });
     await waitForSuccessToast(this.page, 5_000).catch(() => undefined);
     await dismissStagingBanner(this.page);
+    await this.form.expandAccordion('Asset Category').catch(() => undefined);
   }
 
   async openEditFromDatalistByCode(code: string): Promise<void> {
     await this.gotoDatalist();
+    await this.setShowDeletedData(false);
     await this.datalist.search(code, 1_500);
 
     const row = this.page.getByRole('row').filter({ hasText: code }).first();
-    await expect(row, `Baris PCG ${code}`).toBeVisible({ timeout: 45_000 });
+    await expect(row, `Baris Asset Category ${code}`).toBeVisible({
+      timeout: 45_000,
+    });
 
     const editBtn = this.datalist.editButton(row).first();
     await expect(editBtn).toBeVisible({ timeout: 30_000 });
     await editBtn.click();
 
-    await this.page.waitForURL(PCG_EDIT_PATH_PATTERN, { timeout: 45_000 });
+    await this.page.waitForURL(ASC_EDIT_PATH_PATTERN, { timeout: 45_000 });
     await dismissStagingBanner(this.page);
-    await this.form.expandAccordion('Basic Information');
+    await this.form.expandAccordion('Asset Category');
     await expect(this.codeInput).toHaveValue(code, { timeout: 30_000 });
   }
 
-  async updateNameAndDescription(
-    name: string,
-    description = 'automation playwright',
-  ): Promise<void> {
-    await this.nameInput.fill(name);
-    await this.descriptionInput.fill(description);
+  async updateNameMethodSalvage(data: {
+    name: string;
+    depreciationMethodLabel: string;
+    salvagePercent: number;
+  }): Promise<void> {
+    await this.nameInput.fill(data.name);
+    await this.selectDepreciationMethod(data.depreciationMethodLabel);
+    await this.salvageInput.fill(String(data.salvagePercent));
+    await this.descriptionInput.fill('automation playwright');
   }
 
   async clickSaveAllAndWait(): Promise<void> {
     const saveResponse = this.page
       .waitForResponse(
         (response) =>
-          /\/accounting\/product-coa-group\/\d+/.test(response.url()) &&
+          /\/accounting\/asset-categories\/\d+/.test(response.url()) &&
           ['PUT', 'POST'].includes(response.request().method()),
         { timeout: 90_000 },
       )
@@ -261,7 +264,7 @@ export class ProductCoaGroupPage {
       } | null;
       if (!response.ok() || body?.status?.error) {
         throw new Error(
-          `Update PCG gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
+          `Update Asset Category gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
         );
       }
     }
@@ -275,20 +278,12 @@ export class ProductCoaGroupPage {
     await this.setShowDeletedData(false);
     await this.datalist.search(code, 1_500);
     const row = this.page.getByRole('row').filter({ hasText: code }).first();
-    await expect(row, `PCG ${code} harus tampil`).toBeVisible({
+    await expect(row, `Asset Category ${code} harus tampil`).toBeVisible({
       timeout: 45_000,
     });
     if (name) {
       await expect(row).toContainText(name);
     }
-  }
-
-  get bulkDeleteButton(): Locator {
-    return this.page.locator('button.delete-bulk').first();
-  }
-
-  get showDeletedSwitch(): Locator {
-    return this.page.locator('#show_deleted_switch');
   }
 
   async setShowDeletedData(on: boolean): Promise<void> {
@@ -332,7 +327,7 @@ export class ProductCoaGroupPage {
     const deleteResponse = this.page.waitForResponse(
       (response) =>
         (response.url().includes('bulk-delete') ||
-          /\/accounting\/product-coa-group\/\d+/.test(response.url())) &&
+          /\/accounting\/asset-categories\/\d+/.test(response.url())) &&
         ['DELETE', 'POST'].includes(response.request().method()),
       { timeout: 90_000 },
     );
@@ -340,7 +335,7 @@ export class ProductCoaGroupPage {
     await confirmDelete.click();
     const response = await deleteResponse;
     if (!response.ok()) {
-      throw new Error(`Soft delete PCG gagal: HTTP ${response.status()}`);
+      throw new Error(`Soft delete gagal: HTTP ${response.status()}`);
     }
     await waitForSuccessToast(this.page, 10_000).catch(() => undefined);
     await this.page.waitForTimeout(1_000);

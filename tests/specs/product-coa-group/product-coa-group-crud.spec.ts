@@ -15,6 +15,7 @@ test.describe.serial('Product COA Group — CRUD', () => {
 
   const stamp = Date.now().toString().slice(-6);
   const code = `AT-PCG-${stamp}`;
+  const auditCode = `AT-PCG-AUD-${stamp}`;
   let name = `Automation PCG ${stamp}`;
   const updatedName = `Automation PCG UPD ${stamp}`;
 
@@ -61,5 +62,25 @@ test.describe.serial('Product COA Group — CRUD', () => {
   test('[@TC-PCG-004] SEARCH Code di datalist', async ({ page }) => {
     const pcg = new ProductCoaGroupPage(page);
     await pcg.assertInDatalist(code, updatedName);
+  });
+
+  test('[@TC-PCG-005] Soft DELETE + Show deleted', async ({ page }) => {
+    const pcg = new ProductCoaGroupPage(page);
+    await pcg.softDeleteByCode(code);
+    await pcg.assertNotInActiveDatalist(code);
+    await pcg.assertInDeletedDatalist(code);
+  });
+
+  test('[@TC-PCG-006] Audit Log slideover', async ({ page }) => {
+    const pcg = new ProductCoaGroupPage(page);
+    await pcg.gotoDatalist();
+    await pcg.openCreateForm();
+    await pcg.fillCreatePurchasedItem({
+      code: auditCode,
+      name: `Automation PCG AUD ${stamp}`,
+      description: 'automation playwright',
+    });
+    await pcg.clickSaveAndNextAndWaitForEdit();
+    await pcg.openAuditLog();
   });
 });
