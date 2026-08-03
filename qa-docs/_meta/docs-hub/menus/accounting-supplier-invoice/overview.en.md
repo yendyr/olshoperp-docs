@@ -145,7 +145,7 @@ stateDiagram-v2
 
 *Tombol Approve.*
 
-<img src="https://lh3.googleusercontent.com/d/1B7vXSX_0N5dmIFiI7YUcT1KCx-MXIrb7" alt="Status transaksi Approved" referrerpolicy="no-referrer">
+<img src="https://lh3.googleusercontent.com/d/1Gh3ZUuHheUGa5KGq7q0bOJ_MbJsuS3h9" alt="Status transaksi Approved" referrerpolicy="no-referrer">
 
 *Status transaksi berubah jadi Approved.*
 
