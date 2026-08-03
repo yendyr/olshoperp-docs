@@ -205,7 +205,9 @@ The system decides the import type from **Column A (first data row)**:
 | **G** | Description | No | Free text | Internal note for the line (max 150 characters). |
 | **H** | Required Delivery Date | No | Date format | Delivery deadline (must be a real Excel date). |
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Import Detail panel with the download-template button and the import log.
+<img src="https://lh3.googleusercontent.com/d/1NPJ4UqBJDTLZ-StFuUkYfmjIBRgnHO1a?v=20260803" alt="Import Detail panel with the download-template button and the import log" referrerpolicy="no-referrer">
+
+*Import Detail panel with the download-template button and the import log.*
 
 ### 📊 Full Field Reference
 

@@ -205,7 +205,9 @@ Sistem mengenali tipe file impor dari isi **Kolom A (baris data pertama)**:
 | **G** | Description | Tidak | Teks bebas | Catatan internal untuk baris barang (maksimal 150 karakter). |
 | **H** | Required Delivery Date | Tidak | Format tanggal | Tenggat pengiriman barang (wajib format tanggal asli Excel). |
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Panel Import Detail dengan tombol download template dan hasil import log.
+<img src="https://lh3.googleusercontent.com/d/1NPJ4UqBJDTLZ-StFuUkYfmjIBRgnHO1a?v=20260803" alt="Panel Import Detail dengan tombol download template dan hasil import log" referrerpolicy="no-referrer">
+
+*Panel Import Detail dengan tombol download template dan hasil import log.*
 
 ### 📊 Referensi Field Lengkap
 
