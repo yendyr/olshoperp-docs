@@ -10,6 +10,14 @@ Menu **Bill of Material** (SCM) — definisi komponen BOM untuk Assembly.
 
 **Maintenance owner:** QA — Yemima
 
+**Help Center overview:** [`_meta/docs-hub/menus/bill-of-material/`](../_meta/docs-hub/menus/bill-of-material/) (`overview.en.md` / `overview.id.md`)
+
+## Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| HC 1.0 | 2026-07-30 | Help Center overview authored id/en: metode create, Composition Rule, snapshot Assembly, batasan, troubleshooting, dan FAQ |
+
 ## Legacy source
 
 - [_legacy/old_bill-of-material.md](../_legacy/old_bill-of-material.md) — merged ke KB + requirement

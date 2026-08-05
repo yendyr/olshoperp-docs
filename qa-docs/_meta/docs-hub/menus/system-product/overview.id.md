@@ -41,7 +41,9 @@ notes: Help Center landing. Terpisah dari layer QA. Disusun agent dari QA docs (
 * **General config:** `/supplychain/product-general-configuration`
 * **Inventory config:** `/supplychain/product-inventory-configuration`
 
-> Placeholder gambar — datalist System Product dengan kolom Availability/On Hand/ATS.
+<img src="https://lh3.googleusercontent.com/d/1sdijj4AI6id6XW8zuL-uKC3LcpJ3PHda" alt="Datalist System Product dengan kolom Availability/On Hand/ATS" referrerpolicy="no-referrer">
+
+*Datalist System Product dengan kolom Availability/On Hand/ATS.*
 
 ## Alur proses
 

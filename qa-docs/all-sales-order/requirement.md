@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.2
-last_updated: 2026-07-22
+version: 1.3
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode]
@@ -23,6 +23,7 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.3 | 2026-08-05 | QA - Yemima | Cross-ref: Shopee unit price escrow di SP req v1.2 (ASO tidak redefine formula) |
 | 1.2 | 2026-07-22 | QA - Yemima | TO-BE: dual import Processed/Non-Processed (paritas SOG v3.1); cross-ref Store Fulfillment Mode |
 | 1.1 | 2026-07-15 | QA - Yemima | GAP-ASO-01: tombol Recheck AS-IS verified; residual O-01…O-03 |
 | 1.0 | 2026-07-15 | QA - Yemima | Split folder; sintesis platform + general; peran ASO |
@@ -200,7 +201,7 @@ flowchart TB
 - [ ] Failed Process icons/tooltip selaras SP
 - [ ] Create memakai alur SO General
 - [ ] Edit booking unmatched tidak memaksa form SP
-- [ ] Tidak mendefinisikan ulang formula harga — merujuk SOG/SP
+- [ ] Tidak mendefinisikan ulang formula harga — merujuk SOG/SP (**Shopee:** escrow `discounted_price + shopee_discount`, SP req §5.5)
 - [ ] Tombol **Recheck failed process** hanya di ASO; lock saat batch jalan
 - [ ] Doc folder terpisah dari SOG & SP
 

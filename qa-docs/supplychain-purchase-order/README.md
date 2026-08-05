@@ -13,9 +13,9 @@ Menu **Purchase Order** (Supply Chain / Procurement).
 
 **UI route:** `/supplychain/purchase-order`  
 **Help Center overview:** [`_meta/docs-hub/menus/supplychain-purchase-order/`](../_meta/docs-hub/menus/supplychain-purchase-order/) (`overview.en.md` / `overview.id.md`)  
-**SoT / PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05)  
+**SoT / PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05); Import VAT locked 5 Agu 2026  
 **Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)  
-**3 layer version:** 2.7 · **User-guide:** v1.5 · `source_version` 2.7 · **Feature Map:** 1.0 · **Last updated:** 2026-07-28
+**3 layer version:** 2.8 · **User-guide:** v1.6 · `source_version` 2.8 · **Feature Map:** 1.0 · **Last updated:** 2026-08-05
 
 ## Changelog
 
@@ -33,6 +33,7 @@ Menu **Purchase Order** (Supply Chain / Procurement).
 | 2.7b | 2026-07-28 | Feature Map + 6 capability cards; UG v1.5 (SF tags, status review); Help Center overview en/id |
 | HC 1.1 | 2026-07-29 | Help Center overview PO diperluas (ramah end-user): tipe With/Without PR, import Excel, field reference, gaps, troubleshooting, FAQ — en + id |
 | HC 1.1a | 2026-07-30 | Help Center overview id/en — embed screenshot Lokasi Menu & Workspace (Drive hotlink) |
+| 2.8 | 2026-08-05 | Import VAT columns TO-BE locked (I–K, partial success, Align Allocate Full); GAP-PO-11; SF-IMP-01 / SF-DET-01 v1.1; UG v1.6 |
 
 ## Related menus
 

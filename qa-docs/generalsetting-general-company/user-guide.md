@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: generalsetting-general-company
 menu_name: "General Company"
-version: 1.0
-last_updated: 2026-07-30
+version: 1.1
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 2.3
+source_version: 2.4
 ---
 
 # Panduan Pengguna — General Company
@@ -105,6 +105,7 @@ Setelah data mitra lengkap dan aktif:
 - **"Import gagal semua."** Import bersifat semua-atau-tidak: satu baris salah menggagalkan seluruh file. Cek Import Log, perbaiki, unggah ulang.
 - **"Import cuma satu peran per baris."** Benar — untuk mitra multi-peran, buat/edit lewat UI, bukan import.
 - **Field Deposit of Sales/Purchase Return** dipakai untuk auto-journal proses retur — isi sesuai akun yang benar bila perannya Customer/Supplier.
+- **Akun di Accounting Setting tidak bisa dipilih karena sudah dipakai Cash/Bank?** Satu akun tidak boleh sekaligus jadi rekening Cash/Bank dan default COA mitra. Kalau rekening Cash/Bank yang memakai akun itu sudah dihapus, akun boleh dipilih lagi. Blokir penuh di picker dan saat simpan masih dalam penyiapan.
 
 ---
 

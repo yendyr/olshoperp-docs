@@ -52,7 +52,9 @@ notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/
 * **UI path:** Finance & Accounting → Account Receivable → Credit Note  
 * **Route:** `/accounting/credit-note`
 
-> Image placeholder — sidebar Accounting → Credit Note and DataList.
+<img src="https://lh3.googleusercontent.com/d/1ii4FUPDqqZu_f91IjbOQ9tTed6bLyTZ6?v=20260804b" alt="Sidebar Accounting → Credit Note and DataList" referrerpolicy="no-referrer">
+
+*Sidebar Accounting → Credit Note and DataList.*
 
 ## Process flow
 

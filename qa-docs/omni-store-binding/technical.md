@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.1
-last_updated: 2026-07-22
+version: 2.2
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # Store — Technical Documentation
 
-> **Status: REVIEW** — v2.1 (2026-07-22) menambahkan planned schema & invariants **Fulfillment Mode TO-BE** (§5.1, `GAP-ST-FM-01`). Verifikasi codebase AS-IS v2.0 (2026-06-25) tetap berlaku untuk seluruh bagian lain.
+> **Status: REVIEW** — v2.2 (2026-08-04) menambahkan planned validation **COA vs Cash/Bank exclusion TO-BE** (§11, `GAP-ST-CB-01`). v2.1 Fulfillment Mode TO-BE (§5.1) tetap berlaku. Verifikasi codebase AS-IS v2.0 (2026-06-25) tetap berlaku untuk seluruh bagian lain.
 
 ## 0. Metadata
 
@@ -367,6 +367,26 @@ Priority (verified `Store.php`):
 | G-06 | Order onboarding columns reserved unused | `omni_store_onboardings` |
 | G-07 | Sync routes outside sanctum group | `Routes/api.php` lines 58–70 |
 | `GAP-ST-FM-01` | Fulfillment Mode (`fulfillment_mode`, form, datalist, validasi) belum ada — TO-BE, lihat requirement §4.8 dan §5.1 | `omni_stores`, `Form.vue`, `DataList.vue`, `StoreController.php` |
+| `GAP-ST-CB-01` | COA vs Cash/Bank exclusion untuk `coa_id` / `deposit_coa_id` — TO-BE, lihat requirement §3 V-19 dan §11 | `StoreController@select2Coa`, `@store`, `@update`; relasi `gs_company_detail_banks.chart_of_account_id` |
+
+---
+
+## 11. Validation Highlights
+
+**AS-IS (verified):**
+
+- `coa_id`, `deposit_coa_id`, `cash_bank_account_id` required on update; `coa_id` on create commented out (G-05).
+- COA select2: class filter Assets (AR) / Passiva (deposit) via `select2Coa` — **tanpa** exclude COA terikat cash bank.
+
+**TO-BE (`GAP-ST-CB-01` — Implementation pending):**
+
+- Scope: **`coa_id`** (Account Receivable COA) dan **`deposit_coa_id`** (Customer Deposit COA) saja — **bukan** `cash_bank_account_id`.
+- Exclude dari picker: COA id yang ada di `gs_company_detail_banks.chart_of_account_id` untuk cash bank **active + non-deleted** (filter by id/relation, bukan string code).
+- Reject on save (`store`/`update`): message `This COA is already used in Cash/Bank Account.`
+- Edit form: selected value tetap tampil meski COA excluded dari daftar pilihan baru.
+- Soft-deleted cash bank record → COA id tidak lagi di-exclude.
+
+**Planned touchpoints:** `StoreController@select2Coa` (query exclude), validation block in `@store`/`@update`; FE `Form.vue` COA select2 params unchanged except API response set.
 
 ---
 

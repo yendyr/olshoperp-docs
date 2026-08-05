@@ -10,8 +10,12 @@ Menu **Store** (Omni Channel) — registrasi toko marketplace/offline, OAuth aut
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 
 **Maintenance owner:** QA — Yemima  
-**Versi dokumen (3 layer):** 2.1 (2026-07-22) — TO-BE **Fulfillment Mode** (`GAP-ST-FM-01`)  
-**User-guide:** v1.0 · `source_version` 2.1
+**Versi dokumen (3 layer):** 2.2 (2026-08-04) — TO-BE **COA vs Cash/Bank exclusion** (`GAP-ST-CB-01`) untuk AR & Deposit COA  
+**User-guide:** v1.1 · `source_version` 2.2
+
+**UI route:** `/omni/store-binding`
+
+**Help Center overview:** [ID](../_meta/docs-hub/menus/omni-store-binding/overview.id.md) · [EN](../_meta/docs-hub/menus/omni-store-binding/overview.en.md) (authored v1.0)
 
 ## Changelog
 
@@ -19,6 +23,8 @@ Menu **Store** (Omni Channel) — registrasi toko marketplace/offline, OAuth aut
 |---------|------|---------|
 | 2.0 | 2026-06-25 | Konsolidasi requirement bisnis + verifikasi codebase AS-IS |
 | 2.1 | 2026-07-22 | TO-BE: kolom **Fulfillment Mode** (Processed/Non Processed) — gate dual import Dev - Sales Order; `GAP-ST-FM-01`; tambah `user-guide.md` |
+| 2.2 | 2026-08-04 | TO-BE: COA terikat Cash/Bank tidak boleh dipilih untuk `coa_id` / `deposit_coa_id` — `GAP-ST-CB-01` |
+| HC 1.0 | 2026-07-31 | Help Center overview ID + EN dari file authored user (Store) |
 
 ## Route & code
 

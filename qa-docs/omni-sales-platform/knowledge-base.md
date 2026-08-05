@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.1
-last_updated: 2026-07-15
+version: 1.2
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 audience: operator
@@ -97,7 +97,10 @@ Edit field booking (Other Information) dilakukan dari **All Sales Order**, bukan
 - Toko harus **authorized** dan platform **Active**.
 - Jadwal tarik order lebih jarang malam hari.
 - **Order Sync Start Date** di Omni Setting membatasi order terlalu lama tidak ikut ditarik.
-- Harga Shopee memakai harga diskon platform (bukan harga coret). Biaya/diskon tambahan dari label akun platform hanya info di SO — **tidak** ikut ke Sales Invoice.
+- **Harga Shopee (penting):** unit price di detail SO **bukan** sekadar harga “setelah diskon” di order detail API. Sistem memakai data **escrow** Shopee: harga diskon + **potongan yang ditanggung Shopee** (`shopee_discount`), supaya nilai penjualan seller tidak mengecil salah. Contoh: SKU tampil 25.900 di order detail padahal harga seller 53.999 karena Shopee menanggung 28.099.
+- Jika harga line Shopee jadi **0** setelah sync, kemungkinan escrow gagal / item tidak ketemu — cek API Data Log (escrow) lalu **Sync** ulang; laporkan jika berulang.
+- Order yang sudah masuk **sebelum** perbaikan harga escrow mungkin masih understated sampai di-sync/backfill ulang.
+- Biaya/diskon tambahan dari label akun platform hanya info di SO — **tidak** ikut ke Sales Invoice.
 
 ---
 
@@ -129,6 +132,7 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 | Order tidak muncul | Start Date / platform Inactive / toko unauthorized | Cek Omni Setting, Store Binding, Sync Status |
 | Pill Failed Sync isi | Produk belum sync, line kosong, toko unauthorized | Perbaiki master → Retry |
 | Ikon bind / COA / warehouse | Binding atau setting gudang kurang | Ikat produk / lengkapi COA / set WH Process |
+| Harga Shopee terlalu kecil vs seller | Voucher/discount ditanggung Shopee tidak dijumlahkan (order lama / escrow miss) | Sync ulang order; cek escrow di API Data Log; eskalasi jika tetap understated |
 | Tidak auto-approve | Error flag, harga &lt; benchmark, booking | Perbaiki lalu approve manual atau tunggu retry error-approve |
 | Booking: Get Resi gagal | Tracking number belum ada | Sync/ambil resi dulu; cek status booking di Shopee |
 | Settlement: *Unable to find order* pada booking | Platform Order ID masih kosong | Tunggu match order → pastikan Order ID terisi, baru upload settlement |

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.1
-last_updated: 2026-07-22
+version: 2.2
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 audience: operator
@@ -211,6 +211,7 @@ Detail template & validasi: [requirement.md §6](./requirement.md#6-import--refe
 | Building Process kosong | Omni Channel Settings NULL | Set di Global Settings atau isi manual |
 | Duplicate store name | Validasi unik | Gunakan nama berbeda |
 | Settlement Approve error COA | Cash/bank store kosong | Lengkapi di form store |
+| Akun piutang/deposit tidak bisa dipilih — sudah dipakai Cash/Bank | COA yang sama sudah terikat rekening Cash/Bank aktif di master | Pilih akun lain, atau hapus/nonaktifkan cash bank yang memakai akun itu (fitur blokir penuh masih dalam penyiapan) |
 | Sync tombol loading terus | Job lock aktif | Tunggu / cek Horizon queue |
 
 ## 9. FAQ
@@ -241,6 +242,9 @@ A: Platform legacy — store Tokopedia existing masih bisa diedit; create baru t
 
 **Q: Apa itu Fulfillment Mode?**  
 A: Pengaturan Processed/Non Processed di §4.6 — masih tahap penyiapan, belum aktif.
+
+**Q: Kenapa akun piutang atau deposit pelanggan tidak bisa dipilih karena sudah dipakai Cash/Bank?**  
+A: Akun yang sama tidak boleh dipakai ganda sebagai rekening Cash/Bank dan sebagai **Account Receivable COA** atau **Customer Deposit COA** di store. Kalau rekening Cash/Bank yang memakai akun itu sudah dihapus (soft delete), akun tersebut boleh dipilih lagi. Aturan penuh (picker + tolak saat simpan) masih dalam penyiapan — saat ini mungkin masih bisa dipilih sampai fitur dirilis.
 
 ## 10. Relasi Instant Settlement (operator)
 

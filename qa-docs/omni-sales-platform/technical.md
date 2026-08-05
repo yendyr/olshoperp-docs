@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.1
-last_updated: 2026-07-15
+version: 1.2
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 related_docs:
@@ -97,9 +97,21 @@ related_docs:
 
 | Platform | Unit price at sync |
 |----------|-------------------|
-| Shopee | `modal_discounted_price` only |
+| Shopee | Escrow `get_escrow_detail` → `order_income.items[]`: **`discounted_price + shopee_discount`**, match `line_item_id` ke item order detail. **Bukan** `item_list.model_discounted_price` |
 | TikTok | `sale_price + platform_discount` |
 | Lazada | Existing product price path |
+
+**Shopee implementation (`OmniShopeeService`):**
+
+| Method | Escrow / price |
+|--------|----------------|
+| `getAccountingInfo($order_sn, $store_id)` | `POST/GET` path `/api/v2/payment/get_escrow_detail` |
+| Create SO (store path) | Always call escrow; set `each_price`, `each_price_before_discount_before_vat`, bundle `origin_price` |
+| `updateSalesOrder` | Reprice from escrow **only** when converting booking → real order (`converting_booking`) |
+| Fallback if escrow empty / no match | `$price = 0` (GAP-SPR-01) |
+| Legacy | Commented `model_discounted_price` / `model_original_price` — remove after **2026-09-04** |
+
+`processAccountMapping` tetap memakai payload escrow untuk additional cost/disc mapping (terpisah dari unit price line).
 
 `updateAutoApproveFlagForSalesOrder`: compare `each_price_after_vat_primary_currency` vs `benchmark_cogs` (AS-IS; SoT menyebut Price Before VAT — GAP mengacu GAP-BM-05 di docs benchmark).
 
@@ -226,7 +238,9 @@ sequenceDiagram
 ## 12. Tests & QA Notes
 
 - [ ] Cron filter set vs booking exclusion
-- [ ] Shopee price always modal_discounted_price
+- [ ] Shopee price = escrow `discounted_price + shopee_discount` (match `line_item_id`); not order-detail `model_discounted_price`
+- [ ] Booking convert reprice via escrow; regular status update does not zero prices
+- [ ] Escrow fail / unmatched line → price 0 + observable (GAP-SPR-01)
 - [ ] ErrorFlag icon matrix
 - [ ] Processing icon color states
 - [ ] Failed Sync retry deletes row
@@ -245,3 +259,4 @@ sequenceDiagram
 | GAP-BOOK-01 | **Accepted residual:** jalur IS mitigated — null `platform_order_id` → no settlement match; approve SP no SI. Residual = manual SI amount 0 only. See requirement §3b |
 | GAP-SYN-01 | No Shopee skip-sync optimization |
 | GAP-BM-05 | Flag uses after-VAT price vs SoT Price Before VAT |
+| GAP-SPR-01 | Escrow miss → price 0; historical SO understated until backfill/re-sync; legacy seeders `FixShopee*` still use `model_discounted_price` |

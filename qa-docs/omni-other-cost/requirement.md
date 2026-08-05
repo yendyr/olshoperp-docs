@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-other-cost
 menu_name: "Other Cost"
-version: 1.5
-last_updated: 2026-07-17
+version: 1.6
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -21,6 +21,7 @@ legacy_sources: []
 | 1.3 | 2026-06-23 | QA - Yemima | Koreksi: Applied Store import pakai **store name** (bukan code) — selaras codebase & form manual; batalkan IMP-01 |
 | 1.4 | 2026-07-10 | QA - Yemima | Cross-ref: COA di Master = **default** untuk PI; override COA per baris di Purchase Invoice (§6) |
 | 1.5 | 2026-07-17 | QA - Yemima | COA scope: **semua class** + child-only (update req 17 Jul 2026); O-08 = hapus filter class form+import |
+| 1.6 | 2026-08-04 | QA - Yemima | TO-BE: `expense_coa_id` vs Cash/Bank exclusion — §3 V-09, AC4, `GAP-OC-CB-01` |
 
 **Nama lain menu:** Other Cost, Master Other Cost  
 **UI route:** `/omni/other-cost`  
@@ -118,6 +119,7 @@ flowchart TB
 | V-07 | COA `owned_by` | Harus match company login | |
 | V-05b | COA class | **Semua class diperbolehkan** (TO-BE) — tidak ada filter class | AS-IS form/import masih filter — O-08 |
 | V-08 | `status` | Default Yes dari FE | |
+| V-09 **(TO-BE)** | `expense_coa_id` — COA tidak boleh sudah terikat **Master Cash Bank** aktif (non-deleted) via `gs_company_detail_banks.chart_of_account_id` | Create/update + import | Picker: exclude by COA **id/relation**. Save reject: `This COA is already used in Cash/Bank Account.` Edit: nilai terpilih tetap tampil. Soft-delete cash bank → COA boleh dipilih lagi — lihat `GAP-OC-CB-01` |
 
 **Manual test O-03 (description max 150 di form):**
 
@@ -241,6 +243,7 @@ COA valid jika **semua** terpenuhi:
 - Wajib diisi; input = **Code COA**
 - **Semua COA Class** diperbolehkan (TO-BE — hapus allow-list class)
 - **Child account** (bukan parent) — wajib
+- **(TO-BE — `GAP-OC-CB-01`)** COA id tidak boleh sudah terikat Master Cash Bank aktif (non-deleted) — exclude picker + reject save/import dengan pesan `This COA is already used in Cash/Bank Account.`; edit tetap tampilkan nilai terpilih; soft-delete cash bank membebaskan COA
 
 | Skenario | Error Message |
 |----------|---------------|
@@ -248,6 +251,7 @@ COA valid jika **semua** terpenuhi:
 | Tidak ditemukan | `Row [X]: COA Code [Code] not found in master data.` |
 | Class tidak diizinkan | **AS-IS only** (Expense/ORev) — **TO-BE: pesan ini dihapus** bersama allow-list (O-08) |
 | Parent account | `Row [X]: COA Code [Code] is a parent account. Only child accounts are allowed.` (AS-IS copy: `is parent COA.`) |
+| **(TO-BE)** COA terikat Cash/Bank | `Row [X]: This COA is already used in Cash/Bank Account.` |
 
 ### AC 5 — Validasi Applied Store
 
@@ -397,6 +401,7 @@ Gunakan file xlsx dengan header persis: `Code | Name | Other Cost COA | Applied 
 | O-11 | Applied to Store scope | **Closed** | Hanya settlement Others/General |
 | O-12 | Dedicated FormRequest class | Low / tech debt | §3.7 |
 | O-13 | Field Tariff legacy | **Ignored** | §3.6 |
+| `GAP-OC-CB-01` | **`expense_coa_id` vs Cash/Bank exclusion** — COA terikat cash bank aktif tidak boleh dipilih/disimpan (form, API, import) | **TO-BE — Implementation pending** | Lihat §3 V-09, AC4, [technical §11](./technical.md#11-known-technical-debt) |
 
 ---
 

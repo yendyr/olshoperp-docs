@@ -9,6 +9,7 @@ last_updated: 2026-07-23
 menus:
   manage-platform-product:
     menu_name: "Manage Platform Product"
+    short_description: "Bind and manage products between OlshopERP and marketplace platforms."
     path: manage-platform-product
     module: OmniChannel
     menu_links:
@@ -26,7 +27,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       - _legacy/old_platform-product-binding-glossary.md
       - _legacy/old_platform-product-sync-newrequirement.md
@@ -45,6 +46,7 @@ menus:
 
   omni-checking-process:
     menu_name: "Checking Process"
+    short_description: "Check picked items before packing to confirm the order is correct."
     path: omni-checking-process
     module: OmniChannel
     menu_links:
@@ -73,6 +75,7 @@ menus:
 
   omni-global-settings:
     menu_name: "Omni Channel Settings"
+    short_description: "Configure Omni Channel settings used across stores and warehouses."
     path: omni-global-settings
     module: OmniChannel
     menu_links:
@@ -81,26 +84,36 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
       backend:
-        - Modules/OmniChannel/Http/Controllers/GlobalSettingController.php
+        - Modules/OmniChannel/Http/Controllers/DefaultWarehouseController.php
+        - Modules/OmniChannel/Http/Controllers/OmniSettingController.php
+        - Modules/OmniChannel/Http/Controllers/OrderAutomationSettingController.php
+        - Modules/OmniChannel/Http/Controllers/SalesReturnConfigurationController.php
+        - Modules/OmniChannel/Entities/DefaultWarehouse.php
+        - Modules/OmniChannel/Entities/DefaultWarehouseStock.php
+        - Modules/OmniChannel/Entities/OmniSetting.php
+        - Modules/OmniChannel/Entities/OrderAutomationSetting.php
+        - Modules/OmniChannel/Policies/GlobalSettingPolicy.php
+        - Modules/OmniChannel/Routes/api.php
+      frontend:
         - olshoperp-frontend/src/pages/Omni/master/GlobalSetting/**/*
-      frontend: []
 
   omni-packing-process:
     menu_name: "Packing Process"
+    short_description: "Pack checked orders and prepare them for shipping."
     path: omni-packing-process
     module: OmniChannel
     menu_links:
@@ -129,6 +142,7 @@ menus:
 
   omni-picking-process:
     menu_name: "Picking Process"
+    short_description: "Pick items from warehouse locations for marketplace orders."
     path: omni-picking-process
     module: OmniChannel
     menu_links:
@@ -157,6 +171,7 @@ menus:
 
   omni-platform-api:
     menu_name: "Platform API"
+    short_description: "Manage platform API connections used to sync marketplace data."
     path: omni-platform-api
     module: OmniChannel
     menu_links:
@@ -185,6 +200,7 @@ menus:
 
   omni-sales-order-report:
     menu_name: "Sales Order Report"
+    short_description: "Review sales order reports across marketplace channels."
     path: omni-sales-order-report
     module: OmniChannel
     menu_links:
@@ -213,6 +229,7 @@ menus:
 
   omni-shipping-service:
     menu_name: "Master Shipping Service"
+    short_description: "Maintain the master list of shipping services used for fulfillment."
     path: omni-shipping-service
     module: OmniChannel
     menu_links:
@@ -221,26 +238,34 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
       backend:
         - Modules/OmniChannel/Http/Controllers/ShippingServiceController.php
+        - Modules/OmniChannel/Entities/ShippingService.php
+        - Modules/OmniChannel/Entities/ShippingServiceBindingPivot.php
+        - Modules/OmniChannel/Entities/ShippingServiceType.php
+        - Modules/OmniChannel/Services/ShippingServiceExportService.php
+        - Modules/OmniChannel/Jobs/ShippingServiceDetailExportJob.php
+        - Modules/OmniChannel/Http/Controllers/TransferShippingDoController.php
+        - Modules/OmniChannel/Routes/api.php
+      frontend:
         - olshoperp-frontend/src/pages/Omni/master/ShippingService/**/*
-      frontend: []
 
   omni-shipping-service-platform:
     menu_name: "Platform Shipping Service"
+    short_description: "Map shipping services to each marketplace platform."
     path: omni-shipping-service-platform
     module: OmniChannel
     menu_links:
@@ -249,26 +274,36 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
       backend:
         - Modules/OmniChannel/Http/Controllers/ShippingServicePlatformController.php
+        - Modules/OmniChannel/Http/Controllers/ShippingServiceSyncLogController.php
+        - Modules/OmniChannel/Jobs/ShippingServiceSyncJob.php
+        - Modules/OmniChannel/Entities/ShippingServicePlatform.php
+        - Modules/OmniChannel/Entities/ShippingServiceBindingPivot.php
+        - Modules/OmniChannel/Entities/ShippingServiceSyncLog.php
+        - Modules/OmniChannel/Services/OmniShopeeService.php
+        - Modules/OmniChannel/Services/OmniTikTokService.php
+        - Modules/OmniChannel/Policies/ShippingServicePlatformPolicy.php
+        - Modules/OmniChannel/Routes/api.php
+      frontend:
         - olshoperp-frontend/src/pages/Omni/master/ShippingServicePlatform/**/*
-      frontend: []
 
   omni-store-binding:
     menu_name: "Store"
+    short_description: "Connect and manage marketplace stores linked to your company."
     path: omni-store-binding
     module: OmniChannel
     menu_links:
@@ -309,6 +344,7 @@ menus:
 
   omni-warehouse-binding:
     menu_name: "Warehouse Binding"
+    short_description: "Link warehouses to stores for order fulfillment."
     path: omni-warehouse-binding
     module: OmniChannel
     docs:
@@ -337,6 +373,7 @@ menus:
 
   omni-sales-platform:
     menu_name: "Dev - Sales Platform"
+    short_description: "Developer view of sales platform order data and sync status."
     path: omni-sales-platform
     module: OmniChannel
     menu_links:
@@ -379,6 +416,7 @@ menus:
 
   sales-order-general:
     menu_name: "Dev - Sales Order"
+    short_description: "Developer view of sales orders from marketplace channels."
     path: sales-order-general
     module: OmniChannel
     menu_links:
@@ -440,6 +478,7 @@ menus:
 
   accounting-account-payable-report:
     menu_name: "Account Payable Report"
+    short_description: "See how much you still owe suppliers and track outstanding payables."
     path: accounting-account-payable-report
     module: Accounting
     menu_links:
@@ -466,6 +505,7 @@ menus:
 
   accounting-account-receivable-report:
     menu_name: "Account Receivable Report"
+    short_description: "See how much customers still owe you and track outstanding receivables."
     path: accounting-account-receivable-report
     module: Accounting
     menu_links:
@@ -492,6 +532,7 @@ menus:
 
   accounting-adjustment-inbound:
     menu_name: "Stock Addition Approval"
+    short_description: "Approve stock addition adjustments before they update inventory value."
     path: accounting-adjustment-inbound
     module: Accounting
     menu_links:
@@ -518,6 +559,7 @@ menus:
 
   accounting-adjustment-outbound:
     menu_name: "Stock Deduction Approval"
+    short_description: "Approve stock deduction adjustments before they update inventory value."
     path: accounting-adjustment-outbound
     module: Accounting
     menu_links:
@@ -544,6 +586,7 @@ menus:
 
   accounting-asset-category:
     menu_name: "Asset Category"
+    short_description: "Define categories used to group fixed assets."
     path: accounting-asset-category
     module: Accounting
     menu_links:
@@ -570,6 +613,7 @@ menus:
 
   accounting-asset-list:
     menu_name: "Asset List"
+    short_description: "Register and manage company fixed assets."
     path: accounting-asset-list
     module: Accounting
     menu_links:
@@ -596,6 +640,7 @@ menus:
 
   accounting-balance-sheet:
     menu_name: "Balance Sheet"
+    short_description: "View the company balance sheet for a selected period."
     path: accounting-balance-sheet
     module: Accounting
     menu_links:
@@ -622,6 +667,7 @@ menus:
 
   accounting-cash-bank-reconcile:
     menu_name: "Cash/Bank Reconcile"
+    short_description: "Match cash and bank transactions with your account statements."
     path: accounting-cash-bank-reconcile
     module: Accounting
     menu_links:
@@ -656,7 +702,8 @@ menus:
       frontend: []
 
   accounting-chart-of-account:
-    menu_name: "COA"
+    menu_name: "Chart of Account (Master COA)"
+    short_description: "Maintain the master chart of accounts used in all journals."
     path: accounting-chart-of-account
     module: Accounting
     menu_links:
@@ -665,24 +712,43 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
+      test_cases:
+        path: test-cases/
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/ChartOfAccountController.php
+        - Modules/Accounting/Http/Controllers/ChartOfAccountClassController.php
+        - Modules/Accounting/Entities/ChartOfAccount.php
+        - Modules/Accounting/Entities/ChartOfAccountClass.php
+        - Modules/Accounting/Entities/CoaTree.php
+        - Modules/Accounting/Import/CoaImport.php
+        - Modules/Accounting/Jobs/CoaImportJob.php
+        - Modules/Accounting/Jobs/CoaExportJob.php
+        - Modules/Accounting/Jobs/CoaExportExcelJob.php
+        - Modules/Accounting/Exports/CoaTemplateExport.php
+        - Modules/Accounting/Policies/ChartOfAccountPolicy.php
+        - Modules/Accounting/Database/Seeders/ChartOfAccountClassSeeder.php
+        - Modules/Accounting/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/master/COA/**/*
+        - olshoperp-frontend/src/router/index.ts
 
   accounting-company-detail-bank:
     menu_name: "Cash/Bank Account"
+    short_description: "Set up company cash and bank accounts for payments and receipts."
     path: accounting-company-detail-bank
     module: Accounting
     menu_links:
@@ -691,24 +757,29 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/GeneralSetting/Http/Controllers/CompanyDetailBankController.php
+        - Modules/GeneralSetting/Entities/CompanyDetailBank.php
+        - Modules/GeneralSetting/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/master/CashBankAccount/**/*
 
   accounting-consolidation-report:
     menu_name: "Consolidation Report"
+    short_description: "View consolidated financial reports across related companies."
     path: accounting-consolidation-report
     module: Accounting
     menu_links:
@@ -735,6 +806,7 @@ menus:
 
   accounting-credit-note:
     menu_name: "Credit Note"
+    short_description: "Issue credit notes to reduce customer invoice balances."
     path: accounting-credit-note
     module: Accounting
     menu_links:
@@ -771,6 +843,7 @@ menus:
 
   accounting-customer-invoice:
     menu_name: "Sales Invoice"
+    short_description: "Create customer invoices and track accounts receivable from sales."
     path: accounting-customer-invoice
     module: Accounting
     menu_links:
@@ -803,6 +876,7 @@ menus:
 
   accounting-customer-payment:
     menu_name: "Account Receive"
+    short_description: "Record customer payments and clear outstanding sales invoices."
     path: accounting-customer-payment
     module: Accounting
     menu_links:
@@ -847,6 +921,7 @@ menus:
 
   accounting-debit-note:
     menu_name: "Debit Note"
+    short_description: "Issue debit notes to reduce amounts owed to suppliers."
     path: accounting-debit-note
     module: Accounting
     menu_links:
@@ -873,6 +948,7 @@ menus:
 
   accounting-default-vat:
     menu_name: "Default VAT"
+    short_description: "Set default VAT rates used on purchase and sales documents."
     path: accounting-default-vat
     module: Accounting
     menu_links:
@@ -881,24 +957,33 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/DefaultVatController.php
+        - Modules/Accounting/Http/Requests/DefaultVatRequest.php
+        - Modules/Accounting/Entities/DefaultVat.php
+        - Modules/Accounting/Policies/DefaultVatPolicy.php
+        - Modules/Accounting/Routes/api.php
+        - Modules/SupplyChain/Http/Controllers/ProductController.php
+        - Modules/SupplyChain/Import/ProductImport.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/master/DefaultVAT/**/*
 
   accounting-fiscal-period:
     menu_name: "Fiscal Period"
+    short_description: "Open and close fiscal periods that control posting dates."
     path: accounting-fiscal-period
     module: Accounting
     menu_links:
@@ -925,6 +1010,7 @@ menus:
 
   accounting-item:
     menu_name: "Item COA"
+    short_description: "Map individual items to chart of account settings."
     path: accounting-item
     module: Accounting
     menu_links:
@@ -951,6 +1037,7 @@ menus:
 
   accounting-opening-stock:
     menu_name: "Opening Stock"
+    short_description: "Enter opening stock balances when starting inventory accounting."
     path: accounting-opening-stock
     module: Accounting
     menu_links:
@@ -977,6 +1064,7 @@ menus:
 
   accounting-platform-account-labels:
     menu_name: "Platform Account Labelling"
+    short_description: "Label platform accounts so settlement mapping is easier to read."
     path: accounting-platform-account-labels
     module: Accounting
     menu_links:
@@ -1003,6 +1091,7 @@ menus:
 
   accounting-platform-account-mapping:
     menu_name: "Platform Account Mapping"
+    short_description: "Map marketplace settlement accounts to your chart of accounts."
     path: accounting-platform-account-mapping
     module: Accounting
     menu_links:
@@ -1029,6 +1118,7 @@ menus:
 
   accounting-product-benchmark-price:
     menu_name: "Benchmark COGS"
+    short_description: "Set benchmark COGS values used for product cost analysis."
     path: accounting-product-benchmark-price
     module: Accounting
     menu_links:
@@ -1069,6 +1159,7 @@ menus:
 
   accounting-product-coa-group:
     menu_name: "Product COA Group"
+    short_description: "Group products with shared chart of account settings."
     path: accounting-product-coa-group
     module: Accounting
     menu_links:
@@ -1077,24 +1168,33 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/ProductCoaGroupController.php
+        - Modules/Accounting/Entities/ProductCoaGroup.php
+        - Modules/Accounting/Entities/ProductCoaGroupDetail.php
+        - Modules/Accounting/Entities/TransactionCoaList.php
+        - Modules/SupplyChain/Jobs/ProductCoaGroupProductAccountingJob.php
+        - app/Helpers/Accounting/JournalProcess.php
+        - Modules/Accounting/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/master/ProductCoaGroup/**/*
 
   accounting-product-profit-loss:
     menu_name: "Product Profit Loss"
+    short_description: "Analyze profit and loss results by product."
     path: accounting-product-profit-loss
     module: Accounting
     menu_links:
@@ -1127,6 +1227,7 @@ menus:
 
   accounting-profit-loss:
     menu_name: "Profit & Loss"
+    short_description: "View the company profit and loss statement for a period."
     path: accounting-profit-loss
     module: Accounting
     menu_links:
@@ -1153,6 +1254,7 @@ menus:
 
   accounting-profit-loss-v1:
     menu_name: "Dev - Profit & Loss"
+    short_description: "Developer version of the profit and loss report."
     path: accounting-profit-loss-v1
     module: Accounting
     menu_links:
@@ -1184,6 +1286,7 @@ menus:
 
   accounting-purchase-return:
     menu_name: "Purchase Return"
+    short_description: "Record purchase returns and reduce supplier invoice balances."
     path: accounting-purchase-return
     module: Accounting
     menu_links:
@@ -1210,6 +1313,7 @@ menus:
 
   accounting-sales-order-invoicing:
     menu_name: "Sales Order Invoicing"
+    short_description: "Create sales invoices from marketplace sales orders."
     path: accounting-sales-order-invoicing
     module: Accounting
     menu_links:
@@ -1236,6 +1340,7 @@ menus:
 
   accounting-sales-order-profit-loss:
     menu_name: "Sales Order Profit Loss"
+    short_description: "Analyze profit and loss results by sales order."
     path: accounting-sales-order-profit-loss
     module: Accounting
     menu_links:
@@ -1262,6 +1367,7 @@ menus:
 
   accounting-sales-return:
     menu_name: "Sales Return"
+    short_description: "Record sales returns and adjust customer invoice balances."
     path: accounting-sales-return
     module: Accounting
     menu_links:
@@ -1296,6 +1402,7 @@ menus:
 
   accounting-settlement-mapping:
     menu_name: "Settlement Mapping"
+    short_description: "Map marketplace settlement lines to accounting accounts."
     path: accounting-settlement-mapping
     module: Accounting
     menu_links:
@@ -1322,6 +1429,7 @@ menus:
 
   accounting-settlement-upload:
     menu_name: "Instant Settlement"
+    short_description: "Upload marketplace settlement files for faster reconciliation."
     path: accounting-settlement-upload
     module: Accounting
     menu_links:
@@ -1358,6 +1466,7 @@ menus:
 
   accounting-stock-monitoring-value:
     menu_name: "Stock Monitoring Value"
+    short_description: "Monitor inventory value and stock movement in accounting terms."
     path: accounting-stock-monitoring-value
     module: Accounting
     menu_links:
@@ -1384,6 +1493,7 @@ menus:
 
   accounting-stock-opname-approval:
     menu_name: "Stock Opname Approval "
+    short_description: "Approve stock opname results before inventory value is updated."
     path: accounting-stock-opname-approval
     module: Accounting
     menu_links:
@@ -1410,6 +1520,7 @@ menus:
 
   accounting-stock-remapping:
     menu_name: "Stock Remapping"
+    short_description: "Remap stock values when account or product mapping changes."
     path: accounting-stock-remapping
     module: Accounting
     menu_links:
@@ -1448,6 +1559,7 @@ menus:
 
   accounting-supplier-invoice:
     menu_name: "Purchase Invoice"
+    short_description: "Record supplier invoices and create accounts payable after goods are received."
     path: accounting-supplier-invoice
     module: Accounting
     menu_links:
@@ -1485,6 +1597,7 @@ menus:
 
   accounting-supplier-payment:
     menu_name: "Account Payment"
+    short_description: "Pay suppliers and clear outstanding purchase invoice balances."
     path: accounting-supplier-payment
     module: Accounting
     menu_links:
@@ -1529,6 +1642,7 @@ menus:
 
   accounting-tax:
     menu_name: "Tax"
+    short_description: "Maintain tax master data used on purchase and sales documents."
     path: accounting-tax
     module: Accounting
     menu_links:
@@ -1537,24 +1651,31 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/TaxController.php
+        - Modules/Accounting/Entities/Tax.php
+        - Modules/Accounting/Policies/TaxPolicy.php
+        - Modules/Accounting/Routes/api.php
+        - app/Helpers/Accounting/AccontingHelper.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/master/Tax/**/*
 
   accounting-trial-balance:
     menu_name: "Trial Balance"
+    short_description: "View the trial balance to check debit and credit totals."
     path: accounting-trial-balance
     module: Accounting
     menu_links:
@@ -1586,6 +1707,7 @@ menus:
 
   general-ledger:
     menu_name: "General Ledger Report"
+    short_description: "Browse detailed general ledger movements by account."
     path: general-ledger
     module: Accounting
     menu_links:
@@ -1617,6 +1739,7 @@ menus:
 
   journal:
     menu_name: "Journal"
+    short_description: "Create and post manual journal entries to the general ledger."
     path: journal
     module: Accounting
     menu_links:
@@ -1653,6 +1776,7 @@ menus:
 
   omni-other-cost:
     menu_name: "Other Cost"
+    short_description: "Record other costs that affect marketplace order profitability."
     path: omni-other-cost
     module: Accounting
     menu_links:
@@ -1693,6 +1817,7 @@ menus:
 
   omni-other-discount:
     menu_name: "Other Discount"
+    short_description: "Record other discounts that affect marketplace order profitability."
     path: omni-other-discount
     module: Accounting
     menu_links:
@@ -1737,6 +1862,7 @@ menus:
 
   bill-of-material:
     menu_name: "Bill of Material"
+    short_description: "Define product recipes that list components needed for assembly."
     path: bill-of-material
     module: SupplyChain
     menu_links:
@@ -1767,6 +1893,7 @@ menus:
 
   omni-checking-list:
     menu_name: "Checking List"
+    short_description: "Review checking lists prepared for marketplace order fulfillment."
     path: omni-checking-list
     module: SupplyChain
     menu_links:
@@ -1793,6 +1920,7 @@ menus:
 
   omni-packing-list:
     menu_name: "Packing List"
+    short_description: "Review packing lists prepared for marketplace order fulfillment."
     path: omni-packing-list
     module: SupplyChain
     menu_links:
@@ -1819,6 +1947,7 @@ menus:
 
   omni-picking-list:
     menu_name: "Picking List"
+    short_description: "Review picking lists prepared for marketplace order fulfillment."
     path: omni-picking-list
     module: SupplyChain
     menu_links:
@@ -1845,6 +1974,7 @@ menus:
 
   omni-process-summary:
     menu_name: "Order Process"
+    short_description: "Track order progress across picking, checking, packing, and shipping."
     path: omni-process-summary
     module: SupplyChain
     menu_links:
@@ -1880,6 +2010,7 @@ menus:
 
   omni-skip-processing:
     menu_name: "Skip Processing"
+    short_description: "Skip selected warehouse process steps when allowed by workflow."
     path: omni-skip-processing
     module: SupplyChain
     menu_links:
@@ -1916,6 +2047,7 @@ menus:
 
   omni-skip-wave-process:
     menu_name: "Skip Wave Process"
+    short_description: "Skip wave processing steps for selected marketplace orders."
     path: omni-skip-wave-process
     module: SupplyChain
     menu_links:
@@ -1950,6 +2082,7 @@ menus:
 
   omni-unassign-wave:
     menu_name: "Unassign Wave"
+    short_description: "Remove orders from a wave so they can be reassigned."
     path: omni-unassign-wave
     module: SupplyChain
     menu_links:
@@ -1984,6 +2117,7 @@ menus:
 
   omni-waves-management:
     menu_name: "Waves Management"
+    short_description: "Create and manage warehouse waves for batch order processing."
     path: omni-waves-management
     module: SupplyChain
     menu_links:
@@ -2018,6 +2152,7 @@ menus:
         - olshoperp-frontend/src/pages/Omni/WavesManagement/**/*
   random-sku:
     menu_name: "Random SKU"
+    short_description: "Generate or manage random SKU values for product setup."
     path: random-sku
     module: SupplyChain
     menu_links:
@@ -2050,6 +2185,7 @@ menus:
 
   supplychain-adjustment-addition:
     menu_name: "Stock Addition "
+    short_description: "Add stock manually when inventory needs to be increased."
     path: supplychain-adjustment-addition
     module: SupplyChain
     menu_links:
@@ -2081,6 +2217,7 @@ menus:
 
   supplychain-adjustment-deduction:
     menu_name: "Stock Deduction "
+    short_description: "Deduct stock manually when inventory needs to be reduced."
     path: supplychain-adjustment-deduction
     module: SupplyChain
     menu_links:
@@ -2112,6 +2249,7 @@ menus:
 
   supplychain-assembly:
     menu_name: "Assembly"
+    short_description: "Build finished goods from components using a bill of material."
     path: supplychain-assembly
     module: SupplyChain
     menu_links:
@@ -2149,6 +2287,7 @@ menus:
 
   supplychain-bundle-stock-report:
     menu_name: "Bundle Stock"
+    short_description: "View stock availability for bundled products."
     path: supplychain-bundle-stock-report
     module: SupplyChain
     menu_links:
@@ -2182,6 +2321,7 @@ menus:
 
   supplychain-cancelled-order:
     menu_name: "Cancelled Order"
+    short_description: "Review cancelled marketplace orders and related warehouse impact."
     path: supplychain-cancelled-order
     module: SupplyChain
     menu_links:
@@ -2213,6 +2353,7 @@ menus:
 
   supplychain-delivery-order:
     menu_name: "Delivery Order"
+    short_description: "Create delivery orders to ship goods to customers."
     path: supplychain-delivery-order
     module: SupplyChain
     menu_links:
@@ -2239,6 +2380,7 @@ menus:
 
   supplychain-dimension-and-weight-label:
     menu_name: "Dimension and Weight Label"
+    short_description: "Maintain dimension and weight labels used on products and packing."
     path: supplychain-dimension-and-weight-label
     module: SupplyChain
     menu_links:
@@ -2272,6 +2414,7 @@ menus:
 
   supplychain-failed-ship:
     menu_name: "Failed Ship"
+    short_description: "Handle orders that failed shipping and need follow-up action."
     path: supplychain-failed-ship
     module: SupplyChain
     menu_links:
@@ -2308,6 +2451,7 @@ menus:
 
   supplychain-inventory-detail:
     menu_name: "Dev - Inventory Detail"
+    short_description: "Developer view of detailed inventory balances and movements."
     path: supplychain-inventory-detail
     module: SupplyChain
     menu_links:
@@ -2340,6 +2484,7 @@ menus:
 
   supplychain-item-category:
     menu_name: "Item Category"
+    short_description: "Organize products into item categories for easier management."
     path: supplychain-item-category
     module: SupplyChain
     menu_links:
@@ -2372,6 +2517,7 @@ menus:
 
   supplychain-item-interchange:
     menu_name: "Product Interchange"
+    short_description: "Define interchangeable products that can replace each other."
     path: supplychain-item-interchange
     module: SupplyChain
     menu_links:
@@ -2403,6 +2549,7 @@ menus:
 
   supplychain-location:
     menu_name: "Location"
+    short_description: "Manage warehouse locations used to store inventory."
     path: supplychain-location
     module: SupplyChain
     menu_links:
@@ -2434,6 +2581,7 @@ menus:
 
   supplychain-manual-picking-list:
     menu_name: "Manual Picking List"
+    short_description: "Create picking lists manually outside the normal wave process."
     path: supplychain-manual-picking-list
     module: SupplyChain
     menu_links:
@@ -2477,6 +2625,7 @@ menus:
 
   supplychain-master-brand:
     menu_name: "Master Brand"
+    short_description: "Maintain the master list of product brands."
     path: supplychain-master-brand
     module: SupplyChain
     menu_links:
@@ -2509,6 +2658,7 @@ menus:
 
   supplychain-mutation-inbound:
     menu_name: "Purchase Inbound"
+    short_description: "Receive purchased goods into warehouse and update stock."
     path: supplychain-mutation-inbound
     module: SupplyChain
     menu_links:
@@ -2544,6 +2694,7 @@ menus:
 
   supplychain-mutation-outbound:
     menu_name: "Outbound External"
+    short_description: "Send stock out to an external destination and reduce inventory."
     path: supplychain-mutation-outbound
     module: SupplyChain
     menu_links:
@@ -2575,7 +2726,8 @@ menus:
       frontend: []
 
   supplychain-mutation-transfer-external:
-    menu_name: "External"
+    menu_name: "Transfer External"
+    short_description: "Transfer stock to an external warehouse or partner location."
     path: supplychain-mutation-transfer-external
     module: SupplyChain
     menu_links:
@@ -2609,6 +2761,7 @@ menus:
 
   supplychain-mutation-transfer-internal:
     menu_name: "Transfer Internal"
+    short_description: "Transfer stock between warehouses or locations inside the company."
     path: supplychain-mutation-transfer-internal
     module: SupplyChain
     menu_links:
@@ -2640,7 +2793,8 @@ menus:
       frontend: []
 
   supplychain-mutation-transfer-scrap:
-    menu_name: "Broken"
+    menu_name: "Transfer Broken"
+    short_description: "Move damaged or broken stock out of sellable inventory."
     path: supplychain-mutation-transfer-scrap
     module: SupplyChain
     menu_links:
@@ -2672,7 +2826,8 @@ menus:
       frontend: []
 
   supplychain-mutation-transfer-void:
-    menu_name: "Void"
+    menu_name: "Transfer Void"
+    short_description: "Void transfer documents that should no longer affect stock."
     path: supplychain-mutation-transfer-void
     module: SupplyChain
     menu_links:
@@ -2705,6 +2860,7 @@ menus:
 
   supplychain-new-purchase-inbound:
     menu_name: "BETA - New Purchase Inbound"
+    short_description: "Receive purchased goods with the newer purchase inbound flow."
     path: supplychain-new-purchase-inbound
     module: SupplyChain
     menu_links:
@@ -2744,6 +2900,7 @@ menus:
 
   supplychain-other-inbound:
     menu_name: "Other Inbound"
+    short_description: "Receive stock from non-purchase sources into the warehouse."
     path: supplychain-other-inbound
     module: SupplyChain
     menu_links:
@@ -2776,6 +2933,7 @@ menus:
 
   supplychain-product-ending-stock:
     menu_name: "Dev - Product Ending Stock"
+    short_description: "Developer view of product ending stock balances."
     path: supplychain-product-ending-stock
     module: SupplyChain
     menu_links:
@@ -2807,6 +2965,7 @@ menus:
 
   supplychain-product-general-configuration:
     menu_name: "Product General Configuration"
+    short_description: "Configure general product settings used across supply chain."
     path: supplychain-product-general-configuration
     module: SupplyChain
     menu_links:
@@ -2841,6 +3000,7 @@ menus:
 
   supplychain-product-inventory-configuration:
     menu_name: "Product Inventory Configuration"
+    short_description: "Configure inventory rules and stock behavior per product."
     path: supplychain-product-inventory-configuration
     module: SupplyChain
     menu_links:
@@ -2875,6 +3035,7 @@ menus:
 
   supplychain-product-mutation:
     menu_name: "Dev - Product Mutation History"
+    short_description: "Developer view of product stock mutation history."
     path: supplychain-product-mutation
     module: SupplyChain
     menu_links:
@@ -2907,6 +3068,7 @@ menus:
 
   supplychain-product-mutation-stock:
     menu_name: "Stock History"
+    short_description: "Review stock movement history for products over time."
     path: supplychain-product-mutation-stock
     module: SupplyChain
     menu_links:
@@ -2948,6 +3110,7 @@ menus:
 
   supplychain-product-transaction-history:
     menu_name: "Dev - Product Transaction History"
+    short_description: "Developer view of product transaction history across documents."
     path: supplychain-product-transaction-history
     module: SupplyChain
     menu_links:
@@ -2997,6 +3160,7 @@ draftpending
 
   supplychain-purchase-order:
     menu_name: "Purchase Order"
+    short_description: "Create purchase orders to buy goods from suppliers."
     path: supplychain-purchase-order
     module: SupplyChain
     menu_links:
@@ -3034,6 +3198,7 @@ draftpending
 
   supplychain-purchase-requisition:
     menu_name: "Purchase Requisition"
+    short_description: "Request purchase needs before a purchase order is created."
     path: supplychain-purchase-requisition
     module: SupplyChain
     menu_links:
@@ -3065,6 +3230,7 @@ draftpending
 
   supplychain-qc-procedure:
     menu_name: "QC Procedure"
+    short_description: "Define quality control procedures used when receiving or assembling goods."
     path: supplychain-qc-procedure
     module: SupplyChain
     menu_links:
@@ -3098,6 +3264,7 @@ draftpending
 
   supplychain-real-stock:
     menu_name: "Real Time Stock"
+    short_description: "Check real-time stock balances across warehouses and locations."
     path: supplychain-real-stock
     module: SupplyChain
     menu_links:
@@ -3131,6 +3298,7 @@ draftpending
 
   supplychain-sales-returns:
     menu_name: "Sales Return "
+    short_description: "Receive returned sales goods back into warehouse stock."
     path: supplychain-sales-returns
     module: SupplyChain
     menu_links:
@@ -3171,6 +3339,7 @@ draftpending
 
   supplychain-setting:
     menu_name: "Warehouse Setting"
+    short_description: "Configure warehouse settings used by supply chain processes."
     path: supplychain-setting
     module: SupplyChain
     menu_links:
@@ -3204,6 +3373,7 @@ draftpending
 
   supplychain-stock-monitoring:
     menu_name: "Dev - Stock Monitoring"
+    short_description: "Developer view for monitoring stock levels and alerts."
     path: supplychain-stock-monitoring
     module: SupplyChain
     menu_links:
@@ -3239,6 +3409,7 @@ draftpending
 
   supplychain-stock-opname:
     menu_name: "Stock Opname"
+    short_description: "Count physical stock and compare it with system inventory."
     path: supplychain-stock-opname
     module: SupplyChain
     menu_links:
@@ -3265,6 +3436,7 @@ draftpending
 
   supplychain-tagging:
     menu_name: "Tagging"
+    short_description: "Manage tags used to label products or warehouse records."
     path: supplychain-tagging
     module: SupplyChain
     menu_links:
@@ -3297,6 +3469,7 @@ draftpending
 
   supplychain-transaction-history:
     menu_name: "BETA - Transaction History"
+    short_description: "Browse transaction history across supply chain documents."
     path: supplychain-transaction-history
     module: SupplyChain
     menu_links:
@@ -3329,6 +3502,7 @@ draftpending
 
   supplychain-transfer-inbound:
     menu_name: "Transfer Inbound"
+    short_description: "Receive stock from an internal or external transfer into a warehouse."
     path: supplychain-transfer-inbound
     module: SupplyChain
     menu_links:
@@ -3362,6 +3536,7 @@ draftpending
 
   supplychain-unit:
     menu_name: "Unit"
+    short_description: "Maintain units of measure used on products and documents."
     path: supplychain-unit
     module: SupplyChain
     menu_links:
@@ -3394,6 +3569,7 @@ draftpending
 
   supplychain-warehouse-layout:
     menu_name: "Warehouse Layout"
+    short_description: "Design warehouse layout for locations and storage areas."
     path: supplychain-warehouse-layout
     module: SupplyChain
     menu_links:
@@ -3427,6 +3603,7 @@ draftpending
 
   supplychain-warehouse-structure:
     menu_name: "Warehouse Structure"
+    short_description: "Define warehouse structure and hierarchy."
     path: supplychain-warehouse-structure
     module: SupplyChain
     menu_links:
@@ -3461,6 +3638,7 @@ draftpending
 
   supplychain-warehouse-type:
     menu_name: "Warehouse Level"
+    short_description: "Define warehouse levels or types used in layout setup."
     path: supplychain-warehouse-type
     module: SupplyChain
     menu_links:
@@ -3492,6 +3670,7 @@ draftpending
 
   supplychain-warranty:
     menu_name: "Warranty"
+    short_description: "Track warranty handling for products that need service or replacement."
     path: supplychain-warranty
     module: SupplyChain
     menu_links:
@@ -3523,6 +3702,7 @@ draftpending
 
   system-product:
     menu_name: "System Product"
+    short_description: "Maintain the master product catalog used across the system."
     path: system-product
     module: SupplyChain
     menu_links:
@@ -3563,6 +3743,7 @@ draftpending
 
   gate-user:
     menu_name: "User (Gate)"
+    short_description: "Create and manage user accounts that can log in to OlshopERP."
     path: gate-user
     module: Gate
     menu_links:
@@ -3595,6 +3776,7 @@ draftpending
 
   gate-role:
     menu_name: "Role (Gate)"
+    short_description: "Define roles and access rights for users."
     path: gate-role
     module: Gate
     menu_links:
@@ -3697,6 +3879,7 @@ draftpending
 
   sidebar-menu:
     menu_name: "Sidebar Menu (Gate)"
+    short_description: "Control which menus appear in the sidebar for each role."
     path: sidebar-menu
     module: Gate
     menu_links: []
@@ -3732,6 +3915,7 @@ draftpending
 
   gate-global-audit-log:
     menu_name: "Global Audit Log"
+    short_description: "Review system-wide audit logs of important user actions."
     path: gate-global-audit-log
     module: Gate
     menu_links:
@@ -3762,6 +3946,7 @@ draftpending
 
   generalsetting-country:
     menu_name: "Master Country"
+    short_description: "Maintain the master list of countries used in company and address data."
     path: generalsetting-country
     module: GeneralSetting
     menu_links:
@@ -3792,6 +3977,7 @@ draftpending
 
   generalsetting-region:
     menu_name: "Master Region"
+    short_description: "Maintain regions and areas used for address and shipping setup."
     path: generalsetting-region
     module: GeneralSetting
     menu_links:
@@ -3822,6 +4008,7 @@ draftpending
 
   generalsetting-currency:
     menu_name: "Master Currency"
+    short_description: "Maintain currencies and exchange settings used in transactions."
     path: generalsetting-currency
     module: GeneralSetting
     menu_links:
@@ -3852,6 +4039,7 @@ draftpending
 
   generalsetting-internal-company:
     menu_name: "Internal Company"
+    short_description: "Manage internal company records used for multi-company operations."
     path: generalsetting-internal-company
     module: GeneralSetting
     menu_links:
@@ -3884,6 +4072,7 @@ draftpending
 
   generalsetting-general-company:
     menu_name: "General Company"
+    short_description: "Configure general company profile and shared company settings."
     path: generalsetting-general-company
     module: GeneralSetting
     menu_links:
@@ -3926,6 +4115,7 @@ draftpending
 
   generalsetting-application:
     menu_name: "Application"
+    short_description: "Configure application-level settings shared across OlshopERP."
     path: generalsetting-application
     module: GeneralSetting
     menu_links:

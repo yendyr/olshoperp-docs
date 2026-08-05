@@ -11,7 +11,7 @@ Menu **General Company** (alias: Master Customer, Customer, Master Supplier, Sup
 | Test Cases | [test-cases/README.md](./test-cases/README.md) | QA, Manual Tester | review |
 
 **PM source:** Source of Truth General Company **v1.0** (30 Juli 2026)  
-**3 layer version:** requirement 2.3 · technical 2.1 · knowledge-base 2.1 · **User-guide:** 1.0 (`source_version` 2.3)  
+**3 layer version:** 2.4 (2026-08-04) · **User-guide:** 1.1 (`source_version` 2.4)  
 **Maintenance owner:** QA — Yemima
 
 ## Navigasi
@@ -44,6 +44,7 @@ Menu **General Company** (alias: Master Customer, Customer, Master Supplier, Sup
 
 | Tanggal | Perubahan |
 |---------|-----------|
+| 2026-08-04 | TO-BE: COA vs Cash/Bank exclusion semua slot Accounting Setting — `GAP-GC-CB-01`; 3 layer v2.4 |
 | 2026-07-30 | Selaras SoT v1.0: FE Import kini wired (resolve G-01); Gap Registry `GAP-GC-NN`; user-guide baru; status 3 layer → review |
 | 2026-06-24 | Konsolidasi requirement PM + verifikasi codebase (import, COA class, UI/UX, gap analysis) |
 | 2026-06-23 | Cross-reference Instant Settlement |

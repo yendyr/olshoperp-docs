@@ -53,7 +53,9 @@ notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/
 * **UI path:** Finance & Accounting → Account Payable → Account Payment  
 * **Route:** `/accounting/supplier-payment`
 
-> Image placeholder — sidebar Accounting → Account Payment and DataList.
+<img src="https://lh3.googleusercontent.com/d/15t8PVkz3LTdoJzW4G_8Gkca8_XLyRVRy" alt="Sidebar Accounting → Account Payment and DataList" referrerpolicy="no-referrer">
+
+*Sidebar Accounting → Account Payment and DataList.*
 
 ## Process flow
 

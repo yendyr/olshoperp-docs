@@ -51,7 +51,13 @@ notes: Help Center landing (Docs Page). Terpisah dari layer QA.
 * **Route:** `/accounting/sales-return`  
 * **Menu gudang:** `/supplychain/sales-returns`
 
-> Placeholder gambar — list Accounting Sales Return dan tombol Complete.
+<img src="https://lh3.googleusercontent.com/d/1L99oHw2Vsg2_fsW6IINTA5HamnulDPBV" alt="DataList Accounting Sales Return" referrerpolicy="no-referrer">
+
+*DataList Accounting Sales Return.*
+
+<img src="https://lh3.googleusercontent.com/d/1GyQazSP_eZcKsUN7NaIcVR7H-AzQe-W3" alt="Tombol Complete pada Sales Return" referrerpolicy="no-referrer">
+
+*Tombol Complete pada Sales Return.*
 
 ## Alur proses
 

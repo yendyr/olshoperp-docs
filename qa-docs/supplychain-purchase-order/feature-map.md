@@ -39,7 +39,7 @@ Proposal: [`_meta/proposals/feature-map-and-capability-lingo.md`](../_meta/propo
 | SF-COST-01 | [Additional Cost & Discount](#sf-lingo:SF-COST-01) | menu | AS-IS | detailed | capabilities · sf-cost-01 | Ya | overview |
 | SF-PO-02 | [Complete vs Closed](#sf-lingo:SF-PO-02) | menu | AS-IS | detailed | capabilities · sf-po-02 | Ya | overview |
 | SF-PO-03 | [Void vs Delete](#sf-lingo:SF-PO-03) | menu | AS-IS | detailed | capabilities · sf-po-03 | Ya | tips |
-| SF-IMP-01 | [Import Detail](#sf-lingo:SF-IMP-01) | menu | AS-IS | detailed | capabilities · sf-imp-01 | Ya | overview |
+| SF-IMP-01 | [Import Detail](#sf-lingo:SF-IMP-01) | menu | AS-IS + TO-BE VAT (GAP-PO-11) | detailed | capabilities · sf-imp-01 | Ya | overview |
 | SF-PRT-01 | Print PO | menu | AS-IS | stub | KB/UG — print belum include Other Cost/Disc | Ya | tips |
 | SF-LOG-01 | [Approval Log](#sf-lingo:SF-LOG-01) | shared | AS-IS | stub | shared · approval-audit-log | — | slice |
 | SF-LOG-02 | [Audit Log](#sf-lingo:SF-LOG-02) | shared | AS-IS | stub | shared · approval-audit-log | — | slice |

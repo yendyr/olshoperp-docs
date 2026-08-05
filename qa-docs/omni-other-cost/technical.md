@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-other-cost
 menu_name: "Other Cost"
-version: 1.5
-last_updated: 2026-07-17
+version: 1.6
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 related_docs:
@@ -162,6 +162,8 @@ AS-IS: exclude parent via `CoaTree`, filter class Expense **atau** Other Revenue
 
 **TO-BE (O-08):** hapus `whereHas` class filter — biarkan semua class; pertahankan exclude parent + Active + owned_by.
 
+**TO-BE (`GAP-OC-CB-01` — Implementation pending):** exclude COA ids bound to active non-deleted `gs_company_detail_banks.chart_of_account_id` (by id/relation); reject on `store`/`update`/import: `This COA is already used in Cash/Bank Account.` Edit form retains selected value. Planned: `OtherCostController@select2Child_expense`, `@store`, `@update`, `OtherCostImport`.
+
 ### 6.2b COA save / import — leaf enforcement
 
 | Channel | Class check | Leaf check |
@@ -252,4 +254,4 @@ Sisa gap utama: IMP-02 (company scope store), IMP-03 (COA `owned_by`), IMP-04–
 
 ## 11. Known Technical Debt
 
-Lihat [requirement.md §5 Open Items](./requirement.md) — O-08 (all-class COA), FormRequest (O-12), `expense_coa_id` update rules (O-09), export Applied to Store (O-05).
+Lihat [requirement.md §5 Open Items](./requirement.md) — O-08 (all-class COA), FormRequest (O-12), `expense_coa_id` update rules (O-09), export Applied to Store (O-05), **`GAP-OC-CB-01`** (COA vs Cash/Bank exclusion — TO-BE, planned select2 + store/update + import validation).

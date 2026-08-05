@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-other-discount
 menu_name: "Other Discount"
-version: 1.2
-last_updated: 2026-07-17
+version: 1.3
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -18,6 +18,7 @@ legacy_sources: []
 | 1.0 | 2026-06-23 | QA - Yemima | Konsolidasi requirement PM + verifikasi AS-IS codebase; selaraskan jawaban konsisten dengan [Other Cost](../omni-other-cost/requirement.md) |
 | 1.1 | 2026-07-10 | QA - Yemima | Cross-ref: COA di Master = **default** untuk PI; override COA per baris di Purchase Invoice (§6) |
 | 1.2 | 2026-07-17 | QA - Yemima | COA scope **sama Other Cost**: semua class + child-only (update req 17 Jul); O-08 = hapus filter class |
+| 1.3 | 2026-08-04 | QA - Yemima | TO-BE: `expense_coa_id` vs Cash/Bank exclusion — §3 V-09, AC4, `GAP-OD-CB-01` (mirror Other Cost) |
 
 **Nama lain menu:** Other Discount, Master Other Discount  
 **UI route:** `/omni/other-discount`  
@@ -125,6 +126,7 @@ flowchart TB
 | V-06 | Owner COA | COA `owned_by` harus match company login (`getToken()->company_id`) | Pesan error masih menyebut "other cost owner" — O-14 |
 | V-07 | `status` | Default Yes dari FE | |
 | V-08 | Namespace Code | Unique **per menu** (`omni_other_discounts`) — **terpisah** dari Other Cost | Code sama boleh ada di OC & OD |
+| V-09 **(TO-BE)** | `expense_coa_id` — COA tidak boleh sudah terikat **Master Cash Bank** aktif (non-deleted) via `gs_company_detail_banks.chart_of_account_id` | Create/update + import | Picker: exclude by COA **id/relation**. Save reject: `This COA is already used in Cash/Bank Account.` Edit: nilai terpilih tetap tampil. Soft-delete cash bank → COA boleh dipilih lagi — lihat `GAP-OD-CB-01` |
 
 ### 3.2 COA — scope class & child-only (update 17 Jul 2026)
 
@@ -212,6 +214,11 @@ Validasi inline di `OtherDiscountController` — technical debt refactor ke Form
 - **Semua COA Class** diperbolehkan (TO-BE — hapus allow-list)
 - Child account only
 - AS-IS masih menolak class di luar Expense/ORev — dihapus bersama O-08
+- **(TO-BE — `GAP-OD-CB-01`)** COA id tidak boleh sudah terikat Master Cash Bank aktif (non-deleted) — exclude picker + reject save/import: `This COA is already used in Cash/Bank Account.`; edit tetap tampilkan nilai terpilih; soft-delete cash bank membebaskan COA
+
+| Skenario **(TO-BE)** | Error Message |
+|----------------------|---------------|
+| COA terikat Cash/Bank | `Row [X]: This COA is already used in Cash/Bank Account.` |
 
 ### AC 5 — Applied Store
 
@@ -266,6 +273,7 @@ Header: `Code | Name | Other Discount COA | Applied Store | Description`
 | O-12 | FormRequest class | Low | Tech debt |
 | O-13 | Field Tariff | **Ignored** | |
 | O-14 | Pesan error "other **cost** owner" di controller diskon | Low | Copy-paste bug |
+| `GAP-OD-CB-01` | **`expense_coa_id` vs Cash/Bank exclusion** — mirror [Other Cost `GAP-OC-CB-01`](../omni-other-cost/requirement.md) | **TO-BE — Implementation pending** | Lihat §3 V-09, AC4, [technical §10](./technical.md#10-known-technical-debt) |
 
 ---
 

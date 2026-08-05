@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: omni-store-binding
 menu_name: "Store"
-version: 1.0
-last_updated: 2026-07-22
+version: 1.1
+last_updated: 2026-08-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.1
+source_version: 2.2
 owner: QA - Yemima
 status: review
 ---
@@ -165,6 +165,7 @@ Detail lengkap cara import untuk masing-masing mode ada di dokumentasi menu **De
 - **Tidak ada fitur import untuk membuat toko massal** — setiap toko harus dibuat satu per satu lewat form Create.
 - **Toko Tokopedia tidak ada di pilihan Create?** Platform ini sudah legacy — toko lama masih bisa diedit, tapi tidak bisa dibuat baru.
 - **Fulfillment Mode belum muncul di form-mu?** Fitur ini masih dalam tahap penyiapan — belum aktif di sistem saat ini.
+- **Akun piutang atau deposit pelanggan tidak bisa dipilih karena sudah dipakai Cash/Bank?** Akun yang sama tidak boleh dipakai ganda sebagai rekening Cash/Bank dan sebagai akun piutang/deposit di store. Kalau rekening Cash/Bank yang memakai akun itu sudah dihapus, akun boleh dipilih lagi. Aturan blokir penuh di picker dan saat simpan masih dalam penyiapan.
 
 ---
 
@@ -182,4 +183,4 @@ Untuk detail lebih lanjut (QA, developer, atau operator yang mau ngulik):
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.1 — tanpa menambah fakta baru di luar sumber.*
+*Derivatif dari requirement / knowledge-base / technical v2.2 — tanpa menambah fakta baru di luar sumber.*

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: generalsetting-general-company
 menu_name: "General Company"
-version: 2.1
-last_updated: 2026-07-30
+version: 2.4
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 audience: operator
@@ -124,6 +124,7 @@ Detail template & validasi: [requirement.md §13](./requirement.md#13-import-gen
 | Filter "Yes" tidak match | Typo filter | Ketik `yes`, `y`, atau `ye` |
 | Import gagal semua baris | Salah satu baris tidak valid (all-or-nothing) | Cek **Import Log**, perbaiki baris yang error, unggah ulang |
 | Import gagal — template | Header/kolom tidak sesuai | Unduh ulang **Download Template** dan ikuti formatnya |
+| COA Accounting tidak bisa dipilih — sudah dipakai Cash/Bank | Akun yang sama sudah terikat rekening Cash/Bank aktif | Pilih akun lain, atau hapus/nonaktifkan cash bank yang memakai akun itu (blokir penuh masih dalam penyiapan) |
 
 ## 6. FAQ
 
@@ -147,6 +148,9 @@ A: Tidak — satu Default Currency dipakai bersama untuk PO dan SO. Yang bisa be
 
 **Q: Apakah ada reminder dokumen expired?**  
 A: Belum — tab Documents hanya menyimpan data.
+
+**Q: Kenapa akun di Accounting Setting tidak bisa dipilih karena sudah dipakai Cash/Bank?**  
+A: Satu akun tidak boleh sekaligus jadi rekening Cash/Bank dan default COA mitra (piutang, hutang, deposit, diskon, dll.). Kalau rekening Cash/Bank yang memakai akun itu sudah dihapus, akun boleh dipilih lagi. Aturan blokir di picker dan saat simpan masih dalam penyiapan.
 
 ## Relasi Instant Settlement
 

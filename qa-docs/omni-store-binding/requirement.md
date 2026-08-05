@@ -2,15 +2,15 @@
 doc_type: requirement
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.1
-last_updated: 2026-07-22
+version: 2.2
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 ---
 
 # Store — Requirement Documentation
 
-> **Status: REVIEW** — v2.1 menambahkan requirement **TO-BE Fulfillment Mode** (belum diimplementasi di codebase — lihat §12 `GAP-ST-FM-01`). Konten AS-IS v2.0 (verifikasi codebase 25 Juni 2026) tetap berlaku untuk seluruh bagian lain.
+> **Status: REVIEW** — v2.2 menambahkan requirement **TO-BE COA vs Cash/Bank exclusion** untuk `coa_id` / `deposit_coa_id` (belum diimplementasi — lihat §3 V-19, §12 `GAP-ST-CB-01`). v2.1 Fulfillment Mode TO-BE tetap berlaku. Konten AS-IS v2.0 (verifikasi codebase 25 Juni 2026) tetap berlaku untuk seluruh bagian lain.
 
 ## 0. Metadata & Changelog
 
@@ -22,6 +22,7 @@ status: review
 | 1.3 | 2026-06-23 | QA - Yemima | Cross-reference Relasi Instant Settlement |
 | 2.0 | 2026-06-25 | QA - Yemima | Konsolidasi `store_requirement_1.md`; verifikasi codebase; §5 UI/UX tombol; §6 import terkait; §12 gap analysis |
 | 2.1 | 2026-07-22 | QA - Yemima | TO-BE: kolom **Fulfillment Mode** (Processed/Non Processed) §4.8 — gate dual import Dev - Sales Order; `GAP-ST-FM-01` |
+| 2.2 | 2026-08-04 | QA - Yemima | TO-BE: COA terikat Cash/Bank tidak boleh dipilih untuk `coa_id` / `deposit_coa_id` — §3 V-19, §12 `GAP-ST-CB-01` (bukan `cash_bank_account_id`) |
 
 **UI route:** `/omni/store-binding`  
 **API prefix:** `omnichannel/store/*`  
@@ -114,6 +115,7 @@ Menu **Store** adalah master data toko Omni Channel — merepresentasikan toko/c
 | V-16 **(TO-BE)** | Non Processed hanya untuk tipe **Others** | Create/update store | Platform: opsi Non Processed disabled/hidden; hanya Processed |
 | V-17 **(TO-BE)** | Default Fulfillment Mode Others (existing & baru) = **Processed** | Create / data migrasi | Direkomendasikan; tidak auto-switch ke Non Processed |
 | V-18 **(TO-BE)** | Perubahan Fulfillment Mode tidak retroaktif | Update store | Berlaku untuk order baru saja — order existing tetap ikut mode saat dibuat |
+| V-19 **(TO-BE)** | `coa_id`, `deposit_coa_id` — COA tidak boleh sudah terikat **Master Cash Bank** aktif (non-deleted) via `gs_company_detail_banks.chart_of_account_id` | Create/update store (picker + save) | Picker: exclude by COA **id/relation** (bukan filter kode string). Save reject: `This COA is already used in Cash/Bank Account.` Edit: nilai terpilih saat ini tetap tampil. Soft-delete cash bank → COA boleh dipilih lagi. **Scope:** hanya AR COA & Customer Deposit COA — **bukan** `cash_bank_account_id` |
 
 ---
 
@@ -623,6 +625,7 @@ Lihat v1.3 §7.1 — tetap valid. Tambahan regression v2.0:
 | G-12 | Sync Warehouse non-functional | ✅ **Functional** | `WarehouseSyncJob` aktif (Shopee/Lazada/TikTok) |
 | G-13 | Notifikasi blocking antrian lintas company | ❌ **Out of scope** | Accepted — user lihat `waiting` tanpa penjelasan |
 | `GAP-ST-FM-01` | **Fulfillment Mode** (Processed/Non Processed) — field, form, datalist, validasi, gate dual import SO General | 🔜 **TO-BE — Implementation pending** | Belum ada kolom `fulfillment_mode` di `omni_stores`; FE `Form.vue`/`DataList.vue` belum update. Lihat §4.8 dan [technical §5.1](./technical.md#51-fulfillment-mode--planned-schema--invariants-to-be). Konsumen import dual mode: [Sales Order General — Gap Registry](../sales-order-general/requirement.md#9-gap-registry) |
+| `GAP-ST-CB-01` | **COA vs Cash/Bank exclusion** — `coa_id` & `deposit_coa_id` tidak boleh COA yang sudah dipakai Master Cash Bank aktif | 🔜 **TO-BE — Implementation pending** | Belum ada filter di `select2Coa` / validasi `store`/`update`. Lihat §3 V-19 dan [technical §11](./technical.md#11-validation-highlights). **Out of scope:** `cash_bank_account_id` |
 
 ---
 
@@ -634,6 +637,7 @@ Lihat v1.3 §7.1 — tetap valid. Tambahan regression v2.0:
 - Building Return: re-enable UI atau deprecate endpoint?
 - Cross-owner onboarding queue — notifikasi future enhancement
 - **Fulfillment Mode (`GAP-ST-FM-01`):** belum ada scope teknis pasti (migration, endpoint, FE) — koordinasikan dengan tim Sales Order General sebelum mulai development karena dua sisi (Store sebagai master flag, SO General sebagai consumer) harus rilis bersamaan.
+- **COA vs Cash/Bank (`GAP-ST-CB-01`):** exclude/validate `coa_id` & `deposit_coa_id` belum ada di select2 maupun save — TO-BE shared rule lintas menu.
 
 ---
 

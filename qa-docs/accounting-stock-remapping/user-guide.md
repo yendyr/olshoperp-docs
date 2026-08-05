@@ -2,30 +2,30 @@
 doc_type: user-guide
 menu: accounting-stock-remapping
 menu_name: "Stock Remapping"
-version: 1.0
-last_updated: 2026-07-30
+version: 1.1
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 2.0
+source_version: 2.1
 ---
 
 # Panduan Pengguna — Stock Remapping
 
-Panduan ini membantu tim Finance/Accounting memakai menu **Stock Remapping** dari awal sampai transaksi disetujui.
+**Siapa yang baca:** tim Finance / Accounting  
+**Menu:** Finance Accounting → Stock Remapping  
+**Route:** `/accounting/stock-remapping`
 
 ---
 
 ## 1. Apa Itu & Kenapa Penting
 
-**Stock Remapping** (kadang disebut **Stock Acak**) dipakai untuk **mengubah identitas stok** dari satu SKU ke SKU lain. Contoh paling umum: kamu membeli barang impor dengan SKU acak (satu "kardus campur"), lalu setelah disortir kamu ingin memecahnya menjadi variant yang sebenarnya — misalnya pensil warna pink, biru, dan putih.
+**Stock Remapping** mengubah identitas stok dari satu SKU ke SKU lain dalam satu transaksi. Sistem mengurangi stok asal dan menambah stok tujuan saat kamu approve — termasuk nilai harganya.
 
-Tanpa menu ini, kamu harus membuat pengurangan stok dan penambahan stok secara manual satu per satu. Dengan Stock Remapping, cukup satu transaksi: sistem yang mengerjakan pergerakan stoknya otomatis, lengkap dengan nilai barangnya.
-
-Menu ini berada di **Finance Accounting** karena menampilkan **nilai harga (Unit Price)** barang, yang tidak boleh dilihat oleh operator gudang biasa.
+Menu ini ada di Finance Accounting karena menampilkan **harga satuan**, yang tidak untuk operator gudang biasa.
 
 ---
 
@@ -33,67 +33,68 @@ Menu ini berada di **Finance Accounting** karena menampilkan **nilai harga (Unit
 
 ```mermaid
 flowchart LR
-    A[Barang SKU acak masuk gudang] --> B[Buat transaksi Stock Remapping]
-    B --> C[Isi baris: SKU Origin - SKU tujuan - Qty]
+    A[Pilih batch stok Origin] --> B[Pilih SKU tujuan seinduk]
+    B --> C[Isi qty satuan dasar]
     C --> D[Approve]
-    D --> E[Stok Origin berkurang]
-    E --> F[Stok SKU tujuan bertambah]
+    D --> E[Stok pindah identitas]
 ```
 
-**Alur singkat (tanpa diagram):**
+**Versi teks:**
 
-1. Barang SKU acak sudah ada stoknya di gudang.
-2. Kamu membuat transaksi Stock Remapping dan mengisi baris-baris remap.
-3. Setelah Approve, stok SKU asal berkurang.
-4. Beberapa detik kemudian stok SKU tujuan bertambah dengan nilai yang sama.
+1. Buat transaksi Remapping.  
+2. Pilih **batch stok (Stock ID)** yang mau diubah identitasnya.  
+3. Pilih SKU tujuan dari **variant induk yang sama**.  
+4. Isi jumlah dalam **satuan dasar**; simpan.  
+5. Boleh ulang langkah 2–4; SKU tujuan yang sama boleh dipakai di baris lain.  
+6. Approve — sistem memproses pengurangan lalu penambahan stok.
+
+### Status
+
+| Status | Arti |
+|--------|------|
+| Open | Masih bisa diedit |
+| Approved | Sudah diproses; tidak diedit |
+| Cancelled | Dibatalkan |
 
 ---
 
-## 3. Sebelum Mulai (Flow Sebelum)
+## 3. Sebelum Mulai
 
-Pastikan hal berikut sudah siap:
+- Gudang origin aktif dan punya stok.  
+- SKU Origin & tujuan: variant aktif, bukan SKU acak, COA Purchased/Manufactured.  
+- SKU tujuan harus **satu induk** dengan Origin.  
+- Pastikan satuan di master product Origin & tujuan masuk akal (satu Unit Class).
 
-- **Stok SKU Origin tersedia** di gudang asal (barang sudah masuk lewat pembelian/inbound).
-- **SKU tujuan sudah aktif** di Master System Product.
-- Kamu punya **akses menu Finance Accounting** (menu ini tidak muncul untuk operator gudang biasa).
-- Kamu tahu **gudang asal** barang yang akan diremap.
+🎬 [Interactive demo akan ditambahkan di sini]
 
 ---
 
-## 4. Setelah Selesai (Flow Sesudah)
+## 4. Setelah Selesai
 
-Setelah transaksi disetujui:
-
-- Muncul dokumen **pengurangan stok** (di menu Adjustment Outbound) untuk SKU Origin.
-- Muncul dokumen **penambahan stok** (di menu Adjustment Inbound) untuk SKU tujuan, dengan nilai harga yang sama.
-- Kedua dokumen beserta jurnalnya bisa ditelusuri dari baris transaksi Stock Remapping.
-
-Kamu tidak perlu membuat dokumen pengurangan/penambahan itu secara manual — semuanya otomatis.
+- Stok Origin (batch yang dipilih) berkurang.  
+- Stok SKU tujuan bertambah dengan harga mengikuti batch asal.  
+- Dokumen pengurangan/penambahan stok muncul otomatis.
 
 ---
 
 ## 5. Yang Perlu Diperhatikan
 
-- **Warehouse Origin wajib diisi lebih dulu**, dan **tidak bisa diganti** setelah ada baris. Kalau salah gudang, hapus dulu barisnya.
-- **Unit Price tidak bisa diedit** — nilainya otomatis dari stok SKU Origin.
-- **SKU acak (random) ditolak** di semua posisi.
-- **SKU Service dan Asset ditolak** — hanya Purchased Item & Manufactured Item yang boleh.
-- Saat Approve, **Unit Price harus bilangan bulat** (tanpa desimal) dan **gudang asal harus aktif**.
-- Ada **jeda beberapa detik** antara stok berkurang dan bertambah — ini normal.
-- **Peningkatan yang sedang disiapkan:** memilih batch stok tertentu untuk SKU Origin, membuka SKU tujuan lintas induk (asal kelompok satuannya sama), dan memakai SKU tujuan yang sama di beberapa baris. Untuk sekarang, SKU tujuan masih dibatasi ke variant satu induk dan hanya boleh sekali per transaksi.
+- Pilih **batch (Stock ID)**, bukan sekadar “total SKU di gudang”.  
+- Qty selalu dalam **satuan dasar** (kolom Avl. Base Unit = batas).  
+- SKU tujuan **boleh sama** di beberapa baris (misalnya dua batch beda → satu SKU hasil).  
+- Tidak bisa remap ke Single / BOM / Bundle di luar variant seinduk.  
+- Import: isi SKU Origin, Remapped To, Qty — **tanpa Unit**; sistem memecah otomatis jika qty melebihi satu batch.  
+- Jika approve ditolak karena Unit Class: perbaiki master product dulu.
 
 ---
 
-## 6. Langkah-Langkah (Step by Step)
+## 6. Langkah-Langkah
 
-1. Buka **Finance Accounting → Stock Remapping**, lalu klik tambah transaksi baru.
-2. Isi **Warehouse Origin** (gudang asal). Isi **Trx Ref** dan **Description** bila perlu (opsional). Transaksi tersimpan otomatis.
-3. Tambah baris detail: pilih **SKU Origin**. Kamu bisa memakai **Available Product** untuk melihat stok — **Single Use** (pilih satu) atau **Bulk Use** (pilih banyak sekaligus).
-4. Pilih **SKU Remapped To** (SKU tujuan) dan isi **Qty**. Pastikan Qty tidak melebihi stok yang tersedia.
-5. Ulangi langkah 3–4 untuk baris lain sesuai hasil sortir.
-6. Bila datanya banyak, gunakan **Import**: unduh template (SKU Origin, Remapped To SKU, Qty, Unit, Description), isi, lalu unggah. Cek **import log** bila ada baris yang gagal.
-7. Klik **Approve**. Bila ada pesan penolakan (misal barang Service, Unit Price desimal, atau gudang non-aktif), perbaiki dulu lalu Approve ulang.
-8. Setelah sukses, telusuri dokumen pengurangan/penambahan stok dan jurnalnya dari baris transaksi.
+1. Buka **Stock Remapping** → Create.  
+2. Isi gudang & tanggal → simpan header.  
+3. Available Product → pilih Stock ID → set Remapped To & Qty → simpan baris.  
+4. Ulangi bila perlu.  
+5. Approve.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -101,11 +102,9 @@ Kamu tidak perlu membuat dokumen pengurangan/penambahan itu secara manual — se
 
 ## 7. Tips & Hal yang Sering Bikin Bingung
 
-- **"Qty saya ditolak padahal stok kelihatan cukup."** Qty dihitung terhadap stok tersedia; kalau kamu punya beberapa baris dengan SKU Origin sama, stoknya dibagi. Kurangi qty atau cek baris lain.
-- **"Kenapa SKU tujuan tertentu tidak muncul?"** Saat ini SKU tujuan masih dibatasi ke variant dari induk yang sama, bukan random, dan belum dipakai di baris lain.
-- **"Import baris terakhir gagal."** Stok dihitung menumpuk dari atas ke bawah. Urutkan qty besar lebih dulu, atau pecah menjadi transaksi terpisah.
-- **"Tidak melihat kolom Unit Price."** Kolom nilai hanya untuk peran Finance Accounting.
-- **Hindari membuat dokumen pengurangan/penambahan manual** untuk barang yang sudah diproses lewat Stock Remapping — berisiko dobel pergerakan stok.
+- **"Remapped To tidak muncul."** Bukan variant seinduk / tidak eligible.  
+- **"Harga berubah-ubah dulu."** Perilaku lama (rata-rata); setelah update harus ikut batch yang dipilih.  
+- **"Import tanpa Unit."** Memang — qty = satuan dasar.
 
 ---
 
@@ -113,7 +112,6 @@ Kamu tidak perlu membuat dokumen pengurangan/penambahan itu secara manual — se
 
 | Sumber | Untuk apa |
 |--------|-----------|
-| [Knowledge Base](./knowledge-base.md) | Panduan operator & troubleshooting lengkap |
-| [Requirement](./requirement.md) | Aturan bisnis, validasi, status implementasi v2.0 |
-| [Random SKU](../random-sku/README.md) | Aturan SKU acak |
-| [System Product](../system-product/README.md) | Struktur induk/variant SKU |
+| [Knowledge Base](./knowledge-base.md) | Troubleshooting |
+| [Requirement](./requirement.md) | Aturan & AC |
+| [Technical](./technical.md) | Developer |

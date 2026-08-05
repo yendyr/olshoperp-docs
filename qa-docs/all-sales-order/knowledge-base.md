@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.3
-last_updated: 2026-07-22
+version: 1.4
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed]
@@ -65,6 +65,7 @@ Tombol ada di halaman ini (bukan di list Dev Sales Platform). Memeriksa ulang fl
 | Gejala | Solusi |
 |--------|--------|
 | Order marketplace tidak muncul | Cek sync di Sales Platform |
+| Harga line Shopee terlalu kecil / aneh | Rule harga di **Sales Platform** (escrow + `shopee_discount`) — sync ulang; lihat [SP KB §5](../omni-sales-platform/knowledge-base.md) |
 | Import gagal karena mode store | Samakan tombol dengan **Fulfillment Mode** di Store |
 | Perlu buat order manual | Create di ASO atau Dev Sales Order |
 | Tidak ada Recheck di Sales Platform | By design — pakai All Sales Order |

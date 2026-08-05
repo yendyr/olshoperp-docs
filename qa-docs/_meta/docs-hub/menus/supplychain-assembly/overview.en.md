@@ -54,7 +54,9 @@ You manage internal production from this navigation path:
 * **UI navigation path:** Supply Chain → Assembly
 * **System UI route:** `/supplychain/assembly`
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Supply Chain → Assembly sidebar and the list page.
+<img src="https://lh3.googleusercontent.com/d/19rbpTI4KN3NRNFze8EHDPTS0FTK2eeBT" alt="Supply Chain → Assembly sidebar and the list page" referrerpolicy="no-referrer">
+
+*Supply Chain → Assembly sidebar and the list page.*
 
 ### 🔄 Sub-Assembly / Nested BOM — Why It Must Be Done in Stages
 
@@ -127,7 +129,9 @@ stateDiagram-v2
 > 4. Set the **Start Date** for assembly and pick a **Type** (Production, Service, Assembly, or Other).
 > 5. Add an optional **Description** (max 150 characters).
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Create Assembly form, header section (Building Origin, Start Date, Type).
+<img src="https://lh3.googleusercontent.com/d/1Fp6uKBxfT99vOw9MijTPf-Fuuwl7lPBa" alt="Create Assembly form, header section (Building Origin, Start Date, Type)" referrerpolicy="no-referrer">
+
+*Create Assembly form, header section (Building Origin, Start Date, Type).*
 
 #### Task 2: Add the Finished Goods to Build
 
@@ -137,7 +141,9 @@ stateDiagram-v2
 > 4. Choose the **Unit** (the main base unit or a valid alternate unit).
 > 5. Check the **Max Assembly Qty** column that appears automatically — it's the build capacity limit based on the lowest available component stock.
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Select Product panel and the expanded row showing BoM components + stock availability.
+<img src="https://lh3.googleusercontent.com/d/1S17wmzuKF87_3HoJN3qPbwMuM-ErRIRF" alt="Select Product panel and expanded row showing BoM components + stock availability" referrerpolicy="no-referrer">
+
+*Select Product panel and expanded row showing BoM components + stock availability.*
 
 ⚠️ **IMPORTANT RULE:** The header fields **Building Origin**, **Transaction Date**, and **Start Date** lock completely once you add at least one finished-good line to the grid. Each finished good can only appear once (no duplicates) in a single Assembly document.
 
@@ -147,7 +153,9 @@ stateDiagram-v2
 > 2. Switch the status from **Draft** to **Open**.
 > 3. The system automatically validates the component balance in the background. If the quantity is enough, an **Internal Transfer** from the source to the production warehouse (WIP) is issued and the detail lines lock from manual editing.
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Draft/Open status radio in the form sidebar.
+<img src="https://lh3.googleusercontent.com/d/1EXEmG1d6tOhK5TXkBFJbStw6IuLrv3dV" alt="Draft/Open status radio in the form sidebar" referrerpolicy="no-referrer">
+
+*Draft/Open status radio in the form sidebar.*
 
 #### Task 4: Approve & Monitor the Background Process
 
@@ -168,7 +176,9 @@ When you click **Approve**, the system doesn't finish all the bookkeeping instan
 
 Track the progress percentage in the **Progress Status** column. If the queue breaks midway, the failed line is flagged with an *error* — wait a few minutes, then click **Retry** to continue the remaining lines.
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Progress Status column on the list page, and the Retry button.
+<img src="https://lh3.googleusercontent.com/d/155-pqDLgfHJVcx-IfCvuLkih0MGdXHkI?v=20260804" alt="Progress Status column on the list page, and the Retry button" referrerpolicy="no-referrer">
+
+*Progress Status column on the list page, and the Retry button.*
 
 ### 📊 Full Field Reference
 
@@ -218,7 +228,9 @@ Track the progress percentage in the **Progress Status** column. If the queue br
 
 The file upload speeds up adding finished-good lines to the detail grid in bulk using the system's standard template file.
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Excel Import panel with the download-template button.
+<img src="https://lh3.googleusercontent.com/d/1bxur8_0vkSiTHxnRZe2P1GR0cCdkVQo-" alt="Excel Import panel with the download-template button" referrerpolicy="no-referrer">
+
+*Excel Import panel with the download-template button.*
 
 🛑 **NOTE:** Import currently **only** adds **finished-good detail lines** to **one existing Assembly voucher** that is **still in Draft**. The system does **not** yet support creating many new Assembly header documents at once via an Excel file from the main list page.
 
@@ -275,7 +287,9 @@ The features below are **intentionally deferred** by the product team to keep th
   2. **BOX Label** — the packaging/carton marker label.
   3. **SID Label** — the unique *Stock ID* code for internal tracking.
 
-> 🖼️ **[IMAGE PLACEHOLDER]** — Print buttons for the SKU/BOX/SID labels.
+<img src="https://lh3.googleusercontent.com/d/1b-Xu8xTDNZhXu19F_-v24jIAoHbuHp0m" alt="Print buttons for the SKU/BOX/SID labels" referrerpolicy="no-referrer">
+
+*Print buttons for the SKU/BOX/SID labels.*
 
 ### 🔗 How This Menu Connects to Others
 

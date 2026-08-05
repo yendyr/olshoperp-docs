@@ -41,7 +41,9 @@ notes: Help Center landing. Separate from QA layers. Derived from QA docs (no us
 * **General config:** `/supplychain/product-general-configuration`
 * **Inventory config:** `/supplychain/product-inventory-configuration`
 
-> Image placeholder — System Product datalist with Availability/On Hand/ATS columns.
+<img src="https://lh3.googleusercontent.com/d/1sdijj4AI6id6XW8zuL-uKC3LcpJ3PHda" alt="System Product datalist with Availability/On Hand/ATS columns" referrerpolicy="no-referrer">
+
+*System Product datalist with Availability/On Hand/ATS columns.*
 
 ## Process flow
 

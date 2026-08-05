@@ -51,7 +51,13 @@ notes: Help Center landing (Docs Page). Separate from QA layers.
 * **Route:** `/accounting/sales-return`  
 * **Warehouse menu:** `/supplychain/sales-returns`
 
-> Image placeholder — Accounting Sales Return list and Complete button.
+<img src="https://lh3.googleusercontent.com/d/1L99oHw2Vsg2_fsW6IINTA5HamnulDPBV" alt="Accounting Sales Return DataList" referrerpolicy="no-referrer">
+
+*Accounting Sales Return DataList.*
+
+<img src="https://lh3.googleusercontent.com/d/1GyQazSP_eZcKsUN7NaIcVR7H-AzQe-W3" alt="Complete button on Sales Return" referrerpolicy="no-referrer">
+
+*Tombol Complete pada Sales Return.*
 
 ## Process flow
 

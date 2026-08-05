@@ -48,7 +48,9 @@ notes: Help Center landing (Docs Page). Separate from QA layers.
 * **UI path:** Supply Chain → Purchase Requisition  
 * **Route:** `/supplychain/purchase-requisition`
 
-> Image placeholder — SCM Purchase Requisition DataList.
+<img src="https://lh3.googleusercontent.com/d/1eljUyWbWVUGmjHqCIy6wqc8WJv_z60XH" alt="SCM Purchase Requisition DataList" referrerpolicy="no-referrer">
+
+*SCM Purchase Requisition DataList.*
 
 ## Process flow
 

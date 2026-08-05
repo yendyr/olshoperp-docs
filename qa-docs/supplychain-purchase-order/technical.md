@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.6
-last_updated: 2026-07-27
+version: 2.8
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 ---
@@ -11,8 +11,9 @@ status: review
 # Purchase Order — Technical Documentation
 
 **API prefix:** `supplychain/purchase-order`  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.7  
-**Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)
+**Behavior SoT:** [requirement.md](./requirement.md) v2.8  
+**Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)  
+**Import VAT TO-BE:** locked 5 Agu 2026 — GAP-PO-11 / brief `Brief-Dev-PO-Import-VAT-Columns.md`
 
 ---
 
@@ -218,8 +219,9 @@ Detail: [inbound technical §9](../supplychain-new-purchase-inbound/technical.md
 |---------|-------|----------|
 | Approve without detail / wrong status / fiscal closed | Pre-TX | Error; no status change |
 | Concurrent / invalid void on processed | Pre-TX | Error *prepared at purchase* |
-| Import pre-validation fail | Sync | **All-or-nothing** — 0 jobs, 0 inserts |
-| Import job row fail (async) | Per job | Sibling rows already inserted **remain** |
+| Import pre-validation fail (file-level) | Sync | Abort penuh — 0 jobs |
+| Import row bisnis/VAT (TO-BE) | Per job | Sibling rows remain; history counts accurate (GAP-PO-11) |
+| Import 1 bad row pre-val (AS-IS) | Sync | **All-or-nothing** — 0 inserts (diganti TO-BE partial untuk error per-row) |
 | Header destroy With PR | Destroy TX | PR prepared revert **buggy** (DEV-PO-02) |
 | Void approved With PR | Approve TX | Status void; PR processed qty **unchanged** (GAP-PO-01) |
 | Template download | FE static | Often **404** (GAP-PO-05) |
@@ -246,13 +248,46 @@ Business rules: [requirement.md](./requirement.md).
 **Active class:** `PurchaseOrderWithPrImport` only · Upload: `PurchaseOrderDetailController@uploadFilePo`  
 **Type detection:** Excel row 2 col A non-null → `with_pr=1`; else `0` (overwrites header on success).
 
-**Header B–H exact:** System Product SKU | PO Qty | Unit | Unit Price | Disc. | Description | Required Delivery Date
+**Header B–H exact (AS-IS):** System Product SKU | PO Qty | Unit | Unit Price | Disc. | Description | Required Delivery Date  
+**Header I–K (TO-BE GAP-PO-11):** `VAT` | `VAT Code` | `VAT Type` — optional by presence; legacy file tanpa I–K = empty3.
 
-**Per-row validation (R-01…R-19):** PR code present/found; SKU required/found/not bundle/not random; qty > 0 numeric; unit associated; unit price ≥ 1; disc ≥ 0; delivery date Excel serial. Full message table historically in requirement §12 — keep AS-IS messages in import logs.
+**Per-row validation (R-01…R-19 AS-IS):** PR / SKU / qty / unit / price / disc / delivery / outstanding.  
+**TO-BE VAT messages (draft EN):**
+
+| Kondisi | Message |
+|---------|---------|
+| Invalid VAT token | `Row {n}: Invalid VAT. Use yes or no.` |
+| Invalid type | `Row {n}: Invalid VAT Type. Use include or exclude.` |
+| VAT=no + code/type | `Row {n}: VAT is no but VAT Code or VAT Type is filled.` |
+| Code not found | `Row {n}: VAT code '{code}' not found or inactive.` |
+| Code not on SKU | `Row {n}: VAT code '{code}' is not configured on SKU '{sku}'.` |
+| No purchase tax | `Row {n}: SKU '{sku}' has no purchase VAT setting in System Product.` |
+
+**Tax resolver (TO-BE):** shared helper mis. `App\Helpers\SupplyChain\PurchaseOrderDetailTaxResolver` — dipanggil dari:
+
+- `PurchaseOrderWithPrImport::importProcess` (I–K raw → taxes[])
+- Bulk without PR / bulk Use / **Allocate Full** / Use PR dengan args null → empty3 (hormati supplier)
+- Wire di `PurchaseOrderDetailController` call sites yang hari ini `store` tanpa taxes
+
+**Resolver rules (locked):** Excel explicit overrides supplier; empty3 = AS-IS auto_add; `no` = empty taxes; multi-tax → **min purchase pivot id**; type include/exclude overrides pivot.included; VAT code = Tax.code active + purchase pivot SKU; max 1 tax line; Service SKU same rules.
+
+**Partial success (TO-BE):**
+
+| AS-IS | TO-BE |
+|-------|-------|
+| Pre-val bisnis 1 error → 0 jobs | Queue **all** data rows; fail per job |
+| Job catch tanpa fail batch | Propagate failure; history counts accurate |
+| — | Notif partial: `{n} succeeded, {m} failed` |
+
+File-level abort tetap: empty, header mismatch, mime, type mismatch, max 500, lock, mixed PR empty.
 
 **Batch:** `PurchaseOrderWithPrImport-{po_id}` on `import_connection_{git_branch}`; recalc totals in `finally`.
 
-**Without PR class:** not wired; expects Product ID col A; max_child **100** (inconsistent vs 500).
+**Without PR class:** not wired (GAP-PO-04); max_child **100** inconsistent. VAT work on **active** importer + both xlsx — not only dead class.
+
+**Templates:** deploy both With-PR & Without-PR with I–K (GAP-PO-05 + GAP-PO-11).
+
+**Tests:** matrix T01–T20 in implementator brief §9.
 
 ---
 
@@ -304,7 +339,10 @@ Print loads supplier, details, approvals; totals **without** other cost/disc.
 | Create PO | status open |
 | Approve without detail | Error |
 | Import 501 rows | Fail max 500 |
-| Import 1 bad row (pre-val) | 0 inserts |
+| Import 1 bad VAT row (TO-BE) | Partial: siblings inserted; 1 log fail |
+| Import 1 bad row pre-val file-level | 0 inserts |
+| Allocate Full (TO-BE) | Tax same as add product empty3 |
+| Legacy file no I–K | Tax AS-IS supplier/product |
 | GRN full qty | PO complete |
 | Closed on processed | status closed |
 | Void on processed | Error |
@@ -328,6 +366,7 @@ Print loads supplier, details, approvals; totals **without** other cost/disc.
 | GAP-PO-07 | `with_pr` mutable via API/import despite UI lock |
 | GAP-PO-09 | UI Σ DPP+VAT 2dp +0,01 vs Total — **Accepted** known behavior (27 Jul) |
 | GAP-PO-10 | Export DPP/VAT 4dp — **TO-BE** |
+| GAP-PO-11 | Import VAT I–K + partial success + Align Allocate Full/bulk tax — **TO-BE locked** 5 Agu 2026 |
 | DEV-PO-07 | Without PR import max 100 vs With PR 500 |
 
 Full gap narrative: [requirement §19–§21](./requirement.md).

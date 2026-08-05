@@ -8,8 +8,8 @@ scope: menu
 summary: >-
   Dari Available Product, masukkan baris ke detail PO. Use = satu baris
   dengan qty/harga bisa diisi; Allocate Full Qty Clearing = isi sisa qty PR sekaligus.
-version: 1.0
-last_updated: 2026-07-28
+version: 1.1
+last_updated: 2026-08-05
 status: draft
 ---
 
@@ -41,6 +41,7 @@ Cara mengisi detail Purchase Order dari modal **Available Product**. **Use** mem
 - Input manual qty di form = **bilangan bulat**; import boleh desimal > 0.
 - Maksimal **500** baris detail per PO.
 - Setelah PO approved, detail terkunci — edit/hapus hanya sebelum approve.
+- **Pajak (TO-BE GAP-PO-11):** Allocate Full / bulk Use harus memakai **resolver tax yang sama** dengan add product (hormati supplier `auto_add`) — **AS-IS** Allocate Full sering **tanpa** tax line. Setelah rilis, hasil tax harus konsisten dengan Use / import kosong VAT.
 
 ## Contoh
 
@@ -49,9 +50,11 @@ Cara mengisi detail Purchase Order dari modal **Available Product**. **Use** mem
 | PR sisa 100 pcs, belum di-PO | Use qty 40 | 40 masuk detail; sisa PR outstanding 60 |
 | PR sisa 60 pcs | Allocate Full Qty Clearing | 60 masuk detail; outstanding PR untuk baris itu habis |
 | Without PR, produk aktif | Use qty 10, harga 50.000 | Baris produk masuk detail |
+| Allocate Full + supplier auto_add yes (TO-BE) | Allocate Full | Detail + tax sama seperti add product |
 
 ## Lihat juga
 
 - [With PR / Without PR](#sf-lingo:SF-PO-01)
 - [Import Detail](#sf-lingo:SF-IMP-01)
 - Knowledge Base: [§6.2 Section Detail](../knowledge-base.md)
+

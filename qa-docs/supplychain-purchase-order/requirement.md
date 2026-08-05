@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.7
-last_updated: 2026-07-27
+version: 2.8
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 aliases: [PO requirement, purchase order docs, pembelian, PO validation]
@@ -14,10 +14,10 @@ aliases: [PO requirement, purchase order docs, pembelian, PO validation]
 **Modul:** Supply Chain Management (SCM) / Procurement  
 **Prefix transaksi:** `PO-`  
 **Audience:** PM, Operations, QA  
-**Status:** AS-IS + Rounding SoT **final** (disetujui end user 27 Jul 2026)
+**Status:** AS-IS + Rounding SoT **final** + **Import VAT columns TO-BE locked** (5 Agu 2026)
 
 **UI route:** `/supplychain/purchase-order`  
-**PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05)  
+**PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05); Import VAT brief locked 5 Agu 2026  
 **Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** — known behavior UI + resolusi export 4dp)
 
 ---
@@ -35,6 +35,7 @@ aliases: [PO requirement, purchase order docs, pembelian, PO validation]
 | 2.5 | 2026-07-23 | QA - Yemima | SoT rounding DPP/VAT (variable, tie ±1 sen, regresi qty non-kelipatan); rantai PO→Inbound→PI jurnal |
 | 2.6 | 2026-07-27 | QA - Yemima | Rounding SoT **final**: selisih 1 sen = known behavior UI only; Total/Net/Journal exact 4dp; resolusi export DPP/VAT 4dp (GAP-PO-10) |
 | 2.7 | 2026-07-27 | QA - Yemima | Contoh Case 4/5 siap Lingo/UG (SF-PRICE-01); pointer di §9.2 |
+| 2.8 | 2026-08-05 | QA - Yemima | Import Detail: kolom VAT / VAT Code / VAT Type (TO-BE locked); partial success per-row; align tax Allocate Full / bulk Use; GAP-PO-11 |
 
 ---
 
@@ -265,7 +266,7 @@ Endpoint outstanding: `GET purchase-order-detail/outstanding?purchase_order_id={
 | VAT (%) | Autofill dari Purchase VAT Setting jika supplier `auto_add` + product tax pivot; toggle **Include/Exclude** |
 | Required Delivery Date | Opsional |
 | Net Purchase | Preview FE dari price × qty − disc + VAT |
-| **Allocate Full Qty Clearing** | Set `order_quantity = round(poBalance)` — untuk sisa outstanding PR desimal |
+| **Allocate Full Qty Clearing** | Set `order_quantity = round(poBalance)` — untuk sisa outstanding PR desimal. **AS-IS:** sering **tanpa** tax line. **TO-BE (GAP-PO-11):** tax via resolver empty3 (= add product / hormati supplier) |
 
 **Backend:** flag `isFullAlocated` dikirim FE tapi **tidak diproses** server — qty sudah di-set client-side.
 
@@ -436,100 +437,129 @@ Audit menampilkan header, detail (termasuk soft-deleted), attachments, other cos
 
 ## 12. Import Detail Purchase Order
 
+> **TO-BE Import VAT** locked 5 Agu 2026 — brief implementator: `Brief-Dev-PO-Import-VAT-Columns.md`. Status codebase: **belum** (GAP-PO-11). Bagian bertanda **AS-IS** = perilaku live hari ini.
+
 ### 12.1 Ringkasan perilaku
 
-| Item | Nilai AS-IS |
-|------|-------------|
-| Deteksi With/Without PR | Baris 2 kolom A: terisi → With PR; kosong → Without PR |
-| Side effect tipe | Import sukses **overwrite** flag tipe PO sesuai file |
-| Max baris | **500** |
-| Re-upload | Bisa ganti semua detail existing |
-| VAT / warranty | Auto dari master produk (bukan kolom Excel) |
-| Wiring teknis | Class/import job/API: [technical §9](./technical.md#9-import-detail) |
+| Item | AS-IS | TO-BE (locked) |
+|------|-------|----------------|
+| Deteksi With/Without PR | Baris 2 kolom A: terisi → With PR; kosong → Without PR | Sama |
+| Side effect tipe | Import sukses **overwrite** flag tipe PO | Sama (GAP-PO-07) |
+| Max baris | **500** | Sama |
+| Re-upload | Bisa ganti semua detail existing | Sama |
+| VAT | Auto dari product + supplier `auto_add` — **bukan** kolom Excel | Kolom **I–K** opsional; Excel explicit mengalahkan supplier; ketiga blank → AS-IS |
+| Partial success | Pre-val 1 error → **0 insert**; job gagal sering tidak akurat di history | Queue **semua** data row; gagal **per job**; history/notif `success`/`failed` akurat |
+| Kontrak With & Without PR | Satu importer aktif; Without PR class dead | **Satu kontrak kolom** A–K; update **kedua** template xlsx |
+| Wiring | [technical §9](./technical.md#9-import-detail) | + shared `PurchaseOrderDetailTaxResolver` |
+
+**Out of scope TO-BE:** redesign tax picker form manual; multi-tax per baris Excel (tetap **maks 1 tax** per line).
 
 ### 12.2 Template Excel — struktur file
 
-**Baris 1** = header (label exact kolom B–H wajib match).  
-**Baris 2+** = data produk.
+**Baris 1** = header. **Baris 2+** = data.
 
-Satu file fleksibel — **mode With PR vs Without PR** ditentukan oleh isi kolom A di **seluruh file** (tidak boleh campur):
+Mode With/Without PR dari isi kolom A di **seluruh file** (tidak boleh campur):
 
-| Mode | Kolom A semua baris data | Header kolom A |
-|------|--------------------------|----------------|
-| **With PR** | Semua baris **wajib** isi kode PR | Tidak divalidasi exact (boleh kosong di header row) |
-| **Without PR** | Semua baris **kosong** | — |
+| Mode | Kolom A semua baris data |
+|------|--------------------------|
+| **With PR** | Semua baris **wajib** isi kode PR |
+| **Without PR** | Semua baris **kosong** |
 
-**Campuran** (sebagian baris ada PR Code, sebagian kosong) → **gagal total** per baris kosong: `Row {n}: PR Number is empty. When using PR references, every row must include a PR number.`
+**Campuran** A kosong/isi → **gagal file-level** (bukan partial VAT):  
+`Row {n}: PR Number is empty. When using PR references, every row must include a PR number.`
 
-### 12.3 Kolom import — data yang harus diisi
+### 12.3 Kolom import
 
-| Kolom Excel | Header exact (baris 1) | Wajib? | Format / isi | Dipakai untuk |
-|-------------|------------------------|--------|--------------|---------------|
-| **A** | *(bebas / kosong di header)* | With PR: **Ya** per baris | Kode transaksi PR exact, contoh `PR-20250705-001` | Lookup `PurchaseRequisition` → resolve `purchase_requisition_detail_id` by PR + SKU |
-| **B** | `System Product SKU` | **Ya** | SKU exact dari System Product company | Lookup product; exclude bundle child |
-| **C** | `PO Qty` | **Ya** | Integer atau double; **> 0** | `order_quantity` |
-| **D** | `Unit` | **Ya** | Kode unit exact (case sensitive match ke master) | `order_quantity_unit_id` — primary stock unit atau alternate unit product |
-| **E** | `Unit Price` | **Ya** | Integer atau double; **≥ 1** | `each_price_before_discount_before_vat` |
-| **F** | `Disc.` | Opsional | Integer/double; **≥ 0** jika diisi | `purchase_discount` (%) |
-| **G** | `Description` | Opsional | Freetext max ~150 | Remark baris detail |
-| **H** | `Required Delivery Date` | Opsional | **Excel serial date** (integer) — bukan string `DD/MM/YYYY` | `required_delivery_date` — dikonversi `(cell - 25569) × 86400` |
+| Kolom | Header exact (baris 1) | Wajib? | Format / isi |
+|-------|------------------------|--------|--------------|
+| **A** | *(bebas / kosong di header)* | With PR: Ya per baris | Kode PR exact |
+| **B** | `System Product SKU` | Ya | SKU exact |
+| **C** | `PO Qty` | Ya | > 0 |
+| **D** | `Unit` | Ya | Kode unit exact |
+| **E** | `Unit Price` | Ya | ≥ 1 |
+| **F** | `Disc.` | Opsional | ≥ 0 |
+| **G** | `Description` | Opsional | Freetext |
+| **H** | `Required Delivery Date` | Opsional | Excel serial date |
+| **I** | **`VAT`** | Opsional (TO-BE) | Hanya `yes` \| `no` (case-insensitive). **Bukan** `Y/N`, `1/0` |
+| **J** | **`VAT Code`** | Opsional (TO-BE) | `accounting_taxes.code` active + harus ada di **purchase** tax pivot SKU |
+| **K** | **`VAT Type`** | Opsional (TO-BE) | Hanya `include` \| `exclude` (case-insensitive) |
 
-VAT / warranty / PR detail ID **tidak** di template — diisi sistem saat import.
+**Header I–K:** opsional by presence. File lama tanpa I–K = ketiga NULL = tax AS-IS. Jika salah satu posisi I/J/K ada di header → label harus exact `VAT` / `VAT Code` / `VAT Type`.
 
-### 12.4 Template Without PR (belum aktif)
+Warranty / PR detail ID tetap sistem — bukan kolom Excel.
 
-Mode Without PR via class terpisah **belum di-wire**. Jika diaktifkan nanti: kolom A = Product ID; batas baris historis **100** (inkonsisten vs 500). Lihat GAP-PO-04 / technical.
+### 12.4 Resolver VAT (TO-BE) — keputusan terkunci
 
-### 12.5 Validasi file-level
+Shared helper (dipakai import + add product / bulk / **Allocate Full** / Use PR). Service SKU: **rules sama**.
 
-| # | Kondisi | Pesan error |
-|---|---------|-------------|
-| F-01 | File bukan `.xlsx`/`.xls` | "The uploaded data format does not match the system." |
-| F-02 | Batch import masih running | "Please wait, other import is being process" |
-| F-03 | Header B–H label salah | "The file format doesn't match the system template." |
-| F-04 | Hanya header, no data | "The imported file is empty. Please add at least one product." |
-| F-05 | PO sudah punya detail + tipe file ≠ `with_pr` PO | "type of import not match" |
-| F-06 | existing + import > **500** | "Cannot add more than 500 details to this transaction." |
-| F-07 | Campuran baris With/Without PR dalam 1 file | PR Number empty per baris (lihat §12.2) |
+| # | Keputusan |
+|---|-----------|
+| 1 | Excel explicit (`yes`/`no`/code/type) **mengalahkan** supplier `auto_add_transaction_supplier`. Hanya **ketiga kolom NULL** → hormati supplier (AS-IS). |
+| 2 | `VAT=no` → **tanpa** tax line. Jika `no` + code/type terisi → **fail row** conflict. |
+| 3 | `VAT=yes` **atau** (VAT kosong tapi code/type terisi) → effective YES → resolve tax. |
+| 4 | Hanya type terisi (Rule 3): anggap YES → resolve tax → **override** `included` dari Excel. |
+| 5 | Multi-tax, semua `auto_add=NO`: pilih purchase pivot **`id` terkecil** (deterministik). Juga seragamkan “first” di cabang empty3 → min pivot id. |
+| 6 | Code terisi: Tax active by code + harus di purchase pivot SKU; `included` default dari pivot kecuali type override. |
+| 7 | Satu tax line per baris (bukan multi-tax Excel). |
 
-### 12.6 Validasi per baris (ringkas)
+**Matriks ringkas:**
 
-Kategori gagal yang sering muncul di Import Log:
+| VAT | Code | Type | Hasil |
+|-----|------|------|-------|
+| (kosong) | (kosong) | (kosong) | AS-IS supplier/product auto-pick |
+| `no` | — | — | No tax |
+| `no` | terisi / type terisi | | Fail: conflict |
+| `yes` / kosong+code/type | — | — | Resolve tax; type override include/exclude |
+| invalid `maybe` / type `incl` | | | Fail row English |
 
-| Area | Contoh kondisi gagal |
-|------|----------------------|
-| PR Code | Kosong (mode With PR), tidak ditemukan |
-| SKU | Kosong, tidak ditemukan, bundle, random |
-| PO Qty | Kosong, bukan angka, ≤ 0 |
-| Unit | Kosong, tidak ada di master, tidak terkait produk |
-| Unit Price | Kosong, bukan angka, < 1 |
-| Disc. | Bukan angka, < 0 |
-| Delivery Date | Bukan Excel serial date |
-| PR + SKU | PR valid tapi SKU tidak di outstanding PR |
+Pesan draft (EN): lihat [technical §9](./technical.md#9-import-detail). Testcase T01–T20: brief implementator §9.
 
-Pesan exact per baris (R-01…R-19) & resolve PR detail: [technical §9](./technical.md#9-import-detail).
+### 12.5 Align non-Excel (TO-BE)
 
+**AS-IS gap:** Allocate Full / sebagian bulk With PR memanggil `store` **tanpa** taxes.
 
-### 12.7 All-or-nothing vs partial
+**TO-BE:** path add product / bulk without PR / Allocate Full / Use PR (tanpa Excel) memanggil resolver dengan argumen VAT **null** → cabang empty3 (hormati supplier) — sama dengan add product. FE jangan kirim `taxes: []` yang men-override.
 
-| Fase | Perilaku |
-|------|----------|
-| **Pre-validation (sync)** | Semua baris dicek di `collection()`. **Satu error → 0 job → 0 insert.** |
-| **Job queue (async)** | Satu job per baris. Job gagal → log row; sibling yang sukses **tetap ada**. |
+### 12.6 Template Without PR class
 
-Import dari header **rejected** → status **draft**. Batch selesai → recalc grand totals.
+Class `PurchaseOrderWithoutPrImport` **belum di-wire** (GAP-PO-04). Mode Without PR tetap via kolom A kosong pada importer aktif. TO-BE VAT: jangan implement hanya di dead class — fokus importer aktif + **2 xlsx** kolom sama.
 
-### 12.8 Duplicate SKU
+### 12.7 Validasi file-level (abort penuh — tetap)
 
-Tidak merge — baris valid = baris detail baru (bisa duplikat SKU).
+| # | Kondisi | Pesan (AS-IS / tetap) |
+|---|---------|------------------------|
+| F-01 | Bukan `.xlsx`/`.xls` | format does not match |
+| F-02 | Batch masih running | Please wait… |
+| F-03 | Header B–H salah / VAT header present but wrong label | template mismatch |
+| F-04 | Empty data | imported file is empty |
+| F-05 | Type import not match | type of import not match |
+| F-06 | > 500 details | Cannot add more than 500… |
+| F-07 | Campuran With/Without PR | PR Number empty… |
 
-### 12.9 Download template (GAP-PO-05)
+### 12.8 Validasi per baris
 
-Tombol download mengarah ke file static With-PR / Without-PR di `/files/…`. **AS-IS:** aset sering **404** — operator buat manual (§12.3) atau IT deploy. Detail path: [technical §1](./technical.md#1-file-map).
+AS-IS: PR / SKU / Qty / Unit / Price / Disc / Delivery / outstanding.  
+**TO-BE tambahan:** invalid VAT tokens; VAT code not found/inactive/not on SKU; no purchase VAT setting; VAT=no conflict; SKU tanpa purchase tax saat effective YES.
 
-### 12.10 Monitoring import
+### 12.9 Partial success (TO-BE)
 
-Progress, import log, dan history tersedia di API import — lihat [technical §2 & §9](./technical.md).
+| Fase | AS-IS | TO-BE |
+|------|-------|-------|
+| Pre-val bisnis/VAT per row | 1 error → **0 jobs** | Jangan abort queue untuk error per-row; **queue semua** data row |
+| Job | Sering swallow → history bohong | Fail job propagates; log + `count_row_success` / `count_row_failed` akurat |
+| Notif | — | all OK / **partial** `{n} succeeded, {m} failed` / all failed |
+
+### 12.10 Duplicate SKU
+
+Tidak merge — tiap baris valid = detail baru.
+
+### 12.11 Download template (GAP-PO-05 + TO-BE)
+
+Deploy **kedua** file: `Template-Import-PO-With-PR.xlsx` & `…-Without-PR.xlsx` dengan kolom I–K. File lama tanpa I–K tetap diterima.
+
+### 12.12 Monitoring
+
+Progress, import log, history — [technical §2 & §9](./technical.md).
 
 ---
 
@@ -640,6 +670,7 @@ Create open + With/Without PR · supplier filter · outstanding/Single Use · pr
 | **GAP-PO-08** | Sort kolom DPP/VAT = nilai tampilan | `orderColumn` masih `SUM(dpp_amount)` / `SUM(vat_amount)` | **Residual** | Display sudah Path B; sort masih pivot |
 | **GAP-PO-09** | Σ manual DPP+VAT UI 2dp = Total Price | UI round independen → +0,01 pada tie | **Accepted — known behavior** (27 Jul 2026) | Backend/Total/Journal exact 4dp; bukan bug |
 | **GAP-PO-10** | Export DPP/VAT pakai 4 desimal | Export masih 2dp seperti UI | **TO-BE** | Resolusi end user — audit/rekonsiliasi; UI tetap 2dp |
+| **GAP-PO-11** | Import kolom VAT/VAT Code/VAT Type; partial success akurat; tax Align Allocate Full / bulk | Excel tidak baca VAT; pre-val all-or-nothing; Allocate Full tanpa tax | **TO-BE locked** (5 Agu 2026) | §12.3–§12.9; brief Dev PO Import VAT |
 
 ### 19.1 GAP-PO-05 — Template file missing (detail)
 
@@ -679,6 +710,7 @@ Butuh keputusan bisnis sebelum implementasi:
 | **P-PO-06** | 🟡 Medium | **Dev + QA** | Samakan sort DPP/VAT dengan rumus tampilan (GAP-PO-08) | Sort `SUM(dpp_amount)` vs cell display | Sort order bisa “salah” relatif ke angka yang user lihat |
 | **P-PO-07** | ✅ Closed | **Finance + End user** | Kebijakan rounding tie | **Accepted** known behavior UI (GAP-PO-09) | Jangan ubah backend/UI round |
 | **P-PO-08** | 🟡 Medium | **Dev** | Export DPP/VAT 4dp (GAP-PO-10) | Export PO (dan PI/Journal terkait) | Scope: format export saja |
+| **P-PO-09** | 🔴 **High** | **Dev + QA** | Import VAT columns + partial success + Align Allocate Full (GAP-PO-11) | Template I–K; resolver shared; history/notif; tax path non-Excel | Locked 5 Agu 2026 — brief implementator |
 
 **Confirmed OK (bukan pending):** GAP-PO-02 (Void draft/open = Delete); GAP-PO-03 (Closed dari processed intentional).
 

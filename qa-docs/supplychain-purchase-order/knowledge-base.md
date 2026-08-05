@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.7
-last_updated: 2026-07-27
+version: 2.8
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 aliases: [PO, purchase order, pembelian, pesanan pembelian, outstanding PR]
@@ -142,10 +142,19 @@ Download template dari panel import (With PR / Without PR). Jika file tidak ters
 | F | Disc. (%) | Opsional |
 | G | Description | Opsional |
 | H | Required Delivery Date (**Excel date**, bukan ketik teks) | Opsional |
+| I | **VAT** — hanya `yes` atau `no` (rencana) | Opsional |
+| J | **VAT Code** — kode pajak dari master (rencana) | Opsional |
+| K | **VAT Type** — `include` atau `exclude` (rencana) | Opsional |
 
-VAT & warranty **tidak** di template — sistem isi otomatis.
+**VAT hari ini (AS-IS):** kolom I–K belum aktif — sistem mengisi pajak otomatis dari master produk + setting supplier.  
+**Setelah rilis:** isi `yes`/`no`/kode/type di Excel untuk override; biarkan kosong ketiga kolom jika ingin perilaku otomatis lama. `VAT=no` = tanpa pajak. File lama tanpa kolom I–K tetap bisa diimport.
 
-**Aturan:** maks **500** baris; **satu baris salah** di validasi awal → **seluruh file batal**; tipe file harus cocok dengan detail PO yang sudah ada; bundle/random ditolak.
+Warranty tetap sistem — bukan kolom Excel.
+
+**Aturan:** maks **500** baris; jangan campur baris With PR dan Without PR dalam 1 file; tipe file harus cocok dengan detail PO yang sudah ada; bundle/random ditolak.  
+**Partial (setelah rilis):** baris valid tetap masuk meski ada baris gagal — cek Import Log. **Sementara (AS-IS):** satu error di validasi awal bisa membatalkan seluruh file.
+
+Lingo: [Import Detail](#sf-lingo:SF-IMP-01).
 
 ---
 

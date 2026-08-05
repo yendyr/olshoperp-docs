@@ -52,7 +52,9 @@ notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/t
 * **Jalur UI:** Finance & Accounting → Account Receivable → Credit Note  
 * **Route:** `/accounting/credit-note`
 
-> Placeholder gambar — sidebar Accounting → Credit Note dan DataList.
+<img src="https://lh3.googleusercontent.com/d/1ii4FUPDqqZu_f91IjbOQ9tTed6bLyTZ6?v=20260804b" alt="Sidebar Accounting → Credit Note dan DataList" referrerpolicy="no-referrer">
+
+*Sidebar Accounting → Credit Note dan DataList.*
 
 ## Alur proses
 

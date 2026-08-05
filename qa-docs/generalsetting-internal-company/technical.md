@@ -2,8 +2,8 @@
 doc_type: technical
 menu: generalsetting-internal-company
 menu_name: "Internal Company"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -24,7 +24,7 @@ flowchart TB
     IC --> Contact["gs_company_detail_contacts"]
     IC --> Addr["gs_company_detail_addresses"]
     IC --> Doc["gs_company_detail_documents"]
-    IC --> Acct["gs_company_accountings"]
+    IC --> Acct["CompanyAccountingController\n(shared with General Company)"]
     IC --> Jobs["ImportCoaDevJob / InitWarehouseDataAllServer"]
 ```
 
@@ -49,7 +49,7 @@ flowchart TB
 | `Modules/GeneralSetting/Entities/Company.php` | TYPE_INTERNAL constant |
 | `Modules/GeneralSetting/Entities/InternalCompanyTree.php` | Parent tree |
 | `Modules/GeneralSetting/Policies/InternalCompanyPolicy.php` | Auth |
-| `Modules/GeneralSetting/Jobs/ImportCoaDevJob.php` | COA seed |
+| `Modules/GeneralSetting/Http/Controllers/CompanyAccountingController.php` | Shared GET/POST `/company/{id}/accounting` — COA slots internal + general |
 
 ## 4. API Routes (selected)
 
@@ -91,3 +91,33 @@ Full list: `Modules/GeneralSetting/Routes/api.php` lines 37–76.
 ## 7. Related db-schema docs
 
 - `gs_companies`, `gs_internal_company_trees`
+
+## 8. Validation Highlights
+
+### AS-IS (Accounting Setting)
+
+| Area | Behavior |
+|------|----------|
+| Endpoint | `POST /company/{company_id}/accounting` — same controller as General Company |
+| Required slots | Each `transaction_coa_list_id` must have `chart_of_account_id` |
+| Current P/L guard | Rejects COA already used in Product COA Group, Product Accounting, Tax, Journal |
+| Select2 | `InternalCompanyController@select2Coa` — leaf COA filter per slot `[VERIFY: CODEBASE]` |
+
+### TO-BE — Cash/Bank COA exclusion (GAP-IC-CB-01)
+
+Shared with General Company **[GAP-GC-CB-01](../generalsetting-general-company/requirement.md#gap-registry)**:
+
+| Rule | Detail |
+|------|--------|
+| Scope | All Accounting Setting COA slots (`internal-company` tagging) |
+| Block | COA bound to active Cash/Bank (`CompanyDetailBank.chart_of_account_id`) |
+| Message | `This COA is already used in Cash/Bank Account.` |
+| Lookup | By COA id / relation, not code |
+| Edit | Show current value; exclude from pickers |
+| Free | Soft-deleted bank frees COA |
+
+## 9. Known Issues
+
+| ID | Issue |
+|----|-------|
+| GAP-IC-CB-01 | Cash/Bank exclusion not implemented — see [requirement §3](./requirement.md#3-validasi--rules) |

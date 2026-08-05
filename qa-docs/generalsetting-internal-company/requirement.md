@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: generalsetting-internal-company
 menu_name: "Internal Company"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: draft
 ---
@@ -17,6 +17,7 @@ status: draft
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft (AS-IS) |
+| 1.1 | 2026-08-04 | QA - Yemima | Validasi TO-BE Cash/Bank COA exclusion (GAP-IC-CB-01); cross-ref GAP-GC-CB-01 |
 
 ## 1. Ringkasan Eksekutif
 
@@ -61,6 +62,30 @@ Largest GeneralSetting controller — company master + nested CRUD. Filter `Comp
 |----|------|---------|-------------|
 | V-20 | title required, dates required, file required | documentStore | Laravel validation |
 
+### Accounting Setting COA (shared `CompanyAccountingController`)
+
+Internal Company memakai endpoint yang sama dengan General Company: `GET/POST /company/{id}/accounting`. Semua slot COA di tab **Accounting Setting** (tagging `internal-company`) tercakup.
+
+#### AS-IS
+
+| ID | Rule | Trigger | Pesan / behavior AS-IS |
+|----|------|---------|------------------------|
+| V-A01 | Slot COA wajib terisi | POST accounting | `The {slot name} field is required.` |
+| V-A02 | COA harus exists + status Active | POST accounting | `COA not found.` |
+| V-A03 | Current Profit/Loss: tolak jika COA sudah dipakai Product COA Group / Product Accounting / Tax / Journal | POST accounting (slot Current P/L) | `The selected Current Profit/Loss COA has already been used in a transaction.` |
+| V-A04 | COA picker: leaf child via `InternalCompanyController@select2Coa` | select2 | Filter class per slot `[VERIFY: CODEBASE]` |
+
+#### TO-BE — Cash/Bank COA exclusion (Implementation pending)
+
+| ID | Rule | Trigger | Pesan error |
+|----|------|---------|-------------|
+| V-CB-01 | COA terikat **Master Cash/Bank** aktif tidak boleh dipilih/disimpan di **semua** slot Accounting Setting | POST accounting + select2 | `This COA is already used in Cash/Bank Account.` |
+| V-CB-02 | Lookup by **COA id / relasi**, bukan kode | POST accounting + select2 | — |
+| V-CB-03 | Edit: tampilkan nilai COA saat ini | show/edit | — |
+| V-CB-04 | Soft-delete Cash/Bank → COA boleh dipilih lagi | setelah bank soft-deleted | — |
+
+> Implementasi TO-BE **shared** dengan General Company — lihat [GAP-GC-CB-01](../generalsetting-general-company/requirement.md#gap-registry) di `CompanyAccountingController@store` + select2 COA.
+
 ## 4. Fitur & Behavior
 
 | ID | Fitur | Trigger | Expected result |
@@ -85,6 +110,10 @@ Largest GeneralSetting controller — company master + nested CRUD. Filter `Comp
 - [ ] Soft delete company → show_deleted toggle
 
 ## 7. Known Gaps / Open Questions
+
+| ID | Deskripsi | Dampak | Status |
+|----|-----------|--------|--------|
+| GAP-IC-CB-01 | Semua slot Accounting Setting Internal Company belum mengecualikan COA terikat Cash/Bank | Double-use COA kas vs setting perusahaan | Open — **TO-BE / Implementation pending** (shared API: [GAP-GC-CB-01](../generalsetting-general-company/requirement.md#gap-registry)) |
 
 - Full create side-effect chain lengthy — document detailed technical flow in pass 2.
 - Contact validation company_id on store — verify FE always sends.

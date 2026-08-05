@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-other-discount
 menu_name: "Other Discount"
-version: 1.2
-last_updated: 2026-07-17
+version: 1.3
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 related_docs:
@@ -165,8 +165,10 @@ Lihat [requirement.md §4.4](./requirement.md).
 
 **File:** `OtherDiscountController@select2Child_expense`; `OtherDiscountImport::ALLOWED_COA_CLASSES`.
 
+**TO-BE (`GAP-OD-CB-01` — Implementation pending):** mirror [Other Cost](../omni-other-cost/technical.md) — exclude COA ids from `gs_company_detail_banks.chart_of_account_id` (active, non-deleted); reject `store`/`update`/import; edit retains selected value. Planned: `OtherDiscountController@select2Child_expense`, `@store`, `@update`, `OtherDiscountImport`.
+
 **VERIFY:** mirror [Other Cost technical §9](../omni-other-cost/technical.md#9-coa-scope-update-17-jul-2026) — enforcement child-only di dropdown + save + import; parent = `CoaTree.parent_id`; Active + owned_by di select2; tidak ada hardcode class jurnal untuk OD.
 
 ## 10. Known Technical Debt
 
-Lihat [requirement.md §5](./requirement.md) — O-08 (all-class COA), O-01 (no space), O-05 (export Applied to Store), IMP-02–06, O-14 (error message copy).
+Lihat [requirement.md §5](./requirement.md) — O-08 (all-class COA), O-01 (no space), O-05 (export Applied to Store), IMP-02–06, O-14 (error message copy), **`GAP-OD-CB-01`** (COA vs Cash/Bank exclusion — TO-BE, planned select2 + store/update + import validation).

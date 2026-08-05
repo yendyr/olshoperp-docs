@@ -54,7 +54,9 @@ Pengelolaan modul produksi internal diakses lewat jalur navigasi berikut:
 * **Jalur Navigasi UI:** Supply Chain → Assembly
 * **Route UI Sistem:** `/supplychain/assembly`
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Sidebar navigasi Supply Chain → Assembly, dan tampilan halaman list.
+<img src="https://lh3.googleusercontent.com/d/19rbpTI4KN3NRNFze8EHDPTS0FTK2eeBT" alt="Sidebar navigasi Supply Chain → Assembly, dan tampilan halaman list" referrerpolicy="no-referrer">
+
+*Sidebar navigasi Supply Chain → Assembly, dan tampilan halaman list.*
 
 ### 🔄 Sub-Assembly / Nested BOM — Kenapa Harus Bertahap
 
@@ -127,7 +129,9 @@ stateDiagram-v2
 > 4. Tentukan **Start Date** perakitan dan pilih kategori **Type** (Production, Service, Assembly, atau Other).
 > 5. Isi **Description** opsional (maksimal 150 karakter).
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Form Create Assembly, bagian header (Building Origin, Start Date, Type).
+<img src="https://lh3.googleusercontent.com/d/1Fp6uKBxfT99vOw9MijTPf-Fuuwl7lPBa" alt="Form Create Assembly, bagian header (Building Origin, Start Date, Type)" referrerpolicy="no-referrer">
+
+*Form Create Assembly, bagian header (Building Origin, Start Date, Type).*
 
 #### Task 2: Menambahkan Barang Jadi yang Akan Dirakit
 
@@ -137,7 +141,9 @@ stateDiagram-v2
 > 4. Tentukan **Unit** (satuan dasar utama atau satuan alternatif produk yang sah).
 > 5. Perhatikan kolom **Max Assembly Qty** yang muncul otomatis sebagai batas kapasitas perakitan berdasarkan stok komponen paling minimum.
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Panel pemilihan produk (Select Product) dan expand baris yang menampilkan komponen BoM + ketersediaan stok.
+<img src="https://lh3.googleusercontent.com/d/1S17wmzuKF87_3HoJN3qPbwMuM-ErRIRF" alt="Panel pemilihan produk (Select Product) dan expand baris BoM + ketersediaan stok" referrerpolicy="no-referrer">
+
+*Panel pemilihan produk (Select Product) dan expand baris BoM + ketersediaan stok.*
 
 ⚠️ **ATURAN PENTING:** Field header **Building Origin**, **Transaction Date**, dan **Start Date** otomatis terkunci total begitu ada minimal 1 baris detail barang jadi di grid. Satu jenis barang jadi hanya boleh terdaftar satu kali (tidak boleh duplikat) dalam satu dokumen Assembly.
 
@@ -147,7 +153,9 @@ stateDiagram-v2
 > 2. Geser status dari **Draft** ke **Open**.
 > 3. Sistem otomatis memvalidasi saldo komponen di latar belakang. Jika kuantitas mencukupi, **Transfer Internal** dari gudang asal ke gudang produksi (WIP) diterbitkan dan baris detail terkunci dari edit manual.
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Radio pilihan status Draft/Open di sidebar form.
+<img src="https://lh3.googleusercontent.com/d/1EXEmG1d6tOhK5TXkBFJbStw6IuLrv3dV" alt="Radio pilihan status Draft/Open di sidebar form" referrerpolicy="no-referrer">
+
+*Radio pilihan status Draft/Open di sidebar form.*
 
 #### Task 4: Eksekusi Approval & Pemantauan Latar Belakang
 
@@ -168,7 +176,9 @@ Saat Anda menekan **Approve**, sistem tidak menyelesaikan seluruh pembukuan seke
 
 Pantau persentase kemajuan lewat kolom **Progress Status**. Jika antrean terputus di tengah jalan, baris yang gagal ditandai indikator *error* — beri jeda beberapa menit, lalu klik **Retry** untuk melanjutkan sisa baris yang tertunda.
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Kolom Progress Status di halaman daftar, dan tombol Retry.
+<img src="https://lh3.googleusercontent.com/d/155-pqDLgfHJVcx-IfCvuLkih0MGdXHkI?v=20260804" alt="Kolom Progress Status di halaman daftar, dan tombol Retry" referrerpolicy="no-referrer">
+
+*Kolom Progress Status di halaman daftar, dan tombol Retry.*
 
 ### 📊 Referensi Field Lengkap
 
@@ -218,7 +228,9 @@ Pantau persentase kemajuan lewat kolom **Progress Status**. Jika antrean terputu
 
 Fasilitas unggah berkas dipakai untuk mempercepat penambahan baris barang jadi ke grid detail secara massal memakai file *template* standar sistem.
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Panel Import Excel dengan tombol download template.
+<img src="https://lh3.googleusercontent.com/d/1bxur8_0vkSiTHxnRZe2P1GR0cCdkVQo-" alt="Panel Import Excel dengan tombol download template" referrerpolicy="no-referrer">
+
+*Panel Import Excel dengan tombol download template.*
 
 🛑 **PERHATIAN:** Impor saat ini **hanya** untuk **menambahkan baris detail barang jadi** ke **satu voucher Assembly** yang sudah dibuat dan **masih berstatus Draft**. Sistem **belum** mendukung pembuatan banyak dokumen header Assembly sekaligus lewat file Excel dari halaman daftar utama.
 
@@ -275,7 +287,9 @@ Fungsi berikut **sengaja ditunda** oleh tim produk demi menjaga stabilitas siste
   2. **Label BOX** — label penanda kemasan kardus/wadah logistik.
   3. **Label SID** — kode identitas unik *Stock ID* untuk pelacakan internal.
 
-> 🖼️ **[PLACEHOLDER GAMBAR]** — Tombol Print untuk label SKU/BOX/SID.
+<img src="https://lh3.googleusercontent.com/d/1b-Xu8xTDNZhXu19F_-v24jIAoHbuHp0m" alt="Tombol Print untuk label SKU/BOX/SID" referrerpolicy="no-referrer">
+
+*Tombol Print untuk label SKU/BOX/SID.*
 
 ### 🔗 Hubungan Antar Menu Sistem
 

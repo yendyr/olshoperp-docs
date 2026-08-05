@@ -53,7 +53,9 @@ notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/t
 * **Jalur UI:** Finance & Accounting → Account Payable → Account Payment  
 * **Route:** `/accounting/supplier-payment`
 
-> Placeholder gambar — sidebar Accounting → Account Payment dan DataList.
+<img src="https://lh3.googleusercontent.com/d/15t8PVkz3LTdoJzW4G_8Gkca8_XLyRVRy" alt="Sidebar Accounting → Account Payment dan DataList" referrerpolicy="no-referrer">
+
+*Sidebar Accounting → Account Payment dan DataList.*
 
 ## Alur proses
 

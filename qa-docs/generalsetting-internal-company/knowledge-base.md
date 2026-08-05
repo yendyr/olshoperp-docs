@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: generalsetting-internal-company
 menu_name: "Internal Company"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -51,7 +51,14 @@ Company dengan `owned_by = null` ditampilkan sebagai **Super Company** di datali
 2. Isi Code, Name; pilih parent (opsional), business field, NPWP/GST.
 3. Save — sistem dapat trigger seed COA, warehouse, fiscal period (AS-IS heavy create flow).
 
+### Kelola Accounting Setting (COA)
+
+1. Edit company → tab **Accounting Setting**.
+2. Pilih akun COA per slot (auto-save inline saat pilih).
+3. **Tip (TO-BE):** Jangan pilih akun yang sudah dipakai di menu **Cash/Bank Account** — validasi blokir sedang direncanakan. Sementara cek manual di Cash/Bank Account.
+
 ### Kelola alamat
+
 1. Edit company → tab Address → country wajib, province & city wajib on create.
 2. Cascade region select2.
 
@@ -61,6 +68,7 @@ Company dengan `owned_by = null` ditampilkan sebagai **Super Company** di datali
 |--------|----------|--------|
 | Company tidak di list | Company scope | Login company yang benar / super admin |
 | Create lambat | Background jobs COA/warehouse | Tunggu / cek Horizon |
+| Akun kas ikut ke Accounting Setting | Validasi Cash/Bank belum live (TO-BE) | Ganti COA; lihat Cash/Bank Account |
 
 ## 6. FAQ
 

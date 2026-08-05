@@ -2,8 +2,8 @@
 doc_type: technical
 menu: generalsetting-general-company
 menu_name: "General Company"
-version: 2.1
-last_updated: 2026-07-30
+version: 2.4
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 related_docs:
@@ -188,6 +188,14 @@ DEFAULT_COMPANY_COA_PASSIVA = [3, 4, 26, 27, 28, 31];
 
 Maps to `chart_of_account_class.position` ∈ `Activa` / `Passiva`.
 
+**TO-BE (`GAP-GC-CB-01` — Implementation pending):** tambah exclude COA ids from active non-deleted `gs_company_detail_banks.chart_of_account_id` di `InternalCompanyController@select2Coa` **dan** validasi `CompanyAccountingController@store` (semua slot §7.2). Filter by COA id/relation. Reject message: `This COA is already used in Cash/Bank Account.` Edit: selected value tetap returnable. Soft-deleted cash bank → id tidak di-exclude.
+
+## 7b. Validation Highlights
+
+- Accounting COA inline save: `CompanyAccountingController@store` — AS-IS cek child COA + exists; **tanpa** cash-bank exclusion.
+- COA select2: `InternalCompanyController@select2Coa` + `transaction_coa_id` class filter — **tanpa** exclude cash-bank-bound COA ids (TO-BE `GAP-GC-CB-01`).
+- Import COA columns: match by code — planned same exclusion by resolved COA id after lookup.
+
 ## 8. Onboarding Seeder
 
 `InternalCompanyController@generateGeneralCompany` — dipanggil saat create internal company:
@@ -240,6 +248,7 @@ Lihat [requirement.md §18 Gap Registry](./requirement.md#18-gap-registry) — r
 - Recognize As Supplier OFF tanpa cek pemakaian transaksi setara Customer (**GAP-GC-02**)
 - `CompanyVatSetting` tax assignment commented out in `vat()`
 - GST field hidden di FE (**GAP-GC-03**)
+- COA vs Cash/Bank exclusion belum ada di select2/validate Accounting (**GAP-GC-CB-01** — TO-BE)
 
 **Resolved:** FE import UI kini wired (`DataListGeneralCompany.vue` + `ImportFileTable.vue`) — G-01 closed.
 

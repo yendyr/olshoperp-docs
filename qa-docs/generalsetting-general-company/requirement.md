@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: generalsetting-general-company
 menu_name: "General Company"
-version: 2.3
-last_updated: 2026-07-30
+version: 2.4
+last_updated: 2026-08-04
 owner: QA - Yemima
 status: review
 ---
@@ -284,6 +284,19 @@ Mengontrol **apakah pajak produk otomatis terisi** saat tambah baris detail. Tar
 
 Dropdown customer/supplier di form transaksi hanya menampilkan company yang **sudah melengkapi semua COA wajib** untuk role tersebut (`select2Customer`, `select2Supplier`).
 
+### 7.7 COA vs Cash/Bank exclusion **(TO-BE — `GAP-GC-CB-01`)**
+
+> **Belum diimplementasi.** Scope: **semua slot COA** di tab Accounting Setting (§7.2 — Customer & Supplier).
+
+| Aturan TO-BE | Detail |
+|--------------|--------|
+| Exclude picker | COA yang `id`-nya sudah terikat **Master Cash Bank** aktif (non-deleted) via `gs_company_detail_banks.chart_of_account_id` — filter by **id/relation**, bukan string code |
+| Reject save | Pesan: `This COA is already used in Cash/Bank Account.` |
+| Edit form | Nilai COA terpilih saat ini tetap tampil |
+| Soft-delete cash bank | COA id tidak lagi di-exclude |
+
+Berlaku untuk seluruh field COA §7.2 (AR, Sales Discount, Customer's Deposit, Deposit of Sales Return, AP, Purchase Discount, Deposit to Supplier, Deposit of Purchase Return) — inline save maupun kolom COA import.
+
 ---
 
 ## 8. Tab Payment Type & Currency Setting
@@ -494,6 +507,7 @@ Di form ada **dua kontrol terpisah** dengan validasi berbeda:
 | Delete | dipakai sebagai customer/supplier di PO, invoice, dll. | **Tidak dicek eksplisit** di `destroy()` (lihat §14.3) |
 | Business Field > 3 | save | Error |
 | Code unique | per `owned_by` | Enforced |
+| COA Accounting slots **(TO-BE)** | Pilih/simpan COA di tab Accounting Setting | COA id tidak boleh sudah terikat Master Cash Bank aktif (non-deleted); reject: `This COA is already used in Cash/Bank Account.` — lihat §7.7 `GAP-GC-CB-01` |
 
 ### 14.3 Delete — apa yang benar-benar dicek (GAP-GC-01)
 
@@ -680,6 +694,7 @@ ID kanonik memakai format `GAP-GC-NN` (selaras Source of Truth v1.0 & standar QA
 | GAP-GC-05 | G-04b | Shipper OFF saat masih punya shipping service terikat hanya dicek saat Active OFF, bukan saat toggle role Shipper OFF | Shipping service bisa menggantung tanpa shipper | Open |
 | GAP-GC-06 | G-10 | Primary address tidak auto-revoke saat address di-set Inactive | Alamat Inactive bisa tetap berstatus Primary di transaksi | Low — `[VERIFY: CODEBASE]` |
 | GAP-GC-07 | G-09 | Tidak ada job/notifikasi reminder dokumen mendekati `valid_until_date` | Tab Documents baru sebatas penyimpanan, belum reminder expiry | Accepted AS-IS |
+| `GAP-GC-CB-01` | — | **COA vs Cash/Bank exclusion** — semua slot Accounting Setting §7.2: COA terikat cash bank aktif tidak boleh dipilih/disimpan | Satu akun dipakai ganda sebagai rekening Cash/Bank dan default COA mitra — risiko jurnal salah | Open (TO-BE — Implementation pending) |
 
 **Resolved (tidak lagi open):**
 
@@ -699,6 +714,7 @@ ID kanonik memakai format `GAP-GC-NN` (selaras Source of Truth v1.0 & standar QA
 | Version | Date | Perubahan |
 |---------|------|-----------|
 | 2.3 | 2026-07-30 | Selaras Source of Truth v1.0: FE Import kini **wired** (resolve G-01) di datalist §2.2/§13.1 + route `progress`; §18 dijadikan **Gap Registry `GAP-GC-NN`** (mapping legacy G-0N) + GAP-GC-02 (asimetri guard Supplier OFF); catatan akurasi single-currency vs SoT; status → review |
+| 2.4 | 2026-08-04 | TO-BE: COA vs Cash/Bank exclusion untuk semua slot Accounting Setting — §7.7, §14, `GAP-GC-CB-01` |
 | 2.2 | 2026-06-24 | Implement G-02: Active OFF cek saldo; lock customer role jika sudah dipakai transaksi |
 | 2.1 | 2026-06-24 | Klarifikasi G-02/G-03/G-04; perluas §7.5 VAT transaksional SO/PO; selaraskan G-06 |
 | 2.0 | 2026-06-24 | Konsolidasi requirement PM + verifikasi codebase; tambah §13 Import, §15 UI/UX, §18 Gaps |

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.1
-last_updated: 2026-07-15
+version: 1.2
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order]
@@ -23,6 +23,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-08-05 | QA - Yemima | Shopee unit price: escrow `discounted_price + shopee_discount` (bukan order-detail `model_discounted_price`); GAP-SPR-01 |
 | 1.1 | 2026-07-15 | QA - Yemima | GAP-BOOK-01: jalur Instant Settlement mitigasi jurnal 0; booking × tracking × settle (§3b, §5.6) |
 | 1.0 | 2026-07-15 | QA - Yemima | Initial dari 6 SoT + codebase; gaps APR/SPL/SPD/BOOK/SYN; relasi return/FS |
 
@@ -196,11 +197,28 @@ Outcome counters: Created / Updated / Skipped / Failed.
 
 ### 5.5 Price & mapping (sync)
 
-| Platform | Rule harga unit |
-|----------|-----------------|
-| Shopee | **Selalu** `modal_discounted_price` (0 tetap 0; tanpa fallback original) |
+| Platform | Rule harga unit (per line) |
+|----------|----------------------------|
+| Shopee | **Escrow** `v2.payment.get_escrow_detail` → match item by `line_item_id` → **`discounted_price + shopee_discount`** (field di `order_income.items`). **Jangan** pakai `v2.order.get_order_detail`.`model_discounted_price` sebagai unit price |
 | TikTok | `sale_price + platform_discount` ([VERIFY] NULL discount) |
 | Lazada | Product price existing; **tanpa** pre-sale datetime |
+
+**Latar belakang Shopee (wajib):**  
+`model_discounted_price` di order detail bisa sudah **terpotong voucher/discount ditanggung Shopee** pada SKU tertentu, sehingga nilai jual seller di SO menjadi understated. Contoh staging Meridian order `260804EWSU86XW`: order-detail menampilkan ~25.900 padahal harga seller yang benar ~53.999 (`shopee_discount` ≈ 28.099 ditanggung platform). Escrow memaparkan komponen itu; unit price SO = harga setelah seller-side discount **plus** bagian yang ditanggung Shopee.
+
+```
+unit_price = escrow.items[line].discounted_price + escrow.items[line].shopee_discount
+→ tulis ke each_price / each_price_before_discount_before_vat (dan origin_price bundle header)
+```
+
+| Path sync Shopee | Escrow untuk harga |
+|------------------|--------------------|
+| Create SO (insert baru) | **Wajib** panggil `getAccountingInfo` / escrow |
+| Update biasa (status/tracking) | Tidak wajib reprice ulang dari escrow |
+| Convert booking → real order | **Wajib** escrow + reprice detail |
+
+Escrow tersedia lintas status order yang relevan (verified requirement) — jangan tunda harga sampai settlement selesai.  
+Jika escrow gagal / item tidak match → harga line **0** (risiko `price-error`) — lihat **GAP-SPR-01**.
 
 Pre-sale time: Shopee `ship_by_date` · TikTok `shipping_due_time` · Tokopedia `preorder_deadline`.  
 **Platform Account Label** → Additional Cost/Disc (info SO; **tidak** mengalir ke Sales Invoice). Label baru unmapped → sidebar dot.
@@ -353,6 +371,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 | **GAP-SPD-01** | Dua mekanisme Duplicate (internal vs void-platform) belum diklarifikasi | Bingung usage | Open |
 | **GAP-BOOK-01** | Approve booking amount 0 — risiko jurnal 0 via **Instant Settlement** hampir tertutup (null `platform_order_id` tidak match; approve SP tidak buat SI). Residual: SI manual amount 0 | Accounting | **Accepted residual** (verified 2026-07-15) |
 | **GAP-SYN-01** | Optimasi skip-sync Shopee (cancel/complete, dll.) belum diimplementasi | API waste | Open |
+| **GAP-SPR-01** | Escrow gagal / `line_item_id` tidak match → unit price 0; order historis yang sync sebelum rule escrow tetap understated hingga re-sync/backfill | Nilai jual & benchmark/auto-approve salah | Open |
 
 **[VERIFY: CODEBASE] terbuka:** TZ interval sync; Start Date global vs store; Bulk Sync residual; Instant Processing timing vs Complete; Total Price composition; Invoice∪FS caps; bind-error owner mismatch; Buyer Name censor scope; TikTok NULL discount; auto-delete soft/hard.
 
@@ -367,6 +386,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 - [ ] Booking NULL id processable; excluded auto-approve; IS tidak match hingga Order ID ada
 - [ ] Auto-approve 19:00 filters + validate tanpa stock
 - [ ] prevent_auto_approve saat PbV &lt; Benchmark COGS
+- [ ] Shopee unit price = escrow `discounted_price + shopee_discount` (bukan order-detail `model_discounted_price`); kasus voucher Shopee-borne tidak understate penjualan
 - [ ] Additional cost/disc tidak ke SI
 - [ ] Return bucket = SR dan/atau FS
 

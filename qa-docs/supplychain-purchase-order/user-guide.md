@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 1.5
-last_updated: 2026-07-28
+version: 1.6
+last_updated: 2026-08-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.7
+source_version: 2.8
 owner: QA - Yemima
 status: review
 ---
@@ -123,7 +123,8 @@ Yang perlu diingat:
 - **Kalau kamu Closed dari status Approved** (belum pernah inbound), tombol Closed tidak muncul — buat inbound dulu sampai Processed.
 - **Kalau kamu isi lebih dari 500 baris detail**, sistem menolak.
 - **Kalau kamu input qty desimal di form manual**, ditolak — pakai bilangan bulat. Import Excel boleh angka > 0 termasuk desimal.
-- **Kalau satu baris import salah di validasi awal**, seluruh file batal — perbaiki lalu upload ulang. Lihat [Import Detail](#sf-lingo:SF-IMP-01).
+- **Kalau satu baris import salah di validasi file** (template rusak / campur With–Without PR), seluruh upload batal. Setelah fitur VAT Excel rilis, error **per baris** (SKU/VAT) tidak membatalkan baris lain — cek Import Log. Lihat [Import Detail](#sf-lingo:SF-IMP-01).
+- **Kalau kamu ingin atur pajak di Excel** (rencana): kolom VAT / VAT Code / VAT Type di kanan template; kosongkan ketiganya untuk ikut setting supplier otomatis.
 - **Kalau file import tipenya tidak cocok** dengan detail PO yang sudah ada, sistem menolak (type not match).
 - **Kalau currency utama tapi kurs bukan 1**, validasi gagal.
 - **Kalau Other Cost/Disc membuat total sebelum PPN negatif**, sistem menolak.
