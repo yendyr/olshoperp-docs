@@ -2,8 +2,8 @@
 doc_type: technical
 menu: system-product
 menu_name: "System Product"
-version: 2.2
-last_updated: 2026-08-11
+version: 2.3
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
 related_docs:
@@ -12,6 +12,8 @@ related_docs:
 ---
 
 # System Product — Technical Documentation
+
+> **2.3 (2026-08-12):** TO-BE Default Variant create/import (`GAP-SP-17`) + expand soft-delete/leftover (`GAP-SP-18`) — [requirement §6.3.1–§6.3.2](./requirement.md#631-to-be--default-variant-on-create--import-gap-sp-17); prasyarat [Master Variant technical](../supplychain-variant/technical.md).
 
 ## 1. Architecture Overview
 
@@ -239,6 +241,18 @@ Import disabled on general/inventory datalists: `has_import_history = false`.
 | Partial | Commit success rows; log failures |
 
 Suggested classes: `ImportProductImagesImport` + `ImportProductImagesJob` (or equivalent under SupplyChain Import/Jobs).
+
+### 11.2 Default Variant create/import/expand (TO-BE · GAP-SP-17 / GAP-SP-18)
+
+| Area | Touch points (AS-IS → extend) |
+|------|-------------------------------|
+| Master Default | `scm_variants.is_default` (GAP-VAR-01) — create+default+1 option **skips** `random` inject in `VariantOptionController` |
+| Create | `ProductController@store` + specification/variant store — if default ON and not enabling single path: create parent `sku-(PARENT)`, child `sku`, attach default variant/option |
+| Import | `ProductImport` — Single-eligible rows apply same; skip explicit variant / parent-used SKUs |
+| Expand block | `ProductSpecificationController` L102–104 hard-block — **remove/replace** with soft-delete vs leftover |
+| Soft delete gate | `haveRelations()` / `ProductVariantController::checkRelations` — relation-only (not stock-only) |
+| Naming | Omit default option segment when building child SKU from Default-origin products |
+| FE | `FormProductComponent.vue` — confirm OFF→Single; confirm expand leftover; hide Default column in variant datatable |
 
 ---
 

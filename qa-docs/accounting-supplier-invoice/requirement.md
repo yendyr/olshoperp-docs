@@ -5,7 +5,7 @@ menu_name: "Purchase Invoice"
 version: 3.6
 last_updated: 2026-07-27
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [PI, purchase invoice, purchase invoice docs, supplier invoice, faktur beli, tagihan supplier]
 ---
 

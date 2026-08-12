@@ -35,6 +35,8 @@ Menu **Fiscal Period** (Finance Accounting → Master) — master rentang tangga
 
 - [Cash Bank Reconcile](../accounting-cash-bank-reconcile/README.md)  
 - [Chart of Account](../accounting-chart-of-account/README.md)  
+- [Balance Sheet](../accounting-balance-sheet/README.md) — path Current P/L tergantung period Open  
+- [Profit & Loss](../accounting-profit-loss/README.md)  
 - Internal / General Company (COA Current & Retained P/L)
 
 ## Changelog

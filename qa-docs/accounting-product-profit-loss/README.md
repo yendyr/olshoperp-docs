@@ -20,6 +20,7 @@ Menu **Product Profit Loss** (Accounting) — laporan profit & loss per SKU.
 ## Ringkasan cepat
 
 - **Path UI:** `/accounting/product-profit-loss`
+- **Sibling statement:** [Profit & Loss](../accounting-profit-loss/) — Income Statement per COA class (bukan per SKU)
 - **Sumber data:** [Dev - Sales Order](../sales-order-general/), [Dev - Sales Platform](../omni-sales-platform/), [Outbound External](../supplychain-mutation-outbound/)
 - **Gross Sales (TO-BE):** Price Before VAT setelah disc line — selaras Total COGS tanpa PPN ([requirement §5.1](./requirement.md#51-kolom-datalist--formula))
 - **Import file:** Tidak ada (report-only)

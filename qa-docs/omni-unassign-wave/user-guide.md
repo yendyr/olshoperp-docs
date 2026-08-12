@@ -7,7 +7,7 @@ last_updated: 2026-07-28
 source_docs: [requirement.md, knowledge-base.md, technical.md]
 source_version: 1.1
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Unassign Wave — Panduan Pengguna

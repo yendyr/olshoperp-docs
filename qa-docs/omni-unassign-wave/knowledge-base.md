@@ -5,7 +5,7 @@ menu_name: "Unassign Wave"
 version: 1.1
 last_updated: 2026-07-28
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [unassign wave, send to default waves, default wave queue, send wave logs, failed process wave, processing order date]
 audience: operator
 ---

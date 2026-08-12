@@ -4,10 +4,10 @@ Menu **Order Process** (SupplyChain / OmniChannel) — UI route `/omni/process-s
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
-| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 
 **SoT:** `order-process-source-of-truth.md` v1.2 (19 Jul 2026)  
 **User-guide:** v1.0 · `source_version` 1.2 · generate atas permintaan (3 layer sumber masih draft — exception disetujui user)  
@@ -18,6 +18,7 @@ Menu **Order Process** (SupplyChain / OmniChannel) — UI route `/omni/process-s
 
 | Version | Date | Changes |
 |---------|------|---------|
+| status | 2026-08-12 | Promote 5-file ke **review** (Tier 1 — isi sudah lengkap dari SoT) |
 | 1.2 | 2026-07-20 | Initial 5-file dari SoT v1.2 + verifikasi TransferSummary/AWB/gaps OP-01…10 |
 | ug-1.0 | 2026-07-20 | Tambah `user-guide.md` v1.0 |
 

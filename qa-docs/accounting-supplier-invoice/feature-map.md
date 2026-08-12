@@ -5,7 +5,7 @@ menu_name: "Purchase Invoice"
 version: 1.1
 last_updated: 2026-07-27
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [PI feature map, purchase invoice features, sub feature PI]
 ---
 

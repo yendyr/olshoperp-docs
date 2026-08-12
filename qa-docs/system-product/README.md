@@ -12,7 +12,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 | Capability cards | [capabilities/](./capabilities/) | Semua | draft |
 
 **Help Center:** [`_meta/docs-hub/menus/system-product/`](../_meta/docs-hub/menus/system-product/)  
-**3 layer:** v2.2 · **User Guide:** v1.1 (`source_version` 2.2) · **Feature Map:** v1.0  
+**3 layer:** v2.3 · **User Guide:** v1.1 (`source_version` 2.2) · **Feature Map:** v1.0  
 **Maintenance owner:** QA — Yemima
 
 ---
@@ -21,6 +21,9 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-08-12 | 2.3b | Cross-ref MV: create+Default ON skips `random` inject (MV v1.2) |
+| 2026-08-12 | 2.3 | Default Variant create/import (`GAP-SP-17`) + expand soft-delete/leftover (`GAP-SP-18`); parent `-(PARENT)` |
+| 2026-08-12 | 2.2b | Cross-ref Master Variant Default (GAP-VAR-01) · placeholder konsumen create/import GAP-SP-17 |
 | 2026-08-11 | 2.2 | **Import Product Images** (GDrive public URL → replace primary; max 1000; partial success) · GAP-SP-16 |
 | 2026-07-29 | 2.1b | Feature Map + 6 Lingo cards; user-guide v1.0; Help Center overview en/id |
 | 2026-07-05 | 2.1 | Bundle proporsi Price Before VAT (§11), parent tax hide, GAP-SP-12 resolved |
@@ -50,6 +53,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 - **Bundle pricing (v2.1):** proporsi **Price Before VAT** — lihat requirement §11 + [sales-order-general §10](../sales-order-general/requirement.md#10-product-bundle--proporsi-harga-price-before-vat)
 - Import Excel **hanya** menu System Product full (max **5000** rows; **Import Product Images** max **1000**)
 - **Import Product Images (TO-BE):** GDrive public → replace **primary** only · GAP-SP-16
+- **Default Variant (TO-BE):** Master Default ON → create/import `SKU-(PARENT)` + child; expand = soft-delete vs leftover · GAP-SP-17/18 · prasyarat MV: create Default ON **tanpa** inject `random` · [Master Variant](../supplychain-variant/)
 
 ---
 
@@ -62,6 +66,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 ## Related menus
 
 - [bill-of-material](../bill-of-material/) — Header BOM untuk Assembly  
+- [Master Variant](../supplychain-variant/) — Variant Group + options · TO-BE Default (`GAP-VAR-01`)  
 - [random-sku](../random-sku/) — virtual SKU `-random`  
 - [supplychain-dimension-and-weight-label](../supplychain-dimension-and-weight-label/) — master D&W label  
 - [supplychain-unit](../supplychain-unit/) — master satuan & konversi  

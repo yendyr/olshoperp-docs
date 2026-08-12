@@ -4,25 +4,26 @@ Menu **Purchase Invoice** (Accounting / Account Payable).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | draft |
-| Feature Map | [feature-map.md](./feature-map.md) | Operator, QA (Lingo index) | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
-| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
-| Capability cards (pilot) | [capabilities/](./capabilities/) | Lingo-style SF Entry | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Feature Map | [feature-map.md](./feature-map.md) | Operator, QA (Lingo index) | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
+| Capability cards (pilot) | [capabilities/](./capabilities/) | Lingo-style SF Entry | review |
 
 **UI route:** `/accounting/supplier-invoice`  
 **Feature Map:** [feature-map.md](./feature-map.md) (tab MenuDoc)  
 **Shared capabilities:** [../_meta/shared-capabilities/](../_meta/shared-capabilities/)  
 **Proposal:** [../_meta/proposals/feature-map-and-capability-lingo.md](../_meta/proposals/feature-map-and-capability-lingo.md)  
 **User-guide:** v1.5 · `source_version` 3.7  
-**Help Center overview:** ID v1.1
-**Version (requirement):** 3.6 · **KB:** 3.7 · **Technical:** 3.5 · **Feature Map:** 1.1 · **Last updated:** 2026-07-27
+**Help Center overview:** [ID](../_meta/docs-hub/menus/accounting-supplier-invoice/overview.id.md) · [EN](../_meta/docs-hub/menus/accounting-supplier-invoice/overview.en.md) (`authored`, review)  
+**Version (requirement):** 3.6 · **KB:** 3.7 · **Technical:** 3.5 · **Feature Map:** 1.1 · **Last updated:** 2026-08-12
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| status | 2026-08-12 14:58 | Promote 5-file + Feature Map/Lingo + Help Center overview ke **review** (paket sudah lengkap; update berikutnya hanya bila ada improvement / change requirement) |
 | 3.3 | 2026-07-23 | TO-BE Supplier's Invoice Amount + Invoice Diff |
 | 3.4 | 2026-07-24 | Pilot Feature Map + SF Entry (shared + capabilities/) |
 | 3.5 | 2026-07-24 | Restore full KB; MenuDoc layer links (no SPA .md 404) |
@@ -38,5 +39,7 @@ Menu **Purchase Invoice** (Accounting / Account Payable).
 | Purchase Inbound | [../supplychain-new-purchase-inbound/](../supplychain-new-purchase-inbound/) — eligible SKU |
 | Purchase Order | [../supplychain-purchase-order/](../supplychain-purchase-order/) — harga, tax, cost/disc |
 | Account Payment | [../accounting-supplier-payment/](../accounting-supplier-payment/) — pelunasan |
+| Debit Note | [../accounting-debit-note/](../accounting-debit-note/) — potong hutang via AP; DN dari PR billed |
+| Purchase Return | [../accounting-purchase-return/](../accounting-purchase-return/) — retur billed → DN |
 
 **Maintenance owner:** QA — Yemima

@@ -5,7 +5,7 @@ menu_name: "Purchase Invoice"
 version: 3.5
 last_updated: 2026-07-27
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [PI technical, supplier invoice API, purchase invoice code]
 ---
 

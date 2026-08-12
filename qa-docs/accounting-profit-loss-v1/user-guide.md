@@ -7,7 +7,7 @@ last_updated: 2026-07-17
 source_docs: [requirement.md, knowledge-base.md, technical.md]
 source_version: 1.0
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Dev - Profit & Loss — Panduan Pengguna

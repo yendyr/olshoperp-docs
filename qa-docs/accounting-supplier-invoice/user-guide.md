@@ -7,7 +7,7 @@ last_updated: 2026-07-27
 source_docs: [requirement.md, knowledge-base.md, technical.md]
 source_version: 3.7
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Purchase Invoice — Panduan Pengguna

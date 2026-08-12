@@ -5,7 +5,7 @@ menu_name: "Order Process"
 version: 1.2
 last_updated: 2026-07-20
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [order process, process summary, print awb, get resi, bulk pick list, bulk action log]
 audience: operator
 ---

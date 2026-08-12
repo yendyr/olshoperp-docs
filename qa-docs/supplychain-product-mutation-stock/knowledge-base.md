@@ -5,7 +5,7 @@ menu_name: "Stock History"
 version: 2.0
 last_updated: 2026-07-17
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 aliases: [stock history, stock history v2, riwayat stok, stock movement report, ending balance warehouse]
 ---

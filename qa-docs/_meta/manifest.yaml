@@ -4,7 +4,7 @@
 # Field `status` must match frontmatter `status` in each doc file.
 
 version: 1
-last_updated: 2026-07-23
+last_updated: 2026-08-12
 
 menus:
   manage-platform-product:
@@ -649,21 +649,27 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
-      []
+      - docs/qa-docs/_meta/sot/accounting-balance-sheet-source-of-truth.md
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/BalanceSheetController.php
+        - Modules/Accounting/Entities/BalanceSheet.php
+        - Modules/Accounting/Policies/BalanceSheetPolicy.php
+        - Modules/Accounting/Entities/CurrentProfitLossHistory.php
+        - app/Helpers/Accounting/JournalReport.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Report/BalanceSheet/**/*
 
   accounting-cash-bank-reconcile:
     menu_name: "Cash/Bank Reconcile"
@@ -930,21 +936,34 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
-      []
+      - docs/qa-docs/_meta/sot/accounting-debit-note-source-of-truth.md
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/DebitNoteController.php
+        - Modules/Accounting/Http/Controllers/DebitNoteDetailFundController.php
+        - Modules/Accounting/Http/Controllers/DebitNoteReturnDepositController.php
+        - Modules/Accounting/Services/DebitNoteService.php
+        - Modules/Accounting/Entities/DebitNote.php
+        - Modules/Accounting/Exports/DebitNoteExportAll2.php
+        - Modules/Accounting/Exports/DebitNoteWhithDetailExportAll.php
+        - Modules/Accounting/Jobs/DebitNoteExportJob.php
+        - Modules/Accounting/Jobs/DebitNoteDetailExportJob.php
+        - Modules/Accounting/Jobs/SupplierPaymentImportPerMutationJob.php
+        - app/Helpers/Accounting/JournalProcess.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/DebitNote/**/*
+        - olshoperp-frontend/src/stores/project/DebitNote/**/*
 
   accounting-default-vat:
     menu_name: "Default VAT"
@@ -1271,21 +1290,32 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
-      []
+      - docs/qa-docs/_meta/sot/accounting-profit-loss-source-of-truth.md
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/ProfitLossController.php
+        - Modules/Accounting/Http/Controllers/ProfitLossExportController.php
+        - Modules/Accounting/Jobs/ProfitLossExportChunkJob.php
+        - Modules/Accounting/Jobs/ProfitLossExportCombineJob.php
+        - Modules/Accounting/Exports/ProfitLossExport.php
+        - Modules/Accounting/Entities/ProfitLoss.php
+        - Modules/Accounting/Entities/ProfitLossExportFile.php
+        - Modules/Accounting/Entities/CurrentProfitLossHistory.php
+        - Modules/Accounting/Policies/ProfitLossPolicy.php
+        - app/Helpers/Accounting/JournalReport.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Report/ProfitLoss/**/*
 
   accounting-profit-loss-v1:
     menu_name: "Dev - Profit & Loss"
@@ -1298,16 +1328,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -1609,16 +1639,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -1789,16 +1819,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       - _legacy/old_Journal-Requirement.md
     code_globs:
@@ -2024,16 +2054,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       - order-process-source-of-truth.md
     code_globs:
@@ -2132,16 +2162,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       - unassign-waves-source-of-truth.md
     code_globs:
@@ -2167,16 +2197,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       - waves-management-source-of-truth.md
     code_globs:
@@ -2223,6 +2253,39 @@ menus:
         - Modules/OmniChannel/Concerns/CanAutoBind.php
         - Modules/OmniChannel/Entities/SalesOrderDetailRandom.php
       frontend: []
+
+  supplychain-variant:
+    menu_name: "Master Variant"
+    short_description: "Maintain variant groups and options used when enabling product variations."
+    path: supplychain-variant
+    module: SupplyChain
+    menu_links:
+      - supplychain/variant
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Http/Controllers/VariantController.php
+        - Modules/SupplyChain/Http/Controllers/VariantOptionController.php
+        - Modules/SupplyChain/Entities/Variant.php
+        - Modules/SupplyChain/Entities/VariantOption.php
+        - Modules/SupplyChain/Policies/VariantPolicy.php
+        - Modules/SupplyChain/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/SCM/master/VariantType/**/*
 
   supplychain-adjustment-addition:
     menu_name: "Stock Addition "
@@ -3119,16 +3182,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:

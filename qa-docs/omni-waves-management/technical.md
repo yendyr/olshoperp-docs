@@ -5,7 +5,7 @@ menu_name: "Waves Management"
 version: 2.0
 last_updated: 2026-07-20
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [waves management API, GenerateWaveJob, wave automation technical]
 ---
 

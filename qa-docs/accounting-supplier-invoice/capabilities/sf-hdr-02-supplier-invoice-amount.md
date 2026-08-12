@@ -13,7 +13,7 @@ summary: >-
   memposting selisih lebih besar ke Cash Diff saat approve.
 version: 0.2
 last_updated: 2026-07-27
-status: draft
+status: review
 ---
 
 # Supplier's Invoice Amount (**TO-BE**)

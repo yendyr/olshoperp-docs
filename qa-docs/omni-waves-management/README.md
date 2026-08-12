@@ -4,10 +4,10 @@ Menu **Waves Management** (SupplyChain / OmniChannel).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
-| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 
 **SoT:** `waves-management-source-of-truth.md` v1.0 (19 Jul 2026)  
 **User-guide:** v1.0 · `source_version` 2.0 · generate atas permintaan (3 layer sumber masih draft — exception disetujui user)  
@@ -17,6 +17,7 @@ Menu **Waves Management** (SupplyChain / OmniChannel).
 
 | Version | Date | Changes |
 |---------|------|---------|
+| status | 2026-08-12 | Promote 5-file ke **review** (Tier 1 — isi sudah lengkap dari SoT) |
 | 1.0–1.1 | 2026-06 | Draft AS-IS awal (struktur lama) |
 | 2.0 | 2026-07-20 | Rewrite 5-file dari SoT v1.0 + verifikasi matching/revert/transfer/gaps WM-01…06 |
 | ug-1.0 | 2026-07-20 | Tambah `user-guide.md` v1.0 |

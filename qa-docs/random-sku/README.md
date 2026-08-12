@@ -20,7 +20,7 @@ Konsep **Random SKU** — virtual SKU (non-stockable) untuk auto-pick sibling va
 
 | Menu | Behavior |
 |------|----------|
-| Master Variant | Opsi `random` per variant type |
+| Master Variant | Opsi `random` per variant type — **TO-BE:** skip inject jika create + Default ON + 1 opsi ([supplychain-variant](../supplychain-variant/)) |
 | System Product (Variant) | SKU `-random` auto-generated |
 | Bundle Product | Random di detail → pick stock tertinggi |
 | BOM | ❌ Tidak diperbolehkan |

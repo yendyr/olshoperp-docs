@@ -7,7 +7,7 @@ last_updated: 2026-07-20
 source_docs: [requirement.md, knowledge-base.md, technical.md]
 source_version: 1.2
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Order Process — Panduan Pengguna

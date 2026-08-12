@@ -3,7 +3,7 @@ doc_type: menu-capability-index
 menu: accounting-supplier-invoice
 version: 0.2
 last_updated: 2026-07-27
-status: draft
+status: review
 ---
 
 # Purchase Invoice — Capability cards (pilot)

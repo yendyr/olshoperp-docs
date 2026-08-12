@@ -12,7 +12,7 @@ summary: >-
   fisik supplier.
 version: 0.3
 last_updated: 2026-07-27
-status: draft
+status: review
 ---
 
 # Net Purchase Invoice

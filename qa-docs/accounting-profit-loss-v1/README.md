@@ -4,10 +4,10 @@ Menu **Dev - Profit & Loss** (Accounting / Report).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
-| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 
 **SoT:** `dev-profit-loss-source-of-truth.md` v1.0 (17 Jul 2026)  
 **User-guide:** v1.0 · `source_version` 1.0 · exception: user minta generate meski 3 layer masih draft  
@@ -18,6 +18,7 @@ Menu **Dev - Profit & Loss** (Accounting / Report).
 
 | Version | Date | Changes |
 |---------|------|---------|
+| status | 2026-08-12 | Promote 5-file ke **review** (Tier 1 — isi sudah lengkap dari SoT) |
 | 1.0 | 2026-07-17 | Initial 5-file set dari SoT v1.0 + AS-IS codebase; GAP-DPL-01/02; user-guide v1.0 |
 
 ## Related menus

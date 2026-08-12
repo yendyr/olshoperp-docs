@@ -4,12 +4,13 @@ Menu **Stock History** (Supply Chain / Report).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | End-user onboarding | review |
 
 **SoT:** `supplychain-stock-history-source-of-truth.md` v2.0 (17 Jul 2026)  
-**Version:** 2.0 · **Last updated:** 2026-07-17  
+**Version:** 2.0 · **Last updated:** 2026-08-12  
 **UI route:** `/supplychain/product-mutation-stock` (alias `/supplychain/stock-history`)
 
 ## Changelog
@@ -18,6 +19,7 @@ Menu **Stock History** (Supply Chain / Report).
 |---------|------|---------|
 | 1.0 | 2026-06-19 | Draft awal analisis otomatis |
 | 2.0 | 2026-07-17 | Rewrite SoT v2.0 + AS-IS: filter/datalist, formula EB, TF Receiving Process, job hourly, gap SH-01..05, matrix implementasi |
+| 2.0 | 2026-08-12 15:20 | Promote KB/requirement/technical ke review; tambah User Guide onboarding (saldo per gudang, Receiving Process, beda Product Mutation History) |
 
 ## Related menus
 

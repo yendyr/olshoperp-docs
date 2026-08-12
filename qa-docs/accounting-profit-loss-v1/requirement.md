@@ -5,7 +5,7 @@ menu_name: "Dev - Profit & Loss"
 version: 1.0
 last_updated: 2026-07-17
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [Dev Profit Loss, Dev P&L, profit loss v1, legacy profit loss, laba rugi dev]
 ---
 

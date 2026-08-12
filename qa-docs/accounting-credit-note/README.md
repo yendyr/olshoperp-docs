@@ -32,6 +32,7 @@ Menu **Credit Note** (Accounting / Account Receivable).
 | Sales Return Approval | [../accounting-sales-return/](../accounting-sales-return/) — auto-generate CN billed |
 | Sales Return (SC) | [../supplychain-sales-returns/](../supplychain-sales-returns/) — qty/nilai retur |
 | Account Receive | [../accounting-customer-payment/](../accounting-customer-payment/) — pakai CN sebagai deposit |
+| Debit Note (mirror AP) | [../accounting-debit-note/](../accounting-debit-note/) — klaim supplier; dipakai di Account Payment |
 | Journal | [../journal/](../journal/) — auto journal approve |
 | Store Binding | [../omni-store-binding/](../omni-store-binding/) — Deposit COA Platform |
 | Cash/Bank Account | [../accounting-company-detail-bank/](../accounting-company-detail-bank/) — Receiving Cash/Bank; COA bound exclude free picker |

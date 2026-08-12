@@ -5,7 +5,7 @@ menu_name: Purchase Invoice
 lang: en
 version: 1.0
 last_updated: 2026-07-28
-status: draft
+status: review
 audience: help-center
 source_type: authored
 source_ref: "user-provided (Help Center content authored by user)"

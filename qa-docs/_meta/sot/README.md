@@ -45,7 +45,10 @@ Disalin dari `~/Downloads` (file chat lama yang belum masuk repo). Fiscal Period
 | `omni-unassign-wave-source-of-truth.md` | omni-unassign-wave | 4 file draft |
 | `omni-waves-management-source-of-truth.md` | omni-waves-management | 4 file draft |
 | `omni-process-summary-source-of-truth.md` | omni-process-summary | 4 file draft |
-| `accounting-profit-loss-v1-source-of-truth.md` | accounting-profit-loss-v1 | 4 file draft |
-| `supplychain-product-mutation-stock-source-of-truth.md` | supplychain-product-mutation-stock | draft, UG pending |
+| `accounting-profit-loss-v1-source-of-truth.md` | accounting-profit-loss-v1 | 4/4 review |
+| `accounting-profit-loss-source-of-truth.md` | accounting-profit-loss | 4/4 review (+ Feature Map/Lingo) |
+| `accounting-balance-sheet-source-of-truth.md` | accounting-balance-sheet | 4/4 review |
+| `accounting-debit-note-source-of-truth.md` | accounting-debit-note | 4/4 review (+ Feature Map/Lingo) |
+| `supplychain-product-mutation-stock-source-of-truth.md` | supplychain-product-mutation-stock | 4/4 review |
 
-**Belum ada SOT di folder ini** untuk menu lain di manifest (termasuk Instant Settlement, Assembly, Unit, Role, Failed Ship, Debit Note, P/L, dll.).
+**Belum ada SOT di folder ini** untuk menu lain di manifest (mis. Balance Sheet, Trial Balance, dll.).

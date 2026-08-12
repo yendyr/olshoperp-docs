@@ -61,7 +61,7 @@ Virtual SKU (non-stockable) auto-generated saat opsi `random` dipilih di variant
 
 | Menu | Allowed | Behavior |
 |------|---------|----------|
-| Master Variant | Setup | Auto-add `random` option per type |
+| Master Variant | Setup | Auto-add `random` option per type (**AS-IS**). **TO-BE:** create + **Set as Default System Product ON** + 1 option → **skip** inject `random` — [Master Variant §6.2](../supplychain-variant/requirement.md#62-eligibility--option-count--create-inject) |
 | System Product (Variant) | ✅ Generate | `BTLMINUM-random` |
 | Bundle Single/Variant | ✅ | Pick highest stock sibling/header |
 | Bill of Material | ❌ | Stockable only |

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.2
-last_updated: 2026-08-11
+version: 2.3
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
 audience: operator
@@ -125,11 +125,13 @@ Setiap satuan punya **profil D&W** (bisa lebih dari satu):
 ### Variant
 
 1. Aktifkan **Enable Variations**  
-2. Pilih tipe variant (max **3** tipe, mis. Warna + Ukuran)  
+2. Pilih tipe variant dari [Master Variant](../supplychain-variant/knowledge-base.md) (max **3** tipe, mis. Warna + Ukuran)
 3. Sistem buat SKU child otomatis: `PARENT-MERAH-L`  
 4. Opsi **random** → lihat [Random SKU](../random-sku/knowledge-base.md)  
 
 Hanya **child** yang muncul di PO/SO/inbound.
+
+**TO-BE — Default Variant** (jika Master Variant punya Default ON): create/import Single otomatis jadi Variant — parent `SKU-(PARENT)`, child = kode yang Anda ketik. Menambah group baru: child tanpa relasi boleh diganti (soft delete); yang sudah dipakai transaksi **tetap ada** (kelebihan) + kombinasi baru digenerate — konfirmasi dulu. Detail: [requirement §6.3.1–§6.3.2](./requirement.md#631-to-be--default-variant-on-create--import-gap-sp-17).
 
 ### Bundle
 
@@ -261,4 +263,5 @@ A: Produk harus **Active**, stok cukup, COA Group terisi. Lihat [Instant Settlem
 | Requirement | [requirement.md](./requirement.md) |
 | Technical | [technical.md](./technical.md) |
 | Bill of Material | [../bill-of-material/knowledge-base.md](../bill-of-material/knowledge-base.md) |
+| Master Variant | [../supplychain-variant/knowledge-base.md](../supplychain-variant/knowledge-base.md) |
 | Master Unit | [../supplychain-unit/knowledge-base.md](../supplychain-unit/knowledge-base.md) |

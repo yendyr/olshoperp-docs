@@ -10,7 +10,7 @@ summary: >-
   Qty di draft mengunci sisa; setelah approve, qty itu final ter-tagih.
 version: 0.2
 last_updated: 2026-07-27
-status: draft
+status: review
 ---
 
 # Partial invoicing per SKU

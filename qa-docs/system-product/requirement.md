@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.2
-last_updated: 2026-08-11
+version: 2.3
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
-aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image]
+aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant]
 ---
 
 # System Product — Requirement Documentation
@@ -31,6 +31,9 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 | 2.0 | 2026-07-05 | QA - Yemima | Full rewrite: codebase AS-IS, D&W per unit canonical, bundle/random/import detail, gaps §19–§21 |
 | 2.1 | 2026-07-05 | QA - Yemima | §6.4 tax hide bundle parent · §11 proporsi harga bundle TO-BE (Price Before VAT, coefficient) · GAP-SP-12/P-SP-02 resolved |
 | 2.2 | 2026-08-11 | QA - Yemima | §13.1 **Import Product Images** (GDrive public URL, primary replace, max 1000, partial success) · GAP-SP-16 |
+| 2.2b | 2026-08-12 | QA - Yemima | Cross-ref **Master Variant** Default (`GAP-VAR-01`); konsumen create/import SP masih pending (GAP-SP-17 placeholder) |
+| 2.3 | 2026-08-12 | QA - Yemima | §6.3.1–§6.3.2 Default create/import + expand soft-delete/leftover (`GAP-SP-17`/`GAP-SP-18`); parent `-(PARENT)`; no auto-rename |
+| 2.3b | 2026-08-12 | QA - Yemima | Cross-ref MV major: create+Default ON skips `random` inject (MV v1.2 / GAP-VAR-01) |
 
 ---
 
@@ -260,6 +263,67 @@ Upload foto auto-trigger saat edit via `POST {menuBaseUrl}/{id}/detail`.
 | Transactable | Hanya **child** variant |
 | Variant datatable | Kolom dinamis dari `GET .../specification/variant-column` + Variant SKU, Barcode, RETAIL PRICE |
 | Variant edit modal | SKU, retail price, stock, min order qty, wholesale, D&W profiles, `is_random` |
+| Master source | [Master Variant / Variant Group](../supplychain-variant/requirement.md) |
+
+#### 6.3.1 TO-BE — Default Variant on create / import (`GAP-SP-17`)
+
+Prasyarat: [Master Variant GAP-VAR-01](../supplychain-variant/requirement.md#6-to-be--set-as-default-system-product-gap-var-01)  
+(Master Default ON hanya valid dengan **tepat 1 opsi**; create master + Default ON **tidak** inject `random` — lihat MV §6.2).
+
+**Manual create** saat ada tepat satu Master Variant Default ON:
+
+| Role | SKU |
+|------|-----|
+| Parent | `{userSku}-(PARENT)` — literal suffix `-(PARENT)` |
+| Child | `{userSku}` (opsi = nama opsi di master Default; **tanpa** suffix opsi di kode) |
+
+- Auto **Enable Variations ON** + attach Default group + 1 opsi.
+- User **boleh OFF** Enable Variations → jadi **Single** — **wajib confirmation popup**.
+- Section di bawah toggle: Default group **tetap tampil** (sementara).
+- Datatable variant: kolom dynamic Default group **`visible: false`** (fase 1 UI only).
+- Default group **menghitung** ke max **3** variant types.
+- Bundle: create lewat Default → header bundle sudah Variant (bukan Single dulu).
+
+**Import create** saat Default ON:
+
+| Kondisi row | Behavior |
+|-------------|----------|
+| Kandidat **Single** (no parent; tidak membentuk variant eksplisit) | Terapkan sama create (`-(PARENT)` + child) |
+| Sudah isi variant group & option | **Skip** auto-default |
+| SKU dipakai sebagai **Parent** di row lain | **Skip** auto-default |
+| Semua Default OFF di master | Single tetap mungkin |
+
+#### 6.3.2 TO-BE — Expand Variant Groups: soft delete vs leftover (`GAP-SP-18`)
+
+**AS-IS pain:** `Cannot add variant, Product already have relations` hard-block; tanpa relasi child sering soft delete + regenerate (ID baru).
+
+**TO-BE — tidak ada auto-rename.** Dua cabang:
+
+| Child lama | Soft delete obsolete? | Generate kombinasi baru | Hasil |
+|------------|------------------------|-------------------------|--------|
+| **Zero relation** | **Ya** | Ya (SKU/ID baru) | Bersih |
+| **Punya relasi** (stok **bukan** syarat; relasi saja cukup) | **Tidak** | Ya — **semua** kombinasi baru | Leftover Active under same parent + SKU baru |
+
+Relasi pengunci soft delete (minimal): PR, PO, inbound, outbound, transfer, SO, WO, platform binding, **BOM header & detail**, **bundle header & detail** (+ existing `haveRelations`).
+
+**UX:** sebelum save expand yang menghasilkan leftover → **confirmation popup** menjelaskan behaviour.
+
+**Leftover:** tetap Active child di bawah parent yang sama; user boleh Inactive jika memenuhi rule inactive existing; rename manual OK; stok remap manual (Stock Remapping).
+
+**Naming Default-origin:** SKU baru **omit** segment opsi Default  
+→ `SKUPENSIL-biru-pikacu` bukan `SKUPENSIL-{defaultOpt}-biru-pikacu`.
+
+**Contoh leftover (Default → Warna+Motif, child berelasi):**
+
+```text
+SKUPENSIL                 ← leftover
+SKUPENSIL-biru-doraemon   ← new
+SKUPENSIL-hijau-doraemon  ← new
+SKUPENSIL-biru-pikacu     ← new
+SKUPENSIL-hijau-pikacu    ← new
+```
+
+**Known residual:** rename SKU AS-IS mixed (SO `detail_sku_name` bisa tetap string lama) — bukan cascade rewrite di scope ini.
 
 ### 6.4 Product Bundle Configuration
 
@@ -595,6 +659,8 @@ PO/PR Without PR: System Product **active**, Single/Variant child, punya COA gro
 | **GAP-SP-14** | Qty conversion manual | Manual when master rate NULL | FE always disabled | **Behavior differs** |
 | **GAP-SP-15** | Route menu KB | `/supplychain/system-product` | Actual `/supplychain/product` | **Doc drift** |
 | **GAP-SP-16** | Import Product Images | Dropdown + GDrive public URL → replace primary (max 1000) | Belum ada di `PRODUCT_IMPORT_OPTIONS` / import pipeline | **TO-BE / not implemented** |
+| **GAP-SP-17** | Default Variant create/import | Parent `SKU-(PARENT)` + child = user SKU saat Master Default ON | Belum ada | **TO-BE** — §6.3.1 |
+| **GAP-SP-18** | Expand groups soft-delete vs leftover | Soft delete only zero-relation; related → leftover + new combos + confirm; no auto-rename | Hard-block add variant if relations | **TO-BE** — §6.3.2 |
 
 ### 19.1 GAP-SP-09 — D&W UI sections (detail)
 

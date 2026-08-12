@@ -5,7 +5,7 @@ menu_name: "Unassign Wave"
 version: 1.1
 last_updated: 2026-07-28
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processing order date]
 ---
 

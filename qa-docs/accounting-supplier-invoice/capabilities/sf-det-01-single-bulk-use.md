@@ -11,7 +11,7 @@ summary: >-
   sekaligus dengan qty penuh outstanding.
 version: 0.2
 last_updated: 2026-07-27
-status: draft
+status: review
 ---
 
 # Insert Inbound — Single Use & Bulk Use

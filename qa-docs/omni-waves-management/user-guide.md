@@ -7,7 +7,7 @@ last_updated: 2026-07-20
 source_docs: [requirement.md, knowledge-base.md, technical.md]
 source_version: 2.0
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Waves Management — Panduan Pengguna
