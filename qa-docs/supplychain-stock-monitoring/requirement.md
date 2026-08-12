@@ -2,20 +2,21 @@
 doc_type: requirement
 menu: supplychain-stock-monitoring
 menu_name: "Dev - Stock Monitoring"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: draft
 ---
 
 # Dev - Stock Monitoring — Requirement Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+> **DRAFT** — v1.1 menambahkan TO-BE **Export All parity dengan UI** (`GAP-STMON-EXP-01`). Draft AS-IS v1.0 (2026-06-19) tetap untuk bagian lain.
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-08-11 | QA - Yemima | TO-BE Export All: urutan kolom = UI; Last Move Ref dipecah Transaction + Warehouse; parity N/A; shared dengan Stock Monitoring Value — `GAP-STMON-EXP-01` |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft (AS-IS) |
 
 ## 1. Ringkasan Eksekutif
@@ -43,6 +44,7 @@ Stock Monitoring menampilkan item stock per warehouse via `ItemStockChecker::usa
 | A-13 | Interchange tab | `GET .../interchange` | InterChange.vue |
 | A-14 | Virtual WH toggle | Double-click label + `with_virtual_processing` | Dev feature |
 | A-15 | Advanced filter | `advanced_filter=true` prop | SearchBuilder |
+| A-16 | **(TO-BE)** Export All kolom & data = mirror UI | Urutan + Last Move split — §8, `GAP-STMON-EXP-01` | Export parity |
 
 ## 3. Validasi & Rules
 
@@ -133,7 +135,48 @@ sequenceDiagram
     API-->>UI: download link
 ```
 
-## 8. QA Test Notes
+## 8. Export All — UI parity (TO-BE · `GAP-STMON-EXP-01`)
+
+**Prinsip:** isi & urutan kolom Export All harus **konsisten** dengan datalist UI (tanpa HTML). Kolom UI yang memuat **dua konteks** → **dua kolom** di Excel.
+
+### 8.1 AS-IS vs TO-BE (sample export 11-08-2026)
+
+| Aspek | AS-IS export | TO-BE |
+|-------|--------------|--------|
+| Urutan setelah ID | Inbound Ref → Warehouse → Last move → **SKU → Name** | **SKU → Name** → Inbound Ref → Warehouse → Last Move… |
+| Last Move Ref | 1 kolom = `latest_mutation.code` saja | **Last Move Ref (Transaction)** + **Last Move Warehouse** |
+| Last move = inbound | Sering tetap isi kode IN | **N/A** / `-` (sama UI `latest_mutation_formatted`) |
+
+**UI Last Move** (`ItemStockChecker`): baris 1 = transaction **code** (link); baris 2 = **warehouse** last move.
+
+### 8.2 Urutan header TO-BE (SCM)
+
+1. ID Stock *(samakan label UI bila memungkinkan: ID Stock Monitoring)*  
+2. System Product SKU  
+3. System Product Name  
+4. Inbound Ref.  
+5. Warehouse  
+6. Last Move Ref (Transaction)  
+7. Last Move Warehouse  
+8. Inbound · Transfer · Used · All Reserved · Availability · Unit · Purchase Inbound Date · WH Inbound Date · Expired Date · Created At · Update At  
+
+**Stock Monitoring Value:** aturan Last Move + urutan product-first yang sama; tetap sertakan Currency / Unit Price / Price in Primary Unit.
+
+### 8.3 Acceptance
+
+| ID | Kriteria |
+|----|----------|
+| EXP-01 | Setelah ID, export menampilkan SKU lalu Name sebelum Inbound Ref |
+| EXP-02 | Last Move dipecah 2 kolom: Transaction + Warehouse |
+| EXP-03 | Kasus UI N/A → kedua kolom Last Move N/A/`-` |
+| EXP-04 | SMV export ikut perbaikan Last Move (+ order konsisten) |
+| EXP-05 | Tidak kehilangan kolom qty/tanggal existing |
+
+Cross-ref: [Stock Monitoring Value](../accounting-stock-monitoring-value/) · brief `~/Downloads/improvement-stock-monitoring-export-ui-parity.md`
+
+---
+
+## 9. QA Test Notes
 
 - Pilih warehouse dengan mixed inbound/outbound → verifikasi formula Availability
 - Klik Availability → modal colli qty sum = angka availability
@@ -142,8 +185,9 @@ sequenceDiagram
 - Parallel export same user → toast error lock
 - Buka detail → tab certificate download
 - Bandingkan dengan Accounting menu: unit value muncul hanya di accounting path
+- **T-EXP:** bandingkan 1 baris UI vs Excel — urutan SKU; Last Move code+WH; N/A parity
 
-## 9. Known Gaps / Open Questions
+## 10. Known Gaps / Open Questions
 
 | Gap | Detail |
 |-----|--------|
@@ -151,6 +195,7 @@ sequenceDiagram
 | G-02 | `console.log` di `updateModal` inventory_out branch |
 | G-03 | Double-click warehouse label untuk virtual WH tidak terdokumentasi di UI |
 | G-04 | Shared controller dengan asset-list accounting — regresi lintas modul |
+| **GAP-STMON-EXP-01** | Export All tidak mirror UI (order + Last Move split) — §8 · shared SMV |
 
 ## Related Documents
 
@@ -158,3 +203,4 @@ sequenceDiagram
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| Stock Monitoring Value | [../accounting-stock-monitoring-value/](../accounting-stock-monitoring-value/) |

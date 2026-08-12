@@ -2,20 +2,21 @@
 doc_type: requirement
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.2
-last_updated: 2026-08-04
+version: 2.3
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: review
 ---
 
 # Store — Requirement Documentation
 
-> **Status: REVIEW** — v2.2 menambahkan requirement **TO-BE COA vs Cash/Bank exclusion** untuk `coa_id` / `deposit_coa_id` (belum diimplementasi — lihat §3 V-19, §12 `GAP-ST-CB-01`). v2.1 Fulfillment Mode TO-BE tetap berlaku. Konten AS-IS v2.0 (verifikasi codebase 25 Juni 2026) tetap berlaku untuk seluruh bagian lain.
+> **Status: REVIEW** — v2.3 TO-BE: pecah Store Configuration + **Auto Add VAT (Platform Orders)** (`GAP-ST-VAT-01`). v2.2 COA vs Cash/Bank (`GAP-ST-CB-01`) & v2.1 Fulfillment Mode (`GAP-ST-FM-01`) tetap berlaku.
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.3 | 2026-08-11 | QA - Yemima | TO-BE: split **Ownership & Fulfillment** / **Accounting & Tax**; field **Auto Add VAT (Platform Orders)**; Others disabled+note; konsumen Sales Platform; `GAP-ST-VAT-01` |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial AS-IS draft |
 | 1.1 | 2026-06-22 | QA - Yemima | Sequencing sync platform product on onboarding (§10) |
 | 1.2 | 2026-06-22 | QA - Yemima | Rule `sync_product` OFF (§10.7); QA E2E authorize simulation |
@@ -47,7 +48,8 @@ Menu **Store** adalah master data toko Omni Channel — merepresentasikan toko/c
 | Kebutuhan | Jawaban Store |
 |-----------|---------------|
 | Sinkronisasi otomatis marketplace | Toggle Auto Sync Product & Auto Sync Order |
-| Default akuntansi per store | Section Sales Order Default Configuration (COA, deposit, cash/bank) |
+| Default akuntansi per store | Section **Accounting & Tax Defaults** (COA, deposit, cash/bank, Auto Add VAT Platform) |
+| Default ownership & fulfillment | Section **Ownership & Fulfillment Defaults** (owner, building process/stock) |
 | Gudang proses otomatis per order | Default Building Process + Building Stock |
 | Konsistensi harga lintas store | Pricelist Products (kategori harga) |
 | Transparansi integrasi | Flag Store Outdated, status Authorization |
@@ -90,6 +92,7 @@ Menu **Store** adalah master data toko Omni Channel — merepresentasikan toko/c
 | A-23 | Order sync gated ≥97% product sync | ✅ `initial_sync_product_completed` |
 | A-24 | Update pricelist kategori → sync ke store terkait | ✅ via Product Pricelist menu |
 | A-25 | **(TO-BE)** Others pilih Fulfillment Mode Processed/Non Processed; Platform Processed only | 🔜 **Belum implementasi** — lihat §4.8, §12 `GAP-ST-FM-01` |
+| A-26 | **(TO-BE)** Auto Add VAT (Platform Orders) + split sections Store Configuration | 🔜 **Belum implementasi** — lihat §4.9, §12 `GAP-ST-VAT-01` |
 
 ---
 
@@ -247,6 +250,33 @@ Defense-in-depth: platform service (`OmniShopeeService`, dll.) juga guard `autho
    - **Import Non-Processed** → store yang dipilih harus Fulfillment Mode = Non Processed → skip proses gudang (wave/pick/pack) → auto Outbound + Sales Invoice. **Detail alur ini adalah rumah kanonik di dokumentasi Sales Order General** — tidak diduplikasi di sini.
 6. **Out of scope (belum direncanakan):** create manual/POS untuk order Non Processed dengan auto path yang sama seperti dual import — saat ini tidak termasuk cakupan TO-BE ini.
 
+### 4.9 Auto Add VAT (Platform Orders) — TO-BE (`GAP-ST-VAT-01`)
+
+Setting setara **Auto Add VAT as Customer** di General Company, tetapi **khusus order Sales Platform** dan di-resolve dari **Store**.
+
+| Aspek | TO-BE |
+|-------|--------|
+| Label | **Auto Add VAT (Platform Orders)** |
+| Nilai | `yes` / `no` / `default_by_product` |
+| Default | **Default by Product** |
+| Store type **Platform** | Field enabled |
+| Store type **Others** | Field **tampil disabled** + note: *Not applicable for store type Others. VAT auto-add follows the customer’s Auto Add VAT as Customer setting in General Company.* |
+| Konsumen | **Dev - Sales Platform** saja — **bukan** Sales Order General |
+| Resolve di SP | **Selalu** dari Store order — **abaikan** `auto_add_transaction_customer` |
+| Trigger | Saat detail **masuk** ke order **dan** unit price detail **sudah terisi** (pola sama PO) |
+| Tarif | Dari Product Tax pivot — Store hanya kontrol *apakah* auto-add |
+| Existing orders | **Tidak** backfill — berlaku data baru setelah release |
+
+| Nilai | Perilaku di Sales Platform |
+|-------|----------------------------|
+| **Yes** | Pajak produk selalu di-auto-add (saat trigger terpenuhi) |
+| **No** | Tidak auto-add |
+| **Default by Product** | Auto-add hanya jika pivot produk `auto_add_transaction = true` |
+
+**Tooltip:** Determine how VAT is applied on Sales Platform orders for this store. Yes always auto-adds product VAT, No requires manual entry, and Default by Product follows each product’s auto-add tax setting.
+
+Cross-ref: [General Company §7.4–§7.5](../generalsetting-general-company/requirement.md) · [Sales Platform](../omni-sales-platform/requirement.md)
+
 ### 4.4 Auto Sync & Authorization (AS-IS vs requirement bisnis)
 
 | Kondisi | Requirement bisnis | AS-IS codebase |
@@ -331,18 +361,26 @@ Defense-in-depth: platform service (`OmniShopeeService`, dll.) juga guard `autho
 | Store Platform ID | Disabled — terisi setelah authorize |
 | Email, Mobile, Country, City, Address, Description | Opsional |
 
-**Section: Sales Order Default Configuration**
+**Section: Ownership & Fulfillment Defaults** **(TO-BE v2.3 — pecah dari Sales Order Default Configuration)**
 
 | Field | Filter / rule |
 |-------|---------------|
 | Default Owner Data | Internal company active |
-| Account Receivable COA | COA Class = Assets |
-| Cash/Bank Receiving | Company Detail Bank |
-| Customer's Deposit COA | Company accounting default |
 | Default Building Process | Level 19, `for_wh_binding`, configured WH |
 | Building Stock | Multi-select, level 19, `include_ats=1` |
 | Default Warehouse Void | Conditional (automated distribution) |
 | **Fulfillment Mode** **(TO-BE)** | Others: selectable Processed/Non Processed (default Processed); Platform: Processed only, disabled/hidden — belum implementasi, lihat §4.8 |
+
+**Section: Accounting & Tax Defaults** **(TO-BE v2.3)**
+
+| Field | Filter / rule |
+|-------|---------------|
+| Account Receivable COA | COA Class = Assets |
+| Cash/Bank Receiving | Company Detail Bank |
+| Customer's Deposit COA | Company accounting default |
+| **Auto Add VAT (Platform Orders)** | `yes` / `no` / `default_by_product` — default **Default by Product**; lihat §4.9 |
+
+> **AS-IS UI:** masih satu section **Sales Order Default Configuration** (tanpa Auto Add VAT). Setelah ship, dua section di atas menggantikan section lama.
 
 **Section: Synchronization** (`SyncSection.vue` — **hanya Platform**)
 
@@ -626,6 +664,7 @@ Lihat v1.3 §7.1 — tetap valid. Tambahan regression v2.0:
 | G-13 | Notifikasi blocking antrian lintas company | ❌ **Out of scope** | Accepted — user lihat `waiting` tanpa penjelasan |
 | `GAP-ST-FM-01` | **Fulfillment Mode** (Processed/Non Processed) — field, form, datalist, validasi, gate dual import SO General | 🔜 **TO-BE — Implementation pending** | Belum ada kolom `fulfillment_mode` di `omni_stores`; FE `Form.vue`/`DataList.vue` belum update. Lihat §4.8 dan [technical §5.1](./technical.md#51-fulfillment-mode--planned-schema--invariants-to-be). Konsumen import dual mode: [Sales Order General — Gap Registry](../sales-order-general/requirement.md#9-gap-registry) |
 | `GAP-ST-CB-01` | **COA vs Cash/Bank exclusion** — `coa_id` & `deposit_coa_id` tidak boleh COA yang sudah dipakai Master Cash Bank aktif | 🔜 **TO-BE — Implementation pending** | Belum ada filter di `select2Coa` / validasi `store`/`update`. Lihat §3 V-19 dan [technical §11](./technical.md#11-validation-highlights). **Out of scope:** `cash_bank_account_id` |
+| `GAP-ST-VAT-01` | **Auto Add VAT (Platform Orders)** + pecah section Ownership/Fulfillment vs Accounting & Tax | 🔜 **TO-BE — Implementation pending** | Belum ada field di `omni_stores` / Form.vue; SP masih resolve via customer. Lihat §4.9, §5.2. Konsumen: [Sales Platform](../omni-sales-platform/requirement.md) |
 
 ---
 

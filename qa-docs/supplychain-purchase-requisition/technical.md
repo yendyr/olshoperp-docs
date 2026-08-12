@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-purchase-requisition
 menu_name: "Purchase Requisition"
-version: 2.1
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
 related_docs:
@@ -84,9 +84,22 @@ flowchart TB
 | POST | `/purchase-requisition/{id}/show/upload` | import detail |
 | GET | `/purchase-requisition/{id}/show/export-excel` | export detail |
 | POST | `/purchase-requisition/export-all` | advanced export |
-| GET | `/purchase-requisition-detail/select2-product` | product picker |
+| GET | `/purchase-requisition-detail/select2-product` | product picker (single) |
+| GET | `/purchase-requisition-detail/available-products` | modal list (Select Multiple Products) |
+| POST | `/purchase-requisition-detail/create-select` | add detail from Select Product (qty 1) |
 | POST | `/purchase-requisition-detail` | store detail |
 | GET | `/purchase-requisition/{id}/show/primevue` | detail datatable (auto-appended) |
+
+### 4.1 Select Multiple Products (TO-BE · GAP-PR-01)
+
+| Layer | Notes |
+|-------|-------|
+| BE list | `PurchaseRequisitionDetailController@availableProducts` — filter mirror `select2ProductForTransaction` (+ `has('productUnit')`) |
+| FE | Wire text link + modal (ref Transfer Internal `Available Products` / `AvailableWarehouse`) in `PurchaseRequisition/DatalistDetail.vue` |
+| Labels | Button + modal title: **Select Multiple Products** |
+| Add | Batch create-select / bulk endpoint — qty 1 each; allow duplicate SKU rows |
+| Guard | If `detail_count + selected > config('general.max_child')` (100) → reject **entire** batch; English message requirement §5.1.1 |
+| Visibility | `can_update` only (draft/open/rejected edit) |
 
 ---
 
@@ -342,6 +355,8 @@ validationExtensionFile() // MainHelper
 | Datalist Closed on processed | status closed |
 | Form ClosedDialog on processed | **Error void on processed** (DEV-PR-01) |
 | Delete rejected PR | Error ERR_APPROVED_MSG |
+| Select Multiple Products: 98 + select 5 | Reject entire batch; English max-100 message |
+| Select Multiple Products on Approved show | Button hidden |
 
 ---
 
@@ -370,6 +385,12 @@ validationExtensionFile() // MainHelper
 ### DEV-PR-05 — Print approver section missing
 
 **File:** print.blade.php — `$approver` passed but not rendered.
+
+### GAP-PR-01 — Select Multiple Products FE wire-up
+
+**BE:** `availableProducts` + route `purchase-requisition-detail/available-products` already exist.  
+**FE:** No text button / modal on `PurchaseRequisition/DatalistDetail.vue` (contrast Transfer Internal **Available Products**).  
+**Spec:** requirement §5.1.1 — label **Select Multiple Products**, qty 1, duplicate OK, reject all if >100.
 
 ---
 

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 1.2
-last_updated: 2026-07-23
+version: 1.3
+last_updated: 2026-08-11
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.2
+source_version: 3.3
 owner: QA - Yemima
 status: review
 ---
@@ -142,7 +142,8 @@ Ikuti Point of Sales. Jalur Non-Processed penuh dari POS = requirement berikutny
 - Sheet 2 pakai satu kolom **Other Cost/Disc Code** — jangan duplikat kode antara master biaya dan diskon tambahan.  
 - Satu file bisa multi-store; tiap order dicek ke gudang proses **store-nya sendiri**.  
 - All Sales Order punya **tombol import yang sama**.  
-- Platform Order ID di General = referensi kamu, bukan nomor Shopee.
+- Platform Order ID di General = referensi kamu, bukan nomor Shopee.  
+- Kalau harga jual sebelum pajak di bawah **Benchmark COGS**, order bisa punya Error Flag **Below Benchmark COGS** dan tidak ikut auto-approve — **approve manual tetap boleh**. Tanda itu mengikuti data baris SKU (snapshot); ubah master COGS tidak mengubah order lama sampai baris detail diganti.
 
 ---
 

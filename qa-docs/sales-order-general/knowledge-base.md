@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.2
-last_updated: 2026-07-23
+version: 3.4
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
-aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost Disc]
+aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost Disc, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
 ---
 
 # Dev - Sales Order — Knowledge Base
@@ -122,6 +122,21 @@ Atur mode di **Omni → Store → Fulfillment Mode** dulu.
 | Non-Processed gagal stok | Stok di hierarki gudang proses store kurang | Isi stok / kurangi qty / ganti store |
 | Sheet 2 cost/disc “aneh” / salah jadi biaya | Kode sama ada di Other Cost dan Other Discount | Ubah salah satu kode di master; re-import. Order harus gagal jika bentrok (aturan baru) |
 | Create langsung ke edit | By design | Lengkapi di halaman edit |
+| Ada tanda harga di bawah HPP / auto-approve gagal | Price Before VAT di bawah Benchmark COGS di line | Unhide kolom Price Before VAT + Benchmark; naikkan harga atau **approve manual**. Filter TO-BE: Error Flag **Below Benchmark COGS** |
+
+---
+
+## 5b. Error Flag Below Benchmark COGS (TO-BE)
+
+Saat unit price sebelum pajak (nilai primary) di bawah Benchmark COGS yang tersimpan di baris SKU:
+
+- Muncul tanda Error Flag **Below Benchmark COGS** (merah) di list order dan di baris SKU yang under  
+- Bisa difilter lewat advanced filter Error Flag  
+- Order **tidak ikut auto-approve terjadwal**; **approve manual tetap boleh**  
+- Nilai Benchmark di order adalah **snapshot** — mengubah master COGS tidak mengubah order lama sampai detail dihapus & diisi ulang
+- **TO-BE (Manual COGS):** snapshot = **COGS efektif** (Manual jika override aktif, else rumus) — sama seperti Sales Platform
+
+Detail: [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md).
 
 ---
 

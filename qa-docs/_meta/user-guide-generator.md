@@ -59,6 +59,7 @@ Numbered steps actionable dari Create sampai selesai. Tanpa field backend (`acco
 
 ### 7. Tips & Hal yang Sering Bikin Bingung
 Ambil dari FAQ/troubleshooting knowledge-base.md, ringkas ulang, bahasa paling santai di seluruh dokumen ini.
+Jika user/SoT memberi **contoh case / ilustrasi** (angka, tanggal, overlap, reject path): **wajib** ikut 1–2 case paling mudah dipahami di section ini atau di Langkah-Langkah — lihat `qa-docs-standard.mdc` § Contoh kasus dari user. Jangan buang contoh user hanya karena sudah ada di requirement.
 
 ### 8. Referensi
 Link balik ke requirement.md / knowledge-base.md / technical.md untuk yang butuh detail lebih lanjut (developer, QA, atau operator yang mau ngulik).

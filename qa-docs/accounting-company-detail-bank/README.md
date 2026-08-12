@@ -15,6 +15,10 @@ Menu **Cash/Bank Account** (Finance Accounting → Master) — master rekening k
 **3 layer version:** 1.0 · **User-guide:** 1.0  
 **Maintenance owner:** QA — Yemima
 
+**UI route:** `/accounting/company-detail-bank`
+
+**Help Center overview:** [ID](../_meta/docs-hub/menus/accounting-company-detail-bank/overview.id.md) · [EN](../_meta/docs-hub/menus/accounting-company-detail-bank/overview.en.md) (authored v1.0)
+
 ---
 
 ## Route & modul
@@ -37,3 +41,4 @@ Menu **Cash/Bank Account** (Finance Accounting → Master) — master rekening k
 | Date | Version | Changes |
 |------|---------|---------|
 | 2026-08-05 | 1.0 | Full 5-file dari SoT v1.0; Gap `GAP-CBA-01..05` |
+| 2026-08-05 | HC 1.0 | Help Center overview ID + EN dari file authored user (Cash/Bank Account) |

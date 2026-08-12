@@ -7,7 +7,7 @@ last_updated: 2026-07-23
 source_docs: [requirement.md, knowledge-base.md, technical.md]
 source_version: 2.6
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Failed Ship — Panduan Pengguna

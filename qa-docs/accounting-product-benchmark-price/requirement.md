@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.1
-last_updated: 2026-07-09
+version: 1.3
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: review
-aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product benchmark price, daily COGS]
+aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product benchmark price, daily COGS, Manual COGS, Manual COGS Expiry]
 ---
 
 # Benchmark COGS — Requirement Documentation
@@ -15,7 +15,7 @@ aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product ben
 **UI route:** `/accounting/product-benchmark-price`  
 **API base:** `{VITE_API_URL}accounting/product-benchmark-price`  
 **Audience:** PM, Operations, QA, Support, Developer  
-**Status:** TO-BE requirement v1.1 (perluasan sumber data) · kode AS-IS divergen — lihat §12–§13  
+**Status:** TO-BE v1.3 (**Manual COGS**) · Error Flag v1.2 · sumber data v1.1 · kode AS-IS divergen — lihat §12–§13  
 **PM source:** Notion Benchmark COGS v1.0 (27 Jan 2026) · Jira [ETM-7029](https://erpintegration.atlassian.net/browse/ETM-7029)  
 **Spreadsheet logic:** [Google Sheet](https://docs.google.com/spreadsheets/d/1c_eDle4g4E_IIp6d0wNpER6LIzugh1MBBYE1gxv28iU/edit?gid=2129708031#gid=2129708031)
 
@@ -25,6 +25,8 @@ aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product ben
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.3 | 2026-08-11 | QA - Yemima | TO-BE **Manual COGS** + **Manual COGS Expiry** + import + audit (§2.3, §3.5, §4.2–§4.4, AC/TC, GAP-BM-14) |
+| 1.2 | 2026-08-11 | QA - Yemima | TO-BE Error Flag **Below Benchmark COGS** (`cogs-error`): icon, tooltip, filter, FX→primary, capture; §6.4–§6.5; GAP-BM-05 clarify + GAP-BM-13 |
 | 1.1 | 2026-07-09 | QA - Yemima | Perluasan sumber data (PO + Stock Addition + Opname IN + Opening Stock); before/after §2.2; pending items §13; relasi Stock Remapping |
 | 1.0 | 2026-07-05 | QA - Yemima | Full doc from PM requirement + codebase AS-IS, gaps §12 |
 
@@ -34,7 +36,7 @@ aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product ben
 
 1. [Ringkasan Eksekutif](#1-ringkasan-eksekutif)
 2. [Before vs After (Requirement Comparison)](#2-before-vs-after-requirement-comparison)
-3. [Logika Perhitungan COGS Master](#3-logika-perhitungan-cogs-master)
+3. [Logika Perhitungan COGS Master](#3-logika-perhitungan-cogs-master) (+ [§3.5 Manual COGS](#35-manual-cogs-override-to-be-v13))
 4. [UI/UX — Menu Benchmark COGS](#4-uiux--menu-benchmark-cogs)
 5. [Audit Log (Calculate Log)](#5-audit-log-calculate-log)
 6. [Integrasi Sales Order (General & Platform)](#6-integrasi-sales-order-general--platform)
@@ -58,7 +60,7 @@ Nilai ini **bukan** moving average accounting inventory — melainkan **acuan op
 |----------|-----------|
 | **Stock Opname** | Default harga surplus (penambahan stok) jika user tidak input harga |
 | **Sales Order** | Kolom `benchmark_cogs` (snapshot) + validasi **Auto-Approval** vs harga jual |
-| **Operator / Finance** | Monitoring COGS per SKU + audit perubahan |
+| **Operator / Finance** | Monitoring COGS per SKU + audit perubahan · **Manual COGS** override (TO-BE v1.3) |
 
 ---
 
@@ -92,6 +94,18 @@ Nilai ini **bukan** moving average accounting inventory — melainkan **acuan op
 | 4 | Opening Stock | Opening Stock → Addition | `OS` → `AI` | Addition auto-generated saat opening stock approve |
 
 **AS-IS note (kode per 2026-07-09):** Job **belum** memakai allowlist eksplisit 4 sumber — filter PO di-comment sehingga semua inbound approved ikut terhitung (lihat §12 GAP-BM-12). Kode **tidak** memanggil `Product::MaPrice30Days()`.
+
+### 2.3 Manual COGS override (v1.2 doc → v1.3 TO-BE)
+
+| Aspek | Before (AS-IS / v1.2) | After (v1.3 TO-BE) |
+|-------|----------------------|-------------------|
+| Input harga di menu | **Read-only** — hanya Calculate | Inline **Manual COGS** + **Manual COGS Expiry** (pola Price List) |
+| COGS efektif | Selalu hasil rumus | Manual jika aktif; else rumus |
+| Description | Highest / Last Inbound / No Inbound | + **Manual Input** saat override aktif |
+| Import | Tidak ada import override | Template `SKU Code` \| `Manual COGS` \| `Manual COGS Expiry` |
+| Scope edit | — | **Single** + **Variant** only (Parent ditolak) |
+| Expiry kosong | — | Override **permanen** sampai Manual COGS di-clear |
+| Clear Manual COGS | — | Langsung kembali rumus + audit |
 
 ---
 
@@ -168,8 +182,80 @@ scm_stock_mutations (approved)
 |------|-------|
 | Tabel | `accounting_product_benchmark_prices` |
 | Unique key | `product_id` (per SKU) |
-| Kolom | `benchmark_price` decimal(21,4), `description` nullable |
+| Kolom AS-IS | `benchmark_price` decimal(21,4), `description` nullable |
+| Kolom TO-BE (v1.3) | + `manual_cogs` nullable · `manual_cogs_expiry` date/datetime nullable · (opsional) simpan calculated terpisah jika perlu audit rumus vs efektif |
 | Relasi | `Product::benchmarkPrice()` hasOne |
+
+**API / UI kolom COGS** = **nilai efektif** (lihat §3.5), bukan selalu hasil rumus mentah.
+
+### 3.5 Manual COGS override (TO-BE v1.3)
+
+Override agar ops bisa set COGS efektif di luar rumus Highest Price / Last Inbound / No Inbound.
+
+#### Labels (approved)
+
+| Surface | Label |
+|---------|--------|
+| Input override | **Manual COGS** |
+| Expiry | **Manual COGS Expiry** |
+| Description saat override aktif | **Manual Input** |
+| Nilai efektif (kolom tetap) | **COGS** |
+| Import headers | **SKU Code** \| **Manual COGS** \| **Manual COGS Expiry** |
+
+#### Effective logic
+
+```
+effective_cogs =
+  if manual_cogs is not null
+     and (manual_cogs_expiry is null
+          or now(Asia/Jakarta) <= end_of_day_235959(manual_cogs_expiry))
+    then manual_cogs
+    else calculated_cogs_from_formula
+
+description =
+  if using manual override then "Manual Input"
+  else ("Highest Price" | "Last Inbound" | "No Inbound")
+```
+
+| Rule | Detail |
+|------|--------|
+| Expiry **NULL/kosong** | Override **permanen** sampai Manual COGS di-clear |
+| Expiry diisi (DD-MM-YYYY) | Berlaku sampai **23:59:59 Asia/Jakarta** tanggal itu; setelah itu kembali rumus |
+| Clear Manual COGS (null) | Langsung kembali rumus (tanpa tunggu expiry); recommended clear expiry bersama |
+| Nilai | Numeric; **boleh 0**; **tidak boleh negatif** |
+| Scope | **Single** + **Variant** only — Parent tidak editable / import row fail |
+| Daily job | Jangan timpa COGS efektif saat override masih aktif (boleh update calculated di belakang layar jika disimpan terpisah) |
+| Snapshot SO | Capture **effective** COGS saat create/bind (recommended follow-up; pastikan setelah ship) |
+
+#### Contoh kasus
+
+| SKU | Type | Manual COGS | Manual COGS Expiry | COGS (efektif) | Description |
+|-----|------|-------------|--------------------|----------------|-------------|
+| SKU-A | Single | 15000 | (empty) | 15000 | Manual Input |
+| SKU-B | Variant | 0 | 31-12-2026 | 0 | Manual Input |
+| SKU-C | Single | (cleared) | — | rumus | Highest Price / Last Inbound / No Inbound |
+| SKU-P | Parent | — | — | rumus | Manual tidak editable / import rejected |
+
+#### Tooltips (approved copy)
+
+**Manual COGS:** Set a manual COGS to override the calculated value. While Manual COGS is filled and not expired, the **COGS** column shows this value and Description becomes **Manual Input**. Clear this field to return to the system formula (Highest Price / Last Inbound / No Inbound). Use **0** if you intentionally want COGS = 0. Negative values are not allowed.
+
+**Manual COGS Expiry:** Optional. Format **DD-MM-YYYY** (valid until **23:59:59 Asia/Jakarta** that day). • **Filled:** Manual COGS applies until that date/time, then COGS returns to the system formula. • **Empty:** Manual COGS stays active **indefinitely** until you clear Manual COGS. Use this only when you want a time-limited override.
+
+#### Import (TO-BE)
+
+| Item | Rule |
+|------|------|
+| Template | `Template-Import-Manual-COGS.xlsx` — 3 kolom di atas |
+| Manual COGS blank | **Clear** override (+ clear expiry) |
+| Fail row | SKU not found · bukan Single/Variant · Manual COGS < 0 · expiry invalid / sudah lewat EOD |
+| Success | Set/clear + audit + Updated by / COGS Last Updated |
+| Partial | Row valid commit; fail hanya di import log |
+| UX | Samakan standar import OlshopERP terbaru (progress, history, notifikasi) |
+
+**Out of scope v1:** Manual override pada Parent; ubah rumus 3-tier.
+
+Lihat **GAP-BM-14**.
 
 ---
 
@@ -197,37 +283,53 @@ scm_stock_mutations (approved)
 | Retail Price | `price_formatted` | `scm_products.price` |
 | Created by / at | `created_by_formatted` (+ hidden `created_at_formatted`) | Audit default columns |
 | Updated by / at | `updated_by_formatted` (+ hidden `updated_at_formatted`) | Audit default columns |
-| **COGS** | `benchmark_price_formatted` | Nilai benchmark — currency format |
-| **Description** | `description_formatted` | `Highest Price` / `Last Inbound` / `No Inbound` |
-| **COGS Last Updated** | `last_updated_formatted` | Timestamp update row benchmark |
+| **COGS** | `benchmark_price_formatted` (efektif) | Nilai efektif — rumus **atau** Manual COGS jika override aktif |
+| **Manual COGS** | `manual_cogs` (TO-BE) | Inline edit; Single + Variant only |
+| **Manual COGS Expiry** | `manual_cogs_expiry` (TO-BE) | Opsional; DD-MM-YYYY; kosong = permanen |
+| **Description** | `description_formatted` | `Highest Price` / `Last Inbound` / `No Inbound` / **Manual Input** (TO-BE) |
+| **COGS Last Updated** | `last_updated_formatted` | Timestamp update row benchmark (termasuk edit/import Manual) |
 | Action | sync | Manual calculate |
 
 **Show Detail OFF (default):** query join `product_tree` where `parent_id IS NULL` → hanya **Single + Parent**.
 
 **Show Detail ON:** semua produk termasuk **Variant** child.
 
-### 4.3 UX notes (AS-IS)
+### 4.3 UX notes
 
 | Behavior | Detail |
 |----------|--------|
 | Manual Calculate | Job **async** (Horizon); controller `sleep(1)` — reload datalist **tidak** menjamin selesai |
+| Inline Manual COGS | TO-BE — pola **Price List**; Parent disabled |
+| Import Manual COGS | TO-BE — toolbar import + template download |
 | Export All | Tab export file + progress polling |
 | Permission | `ProductBenchmarkPricePolicy` → `viewAny` untuk index |
+
+### 4.4 Out of scope (Manual COGS v1)
+
+- Override Manual pada **Parent** SKU  
+- Mengubah rumus Highest Price / Last Inbound / No Inbound  
 
 ---
 
 ## 5. Audit Log (Calculate Log)
 
-Setiap perubahan `benchmark_price` / `description` (auto midnight **atau** manual) tercatat via OwenIt Audit (`ConsoleAuditTrait` — aktif saat **console/queue**).
+Setiap perubahan `benchmark_price` / `description` / **Manual COGS** (set atau clear) — auto midnight, manual Calculate, **inline edit**, atau **import** — tercatat via OwenIt Audit (`ConsoleAuditTrait` — aktif saat **console/queue**; pastikan path UI/import juga menulis audit).
 
 | Kolom slideover | Isi |
 |-----------------|-----|
 | **Date** | Waktu audit |
-| **Old Values** | SKU Code, COGS, Description (transformed) |
-| **New Values** | SKU Code, COGS, Description |
+| **Old Values** | SKU Code, COGS, Description (transformed) · TO-BE: Manual COGS / Expiry jika berubah |
+| **New Values** | SKU Code, COGS, Description · TO-BE: Manual fields |
 | **Action** | Event type (created/updated) |
 
 **API:** `GET /api/accounting/product-benchmark-price/calculate-log`
+
+| Event (TO-BE) | Audit | Updated by | COGS Last Updated |
+|---------------|-------|------------|-------------------|
+| Inline set/change Manual | Yes | Yes | Yes |
+| Clear Manual COGS | Yes | Yes | Yes |
+| Import set/clear | Yes | Yes | Yes |
+| Daily job while override aktif | Jangan ubah COGS efektif | — | Prefer no user-facing bump |
 
 ---
 
@@ -255,7 +357,7 @@ Keduanya `visible: false` default — user unhide via column picker.
 
 | Event | Behavior AS-IS |
 |-------|----------------|
-| Create `SalesOrderDetail` / `SalesOrderDetailRandom` | `handleBenchmarkCogsOnCreating()` — copy `ProductBenchmarkPrice.benchmark_price` jika `product_id` set & `benchmark_cogs` belum > 0 |
+| Create `SalesOrderDetail` / `SalesOrderDetailRandom` | `handleBenchmarkCogsOnCreating()` — copy `ProductBenchmarkPrice.benchmark_price` jika `product_id` set & `benchmark_cogs` belum > 0 · **TO-BE v1.3:** snapshot harus pakai **effective** COGS (Manual jika aktif) |
 | Platform **product binding** | Update `product_id` + **re-set** `benchmark_cogs` dari system product ter-bind |
 | Edit line — ganti `product_id` | Re-fetch benchmark master |
 | Master benchmark berubah setelah order ada | Kolom SO **tidak** berubah (snapshot di kolom `benchmark_cogs`) |
@@ -272,19 +374,55 @@ Keduanya `visible: false` default — user unhide via column picker.
 
 ### 6.4 Auto-Approval validation
 
-| Aspek | PM TO-BE | AS-IS code |
-|-------|----------|------------|
-| Metrik harga | **Price Before VAT** | **`each_price_after_vat_primary_currency`** |
-| Metrik COGS | **Benchmark COGS (captured)** | **`benchmark_cogs`** ✓ |
-| Rule | Price Before VAT < Benchmark → block auto-approve | `unit_price < benchmark_cogs` → `prevent_auto_approve = true` |
-| Trigger | — | `SalesOrderDetailPriceObserver` + `updateAutoApproveFlagForSalesOrder()` |
-| UI flag | — | Icon dollar merah — *"Product price is below COGS Benchmark"* |
-| Random bundle line | — | Random detail dengan `product.isBundle()` → **force** prevent auto-approve |
-| Bundle komponen | Price Before VAT komponen vs **Parent** COGS | Lihat [sales-order-general §10.6](../sales-order-general/requirement.md#106-validasi-auto-approval-hpp--benchmark-cogs) — **belum align penuh** |
+| Aspek | TO-BE (v1.2) | AS-IS code (verifikasi 2026-08-11) |
+|-------|--------------|-----------------------------------|
+| Metrik harga | **Price Before VAT** dalam **primary currency** | `each_price_without_vat` (detail) / `each_price_before_discount_before_vat` (random) — **belum** eksplisit × rate ke primary di satu helper bersama UI flag |
+| Metrik COGS | **Benchmark COGS (captured)** | `benchmark_cogs` ✓ |
+| Rule | `price_before_vat_primary < benchmark_cogs` → block auto-approve | `unit_price < benchmark_cogs` → `prevent_auto_approve = true` |
+| Zero COGS | `benchmark_cogs = 0` / unset → **jangan** flag / jangan block karena reason ini | Praktis: `0 < x` false untuk harga positif; pastikan edge harga 0 tetap no-flag |
+| Equal | `==` → **tidak** flag / tidak block | `<` only ✓ |
+| Trigger | Sama helper untuk UI flag + prevent | `SalesOrderDetailPriceObserver` + `updateAutoApproveFlagForSalesOrder()` |
+| UI flag | Lihat §6.5 | Icon `dollar-sign` — *"Product price is below COGS Benchmark. Manual approval required."* |
+| Process impact | Block **schedule auto-approve** only; **manual approve tetap boleh** | Selaras intent |
+| Random bundle line | — | Random detail `product.isBundle()` → **force** prevent auto-approve |
+| Bundle komponen | Price Before VAT komponen vs **Parent** COGS | Belum align penuh — **GAP-BM-06** |
+
+**FX (TO-BE wajib):** jika currency order ≠ primary:
+
+```
+price_before_vat_primary = price_before_vat_order_currency × exchange_rate_order
+```
+
+Rate = exchange rate yang tersimpan di order. Benchmark COGS selalu primary.
 
 **Legacy dead code:** `checkLatestPricePO()` — compare vs latest PO price, **tidak pernah dipanggil**.
 
-**Jira:** [ETM-12890](https://erpintegration.atlassian.net/browse/ETM-12890) (SO General) · [ETM-12947](https://erpintegration.atlassian.net/browse/ETM-12947) (SO Platform)
+**Jira historis:** [ETM-12890](https://erpintegration.atlassian.net/browse/ETM-12890) · [ETM-12947](https://erpintegration.atlassian.net/browse/ETM-12947) · improvement Error Flag 2026-08-11 (brief lokal Downloads)
+
+### 6.5 Error Flag **Below Benchmark COGS** (TO-BE — improve `cogs-error`)
+
+Bukan flag key baru — standarisasi AS-IS `cogs-error` di:
+
+| Menu | UI route |
+|------|----------|
+| Dev - Sales Platform | `/omni/sales-order` |
+| Dev - Sales Order | `/businessdevelopment/sales-order-general` |
+| All Sales Order | `/businessdevelopment/all-sales-order` |
+
+| Aspek | TO-BE |
+|-------|--------|
+| Flag key | `cogs-error` (tetap) |
+| Icon | Font Awesome `money-bill-trend-down` (fallback `arrow-trend-down`), warna **merah** |
+| Filter / label | `Below Benchmark COGS` — advanced filter Error Flag harus searchable by label ini |
+| Tooltip line 1 | `Below Benchmark COGS` |
+| Tooltip line 2 | `Unit price before VAT (in primary currency) is below Benchmark COGS. Auto-approve is blocked; manual approval is still allowed.` |
+| Header Error Flag | Icon jika **minimal 1** detail SKU under benchmark |
+| Detail SKU Error Flag | Icon **hanya** di baris SKU under; baris aman tanpa icon ini |
+| Lifecycle | **Capture:** selama detail tidak dihapus, flag mengikuti data line ter-capture. Refresh via **delete + reinsert** detail (snapshot COGS/harga mengikuti fungsi capture saat reinsert). Master Benchmark berubah **tidak** mengubah line lama tanpa reinsert |
+
+**Out of scope:** rumus master Benchmark; memblokir manual approve; recompute live tanpa delete/reinsert.
+
+Lihat **GAP-BM-13**. Konsumen menu: [omni-sales-platform](../omni-sales-platform/requirement.md) · [sales-order-general](../sales-order-general/requirement.md) · [all-sales-order](../all-sales-order/requirement.md).
 
 ---
 
@@ -345,6 +483,14 @@ Detail: [accounting-opening-stock](../accounting-opening-stock/knowledge-base.md
 | BM-11 | Stock Opname IN sebagai sumber | SKU tanpa PO, opname surplus ≤30 hari → COGS > 0 |
 | BM-12 | Opening Stock sebagai sumber | SKU tanpa PO, opening stock ≤30 hari → COGS > 0 |
 | BM-13 | MAX lintas sumber | PO 6.000 + Addition 8.000 ≤30 hari → COGS = 8.000 |
+| BM-14 | Manual COGS aktif (expiry empty) | COGS = Manual; Description = **Manual Input**; permanen sampai clear |
+| BM-15 | Manual COGS = 0 | Diterima; COGS efektif 0 + Manual Input |
+| BM-16 | Manual COGS negatif | Ditolak |
+| BM-17 | Expiry DD-MM-YYYY | Berlaku sampai 23:59:59 Asia/Jakarta; setelah itu kembali rumus |
+| BM-18 | Clear Manual COGS | Langsung rumus; audit clear |
+| BM-19 | Parent Manual COGS | Tidak editable; import row fail; partial OK |
+| BM-20 | Import 3 kolom | Blank Manual = clear; blank Expiry = permanent; log/notifikasi standar |
+| BM-21 | Job vs override | Daily calculate tidak menimpa COGS efektif saat override aktif |
 
 ---
 
@@ -356,8 +502,10 @@ Detail: [accounting-opening-stock](../accounting-opening-stock/knowledge-base.md
 | SO-02 | Kolom Benchmark COGS | Hidden default; nilai saat order masuk | ✓ hidden · snapshot on create |
 | SO-03 | Snapshot test | Edit master benchmark → SO **tidak** berubah | ✓ kolom `benchmark_cogs` |
 | SO-04 | Bundle/Random parent COGS | Capture **parent** benchmark | ⚠️ header ✓ · child lines own product — **GAP** |
-| SO-05 | Block auto-approve | Price Before VAT < Benchmark | ⚠️ code pakai **price after VAT** — **GAP** |
-| SO-06 | Allow auto-approve | Price Before VAT ≥ Benchmark (+ syarat lain) | ⚠️ same gap |
+| SO-05 | Block auto-approve | Price Before VAT (primary) < Benchmark | ⚠️ samakan helper + FX — **GAP-BM-05 / GAP-BM-13** |
+| SO-06 | Allow auto-approve | Price Before VAT (primary) ≥ Benchmark (+ syarat lain) | ⚠️ same |
+| SO-09 | Error Flag Below Benchmark COGS | Icon/tooltip/filter §6.5 di 3 menu + detail SKU | 🔜 **TO-BE** — **GAP-BM-13** |
+| SO-10 | Zero / equal COGS | `benchmark_cogs = 0` atau harga `==` → no flag | Partial AS-IS; harden di GAP-BM-13 |
 | SO-07 | Platform unbound | Skip; COGS 0 | ✓ `product_id` null |
 | SO-08 | Binding platform | Set benchmark saat bind | ✓ `ProductController` binding update |
 
@@ -398,6 +546,14 @@ Detail: [accounting-opening-stock](../accounting-opening-stock/knowledge-base.md
 | T-14 | PO 6.000 + Addition 8.000 dalam 30 hari | COGS = **8.000** (MAX lintas sumber) |
 | T-15 | Opname surplus pakai fallback benchmark | Benchmark dapat mengulang nilai sebelumnya — expected (§13 P-02) |
 | T-16 | Return inbound / transfer inbound | **Tidak** masuk kalkulasi |
+| T-17 | Manual COGS 15000, expiry empty | COGS 15000, Manual Input (permanen) |
+| T-18 | Manual COGS = 0 + expiry future | COGS 0, Manual Input |
+| T-19 | Manual COGS negatif | Reject |
+| T-20 | Expiry hari ini — setelah 23:59:59 WIB | Kembali rumus |
+| T-21 | Clear Manual COGS | Rumus + audit clear |
+| T-22 | Parent inline / import Manual | Not editable / row fail; partial success |
+| T-23 | Import blank Manual COGS | Clear override |
+| T-24 | Job midnight saat override aktif | COGS efektif tetap Manual |
 
 ---
 
@@ -409,14 +565,16 @@ Detail: [accounting-opening-stock](../accounting-opening-stock/knowledge-base.md
 | **GAP-BM-02** | MA30 legacy | Diganti Highest Price | `MaPrice30Days()` masih ada di Product, **commented** di opname — tidak dipakai job | **OK (by design)** |
 | **GAP-BM-03** | Scope sumber (v1.0) | PO only | Filter PO **di-comment** — semua inbound masuk | **Superseded by GAP-BM-12** |
 | **GAP-BM-04** | COALESCE item_stock vs inbound detail | Fallback jika item_stock price 0 | **Commented out** di job | **Partial** |
-| **GAP-BM-05** | Auto-approve metric | Price **Before** VAT | **`each_price_after_vat_primary_currency`** | **Bug / gap** |
-| **GAP-BM-06** | Bundle child COGS | Parent benchmark untuk validasi | Each line own `product_id` benchmark | **Gap vs bundle §10.6** |
+| **GAP-BM-05** | Auto-approve / UI metric | Price **Before** VAT → **primary** (× rate jika FX) | AS-IS: `each_price_without_vat` / random before-VAT vs `benchmark_cogs` — FX→primary + satu helper UI+prevent belum lengkap | **Open** (clarify 2026-08-11; dulu terdokumentasi sebagai after-VAT) |
+| **GAP-BM-06** | Bundle child COGS | Parent benchmark untuk validasi | Each line own `product_id` benchmark | **Gap** |
 | **GAP-BM-07** | Random SO line | Parent COGS | Master: random inherits parent · SO: depends on `product_id` at capture | **See random-sku doc** |
 | **GAP-BM-08** | Manual calculate UX | Immediate feedback | Async job + sleep(1) | **UX gap** |
 | **GAP-BM-09** | `checkLatestPricePO` | Replaced by benchmark | Method exists, **never called** | **Dead code** |
 | **GAP-BM-10** | Description parent | Highest / Last Inbound per logic | Parent with max>0 always **Highest Price** even if from Last Inbound child | **Minor** |
 | **GAP-BM-11** | QA docs | 3-layer complete | Was pending — **this release** | **Resolved** |
 | **GAP-BM-12** | Allowlist 4 sumber (v1.1) | PO + Addition + Opname IN + Opening Stock | Filter PO di-comment; **belum** allowlist eksplisit; return/transfer ikut terhitung | **Pending implementasi** |
+| **GAP-BM-13** | Error Flag `cogs-error` UX + filter | Icon `money-bill-trend-down`, label/filter **Below Benchmark COGS**, tooltip 2 baris, header+detail SKU di 3 menu, capture/reinsert, samakan formula §6.4–§6.5 | AS-IS: `dollar-sign` + message lama; filter by label baru belum | **Open (TO-BE)** |
+| **GAP-BM-14** | Manual COGS override | §3.5 — kolom Manual COGS + Expiry, effective COGS, Description Manual Input, inline+import, audit, job respects override | AS-IS: read-only COGS rumus saja | **Open (TO-BE)** |
 
 ---
 
@@ -434,12 +592,13 @@ Item di bawah ini adalah **potensi loophole**, risiko operasional, atau pekerjaa
 | **P-04** | COALESCE harga 0 | Fallback `item_stock` → `inbound.each_price_before_vat` di-comment di job | **Partial** — edge case harga 0 di item_stock |
 | **P-05** | Parent description | Parent row selalu `Highest Price` meski nilai MAX berasal dari child `Last Inbound` | **Minor** — cosmetic |
 | **P-06** | Manual Calculate UX | Job async + `sleep(1)` — reload datalist tidak menjamin nilai terbaru | **UX gap** — operator perlu refresh manual |
+| **P-15** | Manual COGS (v1.3) | Override + expiry + import belum di kode | **Pending dev** — GAP-BM-14 |
 
 ### 13.2 Relasi ke menu lain
 
 | ID | Menu terkait | Deskripsi | Status / Tindakan |
 |----|--------------|-----------|---------------------|
-| **P-07** | Sales Order — auto-approve | Kode bandingkan **price after VAT** vs benchmark; requirement **Price Before VAT** (GAP-BM-05) | **Bug / gap** — [ETM-12890](https://erpintegration.atlassian.net/browse/ETM-12890) · [ETM-12947](https://erpintegration.atlassian.net/browse/ETM-12947) |
+| **P-07** | Sales Order — auto-approve + Error Flag | TO-BE §6.4–§6.5 (Before VAT primary + Below Benchmark COGS); AS-IS belum penuh (GAP-BM-05 / GAP-BM-13) | **Open** — improve `cogs-error` |
 | **P-08** | Sales Order — bundle child | Validasi PM: komponen vs parent benchmark; kode: each line own `product_id` (GAP-BM-06) | **Gap** — lihat [sales-order-general §10.6](../sales-order-general/requirement.md#106-validasi-auto-approval-hpp--benchmark-cogs) |
 | **P-09** | Sales Order — random SKU | Line random sering `benchmark_cogs = 0` pre-bind; validasi under-benchmark tidak trigger | **Known** — [random-sku](../random-sku/requirement.md) |
 | **P-10** | Stock Opname | Dua arah: konsumen fallback harga **dan** sumber kalkulasi (v1.1) — operator perlu paham dampak input harga | **Catatan operasional** |

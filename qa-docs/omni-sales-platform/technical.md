@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.2
-last_updated: 2026-08-05
+version: 1.5
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
 related_docs:
@@ -14,6 +14,10 @@ related_docs:
 # Dev - Sales Platform — Technical Documentation
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
+
+> Changelog 1.5 (2026-08-12): TO-BE Benchmark COGS line snapshot = **effective** Manual COGS (`GAP-BM-14`) — [requirement §6.6](./requirement.md#66-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14); [Benchmark technical §4.4](../accounting-product-benchmark-price/technical.md#44-job-vs-manual-cogs-to-be--gap-bm-14).  
+> Changelog 1.4 (2026-08-11): TO-BE Auto Add VAT dari Store (`GAP-ST-VAT-01`) — lihat [Store technical §11.1](../omni-store-binding/technical.md#111-auto-add-vat-platform-orders--to-be-gap-st-vat-01).  
+> Changelog 1.3 (2026-08-11): TO-BE `cogs-error` Below Benchmark COGS — lihat [Benchmark technical §6.5–§6.6](../accounting-product-benchmark-price/technical.md#65-auto-approve-flag); GAP-BM-13.
 
 ---
 
@@ -113,7 +117,7 @@ related_docs:
 
 `processAccountMapping` tetap memakai payload escrow untuk additional cost/disc mapping (terpisah dari unit price line).
 
-`updateAutoApproveFlagForSalesOrder`: compare `each_price_after_vat_primary_currency` vs `benchmark_cogs` (AS-IS; SoT menyebut Price Before VAT — GAP mengacu GAP-BM-05 di docs benchmark).
+`updateAutoApproveFlagForSalesOrder`: AS-IS bandingkan `each_price_without_vat` vs `benchmark_cogs` (random: before-discount-before-VAT). TO-BE: Price Before VAT × order rate → primary; skip `benchmark_cogs = 0`; satu helper dengan UI `cogs-error` — [GAP-BM-05](../accounting-product-benchmark-price/requirement.md) · [GAP-BM-13](../accounting-product-benchmark-price/requirement.md). FE: `ErrorFlag.vue` case `cogs-error`.
 
 ---
 
@@ -195,6 +199,8 @@ sequenceDiagram
 | Approve | `SalesOrderValidationLogic` — stock skipped when `validate(false)` |
 | Prevent flag | Benchmark compare + random-bundle + product change + clone + unapprove |
 | checkExist | Skip auto-approve jika TransferMutationDetail sudah mereferensi SO details |
+| Auto Add VAT **(TO-BE GAP-ST-VAT-01)** | Resolve dari `Store.auto_add_transaction_platform` saat detail create/sync + unit price set; **bukan** `Company.auto_add_transaction_customer` |
+| Benchmark COGS snapshot **(TO-BE GAP-BM-14)** | Line capture = **effective** COGS (Manual override jika aktif); shared dengan SOG/ASO |
 
 ---
 
@@ -258,5 +264,5 @@ sequenceDiagram
 | GAP-SPD-01 | Duplicate internal vs void-platform clone share naming |
 | GAP-BOOK-01 | **Accepted residual:** jalur IS mitigated — null `platform_order_id` → no settlement match; approve SP no SI. Residual = manual SI amount 0 only. See requirement §3b |
 | GAP-SYN-01 | No Shopee skip-sync optimization |
-| GAP-BM-05 | Flag uses after-VAT price vs SoT Price Before VAT |
+| GAP-BM-05 / GAP-BM-13 | Auto-approve + Error Flag Below Benchmark COGS — formula FX primary + UX icon/filter/detail; kanonik di Benchmark COGS docs |
 | GAP-SPR-01 | Escrow miss → price 0; historical SO understated until backfill/re-sync; legacy seeders `FixShopee*` still use `model_discounted_price` |

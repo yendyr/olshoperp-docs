@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-product-profit-loss
 menu_name: "Product Profit Loss"
-version: 1.3
-last_updated: 2026-06-29
+version: 1.4
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -13,7 +13,14 @@ related_docs:
 
 # Product Profit Loss — Technical Documentation
 
-> **DRAFT** — Dokumentasi AS-IS dari codebase (29 Juni 2026). Belum final review QA/PM.
+> **DRAFT** — AS-IS codebase + TO-BE Gross Sales Before VAT (**G-13**, 11 Agustus 2026). Belum final review QA/PM.
+
+## 0. Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.4 | 2026-08-11 | TO-BE Gross Sales = Price Before VAT; FE tooltip; §6.1 / §9 |
+| 1.3 | 2026-06-29 | Related menus & AS-IS docs |
 
 ## 1. Architecture Overview
 
@@ -220,7 +227,23 @@ Migration: `2026_05_08_102507_create_product_profit_losses_table.php`
 - Filter: Approved/Processed, `wh_process_id` NOT NULL, `whereDate(transaction_date, $date)`, company scope
 - `applySalesDetailRowFilter()` — exclude bundle parent, variant random master, random child parent rows
 - Qty: `SUM(sod.sales_order_quantity_in_base_unit)`
-- Gross: price × discount × VAT rule × qty × exchange_rate (lihat `selectRaw` di controller)
+- Gross **AS-IS:** price × discount × VAT rule × qty × exchange_rate (`selectRaw` di controller — tax included ×1 / excluded ×(1+vat%))
+- Gross **TO-BE (G-13):** Price Before VAT after line discount × qty × exchange_rate — **tanpa** VAT CASE; mirror `SalesOrderDetail` Price Before VAT / `eachPriceBeforeVat` (jangan double-apply disc). Hint SQL:
+
+```sql
+SUM(
+  (
+    COALESCE(sod.each_price_before_discount_before_vat, 0)
+    * (1 - COALESCE(sod.sales_discount, 0) / 100)
+  )
+  * COALESCE(sod.sales_order_quantity, 0)
+  * COALESCE(so.exchange_rate, 1)
+) as total_gross_sales
+```
+
+**FE tooltip** (`DataList.vue` `tooltip-custom-gross_sales`): ganti dari *including VAT* → *Price Before VAT… excluding VAT…* (teks di requirement §5.1.2).
+
+Net / margin / avg selling = turunan Gross — ikut berubah; **tidak** ubah rumus HPP query.
 
 **HPP query** — per `(sales_order_id, product_id)`:
 

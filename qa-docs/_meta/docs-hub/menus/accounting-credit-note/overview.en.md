@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: accounting-credit-note
 menu_name: Credit Note
 lang: en
-version: 1.0
-last_updated: 2026-07-29
+version: 1.1
+last_updated: 2026-08-05
 status: draft
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/technical/user-guide).
+notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/technical/user-guide). Sync free COA TO-BE 2026-08-05.
 ---
 
 ## Module/Feature: Credit Note
@@ -19,11 +19,11 @@ notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/
 ## Key terms
 
 * **Credit Note (CN-):** Customer credit / deposit document.
-* **Receiving Destination:** Cash/Bank lines that hold the CN value.
+* **Receiving Destination:** Fund lines that hold the CN value — **Cash/Bank** and/or **Free COA** (non-cash leaf COAs such as Equity; TO-BE).
 * **Total / Paid / Outstanding:** Total funds; amount used on approved AR; remaining on the list.
 * **Billed return:** Sales return that auto-creates an approved CN (invoice was previously paid).
 * **Unbilled return:** Does **not** create a CN — different accounting path.
-* **Deposit COA:** Customer/store deposit account required to approve a CN.
+* **Deposit COA:** Customer/store deposit account required to approve a CN (cannot be used as Free COA destination).
 
 ## When to use
 
@@ -68,7 +68,7 @@ flowchart LR
 ### Order of execution (manual)
 
 1. **Create header** — date, customer, currency, rate.  
-2. **Receiving Destination** — Use / Bulk Use Cash/Bank; set amount > 0.  
+2. **Receiving Destination** — Use / Bulk Use Cash/Bank and/or Free COA (TO-BE); set amount > 0.  
 3. **Approve** — journal posts; balance ready for Account Receive.  
 4. **Apply** — select CN as deposit in Account Receive.
 

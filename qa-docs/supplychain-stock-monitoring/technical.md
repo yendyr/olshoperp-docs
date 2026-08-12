@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-stock-monitoring
 menu_name: "Dev - Stock Monitoring"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # Dev - Stock Monitoring — Technical Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+> **DRAFT** — v1.1 TO-BE Export UI parity (`GAP-STMON-EXP-01`). AS-IS pipeline v1.0 tetap.
 
 **UI route:** `/supplychain/stock-monitoring`  
 **Detail route:** `/supplychain/stock-monitoring/{item_stock_id}`  
@@ -21,6 +21,12 @@ related_docs:
 
 ---
 
+## 0. Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-08-11 | TO-BE export headings/map + last_move_warehouse; §5.1 |
+| 1.0 | 2026-06-19 | Initial AS-IS |
 ## 1. Architecture Overview
 
 ```mermaid
@@ -167,6 +173,20 @@ flowchart TD
 | Export lock TTL | 600s per user |
 | Progress stale | 30 minutes |
 | ZIP threshold | 5000 rows |
+
+### 5.1 Export column map — AS-IS vs TO-BE (`GAP-STMON-EXP-01`)
+
+**UI source of truth (visible order):** `StockMonitoringTable.vue`  
+`product_formatted` → `inbound_ref_formatted` → `latest_mutation_formatted` → qty…
+
+**UI Last Move** (`ItemStockChecker::latest_mutation_formatted`): transaction **code** + warehouse name; **N/A** jika last mutation = inbound.
+
+| Layer | AS-IS | TO-BE |
+|-------|-------|--------|
+| `StockMonitoringExportJob` | `last_move_ref` = `latest_mutation()->code` only | + `last_move_warehouse` from same resolve as UI; N/A when UI N/A |
+| `StockMonitoringExportAll` headings | ID, Inbound Ref, Warehouse, Last move, SKU, Name, … | ID, **SKU, Name**, Inbound Ref, Warehouse, **Last Move Ref (Transaction)**, **Last Move Warehouse**, … |
+| Temp table | `last_move_ref` | + `last_move_warehouse` (migration) |
+| Value export | `StockMonitoringValueExportAll` / `StockMonitoringValueExportJob` | Same Last Move split + order consistency |
 
 ---
 

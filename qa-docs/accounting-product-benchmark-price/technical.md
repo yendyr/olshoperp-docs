@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.1
-last_updated: 2026-07-09
+version: 1.3
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: review
 related_docs:
@@ -17,6 +17,8 @@ related_docs:
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.3 | 2026-08-11 | QA - Yemima | TO-BE Manual COGS: schema, effective COGS, import/inline, job respects override (§3.4, §4.4, §5); GAP-BM-14 |
+| 1.2 | 2026-08-11 | QA - Yemima | AS-IS auto-approve uses without-VAT accessors; TO-BE Error Flag Below Benchmark COGS + FX primary (§6.5–§6.6); GAP-BM-13 |
 | 1.1 | 2026-07-09 | QA - Yemima | v1.1 source allowlist TO-BE; AS-IS code gap §4.3; pending items cross-ref §13 requirement |
 | 1.0 | 2026-07-05 | QA - Yemima | Initial technical — calculation job, API, SO snapshot, gaps |
 
@@ -39,13 +41,14 @@ flowchart TB
     subgraph Master["Benchmark COGS Menu"]
         CMD["Artisan product-benchmark-price:calculate\n00:00 Asia/Jakarta"]
         MAN["Manual Calculate per row"]
+        MANUAL["Manual COGS inline / import\n(TO-BE v1.3)"]
         JOB["ProductBenchmarkPriceJob"]
-        TBL["accounting_product_benchmark_prices"]
+        TBL["accounting_product_benchmark_prices\n(+ manual_cogs, manual_cogs_expiry)"]
         AUD["owen-it/auditing Audit"]
     end
 
     subgraph Consumers["Consumers"]
-        SO["SalesOrderDetail.benchmark_cogs\n(snapshot on create)"]
+        SO["SalesOrderDetail.benchmark_cogs\n(snapshot effective on create)"]
         OP["StockOpnameDetail\nsurplus default price"]
         EXP["Export jobs"]
     end
@@ -56,8 +59,10 @@ flowchart TB
     OS --> JOB
     CMD --> JOB
     MAN --> JOB
+    MANUAL --> TBL
     JOB --> TBL
     JOB --> AUD
+    MANUAL --> AUD
     TBL --> SO
     TBL --> OP
     TBL --> EXP
@@ -81,14 +86,17 @@ flowchart TB
 
 | Method | Path | Controller | Notes |
 |--------|------|------------|-------|
-| GET | `/product-benchmark-price` | `index` | Datalist |
+| GET | `/product-benchmark-price` | `index` | Datalist — COGS = **effective** (TO-BE) |
 | GET | `/product-benchmark-price/{product}/sync` | `manualCalculate` | Queue job |
 | GET | `/product-benchmark-price/calculate-log` | `CalculateLog` | Audit datalist |
 | GET | `/product-benchmark-price/export-file` | `exportFile` | Export batch list |
 | GET | `/product-benchmark-price/export-progress` | `exportProgress` | Poll |
 | GET | `/product-benchmark-price/export-excel` | `exportExcelAll` | Download |
+| PATCH/PUT | `/product-benchmark-price/{id}` (TO-BE) | update Manual fields | Inline — Single/Variant only |
+| POST | `/product-benchmark-price/import` (TO-BE) | import Manual COGS | Partial success + log |
 
-**Routes file:** `Modules/Accounting/Routes/api.php`
+**Routes file:** `Modules/Accounting/Routes/api.php`  
+Pola inline/import: samakan Price List / standar import OlshopERP terbaru.
 
 ---
 
@@ -96,26 +104,42 @@ flowchart TB
 
 ### 3.1 `accounting_product_benchmark_prices`
 
-**Migration:** `Modules/Accounting/Database/Migrations/2026_01_27_130442_create_product_benchmark_prices_table.php`
+**Migration AS-IS:** `Modules/Accounting/Database/Migrations/2026_01_27_130442_create_product_benchmark_prices_table.php`
 
 | Column | Type | Notes |
 |--------|------|-------|
 | `id` | bigint | PK |
 | `product_id` | FK → `scm_products.id` | One row per product |
-| `benchmark_price` | decimal(21,4) | Default 0 |
-| `description` | string nullable | `Highest Price` / `Last Inbound` / `No Inbound` |
+| `benchmark_price` | decimal(21,4) | AS-IS = calculated; TO-BE = **effective** *atau* keep calculated + expose effective accessor |
+| `description` | string nullable | + `Manual Input` when override active |
+| `manual_cogs` | decimal(21,4) nullable | **TO-BE** |
+| `manual_cogs_expiry` | date nullable | **TO-BE** — interpret EOD **23:59:59 Asia/Jakarta** |
 | `status`, `is_all_company`, `owned_by`, `created_by` | | From `baseColumns` |
 | timestamps, soft deletes | | |
 
+**Recommended storage:** simpan `manual_cogs` / `manual_cogs_expiry` terpisah; `benchmark_price` (atau accessor `effective_cogs`) = nilai yang dibaca konsumen + UI.
+
 **Model:** `Modules/Accounting/Entities/ProductBenchmarkPrice.php`
 
-- Traits: `ConsoleAuditTrait` (audit on console/queue only)
+- Traits: `ConsoleAuditTrait` (audit on console/queue only) — **extend** agar inline/import UI juga audited
 - `transformAudit()` — maps `product_id` → SKU label in audit payload
 - `$auditExclude` — skips metadata fields
 
 **Product relation:** `Modules/SupplyChain/Entities/Product::benchmarkPrice()` hasOne
 
-### 3.2 Sales order snapshot
+### 3.2 Effective COGS helper (TO-BE)
+
+```
+effective =
+  manual_cogs IS NOT NULL
+  AND (manual_cogs_expiry IS NULL OR now(Asia/Jakarta) <= expiry@23:59:59)
+  ? manual_cogs
+  : calculated_from_formula
+```
+
+Description = `Manual Input` iff effective from manual; else formula labels.
+
+### 3.3 Sales order snapshot
 
 **Migration:** `2023_12_06_145423_create_sales_order_details_table.php`
 
@@ -125,7 +149,9 @@ $table->decimal('benchmark_cogs', 21, 4)->default(0)->comment('Benchmark COGS');
 
 Also on `omni_sales_order_detail_randoms` and export temp `sales_order_data_temps.benchmark_cogs`.
 
-### 3.3 Export tracking
+**TO-BE:** `handleBenchmarkCogsOnCreating()` harus copy **effective** COGS (bukan rumus mentah jika Manual aktif).
+
+### 3.4 Export tracking
 
 `accounting_product_benchmark_price_export_files` — `ProductBenchmarkPriceExportFile`
 
@@ -179,18 +205,35 @@ Filter sumber — salah satu kondisi berikut (OR):
 
 #### AS-IS (kode per 2026-07-09) — belum allowlist
 
-Filter PO **di-comment** di `ProductBenchmarkPriceJob.php`:
+Filter PO **di-comment** di `ProductBenchmarkPriceJob.php` — semua inbound approved ikut terhitung. Lihat [requirement §13 P-01](./requirement.md#131-fungsi-utama-benchmark-cogs).
 
-```php
-// ->WhereNull($tableInboundDetail.'.transaction_reference_class')
-// ->whereNotNull($tableInboundDetail.'.purchase_order_detail_id')
-```
+### 4.4 Job vs Manual COGS (TO-BE — GAP-BM-14)
 
-Akibatnya: **semua** `InboundMutationDetail` approved ikut terhitung (termasuk return, transfer) — belum sesuai v1.1 TO-BE. Lihat [requirement §13 P-01](./requirement.md#131-fungsi-utama-benchmark-cogs).
+Saat override aktif (`manual_cogs` set + not expired):
+
+- Jangan overwrite nilai **efektif** yang ditampilkan / di-snapshot konsumen dengan rumus
+- Boleh refresh calculated di kolom terpisah jika diimplementasi
+- Prefer jangan bump `updated_at` / COGS Last Updated user-facing hanya karena midnight job
 
 ---
 
-## 5. Controller Highlights
+## 5. Manual COGS — Inline & Import (TO-BE)
+
+| Concern | Guidance |
+|---------|----------|
+| Validation | `manual_cogs` ≥ 0 (nullable to clear); expiry date ≥ today EOD or null; product type Single/Variant |
+| Inline UX | Mirror Price List editable cells + tooltips (requirement §3.5) |
+| Import headers | `SKU Code` \| `Manual COGS` \| `Manual COGS Expiry` |
+| Blank Manual on import | Clear override + expiry |
+| Partial | Commit valid rows; failed rows only in import log |
+| Audit | Set **and** clear must appear in Calculate Log |
+| Updated by / COGS Last Updated | Update on inline + import |
+
+**FE:** extend `ProductBenchmarkPrice/Datalist.vue` — columns Manual COGS / Expiry; Parent cells disabled.
+
+---
+
+## 6. Controller Highlights
 
 **File:** `Modules/Accounting/Http/Controllers/ProductBenchmarkPriceController.php`
 
@@ -205,9 +248,9 @@ Akibatnya: **semua** `InboundMutationDetail` approved ikut terhitung (termasuk r
 
 ---
 
-## 6. Sales Order Integration
+## 7. Sales Order Integration
 
-### 6.1 Snapshot on create
+### 7.1 Snapshot on create
 
 **Files:**
 
@@ -220,117 +263,87 @@ if (! $this->product_id) return;
 $this->benchmark_cogs = ProductBenchmarkPrice::where('product_id', $this->product_id)->value('benchmark_price');
 ```
 
-### 6.2 Binding update (Platform)
+**TO-BE:** resolve **effective** COGS (Manual if active).
 
-`Modules/OmniChannel/Http/Controllers/ProductController.php` (~3277):
+### 7.2 Binding update (Platform)
 
-On bind → set `product_id` + `benchmark_cogs` from `product_system_id` benchmark.
+`Modules/OmniChannel/Http/Controllers/ProductController.php` (~3277): On bind → set `product_id` + `benchmark_cogs`.  
+Also: `Modules/SupplyChain/Http/Controllers/ProductController.php` (~3900).
 
-Also: `Modules/SupplyChain/Http/Controllers/ProductController.php` (~3900) for SCM binding path.
-
-### 6.3 Detail update
+### 7.3 Detail update
 
 `SalesOrderDetailController@update` — if `product_id` changes → re-fetch benchmark.
 
-### 6.4 Datalist columns
+### 7.4 Datalist columns
 
-`SalesOrderDetailController` (general + platform datalist):
+- `price_before_vat_formatted` / platform `each_price_before_discount_before_vat_so_formatted`
+- `benchmark_cogs_formatted` — `unitConverterFromProduct(...)`
+- FE: `SalesOrderGeneral/DatalistDetail.vue`, `Omni/SalesOrder/DatalistDetail.vue` — `visible: false`
 
-- `price_before_vat_formatted` — bundle header sums children `each_price_before_discount_before_vat × qty`
-- `benchmark_cogs_formatted` — `unitConverterFromProduct(benchmark_cogs, ...)`
+### 7.5 Auto-approve flag
 
-**FE column config:**
+**File:** `SalesOrderDetailController::updateAutoApproveFlagForSalesOrder()` — AS-IS compares `each_price_without_vat` vs `benchmark_cogs`.  
+**TO-BE:** Price Before VAT × rate → primary; skip if COGS 0; strict `<` — requirement §6.4.
 
-- `BusinessDevelopment/SalesOrderGeneral/DatalistDetail.vue` — both columns `visible: false`
-- `Omni/SalesOrder/DatalistDetail.vue` — platform uses `each_price_before_discount_before_vat_so_formatted` for Price Before VAT label
+**Observer:** `SalesOrderDetailPriceObserver` · header `prevent_auto_approve`.
 
-### 6.5 Auto-approve flag
+### 7.6 Error Flag `cogs-error` (TO-BE — GAP-BM-13)
 
-**File:** `SalesOrderDetailController::updateAutoApproveFlagForSalesOrder()` (~3128)
+Icon `money-bill-trend-down`, label **Below Benchmark COGS**, header+detail SKU — lihat requirement §6.5.
 
-```php
-$unit_price = $detail->each_price_after_vat_primary_currency;
-if ($unit_price < $detail->benchmark_cogs) {
-    $shouldPreventAutoApprove = true;
-}
-```
+### 7.7 Export
 
-**Observer:** `Modules/OmniChannel/Observers/SalesOrderDetailPriceObserver.php` — watches price, qty, product_id, benchmark_cogs.
-
-**UI flag:** `Modules/OmniChannel/Concerns/CanManageOrderDetailError.php` — dollar icon when below benchmark.
-
-**Header field:** `omni_sales_orders.prevent_auto_approve` boolean.
-
-### 6.6 Export
-
-- `SalesOrderGeneralExportAll` / `SalesOrderPlatformExport` — include `benchmark_cogs`
-- `SalesOrderGeneralExportAllJob::resolveBenchmarkCogs()` — fallback to live master if snapshot 0
+`SalesOrderGeneralExportAll` / platform export include `benchmark_cogs`; `resolveBenchmarkCogs()` fallback live master if snapshot 0.
 
 ---
 
-## 7. Stock Opname, Stock Addition & Opening Stock
+## 8. Stock Opname, Stock Addition & Opening Stock
 
-### 7.1 Opname surplus fallback (konsumen benchmark)
+### 8.1 Opname surplus fallback
 
-**File:** `Modules/SupplyChain/Http/Controllers/StockOpnameDetailController.php` (~579)
+`StockOpnameDetailController` (~579) — `product.benchmarkPrice.benchmark_price`. TO-BE: baca **effective**.
 
-```php
-$price = $product?->benchmarkPrice?->benchmark_price ?? 0;
-$price = ($price * $base_unit); // unit conversion
-```
+### 8.2 Opname / Opening Stock → addition inbound
 
-### 7.2 Opname / Opening Stock → addition inbound (sumber benchmark v1.1)
+Auto `StockMutationAddition` → `InboundMutationDetail.each_price_before_vat` masuk job (v1.1).
 
-**Files:**
+### 8.3 Stock Addition manual
 
-- `StockOpnameDetailController` — auto-create `StockMutationAddition` saat surplus
-- `OpeningStockController` / `StockOpnameController` — opening stock flow (`is_opening_stock: true`)
-- `StockMutationAdditionController` — header addition `AI`
-- `StockMutationAdditionDetailController` — `InboundMutationDetail` + `ItemStock`
-
-Opname IN dan Opening Stock menghasilkan `InboundMutationDetail.each_price_before_vat` yang menjadi input job benchmark (v1.1).
-
-### 7.3 Stock Addition manual
-
-**File:** `StockMutationAdditionDetailController` — user input `each_price_before_vat` di detail; setelah approve masuk rantai yang sama.
+User input `each_price_before_vat` setelah approve masuk rantai yang sama.
 
 ---
 
-## 8. Frontend File Map
+## 9. Frontend File Map
 
 | File | Role |
 |------|------|
-| `ProductBenchmarkPrice/Datalist.vue` | Columns, Show Detail, Export All, Calculate Log trigger |
+| `ProductBenchmarkPrice/Datalist.vue` | Columns, Show Detail, Export · TO-BE Manual COGS + import |
 | `ProductBenchmarkPrice/CalculateLog.vue` | Audit slideover |
-| `DataTables/DataTablesV3.vue` | `is_show_details`, sync action `product-benchmark-price` |
+| `DataTables/DataTablesV3.vue` | `is_show_details`, sync action |
 | `SalesOrderGeneral/DatalistDetail.vue` | SO General hidden columns |
 | `Omni/SalesOrder/DatalistDetail.vue` | SO Platform hidden columns |
 
 ---
 
-## 9. Testing Notes
+## 10. Testing Notes
 
-1. **Job isolation:** Run `php artisan product-benchmark-price:calculate` — verify audit rows in calculate-log
-2. **30-day window:** Seed approved PO inbound with known `each_price_before_vat` dates
-3. **Parent MAX:** Parent COGS = max(child) not sum
-4. **Random variant:** Excluded from MAX calculation; row = parent value
-5. **SO snapshot:** Create SO → change master → assert `benchmark_cogs` unchanged
-6. **Auto-approve:** Set price below snapshot → `prevent_auto_approve = 1`
-7. **Regression GAP-BM-05:** Compare using `each_price_before_vat` vs current after-VAT accessor
+1. Job: `php artisan product-benchmark-price:calculate` + calculate-log
+2. 30-day window / Parent MAX / random inherit
+3. SO snapshot unchanged after master edit
+4. Auto-approve + GAP-BM-13 Error Flag
+5. **GAP-BM-14:** permanent / expiry EOD WIB / clear / import partial / Parent reject / job respects override / SO snapshot effective
 
 ---
 
-## 10. Cross-References
+## 11. Cross-References
 
 | Topic | Doc |
 |-------|-----|
 | Business rules & AC | [requirement.md](./requirement.md) |
 | Operator guide | [knowledge-base.md](./knowledge-base.md) |
-| SO detail columns & auto-approve | [../sales-order-general/requirement.md §11](../sales-order-general/requirement.md#11-benchmark-cogs--price-before-vat-detail-order) |
-| Stock opname & addition | [../supplychain-stock-opname/requirement.md](../supplychain-stock-opname/requirement.md) · [../supplychain-adjustment-addition/requirement.md](../supplychain-adjustment-addition/requirement.md) |
-| Opening Stock | [../accounting-opening-stock/knowledge-base.md](../accounting-opening-stock/knowledge-base.md) |
+| Manual COGS | [requirement.md §3.5](./requirement.md#35-manual-cogs-override-to-be-v13) |
+| SO auto-approve | [../sales-order-general/requirement.md §11](../sales-order-general/requirement.md#11-benchmark-cogs--price-before-vat-detail-order) |
 | Pending items | [requirement.md §13](./requirement.md#13-hal-yang-perlu-diperhatikan--pending-items) |
-| Random SKU | [../random-sku/technical.md](../random-sku/technical.md) |
 
 ---
 

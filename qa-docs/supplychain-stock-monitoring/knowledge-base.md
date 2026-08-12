@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-stock-monitoring
 menu_name: "Dev - Stock Monitoring"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -14,7 +14,7 @@ sections:
 
 # Dev - Stock Monitoring — Knowledge Base
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+> **DRAFT** — v1.1 menambah catatan **Export All vs UI** (TO-BE perbaikan).
 
 ## 1. Apa itu Dev - Stock Monitoring?
 
@@ -73,6 +73,10 @@ Menu **Dev - Stock Monitoring** menampilkan **item stock per warehouse** dengan 
 1. Setelah warehouse terpilih, buka panel **Export All**.
 2. Trigger export — sistem chunk 500 ID per job, batch max 40 jobs.
 3. Pantau status di tab export file (`export-file`, `export-progress`).
+
+**Yang diharapkan setelah perbaikan (TO-BE):** file Excel mengikuti urutan kolom di tabel (setelah ID → SKU & Name dulu). **Last Move Ref** di UI berisi kode transaksi **dan** warehouse — di Excel harus jadi **dua kolom**, bukan satu. Kalau di UI Last Move = N/A, di Excel juga N/A.
+
+> **AS-IS:** export masih menaruh Inbound Ref sebelum SKU, dan Last Move hanya kode transaksi (warehouse last move hilang).
 4. Download saat status Ready (file ZIP jika > 5000 baris).
 
 ### Skenario: Detail satu item stock
@@ -90,6 +94,7 @@ Menu **Dev - Stock Monitoring** menampilkan **item stock per warehouse** dengan 
 | Latest Calculation kosong | Belum ada `CalculateTodoDate` status 0 | Tunggu job kalkulasi / trigger dari Real Stock |
 | Export stuck Processing | Job gagal atau > 30 menit | Cek Horizon; progress auto-reset setelah 30 menit |
 | "Export process is running" | Lock cache per user 600 detik | Tunggu export sebelumnya selesai |
+| Excel beda urutan / Last Move kurang lengkap | Export belum mirror UI (GAP-STMON-EXP-01) | TO-BE perbaikan — sementara bandingkan manual dengan kolom UI |
 | Availability negatif / anomali | Data mutation belum sync | Cek mutation approval & transfer in-transit |
 | 403 | Role tanpa viewAny ItemStockMonitoring | Update permission Gate |
 
@@ -103,6 +108,9 @@ A: Label menu di seeder: `Dev - Stock Monitoring` — masih dalam pengembangan/Q
 
 **Q: Apakah sama dengan Accounting Stock Monitoring Value?**  
 A: Controller sama (`StockMonitoringController`) tetapi path `accounting/stock-monitoring-value` mengaktifkan `show_unit_value=1` (harga).
+
+**Q: Kenapa Export All tidak sama dengan tabel?**  
+A: AS-IS memang belum 1:1 (urutan kolom & Last Move). Perbaikan terdaftar di requirement §8 (`GAP-STMON-EXP-01`).
 
 ## Related Documents
 

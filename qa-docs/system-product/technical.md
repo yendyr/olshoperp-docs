@@ -2,8 +2,8 @@
 doc_type: technical
 menu: system-product
 menu_name: "System Product"
-version: 2.1
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: review
 related_docs:
@@ -216,12 +216,29 @@ Random lines: `SalesOrderDetailRandom` created for random children ~L1596–1617
 
 `ProductController@importExcel` L3173–3245:
 
-- Max **5000** rows L3190–3196  
-- Types: `new`, `update`, `bundle`, `insert_random`, `insert_alternative_unit`, `update_variant_product`, `bulk_update_vat`  
+- Max **5000** rows L3190–3196 (default product imports)  
+- Types (AS-IS): `new`, `update`, `bundle`, `insert_random`, `insert_alternative_unit`, `update_variant_product`, `bulk_update_vat`  
 - SKU scoped: `where('sku')->where('owned_by', $company_id)` in import classes  
 - Progress/history endpoints for UI polling  
 
 Import disabled on general/inventory datalists: `has_import_history = false`.
+
+### 11.1 Import Product Images (TO-BE · GAP-SP-16)
+
+| Item | Spec |
+|------|------|
+| FE | Add to `PRODUCT_IMPORT_OPTIONS` + `PRODUCT_DOWNLOAD_OPTIONS` — label **Import Product Images** |
+| Template | `Template Import Product Images.xlsx` — columns **SKU Code**, **Image URL** (required headers red) |
+| Max rows | **1000** (separate cap from 5000) |
+| Job | Dedicated/throttled queue: download GDrive → validate → store; delay between downloads |
+| Storage target | `ProductImage` (parent/single/bundle/random) or `ProductVariantImage` (variant child); set/replace `is_primary` |
+| Replace | Update primary image blob/record only; leave non-primary rows |
+| URL rules | Google Drive public only; detect 403/unlisted → English error (requirement §13.1) |
+| Validation | MIME jpg/jpeg/png; size ≤ **20 MB** (align FE product photo); no dimension enforce |
+| Duplicates | Pre-scan file: SKUs with count > 1 → fail all those rows; continue unique |
+| Partial | Commit success rows; log failures |
+
+Suggested classes: `ImportProductImagesImport` + `ImportProductImagesJob` (or equivalent under SupplyChain Import/Jobs).
 
 ---
 
@@ -246,6 +263,9 @@ Fields affected:
 | Key | Value / usage |
 |-----|---------------|
 | `config('upload.size.video')` | 20480 KB |
+| `config('upload.size.image')` | 512 KB (used elsewhere; **product photo UI** uses **20 MB** — Import Product Images follows **20 MB**) |
+| Product photo max (FE) | 20 MB — `FormProductComponent.vue` |
+| Import Product Images max rows | **1000** (TO-BE) |
 | `Product::COND_NEW` | `'Brand New'` |
 | `Product::COND_SECOND` | `'Second-hand'` |
 | `Product::INSURANCE_REQUIRED/OPTIONAL` | Shipping insurance |
@@ -261,8 +281,9 @@ Fields affected:
 4. **Variant:** 3 types FE block; BE accepts 4th if API called directly (regression)  
 5. **Create SKU duplicate:** test same SKU different `owned_by` (GAP-SP-01)  
 6. **Video:** upload mp4 ✓, mkv ✗, mov ✓  
-7. **Import:** 5001 rows rejected  
-8. **Inactive:** blockquote > 0 blocked  
+7. **Import:** 5001 rows rejected (standard imports)  
+8. **Import Product Images:** 1001 rows rejected; unpublic GDrive English error; duplicate SKU rows skipped; primary-only replace  
+9. **Inactive:** blockquote > 0 blocked  
 
 ---
 

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: omni-store-binding
 menu_name: "Store"
-version: 1.1
-last_updated: 2026-08-04
+version: 1.2
+last_updated: 2026-08-11
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.2
+source_version: 2.3
 owner: QA - Yemima
 status: review
 ---
@@ -138,7 +138,7 @@ Detail lengkap cara import untuk masing-masing mode ada di dokumentasi menu **De
 3. Isi **Store Name** (wajib). Untuk TikTok Shop, isi juga **Store Code** (Store ID dari marketplace) — wajib.
 4. Klik **Save** — sistem membuka tab baru untuk login & menyetujui akses di marketplace.
 5. Setelah disetujui, kamu akan diarahkan kembali dan mendapat notifikasi berhasil/gagal.
-6. Buka detail toko → lengkapi **akun keuangan** (COA, cash/bank) dan **gudang** (Building Process/Stock).
+6. Buka detail toko → lengkapi **Ownership & Fulfillment** (owner, gudang) dan **Accounting & Tax** (COA, cash/bank). Setelah fitur live: atur juga **Auto Add VAT (Platform Orders)** untuk toko marketplace.
 7. Pantau progres sinkronisasi produk sampai cukup tinggi — setelah itu order bisa mulai disinkronkan.
 
 ### Daftarkan toko Others (offline/manual)
@@ -165,6 +165,7 @@ Detail lengkap cara import untuk masing-masing mode ada di dokumentasi menu **De
 - **Tidak ada fitur import untuk membuat toko massal** — setiap toko harus dibuat satu per satu lewat form Create.
 - **Toko Tokopedia tidak ada di pilihan Create?** Platform ini sudah legacy — toko lama masih bisa diedit, tapi tidak bisa dibuat baru.
 - **Fulfillment Mode belum muncul di form-mu?** Fitur ini masih dalam tahap penyiapan — belum aktif di sistem saat ini.
+- **Auto Add VAT (Platform Orders)?** Setting di Store untuk order marketplace (Sales Platform): Yes / No / Default by Product. Toko **Others** field-nya disabled — VAT ikut customer di General Company. Fitur masih TO-BE.
 - **Akun piutang atau deposit pelanggan tidak bisa dipilih karena sudah dipakai Cash/Bank?** Akun yang sama tidak boleh dipakai ganda sebagai rekening Cash/Bank dan sebagai akun piutang/deposit di store. Kalau rekening Cash/Bank yang memakai akun itu sudah dihapus, akun boleh dipilih lagi. Aturan blokir penuh di picker dan saat simpan masih dalam penyiapan.
 
 ---

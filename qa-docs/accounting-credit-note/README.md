@@ -14,12 +14,13 @@ Menu **Credit Note** (Accounting / Account Receivable).
 **UI route:** `/accounting/credit-note`  
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-credit-note/`](../_meta/docs-hub/menus/accounting-credit-note/)  
 **SoT:** `accounting-credit-note-source-of-truth.md` v1.0 (17 Jul 2026)  
-**3 layer version:** 1.0 · **User-guide:** v1.1 · `source_version` 1.0 · **Feature Map:** 1.0 · **Last updated:** 2026-07-29
+**3 layer version:** 1.1 · **User-guide:** v1.2 · `source_version` 1.1 · **Feature Map:** 1.0 · **Last updated:** 2026-08-05
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-08-05 | TO-BE Receiving Destination free COA (GAP-CN-05); SF-DET-01 dual path; Help Center overview sync |
 | 1.0 | 2026-07-17 | Docs awal dari SoT v1.0: konsep CN/Payment, import all-or-nothing, auto Sales Return billed, AR deposit, gaps CN-01–04; user-guide v1.0 |
 | 1.0b | 2026-07-29 | Feature Map + 5 capability cards; UG v1.1 (SF tags, status review); Help Center overview en/id |
 
@@ -33,5 +34,6 @@ Menu **Credit Note** (Accounting / Account Receivable).
 | Account Receive | [../accounting-customer-payment/](../accounting-customer-payment/) — pakai CN sebagai deposit |
 | Journal | [../journal/](../journal/) — auto journal approve |
 | Store Binding | [../omni-store-binding/](../omni-store-binding/) — Deposit COA Platform |
+| Cash/Bank Account | [../accounting-company-detail-bank/](../accounting-company-detail-bank/) — Receiving Cash/Bank; COA bound exclude free picker |
 
 **Maintenance owner:** QA — Yemima

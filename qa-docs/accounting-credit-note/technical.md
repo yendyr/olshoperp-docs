@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.0
-last_updated: 2026-07-17
+version: 1.1
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 aliases: [CN technical, credit note API, credit note code]
@@ -13,7 +13,7 @@ aliases: [CN technical, credit note API, credit note code]
 
 **API prefix:** `accounting/credit-note`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.0
+**Behavior SoT:** [requirement.md](./requirement.md) v1.1
 
 ---
 
@@ -102,6 +102,20 @@ Invoice tracking (return path): `prepared_to_amount_credit_note`, `processed_to_
 
 Default journal (non-invert): **Dr** fund COAs / **Cr** Deposit COA (balanced).
 
+### 4.1 Fund type & free COA **(TO-BE)**
+
+| Rule | Detail |
+|------|--------|
+| Classify | Active `CompanyDetailBank` on `coa_id` → fund `type=Cash/Bank`; else `type=COA` |
+| Store free COA | `source_type=COA` + `coa_id`; exclude bank-bound + Deposit COA actor; leaf aktif semua class |
+| Select2 | Endpoint baru (bukan `select2Child_bank` Assets-only) |
+| Update/inline | Null-safe: jangan resolve via `company_detail_bank` jika type `COA` |
+| Sales Return | `generateCreditNoteFromReturn` → `source_type`/`type` by classify helper (Sales COA → `COA`) |
+| Reconcile | Store Cash/Bank: lock AS-IS; free COA skip; Approve lock hanya COA baris `Cash/Bank` |
+| Import | Tetap Cash/Bank COA only |
+
+Brief: `~/Downloads/Brief-Dev-Credit-Note-Free-COA-Receiving.md` (locked D1–D14).
+
 ---
 
 ## 5. Flow utama
@@ -167,9 +181,9 @@ sequenceDiagram
 |------|------------|
 | Store header | Fiscal; cash/bank for currency; unique code; rate > 0; actor required |
 | Update header | Draft/Open only; critical lock if `hasDetails()`; cash/bank for currency |
-| Fund store | Editable header; amount > 0 unless CN Cash/Bank create (bulk seed 0); currency match; no duplicate COA |
-| Approve | Cache lock 30s; fiscal; funds exist; amounts > 0; Deposit COA; no AR-style source=detail balance |
-| Import | Template headers exact; all-or-nothing parse; General customer by **code**; Cash/Bank COA; max 100 details/header; consistent grouped Trx Code |
+| Fund store | Editable header; amount > 0 unless CN create seed 0; Cash/Bank currency match; no duplicate COA; **TO-BE** free COA branch + classify type |
+| Approve | Cache lock 30s; fiscal; funds exist; amounts > 0; Deposit COA; **TO-BE** reconcile lock hanya jika ada fund `Cash/Bank` |
+| Import | Template headers exact; all-or-nothing parse; General customer by **code**; Cash/Bank COA only (no free COA); max 100 details/header; consistent grouped Trx Code |
 
 Detail messages: [requirement §7](./requirement.md).
 
@@ -182,6 +196,7 @@ Detail messages: [requirement §7](./requirement.md).
 | Auto header save on watch (customer, date, currency) | `Header.vue` |
 | Default values auto-create | `fetchDefaultValues` → `submit` |
 | Bulk Cash/Bank modal | `Destination.vue` → bulk-use |
+| Free COA picker **(TO-BE)** | `Destination.vue` + select2 receiving COA |
 | Print tippy calls `print()` | `Form.vue` — API likely missing (GAP-CN-01) |
 | Void / Closed dialogs | Privilege `can_void` / `can_closed` |
 | Sidenav checks | Basic / Destination count / Related exists |
@@ -231,3 +246,4 @@ Detail messages: [requirement §7](./requirement.md).
 | GAP-CN-02 | `bulkCashBank` forces `balance = 0` seed for CN |
 | GAP-CN-03 | Void/Closed via same approve endpoint Rule::in |
 | GAP-CN-04 | Destroy path shared with Payment — document deposit-in-use guards if/when hardened |
+| GAP-CN-05 | Free COA Receiving Destination + type `COA` + Sales Return classify + reconcile D11 — see requirement §5.2 / technical §4.1 |

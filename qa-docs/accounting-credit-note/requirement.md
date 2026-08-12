@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.0
-last_updated: 2026-07-17
+version: 1.1
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, credit note docs, nota kredit, customer deposit credit]
@@ -25,6 +25,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-08-05 | QA - Yemima | **TO-BE:** Receiving Destination dual path Cash/Bank + free COA (locked D1–D14); GAP-CN-05; Sales Return fund type `COA` |
 | 1.0 | 2026-07-17 | QA - Yemima | Draft awal dari SoT v1.0 + analisa codebase (create/import/approve, auto dari Sales Return billed, pemakaian di AR) |
 
 ---
@@ -150,16 +151,32 @@ Field kritikal terkunci setelah ada Receiving Destination: Customer, Currency, E
 
 ### 5.2 Receiving Destination
 
-Modal Cash/Bank: Type, Label, Bank Name \| Acc Number, Balance. **Use** / **Bulk Use** menambah baris fund.
+Menampung nilai CN lewat baris fund (`accounting_payment_detail_funds`). **TO-BE (locked 5 Aug 2026):** dua jalur add — **Cash/Bank** (AS-IS) dan **Free COA** (baru). Scope **CN only** (Debit Note out of scope).
+
+| Jalur | Cara add | Fund `type` | Catatan |
+|-------|----------|-------------|---------|
+| Cash/Bank | Modal **Use** / **Bulk Use** | `Cash/Bank` | Filter currency = header CN |
+| Free COA | Picker COA + amount (+ memo) | `COA` | Semua class, leaf aktif; exclude Cash/Bank-bound & Deposit COA actor |
+
+Satu CN **boleh campur** baris Cash/Bank + free COA. **No duplicate** `coa_id` lintas jalur.
 
 | Kolom detail | Keterangan |
 |--------------|------------|
-| GL Account, Bank Account/Name, Currency, Swift | Dari master bank/COA |
-| Amount | Inline edit; setelah approved read-only |
+| Type | Tampilkan `Cash/Bank` vs `COA` |
+| GL Account, Bank Account/Name, Currency, Swift | Bank path dari master; free COA → Bank/Swift biasanya `-` |
+| Amount | Inline edit; seed 0 diizinkan pada add (Cash/Bank bulk & free COA) — wajib > 0 sebelum Approve (GAP-CN-02) |
 | Memo | Inline; max 150; setelah approved read-only |
 | Footer Total / Remaining | Σ fund; sisa saldo CN (§6.3) |
 
-Validasi fund: header editable; amount lebih dari 0 (kecuali seed bulk = 0 — GAP-CN-02); currency bank = currency header; COA tidak duplikat.
+**Free COA picker (TO-BE):** leaf + aktif + semua class (termasuk Equity/modal awal); exclude (1) COA bound Master Cash Bank aktif/non-deleted (soft-delete bank → COA free lagi); (2) Customer's Deposit COA (Company tagging / Store `deposit_coa_id`). Bound Cash/Bank harus lewat field Cash/Bank — reject jika dipaksa di free picker.
+
+**Currency (TO-BE):** Free COA ikut currency header (tanpa cek bank). Cash/Bank tetap filter currency header.
+
+**Import:** tetap **bank-only** (GL Acc harus Master Cash/Bank) — free COA **UI saja**.
+
+**Header create:** tetap wajib ada Cash/Bank aktif untuk currency CN (meski user hanya akan isi free COA).
+
+Validasi fund bersama: header editable; amount > 0 kecuali seed create; no duplicate `coa_id`; Cash/Bank currency match.
 
 ### 5.3 Detail Related Transaction
 
@@ -216,6 +233,8 @@ credit_note_amount = harga_setelah_diskon_setelah_PPN * qty_return
 
 Dikelompokkan per invoice + per Sales COA produk → CN per invoice, fund per Sales COA. Status langsung **Approved** + jurnal (`invert_journal` untuk billed platform tertentu).
 
+**TO-BE fund type:** Sales COA (bukan Master Cash Bank) → simpan fund `type = COA` (bukan hardcode `Cash/Bank`). Rule: COA bound active Cash Bank → `Cash/Bank`; selain itu → `COA`.
+
 ### 6.7 Auto journal approve
 
 | Sisi | COA | Nilai |
@@ -267,9 +286,19 @@ Invert debit/kredit untuk CN return billed platform tertentu.
 | 1 | Bukan Draft/Open | can't modify |
 | 2 | Ubah field kritikal + ada fund | clear all details first |
 | 3 | Cash/Bank currency | set up a cash/bank |
-| 4 | Amount kurang dari sama dengan 0 (kecuali seed bulk) | greater than 0 |
-| 5 | Currency bank tidak match | does not match |
-| 6 | COA duplikat | Duplicate Cash/Bank |
+| 4 | Amount kurang dari sama dengan 0 (kecuali seed bulk / free COA add) | greater than 0 |
+| 5 | Currency bank tidak match (jalur Cash/Bank) | does not match |
+| 6 | COA duplikat (lintas Cash/Bank + free COA) | Duplicate Cash/Bank / Duplicate COA |
+| 7 **(TO-BE)** | Free COA = bound Cash/Bank | Use the Cash/Bank field for this account |
+| 8 **(TO-BE)** | Free COA = Deposit COA actor | Cannot use Customer's Deposit COA as receiving destination |
+| 9 **(TO-BE)** | Free COA not leaf / inactive | Invalid COA |
+
+### 7.3b Reconcile lock **(TO-BE)**
+
+| Saat | Cash/Bank fund | Free COA (`type=COA`) |
+|------|----------------|------------------------|
+| Store / update fund | Tetap `validate_cash_bank_reconcile_lock` (AS-IS) | **Skip** |
+| Approve | Jika ≥1 fund `Cash/Bank` → lock atas COA baris bank saja | Jika semua fund `COA` → **tidak** kena cash bank reconciled |
 
 ### 7.4 Delete
 
@@ -312,6 +341,8 @@ flowchart TB
 | Journal | Output jurnal approve |
 | Store Binding / General Company | Actor + Deposit COA |
 | Product Sales COA | Fund COA auto return |
+| [Cash/Bank Account](../accounting-company-detail-bank/README.md) | Master rekening; COA bound exclude dari free picker |
+| Chart of Account | Free COA leaf semua class |
 
 ---
 
@@ -323,6 +354,7 @@ flowchart TB
 | GAP-CN-02 | Bulk Cash/Bank seed amount 0 tanpa warning UI eksplisit | User sering gagal approve karena lupa isi amount | Open |
 | GAP-CN-03 | Status Void/Closed ada di siklus Payment + FE; requirement mentah awal hanya Draft/Open/Reject/Approved | Perlu keputusan tampilan filter/kolom status final | Open |
 | GAP-CN-04 | Validasi hapus CN yang sudah dipakai sebagai deposit AR belum terdokumentasi pesan/rule jelas | Risiko remaining funds tidak konsisten | Open |
+| GAP-CN-05 | **TO-BE:** Free COA Receiving Destination + fund type `COA` + Sales Return type fix + reconcile D11 — belum production | Equity/modal awal tidak bisa jadi destinasi CN; Sales Return salah label `Cash/Bank` | Open (locked requirement) |
 
 ---
 
@@ -349,10 +381,14 @@ A: Hapus semua Receiving Destination dulu.
 **Q: Tidak bisa hapus?**  
 A: Hanya Draft / Open / Rejected.
 
+**Q: Bisa destinasi selain Cash/Bank (mis. Equity / modal awal)?**  
+A: **TO-BE** — Free COA picker di Receiving Destination (bukan COA yang sudah Cash/Bank atau Deposit customer). Import tetap Cash/Bank only. Header create tetap butuh ada Cash/Bank untuk currency.
+
 ---
 
 ## 11. Changelog (layer)
 
 | Tanggal | Versi | Perubahan |
 |---------|-------|-----------|
+| 5 Aug 2026 | 1.1 | TO-BE free COA Receiving Destination (D1–D14); GAP-CN-05 |
 | 17 Jul 2026 | 1.0 | Requirement awal dari SoT + verifikasi print/void/closed di codebase |

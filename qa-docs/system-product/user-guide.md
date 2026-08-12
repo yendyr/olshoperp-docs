@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: system-product
 menu_name: "System Product"
-version: 1.0
-last_updated: 2026-07-29
+version: 1.1
+last_updated: 2026-08-11
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.1
+source_version: 2.2
 owner: QA - Yemima
 status: review
 ---
@@ -127,7 +127,8 @@ Setelah SKU tersimpan:
 - **D&W di mana:** di **Unit Configuration** (per satuan), bukan Shipping lagi.
 - **Platform/Trx Default global:** pilih di satu unit otomatis lepas di unit lain.
 - **Stok bundle:** ikut komponen paling sedikit.
-- **Import massal:** hanya di menu full, maks 5000 baris.
+- **Import massal:** hanya di menu full — kebanyakan tipe max 5000 baris; **Import Product Images** max **1000**.
+- **Import Product Images:** isi **SKU Code** + link **Google Drive publik**; hanya mengganti foto **default**; SKU duplikat di file akan gagal (SKU unik tetap masuk).
 - **Inactive:** hanya saat stok 0 semua gudang.
 
 ---
@@ -145,4 +146,4 @@ Setelah SKU tersimpan:
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.1.*
+*Derivatif dari requirement / knowledge-base / technical v2.2.*

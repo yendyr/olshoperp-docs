@@ -35,7 +35,7 @@ Proposal: [`_meta/proposals/feature-map-and-capability-lingo.md`](../_meta/propo
 | SF-DL-07 | Bulk Approve / Bulk Delete | menu | AS-IS | missing | FE DataList — belum ada card | — | pending |
 | SF-PO-01 | [With PR / Without PR](#sf-lingo:SF-PO-01) | menu | AS-IS | detailed | capabilities · sf-po-01 | Ya | overview |
 | SF-HDR-01 | Create / Save & Next / Save All | menu | AS-IS | stub | KB · Form create/edit | Ya | overview |
-| SF-DET-01 | [Use / Allocate Full Qty Clearing](#sf-lingo:SF-DET-01) | menu | AS-IS | detailed | capabilities · sf-det-01 | Ya | overview |
+| SF-DET-01 | [Use / Allocate Full / Select Multiple](#sf-lingo:SF-DET-01) | menu | AS-IS + TO-BE multi | detailed | capabilities · sf-det-01 | Ya | overview |
 | SF-COST-01 | [Additional Cost & Discount](#sf-lingo:SF-COST-01) | menu | AS-IS | detailed | capabilities · sf-cost-01 | Ya | overview |
 | SF-PO-02 | [Complete vs Closed](#sf-lingo:SF-PO-02) | menu | AS-IS | detailed | capabilities · sf-po-02 | Ya | overview |
 | SF-PO-03 | [Void vs Delete](#sf-lingo:SF-PO-03) | menu | AS-IS | detailed | capabilities · sf-po-03 | Ya | tips |

@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.1
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: review
-aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle]
+aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image]
 ---
 
 # System Product — Requirement Documentation
@@ -30,6 +30,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 | 1.0–1.2 | 2026-01–07 | QA - Yemima | Initial draft from legacy + partial PM |
 | 2.0 | 2026-07-05 | QA - Yemima | Full rewrite: codebase AS-IS, D&W per unit canonical, bundle/random/import detail, gaps §19–§21 |
 | 2.1 | 2026-07-05 | QA - Yemima | §6.4 tax hide bundle parent · §11 proporsi harga bundle TO-BE (Price Before VAT, coefficient) · GAP-SP-12/P-SP-02 resolved |
+| 2.2 | 2026-08-11 | QA - Yemima | §13.1 **Import Product Images** (GDrive public URL, primary replace, max 1000, partial success) · GAP-SP-16 |
 
 ---
 
@@ -437,21 +438,66 @@ Detail kolom DPP/VAT/Total per scenario → [sales-order-general §10.3](../sale
 
 ## 13. Import & Export
 
-**Menu full only** · Max **5000** data rows · Progress: `GET .../progress`
+**Menu full only** · Progress: `GET .../progress`
 
-| Tipe import | Endpoint / template |
-|-------------|---------------------|
-| New Product | `GET .../download-template` → `ProductImport` |
-| Update Product | `download-template-update` → `UpdateProductImport` |
-| Product Bundle | `supplychain/bill-of-material-header/import` |
-| Insert Random | variant random template → `InsertProductRandomImport` |
-| Alternative Unit | static xlsx `/files/` |
-| Update Variant Product | static xlsx |
-| Bulk Update VAT | static xlsx |
+| Tipe import | Max rows | Endpoint / template |
+|-------------|----------|---------------------|
+| New Product | **5000** | `GET .../download-template` → `ProductImport` |
+| Update Product | **5000** | `download-template-update` → `UpdateProductImport` |
+| Product Bundle | **5000** | `supplychain/bill-of-material-header/import` |
+| Insert Random | **5000** | variant random template → `InsertProductRandomImport` |
+| Alternative Unit | **5000** | static xlsx `/files/` |
+| Update Variant Product | **5000** | static xlsx |
+| Bulk Update VAT | **5000** | static xlsx |
+| **Import Product Images** (TO-BE) | **1000** | template `Template Import Product Images.xlsx` · job download GDrive + store primary image |
 
 **SKU on import:** consistently scoped `where('sku')->where('owned_by', $company_id)`.
 
 Logs: `import-log`, `import-history`.
+
+### 13.1 Import Product Images (TO-BE)
+
+**Entry:** opsi baru di dropdown **Import** existing (bukan tombol terpisah) · label **Import Product Images**.
+
+| Item | Rule |
+|------|------|
+| Template | `Template Import Product Images.xlsx` |
+| Kolom (required, header **merah**) | **SKU Code** · **Image URL** |
+| Sumber URL | **Google Drive publik saja** (`Anyone with the link` / Viewer). Non-GDrive ditolak. |
+| Cardinality | 1 baris = 1 SKU = 1 image URL |
+| Replace | Hanya gambar **default/primary**; foto non-primary di gallery **tetap**. Belum ada primary → image baru jadi primary. |
+| Parent / Single / Bundle / Random | Masuk section gambar **Product Details** → jadi default |
+| Variant child | Masuk gambar **variant** tersebut → jadi default variant |
+| Duplicate SKU in file | Semua baris dengan SKU yang muncul >1× **ditolak**; SKU unik tetap diproses (**partial success**) |
+| Format | JPG / JPEG / PNG |
+| Max size | Sama validasi foto existing UI → **20 MB** |
+| Dimensi 300×300 | **Recommended only** — tidak di-enforce (selaras BE manual / GAP-SP-05) |
+| Max rows | **1.000** / file (lebih ketat dari import product lain karena download GDrive) |
+| Queue | Dedicated / throttled job (delay antar download) agar tidak menekan import menu lain |
+| Partial success | Baris valid commit; gagal tercatat di import log |
+
+**Contoh template**
+
+| SKU Code | Image URL |
+|----------|-----------|
+| SKU-PARENT-001 | `https://drive.google.com/uc?export=download&id=…` |
+| SKU-PARENT-001-RED | `https://drive.google.com/file/d/…/view?usp=sharing` |
+
+**Pesan error (English, approved)**
+
+| Case | Message |
+|------|---------|
+| Not GDrive | `Only public Google Drive image URLs are supported. Please use a Google Drive link.` |
+| Unpublic | `The Google Drive file is not publicly accessible. Open the file in Google Drive → Share → set General access to Anyone with the link (Viewer), then try again.` |
+| Download fail | `Failed to download the image from Google Drive. Check that the file still exists and sharing is set to Anyone with the link.` |
+| Bad format | `The downloaded file is not a supported image format. Use JPG, JPEG, or PNG.` |
+| Oversize | `The image exceeds the 20 MB size limit. Reduce the file size and try again.` |
+| SKU missing | `SKU Code '{sku}' was not found for this company.` |
+| Duplicate in file | `SKU Code '{sku}' appears more than once in this file. All rows for this SKU were skipped. Keep only one row per SKU.` |
+| Required empty | `SKU Code and Image URL are required.` |
+| >1000 rows | `Import Product Images allows a maximum of 1,000 rows per file.` |
+
+**Out of scope v1:** non-GDrive URL · multi-image per SKU · video · clear seluruh gallery · enforce dimensi.
 
 ---
 
@@ -494,7 +540,8 @@ Logs: `import-log`, `import-history`.
 9. Inactive block jika stok ≠ 0  
 10. D&W Platform Default global — pilih di unit A uncheck unit B  
 11. Import new product max 5000 rows dengan progress bar  
-12. Foto max 10, video max 5 (format BE mp4/mov)
+12. Foto max 10, video max 5 (format BE mp4/mov)  
+13. **Import Product Images:** GDrive public → replace primary only; duplicate SKU rows rejected; max 1000; partial success
 
 ---
 
@@ -547,6 +594,7 @@ PO/PR Without PR: System Product **active**, Single/Variant child, punya COA gro
 | **GAP-SP-13** | manifest code_globs | Accurate FE path | Stale `SupplyChain/Product` | **Doc drift** |
 | **GAP-SP-14** | Qty conversion manual | Manual when master rate NULL | FE always disabled | **Behavior differs** |
 | **GAP-SP-15** | Route menu KB | `/supplychain/system-product` | Actual `/supplychain/product` | **Doc drift** |
+| **GAP-SP-16** | Import Product Images | Dropdown + GDrive public URL → replace primary (max 1000) | Belum ada di `PRODUCT_IMPORT_OPTIONS` / import pipeline | **TO-BE / not implemented** |
 
 ### 19.1 GAP-SP-09 — D&W UI sections (detail)
 
@@ -592,6 +640,7 @@ Artifact (7 Mei 2026) mensyaratkan tiga section: Unit Configuration ✅, **D&W D
 | **P-SP-04** | 🟡 Medium | **Ops** | Brand default Shopee (GAP-SP-02) | Manual pilih brand setiap create | Perlu config `config/shopee` default brand_id? |
 | **P-SP-05** | 🟡 Medium | **Dev** | Perluas lock transaksi ke SO? (GAP-SP-11) | Primary unit masih bisa diubah meski sudah ada SO | Extend `checkTransaction()` scope? |
 | **P-SP-06** | 🟡 Medium | **End user** | Parent variant tampilkan `-` di stok? (GAP-SP-08) | Tooltip vs angka backend | FE override display untuk PARENT? |
+| **P-SP-07** | 🟡 Medium | **Dev + QA** | **Import Product Images** (GAP-SP-16) | Bulk primary image dari GDrive public belum ada | Ship §13.1 + throttle job |
 
 **Confirmed OK (bukan pending):**
 

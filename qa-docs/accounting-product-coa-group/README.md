@@ -14,6 +14,10 @@ Menu **Product COA Group** (Finance Accounting → Master) — template mapping 
 **3 layer version:** 2.0 · **User-guide:** 1.0 (`source_version` 2.0)  
 **Maintenance owner:** QA — Yemima
 
+**UI route:** `/accounting/product-coa-group`
+
+**Help Center overview:** [ID](../_meta/docs-hub/menus/accounting-product-coa-group/overview.id.md) · [EN](../_meta/docs-hub/menus/accounting-product-coa-group/overview.en.md) (authored v1.0)
+
 ---
 
 ## Route & modul
@@ -38,3 +42,4 @@ Menu **Product COA Group** (Finance Accounting → Master) — template mapping 
 |------|---------|---------|
 | 2026-08-05 | 2.0 | Full 5-file dari SoT v1.0; Gap `GAP-PCG-01..05`; Default = 1 per company |
 | 2026-08-04 | 1.3 | Draft Cash/Bank TO-BE (digantikan) |
+| 2026-08-05 | HC 1.0 | Help Center overview ID + EN dari file authored user (Product COA Group) |

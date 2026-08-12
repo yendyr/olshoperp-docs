@@ -7,7 +7,7 @@ Menu **Failed Ship** (Supply Chain / OmniChannel / Accounting).
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
-| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 
 **Sumber requirement bisnis:** `failed_ship_requirement.md` (23 Juni 2026)  
 **User-guide:** v1.1 · `source_version` 2.6  

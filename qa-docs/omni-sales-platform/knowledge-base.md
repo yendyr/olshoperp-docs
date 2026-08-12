@@ -2,12 +2,12 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.2
-last_updated: 2026-08-05
+version: 1.5
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
 audience: operator
-aliases: [sales platform, order marketplace, sync shopee, failed process, booking shopee]
+aliases: [sales platform, order marketplace, sync shopee, failed process, booking shopee, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot]
 ---
 
 # Dev - Sales Platform — Knowledge Base
@@ -101,13 +101,17 @@ Edit field booking (Other Information) dilakukan dari **All Sales Order**, bukan
 - Jika harga line Shopee jadi **0** setelah sync, kemungkinan escrow gagal / item tidak ketemu — cek API Data Log (escrow) lalu **Sync** ulang; laporkan jika berulang.
 - Order yang sudah masuk **sebelum** perbaikan harga escrow mungkin masih understated sampai di-sync/backfill ulang.
 - Biaya/diskon tambahan dari label akun platform hanya info di SO — **tidak** ikut ke Sales Invoice.
+- **PPN / Auto Add VAT (TO-BE):** setelah fitur live, apakah pajak produk otomatis terisi diikuti setting **Auto Add VAT (Platform Orders)** di **Store** toko itu (bukan setting customer di General Company). Atur di Store → Accounting & Tax. Detail: [Store KB](../omni-store-binding/knowledge-base.md).
 
 ---
 
 ## 6. Auto-approve
 
-Sistem menjadwalkan approve massal tiap hari sekitar **19:00**. Order yang dicegah auto-approve antara lain: punya error flag, harga di bawah Benchmark COGS, booking, atau sudah ditandai cegah approve (misalnya setelah ganti produk). Pengaturan “menit delay” di Omni Setting saat ini **tidak** mengendalikan jadwal harian itu.
+Sistem menjadwalkan approve massal tiap hari sekitar **19:00**. Order yang dicegah auto-approve antara lain: punya error flag, harga jual sebelum pajak (nilai primary) di bawah **Benchmark COGS**, booking, atau sudah ditandai cegah approve (misalnya setelah ganti produk). Pengaturan “menit delay” di Omni Setting saat ini **tidak** mengendalikan jadwal harian itu.
 
+**Tanda Error Flag under COGS (TO-BE):** label **Below Benchmark COGS** — icon merah khusus di kolom Error Flag (dan di baris SKU yang under). Bisa difilter lewat advanced filter Error Flag. Manual approve tetap boleh. Detail: [Benchmark COGS KB](../accounting-product-benchmark-price/knowledge-base.md).
+
+**Benchmark COGS di baris order (TO-BE):** nilai yang tersimpan = **COGS efektif** master saat line dibuat (Manual COGS jika override aktif, else rumus). Bukan selalu rumus mentah.
 Kekurangan stok **tidak** menggagalkan approve otomatis; stok dicek terpisah setelahnya dan bisa muncul sebagai Failed Process.
 
 ---

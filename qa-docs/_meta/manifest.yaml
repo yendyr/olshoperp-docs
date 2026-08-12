@@ -391,7 +391,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -992,21 +992,26 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/FiscalPeriodController.php
+        - Modules/Accounting/Entities/FiscalPeriod.php
+        - Modules/Accounting/Policies/FiscalPeriodPolicy.php
+        - app/Helpers/MainHelper.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/master/FiscalPeriod/**/*
 
   accounting-item:
     menu_name: "Item COA"
@@ -1136,7 +1141,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -1224,6 +1229,36 @@ menus:
         - app/Console/Commands/CleanProductProfitLoss.php
       frontend:
         - olshoperp-frontend/src/pages/Accounting/Report/ProductProfitLoss/**
+
+  accounting-purchase-report:
+    menu_name: "Purchase Report"
+    short_description: "SKU-per-supplier purchase report with Purchase Order or Purchase Invoice POV."
+    path: accounting-purchase-report
+    module: Accounting
+    menu_links:
+      - accounting/purchase-report
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/PurchaseReportController.php
+        - Modules/Accounting/Exports/PurchaseReportExport.php
+        - Modules/Accounting/Jobs/*PurchaseReport*
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Report/PurchaseReport/**
 
   accounting-profit-loss:
     menu_name: "Profit & Loss"
@@ -1447,7 +1482,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -1475,21 +1510,27 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: draft
       requirement:
         file: requirement.md
-        status: pending
+        status: draft
       technical:
         file: technical.md
-        status: pending
+        status: draft
       user-guide:
         file: user-guide.md
         status: pending
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/StockMonitoringValueController.php
+        - Modules/Accounting/Jobs/StockMonitoringValueExportJob.php
+        - Modules/Accounting/Exports/StockMonitoringValueExportAll.php
+        - Modules/SupplyChain/Jobs/StockMonitoringExportExcelJob.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Report/StockMonitoringValue/**/*
+        - olshoperp-frontend/src/components/project/DataTables/StockMonitoringTable.vue
 
   accounting-stock-opname-approval:
     menu_name: "Stock Opname Approval "
@@ -2267,7 +2308,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2432,7 +2473,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2599,7 +2640,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -3554,7 +3595,7 @@ draftpending
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -3761,7 +3802,7 @@ draftpending
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources: []
     code_globs:
       backend:
@@ -3794,7 +3835,7 @@ draftpending
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources: []
     code_globs:
       backend:

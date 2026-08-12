@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.1
-last_updated: 2026-07-22
+version: 1.2
+last_updated: 2026-08-11
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.2
+source_version: 1.5
 owner: QA - Yemima
 status: review
 ---
@@ -110,7 +110,8 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 
 - ASO = jendela; aturan bisnis di menu sumber + Store.  
 - Tombol import di ASO **identik** dengan Dev - Sales Order.  
-- Platform Order ID di baris general ≠ nomor order marketplace.
+- Platform Order ID di baris general ≠ nomor order marketplace.  
+- Error Flag **Below Benchmark COGS** (harga sebelum pajak di bawah HPP acuan) berlaku di ASO sama seperti di Sales Platform / Dev Sales Order — filter lewat label Error Flag; auto-approve bisa ditahan, approve manual tetap boleh.
 
 ---
 

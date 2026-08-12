@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.2
-last_updated: 2026-08-05
+version: 1.5
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
-aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order]
+aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot]
 ---
 
 # Dev - Sales Platform — Requirement Documentation
@@ -23,6 +23,9 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.5 | 2026-08-12 | QA - Yemima | TO-BE snapshot **Benchmark COGS** = effective Manual COGS (§6.6 / GAP-BM-14 consumer) |
+| 1.4 | 2026-08-11 | QA - Yemima | TO-BE Auto Add VAT dari **Store** (`GAP-ST-VAT-01`); abaikan customer GC untuk order platform |
+| 1.3 | 2026-08-11 | QA - Yemima | TO-BE Error Flag **Below Benchmark COGS** (`cogs-error`); cross-ref GAP-BM-13; V-A07 + icon table |
 | 1.2 | 2026-08-05 | QA - Yemima | Shopee unit price: escrow `discounted_price + shopee_discount` (bukan order-detail `model_discounted_price`); GAP-SPR-01 |
 | 1.1 | 2026-07-15 | QA - Yemima | GAP-BOOK-01: jalur Instant Settlement mitigasi jurnal 0; booking × tracking × settle (§3b, §5.6) |
 | 1.0 | 2026-07-15 | QA - Yemima | Initial dari 6 SoT + codebase; gaps APR/SPL/SPD/BOOK/SYN; relasi return/FS |
@@ -129,7 +132,7 @@ Editable hanya **DRAFT/OPEN**: System SKU + SO Qty (inline). Setelah Approved: r
 | Header | Shipper Service | — | Binding shipping / platform name | Shipping-error jika belum bind |
 | Detail | System \| Platform SKU | — | Binding | bind-error jika unbound |
 | Detail | SO Qty / Platform Qty | — | Sync; SO Qty editable DRAFT/OPEN | Unit primary |
-| Detail | Price / Disc / DPP / VAT / Total | — | Mapping sync | Lihat §6.3 |
+| Detail | Price / Disc / DPP / VAT / Total | — | Mapping sync | Lihat §6.3 · **TO-BE VAT auto-add:** §6.5 |
 | Detail | Price Before VAT, Benchmark COGS | — | Hidden default | Prevent auto-approve |
 | Detail | Invoice Status / Failed Ship Status | — | Downstream docs | prepared / processed |
 | Other | Buyer Name | — | Platform | Selalu disensor |
@@ -170,9 +173,13 @@ Sales Request · Review · Processed · Shipment Ready · Delivered · Received 
 | `coa-error` | `share-nodes` | COA belum lengkap |
 | `stock-error` | `boxes-stacked` | Stok kurang (+ WH Process tip) |
 | `price-error` | `tag` | Price null |
+| `unknown-price-error` | `hand-holding-dollar` | Harga detail belum tersedia (random bundle path) |
+| `cogs-error` | AS-IS `dollar-sign` → **TO-BE** `money-bill-trend-down` | **TO-BE** label **Below Benchmark COGS** + body: unit price before VAT (primary) di bawah Benchmark COGS; auto-approve diblokir, manual approve OK — [Benchmark COGS §6.5](../accounting-product-benchmark-price/requirement.md#65-error-flag-below-benchmark-cogs-to-be--improve-cogs-error) |
 | `bundle-error` | `flag` | Bundle detail kurang |
 | `warehouse-error` | `warehouse` | WH process/stock belum set |
 | *(unknown)* | `triangle-exclamation` | Fallback pesan API |
+
+**Filter (TO-BE):** advanced filter Error Flag by label `Below Benchmark COGS`. Icon juga di **detail SKU** untuk baris under saja.
 
 #### Processing Status — 6 icon
 
@@ -283,7 +290,7 @@ flowchart TD
 | V-A04 | Warehouse process ada | warehouse-error |
 | V-A05 | Bind / aktif / unit / COA / bundle children / price not null | bind/coa/bundle/price-error |
 | V-A06 | Auto-approve: **tanpa** cek stok | Stock di evaluasi async `CheckOrderFlagsJob` |
-| V-A07 | Price Before VAT &lt; Benchmark COGS → prevent | Tidak masuk kandidat cron |
+| V-A07 | Price Before VAT (primary) &lt; Benchmark COGS → `prevent_auto_approve` + `cogs-error` | Tidak masuk kandidat cron; manual approve OK. Formula/FX/zero-COGS: [Benchmark §6.4](../accounting-product-benchmark-price/requirement.md#64-auto-approval-validation). UX flag: **GAP-BM-13** |
 
 ### 6.3 Formula tampilan
 
@@ -298,6 +305,32 @@ Additional cost/disc **tidak** masuk Sales Invoice → Net Sales ≠ nilai SI.
 ### 6.4 Invoice / Failed Ship status (detail)
 
 `prepared` = dokumen belum approved · `processed` = approved. Σ qty per SKU ≤ qty order (primary unit). Cap gabungan Invoice+FS [VERIFY].
+
+### 6.5 Auto Add VAT dari Store — TO-BE (`GAP-ST-VAT-01`)
+
+AS-IS: auto-add VAT di detail cenderung mengikuti pola **customer** (`auto_add_transaction_customer`) — kurang cocok untuk order platform.
+
+| Aspek | TO-BE |
+|-------|--------|
+| Sumber setting | Store order → field **Auto Add VAT (Platform Orders)** |
+| Abaikan | `Company.auto_add_transaction_customer` untuk `type=platform` |
+| Opsi | Yes / No / Default by Product (default di Store) |
+| Trigger | Detail **masuk** ke order **dan** unit price detail **sudah terisi** (pola PO) |
+| Existing | Tidak backfill order lama |
+| Master UI | [Store §4.9](../omni-store-binding/requirement.md#49-auto-add-vat-platform-orders--to-be-gap-st-vat-01) |
+
+### 6.6 Benchmark COGS snapshot — effective Manual COGS (TO-BE · GAP-BM-14)
+
+AS-IS: `handleBenchmarkCogsOnCreating` / bind path copy `ProductBenchmarkPrice.benchmark_price` (rumus).
+
+| Aspek | TO-BE |
+|-------|--------|
+| Nilai snapshot | **Effective COGS** master = Manual COGS jika override aktif (terisi & belum expired), else rumus |
+| Manual = 0 | Valid → snapshot **0** |
+| Trigger | Detail create / sync bind / ganti `product_id` (skip rule AS-IS jika `benchmark_cogs` sudah > 0) |
+| Live update | **Tidak** — order lama tidak berubah saat Manual master diubah |
+| Konsumen | Kolom **Benchmark COGS** + Error Flag / auto-approve under-COGS |
+| Kanonik | [Benchmark COGS §3.5](../accounting-product-benchmark-price/requirement.md#35-manual-cogs-override-to-be-v13) · sibling SOG / ASO |
 
 ---
 
@@ -323,7 +356,7 @@ flowchart TB
 |------|----------------|
 | **Sales Order General** | Create manual; Duplicate dari SP → SO general — doc: [sales-order-general](../sales-order-general/requirement.md) |
 | **All Sales Order** | Gabungan monitoring + Failed Process lintas tipe + edit booking Other Info — doc: [all-sales-order](../all-sales-order/requirement.md) |
-| **Store Binding** | Auth, WH Process/Stock, Auto Sync ON/OFF |
+| **Store Binding** | Auth, WH Process/Stock, Auto Sync ON/OFF · **TO-BE:** Auto Add VAT (Platform Orders) |
 | **Omni Order Settings** | Delay auto-approve (diabaikan AS-IS), Start Date sync |
 | **Application Order Process** | Auto Approve toggle (banner only), Process to Wave, Instant Processing |
 | **System Product / Benchmark COGS** | Binding + snapshot COGS prevent approve |
@@ -372,6 +405,9 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 | **GAP-BOOK-01** | Approve booking amount 0 — risiko jurnal 0 via **Instant Settlement** hampir tertutup (null `platform_order_id` tidak match; approve SP tidak buat SI). Residual: SI manual amount 0 | Accounting | **Accepted residual** (verified 2026-07-15) |
 | **GAP-SYN-01** | Optimasi skip-sync Shopee (cancel/complete, dll.) belum diimplementasi | API waste | Open |
 | **GAP-SPR-01** | Escrow gagal / `line_item_id` tidak match → unit price 0; order historis yang sync sebelum rule escrow tetap understated hingga re-sync/backfill | Nilai jual & benchmark/auto-approve salah | Open |
+| **GAP-BM-13** | Error Flag `cogs-error` → **Below Benchmark COGS** (icon/tooltip/filter/detail SKU/FX primary) — kanonik di [Benchmark COGS](../accounting-product-benchmark-price/requirement.md#65-error-flag-below-benchmark-cogs-to-be--improve-cogs-error) | Ops sulit filter & bedakan under-COGS di list | Open (TO-BE) |
+| **GAP-ST-VAT-01** | Auto Add VAT order platform dari **Store** (bukan customer GC) — kanonik di [Store §4.9](../omni-store-binding/requirement.md#49-auto-add-vat-platform-orders--to-be-gap-st-vat-01) | Line platform sering tanpa VAT auto | Open (TO-BE) |
+| **GAP-BM-14** (consumer) | Snapshot Benchmark COGS = **effective** Manual COGS — [§6.6](#66-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14) | Capture masih rumus mentah | Open (TO-BE) |
 
 **[VERIFY: CODEBASE] terbuka:** TZ interval sync; Start Date global vs store; Bulk Sync residual; Instant Processing timing vs Complete; Total Price composition; Invoice∪FS caps; bind-error owner mismatch; Buyer Name censor scope; TikTok NULL discount; auto-delete soft/hard.
 
@@ -385,7 +421,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 - [ ] Log Data batch vs API Data Log terpisah
 - [ ] Booking NULL id processable; excluded auto-approve; IS tidak match hingga Order ID ada
 - [ ] Auto-approve 19:00 filters + validate tanpa stock
-- [ ] prevent_auto_approve saat PbV &lt; Benchmark COGS
+- [ ] prevent_auto_approve + Error Flag Below Benchmark COGS saat PbV (primary) &lt; Benchmark; filter by label; detail SKU (GAP-BM-13)
 - [ ] Shopee unit price = escrow `discounted_price + shopee_discount` (bukan order-detail `model_discounted_price`); kasus voucher Shopee-borne tidak understate penjualan
 - [ ] Additional cost/disc tidak ke SI
 - [ ] Return bucket = SR dan/atau FS

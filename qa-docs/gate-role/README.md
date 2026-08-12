@@ -7,10 +7,13 @@ Menu **Master Role** — definisi role/peran user dan **Role Privilege** (`gate_
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, admin | review |
 | Requirement | [requirement.md](./requirement.md) | PM, QA, Dev | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **Route UI:** `/gate/role`  
 **Maintenance owner:** QA — Yemima  
 **PM source:** `master_role_requirement.md` v1.0 (2026-07-04)
+
+**Help Center overview:** [ID](../_meta/docs-hub/menus/gate-role/overview.id.md) · [EN](../_meta/docs-hub/menus/gate-role/overview.en.md) (authored v1.0)
 
 ## Changelog
 
@@ -21,6 +24,8 @@ Menu **Master Role** — definisi role/peran user dan **Role Privilege** (`gate_
 | 1.2 | 2026-07-05 | Pending P-02 pointer |
 | 2.0 | 2026-07-05 | Full rewrite: PM merge, privilege catalog, gaps §13–§14, logout scope correction |
 | 2.1 | 2026-07-05 | Plain language §8/KB; urgent pending §14; dev follow-ups §15 |
+| HC 1.0 | 2026-08-05 | Help Center overview ID + EN dari brief authored user (role-content-structure-gemini-brief) |
+| ug-1.0 | 2026-08-12 | User-guide v1.0 dari 3 layer v2.1 |
 
 ## Key notes (v2.1)
 

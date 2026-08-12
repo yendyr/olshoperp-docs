@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.1
-last_updated: 2026-07-29
+version: 1.2
+last_updated: 2026-08-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.0
+source_version: 1.1
 owner: QA - Yemima
 status: review
 ---
@@ -107,11 +107,12 @@ Kalau Credit Note dari **Sales Return Billed**, langkah approve manual sering ti
 ## 5. Yang Perlu Diperhatikan
 
 - Kalau kamu approve tanpa baris Receiving Destination, sistem menolak.
-- Kalau amount baris masih 0 (sering setelah **Bulk Use**), isi amount dulu — baru approve. Lihat [Receiving Destination](#sf-lingo:SF-DET-01).
+- Kalau amount baris masih 0 (sering setelah **Bulk Use** atau free COA add), isi amount dulu — baru approve. Lihat [Receiving Destination](#sf-lingo:SF-DET-01).
 - Kalau akun Deposit customer/store kosong, approve gagal sampai setting master dilengkapi.
 - Kalau tanggal di luar periode fiskal aktif, create/edit/approve ditolak.
 - Kalau sudah ada baris Receiving Destination, kamu tidak bisa langsung ganti customer, mata uang, kurs, atau tanggal — hapus semua baris fund dulu.
-- Kalau mata uang rekening tidak sama dengan mata uang header, baris ditolak.
+- Kalau mata uang rekening Cash/Bank tidak sama dengan mata uang header, baris ditolak.
+- **(TO-BE)** Destinasi selain kas/bank (mis. Equity/modal awal): pakai **Free COA** di Receiving Destination — jangan pilih COA yang sudah Cash/Bank atau Deposit customer.
 - Kalau rekening/COA yang sama dipilih dua kali di satu Credit Note, sistem menolak duplikat.
 - Kalau import: satu baris error saja membuat **seluruh file** gagal — tidak ada Credit Note yang terbentuk ([Import](#sf-lingo:SF-IMP-01)).
 - Import hanya untuk customer tipe perusahaan (kode General). Customer store buat lewat form.
@@ -127,7 +128,7 @@ Kalau Credit Note dari **Sales Return Billed**, langkah approve manual sering ti
 1. Buka **Accounting → Credit Note → Create**.
 2. Isi tanggal, customer, mata uang, kurs. Biarkan kode kosong jika ingin otomatis.
 3. Simpan — sistem membuka halaman edit.
-4. Di **Receiving Destination**, pilih Cash/Bank ([**Use** atau **Bulk Use**](#sf-lingo:SF-DET-01)).
+4. Di **Receiving Destination**, pilih Cash/Bank ([**Use** atau **Bulk Use**](#sf-lingo:SF-DET-01)) dan/atau **Free COA** (TO-BE, untuk COA non-kas).
 5. Isi **amount** tiap baris (wajib lebih dari 0 sebelum approve). Opsional isi memo.
 6. Cek total di footer.
 7. **Approve** (isi catatan approval jika diminta).

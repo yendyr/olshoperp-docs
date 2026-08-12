@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.0
-last_updated: 2026-07-17
+version: 1.1
+last_updated: 2026-08-05
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, nota kredit, customer credit, deposit credit note]
@@ -39,7 +39,8 @@ CN bisa muncul dari:
 |------------------|-------------------------------|
 | Customer punya kelebihan / kredit yang harus dicatat | Return **Unbilled** (invoice belum dibayar) — itu jurnal sales/AR, bukan CN |
 | Mau memakai saldo kredit di Account Receive berikutnya | Deposit COA customer/store belum diisi — approve akan gagal |
-| Cash/Bank untuk mata uang CN sudah ada di master | Mau campur rekening beda mata uang dengan header CN |
+| Cash/Bank untuk mata uang CN sudah ada di master (wajib create) | Mau campur rekening beda mata uang dengan header CN (jalur Cash/Bank) |
+| **(TO-BE)** Perlu destinasi Equity / COA non-kas (modal awal, dll.) | Pilih COA yang sudah terikat Cash/Bank atau Deposit customer di free picker — harus lewat Cash/Bank / dilarang Deposit |
 
 ---
 
@@ -59,7 +60,7 @@ flowchart TD
 **Keterangan langkah:**
 
 - **Create:** isi tanggal, customer (General = perusahaan / Platform = store), mata uang, kurs. Kode dikosongkan saja jika ingin auto. Setelah simpan, sistem bawa kamu ke halaman edit.
-- **Receiving Destination:** pilih Cash/Bank lewat modal (**Use** atau **Bulk Use**). Isi amount tiap baris. **Bulk Use** sering mulai dari amount 0 — wajib diisi manual sebelum approve.
+- **Receiving Destination:** pilih **Cash/Bank** (Use / Bulk Use) dan/atau **(TO-BE) Free COA** (COA leaf termasuk Equity). Boleh campur di satu CN. Isi amount tiap baris. **Bulk Use** / free COA add sering mulai amount 0 — wajib diisi manual sebelum approve. Jangan duplikat COA yang sama.
 - **Approve:** butuh minimal satu baris fund dengan amount lebih dari 0, dan akun Deposit customer sudah terisi di master.
 - **Setelah approve:** saldo CN siap dipilih di Account Receive; pemakaian muncul di **Detail Related Transaction**.
 
@@ -113,7 +114,8 @@ Customer, mata uang, kurs, dan tanggal transaksi **terkunci** begitu sudah ada b
 | Gejala | Penyebab umum | Solusi |
 |--------|---------------|--------|
 | Approve gagal terus | Deposit COA customer/store kosong; atau amount fund masih 0 | Lengkapi Deposit COA di master; isi amount semua baris |
-| Amount bulk = 0 | Bulk Use memang seed 0 | Edit amount manual |
+| Amount bulk = 0 | Bulk Use / free COA add memang boleh seed 0 | Edit amount manual |
+| Free COA tidak muncul Equity | Fitur masih TO-BE / filter salah | Cek GAP-CN-05 / escalate dev |
 | Tidak bisa ubah customer/tanggal | Sudah ada fund | Hapus semua Receiving Destination |
 | Import gagal semua | Satu baris error membatalkan semua | Perbaiki Excel, upload ulang |
 | Customer tidak muncul | Inactive atau COA belum lengkap | Lengkapi setting di General Company / Store |

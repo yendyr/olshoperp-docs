@@ -7,6 +7,7 @@ Menu **Instant Settlement** (Accounting) — juga dikenal sebagai Upload Settlem
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | review |
 | Requirement | [requirement.md](./requirement.md) (v1.6) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **UI route:** `/accounting/settlement-upload`  
 **Note (2026-07-15):** Booking Shopee unmatched (`platform_order_id` null) tidak match Instant Settlement — lihat [Sales Platform](../omni-sales-platform/README.md) GAP-BOOK-01.  

@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.8
-last_updated: 2026-08-05
+version: 2.9
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
-aliases: [PO requirement, purchase order docs, pembelian, PO validation]
+aliases: [PO requirement, purchase order docs, pembelian, PO validation, Select Multiple Products, Select Outstanding PR Products]
 ---
 
 # Purchase Order — Requirement Documentation
@@ -36,6 +36,7 @@ aliases: [PO requirement, purchase order docs, pembelian, PO validation]
 | 2.6 | 2026-07-27 | QA - Yemima | Rounding SoT **final**: selisih 1 sen = known behavior UI only; Total/Net/Journal exact 4dp; resolusi export DPP/VAT 4dp (GAP-PO-10) |
 | 2.7 | 2026-07-27 | QA - Yemima | Contoh Case 4/5 siap Lingo/UG (SF-PRICE-01); pointer di §9.2 |
 | 2.8 | 2026-08-05 | QA - Yemima | Import Detail: kolom VAT / VAT Code / VAT Type (TO-BE locked); partial success per-row; align tax Allocate Full / bulk Use; GAP-PO-11 |
+| 2.9 | 2026-08-12 | QA - Yemima | §5.6 / §6.1 **Select Multiple Products** (Without PR) + **Select Outstanding PR Products** (With PR checkbox bulk); keep Available Products Single Use · GAP-PO-12 |
 
 ---
 
@@ -292,6 +293,27 @@ Saat ganti unit inline atau di modal:
 - Qty PO dikonversi ke base unit dibanding outstanding PR.
 - Jika melebihi sisa PR → error; qty auto-adjust saat unit berubah.
 
+### 5.6 Select Outstanding PR Products — checkbox bulk (TO-BE · GAP-PO-12)
+
+Jalur **tambahan** di samping **Available Products** → Use → Single Use (AS-IS tetap).
+
+| Item | Rule |
+|------|------|
+| Label tombol + title modal | **Select Outstanding PR Products** |
+| Visibility | Edit + `can_update` (draft/open/rejected); **tidak** di Show/approved |
+| List | Outstanding PR details — **sama** filter §5.1 / modal Available Product |
+| Setelah Add | 1 baris PO per line terpilih; **qty = sisa outstanding** (full allocate); unit mengikuti validasi existing |
+| Price / VAT | Logic Select Product / `latestPrice()` + auto tax — **tanpa** buka Single Use |
+| Keep AS-IS | **Available Products** + **Use** → Single Use + **Allocate Full Qty Clearing** di Single Use |
+| Duplicate | Boleh selama total qty PO untuk line/SKU **tidak melebihi** outstanding PR |
+| Max detail | Jika `existing + selected > 500` → **tolak seluruh batch** |
+
+**Pesan error (English, approved):**
+
+Max 500: `Unable to add the selected products. This purchase order already has {existing} detail(s). Adding {selected} more would exceed the maximum of 500 details. Please reduce your selection or remove existing lines, then try again.`
+
+Outstanding exceeded: `Unable to add the selected products. One or more selected lines would exceed the remaining outstanding quantity on the Purchase Requisition. Reduce the selection or adjust existing PO lines, then try again.`
+
 ---
 
 ## 6. Section PO Detail — Tipe Without PR
@@ -299,12 +321,24 @@ Saat ganti unit inline atau di modal:
 | Aspek | Perbedaan vs With PR |
 |-------|---------------------|
 | Sumber SKU | Select2 product transaksi — active, COA group, exclude bundle/random |
-| Modal Available Product | Master product (bukan PR outstanding) |
+| Modal Available Product (AS-IS UI) | Text button **tidak** tampil di Without PR (`!is_without_pr`) |
 | Req Qty kolom | **Tidak ada** |
 | Allocate Full Qty Clearing | **Tidak ada** |
 | PR qty tracking | **Tidak** update PR |
 
-Bulk add multiselect: qty default **1**, unit stock, `latestPrice()`, auto taxes.
+Select Product / bulk create: qty default **1**, unit stock, `latestPrice()`, auto taxes.
+
+### 6.1 Select Multiple Products — checkbox bulk (TO-BE · GAP-PO-12)
+
+| Item | Rule |
+|------|------|
+| Label tombol + title modal | **Select Multiple Products** (sama PR) |
+| Visibility | Edit + `can_update` only |
+| List | Filter sama Select Product master (§6) |
+| Qty | **1** per baris |
+| Price / VAT | `latestPrice()` + auto tax |
+| Duplicate SKU | **Boleh** (baris baru) |
+| Max detail | `existing + selected > 500` → tolak **seluruh** batch (pesan English §5.6) |
 
 ---
 
@@ -611,7 +645,9 @@ Async job → tab Export File.
 | V-08 | Close | **Processed** + approval privilege |
 | V-09 | Delete header | **draft, open, rejected** |
 | V-10 | Edit | Blocked approved/processed/complete/closed/void |
-| V-11 | Max detail | **500** rows |
+| V-11 | Max detail | **500** rows — Select Product, Select Multiple / Outstanding checkbox, & import |
+| V-12 | Select Multiple / Outstanding over max | `existing + selected > 500` → reject **entire** batch + English §5.6 |
+| V-13 | Select Outstanding over-allocate | Qty PO tidak boleh > sisa outstanding PR — reject batch/line + English §5.6 |
 | V-12 | Fiscal period | create/update/approve |
 | V-13 | Approval | Single-level; reject description opsional |
 | V-14 | Qty manual | Integer — import allows angka > 0 (termasuk desimal) |
@@ -655,6 +691,7 @@ Cross-ref PR: [supplychain-purchase-requisition requirement §2.3](../supplychai
 
 Create open + With/Without PR · supplier filter · outstanding/Single Use · pricing + Other Cost/Disc · single-level approval · complete/closed · import max 500 · export/print · GRN drives processed/complete.
 
+**TO-BE (GAP-PO-12):** Without PR **Select Multiple Products** (qty 1); With PR **Select Outstanding PR Products** (qty = outstanding) + keep Available Products/Single Use; reject all if >500.
 
 ## 19. Gap PM vs AS-IS — penjelasan
 
@@ -671,6 +708,7 @@ Create open + With/Without PR · supplier filter · outstanding/Single Use · pr
 | **GAP-PO-09** | Σ manual DPP+VAT UI 2dp = Total Price | UI round independen → +0,01 pada tie | **Accepted — known behavior** (27 Jul 2026) | Backend/Total/Journal exact 4dp; bukan bug |
 | **GAP-PO-10** | Export DPP/VAT pakai 4 desimal | Export masih 2dp seperti UI | **TO-BE** | Resolusi end user — audit/rekonsiliasi; UI tetap 2dp |
 | **GAP-PO-11** | Import kolom VAT/VAT Code/VAT Type; partial success akurat; tax Align Allocate Full / bulk | Excel tidak baca VAT; pre-val all-or-nothing; Allocate Full tanpa tax | **TO-BE locked** (5 Agu 2026) | §12.3–§12.9; brief Dev PO Import VAT |
+| **GAP-PO-12** | Select Multiple Products (Without PR) + Select Outstanding PR Products (With PR checkbox); keep Available Products Single Use | Without PR tanpa text-button modal; With PR hanya Use satu-satu | **TO-BE** | §5.6 / §6.1 |
 
 ### 19.1 GAP-PO-05 — Template file missing (detail)
 
@@ -711,6 +749,7 @@ Butuh keputusan bisnis sebelum implementasi:
 | **P-PO-07** | ✅ Closed | **Finance + End user** | Kebijakan rounding tie | **Accepted** known behavior UI (GAP-PO-09) | Jangan ubah backend/UI round |
 | **P-PO-08** | 🟡 Medium | **Dev** | Export DPP/VAT 4dp (GAP-PO-10) | Export PO (dan PI/Journal terkait) | Scope: format export saja |
 | **P-PO-09** | 🔴 **High** | **Dev + QA** | Import VAT columns + partial success + Align Allocate Full (GAP-PO-11) | Template I–K; resolver shared; history/notif; tax path non-Excel | Locked 5 Agu 2026 — brief implementator |
+| **P-PO-10** | 🟡 Medium | **Dev + QA** | Multi-select product buttons (GAP-PO-12) | Without PR: Select Multiple Products; With PR: Select Outstanding PR Products + keep Single Use | Sibling PR GAP-PR-01 |
 
 **Confirmed OK (bukan pending):** GAP-PO-02 (Void draft/open = Delete); GAP-PO-03 (Closed dari processed intentional).
 

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-purchase-requisition
 menu_name: "Purchase Requisition"
-version: 1.0
-last_updated: 2026-07-29
+version: 1.1
+last_updated: 2026-08-12
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.1
+source_version: 2.2
 owner: QA - Yemima
 status: review
 ---
@@ -125,8 +125,9 @@ Setelah PR **Approved**:
 
 ### Langkah 2 — Detail
 
-1. Tambah SKU ([multiselect / edit](#sf-lingo:SF-DET-01)) atau [**Import Detail**](#sf-lingo:SF-IMP-01).
-2. Cek qty & unit; max 100 baris.
+1. Tambah SKU lewat **Select Product** (satu-satu), **Select Multiple Products** (centang banyak di modal), atau [**Import Detail**](#sf-lingo:SF-IMP-01).
+2. Cek qty & unit; max **100** baris. Kalau modal multi-select akan melebihi 100, sistem menolak seluruh pilihan.
+3. Tiap SKU dari Select / Select Multiple mulai dengan qty **1** (boleh diubah di grid).
 
 ### Langkah 3 — Approve
 
@@ -144,6 +145,7 @@ Setelah PR **Approved**:
 
 ## 7. Tips & Hal yang Sering Bikin Bingung
 
+- **Select Multiple Products:** di kanan Select Product (edit saja) — centang banyak SKU tanpa Excel.
 - **Cari SKU di list PR:** Advanced Filter kolom **Product** (tersembunyi).
 - **Setelah reject:** Edit → Draft → set **Open** → Approve.
 - **Duplicate:** PR baru Draft; buka manual dari datalist jika tidak auto-redirect.
@@ -164,4 +166,4 @@ Setelah PR **Approved**:
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.1 — tanpa menambah fakta baru di luar sumber.*
+*Derivatif dari requirement / knowledge-base / technical v2.2 — tanpa menambah fakta baru di luar sumber.*

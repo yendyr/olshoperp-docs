@@ -7,9 +7,12 @@ Menu **Master User** — manajemen akun login OlshopERP + **Role Assignment** (C
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, admin | review |
 | Requirement | [requirement.md](./requirement.md) | PM, QA, Dev | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **Route UI:** `/gate/user`  
 **Maintenance owner:** QA — Yemima
+
+**Help Center overview:** [ID](../_meta/docs-hub/menus/gate-user/overview.id.md) · [EN](../_meta/docs-hub/menus/gate-user/overview.en.md) (authored v1.0)
 
 ## Changelog
 
@@ -18,6 +21,8 @@ Menu **Master User** — manajemen akun login OlshopERP + **Role Assignment** (C
 | 1.0 | 2026-06-19 | Initial draft from codebase analysis |
 | 2.0 | 2026-07-04 | Full rewrite: PM requirement merge, role assignment, multi-device, auto-logout, gap analysis |
 | 2.1 | 2026-07-05 | §13 Known Gaps AS-IS detail + §14 Pending Items Registry (PM §15) |
+| HC 1.0 | 2026-08-05 | Help Center overview ID + EN dari file authored user (Users / Master User) |
+| ug-1.0 | 2026-08-12 | User-guide v1.0 dari 3 layer v2.1 |
 
 ## Related menus
 

@@ -15,12 +15,13 @@ Menu **Purchase Order** (Supply Chain / Procurement).
 **Help Center overview:** [`_meta/docs-hub/menus/supplychain-purchase-order/`](../_meta/docs-hub/menus/supplychain-purchase-order/) (`overview.en.md` / `overview.id.md`)  
 **SoT / PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05); Import VAT locked 5 Agu 2026  
 **Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)  
-**3 layer version:** 2.8 · **User-guide:** v1.6 · `source_version` 2.8 · **Feature Map:** 1.0 · **Last updated:** 2026-08-05
+**3 layer version:** 2.9 · **User-guide:** v1.7 · `source_version` 2.9 · **Feature Map:** 1.0 · **Last updated:** 2026-08-12
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.9 | 2026-08-12 10:35 | Clearer product pickers: Without PR uses Select Multiple Products; With PR uses Select Outstanding PR Products — Available Products stays for one-by-one. Why: operators mixed the two flows when adding PO lines. |
 | 1.0 | 2026-06-19 | Initial draft from codebase auto-analysis |
 | 2.0 | 2026-07-05 | Full rewrite: PM merge, import/export/print/pricing, UI buttons, gaps |
 | 2.1 | 2026-07-05 | GAP clarifications; Pending Items Major; import expanded |

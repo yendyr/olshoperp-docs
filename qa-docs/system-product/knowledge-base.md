@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.1
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: review
 audience: operator
@@ -72,7 +72,7 @@ Import/export Excel **hanya** di menu System Product full.
 | **+ Create** | Buat SKU baru |
 | **Delete** (bulk) | Hapus SKU tanpa relasi transaksi |
 | **Unbind** | Lepas platform binding (bulk) |
-| **Import** | Upload Excel (new/update/bundle/random/VAT) |
+| **Import** | Upload Excel (new/update/bundle/random/VAT/images) |
 | **Export** | Download data |
 | **Show deleted / archived** | Filter SKU terhapus/inactive |
 
@@ -186,8 +186,20 @@ Hanya dari menu **System Product** full:
 | Alternative Unit | Bulk satuan alternatif |
 | Update Variant | Bulk update variant |
 | Bulk Update VAT | Update pajak massal |
+| **Import Product Images** | Bulk set/ganti **gambar default** dari link Google Drive publik |
 
-Max **5000** baris per file. Pantau progress bar setelah upload.
+Kebanyakan tipe import: max **5000** baris. **Import Product Images**: max **1000** baris (lebih ringan karena sistem harus unduh file dari Drive). Pantau progress bar setelah upload.
+
+### Import Product Images — ringkas
+
+1. Siapkan file Excel dari template (**SKU Code** + **Image URL** — keduanya wajib).
+2. Link gambar harus **Google Drive** dan di-share **Anyone with the link** (Viewer).
+3. Satu baris = satu SKU = satu gambar. SKU yang sama muncul lebih dari sekali di file → baris itu gagal; SKU lain yang unik tetap diproses.
+4. Jika SKU sudah punya banyak foto: **hanya foto default diganti**; foto lain tetap.
+5. Parent / Single / Bundle / Random → foto di Product Details jadi default. Variant → foto variant itu.
+6. Format: JPG / JPEG / PNG. Ukuran max sama upload manual (**20 MB**).
+
+**Contoh:** SKU parent sudah 3 foto → setelah import sukses, foto utama berubah dari Drive; 2 foto lain masih ada.
 
 ---
 
@@ -203,6 +215,9 @@ Max **5000** baris per file. Pantau progress bar setelah upload.
 | Video upload gagal | Format mkv | Konversi ke **mp4** |
 | Parent tidak muncul di PO | Parent non-transactable | Pilih **child variant** |
 | Harga bundle aneh di SO | Proporsi pakai Price Before VAT, bukan retail gross | Cek pajak komponen (Include/Exclude/Coefficient); lihat Modal Detail Bundle di SO |
+| Import Product Images gagal — Drive | File Drive belum publik | Share → **Anyone with the link** (Viewer), lalu re-import |
+| Import Product Images — SKU skipped | SKU muncul berkali-kali di file | Sisakan **satu baris per SKU** |
+| Import Product Images — size | File gambar terlalu besar | Kompres di bawah **20 MB** |
 
 ---
 
@@ -216,6 +231,12 @@ A: Hanya SKU child yang stockable. Parent hanya grouping.
 
 **Q: Bundle bisa inbound?**  
 A: Tidak. Inbound komponen satu per satu.
+
+**Q: Import Product Images menghapus semua foto lama?**  
+A: Tidak. Hanya mengganti foto **default**. Foto lain di gallery tetap.
+
+**Q: Boleh pakai link Dropbox / S3?**  
+A: Tidak untuk v1 — hanya **Google Drive publik**.
 
 **Q: Beda Bundle vs BOM?**  
 A: Bundle = paket jual di SO (`is_bom=0`). BOM = resep produksi Assembly (`is_bom=1`, menu Bill of Material).

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.2
-last_updated: 2026-08-04
+version: 2.3
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: review
 audience: operator
@@ -14,7 +14,7 @@ sections:
 
 # Store — Knowledge Base
 
-> **Status: REVIEW** — v2.1 (2026-07-22) menambahkan penjelasan **Fulfillment Mode** (§4.6) — fitur ini masih dalam tahap penyiapan, belum aktif di sistem. Konten SOP operator lain (v2.0, 2026-06-25) tetap berlaku.
+> **Status: REVIEW** — v2.3 (2026-08-11) menambahkan rencana **Auto Add VAT (Platform Orders)** dan pecah section konfigurasi (§4.4–§4.5). Fulfillment Mode (§4.6) masih TO-BE.
 
 ## 1. Apa itu Store?
 
@@ -100,15 +100,32 @@ Store adalah **prasyarat** sebelum Manage Platform Product, sync order platform,
 
 Jika warehouse tidak muncul di dropdown → buka **Supply Chain → Warehouse**, aktifkan **Show in Store**, atau konfigurasi di **Warehouse Settings** (`/supplychain/setting`).
 
-### 4.4 Atur COA
+### 4.4 Atur kepemilikan & gudang (Ownership & Fulfillment)
+
+| Field | Untuk apa |
+|-------|-----------|
+| Default Owner Data | Perusahaan pemilik order / akuntansi & stok |
+| Default Building Process | Gudang proses fulfillment default |
+| Building Stock | Gudang stok yang dihitung ATS untuk store |
+
+> **TO-BE layout:** field ini pindah ke section **Ownership & Fulfillment Defaults** (pisah dari COA).
+
+### 4.5 Atur COA & pajak (Accounting & Tax)
 
 | Field | Untuk apa |
 |-------|-----------|
 | Account Receivable COA | Piutang Sales Invoice order **platform** (store = "customer") |
 | Cash/Bank Receiving | Penerimaan AR saat **Approve Instant Settlement** — **wajib** |
 | Customer's Deposit COA | Kelebihan bayar AR → Credit Note |
+| **Auto Add VAT (Platform Orders)** *(TO-BE)* | Apakah PPN produk otomatis terisi di **Sales Platform** untuk store ini |
 
-### 4.5 Sync manual
+**Opsi Auto Add VAT:** Yes · No · Default by Product (default).  
+**Store Others:** field tampil tapi **disabled** — VAT order Others ikut setting customer di General Company.  
+**Store Platform:** selalu ikut setting Store ini (bukan customer). Berlaku ke order/detail **baru** setelah fitur live; tidak mengubah order lama.
+
+> **TO-BE layout:** field COA + VAT di section **Accounting & Tax Defaults**. AS-IS masih satu section *Sales Order Default Configuration*.
+
+### 4.6 Sync manual
 
 | Tombol | Lokasi | Kapan bisa diklik |
 |--------|--------|-------------------|
@@ -119,7 +136,7 @@ Jika warehouse tidak muncul di dropdown → buka **Supply Chain → Warehouse**,
 
 Tombol disabled (loading) saat job sync sedang berjalan — tunggu sampai selesai.
 
-### 4.6 Fulfillment Mode — cara pesanan diproses (segera hadir)
+### 4.7 Fulfillment Mode — cara pesanan diproses (segera hadir)
 
 > **Catatan:** Fitur ini masih disiapkan, belum aktif — bagian ini menjelaskan rencana cara kerjanya.
 
@@ -241,7 +258,10 @@ A: Tidak. Store dibuat satu per satu via form Create.
 A: Platform legacy — store Tokopedia existing masih bisa diedit; create baru tidak didukung di UI saat ini.
 
 **Q: Apa itu Fulfillment Mode?**  
-A: Pengaturan Processed/Non Processed di §4.6 — masih tahap penyiapan, belum aktif.
+A: Pengaturan Processed/Non Processed di §4.7 — masih tahap penyiapan, belum aktif.
+
+**Q: Apa itu Auto Add VAT (Platform Orders)?**  
+A: Setting di Store (section Accounting & Tax) yang mengatur apakah PPN produk otomatis masuk di order **Sales Platform**. Opsi: Yes / No / Default by Product. Untuk store **Others** field disabled — VAT ikut customer di General Company. Fitur masih TO-BE.
 
 **Q: Kenapa akun piutang atau deposit pelanggan tidak bisa dipilih karena sudah dipakai Cash/Bank?**  
 A: Akun yang sama tidak boleh dipakai ganda sebagai rekening Cash/Bank dan sebagai **Account Receivable COA** atau **Customer Deposit COA** di store. Kalau rekening Cash/Bank yang memakai akun itu sudah dihapus (soft delete), akun tersebut boleh dipilih lagi. Aturan penuh (picker + tolak saat simpan) masih dalam penyiapan — saat ini mungkin masih bisa dipilih sampai fitur dirilis.

@@ -2,11 +2,11 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.2
-last_updated: 2026-07-23
+version: 3.4
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
-aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulfillment Mode, Import Non-Processed, Other Cost/Disc Code]
+aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulfillment Mode, Import Non-Processed, Other Cost/Disc Code, cogs-error, Manual COGS]
 ---
 
 # Dev - Sales Order (Sales Order General) — Technical Documentation
@@ -14,8 +14,11 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 **Type:** `type_sales_order = general`  
 **UI:** `/businessdevelopment/sales-order-general`  
 **API prefix:** `/api/omnichannel/sales-order/*`  
-**Behavior:** [requirement.md](./requirement.md) v3.2  
+**Behavior:** [requirement.md](./requirement.md) v3.4  
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB
+
+> **3.4 (2026-08-12):** TO-BE Benchmark COGS snapshot = effective Manual COGS — [requirement §8.2](./requirement.md#82-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14); GAP-SOG-15 / GAP-BM-14.  
+> **1.3 / 3.3 (2026-08-11):** TO-BE Error Flag Below Benchmark COGS — shared `ErrorFlag.vue` / `CanManageOrderDetailError` / `updateAutoApproveFlagForSalesOrder`; see [Benchmark technical §6.5–§6.6](../accounting-product-benchmark-price/technical.md#65-auto-approve-flag); GAP-SOG-14 / GAP-BM-13.
 
 ---
 
@@ -23,6 +26,7 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.4 | 2026-08-12 | TO-BE Benchmark COGS snapshot = effective Manual COGS; GAP-SOG-15 / GAP-BM-14 |
 | 1.3 | 2026-07-09 | Bundle / benchmark COGS file map |
 | 3.0 | 2026-07-22 | Rewrite SoT v1.0: file map, import AS-IS, invariants, failure modes |
 | 3.1 | 2026-07-22 | TO-BE: dual import channels + Non-Processed OB/SI pipeline; GAP-SOG-07…12 |
@@ -271,6 +275,8 @@ Jika **keduanya** ketemu → selalu `type = cost`; tidak ada error. Unique code 
 | GAP-SOG-04 | Implement failed export; persist logs per `history_id` |
 | GAP-SOG-07…12 | Dual import + Non-Processed OB/SI pipeline, CBR COA guard, Skip Wave UX/retry — see requirement §9 |
 | GAP-SOG-13 | Sheet2: if both OtherCost & OtherDiscount match code → fail SO group (stop silent `$otherCost ?? $otherDiscount`) |
+| GAP-SOG-14 / GAP-BM-13 | `cogs-error` UX Below Benchmark COGS — shared ErrorFlag + prevent_auto_approve helper |
+| GAP-SOG-14 / GAP-BM-13 | `cogs-error` UX: `money-bill-trend-down`, filter label Below Benchmark COGS, FX primary helper shared with prevent_auto_approve |
 
 ---
 

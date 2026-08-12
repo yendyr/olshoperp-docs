@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-purchase-requisition
 menu_name: "Purchase Requisition"
-version: 2.1
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
 ---
@@ -30,6 +30,7 @@ status: review
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft (AS-IS codebase) |
 | 2.0 | 2026-07-05 | QA - Yemima | Full rewrite: merge PM requirement, import/export/print/duplicate spec, UI buttons, gaps §13–§15 |
 | 2.1 | 2026-07-05 | QA - Yemima | Canonical codebase rules; §2.5 closure paths; import validation expanded |
+| 2.2 | 2026-08-12 | QA - Yemima | §5.1.1 **Select Multiple Products** (modal checkbox bulk add) · GAP-PR-01 |
 
 ---
 
@@ -42,7 +43,7 @@ status: review
 | Kontrol pengadaan formal | PR wajib di-approve sebelum dipakai di PO |
 | Prioritas pengadaan | Master priority: Normal, Urgent, Top Urgent |
 | Traceability PR → PO | Field `prepared_to_po_quantity` / `processed_to_po_quantity` per detail |
-| Input massal SKU | Import detail Excel (template 5 kolom) |
+| Input massal SKU | Import Detail Excel **atau** (TO-BE) **Select Multiple Products** modal |
 | Audit & approval | Approval log + audit header/detail/attachment |
 
 ---
@@ -197,9 +198,35 @@ flowchart LR
 | Single / Variant | Product dengan accounting; variant leaf atau single tree root |
 | COA group types | Semua yang punya `productAccounting` |
 | **Diblok** | Bundle (`isBundle()`), BOM header (`is_bom=0` without header), **random variant** (`is_random`) |
-| Bulk add | Multiselect → qty=1, unit = stock unit |
+| Add behavior | **Satu** SKU per pilih → `create-select`, qty = **1**, unit = stock/primary |
 
 Endpoint: `GET purchase-requisition-detail/select2-product`
+
+> Catatan: nama variabel FE `bulk_product_id` **bukan** multi-select native — tiap perubahan model menambah **satu** baris.
+
+### 5.1.1 Select Multiple Products (TO-BE)
+
+Text-button di kanan **Select Product** (pola Transfer Internal **Available Products**) membuka modal list + checkbox untuk bulk add — tanpa ubah library Multiselect.
+
+| Item | Rule |
+|------|------|
+| Label tombol + title modal | **Select Multiple Products** |
+| Visibility | Halaman **edit** + `can_update` saja — status **draft / open / rejected**. **Tidak** di Show / approved read-only |
+| Filter list | **Sama** §5.1 (reuse `available-products` + create path) |
+| Setelah Add | 1 baris per SKU terpilih; **qty = 1**; unit = primary/stock |
+| Duplicate SKU | **Diizinkan** (baris baru) — SKU yang sudah di detail PR **tetap tampil** di modal |
+| Max 100 | Jika `existing + selected > 100` → **tolak seluruh batch** (bukan partial fill) |
+| Select Product | Tetap tersedia untuk add 1 SKU cepat |
+
+**Pesan error max 100 (English, approved):**
+
+`Unable to add the selected products. This purchase requisition already has {existing} detail(s). Adding {selected} more would exceed the maximum of 100 details. Please reduce your selection or remove existing lines, then try again.`
+
+Short toast (opsional): `Cannot add products. The selection would exceed the maximum of 100 details on this purchase requisition.`
+
+**Out of scope v1:** ubah Multiselect library · edit qty di modal · tombol di Show.
+
+Endpoint list (AS-IS BE): `GET purchase-requisition-detail/available-products` — FE wire tombol/modal masih TO-BE (**GAP-PR-01**).
 
 ### 5.2 Datatable detail (PrimeDataTables)
 
@@ -219,6 +246,7 @@ Endpoint: `GET purchase-requisition-detail/select2-product`
 | **Save All** | Sidebar | PUT header (+ status draft/open dari radio) |
 | **Save & Next** | Sidebar | Save lalu navigasi section berikutnya |
 | **Approve** | Sidebar / modal | POST approve — hanya status **open** |
+| **Select Multiple Products** (TO-BE) | Detail panel (kanan Select Product) | Modal checkbox bulk add — §5.1.1 |
 | **Import Detail** | Detail panel | Upload template Excel |
 | **Export Detail** | Detail panel | xlsx/csv per PR |
 | **Print** | Sidebar icon | PDF blob |
@@ -437,7 +465,8 @@ Async via `PurchaseRequisitionExportJob` → download dari tab Export File.
 | V-10 | Reject + edit detail | Header → **draft** |
 | V-11 | Qty detail manual | **Bilangan bulat** (`ctype_digit`); desimal ditolak |
 | V-12 | Qty import | Integer atau double; **≥ 1** |
-| V-13 | Max detail | **100** baris (`general.max_child`) — manual add & import |
+| V-13 | Max detail | **100** baris (`general.max_child`) — manual add, Select Multiple Products, & import |
+| V-14 | Select Multiple Products over max | `existing + selected > 100` → reject **entire** batch + English message §5.1.1 |
 | V-14 | Fiscal period | `validate_fiscal_period()` on create/update/approve |
 | V-15 | Approval | **Single-level**; reject description opsional |
 
@@ -493,6 +522,7 @@ Cross-ref PO: [supplychain-purchase-order requirement §With PR](../supplychain-
 - [x] PR selesai: **complete** (auto full PO) atau **closed** (manual) — keduanya tidak bisa ke PO baru
 - [x] Import: template 5 kolom; pre-validation all-or-nothing; duplicate SKU = baris baru
 - [x] Export detail & export advanced; duplicate; print PDF
+- [ ] **Select Multiple Products** modal (GAP-PR-01): checkbox bulk add qty 1; reject all if >100; edit draft/open/rejected only
 
 ---
 
@@ -504,6 +534,7 @@ Cross-ref PO: [supplychain-purchase-order requirement §With PR](../supplychain-
 | DEV-PR-02 | `duplicate()` tree parent_id mapping | Bug potensial |
 | DEV-PR-03 | Duplicate FE tidak redirect ke PR baru | UX |
 | DEV-PR-04 | Print approver tidak di-render | Template |
+| **GAP-PR-01** | FE belum wire tombol/modal **Select Multiple Products** meski BE `available-products` ada | **TO-BE Improvement** |
 
 Detail: [technical.md §15](./technical.md#15-dev-team--technical-follow-ups)
 

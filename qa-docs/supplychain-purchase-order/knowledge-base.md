@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.8
-last_updated: 2026-08-05
+version: 2.9
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
-aliases: [PO, purchase order, pembelian, pesanan pembelian, outstanding PR]
+aliases: [PO, purchase order, pembelian, pesanan pembelian, outstanding PR, Select Multiple Products]
 ---
 
 # Purchase Order — Knowledge Base
@@ -107,12 +107,19 @@ Tipe **tidak bisa diubah** di form jika sudah ada baris detail. Import Excel bis
 
 | Tombol / aksi | Fungsi |
 |---------------|--------|
-| **Available Product** | Modal outstanding PR (With PR) atau daftar produk (Without PR) |
-| **Use** (per baris modal) | Buka form input qty, harga, unit, VAT |
-| **Allocate Full Qty Clearing** | Isi sisa qty PR sekaligus (With PR) |
+| **Select Product** | Tambah **satu** produk dari dropdown |
+| **Available Products** (With PR) | Modal outstanding PR → **Use** → isi qty/harga per baris (Single Use) |
+| **Select Outstanding PR Products** (With PR) | Modal centang banyak baris outstanding → masuk detail sekaligus; qty = **sisa outstanding**; harga otomatis |
+| **Select Multiple Products** (Without PR) | Modal centang banyak SKU master → tiap baris qty **1**; harga otomatis |
+| **Allocate Full Qty Clearing** | Di Single Use (With PR) — isi sisa qty PR |
 | **Import Detail** | Upload Excel massal |
 | **Export Detail** | Download detail PO |
 | Edit / Delete baris | Sebelum approved |
+
+Tombol multi-select hanya di halaman **edit** (Draft / Open / Rejected). Tidak muncul setelah Approved (Show).
+
+- Maksimal **500** baris per PO. Kalau pilihan modal akan melebihi 500, sistem **menolak seluruh** pilihan.
+- With PR: qty tidak boleh melebihi sisa outstanding di PR.
 
 ### 6.3 Datalist row actions
 
@@ -184,6 +191,9 @@ Setelah ada detail, **tanggal, supplier, currency, payment** terkunci.
 | Import type not match | File With PR vs PO Without PR | Kosongkan detail atau sesuaikan file |
 | Kurs invalid | Currency primer tapi rate ≠ 1 | Set rate = 1 |
 | PR tidak muncul | PR closed/complete atau qty habis | Cek status PR |
+| Select Multiple / Outstanding ditolak (>500) | Centang terlalu banyak | Kurangi centang atau hapus baris — sistem tolak **seluruh** batch |
+| Tidak lihat Select Multiple Products | PO Without PR di Show / sudah Approved | Hanya di edit Draft/Open/Rejected |
+| Select Outstanding melebihi sisa PR | Qty akan > outstanding | Kurangi pilihan atau sesuaikan baris PO yang sudah ada |
 | Σ DPP detail ≠ Total DPP tippy | Bug Path A/B atau data lama | Escalate jika beda besar (~0,03+) — bukan kasus 1 sen |
 | Jumlah manual DPP+VAT kolom = Total +0,01 | Known behavior UI (rounding tie) | Normal jika Total Price / Net tetap pas; jangan “perbaiki” hitungan. Audit → export 4dp (TO-BE) |
 | Total Price / Net ≠ Unit×Qty | Seharusnya tidak (backend exact) | Escalate — bug, bukan known behavior UI |
@@ -208,7 +218,10 @@ Lingo card: [DPP & VAT di detail](../_meta/shared-capabilities/dpp-vat-breakdown
 A: Input manual: **bilangan bulat**. Import: boleh angka > 0 (termasuk desimal).
 
 **Q: Berapa maksimal baris detail?**  
-A: **500** baris.
+A: **500** baris (Select Product + multi-select modal + import digabung).
+
+**Q: Beda Select Multiple Products vs Select Outstanding PR Products?**  
+A: **Select Multiple Products** = PO **Without PR** (SKU master, qty 1). **Select Outstanding PR Products** = PO **With PR** (centang outstanding PR, qty = sisa). **Available Products** (With PR) tetap ada untuk isi qty/harga satu per satu via Use.
 
 **Q: Apakah void mengembalikan qty ke PR?**  
 A: **Belum** — void PO approved saat ini **tidak** mengembalikan qty yang sudah dikunci di PR. Hapus detail sebelum approve akan mengembalikan qty yang masih direservasi.

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 1.6
-last_updated: 2026-08-05
+version: 1.7
+last_updated: 2026-08-12
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.8
+source_version: 2.9
 owner: QA - Yemima
 status: review
 ---
@@ -155,15 +155,17 @@ Yang perlu diingat:
 
 **With PR:**
 
-1. Buka **Available Product** → pilih baris outstanding PR.
-2. [**Use**](#sf-lingo:SF-DET-01) → isi qty, unit, harga, diskon, VAT.
-3. Atau [**Allocate Full Qty Clearing**](#sf-lingo:SF-DET-01) untuk mengisi sisa qty sekaligus.
+1. **Select Product** (satu SKU) **atau** **Available Products** → **Use** → isi qty/harga ([SF-DET-01](#sf-lingo:SF-DET-01)).
+2. Atau **Select Outstanding PR Products** — centang banyak baris outstanding; qty = sisa otomatis; harga otomatis.
+3. Atau **Allocate Full Qty Clearing** di Single Use untuk satu baris.
 4. Atau [**Import Detail**](#sf-lingo:SF-IMP-01) massal.
 
 **Without PR:**
 
-1. Buka **Available Product** → pilih produk.
-2. Isi qty, harga, unit, VAT — atau import Excel (kolom A kosong semua baris).
+1. **Select Product** (satu SKU) **atau** **Select Multiple Products** (centang banyak — qty 1 tiap baris).
+2. Atau import Excel (kolom A kosong semua baris).
+
+Max **500** baris. Kalau pilihan modal melebihi sisa kuota, sistem menolak seluruh pilihan.
 
 ### Langkah 3 — Biaya / diskon tambahan (opsional)
 
@@ -195,6 +197,8 @@ Yang perlu diingat:
 - **Template import 404?** Buat Excel manual (kolom B–H sesuai panduan) atau minta IT.
 - **Qty desimal:** manual = bulat; import = boleh desimal > 0.
 - **Max 500 baris** per PO.
+- **Select Multiple Products** = Without PR; **Select Outstanding PR Products** = With PR (qty sisa). **Available Products** tetap untuk isi manual via Use.
+- **Void ≠ Delete:** draft/open → Delete; approved tanpa inbound → Void.
 - **Void belum mengembalikan qty PR** — koordinasikan dengan tim bila perlu release qty.
 - **Print vs layar:** print belum include Other Cost/Discount.
 - **Tipe With/Without PR:** radio terkunci setelah ada detail; import tetap bisa mengubah tipe jika file tidak hati-hati.
@@ -214,4 +218,4 @@ Yang perlu diingat:
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.7 — tanpa menambah fakta baru di luar sumber. Feature Map v1.0 ditautkan untuk Lingo.*
+*Derivatif dari requirement / knowledge-base / technical v2.9 — tanpa menambah fakta baru di luar sumber. Feature Map v1.0 ditautkan untuk Lingo.*

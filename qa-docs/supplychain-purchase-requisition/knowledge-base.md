@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-purchase-requisition
 menu_name: "Purchase Requisition"
-version: 2.1
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
 audience: operator
@@ -88,10 +88,16 @@ PR **bukan** pesanan ke supplier — PR adalah langkah persetujuan internal sebe
 
 | Tombol / aksi | Fungsi |
 |---------------|--------|
-| Pilih product (multiselect) | Tambah SKU cepat (qty 1) |
+| **Select Product** | Tambah **satu** SKU cepat (qty 1) |
+| **Select Multiple Products** | Buka modal daftar SKU + centang banyak → tambah sekaligus (qty 1 tiap baris) |
 | Edit inline / modal | Ubah qty, unit, description |
 | Delete baris | Hapus detail |
-| Import | Mass upload dari template |
+| Import | Mass upload dari template Excel |
+
+**Select Multiple Products** hanya di halaman **edit** (Draft / Open / Rejected). Tidak muncul setelah PR sudah Approved (halaman Show).
+
+- SKU yang sama boleh muncul di beberapa baris (duplikat diizinkan).
+- Kalau total baris akan melebihi **100**, sistem **menolak seluruh** pilihan di modal — kurangi centang atau hapus baris lama dulu.
 
 Edit/Delete detail **hanya** sebelum PR **Approved**.
 
@@ -182,6 +188,8 @@ Semua baris dicek dulu. **Jika ada satu baris salah, seluruh file dibatalkan** �
 | Tidak bisa ubah tanggal / priority | Sudah ada detail | Hapus detail dulu atau buat PR baru |
 | Import gagal format | Header template salah | Pakai template resmi |
 | Import melebihi limit | >100 baris total | Split ke beberapa PR |
+| Select Multiple Products ditolak | Centang terlalu banyak (existing + pilih > 100) | Kurangi centang atau hapus baris lama — sistem menolak **seluruh** batch |
+| Tidak lihat Select Multiple Products | PR sudah Approved (Show) / tidak bisa edit | Hanya di edit Draft / Open / Rejected |
 | Close dari form gagal | Known issue dialog form | Gunakan **Closed** di **datalist** |
 | Duplicate tidak pindah halaman | By design FE | Buka PR baru manual dari datalist |
 | PR kembali Approved setelah PO dihapus | Revert otomatis | Normal jika qty PO kembali 0 |
@@ -191,7 +199,10 @@ Semua baris dicek dulu. **Jika ada satu baris salah, seluruh file dibatalkan** �
 ## 8. FAQ
 
 **Q: Berapa maksimal SKU per PR?**  
-A: **100 baris detail** (manual add + import digabung).
+A: **100 baris detail** (Select Product + Select Multiple Products + import digabung).
+
+**Q: Apa beda Select Product vs Select Multiple Products?**  
+A: **Select Product** = pilih satu SKU dari dropdown. **Select Multiple Products** = buka modal, centang banyak SKU sekaligus (masing-masing qty 1).
 
 **Q: Apakah qty boleh desimal?**  
 A: Input manual di grid: **hanya bilangan bulat**. Import Excel: boleh desimal asal ≥ 1.

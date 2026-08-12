@@ -25,7 +25,7 @@ Indeks sub-feature master data SKU. **Klik Label UI** untuk membuka penjelasan L
 | SF-SP-03 | [Variant Configuration](#sf-lingo:SF-SP-03) | menu | AS-IS | detailed | capabilities · sf-sp-03 | Ya | overview |
 | SF-SP-04 | [Bundle Configuration & tax hide](#sf-lingo:SF-SP-04) | menu | AS-IS | detailed | capabilities · sf-sp-04 | Ya | overview |
 | SF-SP-05 | [Availability / On Hand / ATS](#sf-lingo:SF-SP-05) | menu | AS-IS | detailed | capabilities · sf-sp-05 | Ya | overview |
-| SF-SP-06 | [Import / Export](#sf-lingo:SF-SP-06) | menu | AS-IS | detailed | capabilities · sf-sp-06 | Ya | overview |
+| SF-SP-06 | [Import / Export](#sf-lingo:SF-SP-06) | menu | AS-IS + TO-BE images | detailed | capabilities · sf-sp-06 | Ya | overview |
 | SF-SP-07 | Inactive & Delete rules | menu | AS-IS | stub | KB §7 · requirement §14 | Ya | tips |
 | SF-SP-08 | Accounting & Tax hierarchy | menu | AS-IS | stub | requirement §10 | Ya | slice |
 | SF-SP-09 | Inventory flags (expired/serial/batch) | menu | AS-IS | stub | requirement §8 | Ya | slice |

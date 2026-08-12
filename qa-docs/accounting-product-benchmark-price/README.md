@@ -7,6 +7,7 @@ Menu **Benchmark COGS** (Finance Accounting → Report) — nilai acuan HPP per 
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | review |
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | End-user (Notion/Lark) | review |
 
 **Maintenance owner:** QA — Yemima
 
@@ -16,6 +17,9 @@ Menu **Benchmark COGS** (Finance Accounting → Report) — nilai acuan HPP per 
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-08-11 | 1.3 | TO-BE **Manual COGS** + Expiry + import + audit; GAP-BM-14; contoh kasus §3.5; **user-guide v1.0** |
+| 2026-08-11 | UG 1.0 | Generate user-guide dari source 1.3 (Manual COGS + rumus + konsumen SO/Opname) |
+| 2026-08-11 | 1.2 | TO-BE Error Flag **Below Benchmark COGS** (`cogs-error`) + FX primary; GAP-BM-05 clarify / GAP-BM-13; konsumen 3 menu SO |
 | 2026-07-09 | 1.1 | Perluasan sumber: PO + Stock Addition + Opname IN + Opening Stock; pending items §13 |
 | 2026-07-05 | 1.0 | Full 3-layer docs from PM Notion + codebase AS-IS; gaps §12 |
 
@@ -34,13 +38,15 @@ Menu **Benchmark COGS** (Finance Accounting → Report) — nilai acuan HPP per 
 
 ---
 
-## Key notes (v1.1)
+## Key notes (v1.3)
 
 - Kalkulasi: **Highest Price** 30 hari → fallback **Last Inbound** → **0**
 - Sumber (v1.1): **PO Inbound** + **Stock Addition** + **Stock Opname IN** + **Opening Stock**
+- **Manual COGS** (TO-BE): override efektif + expiry (NULL = permanen) + Description **Manual Input** + import 3 kolom — [requirement §3.5](./requirement.md#35-manual-cogs-override-to-be-v13)
+- Scope Manual: **Single** + **Variant** only; job midnight tidak menimpa override aktif
 - **Bukan** MA30 — legacy `MaPrice30Days()` tidak dipakai job ini
 - Konsumen: **Stock Opname** (default surplus) · **SO detail** (`benchmark_cogs` snapshot + auto-approve)
-- **Pending kode:** allowlist 4 sumber belum diimplementasi — filter PO di-comment ([requirement §13](./requirement.md#13-hal-yang-perlu-diperhatikan--pending-items))
+- **Pending kode:** allowlist 4 sumber · Manual COGS · Error Flag UX — [requirement §12–§13](./requirement.md#12-gaps--pm-vs-as-is-codebase)
 
 ---
 

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.2
-last_updated: 2026-08-04
+version: 2.3
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # Store — Technical Documentation
 
-> **Status: REVIEW** — v2.2 (2026-08-04) menambahkan planned validation **COA vs Cash/Bank exclusion TO-BE** (§11, `GAP-ST-CB-01`). v2.1 Fulfillment Mode TO-BE (§5.1) tetap berlaku. Verifikasi codebase AS-IS v2.0 (2026-06-25) tetap berlaku untuk seluruh bagian lain.
+> **Status: REVIEW** — v2.3 TO-BE **Auto Add VAT (Platform Orders)** + section split (`GAP-ST-VAT-01`). v2.2 `GAP-ST-CB-01` & v2.1 `GAP-ST-FM-01` tetap.
 
 ## 0. Metadata
 
@@ -180,6 +180,7 @@ flowchart TB
 | `initial_sync_product_completed` | Gate order sync (≥97%) |
 | `warehouse_process_id` | Default building process |
 | `coa_id`, `deposit_coa_id`, `cash_bank_account_id` | Accounting |
+| `auto_add_transaction_platform` **(TO-BE)** | string: `yes` / `no` / `default_by_product` — mirror GC customer field naming |
 | `default_company_owner` | Default `owned_by` transaksi |
 | `is_so_general_default` | Default SO General (Others) |
 | `latest_sync_*` | Timestamp sync terakhir |
@@ -368,6 +369,7 @@ Priority (verified `Store.php`):
 | G-07 | Sync routes outside sanctum group | `Routes/api.php` lines 58–70 |
 | `GAP-ST-FM-01` | Fulfillment Mode (`fulfillment_mode`, form, datalist, validasi) belum ada — TO-BE, lihat requirement §4.8 dan §5.1 | `omni_stores`, `Form.vue`, `DataList.vue`, `StoreController.php` |
 | `GAP-ST-CB-01` | COA vs Cash/Bank exclusion untuk `coa_id` / `deposit_coa_id` — TO-BE, lihat requirement §3 V-19 dan §11 | `StoreController@select2Coa`, `@store`, `@update`; relasi `gs_company_detail_banks.chart_of_account_id` |
+| `GAP-ST-VAT-01` | Auto Add VAT (Platform Orders) + split FormSections — TO-BE, lihat requirement §4.9 | `omni_stores.auto_add_transaction_platform`; `Form.vue` Store Configuration; konsumen `SalesOrderDetailController` / sync detail path `type=platform` |
 
 ---
 
@@ -387,6 +389,16 @@ Priority (verified `Store.php`):
 - Soft-deleted cash bank record → COA id tidak lagi di-exclude.
 
 **Planned touchpoints:** `StoreController@select2Coa` (query exclude), validation block in `@store`/`@update`; FE `Form.vue` COA select2 params unchanged except API response set.
+
+### 11.1 Auto Add VAT (Platform Orders) — TO-BE (`GAP-ST-VAT-01`)
+
+| Item | Guidance |
+|------|----------|
+| FE | Split `FormSection` in `StoreBinding/Form.vue`: **Ownership & Fulfillment Defaults** vs **Accounting & Tax Defaults**; add Multiselect like GC `vat_options` |
+| Others UX | Field visible, `:disabled="true"`, helper note by customer GC |
+| Persist | Column on `omni_stores` (suggested `auto_add_transaction_platform`), default `default_by_product` |
+| Consumer | Platform SO detail create/sync when unit price set — read **store** setting; do **not** use `Company.auto_add_transaction_customer` for `type=platform` |
+| SO General | Unchanged — still customer company VAT |
 
 ---
 

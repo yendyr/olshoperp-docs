@@ -10,12 +10,20 @@ Menu **Product Profit Loss** (Accounting) — laporan profit & loss per SKU.
 
 **Maintenance owner:** QA — Yemima
 
+## Changelog
+
+| Date | Version | Changes |
+|------|---------|---------|
+| 2026-08-11 | 1.4 | TO-BE **Gross Sales** = Price Before VAT (+ tooltip); GAP **G-13** |
+| 2026-06-29 | 1.3 | Related menus & draft 3-layer |
+
 ## Ringkasan cepat
 
 - **Path UI:** `/accounting/product-profit-loss`
 - **Sumber data:** [Dev - Sales Order](../sales-order-general/), [Dev - Sales Platform](../omni-sales-platform/), [Outbound External](../supplychain-mutation-outbound/)
+- **Gross Sales (TO-BE):** Price Before VAT setelah disc line — selaras Total COGS tanpa PPN ([requirement §5.1](./requirement.md#51-kolom-datalist--formula))
 - **Import file:** Tidak ada (report-only)
-- **Gap utama:** modal 14 kolom (G-01 dev backlog), Advanced Filter (G-02 dev backlog)
+- **Gap utama:** **G-13** Gross Before VAT · modal 14 kolom (G-01) · Advanced Filter (G-02)
 - **Next MVP:** summary chart, Sales Return / Failed Ship / Settlement
 - **AS-IS by design:** snapshot lazy + cleanup hourly; filter `wh_process_id`
 

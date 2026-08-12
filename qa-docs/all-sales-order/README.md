@@ -10,22 +10,25 @@ Route: `/businessdevelopment/all-sales-order`
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
-**User-guide:** v1.1 · `source_version` 1.2  
-**Version (3 layer):** 1.3–1.4 · **Last updated:** 2026-08-05
+**User-guide:** v1.2 · `source_version` 1.6  
+**Version (3 layer):** 1.6 · **Last updated:** 2026-08-12
 
 ## Peran vs dua menu sumber
 
 | Menu | Doc | Peran |
 |------|-----|-------|
 | [Dev - Sales Platform](../omni-sales-platform/) | Marketplace sync | Tipe **platform** |
-| [Dev - Sales Order](../sales-order-general/) | SO internal + dual import | Tipe **general** (v3.1) |
-| [Store](../omni-store-binding/) | **Fulfillment Mode** | Gate Processed / Non Processed |
+| [Dev - Sales Order](../sales-order-general/) | SO internal + dual import | Tipe **general** (v3.4) |
+| [Store](../omni-store-binding/) | Fulfillment Mode · Auto Add VAT Platform | Gate import · VAT platform |
+| [Benchmark COGS](../accounting-product-benchmark-price/) | Error Flag + Manual COGS | Shared `cogs-error` · effective snapshot |
 | **All Sales Order** | Window | Monitor, Recheck, import dual (paritas SOG) |
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.6 | 2026-08-12 | TO-BE verify Auto Add VAT (platform) + Benchmark COGS Manual effective snapshot; GAP-ASO-04/05 |
+| 1.5 | 2026-08-11 | TO-BE Error Flag **Below Benchmark COGS**; GAP-ASO-03 / GAP-BM-13 |
 | 1.4 | 2026-08-05 | Cross-ref Shopee escrow unit price (SP v1.2); KB troubleshooting harga |
 | 1.3 | 2026-07-22 | Dual import **Import Processed** / **Import Non-Processed**; user-guide 1.1 |
 | 1.2 | 2026-07-15 | Recheck AS-IS; residual O-01…O-03 |

@@ -33,7 +33,7 @@ Proposal: [`_meta/proposals/feature-map-and-capability-lingo.md`](../_meta/propo
 | SF-DL-06 | Action rules | menu | AS-IS | stub | requirement · Datalist actions | — | overview |
 | SF-HDR-01 | Create / header lock | menu | AS-IS | stub | KB · Status / requirement field lock | Ya | overview |
 | SF-CN-01 | [How CN is created](#sf-lingo:SF-CN-01) | menu | AS-IS | detailed | capabilities · sf-cn-01 | Ya | overview |
-| SF-DET-01 | [Receiving Destination — Use / Bulk Use](#sf-lingo:SF-DET-01) | menu | AS-IS | detailed | capabilities · sf-det-01 | Ya | overview |
+| SF-DET-01 | [Receiving Destination — Cash/Bank & Free COA](#sf-lingo:SF-DET-01) | menu | TO-BE+AS-IS | detailed | capabilities · sf-det-01 | Ya | overview |
 | SF-CN-02 | [Total / Paid / Outstanding](#sf-lingo:SF-CN-02) | menu | AS-IS | detailed | capabilities · sf-cn-02 | Ya | tips |
 | SF-CN-03 | [Use in Account Receive](#sf-lingo:SF-CN-03) | menu | AS-IS | detailed | capabilities · sf-cn-03 | Ya | overview |
 | SF-IMP-01 | [Import Credit Note](#sf-lingo:SF-IMP-01) | menu | AS-IS | detailed | capabilities · sf-imp-01 | Ya | overview |

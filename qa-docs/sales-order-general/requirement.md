@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.2
-last_updated: 2026-07-23
+version: 3.4
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
-aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code]
+aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
 ---
 
 # Dev - Sales Order (Sales Order General) — Requirement Documentation
@@ -26,6 +26,8 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.4 | 2026-08-12 | QA - Yemima | TO-BE snapshot **Benchmark COGS** = effective Manual COGS (§8.2 / GAP-BM-14 consumer) |
+| 3.3 | 2026-08-11 | QA - Yemima | TO-BE Error Flag **Below Benchmark COGS** (§8.1); GAP-SOG-14 → GAP-BM-13 |
 | 2.4 | 2026-07-09 | QA - Yemima | Bundle proporsi + benchmark COGS |
 | 3.0 | 2026-07-22 | QA - Yemima | Rewrite dari SoT v1.0: datalist, status, import, ASO window, gap registry GAP-SOG-01…06 |
 | 3.1 | 2026-07-22 | QA - Yemima | TO-BE: dual import **Import Processed** / **Import Non-Processed** + Fulfillment Mode store; GAP-SOG-07…12 |
@@ -360,6 +362,31 @@ flowchart TB
 | Import Excel | Ya — **Import Processed** & **Import Non-Processed** | Tidak | Ya (kedua tombol, pola General) |
 | Edit | Luas draft/open | Mostly read-only | Tergantung tipe |
 
+### 8.1 Error Flag **Below Benchmark COGS** (TO-BE — paritas Platform)
+
+Shared Omni Error Flag engine. Improve flag `cogs-error`:
+
+| Aspek | TO-BE |
+|-------|--------|
+| Label / filter | `Below Benchmark COGS` |
+| Icon | `money-bill-trend-down` (merah) |
+| Surfaces | Header datalist + baris detail SKU under |
+| Compare | Price Before VAT → primary (× rate) `<` snapshot Benchmark COGS; `benchmark_cogs = 0` → no flag |
+| Impact | Block schedule auto-approve only; manual approve OK |
+| Capture | Flag/snapshot line tidak ikut master berubah; refresh via delete + reinsert detail |
+
+Kanonik: [Benchmark COGS §6.5](../accounting-product-benchmark-price/requirement.md#65-error-flag-below-benchmark-cogs-to-be--improve-cogs-error) · **GAP-SOG-14** / **GAP-BM-13**.
+
+### 8.2 Benchmark COGS snapshot — effective Manual COGS (TO-BE · GAP-BM-14)
+
+| Aspek | TO-BE |
+|-------|--------|
+| Nilai snapshot | **Effective COGS** = Manual COGS jika override aktif, else rumus |
+| Manual = 0 | Valid → snapshot 0 |
+| Trigger | Create detail / import line / ganti `product_id` |
+| Snapshot | Order lama tidak live-update saat Manual master berubah |
+| Kanonik | [Benchmark §3.5](../accounting-product-benchmark-price/requirement.md#35-manual-cogs-override-to-be-v13) · sibling [Sales Platform §6.6](../omni-sales-platform/requirement.md#66-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14) |
+
 ---
 
 ## 9. Gap Registry
@@ -379,6 +406,8 @@ flowchart TB
 | GAP-SOG-11 | Non-Processed: auto-retry teknis + UI progress ala Skip Wave | UX/job gagal transient tanpa sinyal jelas | Open (TO-BE) |
 | GAP-SOG-12 | Trx date OB = order+10s; SI = outbound+10s | Konsistensi timestamp hilir | Open (TO-BE) |
 | GAP-SOG-13 | Sheet 2 `Other Cost/Disc Code`: jika kode ada di Other Cost **dan** Other Discount, AS-IS pilih cost diam-diam; TO-BE order harus gagal import + pesan ambigu | Order bisa dapat cost padahal user maksud discount (atau sebaliknya); data keuangan salah tanpa sinyal | Open (TO-BE fix) |
+| GAP-SOG-14 | Error Flag Below Benchmark COGS (icon/tooltip/filter/detail) — shared dengan Platform/ASO; spec kanonik GAP-BM-13 | Ops sulit filter under-COGS di list General | Open (TO-BE) |
+| GAP-SOG-15 | Snapshot Benchmark COGS = effective Manual COGS (GAP-BM-14 consumer) | Capture masih rumus mentah | Open (TO-BE) |
 
 ---
 

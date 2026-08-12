@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.8
-last_updated: 2026-08-05
+version: 2.9
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
 ---
@@ -11,9 +11,10 @@ status: review
 # Purchase Order — Technical Documentation
 
 **API prefix:** `supplychain/purchase-order`  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.8  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.9  
 **Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)  
-**Import VAT TO-BE:** locked 5 Agu 2026 — GAP-PO-11 / brief `Brief-Dev-PO-Import-VAT-Columns.md`
+**Import VAT TO-BE:** locked 5 Agu 2026 — GAP-PO-11 / brief `Brief-Dev-PO-Import-VAT-Columns.md`  
+**Multi-select products TO-BE:** GAP-PO-12 — Without PR **Select Multiple Products**; With PR **Select Outstanding PR Products** (+ keep Available Products)
 
 ---
 
@@ -79,6 +80,19 @@ flowchart TB
 | GET | `/purchase-order/{id}/log/approve` | approval log |
 | GET | `/purchase-order/payment_and_currency/{supplier}` | defaults |
 | GET | `/purchase-order-detail/outstanding` | PR outstanding |
+| GET | `/purchase-order-detail/select2-product` | Select Product (filters by `is_without_pr`) |
+
+### 4.1 Select Multiple / Outstanding checkbox (TO-BE · GAP-PO-12)
+
+| Type | FE label | List source | Qty on add | Notes |
+|------|----------|-------------|------------|-------|
+| Without PR | **Select Multiple Products** | Master filter (= select2 without PR) | **1** | Show text button (today hidden when `is_without_pr`) |
+| With PR | **Select Outstanding PR Products** | Outstanding PR details | **Remaining outstanding** | Keep **Available Products** → Use → Single Use |
+| Both | — | — | — | Guard `detail_count + selected > max_child_500` (500) → reject entire batch |
+
+Suggested: reuse/extend bulk create paths in `PurchaseOrderDetailController` (existing `bulk_product_id` / allocate) + Transfer/PR modal checkbox UX.
+
+---
 | POST | `/purchase-order/{po}/purchase-order-detail` | store detail |
 | POST | `/purchase-order-detail/{pr_id}/bulk-use` | bulk use PR lines |
 | GET | `/purchase-requisition-detail/{id}/show-for-po` | Single Use modal + prices |
@@ -367,6 +381,7 @@ Print loads supplier, details, approvals; totals **without** other cost/disc.
 | GAP-PO-09 | UI Σ DPP+VAT 2dp +0,01 vs Total — **Accepted** known behavior (27 Jul) |
 | GAP-PO-10 | Export DPP/VAT 4dp — **TO-BE** |
 | GAP-PO-11 | Import VAT I–K + partial success + Align Allocate Full/bulk tax — **TO-BE locked** 5 Agu 2026 |
+| GAP-PO-12 | Select Multiple Products (Without PR) + Select Outstanding PR Products (With PR); keep Available Products — **TO-BE** |
 | DEV-PO-07 | Without PR import max 100 vs With PR 500 |
 
 Full gap narrative: [requirement §19–§21](./requirement.md).

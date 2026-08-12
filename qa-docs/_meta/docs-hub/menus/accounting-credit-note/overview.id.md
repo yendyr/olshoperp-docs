@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: accounting-credit-note
 menu_name: Credit Note
 lang: id
-version: 1.0
-last_updated: 2026-07-29
+version: 1.1
+last_updated: 2026-08-05
 status: draft
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/technical/user-guide).
+notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/technical/user-guide). Sync free COA TO-BE 2026-08-05.
 ---
 
 ## Modul/Fitur: Credit Note
@@ -19,11 +19,11 @@ notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/t
 ## Istilah penting
 
 * **Credit Note (CN-):** Dokumen kredit / deposit customer.
-* **Receiving Destination:** Baris Cash/Bank yang menampung nilai CN.
+* **Receiving Destination:** Baris fund yang menampung nilai CN — **Cash/Bank** dan/atau **Free COA** (COA leaf non-kas seperti Equity; TO-BE).
 * **Total / Paid / Outstanding:** Total fund; yang sudah dipakai di AR approved; sisa di list.
 * **Billed return:** Retur sales yang otomatis membuat CN approved (invoice pernah dibayar).
 * **Unbilled return:** **Tidak** membuat CN — jalur akuntansi berbeda.
-* **Deposit COA:** Akun deposit customer/store yang wajib terisi agar CN bisa di-approve.
+* **Deposit COA:** Akun deposit customer/store yang wajib terisi agar CN bisa di-approve (tidak boleh dipakai sebagai Free COA).
 
 ## Kapan dipakai
 
@@ -68,7 +68,7 @@ flowchart LR
 ### Urutan eksekusi (manual)
 
 1. **Buat header** — tanggal, customer, mata uang, kurs.  
-2. **Receiving Destination** — Use / Bulk Use Cash/Bank; amount > 0.  
+2. **Receiving Destination** — Use / Bulk Use Cash/Bank dan/atau Free COA (TO-BE); amount > 0.  
 3. **Approve** — jurnal terbit; saldo siap untuk Account Receive.  
 4. **Pakai** — pilih CN sebagai deposit di Account Receive.
 

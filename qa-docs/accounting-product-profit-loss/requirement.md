@@ -2,15 +2,15 @@
 doc_type: requirement
 menu: accounting-product-profit-loss
 menu_name: "Product Profit Loss"
-version: 1.3
-last_updated: 2026-06-29
+version: 1.4
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: draft
 ---
 
 # Product Profit Loss — Requirement Documentation
 
-> **DRAFT** — Konsolidasi requirement bisnis (23 Juni 2026) + verifikasi AS-IS codebase (29 Juni 2026). Belum final review QA/PM.
+> **DRAFT** — Konsolidasi requirement bisnis (23 Juni 2026) + verifikasi AS-IS codebase (29 Juni 2026) + TO-BE Gross Sales Before VAT (11 Agustus 2026). Belum final review QA/PM.
 
 **Modul:** Accounting  
 **Menu UI:** FA → Report → Product Profit Loss (`/accounting/product-profit-loss`)  
@@ -22,6 +22,7 @@ status: draft
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.4 | 2026-08-11 | QA - Yemima | TO-BE **Gross Sales** = Price Before VAT (setelah disc line); tooltip revisi; GAP **G-13**; turunan Net/Margin/Avg ikut |
 | 1.0 | 2026-06-23 | QA - Yemima | Requirement bisnis awal (sumber: diskusi Finance) |
 | 1.1 | 2026-06-29 | QA - Yemima | Verifikasi codebase; tambah AS-IS vs TO-BE; gap analysis; section import (N/A) |
 | 1.2 | 2026-06-29 | QA - Yemima | Roadmap gap (G-01/02 dev, G-03/06/11 AS-IS); penjelasan `wh_process_id` |
@@ -167,19 +168,42 @@ Mata uang tampilan: **IDR** (primary currency via `CurrencyProcess::getPrimaryCu
 | F-11 | SKU link | Klik SKU di datalist | Buka `/supplychain/product/edit/{id}` tab baru |
 | F-12 | SO link di modal | Klik SO Code | Buka `/businessdevelopment/all-sales-order/edit/{id}` |
 
-### 5.1 Kolom Datalist & Formula (AS-IS = Requirement)
+### 5.1 Kolom Datalist & Formula
 
-| Kolom | Formula / Sumber (verified code) |
-|-------|----------------------------------|
+| Kolom | Formula / Sumber |
+|-------|------------------|
 | Product SKU / Name | `product_sku`, `product_name` dari snapshot |
 | Qty Sold | `SUM(sod.sales_order_quantity_in_base_unit) / stock_conversion_rate` per SO+product, lalu `SUM` per SKU |
 | Primary Unit | `scm_units.code` dari `p.stock_unit_id` |
-| Gross Sales | `each_price` (atau before discount) × discount% × VAT rule × qty × `exchange_rate`; **tanpa** additional discount summary order |
-| Total COGS | Outbound approved: `somd.outbound_quantity_in_base_unit × sis.each_price_before_vat`, proporsional ke primary unit |
-| Net Profit | Gross Sales − Total COGS |
+| Gross Sales (**AS-IS**) | `each_price` (atau before discount) × discount% × **VAT rule** × qty × `exchange_rate`; tanpa additional discount summary order |
+| Gross Sales (**TO-BE v1.4**) | **Price Before VAT** (setelah disc line, tanpa PPN) × qty × `exchange_rate` — setara kolom SO detail / accessor after-discount-before-VAT; **tanpa** VAT include/exclude multiplier; tanpa additional disc/cost header |
+| Total COGS | Outbound approved: `somd.outbound_quantity_in_base_unit × sis.each_price_before_vat`, proporsional ke primary unit (**tidak berubah**) |
+| Net Profit | Gross Sales − Total COGS *(ikut Gross baru)* |
 | Profit Margin (%) | `(Net Profit / Gross Sales) × 100`; jika Gross Sales = 0 → 0 |
-| Avg. Selling Price | Gross Sales / Qty Sold |
+| Avg. Selling Price | Gross Sales / Qty Sold *(ikut Gross baru → rata-rata sebelum PPN)* |
 | Avg. Buying Price | Total COGS / Qty Sold |
+
+#### 5.1.1 Gross Sales — Before vs After (v1.4)
+
+| Aspek | Before (AS-IS) | After (TO-BE) |
+|-------|----------------|---------------|
+| Basis harga | Unit price + aturan VAT (include/exclude) | **Price Before VAT** setelah disc line |
+| PPN dalam Gross | Ya (include / ditambahkan) | **Tidak** |
+| Label kolom | Gross Sales | Gross Sales *(tetap)* |
+| Tooltip | *…after discounts, including VAT.* | *…Price Before VAT… excluding VAT…* (lihat §5.1.2) |
+| COGS / filter / modal | — | **Tidak diubah** |
+
+**Contoh:** jual 110 (include PPN 10%), qty 1, COGS 80 → AS-IS Gross 110 / Net 30 / ~27%; TO-BE Gross **100** / Net **20** / **20%**.
+
+#### 5.1.2 Tooltip Gross Sales (TO-BE)
+
+**AS-IS FE:** `The total shown based on the product price after discounts, including VAT.`
+
+**TO-BE:** `The total selling amount based on Price Before VAT from Sales Order line details (after line discount, excluding VAT), converted to primary currency. Order-level additional discounts/costs are not included.`
+
+Lihat **G-13**.
+
+---
 
 ### 5.2 Aturan `wh_process_id` (Warehouse Process)
 
@@ -292,7 +316,7 @@ flowchart LR
 | Kontribusi | Field / logika di PPL |
 |------------|----------------------|
 | **Qty Sold** | `sales_order_quantity_in_base_unit` per detail → konversi primary unit |
-| **Gross Sales** | `each_price`, `sales_discount`, `vat`, qty, `exchange_rate` per detail |
+| **Gross Sales** | **AS-IS:** `each_price`, `sales_discount`, `vat`, qty, `exchange_rate` · **TO-BE (G-13):** Price Before VAT (after line disc) × qty × `exchange_rate` |
 | **Filter eligible** | Status Approved/Processed, `wh_process_id` terisi, tanggal SO dalam periode |
 | **Modal detail** | `sales_order_code`, `store_name`, `transaction_date`; link edit ke All Sales Order |
 
@@ -419,6 +443,7 @@ Requirement end user **tidak membahas** topik berikut. Perilaku codebase **diper
 
 | # | Item | Requirement | AS-IS | Action |
 |---|------|-------------|-------|--------|
+| **G-13** | Gross Sales Before VAT + tooltip | §5.1 / §5.1.2 | Gross include/after VAT; tooltip “including VAT” | **Improvement** — samakan basis dengan COGS (tanpa PPN) |
 | **G-01** | Modal detail 14 kolom audit | §6.2 | 6 kolom | **Tim dev akan implementasi** sesuai requirement |
 | **G-02** | Advanced Filter SearchBuilder | §4.2 | `advanced_filter=false` | **Tim dev akan implementasi** (`advanced_filter=true` + operator per kolom) |
 
@@ -472,6 +497,10 @@ Jika requirement masa depan menambah import, buat section terpisah di menu sumbe
 | T-07 | Export All | File `Product Profit Loss_{dd-mm-yyyy H.i.s}.xlsx` |
 | T-08 | Detail Orders | Modal 6 kolom |
 | T-09 | Variant Status Random | Hanya baris dengan `so_detail_random_id` |
+| T-10 | Tax include 110 / COGS 80 (G-13) | Gross **100**, Net **20**, margin **20%** |
+| T-11 | Tax exclude Before VAT 100 | Gross **100** (bukan 110) |
+| T-12 | Tooltip Gross Sales | Tidak lagi “including VAT”; menyebut Price Before VAT |
+| T-13 | Header additional disc | Gross tidak berkurang |
 | T-10 | Tunggu >1 jam tanpa refresh | Snapshot lama terhapus scheduler → buka menu trigger generate lagi |
 
 ---

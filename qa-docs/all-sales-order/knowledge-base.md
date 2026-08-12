@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.4
-last_updated: 2026-08-05
+version: 1.6
+last_updated: 2026-08-12
 owner: QA - Yemima
 status: review
-aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed]
+aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS]
 ---
 
 # All Sales Order — Knowledge Base
@@ -69,6 +69,9 @@ Tombol ada di halaman ini (bukan di list Dev Sales Platform). Memeriksa ulang fl
 | Import gagal karena mode store | Samakan tombol dengan **Fulfillment Mode** di Store |
 | Perlu buat order manual | Create di ASO atau Dev Sales Order |
 | Tidak ada Recheck di Sales Platform | By design — pakai All Sales Order |
+| Ingin filter order harga di bawah HPP | TO-BE: advanced filter Error Flag **Below Benchmark COGS** (paritas Platform / Dev Sales Order) — [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md) |
+| Cek PPN otomatis order marketplace | TO-BE: baris **platform** ikut **Auto Add VAT (Platform Orders)** di Store — [Store KB](../omni-store-binding/knowledge-base.md); baris general tetap setting customer GC |
+| Nilai Benchmark COGS di line | TO-BE: snapshot **COGS efektif** (Manual COGS jika aktif) — paritas SP/SOG |
 
 ---
 

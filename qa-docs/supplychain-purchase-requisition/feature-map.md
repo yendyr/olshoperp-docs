@@ -31,7 +31,7 @@ Downstream: [Purchase Order](../supplychain-purchase-order/). Proposal: [`_meta/
 | SF-DL-05 | [Export (with/without detail)](#sf-lingo:SF-DL-05) | hybrid | AS-IS | stub | shared · export · This Page Only | Ya | slice |
 | SF-DL-07 | Bulk Approve / Bulk Delete | menu | AS-IS | missing | FE DataList — belum card | Ya | pending |
 | SF-HDR-01 | Create / Save / header lock | menu | AS-IS | stub | KB · Basic Information | Ya | overview |
-| SF-DET-01 | [Add / edit detail SKU](#sf-lingo:SF-DET-01) | menu | AS-IS | detailed | capabilities · sf-det-01 | Ya | overview |
+| SF-DET-01 | [Add / edit detail SKU](#sf-lingo:SF-DET-01) | menu | AS-IS + TO-BE multi | detailed | capabilities · sf-det-01 | Ya | overview |
 | SF-IMP-01 | [Import Detail](#sf-lingo:SF-IMP-01) | menu | AS-IS | detailed | capabilities · sf-imp-01 | Ya | overview |
 | SF-PR-01 | [Complete vs Closed](#sf-lingo:SF-PR-01) | menu | AS-IS | detailed | capabilities · sf-pr-01 | Ya | overview |
 | SF-PR-02 | [Void vs Delete](#sf-lingo:SF-PR-02) | menu | AS-IS | detailed | capabilities · sf-pr-02 | Ya | tips |

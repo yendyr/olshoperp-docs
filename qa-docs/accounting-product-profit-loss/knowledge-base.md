@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-product-profit-loss
 menu_name: "Product Profit Loss"
-version: 1.3
-last_updated: 2026-06-29
+version: 1.4
+last_updated: 2026-08-11
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -14,7 +14,7 @@ sections:
 
 # Product Profit Loss — Knowledge Base
 
-> **DRAFT** — Dokumentasi operator AS-IS dari codebase (29 Juni 2026). Belum final review QA/PM.
+> **DRAFT** — Dokumentasi operator AS-IS + TO-BE Gross Sales Before VAT (11 Agustus 2026). Belum final review QA/PM.
 
 ## 1. Apa itu Product Profit Loss?
 
@@ -32,8 +32,8 @@ Menu ini **hanya untuk melihat laporan** — tidak bisa menambah atau mengubah t
 |---------|------|
 | Qty Sold | Jumlah terjual dikonversi ke **Primary Unit** produk |
 | Primary Unit | Satuan utama SKU di Master Product (bukan unit di order) |
-| Gross Sales | Total harga jual per SKU setelah diskon item + PPN, **tanpa** diskon tambahan level summary order |
-| Total COGS | Nilai stok keluar (HPP) dari Outbound yang sudah Approved |
+| Gross Sales | Total harga jual per SKU **sebelum PPN** (Price Before VAT setelah diskon item) — **TO-BE**; AS-IS masih termasuk PPN. **Tanpa** diskon tambahan level summary order |
+| Total COGS | Nilai stok keluar (HPP) dari Outbound yang sudah Approved (**tanpa PPN**) |
 | Net Profit | Gross Sales − Total COGS |
 | Profit Margin (%) | Net Profit ÷ Gross Sales × 100% |
 | Snapshot | Data laporan disimpan sementara di server agar loading berikutnya lebih cepat |
@@ -141,14 +141,16 @@ Menutup modal tanpa mengubah data.
 | Product SKU / Product Name | Identitas produk; SKU bisa diklik ke master |
 | Qty Sold | Total qty terjual (primary unit) dalam periode |
 | Primary Unit | Satuan utama produk |
-| Gross Sales | Penjualan kotor (after item discount, include VAT) |
+| Gross Sales | Penjualan kotor dari **Price Before VAT** di detail order (setelah disc item, **tanpa PPN**) — *TO-BE; AS-IS masih including VAT* |
 | Total COGS | Total biaya pokok dari outbound approved |
 | Net Profit | Gross Sales − Total COGS |
 | Profit Margin (%) | Persentase margin |
-| Avg. Selling Price | Rata-rata harga jual per unit |
+| Avg. Selling Price | Rata-rata harga jual per unit (= Gross ÷ Qty; ikut basis Gross) |
 | Avg. Buying Price | Rata-rata HPP per unit |
 
-Tooltip (ikon ?) di header kolom menjelaskan formula singkat.
+Tooltip (ikon ?) di header kolom menjelaskan formula singkat. Setelah improvement Gross Before VAT, tooltip Gross Sales **harus** bilang excluding VAT (bukan “including VAT”).
+
+**Kenapa Before VAT?** Total COGS juga tanpa PPN. Kalau Gross include PPN, margin terlihat lebih tinggi dari sebenarnya.
 
 ---
 
@@ -286,6 +288,12 @@ Data laporan otomatis terbentuk dari transaksi yang **sudah ada** di sistem.
 
 **Q: Apa beda Primary Unit di sini dengan unit di order?**  
 A: Primary Unit dari Master Product. Di modal detail, Qty sudah dikonversi ke primary unit.
+
+**Q: Kenapa Gross Sales tidak termasuk PPN? (TO-BE)**  
+A: Supaya sama dengan Total COGS yang juga tanpa PPN. Kalau Gross include PPN, margin terlihat lebih tinggi. Sumbernya = **Price Before VAT** di detail Sales Order (setelah diskon baris).
+
+**Q: Kenapa setelah Refresh Data margin saya turun?**  
+A: Setelah rumus Gross Before VAT live, regenerate periode memakai angka jual tanpa PPN — itu expected (lebih akurat), bukan bug COGS.
 
 **Q: Kenapa additional discount di summary order tidak mengurangi Gross Sales?**  
 A: Diskon summary tidak melekat ke SKU tertentu — desain perhitungan per produk.
