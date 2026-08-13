@@ -19,10 +19,12 @@ In-app Help Center (Lark-like homepage + sidebar Module→Menu→Layer). **No da
 |------|------|
 | [home.md](./home.md) | Hero title / subtitle |
 | [getting-started.md](./getting-started.md) | Getting Started cards |
+| [n8n-automation.md](./n8n-automation.md) | Homepage section **n8n Automation Docs** |
+| [n8n-automation/](./n8n-automation/) | Catalog + one markdown file per n8n workflow |
 | [academy.md](./academy.md) | Academy placeholders |
 
-API: `GET /api/qa-docs/hub/home`, `hub/tree`, `hub/modules/{key}`, `hub/whats-new`.
+API: `GET /api/qa-docs/hub/home`, `hub/introduction`, `hub/n8n-automation`, `hub/n8n-automation/{slug}`, `hub/tree`, `hub/modules/{key}`, `hub/whats-new`.
 
-FE routes: `/docs`, `/docs/:module`, `/docs/:module/:menuSlug/:layer?`.
+FE routes: `/docs`, `/docs/introduction`, `/docs/n8n-automation`, `/docs/n8n-automation/:slug`, `/docs/:module`, `/docs/:module/:menuSlug/:layer?`.
 
 Per-menu **docs icon** (MenuDoc slideover) is unchanged.
