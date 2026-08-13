@@ -10,6 +10,7 @@ Menu **Credit Note** (Accounting / Account Receivable).
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 | Capability cards | [capabilities/](./capabilities/) | Lingo-style SF Entry | draft |
+| Test Cases | [test-cases/](./test-cases/) | QA | draft (5 DRAFT, ETM-15442) |
 
 **UI route:** `/accounting/credit-note`  
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-credit-note/`](../_meta/docs-hub/menus/accounting-credit-note/)  
