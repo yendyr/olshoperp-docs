@@ -166,6 +166,28 @@ Semua skenario, precondition, dan expected result harus merujuk ke docs yang ada
 
 ---
 
+## 7b. Istilah UI & URL fixture (WAJIB di TC)
+
+Sama semangat dengan `.cursor/rules/12-jira-card-format.mdc` § Istilah UI & URL fixture (cross-repo: `olshoperp` `15-jira-card-format.mdc`).
+
+### Label tombol / field / status
+
+- Pakai teks **persis** dari UI aplikasi atau dari `requirement.md` / `knowledge-base.md` / capability cards.
+- **Dilarang** mengarang alias (contoh salah: "Finance Complete" padahal tombol UI = **Complete**).
+- `title`, `summary`, `steps`, `expected_result`, `log_summary` harus konsisten satu istilah.
+
+### URL staging di TC
+
+Jika TC dijalankan dengan dokumen staging yang accessible:
+
+1. Sertakan URL **edit** di `preconditions` / `steps` / `test_data_used` / Catatan QA — bukan hanya code trx.
+2. Pola: `https://staging.olshoperp.com/{module}/{menu}/edit/{id}`
+3. Tabel fixture di Catatan QA wajib kolom URL yang bisa diklik.
+
+Anti-pola: steps "klik Finance Complete" tanpa link edit Sales Return.
+
+---
+
 ## 8. Struktur folder test-cases
 
 ```

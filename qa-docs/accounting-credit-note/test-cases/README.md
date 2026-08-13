@@ -12,5 +12,7 @@ Prefix folder baru: `ARCN`. File masih DRAFT sampai `#renumber-tc accounting-cre
 | PENDING-20260813150413 | APPROVE — ditolak jika amount fund masih 0 (termasuk Free COA) | draft | ❌ | 2026-08-13 |
 | PENDING-20260813150414 | EDIT header — currency tanpa Cash/Bank aktif ditolak | draft | ❌ | 2026-08-13 |
 | PENDING-20260813154200 | CREATE+APPROVE — CN hanya Free COA (tanpa baris Cash/Bank) berhasil di-approve | draft | ❌ | 2026-08-13 |
+| PENDING-20260813162500 | IMPORT — Excel tetap bank-only; Free COA di GL Acc ditolak | draft | ❌ | 2026-08-13 |
+| PENDING-20260813211300 | E2E — Complete Sales Return billed → auto-generate Credit Note type COA | **failed** | ❌ | 2026-08-13 |
 
-Belum ada TC (sesi Playwright 13 Aug 2026): Import Excel bank-only, Sales Return billed type `COA`.
+E2E billed SR type COA: `PENDING-20260813211300` — **FAILED** (klik **Complete** → 422 reconcile). Error: [ETM-15537](https://erpintegration.atlassian.net/browse/ETM-15537) (relates [ETM-15534](https://erpintegration.atlassian.net/browse/ETM-15534) + [ETM-15442](https://erpintegration.atlassian.net/browse/ETM-15442)).

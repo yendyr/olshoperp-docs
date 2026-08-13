@@ -18,6 +18,44 @@ Format: `[Nama Menu] - short desc`
 - `[Nama Menu]` = nama menu sistem yang tertera di aplikasi — **tidak boleh diubah, disingkat, atau diterjemahkan**
 - Short desc: padat, langsung ke gejala/konteks, maksimal ±15 kata
 - Berlaku konsisten untuk Bug, Improvement, maupun Change Requirement
+- Judul & Summary: **1 gejala utama**, istilah = label UI/docs — jangan menumpuk jargon proses internal agent
+
+---
+
+## Istilah UI & URL fixture (WAJIB — semua tipe)
+
+Rule ini lahir dari feedback QA pada finding card (contoh ETM-15537). Melanggar = card / TC membingungkan dev.
+
+**Cross-repo:** isi section yang sama ada di `olshoperp/.cursor/rules/15-jira-card-format.mdc` (+ twin AI). Ubah di satu tempat → sync keduanya.
+
+### Dilarang mengarang istilah
+
+| ❌ Karangan agent | ✅ Sumber istilah |
+|-------------------|-------------------|
+| Alias aksi yang tidak ada di UI (mis. "Finance Complete") | Label tombol/field/status **persis** di aplikasi |
+| Nama proses internal agent / chat | `qa-docs/{slug}/requirement.md`, `knowledge-base.md`, capability/user-guide |
+| Parafrase label ("klik selesai finance") | String di FE (contoh tombol Sales Return Accounting: **Complete**) |
+
+Sebelum menulis **judul, summary, steps, expected, actual** (Jira **atau** TC docs):
+
+1. Cek label di FE Vue (tombol, tooltip, status) **atau** istilah di QA docs menu terkait di repo ini / mirror di olshoperp.
+2. Pakai **kata yang sama** di seluruh card/TC (judul = steps = expected).
+3. Jika ragu label mana yang benar → buka form/edit page dulu; **jangan tebak**.
+
+### URL staging wajib jika fixture ada
+
+Jika finding/TC dari tes dengan **data asli di staging yang accessible**:
+
+1. **Wajib** taruh URL halaman **edit** dokumen (bukan hanya code trx / datalist).
+2. Minimal: Environment (`URL (retest)`), Precondition Data, dan Steps to Reproduce (langkah buka dokumen).
+3. Pola: `https://staging.olshoperp.com/{module}/{menu}/edit/{id}`
+4. Code saja tanpa URL (`SR-5U46JLS9` tanpa link edit) = **kurang** — dev harus bisa klik langsung.
+
+Contoh anti-pola yang **dilarang**:
+
+- Judul: `Finance Complete billed Sales Return…` ← istilah karangan
+- Steps: `Klik Finance Complete` + tidak ada URL edit SR
+- Benar: judul/steps pakai **Complete**; steps buka `…/accounting/sales-return/edit/{id}` lalu klik **Complete**
 
 ---
 
@@ -38,20 +76,23 @@ Format: `[Nama Menu] - short desc`
 ---
 
 **Environment**
-- Menu/Fitur: [menu utama - sub-fitur]
+- Menu/Fitur: [menu utama - sub-fitur / aksi UI persis, mis. Complete]
 - Environment: [Staging / Production / UAT — jika tidak disebutkan: "Not specified"]
+- URL (retest): [wajib jika fixture staging ada — link **edit** dokumen utama]
 
 ---
 
 **Precondition Data**
 [kondisi data/state yang harus ada sebelum steps dijalankan: status store, status product, kondisi binding, role user, dll]
+[Jika ada dokumen staging: sertakan code + URL edit tiap dokumen relevan]
 [Tulis "Precondition tidak disebutkan" jika reporter tidak memberikan info ini — jangan ditebak]
 
 ---
 
 **Steps to Reproduce**
-1. [langkah konkret — sertakan nama file/data spesifik jika ada]
-2. ...
+1. [buka URL edit dokumen jika fixture sudah ada — jangan hanya sebut code]
+2. [langkah konkret — label tombol/field = teks UI, bukan alias agent]
+3. ...
 
 ---
 
@@ -80,6 +121,7 @@ Format: `[Nama Menu] - short desc`
 4. Error message, ID, nama file — salin verbatim, jangan parafrase
 5. Jika input mengandung lebih dari satu bug berbeda → proses bug utama yang paling jelas, informasikan ke user bahwa sebaiknya dipecah jadi tiket terpisah
 6. Precondition Data adalah section permanen — selalu ada meski isinya "Precondition tidak disebutkan"
+7. Istilah aksi/field = label UI/docs; URL edit fixture staging wajib jika data accessible (lihat section Istilah UI & URL fixture)
 
 ---
 
@@ -287,6 +329,8 @@ expected result perlu dikonfirmasi ke QA lead sebelum card difinalisasi.]
 - [ ] Nama menu di `[]` tidak diubah dari nama asli di sistem?
 - [ ] Semua section ada dengan separator `---`?
 - [ ] Tidak ada istilah yang diganti/ditambah sendiri di luar input reporter?
+- [ ] Label tombol/field/status di judul–steps = teks UI atau QA docs (bukan alias karangan agent)?
+- [ ] Jika fixture staging accessible: URL **edit** ada di Environment / Precondition / Steps?
 - [ ] Tidak ada jargon teknis di section utama (Summary/Steps/Expected/Actual)?
 - [ ] Expected Result sudah divalidasi dari requirement.md?
 - [ ] Additional Context kosong ditulis "(tidak ada catatan tambahan)", bukan dihapus?
