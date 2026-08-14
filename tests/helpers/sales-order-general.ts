@@ -917,7 +917,8 @@ export class SalesOrderGeneralPage {
   }
 
   /**
-   * Import Processed dari datalist Dev - Sales Order (upload Excel).
+   * Import Processed: buka Import History → Import → upload xlsx.
+   * Upload API adalah PUT (bukan POST).
    */
   async importProcessedFromFile(
     filePath: string,
@@ -925,35 +926,41 @@ export class SalesOrderGeneralPage {
   ): Promise<{ soCode: string; uploadBody: Record<string, unknown> | null }> {
     await this.gotoDatalist();
 
-    const importTrigger = this.page
+    const processed = this.page
       .getByRole('button', { name: /Import Processed/i })
-      .or(this.page.getByRole('menuitem', { name: /Import Processed/i }))
-      .or(this.page.getByText(/^Import Processed$/i))
       .first();
-
-    if (!(await importTrigger.isVisible({ timeout: 5_000 }).catch(() => false))) {
-      const importMenu = this.page
-        .getByRole('button', { name: /^Import$/i })
-        .or(this.page.getByText(/^Import$/i))
-        .first();
-      await expect(importMenu, 'Tombol Import').toBeVisible({ timeout: 20_000 });
-      await importMenu.click();
-    }
-
-    if (await importTrigger.isVisible({ timeout: 8_000 }).catch(() => false)) {
-      await importTrigger.click();
-    }
-
-    const fileInput = this.page.locator('input[type="file"]').last();
-    await expect(fileInput, 'Input file import SO').toBeAttached({
+    await expect(processed, 'Tombol Import Processed').toBeVisible({
       timeout: 20_000,
+    });
+    await processed.click();
+
+    const dialog = this.page
+      .getByRole('dialog')
+      .filter({ hasText: /Import History/i });
+    await expect(dialog, 'Dialog Import History').toBeVisible({ timeout: 20_000 });
+
+    const importInDialog = dialog.getByRole('button', { name: /^Import$/i }).first();
+    await expect(importInDialog).toBeVisible({ timeout: 15_000 });
+    await importInDialog.click();
+
+    const uploadItem = this.page
+      .getByRole('menuitem', { name: /Upload File/i })
+      .or(this.page.getByText(/^Upload File$/i))
+      .first();
+    if (await uploadItem.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await uploadItem.click();
+    }
+
+    const fileInput = dialog.locator('input[type="file"]').first();
+    await expect(fileInput, 'Input file di Import History').toBeAttached({
+      timeout: 15_000,
     });
 
     const uploadResponse = this.page.waitForResponse(
       (response) =>
         /omnichannel\/sales-order\/upload/.test(response.url()) &&
-        response.request().method() === 'POST',
-      { timeout: 180_000 },
+        ['PUT', 'POST'].includes(response.request().method()),
+      { timeout: 120_000 },
     );
 
     await fileInput.setInputFiles(filePath);
@@ -970,6 +977,7 @@ export class SalesOrderGeneralPage {
     }
 
     await waitForSuccessToast(this.page, 30_000).catch(() => undefined);
+    await this.page.keyboard.press('Escape').catch(() => undefined);
 
     const soCode = await this.findSoCodeByPlatformOrderId(platformOrderId);
     if (!soCode) {
@@ -1008,7 +1016,7 @@ export class SalesOrderGeneralPage {
     const auth = await readAuthFromPage(this.page);
     if (!auth.token) throw new Error('Token kosong — tidak bisa upload import');
     const fs = await import('fs');
-    const res = await this.page.request.post(
+    const res = await this.page.request.put(
       `${getApiUrl()}/omnichannel/sales-order/upload?type=general`,
       {
         headers: {

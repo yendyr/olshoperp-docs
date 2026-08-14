@@ -55,12 +55,22 @@ function writeJson(name: string, data: unknown): void {
   fs.writeFileSync(path.join(RESULT_DIR, name), JSON.stringify(data, null, 2));
 }
 
+function loadMasterExpired(): Awaited<
+  ReturnType<ProductBenchmarkPricePage['readSkuRow']>
+> | null {
+  const file = path.join(RESULT_DIR, 'master-row.json');
+  if (!fs.existsSync(file)) return null;
+  return JSON.parse(fs.readFileSync(file, 'utf8')) as Awaited<
+    ReturnType<ProductBenchmarkPricePage['readSkuRow']>
+  >;
+}
+
 function soEditUrl(id: string | null | undefined): string | null {
   if (!id) return null;
   return `https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/${id}`;
 }
 
-test.describe.serial('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', () => {
+test.describe('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', () => {
   test.describe.configure({ timeout: 300_000 });
 
   let masterExpired: Awaited<
@@ -111,6 +121,7 @@ test.describe.serial('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', ()
   test('[@ETM-15493][@AC-EXPIRED-SO] Create line Select Product → snapshot = rumus efektif', async ({
     page,
   }) => {
+    masterExpired = masterExpired ?? loadMasterExpired();
     expect(masterExpired, 'Master expired harus terbaca dulu').toBeTruthy();
 
     await prepareSession(page, {
@@ -152,6 +163,7 @@ test.describe.serial('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', ()
   test('[@ETM-15493][@AC-EXPIRED-IMPORT] Import Sales Order → snapshot = rumus efektif', async ({
     page,
   }) => {
+    masterExpired = masterExpired ?? loadMasterExpired();
     expect(masterExpired, 'Master expired harus terbaca dulu').toBeTruthy();
 
     await prepareSession(page, {
@@ -292,6 +304,7 @@ test.describe.serial('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', ()
   test('[@ETM-15493][@AC-TRXDATE] Trx date 01-08-2026 lalu insert SKU expired → rumus vs Manual', async ({
     page,
   }) => {
+    masterExpired = masterExpired ?? loadMasterExpired();
     expect(masterExpired, 'Master expired harus terbaca dulu').toBeTruthy();
 
     await prepareSession(page, {
