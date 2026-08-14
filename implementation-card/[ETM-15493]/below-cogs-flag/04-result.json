@@ -1,0 +1,52 @@
+{
+  "soCode": "SO-5U4GZRI3",
+  "soId": "2515638",
+  "soUrl": "https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515638",
+  "master": {
+    "cogsNumber": 51900,
+    "cogsText": "51.900",
+    "description": "Last Inbound",
+    "manualCogsText": "47.000",
+    "manualNumber": 47000,
+    "expiryText": "13-08-2026"
+  },
+  "unitPriceRequested": 49000,
+  "comparePrice": 49000,
+  "snapshot": 51900,
+  "uiCogs": {
+    "cellText": "(kolom tidak ketemu; headers= | System Product SKU System Product Name |  | ATS QTY | SO QTY | Unit | Price | DISC. | DPP | VAT | Total Price | Action)",
+    "number": null,
+    "rowText": "SKU-ManualCOGSWith... [With Expired Date... - 0 Pieces 0 % - - IDR 49.000,00"
+  },
+  "uiFlag": {
+    "rowText": " SKU-ManualCOGSWith... [With Expired Date... - 0 Pieces 0 % - - IDR 49.000,00 ",
+    "headerText": "",
+    "tooltip": "",
+    "cellHtml": "<td class=\"text-center\" role=\"cell\" data-pc-section=\"bodycell\" data-pc-name=\"bodycell\" pc84=\"\" data-p-selection-column=\"true\" data-p-cell-editing=\"false\" style=\"width: fit-content; border-bottom: 2px solid rgb(var(--color-primary) / .1); vertical-align: middle;\"><div class=\"p-checkbox p-component dark:bg-darkmode-900/20 dark:border-darkmode-900/20\" data-pc-name=\"pcrowcheckbox\" data-pc-extend=\"checkbox\" pc86=\"\" data-pc-section=\"root\" data-p-checked=\"false\" data-p-disabled=\"false\" data-p=\"\"><input type=\"checkbox\" class=\"p-checkbox-input !shadow-sm  cursor-pointer disabled:cursor-not-allowed !transition-all !duration-100 !ease-in-out !border !rounded !border-current !dark:border-transparent !checked:border-primary !checked:border-opacity-10  focus:ring-1 focus:ring-offset-0 focus:ring-primary focus:ring-opacity-20 dark:focus:ring-slate-700 dark:focus:ring-opacity-50 !dark:bg-darkmode-800 !checked:bg-primary ![&amp;amp;:disabled:not(:checked)]:bg-slate-100 !dark:disabled:bg-darkmode-800/50 !disabled:checked:opacity-70 checkbox-icon !opacity-100 !appearance-none !w-[1rem] !h-[1rem]\" aria-label=\"Row Unselected\" data-pc-section=\"input\"><div class=\"p-checkbox-box !hidden dark:bg-darkmode-900/20 dark:border-darkmode-900/20 border border-slate-200\" data-pc-section=\"box\" data-p=\"\"><!----></div></div></td><td class=\"\" role=\"cell\" data-pc-section=\"bodycell\" data-pc-name=\"bodycell\" pc87=\"\" data-p-selection-column=\"false\" data-p-editable-column=\"true\" data-p-cell-editing=\"false\" style=\"text-align: left; width: fit-content; border-bottom: 2px solid rgb(var(--color-primary) / .1); vertical-align: middle;\"><div data-v-344d5a14=\"\"><div data-v-344d5a14=\"\" class=\"flex items-center gap-1\"><div data-v-344d5a14=\"\" id=\"pv_id_88\" class=\"p-select p-component p-inputwrapper grow dark:bg-darkmode-900/20 dark:border-darkmode-900/20 w-full\" data-p=\"\" data-pc-name=\"select\" pc88=\"\" data-pc-section=\"root\"><span class=\"p-select-label p-placeholder dark:bg-darkmode-900/20 dark:border-darkmode-900/20 w",
+    "hasIcon": true,
+    "hasCogsErrorClass": false,
+    "visibleLabels": [
+      " SKU-ManualCOGSWith... [With Expired Date... - 0 Pieces 0 % - - IDR 49.000,00 "
+    ]
+  },
+  "errorState": {
+    "preventAutoApprove": true,
+    "hasCogsErrorKey": false,
+    "hasBelowBenchmarkLabel": false,
+    "flagLabels": [
+      "benchmark_cogs=51900.0000"
+    ]
+  },
+  "usesFormula": true,
+  "usesManual": false,
+  "priceBelowSnapshot": true,
+  "flagPresent": true,
+  "line": {
+    "id": 3188705,
+    "sku": "",
+    "benchmarkCogs": 51900,
+    "productId": 92113,
+    "priceBeforeVat": 49000,
+    "eachPrice": 49000
+  }
+}

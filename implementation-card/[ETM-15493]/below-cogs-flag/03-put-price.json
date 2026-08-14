@@ -1,0 +1,5 @@
+{
+  "ok": true,
+  "status": 200,
+  "body": "{\"status\":{\"error\":0,\"title\":\"Success\",\"message\":\"The data has been success updated\"},\"data\":{\"id\":3188705,\"status\":1,\"is_all_company\":0,\"updated_at\":\"2026-08-14T09:02:07.000000Z\",\"sales_order_id\":2515638,\"product_id\":92113,\"product_omni_id\":null,\"sales_order_quantity\":1,\"sales_order_quantity_unit_id\":34,\"sales_order_quantity_conversion_rate\":1,\"sales_order_quantity_in_base_unit\":1,\"sales_order_quantity_base_unit_id\":34,\"platform_quantity\":null,\"required_delivery_date\":null,\"description\":null,\"vat\":0,\"sales_discount\":0,\"each_price\":49000,\"each_price_before_discount_before_vat\":49000,\"each_price_before_discount_incl_vat\":49000,\"origin_price\":0,\"is_complete\":0,\"warranty_id\":null,\"prepared_to_out_quantity\":0,\"processed_to_out_quantity\":0,\"prepared_to_do_quantity\":0,\"processed_to_do_quantity\":"
+}
