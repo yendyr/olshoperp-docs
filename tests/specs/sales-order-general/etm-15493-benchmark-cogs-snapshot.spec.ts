@@ -178,12 +178,12 @@ test.describe('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', () => {
       {
         transactionDate: '14-08-2026',
         customerCode: 'BUYER-OFFLINE-1',
-        storeName: 'Store A',
+        storeName: 'Store Staging',
         platformOrderId,
         shipperServiceCode: 'STD1001',
         sku: SKU_EXPIRED,
         qty: 1,
-        unit: 'Pieces',
+        unit: 'PCS',
         price: 100000,
       },
     ]);
