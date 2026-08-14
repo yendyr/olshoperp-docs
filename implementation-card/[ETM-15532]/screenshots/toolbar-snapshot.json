@@ -1,0 +1,56 @@
+{
+  "dateValue": "13-08-2026 19:58:00",
+  "importVisible": true,
+  "inputs": [
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "id": "",
+      "name": "",
+      "role": null,
+      "aria": null,
+      "placeholder": "Search menu...(Ctrl+K)",
+      "value": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "search",
+      "id": "dt-search-0",
+      "name": "",
+      "role": null,
+      "aria": null,
+      "placeholder": " find something ...",
+      "value": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "id": "pv_id_6",
+      "name": "",
+      "role": "combobox",
+      "aria": null,
+      "placeholder": "Default to current time",
+      "value": "13-08-2026 19:58:00"
+    },
+    {
+      "tag": "INPUT",
+      "type": "file",
+      "id": "",
+      "name": "",
+      "role": null,
+      "aria": null,
+      "placeholder": "",
+      "value": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "file",
+      "id": "",
+      "name": "",
+      "role": null,
+      "aria": null,
+      "placeholder": "",
+      "value": ""
+    }
+  ]
+}
