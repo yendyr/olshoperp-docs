@@ -215,6 +215,11 @@ export class SalesPlatformPage {
     }
     await dismissStagingBanner(this.page);
     await this.expandPlatformDetail();
+    await this.page
+      .getByText(/no data available in table/i)
+      .first()
+      .waitFor({ state: 'hidden', timeout: 20_000 })
+      .catch(() => undefined);
   }
 
   async expandPlatformDetail(): Promise<void> {
