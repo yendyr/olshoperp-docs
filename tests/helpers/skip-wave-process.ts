@@ -99,62 +99,82 @@ export class SkipWaveProcessPage {
     return value;
   }
 
-  async triggerImport(filePath: string): Promise<void> {
-    const hiddenInput = this.fileInput.first();
-    if ((await hiddenInput.count()) > 0) {
-      await hiddenInput.setInputFiles(filePath);
-      await this.page.waitForTimeout(1_000);
-      return;
-    }
+  get uploadFileItem(): Locator {
+    return this.page.getByRole('button', { name: 'Upload File', exact: true });
+  }
+
+  get downloadTemplateItem(): Locator {
+    return this.page.getByRole('button', {
+      name: 'Download Template',
+      exact: true,
+    });
+  }
+
+  lastNativeDialogMessage = '';
+
+  private armNativeDialogCapture(): void {
+    this.lastNativeDialogMessage = '';
+    this.page.once('dialog', async (dialog) => {
+      this.lastNativeDialogMessage = dialog.message();
+      await dialog.dismiss().catch(() => undefined);
+    });
+  }
+
+  async clickImportThenMaybeAttach(filePath: string): Promise<boolean> {
+    this.armNativeDialogCapture();
+
+    await this.importControl.click();
+    const uploadItem = this.uploadFileItem;
+    await expect(uploadItem, 'Menu Import → Upload File').toBeVisible({
+      timeout: 8_000,
+    });
 
     const chooserPromise = this.page
       .waitForEvent('filechooser', { timeout: 8_000 })
       .catch(() => null);
-    await this.importControl.click();
-    const chooser = await chooserPromise;
-    if (chooser) {
-      await chooser.setFiles(filePath);
-      await this.page.waitForTimeout(1_000);
-    }
-  }
 
-  /**
-   * Klik Import dulu (dialog empty-date bisa muncul sebelum file picker).
-   * Return true jika dialog empty-date sudah terlihat.
-   */
-  async clickImportThenMaybeAttach(filePath: string): Promise<boolean> {
-    const chooserPromise = this.page
-      .waitForEvent('filechooser', { timeout: 5_000 })
-      .catch(() => null);
+    await uploadItem.click();
 
-    await this.importControl.click();
-
-    if (await this.waitForEmptyDateConfirmation(2_500)) {
+    if (await this.hasEmptyDateConfirmation(2_000)) {
       return true;
     }
 
     const chooser = await chooserPromise;
     if (chooser) {
       await chooser.setFiles(filePath);
-      await this.page.waitForTimeout(800);
-      return this.waitForEmptyDateConfirmation(5_000);
+    } else {
+      const fileInputs = this.fileInput;
+      const count = await fileInputs.count();
+      if (count > 0) {
+        await fileInputs.nth(count - 1).setInputFiles(filePath);
+      }
     }
 
-    const hiddenInput = this.fileInput.first();
-    if ((await hiddenInput.count()) > 0) {
-      await hiddenInput.setInputFiles(filePath);
-      await this.page.waitForTimeout(800);
-      return this.waitForEmptyDateConfirmation(5_000);
-    }
-
-    return this.waitForEmptyDateConfirmation(5_000);
+    await this.page.waitForTimeout(1_200);
+    return this.hasEmptyDateConfirmation(6_000);
   }
 
-  async waitForEmptyDateConfirmation(timeoutMs = 8_000): Promise<boolean> {
-    return this.confirmDialogBody
+  async hasEmptyDateConfirmation(timeoutMs = 8_000): Promise<boolean> {
+    if (this.nativeDialogLooksLikeEmptyDateConfirm()) {
+      return true;
+    }
+    const htmlVisible = await this.confirmDialogBody
       .first()
       .isVisible({ timeout: timeoutMs })
       .catch(() => false);
+    return htmlVisible || this.nativeDialogLooksLikeEmptyDateConfirm();
+  }
+
+  nativeDialogLooksLikeEmptyDateConfirm(): boolean {
+    const msg = this.lastNativeDialogMessage.replace(/\s+/g, ' ');
+    return (
+      /Processing Order Date is empty/i.test(msg) ||
+      /tanggal belum diisi/i.test(msg)
+    );
+  }
+
+  async waitForEmptyDateConfirmation(timeoutMs = 8_000): Promise<boolean> {
+    return this.hasEmptyDateConfirmation(timeoutMs);
   }
 
   async dismissConfirmation(): Promise<void> {

@@ -117,11 +117,8 @@ test.describe('ETM-15532 — Skip Wave Process empty Processing Order Date confi
       'Processing Order Date harus terisi sebelum skenario tanpa dialog',
     ).toBeTruthy();
 
-    await sw.triggerImport(FIXTURE);
-    await page.waitForTimeout(2_000);
+    const appeared = await sw.clickImportThenMaybeAttach(FIXTURE);
     await capture(page, '06-after-import-filled-date');
-
-    const appeared = await sw.waitForEmptyDateConfirmation(3_000);
     expect(
       appeared,
       `Dialog "${ETM_15532_CONFIRM_TEXT}" tidak boleh muncul jika Processing Order Date sudah terisi. Nilai tanggal: "${filled}"`,
