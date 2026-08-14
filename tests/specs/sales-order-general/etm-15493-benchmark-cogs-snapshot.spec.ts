@@ -308,7 +308,6 @@ test.describe('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', () => {
     await so.openCreateOrAutoEdit();
     await so.fillHeaderDescription(DESC_TRX);
     await so.setTransactionDate('01-08-2026 00:00:00');
-    await so.clickSaveAllAndWait();
     await capture(page, '11-so-trxdate-before-sku');
 
     const dateAfterSave = await so.readTransactionDateDisplay();

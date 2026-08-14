@@ -816,20 +816,55 @@ export class SalesOrderGeneralPage {
 
   async setTransactionDate(display: string): Promise<void> {
     await this.expandBasicInformation();
-    const input = this.transactionDateInput;
+    const viaApi = await this.setTransactionDateViaApi(display).catch(() => false);
+    if (viaApi) return;
+
+    const input = this.page
+      .locator('xpath=//*[contains(normalize-space(),"Transaction Date")]/following::input[1]')
+      .first();
     await expect(input, 'Transaction Date').toBeVisible({ timeout: 20_000 });
     await input.click({ clickCount: 3 });
     await input.fill('');
     await input.pressSequentially(display, { delay: 40 });
     await this.page.keyboard.press('Enter').catch(() => undefined);
     await this.page.keyboard.press('Escape').catch(() => undefined);
-    await this.page.waitForTimeout(400);
-    await this.page
-      .locator('#BasicInformation')
-      .getByText(/Basic Information/i)
-      .first()
-      .click({ force: true })
-      .catch(() => undefined);
+    await this.clickSaveAllAndWait();
+  }
+
+  async setTransactionDateViaApi(display: string): Promise<boolean> {
+    const so = await this.fetchSalesOrderApi();
+    if (!so) return false;
+    const id = this.currentEditId();
+    if (!id) return false;
+    const auth = await readAuthFromPage(this.page);
+    if (!auth.token) return false;
+    const payload = {
+      with_quotation: so.with_quotation ?? 0,
+      store_id: so.store_id,
+      currency_id: so.currency_id,
+      exchange_rate: so.exchange_rate,
+      shipping_platform_system_id: so.shipping_platform_system_id,
+      customer_id: so.customer_id,
+      transaction_date: display,
+    };
+    const res = await this.page.request.put(
+      `${getApiUrl()}/omnichannel/sales-order/${id}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+        data: payload,
+      },
+    );
+    if (!res.ok()) {
+      const body = await res.text();
+      throw new Error(`PUT transaction_date gagal HTTP ${res.status()}: ${body.slice(0, 400)}`);
+    }
+    await this.page.reload({ waitUntil: 'domcontentloaded' });
+    await dismissStagingBanner(this.page);
+    await this.expandBasicInformation();
+    return true;
   }
 
   async readTransactionDateDisplay(): Promise<string> {
