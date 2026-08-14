@@ -21,7 +21,7 @@ import {
  * | # | Langkah | Method | Halaman |
  * | 1 | Master expired SKU | searchSku + readSkuRow | Benchmark COGS |
  * | 2 | Create line Select Product | addProductViaSelectProduct | edit SO |
- * | 3 | Import Sales Order (Processed) | importProcessedFromFile | datalist |
+ * | 3 | Import Sales Order (Processed), trx date 01-08-2026 | importProcessedFromFile | datalist |
  * | 4 | SO SKU rumus murni KKTOR | fillHeaderDescription + Select Product | edit SO |
  * | 5 | SO trx date 01-08-2026 lalu insert SKU expired | setTransactionDate + Select Product | edit SO |
  * | 6 | SO SKU bundle | addProductViaSelectProduct | edit SO |
@@ -176,7 +176,7 @@ test.describe('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', () => {
     const xlsxPath = path.join(RESULT_DIR, 'import-expired-manual.xlsx');
     await writeSalesOrderImportXlsx(xlsxPath, [
       {
-        transactionDate: '14-08-2026',
+        transactionDate: '01-08-2026',
         customerCode: 'BUYER-OFFLINE-1',
         storeName: 'Store Staging',
         platformOrderId,
@@ -221,12 +221,17 @@ test.describe('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', () => {
       url: soEditUrl(soId),
       snapshot,
       details,
+      requestedTransactionDate: '01-08-2026',
       transactionDate: header?.transaction_date,
       createdAt: header?.created_at,
       masterCogs: masterExpired?.cogsNumber,
       masterManual: masterExpired?.manualCogsText,
     });
 
+    expect(
+      isJakartaCalendarDate(header?.transaction_date, 2026, 8, 1),
+      `Trx date import harus 1 Agustus 2026 (Excel 01-08-2026). API=${header?.transaction_date}`,
+    ).toBeTruthy();
     expect(snapshot, 'Snapshot import line harus ada').not.toBeNull();
     if (masterExpired?.cogsNumber != null && snapshot != null) {
       expect(
@@ -410,6 +415,25 @@ test.describe('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', () => {
     ).toBeTruthy();
   });
 });
+
+/** API ISO (UTC) → tanggal kalender Asia/Jakarta. */
+function isJakartaCalendarDate(
+  apiIso: unknown,
+  year: number,
+  month: number,
+  day: number,
+): boolean {
+  const raw = String(apiIso ?? '');
+  if (!raw) return false;
+  const parsed = Date.parse(raw);
+  if (!Number.isFinite(parsed)) return false;
+  const jakarta = new Date(parsed + 7 * 60 * 60 * 1000);
+  return (
+    jakarta.getUTCFullYear() === year &&
+    jakarta.getUTCMonth() + 1 === month &&
+    jakarta.getUTCDate() === day
+  );
+}
 
 function parseIdNumber(text: string): number | null {
   const digits = text.replace(/[^\d]/g, '');

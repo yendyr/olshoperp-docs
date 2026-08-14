@@ -933,8 +933,12 @@ export class SalesOrderGeneralPage {
     await this.datalist.search(code);
     const row = this.page.getByRole('row').filter({ hasText: code }).first();
     await expect(row, `SO ${code} di datalist`).toBeVisible({ timeout: 45_000 });
-    const edit = row.locator('#updateButton, a[href*="/edit/"]').first();
-    await edit.click();
+    const href = await row.locator('a[href*="/edit/"]').first().getAttribute('href');
+    if (href) {
+      await this.page.goto(href, { waitUntil: 'domcontentloaded' });
+    } else {
+      await row.locator('#updateButton').first().click();
+    }
     await this.page.waitForURL(SO_GENERAL_EDIT_PATH_PATTERN, { timeout: 45_000 });
     await dismissStagingBanner(this.page);
     await this.expandBasicInformation();
@@ -1011,28 +1015,38 @@ export class SalesOrderGeneralPage {
 
     await waitForSuccessToast(this.page, 30_000).catch(() => undefined);
 
-    const historyRow = dialog.locator('table tbody tr, [role="row"]').nth(1);
     let historyText = '';
-    for (let i = 0; i < 30; i++) {
-      historyText = ((await historyRow.innerText().catch(() => '')) ?? '').replace(
-        /\s+/g,
-        ' ',
-      );
-      if (/Success|Failed|Partial success/i.test(historyText)) break;
+    for (let i = 0; i < 45; i++) {
+      const rows = dialog.locator('table tbody tr');
+      const n = await rows.count().catch(() => 0);
+      for (let r = 0; r < Math.min(n, 8); r++) {
+        const text = ((await rows.nth(r).innerText().catch(() => '')) ?? '').replace(
+          /\s+/g,
+          ' ',
+        );
+        const isOldBulk = /1\.007|1007/.test(text);
+        if (
+          /Success|Failed|Partial success/i.test(text) &&
+          !isOldBulk
+        ) {
+          historyText = text;
+          const failedLink = rows.nth(r).getByText(/Validation Failed/i).first();
+          if (await failedLink.isVisible().catch(() => false)) {
+            await failedLink.click();
+            await this.page.waitForTimeout(1_500);
+          }
+          break;
+        }
+      }
+      if (historyText) break;
       await this.page.waitForTimeout(4_000);
-    }
-
-    const failedLink = historyRow.getByText(/Validation Failed/i).first();
-    if (await failedLink.isVisible().catch(() => false)) {
-      await failedLink.click();
-      await this.page.waitForTimeout(1_500);
     }
 
     await this.page.keyboard.press('Escape').catch(() => undefined);
     await this.page.waitForTimeout(500);
     await this.page.keyboard.press('Escape').catch(() => undefined);
 
-    const soCode = await this.findSoCodeByPlatformOrderId(platformOrderId, 12);
+    const soCode = await this.findSoCodeByPlatformOrderId(platformOrderId, 24);
     if (!soCode) {
       throw new Error(
         `Import SO ${platformOrderId} tidak muncul di datalist. History: ${historyText}. Upload: ${JSON.stringify(uploadBody)?.slice(0, 500)}`,
