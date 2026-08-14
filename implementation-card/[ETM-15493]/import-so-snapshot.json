@@ -1,0 +1,19 @@
+{
+  "platformOrderId": "ETM15493IMP92607559",
+  "soCode": "SO-5U4G6031",
+  "soId": "2515632",
+  "url": "https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515632",
+  "snapshot": 51900,
+  "details": [
+    {
+      "id": 3188694,
+      "sku": "",
+      "benchmarkCogs": 51900,
+      "productId": 92113
+    }
+  ],
+  "requestedTransactionDate": "01-08-2026",
+  "transactionDate": "2026-07-31T17:00:00.000000Z",
+  "masterCogs": 51900,
+  "masterManual": "55.000"
+}

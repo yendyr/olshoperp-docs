@@ -1,5 +1,5 @@
 {
-  "soCode": "SO-5U4FWEN4",
+  "soCode": "SO-5U4G6031",
   "uploadBody": {
     "status": {
       "error": 0,
@@ -8,6 +8,6 @@
     },
     "data": [],
     "recordsTotal": null,
-    "historyText": "SO-IMP-00IG11RGRF4L Success Processed 1.007 1.007 / 1.007 Validation Success 20 Validation Failed 987 20 / 20 Sales Order Created 20 Sales Order Failed 0 Amira Staging 12-08-2026 13:48:35"
+    "historyText": "SO-IMP-00IG3DCZ29A1 Success Processed 1 1 / 1 Validation Success 1 Validation Failed 0 1 / 1 Sales Order Created 1 Sales Order Failed 0 Playwright Use... 14-08-2026 14:00:58"
   }
 }
