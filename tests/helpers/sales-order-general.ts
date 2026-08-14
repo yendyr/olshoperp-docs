@@ -64,11 +64,9 @@ export class SalesOrderGeneralPage {
 
   get transactionDateInput(): Locator {
     return this.page
-      .locator('#BasicInformation')
       .getByRole('combobox')
       .filter({ hasText: /\d{2}-\d{2}-\d{4}/ })
-      .first()
-      .or(this.page.locator('#transaction_date input, #transaction_date'));
+      .first();
   }
 
   get selectProductCombobox(): Locator {
@@ -920,9 +918,10 @@ export class SalesOrderGeneralPage {
   ): Promise<{ soCode: string; uploadBody: Record<string, unknown> | null }> {
     await this.gotoDatalist();
 
-    const datalistImport = this.page
-      .getByRole('link', { name: 'Create', exact: true })
-      .locator('xpath=following::button[normalize-space()="Import"][1]');
+    const datalistImport = this.page.getByRole('button', {
+      name: /^Import$/i,
+      exact: true,
+    }).first();
     await expect(datalistImport, 'Tombol Import di datalist').toBeVisible({
       timeout: 20_000,
     });
