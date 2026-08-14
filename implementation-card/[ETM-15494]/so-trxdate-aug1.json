@@ -1,0 +1,40 @@
+{
+  "soId": "22194",
+  "soCode": "SO-679B1FF5",
+  "url": "https://staging.olshoperp.com/omni/sales-order/edit/22194",
+  "datePut": {
+    "ok": false,
+    "status": 422,
+    "body": "{\"status\":{\"error\":1,\"title\":\"Failed to process your request\",\"message\":\"The sales order type cannot be changed, because there is already detailed data.\"},\"data\":[]}"
+  },
+  "requestedTransactionDate": "01-08-2026",
+  "transactionDateApi": "2025-01-30T06:41:20.000000Z",
+  "snapshot": 51900,
+  "formulaExpectedIfNow": 51900,
+  "manualIfTrxDateBeforeExpiry": 55000,
+  "lockSource": "now / created_at (bukan trx date) — Manual sudah expired di 14 Aug",
+  "jakartaIs1Aug": false,
+  "details": [
+    {
+      "id": 1038,
+      "sku": "",
+      "platformSku": "",
+      "benchmarkCogs": 51900,
+      "productId": 92113
+    },
+    {
+      "id": 3188703,
+      "sku": "",
+      "platformSku": "",
+      "benchmarkCogs": 1000,
+      "productId": 58026
+    },
+    {
+      "id": 3188704,
+      "sku": "",
+      "platformSku": "",
+      "benchmarkCogs": 2000,
+      "productId": 58029
+    }
+  ]
+}

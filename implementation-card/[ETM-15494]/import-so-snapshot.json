@@ -1,0 +1,5 @@
+{
+  "status": "not_applicable",
+  "reason": "Dev - Sales Platform tidak punya Import Excel (SoT datalist: order dari sync marketplace; Create redirect SO General). Skenario import ETM-15493 tidak bisa diulang 1:1. Trigger setara = bind/ganti System SKU.",
+  "docs": "qa-docs/omni-sales-platform/requirement.md — datalist read-only"
+}
