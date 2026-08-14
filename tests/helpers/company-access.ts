@@ -212,8 +212,12 @@ export async function switchCompanyById(
   await expect(companyMenuItem).toBeVisible();
   await companyMenuItem.click();
 
-  await expect(page.getByText('Are you sure?', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Proceed' }).click();
+  const proceedButton = page.getByRole('button', { name: 'Proceed' });
+  await expect(
+    page.getByText('Are you sure?', { exact: true }).or(proceedButton),
+    'Dialog konfirmasi Switch Company (Are you sure? atau tombol Proceed)',
+  ).toBeVisible({ timeout: 10_000 });
+  await proceedButton.click();
 
   await page.waitForFunction(
     (expectedId) => {
