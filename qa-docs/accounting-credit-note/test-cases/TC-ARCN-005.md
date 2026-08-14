@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260813150414
+tc_code: TC-ARCN-005
 menu: accounting-credit-note
 menu_name: "Credit Note"
 title: "EDIT header — currency tanpa Cash/Bank aktif ditolak"

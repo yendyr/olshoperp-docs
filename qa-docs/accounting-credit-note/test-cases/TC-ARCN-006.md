@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260813154200
+tc_code: TC-ARCN-006
 menu: accounting-credit-note
 menu_name: "Credit Note"
 title: "CREATE+APPROVE — CN hanya Free COA (tanpa baris Cash/Bank) berhasil di-approve"

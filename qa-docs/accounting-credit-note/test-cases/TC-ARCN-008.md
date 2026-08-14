@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260813211300
+tc_code: TC-ARCN-008
 menu: accounting-credit-note
 menu_name: "Credit Note"
 title: "E2E — Complete Sales Return billed → auto-generate Credit Note type COA"

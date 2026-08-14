@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260813220210
+tc_code: TC-SPLG-002
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
 title: "LOG DATA — jenis log lookback Job Auto Sync Order (action Sync Order)"

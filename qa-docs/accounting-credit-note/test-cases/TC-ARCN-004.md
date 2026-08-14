@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260813150413
+tc_code: TC-ARCN-004
 menu: accounting-credit-note
 menu_name: "Credit Note"
 title: "APPROVE — ditolak jika amount fund masih 0 (termasuk Free COA)"

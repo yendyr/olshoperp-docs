@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260814062900
+tc_code: TC-VAR-007
 menu: supplychain-variant
 menu_name: "Master Variant"
 title: "Mutual exclusive Default Variant — ON baru men-OFF yang lama"
@@ -60,7 +60,7 @@ last_execution:
   jira: ETM-15511
 ---
 
-# PENDING-20260814062900
+# TC-VAR-007
 
 ## Catatan QA
 

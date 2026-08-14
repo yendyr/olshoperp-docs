@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260813150410
+tc_code: TC-ARCN-001
 menu: accounting-credit-note
 menu_name: "Credit Note"
 title: "EDIT — tambah Receiving Destination via Free COA Equity (modal)"

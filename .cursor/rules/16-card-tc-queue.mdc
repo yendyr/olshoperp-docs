@@ -89,4 +89,35 @@ Jangan simpan history card Done di file ini.
 
 `card_ref` lama = `origin_jira`. Jangan ditimpa saat re-test. Jangan simpan daftar semua card yang pernah me-retest TC ini di file TC.
 
-Jawaban “TC untuk ETM-xxxxx apa saja?” → `test-queue.yaml`, bukan reverse-list di `TC-*.md`.
+---
+
+## Testing specific Jira card (tim QA)
+
+Berlaku jika user minta **tes / testing / test case / re-test** untuk **satu** card (`ETM-xxxxx`), termasuk anggota tim — **tidak** wajib `#card-tc`.
+
+`#card-tc` tetap hanya untuk sync antrian To Do + QA Review. Lookup + pakai TC existing untuk satu card **boleh** tanpa `#card-tc`. Menulis `test-queue.yaml` tetap hanya via `#card-tc` atau follow-up `acc` di thread `#card-tc`.
+
+### Wajib cek dulu (jangan langsung buat TC baru)
+
+1. Baca `test-queue.yaml` key `ETM-xxxxx` (jika ada).
+2. Grep `origin_jira` dan `card_ref` di `qa-docs/**/test-cases/TC-*.md`.
+3. Gabungkan hasil: `ready_tcs` + `reuse` + file TC yang `origin_jira` / `card_ref` = card itu.
+
+| Hasil cek | Aksi |
+|-----------|------|
+| Queue `status: ready` | Pakai `ready_tcs` + `reuse`. Itu daftar yang harus di-test. Jangan duplikasi file TC. |
+| Queue `in_overview` / `needs_overview` | Jangan execute sebagai wajib run. Tampilkan usulan; tunggu acc. |
+| Tidak ada di queue, tapi ada TC `origin_jira` / `card_ref` | **Retest** pakai TC itu (card Done/hapus dari queue tidak menghapus katalog). Update `last_execution.jira` saat run. |
+| Tidak ketemu sama sekali | Jangan mengarang skenario. Ikuti `13-test-case-format.mdc` §1: konfirmasi user dulu, lalu DRAFT + cek duplikasi + expected dari requirement. |
+
+### TC baru untuk card yang sudah punya katalog
+
+Boleh jika ada **delta** (skenario belum tercover). Tetap:
+
+- Naming `TC-{PREFIX}-DRAFT-{timestamp}`
+- Scan duplikasi `title` / `steps` / expected di folder menu yang sama
+- `origin_jira: ETM-xxxxx` (sekali; jangan timpa origin TC lama)
+- `intent: extend` di queue jika entry masih in-flight
+- Jangan clone TC yang alurnya sama hanya karena card baru (itu `reuse` / retest)
+
+Execute Playwright mengikuti `14` / `15` — fidelity ke file TC yang sudah di-referensikan.

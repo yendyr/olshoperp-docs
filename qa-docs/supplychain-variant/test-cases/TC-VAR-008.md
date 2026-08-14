@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260814062915
+tc_code: TC-VAR-008
 menu: supplychain-variant
 menu_name: "Master Variant"
 title: "Edit — hapus opsi random unused tidak di-re-inject"
@@ -58,7 +58,7 @@ last_execution:
   jira: ETM-15511
 ---
 
-# PENDING-20260814062915
+# TC-VAR-008
 
 ## Catatan QA
 

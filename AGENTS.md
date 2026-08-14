@@ -60,7 +60,7 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `13-test-case-format.mdc` | Standar `TC-*.md`, DRAFT naming, `#renumber-tc` (semua menu), expected dari requirement, `origin_jira` / `last_execution` |
 | `14-playwright-e2e.mdc` | Eksekusi Playwright — fidelity TC, run scope, auth, POM |
 | `15-playwright-multi-repo.mdc` | BUILD vs RUN: docs-only re-test jika TC automation lengkap; FE/BE hanya BUILD/debug |
-| `16-card-tc-queue.mdc` | `#card-tc` → antrian `test-queue.yaml` (To Do / QA Review); overview dulu, run hanya `ready` |
+| `16-card-tc-queue.mdc` | `#card-tc` → antrian `test-queue.yaml`; tes card `ETM-xxxxx` = cek TC existing dulu, baru DRAFT jika delta |
 
 ## Playwright — dua mode (ringkas)
 

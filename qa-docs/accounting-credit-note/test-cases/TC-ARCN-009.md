@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260813214500
+tc_code: TC-ARCN-009
 menu: accounting-credit-note
 menu_name: "Credit Note"
 title: "EDIT — Free COA picker exclude Customer's Deposit COA"
@@ -41,7 +41,7 @@ steps:
 expected_result: |
   Customer's Deposit COA actor tidak muncul di Free COA picker (requirement §5.2).
   Free COA Equity (bukan Deposit, bukan bound Cash/Bank) tetap muncul — picker tidak rusak.
-  Bound Cash/Bank exclude sudah diuji terpisah di PENDING-20260813150411.
+  Bound Cash/Bank exclude sudah diuji terpisah di TC-ARCN-002.
 test_result:
   status: pass
   started_at: "2026-08-13 21:40"
@@ -67,7 +67,7 @@ run_history:
 
 ## Catatan QA
 
-AC ETM-15442: Free COA picker exclude **Customer's Deposit COA** (Company tagging / Store `deposit_coa_id`). Pair dengan TC bound Cash/Bank `PENDING-20260813150411`.
+AC ETM-15442: Free COA picker exclude **Customer's Deposit COA** (Company tagging / Store `deposit_coa_id`). Pair dengan TC bound Cash/Bank `TC-ARCN-002`.
 
 **PASS** — actor Deposit `2-104` (#4465) tidak pernah muncul di select2 Free COA untuk CN General ini.
 

@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260813220147
+tc_code: TC-SPLG-001
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
 title: "LOG DATA — kolom Total Order (platform ALL count) tampil di Sync Log"

@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260814071415
+tc_code: TC-SOPNAME-006
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
 title: "Print Detail — dokumen tanpa baris detail tetap generate"
@@ -52,7 +52,7 @@ last_execution:
   jira: ETM-15479
 ---
 
-# PENDING-20260814071415
+# TC-SOPNAME-006
 
 ## Catatan QA
 

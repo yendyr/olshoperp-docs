@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260813162500
+tc_code: TC-ARCN-007
 menu: accounting-credit-note
 menu_name: "Credit Note"
 title: "IMPORT — Excel tetap bank-only; Free COA di GL Acc ditolak"

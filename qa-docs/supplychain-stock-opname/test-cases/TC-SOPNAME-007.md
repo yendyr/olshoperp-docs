@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260814071430
+tc_code: TC-SOPNAME-007
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
 title: "Print opsi detail — COLLI DEV muncul di action Print"
@@ -50,7 +50,7 @@ last_execution:
   jira: ETM-15479
 ---
 
-# PENDING-20260814071430
+# TC-SOPNAME-007
 
 ## Catatan QA
 

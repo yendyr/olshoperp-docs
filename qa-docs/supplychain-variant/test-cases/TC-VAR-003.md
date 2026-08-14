@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260814062801
+tc_code: TC-VAR-003
 menu: supplychain-variant
 menu_name: "Master Variant"
 title: "Form toggle Default Variant + kolom list Default"
@@ -63,7 +63,7 @@ last_execution:
   jira: ETM-15511
 ---
 
-# PENDING-20260814062801
+# TC-VAR-003
 
 ## Catatan QA
 

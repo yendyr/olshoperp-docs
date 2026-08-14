@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260813150411
+tc_code: TC-ARCN-002
 menu: accounting-credit-note
 menu_name: "Credit Note"
 title: "EDIT — Free COA picker exclude COA terikat Master Cash/Bank"

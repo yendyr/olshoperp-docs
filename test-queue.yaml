@@ -197,21 +197,36 @@ ETM-15517:
 ETM-15522:
   menu: accounting-cash-bank-reconcile
   intent: extend
-  status: in_overview
+  status: ready
   reuse: [TC-CBR-001]
   drafts: []
-  ready_tcs: []
-  proposed:
-    - "CBR approve → lock COA+period; Journal/import Journal ditolak"
-    - "COA sama di tanggal luar period tetap muncul (Journal, AP, AR) — REOPEN fail"
-    - "Import AP/AR locked gagal di awal import, bukan hanya approve"
-    - "Instant Settlement: fail import + approve; pesan error menyebut BR-code"
-    - "COA lain / tanggal luar period tetap boleh"
-    - "Create/approve CBR gagal jika fiscal missing atau closed (per tanggal)"
+  ready_tcs:
+    - TC-CBR-001
+    - TC-CBR-003
+    - TC-CBR-004
+    - TC-CBR-005
+    - TC-CBR-006
+    - TC-CBR-007
+    - TC-CBR-008
+    - TC-CBR-009
+    - TC-CBR-010
+    - TC-CBR-011
+    - TC-CBR-012
+    - TC-CBR-013
+    - TC-CBR-014
+    - TC-CBR-015
+    - TC-CBR-016
+    - TC-CBR-017
+    - TC-CBR-018
+  validation_order:
+    - "1. Fiscal Period (missing / closed) — STOP, pesan fiscal. Jangan cek CBR lock."
+    - "2. Fiscal lolos → CBR Approved (lock) untuk COA + tanggal — STOP, pesan lock + BR-code."
+    - "Berlaku create manual DAN import: Journal, AP, AR, Credit Note, Debit Note, CBR sendiri."
+    - "Instant Settlement: validasi HANYA di Approve (trigger AR). Bukan di start import. Urutan sama: fiscal dulu, lalu CBR lock by date."
+  proposed: []
   jira_status: QA Review
   jira_type: Improvement
   summary: "REOPEN - [Cash Bank Reconcile] Lock akun cash/bank spesifik period setelah approval reconcille untuk mencegah transaksi tumpang tindih"
-
 ETM-15524:
   menu: supplychain-new-purchase-inbound
   intent: new
@@ -323,7 +338,7 @@ ETM-15534:
   intent: extend
   status: in_overview
   reuse: []
-  drafts: [TC-ARCN-DRAFT-20260813154200]
+  drafts: [TC-ARCN-006]
   ready_tcs: []
   jira_status: To Do
   jira_type: Error
@@ -334,7 +349,7 @@ ETM-15537:
   intent: new
   status: in_overview
   reuse: []
-  drafts: [TC-ARCN-DRAFT-20260813211300]
+  drafts: [TC-ARCN-008]
   ready_tcs: []
   jira_status: To Do
   jira_type: Error

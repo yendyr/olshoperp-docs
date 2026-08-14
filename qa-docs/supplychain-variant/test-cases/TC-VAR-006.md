@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260814062845
+tc_code: TC-VAR-006
 menu: supplychain-variant
 menu_name: "Master Variant"
 title: "Create/Edit Default Variant ON + opsi > 1 — save ditolak"
@@ -58,7 +58,7 @@ last_execution:
   jira: ETM-15511
 ---
 
-# PENDING-20260814062845
+# TC-VAR-006
 
 ## Catatan QA
 

@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260814062830
+tc_code: TC-VAR-005
 menu: supplychain-variant
 menu_name: "Master Variant"
 title: "Create Default Variant OFF + 1 opsi — tetap inject random"
@@ -61,7 +61,7 @@ last_execution:
   jira: ETM-15511
 ---
 
-# PENDING-20260814062830
+# TC-VAR-005
 
 ## Catatan QA
 

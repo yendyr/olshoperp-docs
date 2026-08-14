@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260814062815
+tc_code: TC-VAR-004
 menu: supplychain-variant
 menu_name: "Master Variant"
 title: "Create Default Variant ON + 1 opsi — save tanpa inject random"
@@ -63,8 +63,8 @@ last_execution:
   jira: ETM-15511
 ---
 
-# PENDING-20260814062815
+# TC-VAR-004
 
 ## Catatan QA
 
-Fixture: [edit 2964](https://staging.olshoperp.com/supplychain/variant/edit/2964) — setelah TC mutual exclusive, Default Variant di record ini di-unset (lihat PENDING-20260814062900).
+Fixture: [edit 2964](https://staging.olshoperp.com/supplychain/variant/edit/2964) — setelah TC mutual exclusive, Default Variant di record ini di-unset (lihat TC-VAR-007).

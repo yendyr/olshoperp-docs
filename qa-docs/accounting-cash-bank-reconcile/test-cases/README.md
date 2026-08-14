@@ -100,6 +100,36 @@
 
 
 
+## ETM-15522 — Period lock
+
+**Card:** [ETM-15522](https://erpintegration.atlassian.net/browse/ETM-15522) — lock Cash Bank Account + Period setelah **Approve**.  
+**Urutan validasi:** Fiscal Period dulu → baru CBR Approved lock.  
+**Instant Settlement:** hanya di **Approve** (bukan start import).  
+**Jangan** run TC-CBRAM-01–14 untuk card ini.
+
+Reuse precondition: [TC-CBR-001.md](./TC-CBR-001.md). Jalankan dulu `TC-CBR-004` (Approve → lock aktif) sebelum TC lock menu lain.
+
+| TC Code | Title | Status | Automated | Last Updated |
+|---------|-------|--------|-----------|-------------|
+| TC-CBR-003 | [CBR CREATE/APPROVE — fiscal missing/Closed dulu](./TC-CBR-003.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-004 | [CBR APPROVE — fiscal Open, lock aktif](./TC-CBR-004.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-005 | [JOURNAL CREATE — fiscal dulu, lalu lock](./TC-CBR-005.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-006 | [JOURNAL IMPORT — fiscal dulu, lalu lock](./TC-CBR-006.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-007 | [ACCOUNT PAYMENT CREATE — fiscal dulu, lalu lock](./TC-CBR-007.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-008 | [ACCOUNT PAYMENT IMPORT — fiscal dulu, lalu lock](./TC-CBR-008.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-009 | [ACCOUNT RECEIVE CREATE — fiscal dulu, lalu lock](./TC-CBR-009.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-010 | [ACCOUNT RECEIVE IMPORT — fiscal dulu, lalu lock](./TC-CBR-010.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-011 | [CREDIT NOTE CREATE — fiscal dulu, lalu lock](./TC-CBR-011.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-012 | [CREDIT NOTE IMPORT — fiscal dulu, lalu lock](./TC-CBR-012.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-013 | [DEBIT NOTE CREATE — fiscal dulu, lalu lock](./TC-CBR-013.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-014 | [DEBIT NOTE IMPORT — fiscal dulu, lalu lock](./TC-CBR-014.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-015 | [Account A di tanggal luar Period tetap muncul](./TC-CBR-015.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-016 | [Account B (COA lain) di tanggal Period tetap boleh](./TC-CBR-016.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-017 | [INSTANT SETTLEMENT APPROVE — fiscal dulu](./TC-CBR-017.md) | draft | ❌ | 2026-08-14 |
+| TC-CBR-018 | [INSTANT SETTLEMENT APPROVE — CBR lock](./TC-CBR-018.md) | draft | ❌ | 2026-08-14 |
+
+Nomor urut final via `#renumber-tc accounting-cash-bank-reconcile`.
+
 ## Catatan
 
 

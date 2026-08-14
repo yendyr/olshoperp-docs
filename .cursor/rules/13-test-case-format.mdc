@@ -17,6 +17,7 @@ Sebelum membuat TC baru, agent wajib:
 1. Baca `qa-docs/_meta/manifest.yaml` — verifikasi `{menu-slug}` valid
 2. Scan seluruh `TC-*.md` di folder `qa-docs/{menu-slug}/test-cases/` — cek duplikasi
 3. Baca `qa-docs/{menu-slug}/requirement.md` — verifikasi expected result
+4. Jika permintaan terkait card Jira (`ETM-xxxxx`): cek `test-queue.yaml` + grep `origin_jira` / `card_ref` dulu (`16-card-tc-queue.mdc` § Testing specific Jira card). TC existing → reuse/retest, jangan file baru kecuali ada delta.
 
 ---
 

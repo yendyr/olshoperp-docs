@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260814071401
+tc_code: TC-SOPNAME-005
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
 title: "Print Detail — dokumen Stock Opname sesuai layout template user"
@@ -64,7 +64,7 @@ last_execution:
   jira: ETM-15479
 ---
 
-# PENDING-20260814071401
+# TC-SOPNAME-005
 
 ## Catatan QA
 
