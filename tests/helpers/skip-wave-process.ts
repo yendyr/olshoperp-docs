@@ -198,15 +198,11 @@ export class SkipWaveProcessPage {
   }
 
   async dismissConfirmation(): Promise<void> {
-    const cancel = this.page
-      .getByRole('button', { name: /cancel|no|tutup|close|batal/i })
-      .or(this.page.locator('.swal2-cancel, button.btn-close'))
-      .first();
-    if (await cancel.isVisible().catch(() => false)) {
-      await cancel.click();
-      return;
-    }
     await this.page.keyboard.press('Escape');
+    await this.page.waitForTimeout(400);
+    if (await this.confirmDialogBody.first().isVisible().catch(() => false)) {
+      await this.page.keyboard.press('Escape');
+    }
   }
 
   async dumpToolbarSnapshot(): Promise<string> {
