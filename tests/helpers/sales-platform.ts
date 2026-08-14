@@ -361,6 +361,115 @@ export class SalesPlatformPage {
     return { ok: res.ok(), status: res.status(), body: body.slice(0, 500) };
   }
 
+  async searchProductBySku(sku: string): Promise<{
+    id: number;
+    sku: string;
+    stockUnitId: number | null;
+  } | null> {
+    const auth = await readAuthFromPage(this.page);
+    if (!auth.token) return null;
+    const res = await this.page.request.get(
+      `${getApiUrl()}/supplychain/product?start=0&length=20&search[value]=${encodeURIComponent(sku)}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+      },
+    );
+    if (!res.ok()) return null;
+    const body = (await res.json().catch(() => null)) as {
+      data?: Array<Record<string, unknown>>;
+    } | null;
+    const rows = Array.isArray(body?.data) ? body.data : [];
+    const match =
+      rows.find((row) => String(row.sku ?? '').toLowerCase() === sku.toLowerCase()) ??
+      rows.find((row) =>
+        new RegExp(sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(
+          String(row.sku ?? ''),
+        ),
+      );
+    if (!match?.id) return null;
+    return {
+      id: Number(match.id),
+      sku: String(match.sku ?? sku),
+      stockUnitId:
+        typeof match.stock_unit_id === 'number'
+          ? match.stock_unit_id
+          : Number(match.stock_unit_id) || null,
+    };
+  }
+
+  pickBindableDetail(
+    so: Record<string, unknown> | null,
+  ): Record<string, unknown> | null {
+    const details = (so?.sales_order_details ??
+      so?.details ??
+      []) as Array<Record<string, unknown>>;
+    return (
+      details.find((d) => d.product_id == null) ??
+      details.find((d) => Number(d.benchmark_cogs) === 0) ??
+      details[0] ??
+      null
+    );
+  }
+
+  async bindSystemSkuViaApi(
+    soId: string,
+    sku: string,
+  ): Promise<{
+    ok: boolean;
+    status: number;
+    body: Record<string, unknown> | null;
+    productId: number | null;
+    detailId: number | null;
+  }> {
+    const so = await this.fetchSalesOrderApi(soId);
+    const detail = this.pickBindableDetail(so);
+    const product = await this.searchProductBySku(sku);
+    const auth = await readAuthFromPage(this.page);
+    if (!so || !detail?.id || !product || !auth.token) {
+      return {
+        ok: false,
+        status: 0,
+        body: {
+          error: `Missing so/detail/product/token. detail=${String(detail?.id)} product=${String(product?.id)}`,
+        },
+        productId: product?.id ?? null,
+        detailId: detail?.id ? Number(detail.id) : null,
+      };
+    }
+    const payload = {
+      product_id: product.id,
+      sales_order_quantity: detail.sales_order_quantity ?? 1,
+      sales_order_quantity_unit_id:
+        detail.sales_order_quantity_unit_id ?? product.stockUnitId ?? 34,
+      each_price_before_discount_before_vat:
+        detail.each_price_before_discount_before_vat ?? 0,
+    };
+    const res = await this.page.request.put(
+      `${getApiUrl()}/omnichannel/sales-order/${soId}/sales-order-detail/${detail.id}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+        data: payload,
+      },
+    );
+    const json = (await res.json().catch(() => null)) as Record<
+      string,
+      unknown
+    > | null;
+    return {
+      ok: res.ok(),
+      status: res.status(),
+      body: json,
+      productId: product.id,
+      detailId: Number(detail.id),
+    };
+  }
+
   async readCode(): Promise<string> {
     const input = this.page.locator('#code').first();
     if (await input.isVisible().catch(() => false)) {

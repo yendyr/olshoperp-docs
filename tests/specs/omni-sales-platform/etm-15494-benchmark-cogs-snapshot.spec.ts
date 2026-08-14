@@ -133,22 +133,6 @@ async function ensureBoundSku(
   details: ReturnType<SalesPlatformPage['collectDetailSnapshots']>;
   snapshot: number | null;
 }> {
-  const existingId = await sp.findOrderIdBySku(sku);
-  if (existingId) {
-    await sp.openEditById(existingId);
-    const header = await sp.fetchSalesOrderApi();
-    const details = sp.collectDetailSnapshots(header);
-    return {
-      soId: existingId,
-      soCode: await sp.readCode(),
-      method: 'existing-order',
-      bindBody: null,
-      header,
-      details,
-      snapshot: snapshotForSku(details, sku),
-    };
-  }
-
   const ids = await sp.findEditableOrderIds(10);
   if (!ids.length) {
     throw new Error(
@@ -158,29 +142,42 @@ async function ensureBoundSku(
 
   let lastError = '';
   for (const id of ids) {
-    try {
-      await sp.openEditById(id);
-      const before = await sp.fetchSalesOrderApi();
-      const bindBody = await sp.bindSystemSku(sku);
-      const header = (await sp.fetchSalesOrderApi()) ?? before;
-      const details = sp.collectDetailSnapshots(header);
+    const headerBefore = await sp.fetchSalesOrderApi(id);
+    const already = sp
+      .collectDetailSnapshots(headerBefore)
+      .find((d) => new RegExp(sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(d.sku));
+    if (already) {
+      await sp.openEditById(id).catch(() => undefined);
       return {
         soId: id,
-        soCode: await sp.readCode(),
-        method: 'bind-system-sku',
-        bindBody,
-        header,
-        details,
-        snapshot:
-          extractBenchmark(bindBody) ?? snapshotForSku(details, sku),
+        soCode: String(headerBefore?.code ?? ''),
+        method: 'existing-line',
+        bindBody: null,
+        header: headerBefore,
+        details: sp.collectDetailSnapshots(headerBefore),
+        snapshot: already.benchmarkCogs,
       };
-    } catch (err) {
-      lastError = err instanceof Error ? err.message : String(err);
     }
+    const bind = await sp.bindSystemSkuViaApi(id, sku);
+    if (!bind.ok) {
+      lastError = JSON.stringify(bind.body)?.slice(0, 300) ?? `HTTP ${bind.status}`;
+      continue;
+    }
+    const header = await sp.fetchSalesOrderApi(id);
+    const details = sp.collectDetailSnapshots(header);
+    await sp.openEditById(id).catch(() => undefined);
+    return {
+      soId: id,
+      soCode: String(header?.code ?? headerBefore?.code ?? ''),
+      method: 'put-sales-order-detail',
+      bindBody: bind.body,
+      header,
+      details,
+      snapshot:
+        extractBenchmark(bind.body) ?? snapshotForSku(details, sku),
+    };
   }
-  throw new Error(
-    `Gagal bind SKU ${sku} ke order platform. Last: ${lastError}`,
-  );
+  throw new Error(`Gagal bind SKU ${sku} ke order platform. Last: ${lastError}`);
 }
 
 test.describe('ETM-15494 — Dev Sales Platform Benchmark COGS snapshot', () => {
@@ -355,20 +352,22 @@ test.describe('ETM-15494 — Dev Sales Platform Benchmark COGS snapshot', () => 
     await sp.openEditById(ids[0]);
     const datePut = await sp.setTransactionDateViaApi('01-08-2026 00:00:00');
     await capture(page, '08-sp-trxdate-before-sku');
-    const bindBody = await sp.bindSystemSku(SKU_EXPIRED).catch((err: Error) => {
+    const bind = await sp.bindSystemSkuViaApi(ids[0], SKU_EXPIRED);
+    if (!bind.ok) {
       writeJson('so-trxdate-aug1.json', {
-        soId: sp.currentEditId(),
+        soId: ids[0],
         datePut,
-        bindError: err.message,
+        bind,
       });
-      throw err;
-    });
+      throw new Error(`Bind trxdate gagal HTTP ${bind.status}: ${JSON.stringify(bind.body)?.slice(0, 300)}`);
+    }
+    await sp.openEditById(ids[0]).catch(() => undefined);
     await capture(page, '09-sp-trxdate-after-sku');
 
-    const header = await sp.fetchSalesOrderApi();
+    const header = await sp.fetchSalesOrderApi(ids[0]);
     const details = sp.collectDetailSnapshots(header);
     const snapshot =
-      extractBenchmark(bindBody) ?? snapshotForSku(details, SKU_EXPIRED);
+      extractBenchmark(bind.body) ?? snapshotForSku(details, SKU_EXPIRED);
     const formula = masterExpired?.cogsNumber ?? 51900;
     const manual = parseIdNumber(masterExpired?.manualCogsText ?? '') ?? 55000;
     let lockSource = 'unknown';
