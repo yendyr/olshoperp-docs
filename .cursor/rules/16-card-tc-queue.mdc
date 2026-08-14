@@ -1,0 +1,92 @@
+---
+description: Antrian uji card Jira — trigger #card-tc, test-queue.yaml, origin/last_execution
+alwaysApply: true
+---
+
+# Card Jira → Test Queue
+
+Antrian rencana uji untuk card Jira **in-flight**. Bukan katalog TC, bukan coverage permanen.
+
+**File antrian:** `test-queue.yaml` di root repo `olshoperp-docs` (bukan di `qa-docs/`).
+
+---
+
+## Trigger — tunggu keyword
+
+**Trigger phrase (utama):** `#card-tc`
+
+**Satu card:** `#card-tc ETM-15442`
+
+Tanpa `#card-tc` di pesan user, agent **dilarang**:
+
+- Pull Jira untuk antrian To Do / QA Review
+- Create / update / hapus `test-queue.yaml`
+- Auto-buat atau auto-overview TC dari antrian card
+
+Frasa lain (`card yang butuh testcase`, `sync testcase`, `sync test-queue`) **bukan** trigger.
+
+`#card-tc` = konfirmasi tulis `test-queue.yaml`. Membuat file `TC-*.md` baru tetap butuh konfirmasi terpisah (`13-test-case-format.mdc` §1).
+
+---
+
+## Saat user kirim `#card-tc`
+
+1. Ambil card Jira ETM status **To Do** dan **QA Review**
+2. Bandingkan dengan `test-queue.yaml`
+3. Card Jira ada, belum di queue → tambah `needs_overview`
+4. Card di queue tapi Jira sudah **Done** / tidak ketemu (hapus) → **hapus** entry queue
+5. Tampilkan dulu yang `needs_overview` dan `in_overview` — **bukan** daftar wajib run
+6. Jangan promote ke `ready` dan jangan execute TC sampai user acc overview secara eksplisit
+
+Varian `#card-tc ETM-xxxxx` = langkah yang sama, scope satu key.
+
+Setelah daftar tampil, follow-up di thread yang sama boleh bahasa biasa (`acc ETM-15442`, `ready`, `reuse TC-CN-003`). Tidak perlu keyword kedua.
+
+---
+
+## Status di `test-queue.yaml`
+
+| Status | Artinya | Boleh di-run? |
+|--------|---------|----------------|
+| `needs_overview` | Card baru / belum ada rencana TC | Tidak |
+| `in_overview` | Ada usulan reuse + draft; menunggu acc QA | Tidak |
+| `ready` | Overview disetujui; daftar TC final | Ya |
+| *(entry dihapus)* | Card Done atau dihapus di Jira | — |
+
+Run / “test case card ini apa saja yang harus di-test” **hanya** dari `status: ready`.
+
+---
+
+## Format entry
+
+```yaml
+ETM-15442:
+  menu: accounting-credit-note
+  intent: retest          # new | extend | retest
+  status: in_overview
+  reuse: [TC-CN-003]      # TC existing, jangan diduplikasi
+  drafts: []              # TC-*-DRAFT-* yang diusulkan (belum final)
+  ready_tcs: []           # terisi setelah acc overview
+```
+
+- `intent: new` — skenario belum ada, usulkan DRAFT (setelah user setuju buat TC)
+- `intent: extend` — sebagian reuse, sebagian DRAFT untuk delta
+- `intent: retest` — **jangan** buat TC baru; isi `reuse` saja
+
+Setelah acc overview: pindahkan TC yang disetujui ke `ready_tcs`, kosongkan `drafts` yang ditolak, `status: ready`.
+
+Jangan simpan history card Done di file ini.
+
+---
+
+## Field di file TC (`13-test-case-format.mdc`)
+
+| Field | Arti | Update saat re-test? |
+|-------|------|----------------------|
+| `origin_jira` | Card yang **melahirkan** TC ini (sekali). Kosong jika bukan dari card | Tidak |
+| `last_execution.at` | Tanggal/waktu run terakhir. `null` jika belum pernah | Ya |
+| `last_execution.jira` | Card Jira run terakhir. `null` jika run tanpa card | Ya |
+
+`card_ref` lama = `origin_jira`. Jangan ditimpa saat re-test. Jangan simpan daftar semua card yang pernah me-retest TC ini di file TC.
+
+Jawaban “TC untuk ETM-xxxxx apa saja?” → `test-queue.yaml`, bukan reverse-list di `TC-*.md`.

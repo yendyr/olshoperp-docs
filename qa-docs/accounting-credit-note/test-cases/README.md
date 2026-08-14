@@ -14,5 +14,8 @@ Prefix folder baru: `ARCN`. File masih DRAFT sampai `#renumber-tc accounting-cre
 | PENDING-20260813154200 | CREATE+APPROVE — CN hanya Free COA (tanpa baris Cash/Bank) berhasil di-approve | draft | ❌ | 2026-08-13 |
 | PENDING-20260813162500 | IMPORT — Excel tetap bank-only; Free COA di GL Acc ditolak | draft | ❌ | 2026-08-13 |
 | PENDING-20260813211300 | E2E — Complete Sales Return billed → auto-generate Credit Note type COA | **failed** | ❌ | 2026-08-13 |
+| PENDING-20260813214500 | EDIT — Free COA picker exclude Customer's Deposit COA | **pass** | ❌ | 2026-08-13 |
 
 E2E billed SR type COA: `PENDING-20260813211300` — **FAILED** (klik **Complete** → 422 reconcile). Error: [ETM-15537](https://erpintegration.atlassian.net/browse/ETM-15537) (relates [ETM-15534](https://erpintegration.atlassian.net/browse/ETM-15534) + [ETM-15442](https://erpintegration.atlassian.net/browse/ETM-15442)).
+
+Deposit COA exclude picker: `PENDING-20260813214500` — **PASSED** (FAT, CN-5U43L1SR; Deposit `2-104` #4465 tidak di Select Free COA; control `3-102` muncul).

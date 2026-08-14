@@ -11,6 +11,7 @@ alwaysApply: true
 - **Tidak ada** source code backend/frontend di repo ini.
 - Field `code_globs` di manifest hanya referensi ke repo aplikasi terpisah — jangan klaim bisa baca/mengubah kode dari sini.
 - Folder `qa-docs/` **read-only** untuk agent — lihat `03-qa-docs-immutable.mdc`.
+- Antrian uji card Jira: `test-queue.yaml` di root repo — hanya via `#card-tc` (`16-card-tc-queue.mdc`).
 
 ## Aplikasi live (staging)
 

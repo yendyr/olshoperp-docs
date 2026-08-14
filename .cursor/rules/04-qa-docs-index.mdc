@@ -92,7 +92,7 @@ Contoh: `menu_links: [accounting/journal]` → `/accounting/journal`
 | `knowledge-base` | `audience`, `sections` |
 | `requirement` | § acceptance criteria, AS-IS |
 | `technical` | `related_docs`, architecture, file map |
-| `e2e-test-case` | `tc_code`, `steps`, `expected_result`, `related_menus` |
+| `e2e-test-case` | `tc_code`, `steps`, `expected_result`, `related_menus`, `origin_jira`, `last_execution` |
 
 ## Yang diabaikan saat indexing jawaban
 

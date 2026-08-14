@@ -25,6 +25,7 @@ Klasifikasikan pertanyaan sebelum jawab; baca layer yang tepat (lihat `05-qa-eng
 | **Jira card** | `bug:` / `improvement:` / `cr:` atau minta tiket | `requirement.md` | KB, technical |
 | **Buat / edit TC** | "buat test case untuk…" | `13-test-case-format.mdc` | `requirement.md`, `test-cases/` |
 | **Renumber TC** | `#renumber-tc` atau `#renumber-tc {menu-slug}` | `13-test-case-format.mdc` §9 | scan DRAFT per menu, update README |
+| **Antrian TC per card Jira** | `#card-tc` atau `#card-tc ETM-xxxxx` | `16-card-tc-queue.mdc` | To Do + QA Review → `test-queue.yaml`; overview dulu, run hanya `ready` |
 
 ## Workflow singkat
 

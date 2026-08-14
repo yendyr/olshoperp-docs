@@ -1,0 +1,606 @@
+# Antrian uji card Jira in-flight (To Do / QA Review).
+# Card Done atau dihapus di Jira → hapus entry. Jangan simpan history di file ini.
+# Trigger agent: #card-tc  (lihat .cursor/rules/16-card-tc-queue.mdc)
+# Sync: 2026-08-14 — 53 card actionable. Epic / Sub-task / Sub Story To Do (legacy) tidak masuk antrian.
+# Belum ada status ready — jangan run TC dari antrian ini dulu.
+
+ETM-15508:
+  menu: supplychain-warehouse-structure
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Error
+  summary: "[Warehouse Setting] - Modal Column Show/Hide terpotong saat hasil global search sedikit"
+
+ETM-15525:
+  menu: supplychain-assembly
+  intent: extend
+  status: in_overview
+  reuse: [TC-ASMBLY-001, TC-ASMBLY-003]
+  drafts: []
+  ready_tcs: []
+  proposed:
+    - "Max Assembly Qty + field Qty convert ke BOX (1 BOX = 10 PCS)"
+    - "Open/Approve ditolak jika qty BOX melebihi stok komponen PCS"
+  jira_status: QA Review
+  jira_type: Error
+  summary: "REOPEN - [Assembly] - Max Assembly Qty & validasi stok komponen tidak menyesuaikan alternative unit (BOX)"
+
+ETM-15350:
+  menu: sales-order-general
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "REOPEN [All Sales Order] Sales Platform — Tombol Trigger Re-check Failed Process & Log"
+
+ETM-15425:
+  menu: supplychain-purchase-order
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Purchase Order] Import Detail - Tambah kolom VAT di template import, partial success, dan konsistensi tax Allocate Full/Use PR"
+
+ETM-15446:
+  menu: sales-order-general
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[All Sales Order] Add new pill button for filter order detail yg harganya under benchmark COGS"
+
+ETM-15447:
+  menu: omni-sales-platform
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Sales Platform] Add new pill button for filter order detail yg harganya under benchmark COGS"
+
+ETM-15485:
+  menu: omni-product-profit-loss
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Product Profit Loss] - Gross Sales based on Price Before VAT"
+
+ETM-15486:
+  menu: omni-store
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Store] Auto Add VAT for platform orders and split Store Configuration sections"
+
+ETM-15492:
+  menu: sales-order-general
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[All Sales Order] Implementasi Benchmark COGS snapshot based on Manual COGS effective value"
+
+ETM-15493:
+  menu: sales-order-general
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Dev - Sales Order] Implementasi Benchmark COGS snapshot based on Manual COGS effective value"
+
+ETM-15494:
+  menu: omni-sales-platform
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Dev - Sales Platform] Implementasi Benchmark COGS snapshot based on Manual COGS effective value"
+
+ETM-15495:
+  menu: system-product
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[System Product] Bisa menambahkan new variant type atau group ke dalam existing system product yang sudah punya stock."
+
+ETM-15504:
+  menu: supplychain-purchase-order
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Purchase Order] Menambahkan new button 'Select Multiple Products' or 'Select Outstanding PR' untuk bisa select multiple sku dari modal add "
+
+ETM-15506:
+  menu: supplychain-mutation-outbound
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Outbound External] New temporary format print 'Colli Dev'"
+
+ETM-15512:
+  menu: system-product
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[System Product] Implementasi Default variant on create/import and expand with leftover SKUs"
+
+ETM-15516:
+  menu: omni-sales-platform
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Dev - Sales Platform] Order Platform - Implement Auto Add VAT from Store for platform orders"
+
+ETM-15517:
+  menu: sales-order-general
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[All Sales Order] Implement platform-order Auto Add VAT from Store"
+
+ETM-15522:
+  menu: accounting-cash-bank-reconcile
+  intent: extend
+  status: in_overview
+  reuse: [TC-CBR-001]
+  drafts: []
+  ready_tcs: []
+  proposed:
+    - "CBR approve → lock COA+period; Journal/import Journal ditolak"
+    - "COA sama di tanggal luar period tetap muncul (Journal, AP, AR) — REOPEN fail"
+    - "Import AP/AR locked gagal di awal import, bukan hanya approve"
+    - "Instant Settlement: fail import + approve; pesan error menyebut BR-code"
+    - "COA lain / tanggal luar period tetap boleh"
+    - "Create/approve CBR gagal jika fiscal missing atau closed (per tanggal)"
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "REOPEN - [Cash Bank Reconcile] Lock akun cash/bank spesifik period setelah approval reconcille untuk mencegah transaksi tumpang tindih"
+
+ETM-15524:
+  menu: supplychain-new-purchase-inbound
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "REOPEN [Purchase Inbound - Print Out] Pembaruan format print out purchase inbound"
+
+ETM-15528:
+  menu: supplychain-new-purchase-inbound
+  intent: extend
+  status: in_overview
+  reuse: [TC-PI-CREATE-001]
+  drafts: []
+  ready_tcs: []
+  proposed:
+    - "1 colli multi-SKU + pilih tipe (box/pallet)"
+    - "Bulk use: create colli baru vs insert ke colli existing"
+    - "Import inbound: nomor urut sama = 1 colli; kosong = tanpa colli"
+    - "Remove/move SKU antar colli"
+    - "Stock Monitoring tampilkan kode colli"
+    - "Qty colli > outstanding PO ditolak"
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[BETA - New Purchase Inbound] Implementasi Fitur Colli by Location: Multi-SKU per Colli & Penandaan Tipe Colli"
+
+ETM-8618:
+  menu: supplychain-warehouse-structure
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Sub Story
+  summary: "[Warehouse Structure - Generator Warehouse] Kode generator dibuat bisa berbeda di setiap level warehousenya"
+
+ETM-12340:
+  menu: sales-order-general
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Sales Order General] Urutan Histories Tidak Sesuai pada SO yang Diproses via Skip Processing"
+
+ETM-12536:
+  menu: omni-point-of-sales
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Point of Sales] Error 500 Saat Menghapus Orders dari List Orders"
+
+ETM-14826:
+  menu: omni-sales-platform
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Sales Order Platform - Order Booking] Webhook Pembatalan Shopee Salah Mengubah Status Order Internal Menjadi Approved"
+
+ETM-15478:
+  menu: supplychain-adjustment-addition
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Stock Addition Approval] - Import unit price COLLI tidak seragam di group view"
+
+ETM-15513:
+  menu: supplychain-stock-remapping
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "REOPEN [Stock Remapping x Export Detail] Fitur Export di detail tidak berfungsi dan menghasilkan error 500"
+
+ETM-15515:
+  menu: supplychain-adjustment-addition
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "REOPEN - [Stock Addition] - Import gagal Colli required saat Inbound Qty diisi tanpa COLLI"
+
+ETM-15534:
+  menu: accounting-credit-note
+  intent: extend
+  status: in_overview
+  reuse: []
+  drafts: [TC-ARCN-DRAFT-20260813154200]
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Credit Note] - Tidak bisa approve jika Receiving Destination hanya Free COA"
+
+ETM-15537:
+  menu: accounting-credit-note
+  intent: new
+  status: in_overview
+  reuse: []
+  drafts: [TC-ARCN-DRAFT-20260813211300]
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Credit Note] - Complete Sales Return billed gagal generate Credit Note type COA"
+
+ETM-15538:
+  menu: omni-sales-platform
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Dev - Sales Platform] - Label kolom Log Data Total Order bukan Platform Total"
+
+ETM-15539:
+  menu: supplychain-variant
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Master Variant] - Kolom Default belum ada dan opsi random tidak terhapus saat edit"
+
+ETM-9627:
+  menu: null
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Technical Requirement] Seluruh error yang muncul di horizon atau log viewer taruh di lonceng notification"
+
+ETM-2443:
+  menu: generalsetting-parameter
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Bug
+  summary: "[Parameter] Opsi Group Name yang value type nya 'Yes/No' tidak muncul"
+
+ETM-7082:
+  menu: omni-point-of-sales
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Bug
+  summary: "[POS - Payment Succesfully] Fitur send receipt to email & number phone belum berfungsi"
+
+ETM-7404:
+  menu: supplychain-purchase-order
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Bug
+  summary: "[Purchase Order - Report] Butuh menu report data SKU yang isinya bisa dari multiple transaksi PO yang sudah approved"
+
+ETM-11713:
+  menu: omni-checking-list
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Change Requirement
+  summary: "[Checking List - Requested by ko Lukas] Change Location tanpa Pause di Checking List"
+
+ETM-11490:
+  menu: null
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Technical Requirement - All Form] Standarisasi UIX di all form"
+
+ETM-11494:
+  menu: null
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Technical Requirement] Standarisasi Size Height Field Filtering dengan Height Global Search"
+
+ETM-12987:
+  menu: system-product
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[System Product] Menampilkan informasi HPP price di System Product untuk mempermudah tracing data"
+
+ETM-13038:
+  menu: supplychain-mutation-transfer-internal
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Transfer Internal] R&D Komponen Inline Edit Qty – Available Product Modal"
+
+ETM-13615:
+  menu: null
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Technical Requirement - Template Import] Standarisasi Tampilan Template Import Pakai Reference dari Import Payroll OCBC"
+
+ETM-15120:
+  menu: system-product
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "RE-OPEN - [SYSTEM PRODUCT] Konfigurasi dimensi dan berat kini diatur per unit"
+
+ETM-15487:
+  menu: accounting-purchase-report
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Purchase Report] POV Purchase Order - New Report format 'Purchase Report' di module finance"
+
+ETM-15488:
+  menu: accounting-purchase-report
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Purchase Report] POV Purchase Invoice - New Report format 'Purchase Report' di module finance"
+
+ETM-15519:
+  menu: supplychain-assembly
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "REOPEN [Assembly] Opsi warehouse origin bisa ambil level wh yg 20 (drop off)"
+
+ETM-15520:
+  menu: supplychain-purchase-requisition
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "REOPEN [Purchase Requisition] Menambahkan new button 'Choose Product' untuk bisa select multiple sku dari modal add to detail PR"
+
+ETM-15526:
+  menu: supplychain-stock-remapping
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "REOPEN - [Stock Remapping] - Remapped To boleh duplicate, Origin pilih per Stock ID, tambah validasi Unit Class (batasan 1 parent tetap)"
+
+ETM-15527:
+  menu: supplychain-stock-remapping
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Stock Remapping] - Tombol Single Use di Available Product belum tersedia"
+
+ETM-15531:
+  menu: omni-benchmark-cogs
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "REOPEN [Benchmark COGS] Manual COGS override, expiry, import & audit"
+
+ETM-15535:
+  menu: supplychain-mutation-outbound
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Outbound] Revert fitur implementasi colli V1 (bukan pakai multi SKU colli)"
+
+ETM-15536:
+  menu: supplychain-mutation-transfer-internal
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Transfer Internal] Revert fitur implementasi colli V1 (bukan pakai multi SKU colli)"
+
+ETM-9286:
+  menu: omni-sales-platform
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Sales Order Platform - Lazada] Butuh webhook push dari semua platform ketika ada orderan masuk"
+
+ETM-9394:
+  menu: null
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Technical Requirement - Datalist] Kolom 'Action' di takedown dan diganti dengan bulk action di atas datalist"
+

@@ -32,6 +32,8 @@ Lihat rule `03-qa-docs-immutable.mdc`. Agent **tidak boleh** mengubah apa pun di
 
 **Pengecualian:** subfolder `qa-docs/{menu-slug}/test-cases/` — boleh create folder baru (slug valid manifest, struktur konsisten) dan edit `TC-*.md` + `README.md`, dengan konfirmasi eksplisit user. Format & workflow: `13-test-case-format.mdc`.
 
+**Pengecualian antrian card:** trigger `#card-tc` (lihat `16-card-tc-queue.mdc`) mengizinkan create/update/hapus `test-queue.yaml` di root repo. Tanpa `#card-tc`, jangan sentuh file itu.
+
 ## Skill — abaikan referensi di docs
 
 **Abaikan** semua skill yang disebut di file dalam `qa-docs/` (mis. `.cursor/skills/qa-menu-documentation/SKILL.md`).
