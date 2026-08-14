@@ -84,10 +84,8 @@ test.describe('ETM-15532 — Skip Wave Process empty Processing Order Date confi
       `Processing Order Date harus bisa dikosongkan (ETM-15532). Nilai sekarang: "${dateValue}". Snapshot toolbar ada di implementation-card/[ETM-15532]/toolbar-snapshot.json`,
     ).toBe(true);
 
-    await sw.triggerImport(FIXTURE);
+    const appeared = await sw.clickImportThenMaybeAttach(FIXTURE);
     await capture(page, '03-after-import-empty-date');
-
-    const appeared = await sw.waitForEmptyDateConfirmation(8_000);
     const visibleText = appeared
       ? ((await sw.confirmDialogBody.first().textContent()) ?? '').trim()
       : '';
