@@ -86,9 +86,20 @@ test.describe('ETM-15532 — Skip Wave Process empty Processing Order Date confi
 
     const appeared = await sw.clickImportThenMaybeAttach(FIXTURE);
     await capture(page, '03-after-import-empty-date');
+
     const visibleText = appeared
-      ? ((await sw.confirmDialogBody.first().textContent()) ?? '').trim()
+      ? (
+          sw.lastNativeDialogMessage ||
+          ((await sw.confirmDialogBody.first().textContent()) ?? '')
+        ).trim()
       : '';
+    const toast = (
+      (await page.locator('.toastify, [class*="toast"]').first().textContent().catch(() => '')) ?? ''
+    ).trim();
+    testInfo.annotations.push({
+      type: 'actual-after-import',
+      description: `dialog=${appeared}; native="${sw.lastNativeDialogMessage}"; toast="${toast}"`,
+    });
 
     expect(
       appeared,
