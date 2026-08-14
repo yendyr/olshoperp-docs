@@ -63,10 +63,7 @@ export class SalesOrderGeneralPage {
   }
 
   get transactionDateInput(): Locator {
-    return this.page
-      .getByRole('combobox')
-      .filter({ hasText: /\d{2}-\d{2}-\d{4}/ })
-      .first();
+    return this.page.getByRole('combobox', { name: /\d{2}-\d{2}-\d{4}/ }).first();
   }
 
   get selectProductCombobox(): Locator {
@@ -978,16 +975,36 @@ export class SalesOrderGeneralPage {
     }
 
     await waitForSuccessToast(this.page, 30_000).catch(() => undefined);
+
+    const historyRow = dialog.locator('table tbody tr, [role="row"]').nth(1);
+    let historyText = '';
+    for (let i = 0; i < 30; i++) {
+      historyText = ((await historyRow.innerText().catch(() => '')) ?? '').replace(
+        /\s+/g,
+        ' ',
+      );
+      if (/Success|Failed|Partial success/i.test(historyText)) break;
+      await this.page.waitForTimeout(4_000);
+    }
+
+    const failedLink = historyRow.getByText(/Validation Failed/i).first();
+    if (await failedLink.isVisible().catch(() => false)) {
+      await failedLink.click();
+      await this.page.waitForTimeout(1_500);
+    }
+
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.waitForTimeout(500);
     await this.page.keyboard.press('Escape').catch(() => undefined);
 
-    const soCode = await this.findSoCodeByPlatformOrderId(platformOrderId);
+    const soCode = await this.findSoCodeByPlatformOrderId(platformOrderId, 12);
     if (!soCode) {
       throw new Error(
-        `Import SO dengan Platform Order ID ${platformOrderId} tidak muncul di datalist. Upload: ${JSON.stringify(uploadBody)?.slice(0, 800)}`,
+        `Import SO ${platformOrderId} tidak muncul di datalist. History: ${historyText}. Upload: ${JSON.stringify(uploadBody)?.slice(0, 500)}`,
       );
     }
 
-    return { soCode, uploadBody };
+    return { soCode, uploadBody: { ...(uploadBody ?? {}), historyText } };
   }
 
   async findSoCodeByPlatformOrderId(
