@@ -344,27 +344,35 @@ test.describe('ETM-15494 — Dev Sales Platform Benchmark COGS snapshot', () => 
       targetPath: SALES_PLATFORM_DATALIST_PATH,
     });
     const sp = new SalesPlatformPage(page);
-    const ids = await sp.findEditableOrderIds(8);
+    const ids = await sp.findEditableOrderIds(10);
     expect(ids.length, 'Perlu order platform editable untuk tes trx date').toBeGreaterThan(
       0,
     );
 
-    await sp.openEditById(ids[0]);
-    const datePut = await sp.setTransactionDateViaApi('01-08-2026 00:00:00');
-    await capture(page, '08-sp-trxdate-before-sku');
-    const bind = await sp.bindSystemSkuViaApi(ids[0], SKU_EXPIRED);
-    if (!bind.ok) {
-      writeJson('so-trxdate-aug1.json', {
-        soId: ids[0],
-        datePut,
-        bind,
-      });
-      throw new Error(`Bind trxdate gagal HTTP ${bind.status}: ${JSON.stringify(bind.body)?.slice(0, 300)}`);
+    let usedId = '';
+    let datePut: { ok: boolean; status: number; body: string } | null = null;
+    let bind: Awaited<ReturnType<SalesPlatformPage['bindSystemSkuViaApi']>> | null =
+      null;
+    for (const id of ids) {
+      await sp.openEditById(id).catch(() => undefined);
+      datePut = await sp.setTransactionDateViaApi('01-08-2026 00:00:00');
+      bind = await sp.bindSystemSkuViaApi(id, SKU_EXPIRED);
+      if (bind.ok) {
+        usedId = id;
+        break;
+      }
     }
-    await sp.openEditById(ids[0]).catch(() => undefined);
+    if (!bind?.ok || !usedId) {
+      writeJson('so-trxdate-aug1.json', { ids, datePut, bind });
+      throw new Error(
+        `Bind trxdate gagal HTTP ${bind?.status}: ${JSON.stringify(bind?.body)?.slice(0, 300)}`,
+      );
+    }
+    await sp.openEditById(usedId).catch(() => undefined);
+    await capture(page, '08-sp-trxdate-before-sku');
     await capture(page, '09-sp-trxdate-after-sku');
 
-    const header = await sp.fetchSalesOrderApi(ids[0]);
+    const header = await sp.fetchSalesOrderApi(usedId);
     const details = sp.collectDetailSnapshots(header);
     const snapshot =
       extractBenchmark(bind.body) ?? snapshotForSku(details, SKU_EXPIRED);
@@ -380,9 +388,9 @@ test.describe('ETM-15494 — Dev Sales Platform Benchmark COGS snapshot', () => 
     }
 
     writeJson('so-trxdate-aug1.json', {
-      soId: sp.currentEditId(),
-      soCode: await sp.readCode(),
-      url: spEditUrl(sp.currentEditId()),
+      soId: usedId,
+      soCode: String(header?.code ?? ''),
+      url: spEditUrl(usedId),
       datePut,
       requestedTransactionDate: '01-08-2026',
       transactionDateApi: header?.transaction_date,
