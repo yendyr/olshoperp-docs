@@ -1,0 +1,9 @@
+{
+  "sku": "BUNDLE-CINCIN-KALUNG",
+  "cogsText": "0",
+  "cogsNumber": 0,
+  "description": "No Inbound",
+  "manualCogsText": "0",
+  "expiryText": "-",
+  "rowText": "headers=System Product SKU System Product Name | Type | Retail Price | Created By Created At | Updated By Updated At | Manual COGS | Manual COGS Expiry | COGS (Efektif) | Description | COGS Last Updated | Action |  |  |  |  |  |  |  |  |  |  |  || cells=BUNDLE-CINCIN-KALUNG [SKU Bundle Random] Bundle Promo Cincin dan Kalung | Parent | 0 | Firda Dev-Stag... 07-04-2026 08:49:52 | Firda Dev-Stag... 07-04-2026 08:49:53 | 0 | - | 0 | No Inbound | 08-04-2026 00:04:44 |  || raw=BUNDLE-CINCIN-KALUNG [SKU Bundle Random] Bundle Promo Cincin dan Kalung Parent 0 Firda Dev-Stag... 07-04-2026 08:49:52 Firda Dev-Stag... 07-04-2026 08:49:53 0 - 0 No Inbound 08-04-2026 00:04:44"
+}

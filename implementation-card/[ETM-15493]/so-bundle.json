@@ -1,0 +1,36 @@
+{
+  "soCode": "SO-5U4FU8NU",
+  "soId": "2515623",
+  "url": "https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515623",
+  "description": "ETM-15493 bundle BUNDLE-CINCIN-KALUNG-White: capture Benchmark COGS per line",
+  "masterBundle": {
+    "sku": "BUNDLE-CINCIN-KALUNG",
+    "cogsText": "0",
+    "cogsNumber": 0,
+    "description": "No Inbound",
+    "manualCogsText": "0",
+    "expiryText": "-",
+    "rowText": "headers=System Product SKU System Product Name | Type | Retail Price | Created By Created At | Updated By Updated At | Manual COGS | Manual COGS Expiry | COGS (Efektif) | Description | COGS Last Updated | Action |  |  |  |  |  |  |  |  |  |  |  || cells=BUNDLE-CINCIN-KALUNG [SKU Bundle Random] Bundle Promo Cincin dan Kalung | Parent | 0 | Firda Dev-Stag... 07-04-2026 08:49:52 | Firda Dev-Stag... 07-04-2026 08:49:53 | 0 | - | 0 | No Inbound | 08-04-2026 00:04:44 |  || raw=BUNDLE-CINCIN-KALUNG [SKU Bundle Random] Bundle Promo Cincin dan Kalung Parent 0 Firda Dev-Stag... 07-04-2026 08:49:52 Firda Dev-Stag... 07-04-2026 08:49:53 0 - 0 No Inbound 08-04-2026 00:04:44"
+  },
+  "snapshotHeaderLine": 0,
+  "details": [
+    {
+      "id": 3188689,
+      "sku": "",
+      "benchmarkCogs": 0,
+      "productId": 58034
+    },
+    {
+      "id": 3188690,
+      "sku": "",
+      "benchmarkCogs": 1000,
+      "productId": 58026
+    },
+    {
+      "id": 3188691,
+      "sku": "",
+      "benchmarkCogs": 2000,
+      "productId": 58029
+    }
+  ]
+}

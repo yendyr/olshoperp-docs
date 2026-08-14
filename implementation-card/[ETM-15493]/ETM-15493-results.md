@@ -1,47 +1,40 @@
-# ETM-15493 — Snapshot Benchmark COGS setelah Manual COGS expired
+# ETM-15493 — Summary automation (gabungan)
 
 **Card:** [Dev - Sales Order] Implementasi Benchmark COGS snapshot based on Manual COGS effective value  
-**Environment:** staging.olshoperp.com · Company **Dev Staging (DEV-STG, id 13)**  
-**Credentials:** playwright@gmail.com  
-**Run:** 14 Aug 2026 · Playwright scoped (2 tes, 2 passed, 35.2s)  
-**SKU:** `SKU-ManualCOGSWithExpirationDate-4`  
-**Expiry Manual COGS:** 13 Aug 2026 23:59:59 (sudah lewat pada tanggal run)
+**Environment:** Staging · Company **Dev Staging (id 13)**  
+**Run:** 14 Aug 2026  
+**SKU expired:** `SKU-ManualCOGSWithExpirationDate-4` (Manual 55.000, expiry 13-08-2026 23:59:59)
 
-**Expected (AS-IS docs):** setelah Manual COGS expired, COGS efektif kembali ke rumus Highest Price / Last Inbound / No Inbound. Snapshot line Dev - Sales Order = nilai efektif itu, **bukan** Manual yang sudah expired.  
-Sumber: `qa-docs/accounting-product-benchmark-price/requirement.md` §3.5 · `qa-docs/sales-order-general/requirement.md` §8.2
+Expected docs: snapshot = COGS efektif saat create/import line (`qa-docs/sales-order-general/requirement.md` §8.2 · Benchmark §3.5). Effective memakai **now(Asia/Jakarta)** vs expiry, bukan transaction date.
 
-## Ringkasan hasil
+## Ringkasan
 
-| # | Skenario | Hasil | Actual |
-|---|----------|-------|--------|
-| 1 | Master Benchmark COGS — SKU expired | **PASS** | Description = **Last Inbound**. COGS (Efektif) = **51.900**. Manual COGS tetap **55.000** dengan expiry **13-08-2026**. |
-| 2 | Create line Dev - Sales Order | **PASS** | Snapshot `benchmark_cogs` = **51900** (= Last Inbound). Bukan Manual 55000. SO **SO-5U4ENWR2**. |
+| # | Skenario | Metode insert | Hasil | Actual |
+|---|----------|---------------|-------|--------|
+| 1 | Master Benchmark COGS — Manual expired | — | **PASS** | Description **Last Inbound**. COGS (Efektif) **51.900**. Manual tetap **55.000**. |
+| 2 | Create line SKU expired | **Select Product** (bukan import) | **PASS** | Snapshot **51.900**. [SO-5U4FQN4Z](https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515616) |
+| 3 | Create line SKU expired | **Import Sales Order** | **BELUM TERVERIFIKASI** | File ter-upload & queued. SO hasil import belum terkonfirmasi di datalist (history yang terbaca batch lama). |
+| 4 | SO baru SKU **KKTOR** (tanpa Manual / rumus murni) | Select Product | **PASS** | Master Highest Price **72.000**, Manual 0. Snapshot **72.000**. [SO-5U4FTRDZ](https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515620) |
+| 5 | Trx date **01-08-2026** lalu insert SKU expired | Select Product (date di-set dulu) | **PASS** | Trx date API `2026-07-31T17:00:00Z` = **01 Aug 2026 00:00 WIB**. Snapshot **51.900** (rumus), **bukan** Manual 55.000. |
+| 6 | SO SKU bundle **BUNDLE-CINCIN-KALUNG-White** | Select Product | **PASS** (observasi) | Header line COGS **0**. Child **CINCIN 1.000**, **KALUNG 2.000**. [SO-5U4FU8NU](https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515623) |
 
-## Data aktual
+## Temuan kunci
 
-| Field | Nilai |
-|-------|--------|
-| SKU | SKU-ManualCOGSWithExpirationDate-4 |
-| Manual COGS (master) | 55.000 |
-| Manual COGS Expiry | 13-08-2026 |
-| COGS (Efektif) master | 51.900 |
-| Description master | Last Inbound |
-| SO | [SO-5U4ENWR2](https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515608) (draft) |
-| Snapshot API `benchmark_cogs` | 51900.0000 |
+**Lock snapshot = waktu create / now(), bukan transaction date.**  
+Order [SO-5U4FXFT5](https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515631) trx date **1 Agustus 2026** (sebelum expiry 13 Agustus). Kalau sistem memakai trx date, Manual 55.000 masih aktif. Actual snapshot **51.900** = rumus Last Inbound → efektif dihitung saat baris dibuat (14 Agustus, sudah expired). Sesuai requirement §3.5 `now(Asia/Jakarta)`.
 
-## Automation
+**SKU tanpa Manual (KKTOR):** sistem tetap ambil rumus master (Highest Price 72.000), bukan 0/kosong salah.
 
-- **Spec:** `tests/specs/sales-order-general/etm-15493-benchmark-cogs-snapshot.spec.ts` (`@ETM-15493`)
-- **Helpers:** `tests/helpers/product-benchmark-price.ts`, `tests/helpers/sales-order-general.ts`
-- **Registry:** `tests/pom-registry/product-benchmark-price.yaml`
+**Bundle:** capture mengikuti `product_id` tiap line (bukan satu nilai parent untuk semua child). Header 0 = parent No Inbound; komponen CINCIN/KALUNG punya COGS sendiri. Selaras AC bundle/random + catatan GAP child vs parent di Benchmark §6.3.
 
-```
-OLSHOP_COMPANY_CODE=DEV-STG npx playwright test tests/specs/sales-order-general/etm-15493-benchmark-cogs-snapshot.spec.ts --project=authenticated --retries=0
-```
+**Import Sales Order:** skenario #2 sebelumnya **bukan** import. Run ini berhasil **queue** file Import Processed; verifikasi snapshot di SO hasil import masih outstanding (job/history).
 
-## Catatan QA / automation
+## Dokumen tes
 
-- Kolom **Benchmark COGS** di detail SO hidden default. Overlay Columns Show/Hide tidak menampilkan opsi dengan label itu pada run ini, jadi nilai snapshot di-assert dari response **create-select** (field `benchmark_cogs`) — itu sumber capture saat create line sesuai requirement §8.2.
-- Baris UI memotong SKU jadi `SKU-ManualCOGSWith...`; helper match prefix.
-- Draft sisa di DEV-STG: `SO-5U4ENWR2` (run PASS) dan `SO-5U4EMP3S` (run sebelumnya).
-- Screenshot: `01-benchmark-cogs-sku-search.png` … `05-so-benchmark-column.png`. JSON: `master-row.json`, `create-select-response.json`, `etm-15493-comparison.json`.
+| SO | URL | Description |
+|----|-----|-------------|
+| SO-5U4FQN4Z | https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515616 | Select Product SKU expired |
+| SO-5U4FTRDZ | https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515620 | ETM-15493 KKTOR: no Manual COGS; snapshot must use formula master |
+| SO-5U4FXFT5 | https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515631 | ETM-15493 trx_date=01-08-2026 created=14-08-2026 SKU expired Manual. Lock trx vs created_at? |
+| SO-5U4FU8NU | https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515623 | ETM-15493 bundle BUNDLE-CINCIN-KALUNG-White: capture Benchmark COGS per line |
+| SO-5U4ENWR2 | https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515608 | Run pertama Select Product (sama SKU expired, snapshot 51900) |
