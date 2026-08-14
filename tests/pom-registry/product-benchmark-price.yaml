@@ -14,7 +14,7 @@ elements:
     role: searchbox
   cogs_column:
     strategy: text
-    value: COGS
+    value: COGS (Efektif)
   description_column:
     strategy: text
     value: Description

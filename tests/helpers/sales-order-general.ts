@@ -414,8 +414,14 @@ export class SalesOrderGeneralPage {
       timeout: 20_000,
     });
     await toggle.click();
-    const option = this.page
-      .getByRole('checkbox', { name: new RegExp(columnName, 'i') })
+    const overlay = this.page.locator(
+      '.p-overlay:visible, .p-multiselect-overlay:visible, .p-popover:visible, [role="listbox"]:visible',
+    );
+    const option = overlay
+      .locator('label, li, [role="option"], .p-multiselect-option, .p-checkbox')
+      .filter({ hasText: new RegExp(columnName, 'i') })
+      .first()
+      .or(this.page.getByRole('checkbox', { name: new RegExp(columnName, 'i') }))
       .or(this.page.getByText(new RegExp(`^${columnName}$`, 'i')))
       .first();
     await expect(option, `Opsi kolom ${columnName}`).toBeVisible({
@@ -425,8 +431,14 @@ export class SalesOrderGeneralPage {
     if (!already) {
       await option.click({ force: true });
     }
-    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.keyboard.press('Escape');
     await this.page.waitForTimeout(400);
+    await this.page
+      .locator('#SalesOrderDetail')
+      .getByText(/Sales Order Detail/i)
+      .first()
+      .click({ force: true })
+      .catch(() => undefined);
   }
 
   async readBenchmarkCogsFromSkuRow(sku: string): Promise<{
@@ -465,10 +477,12 @@ export class SalesOrderGeneralPage {
   }
 
   detailRowBySku(sku: string): Locator {
+    const escaped = sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const prefix = sku.slice(0, 18).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return this.page
-      .locator('#SalesOrderDetail .p-datatable-tbody tr, #SalesOrderDetail tbody tr')
+      .locator('#SalesOrderDetail .p-datatable-tbody tr, #SalesOrderDetail tbody tr, #SalesOrderDetail [role="row"]')
       .filter({
-        hasText: new RegExp(sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+        hasText: new RegExp(`${escaped}|${prefix}`, 'i'),
       })
       .first();
   }

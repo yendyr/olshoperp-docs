@@ -88,8 +88,10 @@ export class ProductBenchmarkPricePage {
     };
 
     const cogsText =
-      pick('^COGS$', 'COGS') ||
-      values.find((v) => /^[\d.,]+$/.test(v.replace(/\s/g, ''))) ||
+      pick('COGS \\(Efektif\\)', 'COGS Efektif') ||
+      values.find((v, i) =>
+        /efektif/i.test(headers[i] ?? ''),
+      ) ||
       '';
     const description =
       pick('Description') ||

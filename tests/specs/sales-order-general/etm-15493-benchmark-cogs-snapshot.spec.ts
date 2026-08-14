@@ -86,6 +86,14 @@ test.describe.serial('ETM-15493 — Dev Sales Order Benchmark COGS snapshot (exp
       /Manual Input/i.test(master.description),
       `Description tidak boleh Manual Input jika Manual COGS sudah expired. Actual description="${master.description}"`,
     ).toBeFalsy();
+
+    const manualNumber = bm.parseNumber(master.manualCogsText);
+    if (manualNumber != null && master.cogsNumber != null) {
+      expect(
+        master.cogsNumber,
+        `COGS (Efektif) ${master.cogsNumber} tidak boleh sama dengan Manual COGS expired ${manualNumber}`,
+      ).not.toBe(manualNumber);
+    }
   });
 
   test('[@ETM-15493][@AC-EXPIRED-SO] Create line Dev Sales Order → snapshot = rumus efektif, bukan Manual expired', async ({
@@ -115,21 +123,34 @@ test.describe.serial('ETM-15493 — Dev Sales Order Benchmark COGS snapshot (exp
     });
     await capture(page, '05-so-benchmark-column');
 
-    const line = await so.readBenchmarkCogsFromSkuRow(SKU);
+    let line: { cellText: string; number: number | null; rowText: string } = {
+      cellText: '(UI tidak terbaca)',
+      number: null,
+      rowText: '',
+    };
+    try {
+      line = await so.readBenchmarkCogsFromSkuRow(SKU);
+    } catch (err) {
+      writeJson('so-line-read-error.json', {
+        message: err instanceof Error ? err.message : String(err),
+      });
+      await capture(page, '06-so-line-read-fail');
+    }
     writeJson('so-line-benchmark.json', { soCode, line, master });
 
     const apiCogs = extractBenchmarkFromCreateBody(createBody);
-    const snapshot =
-      line.number ??
-      apiCogs ??
-      null;
+    const snapshot = apiCogs ?? line.number ?? null;
+    const manualNumber = parseIdNumber(master?.manualCogsText ?? '');
 
     writeJson('etm-15493-comparison.json', {
       sku: SKU,
       soCode,
       masterCogs: master?.cogsNumber,
       masterCogsText: master?.cogsText,
+      masterManualCogs: master?.manualCogsText,
+      masterManualNumber: manualNumber,
       masterDescription: master?.description,
+      masterExpiry: master?.expiryText,
       lineCell: line.cellText,
       lineNumber: line.number,
       apiCogs,
@@ -149,12 +170,26 @@ test.describe.serial('ETM-15493 — Dev Sales Order Benchmark COGS snapshot (exp
       ).toBe(master.cogsNumber);
     }
 
+    if (manualNumber != null && snapshot != null) {
+      expect(
+        snapshot,
+        `Snapshot SO (${snapshot}) tidak boleh pakai Manual COGS expired (${manualNumber})`,
+      ).not.toBe(manualNumber);
+    }
+
     expect(
       /Manual Input/i.test(master?.description ?? ''),
       'Master Description bukan Manual Input — snapshot tidak boleh dari Manual expired',
     ).toBeFalsy();
   });
 });
+
+function parseIdNumber(text: string): number | null {
+  const digits = text.replace(/[^\d]/g, '');
+  if (!digits) return null;
+  const n = Number(digits);
+  return Number.isFinite(n) ? n : null;
+}
 
 function extractBenchmarkFromCreateBody(
   body: Record<string, unknown> | null,
