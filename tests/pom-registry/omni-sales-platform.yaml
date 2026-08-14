@@ -1,0 +1,50 @@
+# POM Element Registry — Dev - Sales Platform
+# Sumber: qa-docs/omni-sales-platform (status review) + SoT datalist/order-detail
+# Dipakai ETM-15494 — snapshot Benchmark COGS = effective Manual COGS
+
+menu: omni-sales-platform
+menu_name: Dev - Sales Platform
+route: /omni/sales-order
+pom_helper: tests/helpers/sales-platform.ts
+company_default: DEV-STG
+
+elements:
+  search:
+    strategy: role
+    role: searchbox
+  create:
+    strategy: role
+    role: link
+    name: Create
+    notes: Redirect ke Dev - Sales Order (bukan create platform)
+  import:
+    strategy: role
+    role: button
+    name: Import
+    notes: Tidak terdokumentasi di SoT datalist; cek UI saat run
+  edit_row:
+    strategy: id
+    value: "#updateButton"
+  platform_detail:
+    strategy: accordion
+    value: Platform Detail
+  system_sku:
+    strategy: aria-placeholder-fragment
+    value: System SKU
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+  columns_toggle:
+    strategy: role
+    role: button
+    name: Columns Show/Hide
+  benchmark_cogs_column:
+    strategy: text
+    value: Benchmark COGS
+
+notes:
+  - "Datalist read-only. Order platform dari sync marketplace, bukan create/import Excel."
+  - "Trigger snapshot: bind / ganti product_id di Platform Detail (DRAFT/OPEN)."
+  - "Skip rule AS-IS: jika benchmark_cogs sudah > 0, capture tidak diulang."
+  - "Transaction Date header read-only (dari platform)."
+  - "API datalist GET/POST omnichannel/sales-order/get?type=platform"
