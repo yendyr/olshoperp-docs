@@ -166,7 +166,7 @@ export class SalesPlatformPage {
   }
 
   isEditableStatus(row: Record<string, unknown>): boolean {
-    const internal = String(row.status ?? row.status_name ?? '');
+    const internal = String(row.transaction_status ?? row.status_name ?? '');
     return /^(draft|open)$/i.test(internal.trim());
   }
 
@@ -184,15 +184,11 @@ export class SalesPlatformPage {
 
   async findEditableOrderIds(limit = 8): Promise<string[]> {
     const rows = await this.listOrdersViaApi(100);
-    const ids: string[] = [];
-    for (const row of rows) {
-      if (!this.isEditableStatus(row)) continue;
-      const id = row.id ?? row.sales_order_id;
-      if (id == null) continue;
-      ids.push(String(id));
-      if (ids.length >= limit) break;
-    }
-    return ids;
+    return rows
+      .filter((row) => this.isEditableStatus(row))
+      .sort((a, b) => Number(b.id ?? 0) - Number(a.id ?? 0))
+      .slice(0, limit)
+      .map((row) => String(row.id ?? row.sales_order_id));
   }
 
   async openEditById(id: string): Promise<void> {
