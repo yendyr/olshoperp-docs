@@ -1,4 +1,5 @@
 import { Page, expect, Locator } from '@playwright/test';
+import { getApiUrl, readAuthFromPage } from './company-access';
 import { OlshopDatalist, OlshopFormActions, OlshopMultiselect } from './shared';
 import { dismissStagingBanner } from './shared/staging-banner';
 import { waitForSuccessToast } from './shared/toast';
@@ -52,6 +53,17 @@ export class SalesOrderGeneralPage {
       .locator('#BasicInformation textarea')
       .or(this.page.getByPlaceholder(/buyer|description|notes/i))
       .first();
+  }
+
+  get descriptionInput(): Locator {
+    return this.page
+      .locator('#OtherInformation #description, #other-information #description, textarea#description')
+      .or(this.page.locator('#BasicInformation textarea'))
+      .first();
+  }
+
+  get transactionDateInput(): Locator {
+    return this.page.getByRole('combobox', { name: /\d{2}-\d{2}-\d{4}/ }).first();
   }
 
   get selectProductCombobox(): Locator {
@@ -345,7 +357,9 @@ export class SalesOrderGeneralPage {
     return (await this.codeInput.inputValue()).trim();
   }
 
-  async addProductViaSelectProduct(sku: string): Promise<void> {
+  async addProductViaSelectProduct(
+    sku: string,
+  ): Promise<Record<string, unknown> | null> {
     await this.expandSalesOrderDetail();
 
     let combobox = this.selectProductCombobox;
@@ -395,13 +409,92 @@ export class SalesOrderGeneralPage {
 
     await waitForSuccessToast(this.page, 10_000).catch(() => undefined);
     await this.page.waitForTimeout(1_200);
+    return (body as Record<string, unknown> | null) ?? null;
+  }
+
+  /**
+   * Unhide kolom detail (hidden default), mis. Benchmark COGS.
+   */
+  async showDetailColumn(columnName: string): Promise<void> {
+    await this.expandSalesOrderDetail();
+    const toggle = this.page
+      .locator('#SalesOrderDetail')
+      .getByRole('button', { name: /Columns Show\/Hide/i })
+      .or(this.page.getByRole('button', { name: /Columns Show\/Hide/i }))
+      .first();
+    await expect(toggle, 'Columns Show/Hide di Sales Order Detail').toBeVisible({
+      timeout: 20_000,
+    });
+    await toggle.click();
+    const overlay = this.page.locator(
+      '.p-overlay:visible, .p-multiselect-overlay:visible, .p-popover:visible, [role="listbox"]:visible',
+    );
+    const option = overlay
+      .locator('label, li, [role="option"], .p-multiselect-option, .p-checkbox')
+      .filter({ hasText: new RegExp(columnName, 'i') })
+      .first()
+      .or(this.page.getByRole('checkbox', { name: new RegExp(columnName, 'i') }))
+      .or(this.page.getByText(new RegExp(`^${columnName}$`, 'i')))
+      .first();
+    await expect(option, `Opsi kolom ${columnName}`).toBeVisible({
+      timeout: 10_000,
+    });
+    const already = await option.isChecked().catch(() => false);
+    if (!already) {
+      await option.click({ force: true });
+    }
+    await this.page.keyboard.press('Escape');
+    await this.page.waitForTimeout(400);
+    await this.page
+      .locator('#SalesOrderDetail')
+      .getByText(/Sales Order Detail/i)
+      .first()
+      .click({ force: true })
+      .catch(() => undefined);
+  }
+
+  async readBenchmarkCogsFromSkuRow(sku: string): Promise<{
+    cellText: string;
+    number: number | null;
+    rowText: string;
+  }> {
+    await this.expandSalesOrderDetail();
+    const row = this.detailRowBySku(sku);
+    await expect(row, `Baris detail ${sku}`).toBeVisible({ timeout: 30_000 });
+    const rowText = ((await row.innerText()) ?? '').replace(/\s+/g, ' ').trim();
+
+    const headerCells = this.page.locator(
+      '#SalesOrderDetail thead th, #SalesOrderDetail thead td, #SalesOrderDetail .p-datatable-thead th',
+    );
+    const headers: string[] = [];
+    const headerCount = await headerCells.count();
+    for (let i = 0; i < headerCount; i++) {
+      headers.push(
+        ((await headerCells.nth(i).innerText()) ?? '').replace(/\s+/g, ' ').trim(),
+      );
+    }
+    const idx = headers.findIndex((h) => /benchmark\s*cogs/i.test(h));
+    const cells = row.locator('td');
+    let cellText = '';
+    if (idx >= 0 && idx < (await cells.count())) {
+      cellText = ((await cells.nth(idx).innerText()) ?? '').replace(/\s+/g, ' ').trim();
+    }
+    const cleaned = cellText.replace(/[^\d,.-]/g, '');
+    const number = Number.parseFloat(cleaned.replace(/\./g, '').replace(',', '.'));
+    return {
+      cellText: cellText || `(kolom tidak ketemu; headers=${headers.join(' | ')})`,
+      number: Number.isFinite(number) ? number : null,
+      rowText,
+    };
   }
 
   detailRowBySku(sku: string): Locator {
+    const escaped = sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const prefix = sku.slice(0, 18).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return this.page
-      .locator('#SalesOrderDetail .p-datatable-tbody tr, #SalesOrderDetail tbody tr')
+      .locator('#SalesOrderDetail .p-datatable-tbody tr, #SalesOrderDetail tbody tr, #SalesOrderDetail [role="row"]')
       .filter({
-        hasText: new RegExp(sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+        hasText: new RegExp(`${escaped}|${prefix}`, 'i'),
       })
       .first();
   }
@@ -715,5 +808,463 @@ export class SalesOrderGeneralPage {
     }
 
     return code;
+  }
+
+  async fillHeaderDescription(text: string): Promise<void> {
+    await this.fillBuyerNotes(text.slice(0, 150));
+  }
+
+  async setTransactionDate(display: string): Promise<void> {
+    await this.expandBasicInformation();
+    const viaApi = await this.setTransactionDateViaApi(display).catch(() => false);
+    if (viaApi) return;
+
+    const input = this.page
+      .locator('xpath=//*[contains(normalize-space(),"Transaction Date")]/following::input[1]')
+      .first();
+    await expect(input, 'Transaction Date').toBeVisible({ timeout: 20_000 });
+    await input.click({ clickCount: 3 });
+    await input.fill('');
+    await input.pressSequentially(display, { delay: 40 });
+    await this.page.keyboard.press('Enter').catch(() => undefined);
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.clickSaveAllAndWait();
+  }
+
+  async setTransactionDateViaApi(display: string): Promise<boolean> {
+    const so = await this.fetchSalesOrderApi();
+    if (!so) return false;
+    const id = this.currentEditId();
+    if (!id) return false;
+    const auth = await readAuthFromPage(this.page);
+    if (!auth.token) return false;
+    const payload = {
+      with_quotation: so.with_quotation ?? 0,
+      store_id: so.store_id,
+      currency_id: so.currency_id,
+      exchange_rate: so.exchange_rate,
+      shipping_platform_system_id: so.shipping_platform_system_id,
+      customer_id: so.customer_id,
+      transaction_date: display,
+    };
+    const res = await this.page.request.put(
+      `${getApiUrl()}/omnichannel/sales-order/${id}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+        data: payload,
+      },
+    );
+    if (!res.ok()) {
+      const body = await res.text();
+      throw new Error(`PUT transaction_date gagal HTTP ${res.status()}: ${body.slice(0, 400)}`);
+    }
+    await this.page.reload({ waitUntil: 'domcontentloaded' });
+    await dismissStagingBanner(this.page);
+    await this.expandBasicInformation();
+    return true;
+  }
+
+  async readTransactionDateDisplay(): Promise<string> {
+    const input = this.transactionDateInput;
+    return (
+      (await input.inputValue().catch(() => '')) ||
+      ((await input.textContent().catch(() => '')) ?? '')
+    ).trim();
+  }
+
+  currentEditId(): string | null {
+    return this.page.url().match(/sales-order-general\/edit\/(\d+)/)?.[1] ?? null;
+  }
+
+  async fetchSalesOrderApi(
+    id?: string,
+  ): Promise<Record<string, unknown> | null> {
+    const soId = id ?? this.currentEditId();
+    if (!soId) return null;
+    const auth = await readAuthFromPage(this.page);
+    if (!auth.token) return null;
+    const res = await this.page.request.get(
+      `${getApiUrl()}/omnichannel/sales-order/${soId}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+      },
+    );
+    if (!res.ok()) return null;
+    const body = (await res.json().catch(() => null)) as {
+      data?: Record<string, unknown>;
+    } | null;
+    return body?.data ?? (body as Record<string, unknown> | null);
+  }
+
+  collectDetailSnapshots(so: Record<string, unknown> | null): Array<{
+    id?: number;
+    sku: string;
+    benchmarkCogs: number | null;
+    productId?: number;
+    priceBeforeVat: number | null;
+    eachPrice: number | null;
+    errors: unknown;
+  }> {
+    if (!so) return [];
+    const details = (so.sales_order_details ??
+      so.details ??
+      []) as Array<Record<string, unknown>>;
+    return details.map((d) => {
+      const product = (d.product ?? {}) as Record<string, unknown>;
+      const sku = String(product.sku ?? d.sku ?? '');
+      const n = Number(d.benchmark_cogs);
+      const pbv = Number(
+        d.each_price_before_vat ??
+          d.price_before_vat ??
+          d.each_price_before_discount_before_vat,
+      );
+      const each = Number(d.each_price ?? d.price);
+      return {
+        id: typeof d.id === 'number' ? d.id : Number(d.id) || undefined,
+        sku,
+        benchmarkCogs: Number.isFinite(n) ? n : null,
+        productId:
+          typeof d.product_id === 'number'
+            ? d.product_id
+            : Number(d.product_id) || undefined,
+        priceBeforeVat: Number.isFinite(pbv) ? pbv : null,
+        eachPrice: Number.isFinite(each) ? each : null,
+        errors: d.errors ?? d.error_flags ?? d.error_info ?? d.sales_order_detail_errors,
+      };
+    });
+  }
+
+  collectCogsErrorState(so: Record<string, unknown> | null): {
+    preventAutoApprove: boolean | null;
+    hasCogsErrorKey: boolean;
+    hasBelowBenchmarkLabel: boolean;
+    flagLabels: string[];
+    blob: string;
+  } {
+    const blob = JSON.stringify(so ?? {});
+    const flagLabels: string[] = [];
+    const walk = (node: unknown): void => {
+      if (!node || typeof node !== 'object') return;
+      if (Array.isArray(node)) {
+        node.forEach(walk);
+        return;
+      }
+      const rec = node as Record<string, unknown>;
+      for (const [k, v] of Object.entries(rec)) {
+        if (typeof v === 'string' && /cogs|benchmark/i.test(`${k} ${v}`)) {
+          flagLabels.push(`${k}=${v}`.slice(0, 180));
+        }
+        if (v && typeof v === 'object') walk(v);
+      }
+    };
+    walk(so);
+    return {
+      preventAutoApprove:
+        so?.prevent_auto_approve === true ||
+        so?.prevent_auto_approve === 1 ||
+        String(so?.prevent_auto_approve) === '1'
+          ? true
+          : so?.prevent_auto_approve === false ||
+              so?.prevent_auto_approve === 0 ||
+              String(so?.prevent_auto_approve) === '0'
+            ? false
+            : null,
+      hasCogsErrorKey: /cogs-error/i.test(blob),
+      hasBelowBenchmarkLabel:
+        /Below Benchmark COGS|below COGS Benchmark|under benchmark/i.test(blob),
+      flagLabels: [...new Set(flagLabels)].slice(0, 30),
+      blob: blob.slice(0, 4000),
+    };
+  }
+
+  async setDetailUnitPriceViaApi(price: number): Promise<{
+    ok: boolean;
+    status: number;
+    body: string;
+  }> {
+    const so = await this.fetchSalesOrderApi();
+    const id = this.currentEditId();
+    const auth = await readAuthFromPage(this.page);
+    const details = (so?.sales_order_details ??
+      so?.details ??
+      []) as Array<Record<string, unknown>>;
+    const detail =
+      details.find((d) => {
+        const product = (d.product ?? {}) as Record<string, unknown>;
+        return /ManualCOGSWithExpirationDate-4/i.test(String(product.sku ?? d.sku ?? ''));
+      }) ?? details[0];
+    if (!so || !id || !auth.token || !detail?.id) {
+      return { ok: false, status: 0, body: 'missing so/detail/token' };
+    }
+    const payload = {
+      product_id: detail.product_id,
+      sales_order_quantity: detail.sales_order_quantity ?? 1,
+      sales_order_quantity_unit_id:
+        detail.sales_order_quantity_unit_id ??
+        (detail.product as { stock_unit_id?: number } | undefined)?.stock_unit_id ??
+        34,
+      each_price_before_discount_before_vat: price,
+      each_price: price,
+    };
+    const res = await this.page.request.put(
+      `${getApiUrl()}/omnichannel/sales-order/${id}/sales-order-detail/${detail.id}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+        data: payload,
+      },
+    );
+    const body = await res.text();
+    if (res.ok()) {
+      await this.page.reload({ waitUntil: 'domcontentloaded' });
+      await dismissStagingBanner(this.page);
+      await this.expandSalesOrderDetail();
+    }
+    return { ok: res.ok(), status: res.status(), body: body.slice(0, 800) };
+  }
+
+  async readErrorFlagUi(sku: string): Promise<{
+    rowText: string;
+    headerText: string;
+    tooltip: string;
+    cellHtml: string;
+    hasIcon: boolean;
+    hasCogsErrorClass: boolean;
+    visibleLabels: string[];
+  }> {
+    await this.expandSalesOrderDetail();
+    await this.showDetailColumn('Error Flag').catch(() => undefined);
+    const row = this.detailRowBySku(sku);
+    const rowText = ((await row.innerText().catch(() => '')) ?? '').replace(/\s+/g, ' ');
+    const cellHtml = ((await row.innerHTML().catch(() => '')) ?? '').slice(0, 2000);
+    const header = this.page.locator(
+      '[class*="error-flag"], [class*="ErrorFlag"], .error-flags, #error_flag',
+    );
+    const headerText = ((await header.first().innerText().catch(() => '')) ?? '').replace(
+      /\s+/g,
+      ' ',
+    );
+    const icons = row
+      .locator(
+        'i.fa-dollar-sign, i.fa-money-bill-trend-down, i.fa-arrow-trend-down, [class*="cogs-error"], svg, .p-tag',
+      )
+      .or(
+        this.page.locator(
+          'i.fa-dollar-sign, i.fa-money-bill-trend-down, i.fa-arrow-trend-down, [class*="cogs-error"]',
+        ),
+      );
+    const n = await icons.count().catch(() => 0);
+    for (let i = 0; i < Math.min(n, 8); i++) {
+      await icons.nth(i).hover().catch(() => undefined);
+      await this.page.waitForTimeout(400);
+    }
+    const tooltip = (
+      (await this.page.locator('[role="tooltip"], .p-tooltip').innerText().catch(() => '')) ??
+      ''
+    ).replace(/\s+/g, ' ');
+    const blob = `${rowText} ${headerText} ${tooltip} ${cellHtml}`;
+    return {
+      rowText,
+      headerText: `${headerText} ${tooltip}`.trim(),
+      tooltip,
+      cellHtml,
+      hasIcon: n > 0,
+      hasCogsErrorClass: /cogs-error|dollar-sign|money-bill-trend-down|below COGS|Below Benchmark/i.test(
+        blob,
+      ),
+      visibleLabels: [rowText, headerText, tooltip].filter(Boolean),
+    };
+  }
+
+  async openEditByCode(code: string): Promise<void> {
+    await this.gotoDatalist();
+    await this.datalist.search(code);
+    const row = this.page.getByRole('row').filter({ hasText: code }).first();
+    await expect(row, `SO ${code} di datalist`).toBeVisible({ timeout: 45_000 });
+    const href = await row.locator('a[href*="/edit/"]').first().getAttribute('href');
+    if (href) {
+      await this.page.goto(href, { waitUntil: 'domcontentloaded' });
+    } else {
+      await row.locator('#updateButton').first().click();
+    }
+    await this.page.waitForURL(SO_GENERAL_EDIT_PATH_PATTERN, { timeout: 45_000 });
+    await dismissStagingBanner(this.page);
+    await this.expandBasicInformation();
+  }
+
+  /**
+   * Import Processed: buka Import History → Import → upload xlsx.
+   * Upload API adalah PUT (bukan POST).
+   */
+  async importProcessedFromFile(
+    filePath: string,
+    platformOrderId: string,
+  ): Promise<{ soCode: string; uploadBody: Record<string, unknown> | null }> {
+    await this.gotoDatalist();
+
+    const datalistImport = this.page.getByRole('button', {
+      name: /^Import$/i,
+      exact: true,
+    }).first();
+    await expect(datalistImport, 'Tombol Import di datalist').toBeVisible({
+      timeout: 20_000,
+    });
+    await datalistImport.click();
+
+    const processedItem = this.page
+      .getByRole('menuitem', { name: /Import Processed/i })
+      .or(this.page.getByText(/^Import Processed$/i))
+      .first();
+    if (await processedItem.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await processedItem.click();
+    }
+
+    const dialog = this.page
+      .getByRole('dialog')
+      .filter({ hasText: /Import History/i });
+    await expect(dialog, 'Dialog Import History').toBeVisible({ timeout: 20_000 });
+
+    const importInDialog = dialog.getByRole('button', { name: /^Import$/i }).first();
+    await expect(importInDialog).toBeVisible({ timeout: 15_000 });
+    await importInDialog.click();
+
+    const uploadItem = this.page
+      .getByRole('menuitem', { name: /Upload File/i })
+      .or(this.page.getByText(/^Upload File$/i))
+      .first();
+    if (await uploadItem.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await uploadItem.click();
+    }
+
+    const fileInput = dialog.locator('input[type="file"]').first();
+    await expect(fileInput, 'Input file di Import History').toBeAttached({
+      timeout: 15_000,
+    });
+
+    const uploadResponse = this.page.waitForResponse(
+      (response) =>
+        /omnichannel\/sales-order\/(upload|import)/.test(response.url()) &&
+        ['PUT', 'POST'].includes(response.request().method()),
+      { timeout: 120_000 },
+    );
+
+    await fileInput.setInputFiles(filePath);
+    const response = await uploadResponse;
+    const uploadBody = (await response.json().catch(() => null)) as Record<
+      string,
+      unknown
+    > | null;
+
+    if (!response.ok()) {
+      throw new Error(
+        `Upload import SO gagal HTTP ${response.status()}: ${JSON.stringify(uploadBody)?.slice(0, 500)}`,
+      );
+    }
+
+    await waitForSuccessToast(this.page, 30_000).catch(() => undefined);
+
+    let historyText = '';
+    for (let i = 0; i < 45; i++) {
+      const rows = dialog.locator('table tbody tr');
+      const n = await rows.count().catch(() => 0);
+      for (let r = 0; r < Math.min(n, 8); r++) {
+        const text = ((await rows.nth(r).innerText().catch(() => '')) ?? '').replace(
+          /\s+/g,
+          ' ',
+        );
+        const isOldBulk = /1\.007|1007/.test(text);
+        if (
+          /Success|Failed|Partial success/i.test(text) &&
+          !isOldBulk
+        ) {
+          historyText = text;
+          const failedLink = rows.nth(r).getByText(/Validation Failed/i).first();
+          if (await failedLink.isVisible().catch(() => false)) {
+            await failedLink.click();
+            await this.page.waitForTimeout(1_500);
+          }
+          break;
+        }
+      }
+      if (historyText) break;
+      await this.page.waitForTimeout(4_000);
+    }
+
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.waitForTimeout(500);
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+
+    const soCode = await this.findSoCodeByPlatformOrderId(platformOrderId, 24);
+    if (!soCode) {
+      throw new Error(
+        `Import SO ${platformOrderId} tidak muncul di datalist. History: ${historyText}. Upload: ${JSON.stringify(uploadBody)?.slice(0, 500)}`,
+      );
+    }
+
+    return { soCode, uploadBody: { ...(uploadBody ?? {}), historyText } };
+  }
+
+  async findSoCodeByPlatformOrderId(
+    platformOrderId: string,
+    attempts = 24,
+  ): Promise<string> {
+    for (let i = 0; i < attempts; i++) {
+      await this.gotoDatalist();
+      await this.datalist.search(platformOrderId);
+      const row = this.page
+        .getByRole('row')
+        .filter({ hasText: platformOrderId })
+        .first();
+      if (await row.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        const text = ((await row.innerText()) ?? '').replace(/\s+/g, ' ');
+        const soCode = text.match(/SO-[A-Z0-9]+/i)?.[0] ?? '';
+        if (soCode) return soCode;
+      }
+      await this.page.waitForTimeout(5_000);
+    }
+    return '';
+  }
+
+  async importViaApi(
+    filePath: string,
+  ): Promise<Record<string, unknown> | null> {
+    const auth = await readAuthFromPage(this.page);
+    if (!auth.token) throw new Error('Token kosong — tidak bisa upload import');
+    const fs = await import('fs');
+    const res = await this.page.request.put(
+      `${getApiUrl()}/omnichannel/sales-order/upload?type=general`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+        multipart: {
+          file: {
+            name: filePath.split(/[/\\]/).pop() ?? 'so-import.xlsx',
+            mimeType:
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            buffer: fs.readFileSync(filePath),
+          },
+        },
+      },
+    );
+    const body = (await res.json().catch(() => null)) as Record<
+      string,
+      unknown
+    > | null;
+    if (!res.ok()) {
+      throw new Error(
+        `API import SO gagal HTTP ${res.status()}: ${JSON.stringify(body)?.slice(0, 800)}`,
+      );
+    }
+    return body;
   }
 }

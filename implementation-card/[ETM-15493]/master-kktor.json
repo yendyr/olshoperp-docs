@@ -1,0 +1,9 @@
+{
+  "sku": "KKTOR",
+  "cogsText": "72.000",
+  "cogsNumber": 72000,
+  "description": "Highest Price",
+  "manualCogsText": "0",
+  "expiryText": "-",
+  "rowText": "headers=System Product SKU System Product Name | Type | Retail Price | Created By Created At | Updated By Updated At | Manual COGS | Manual COGS Expiry | COGS (Efektif) | Description | COGS Last Updated | Action |  |  |  |  |  |  |  |  |  |  |  || cells=KKTOR Kursi Kantor | Single | 0 | ilyas abdurroh... 05-08-2026 08:49:10 | ilyas abdurroh... 05-08-2026 09:06:45 | 0 | - | 72.000 | Highest Price | 06-08-2026 00:05:16 |  || raw=KKTOR Kursi Kantor Single 0 ilyas abdurroh... 05-08-2026 08:49:10 ilyas abdurroh... 05-08-2026 09:06:45 0 - 72.000 Highest Price 06-08-2026 00:05:16"
+}

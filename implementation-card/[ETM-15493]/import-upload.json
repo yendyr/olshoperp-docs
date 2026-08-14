@@ -1,0 +1,13 @@
+{
+  "soCode": "SO-5U4G6031",
+  "uploadBody": {
+    "status": {
+      "error": 0,
+      "title": "Success",
+      "message": "Import file is being queued, please wait."
+    },
+    "data": [],
+    "recordsTotal": null,
+    "historyText": "SO-IMP-00IG3DCZ29A1 Success Processed 1 1 / 1 Validation Success 1 Validation Failed 0 1 / 1 Sales Order Created 1 Sales Order Failed 0 Playwright Use... 14-08-2026 14:00:58"
+  }
+}

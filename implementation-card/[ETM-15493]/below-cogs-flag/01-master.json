@@ -1,0 +1,9 @@
+{
+  "sku": "SKU-ManualCOGSWithExpirationDate-4",
+  "cogsText": "51.900",
+  "cogsNumber": 51900,
+  "description": "Last Inbound",
+  "manualCogsText": "47.000",
+  "expiryText": "13-08-2026",
+  "rowText": "headers=System Product SKU System Product Name | Type | Retail Price | Created By Created At | Updated By Updated At | Manual COGS | Manual COGS Expiry | COGS (Efektif) | Description | COGS Last Updated | Action |  |  |  |  |  |  |  |  |  |  |  || cells=SKU-ManualCOGSWithExpirationDate-4 [With Expired Date] SKU testing function manual COGS | Single | 0 | Jenni Dev-Stag... 13-08-2026 13:02:05 | Jenni Dev-Stag... 13-08-2026 13:02:05 | 47.000 | 13-08-2026 | 51.900 | Last Inbound | 14-08-2026 00:06:15 |  || raw=SKU-ManualCOGSWithExpirationDate-4 [With Expired Date] SKU testing function manual COGS Single 0 Jenni Dev-Stag... 13-08-2026 13:02:05 Jenni Dev-Stag... 13-08-2026 13:02:05 47.000 13-08-2026 51.900 Last Inbound 14-08-2026 00:06:15"
+}
