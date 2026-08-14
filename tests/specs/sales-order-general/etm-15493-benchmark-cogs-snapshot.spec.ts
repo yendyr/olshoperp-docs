@@ -200,15 +200,7 @@ test.describe('ETM-15493 — Dev Sales Order Benchmark COGS snapshot', () => {
       importError = err instanceof Error ? err.message : String(err);
       writeJson('import-ui-error.json', { message: importError });
       await capture(page, '07-import-ui-fail');
-      const apiBody = await so.importViaApi(xlsxPath);
-      writeJson('import-api-upload.json', apiBody);
-      const soCode = await so.findSoCodeByPlatformOrderId(platformOrderId);
-      if (!soCode) {
-        throw new Error(
-          `Import API selesai tapi SO ${platformOrderId} belum di datalist. UI: ${importError}`,
-        );
-      }
-      importResult = { soCode, uploadBody: apiBody };
+      throw err;
     }
 
     writeJson('import-upload.json', importResult);
