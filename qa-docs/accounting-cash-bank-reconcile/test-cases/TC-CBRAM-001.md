@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-01
+tc_code: TC-CBRAM-001
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Happy path — auto-match Account Receivable (Customer Payment) multi-invoice"

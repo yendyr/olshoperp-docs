@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-12
+tc_code: TC-CBRAM-012
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Import gagal (all-or-nothing) tidak menghasilkan partial auto-match"

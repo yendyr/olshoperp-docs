@@ -24,9 +24,9 @@
 
 |---|---|
 
-| File | `TC-CBRAM-{NN}.md` (NN = 01–14, 2 digit) |
+| File | `TC-CBRAM-{NNN}.md` (NNN = 001–014, 3 digit) |
 
-| Frontmatter `tc_code` | `TC-CBRAM-01` (sama dengan nama file tanpa `.md`) |
+| Frontmatter `tc_code` | `TC-CBRAM-001` (sama dengan nama file tanpa `.md`) |
 
 | Sumber skenario | `TC-01` … `TC-14` di [testcase-auto-match-cbr-ap-ar.md](../testcase-auto-match-cbr-ap-ar.md) |
 
@@ -56,33 +56,33 @@
 
 |---|------|--------|-------|----------|
 
-| 01 | [TC-CBRAM-01.md](./TC-CBRAM-01.md) | TC-01 | Happy path auto-match AR (Customer Payment) multi-invoice | High |
+| 01 | [TC-CBRAM-001.md](./TC-CBRAM-001.md) | TC-01 | Happy path auto-match AR (Customer Payment) multi-invoice | High |
 
-| 02 | [TC-CBRAM-02.md](./TC-CBRAM-02.md) | TC-02 | Happy path auto-match AP (Supplier Payment) | High |
+| 02 | [TC-CBRAM-002.md](./TC-CBRAM-002.md) | TC-02 | Happy path auto-match AP (Supplier Payment) | High |
 
-| 03 | [TC-CBRAM-03.md](./TC-CBRAM-03.md) | TC-03 | Skip-on-tie: dua kandidat GL nominal & tanggal sama | High |
+| 03 | [TC-CBRAM-003.md](./TC-CBRAM-003.md) | TC-03 | Skip-on-tie: dua kandidat GL nominal & tanggal sama | High |
 
-| 04 | [TC-CBRAM-04.md](./TC-CBRAM-04.md) | TC-04 | Journal manual (bukan AP/AR) tidak auto-match | High |
+| 04 | [TC-CBRAM-004.md](./TC-CBRAM-004.md) | TC-04 | Journal manual (bukan AP/AR) tidak auto-match | High |
 
-| 05 | [TC-CBRAM-05.md](./TC-CBRAM-05.md) | TC-05 | Amount tidak exact tidak auto-match | Medium |
+| 05 | [TC-CBRAM-005.md](./TC-CBRAM-005.md) | TC-05 | Amount tidak exact tidak auto-match | Medium |
 
-| 06 | [TC-CBRAM-06.md](./TC-CBRAM-06.md) | TC-06 | Tanggal journal ≠ bank statement tidak auto-match | Medium |
+| 06 | [TC-CBRAM-006.md](./TC-CBRAM-006.md) | TC-06 | Tanggal journal ≠ bank statement tidak auto-match | Medium |
 
-| 07 | [TC-CBRAM-07.md](./TC-CBRAM-07.md) | TC-07 | Side tidak sesuai (Received vs Credit) | Medium |
+| 07 | [TC-CBRAM-007.md](./TC-CBRAM-007.md) | TC-07 | Side tidak sesuai (Received vs Credit) | Medium |
 
-| 08 | [TC-CBRAM-08.md](./TC-CBRAM-08.md) | TC-08 | GL sudah ter-link tidak double-match | High |
+| 08 | [TC-CBRAM-008.md](./TC-CBRAM-008.md) | TC-08 | GL sudah ter-link tidak double-match | High |
 
-| 09 | [TC-CBRAM-09.md](./TC-CBRAM-09.md) | TC-09 | Journal AP/AR belum Approved tidak eligible | High |
+| 09 | [TC-CBRAM-009.md](./TC-CBRAM-009.md) | TC-09 | Journal AP/AR belum Approved tidak eligible | High |
 
-| 10 | [TC-CBRAM-10.md](./TC-CBRAM-10.md) | TC-10 | Header CBR Approved — auto-match tidak jalan | High |
+| 10 | [TC-CBRAM-010.md](./TC-CBRAM-010.md) | TC-10 | Header CBR Approved — auto-match tidak jalan | High |
 
-| 11 | [TC-CBRAM-11.md](./TC-CBRAM-11.md) | TC-11 | Re-import: baris matched tidak diproses ulang | Medium |
+| 11 | [TC-CBRAM-011.md](./TC-CBRAM-011.md) | TC-11 | Re-import: baris matched tidak diproses ulang | Medium |
 
-| 12 | [TC-CBRAM-12.md](./TC-CBRAM-12.md) | TC-12 | Import gagal all-or-nothing — tidak partial auto-match | High |
+| 12 | [TC-CBRAM-012.md](./TC-CBRAM-012.md) | TC-12 | Import gagal all-or-nothing — tidak partial auto-match | High |
 
-| 13 | [TC-CBRAM-13.md](./TC-CBRAM-13.md) | TC-13 | Multi cash/bank COA vs 1 baris total — tidak auto-match | Medium |
+| 13 | [TC-CBRAM-013.md](./TC-CBRAM-013.md) | TC-13 | Multi cash/bank COA vs 1 baris total — tidak auto-match | Medium |
 
-| 14 | [TC-CBRAM-14.md](./TC-CBRAM-14.md) | TC-14 | Unmatch setelah auto-match tetap normal | High |
+| 14 | [TC-CBRAM-014.md](./TC-CBRAM-014.md) | TC-14 | Unmatch setelah auto-match tetap normal | High |
 
 
 
@@ -105,7 +105,7 @@
 **Card:** [ETM-15522](https://erpintegration.atlassian.net/browse/ETM-15522) — lock Cash Bank Account + Period setelah **Approve**.  
 **Urutan validasi:** Fiscal Period dulu → baru CBR Approved lock.  
 **Instant Settlement:** hanya di **Approve** (bukan start import).  
-**Jangan** run TC-CBRAM-01–14 untuk card ini.
+**Jangan** run TC-CBRAM-001–014 untuk card ini.
 
 Reuse precondition: [TC-CBR-001.md](./TC-CBR-001.md). Jalankan dulu `TC-CBR-004` (Approve → lock aktif) sebelum TC lock menu lain.
 
@@ -136,5 +136,5 @@ Nomor urut final via `#renumber-tc accounting-cash-bank-reconcile`.
 
 - Expected result mengacu pada skenario sumber ETM-15298 + scope MVP di atas; requirement CBR masih `draft` — flag gap jika behavior staging beda.
 
-- **TC-CBRAM-11** dan **TC-CBRAM-14** bergantung pada hasil **TC-CBRAM-01** (happy path AR).
+- **TC-CBRAM-011** dan **TC-CBRAM-014** bergantung pada hasil **TC-CBRAM-001** (happy path AR).
 

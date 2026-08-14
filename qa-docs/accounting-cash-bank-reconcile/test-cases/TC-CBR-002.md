@@ -49,7 +49,7 @@ test_result:
 
 ## Catatan
 
-- Warm-up W4 sebelum suite TC-CBRAM (auto-match diuji di TC-CBRAM-01+).
+- Warm-up W4 sebelum suite TC-CBRAM (auto-match diuji di TC-CBRAM-001+).
 - Template kolom: TransactionDate, Received, Spent, Description — tepat satu dari Received/Spent.
 - UI download template `.xlsx` (GAP-CBR-11 vs repo `.csv`); fixture automation memakai `.xlsx`.
 - Assert wajib scope `#BankStatement` saja — Internal Transaction juga punya nominal 16.000.

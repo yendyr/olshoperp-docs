@@ -87,5 +87,5 @@ Label UI: **Receiving Destination**, **Save & Next**, **Approve**. Fund harus ja
 - Lock COA+tanggal: TO-BE [requirement.md](../requirement.md) §6.4 / GAP-CBR-08. AS-IS docs masih "lock belum ada".
 - Pesan lock (TO-BE ETM-15522): `Cash/Bank account is locked for reconciliation for {date}. Related Cash & Bank Reconcile: {BR-code}.`
 - Instant Settlement: validasi **hanya** di **Approve** (trigger Account Receive), bukan start import.
-- Origin: ETM-15522. Jangan run suite auto-match TC-CBRAM-01–14 untuk card ini.
+- Origin: ETM-15522. Jangan run suite auto-match TC-CBRAM-001–014 untuk card ini.
 

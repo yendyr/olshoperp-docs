@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-02
+tc_code: TC-CBRAM-002
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Happy path — auto-match Account Payable (Supplier Payment)"

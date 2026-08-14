@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-09
+tc_code: TC-CBRAM-009
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Journal AP/AR belum Approved tidak eligible untuk auto-match"

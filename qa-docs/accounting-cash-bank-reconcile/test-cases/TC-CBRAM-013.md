@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-13
+tc_code: TC-CBRAM-013
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Multi cash/bank COA dalam 1 payment vs 1 baris bank statement total — tidak auto-match"

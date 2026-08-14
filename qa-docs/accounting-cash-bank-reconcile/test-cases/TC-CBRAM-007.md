@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-07
+tc_code: TC-CBRAM-007
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Side tidak sesuai — Received vs posisi Credit di jurnal"

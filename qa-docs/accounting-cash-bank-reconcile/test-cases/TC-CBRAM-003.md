@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-03
+tc_code: TC-CBRAM-003
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Skip-on-tie — dua kandidat GL AP/AR nominal & tanggal sama"

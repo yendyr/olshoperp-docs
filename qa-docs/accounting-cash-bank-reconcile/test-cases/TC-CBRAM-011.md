@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-11
+tc_code: TC-CBRAM-011
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Re-import — baris yang sudah matched tidak diproses ulang, hanya baris baru"
@@ -20,7 +20,7 @@ execution_company:
 related_menus:
   - accounting-customer-payment
 preconditions:
-  - Header BR-000123 (Open) sudah punya baris bank statement Reconciled dari import sebelumnya (lihat TC-CBRAM-01)
+  - Header BR-000123 (Open) sudah punya baris bank statement Reconciled dari import sebelumnya (lihat TC-CBRAM-001)
   - Ada journal baru eligible untuk baris baru
 test_data:
   - field: Baris existing
@@ -50,4 +50,4 @@ run_history: []
 
 ## Catatan
 
-Bergantung pada hasil TC-CBRAM-01 (happy path AR).
+Bergantung pada hasil TC-CBRAM-001 (happy path AR).

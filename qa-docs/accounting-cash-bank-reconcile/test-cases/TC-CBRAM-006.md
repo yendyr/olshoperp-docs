@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-06
+tc_code: TC-CBRAM-006
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Tanggal journal berbeda dengan bank statement — tidak auto-match (out of scope MVP)"

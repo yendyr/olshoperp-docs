@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-10
+tc_code: TC-CBRAM-010
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Header Cash & Bank Reconcile sudah Approved — auto-match tidak boleh jalan"

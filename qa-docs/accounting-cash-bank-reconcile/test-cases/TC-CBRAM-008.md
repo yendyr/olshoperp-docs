@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-08
+tc_code: TC-CBRAM-008
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "GL yang sudah pernah ter-link tidak boleh double-match"

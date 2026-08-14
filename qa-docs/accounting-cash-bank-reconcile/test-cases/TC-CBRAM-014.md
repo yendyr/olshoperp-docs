@@ -1,6 +1,6 @@
 ﻿---
 doc_type: e2e-test-case
-tc_code: TC-CBRAM-14
+tc_code: TC-CBRAM-014
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "Unmatch setelah auto-match tetap berfungsi normal"
@@ -19,7 +19,7 @@ execution_company:
   code: FAT
 related_menus: []
 preconditions:
-  - Baris hasil auto-match dari TC-CBRAM-01 (BR-000123, bank statement 100.000 tanggal 02/07/2026 ↔ JRN-AR-0001)
+  - Baris hasil auto-match dari TC-CBRAM-001 (BR-000123, bank statement 100.000 tanggal 02/07/2026 ↔ JRN-AR-0001)
   - Header masih status Open
 test_data:
   - field: Header
