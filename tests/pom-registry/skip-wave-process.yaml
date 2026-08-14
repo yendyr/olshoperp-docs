@@ -1,0 +1,39 @@
+# POM Element Registry — Skip Wave Process
+# Sumber: qa-docs/omni-skip-wave-process + live staging UI (repo FE tidak ada di environment ini)
+# Card: ETM-15532 — confirmation dialog saat import jika Processing Order Date kosong
+
+menu: omni-skip-wave-process
+menu_name: Skip Wave Process
+route: /omni/skip-wave-process
+create_button_mode: none
+pom_helper: tests/helpers/skip-wave-process.ts
+company_default: lumicharmsid
+
+elements:
+  processing_order_date:
+    strategy: label
+    value: Processing Order Date
+    note: "Date-time picker pojok kiri atas (posisi Create). Shared Unassign Wave. Boleh kosong untuk ETM-15532."
+
+  import_control:
+    strategy: text
+    value: Import
+    note: "Toolbar datalist — Download template + upload"
+
+  file_input:
+    strategy: css
+    value: 'input[type="file"]'
+    note: "Hidden file input untuk upload xlsx/xls/csv"
+
+  empty_date_confirm_text:
+    strategy: text
+    value: >-
+      Processing Order Date is empty. All transaction dates for the imported
+      sales orders will automatically use the current date and time. Are you
+      sure you want to proceed?
+
+notes:
+  - "ETM-15532: dialog hanya muncul jika Processing Order Date kosong/null."
+  - "Jika tanggal sudah terisi, import jalan tanpa dialog tersebut."
+  - "Jangan Confirm import dummy — Cancel/dismiss supaya batch skip wave tidak terproses."
+  - "Menu ini tidak punya tombol Create — jangan pakai OlshopDatalist.gotoAndWait(create)."
