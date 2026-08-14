@@ -1,4 +1,5 @@
 import { Page, expect, Locator } from '@playwright/test';
+import { getApiUrl, readAuthFromPage } from './company-access';
 import { OlshopDatalist, OlshopFormActions, OlshopMultiselect } from './shared';
 import { dismissStagingBanner } from './shared/staging-banner';
 import { waitForSuccessToast } from './shared/toast';
@@ -51,6 +52,22 @@ export class SalesOrderGeneralPage {
     return this.page
       .locator('#BasicInformation textarea')
       .or(this.page.getByPlaceholder(/buyer|description|notes/i))
+      .first();
+  }
+
+  get descriptionInput(): Locator {
+    return this.page.locator('#BasicInformation #description, #description').first();
+  }
+
+  get transactionDateInput(): Locator {
+    return this.page
+      .locator('#transaction_date input, #transaction_date')
+      .or(
+        this.page
+          .locator('#BasicInformation')
+          .getByRole('combobox')
+          .filter({ hasNotText: /Choose|Select/i }),
+      )
       .first();
   }
 
@@ -796,5 +813,227 @@ export class SalesOrderGeneralPage {
     }
 
     return code;
+  }
+
+  async fillHeaderDescription(text: string): Promise<void> {
+    await this.expandBasicInformation();
+    const input = this.descriptionInput;
+    await expect(input, 'Field Description header SO').toBeVisible({
+      timeout: 20_000,
+    });
+    await input.click({ clickCount: 3 });
+    await input.fill(text.slice(0, 150));
+  }
+
+  async setTransactionDate(display: string): Promise<void> {
+    await this.expandBasicInformation();
+    const input = this.transactionDateInput;
+    await expect(input, 'Transaction Date').toBeVisible({ timeout: 20_000 });
+    await input.click({ clickCount: 3 });
+    await input.fill('');
+    await input.pressSequentially(display, { delay: 40 });
+    await this.page.keyboard.press('Enter').catch(() => undefined);
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.waitForTimeout(400);
+    await this.page
+      .locator('#BasicInformation')
+      .getByText(/Basic Information/i)
+      .first()
+      .click({ force: true })
+      .catch(() => undefined);
+  }
+
+  async readTransactionDateDisplay(): Promise<string> {
+    const input = this.transactionDateInput;
+    return (
+      (await input.inputValue().catch(() => '')) ||
+      ((await input.textContent().catch(() => '')) ?? '')
+    ).trim();
+  }
+
+  currentEditId(): string | null {
+    return this.page.url().match(/sales-order-general\/edit\/(\d+)/)?.[1] ?? null;
+  }
+
+  async fetchSalesOrderApi(
+    id?: string,
+  ): Promise<Record<string, unknown> | null> {
+    const soId = id ?? this.currentEditId();
+    if (!soId) return null;
+    const auth = await readAuthFromPage(this.page);
+    if (!auth.token) return null;
+    const res = await this.page.request.get(
+      `${getApiUrl()}/omnichannel/sales-order/${soId}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+      },
+    );
+    if (!res.ok()) return null;
+    const body = (await res.json().catch(() => null)) as {
+      data?: Record<string, unknown>;
+    } | null;
+    return body?.data ?? (body as Record<string, unknown> | null);
+  }
+
+  collectDetailSnapshots(so: Record<string, unknown> | null): Array<{
+    id?: number;
+    sku: string;
+    benchmarkCogs: number | null;
+    productId?: number;
+  }> {
+    if (!so) return [];
+    const details = (so.sales_order_details ??
+      so.details ??
+      []) as Array<Record<string, unknown>>;
+    return details.map((d) => {
+      const product = (d.product ?? {}) as Record<string, unknown>;
+      const sku = String(product.sku ?? d.sku ?? '');
+      const n = Number(d.benchmark_cogs);
+      return {
+        id: typeof d.id === 'number' ? d.id : Number(d.id) || undefined,
+        sku,
+        benchmarkCogs: Number.isFinite(n) ? n : null,
+        productId:
+          typeof d.product_id === 'number'
+            ? d.product_id
+            : Number(d.product_id) || undefined,
+      };
+    });
+  }
+
+  async openEditByCode(code: string): Promise<void> {
+    await this.gotoDatalist();
+    await this.datalist.search(code);
+    const row = this.page.getByRole('row').filter({ hasText: code }).first();
+    await expect(row, `SO ${code} di datalist`).toBeVisible({ timeout: 45_000 });
+    const edit = row.locator('#updateButton, a[href*="/edit/"]').first();
+    await edit.click();
+    await this.page.waitForURL(SO_GENERAL_EDIT_PATH_PATTERN, { timeout: 45_000 });
+    await dismissStagingBanner(this.page);
+    await this.expandBasicInformation();
+  }
+
+  /**
+   * Import Processed dari datalist Dev - Sales Order (upload Excel).
+   */
+  async importProcessedFromFile(
+    filePath: string,
+    platformOrderId: string,
+  ): Promise<{ soCode: string; uploadBody: Record<string, unknown> | null }> {
+    await this.gotoDatalist();
+
+    const importTrigger = this.page
+      .getByRole('button', { name: /Import Processed/i })
+      .or(this.page.getByRole('menuitem', { name: /Import Processed/i }))
+      .or(this.page.getByText(/^Import Processed$/i))
+      .first();
+
+    if (!(await importTrigger.isVisible({ timeout: 5_000 }).catch(() => false))) {
+      const importMenu = this.page
+        .getByRole('button', { name: /^Import$/i })
+        .or(this.page.getByText(/^Import$/i))
+        .first();
+      await expect(importMenu, 'Tombol Import').toBeVisible({ timeout: 20_000 });
+      await importMenu.click();
+    }
+
+    if (await importTrigger.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await importTrigger.click();
+    }
+
+    const fileInput = this.page.locator('input[type="file"]').last();
+    await expect(fileInput, 'Input file import SO').toBeAttached({
+      timeout: 20_000,
+    });
+
+    const uploadResponse = this.page.waitForResponse(
+      (response) =>
+        /omnichannel\/sales-order\/upload/.test(response.url()) &&
+        response.request().method() === 'POST',
+      { timeout: 180_000 },
+    );
+
+    await fileInput.setInputFiles(filePath);
+    const response = await uploadResponse;
+    const uploadBody = (await response.json().catch(() => null)) as Record<
+      string,
+      unknown
+    > | null;
+
+    if (!response.ok()) {
+      throw new Error(
+        `Upload import SO gagal HTTP ${response.status()}: ${JSON.stringify(uploadBody)?.slice(0, 500)}`,
+      );
+    }
+
+    await waitForSuccessToast(this.page, 30_000).catch(() => undefined);
+
+    const soCode = await this.findSoCodeByPlatformOrderId(platformOrderId);
+    if (!soCode) {
+      throw new Error(
+        `Import SO dengan Platform Order ID ${platformOrderId} tidak muncul di datalist. Upload: ${JSON.stringify(uploadBody)?.slice(0, 800)}`,
+      );
+    }
+
+    return { soCode, uploadBody };
+  }
+
+  async findSoCodeByPlatformOrderId(
+    platformOrderId: string,
+    attempts = 24,
+  ): Promise<string> {
+    for (let i = 0; i < attempts; i++) {
+      await this.gotoDatalist();
+      await this.datalist.search(platformOrderId);
+      const row = this.page
+        .getByRole('row')
+        .filter({ hasText: platformOrderId })
+        .first();
+      if (await row.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        const text = ((await row.innerText()) ?? '').replace(/\s+/g, ' ');
+        const soCode = text.match(/SO-[A-Z0-9]+/i)?.[0] ?? '';
+        if (soCode) return soCode;
+      }
+      await this.page.waitForTimeout(5_000);
+    }
+    return '';
+  }
+
+  async importViaApi(
+    filePath: string,
+  ): Promise<Record<string, unknown> | null> {
+    const auth = await readAuthFromPage(this.page);
+    if (!auth.token) throw new Error('Token kosong — tidak bisa upload import');
+    const fs = await import('fs');
+    const res = await this.page.request.post(
+      `${getApiUrl()}/omnichannel/sales-order/upload?type=general`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+        multipart: {
+          file: {
+            name: filePath.split(/[/\\]/).pop() ?? 'so-import.xlsx',
+            mimeType:
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            buffer: fs.readFileSync(filePath),
+          },
+        },
+      },
+    );
+    const body = (await res.json().catch(() => null)) as Record<
+      string,
+      unknown
+    > | null;
+    if (!res.ok()) {
+      throw new Error(
+        `API import SO gagal HTTP ${res.status()}: ${JSON.stringify(body)?.slice(0, 800)}`,
+      );
+    }
+    return body;
   }
 }
