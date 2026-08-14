@@ -56,19 +56,19 @@ export class SalesOrderGeneralPage {
   }
 
   get descriptionInput(): Locator {
-    return this.page.locator('#BasicInformation #description, #description').first();
+    return this.page
+      .locator('#OtherInformation #description, #other-information #description, textarea#description')
+      .or(this.page.locator('#BasicInformation textarea'))
+      .first();
   }
 
   get transactionDateInput(): Locator {
     return this.page
-      .locator('#transaction_date input, #transaction_date')
-      .or(
-        this.page
-          .locator('#BasicInformation')
-          .getByRole('combobox')
-          .filter({ hasNotText: /Choose|Select/i }),
-      )
-      .first();
+      .locator('#BasicInformation')
+      .getByRole('combobox')
+      .filter({ hasText: /\d{2}-\d{2}-\d{4}/ })
+      .first()
+      .or(this.page.locator('#transaction_date input, #transaction_date'));
   }
 
   get selectProductCombobox(): Locator {
@@ -816,13 +816,7 @@ export class SalesOrderGeneralPage {
   }
 
   async fillHeaderDescription(text: string): Promise<void> {
-    await this.expandBasicInformation();
-    const input = this.descriptionInput;
-    await expect(input, 'Field Description header SO').toBeVisible({
-      timeout: 20_000,
-    });
-    await input.click({ clickCount: 3 });
-    await input.fill(text.slice(0, 150));
+    await this.fillBuyerNotes(text.slice(0, 150));
   }
 
   async setTransactionDate(display: string): Promise<void> {
@@ -926,13 +920,21 @@ export class SalesOrderGeneralPage {
   ): Promise<{ soCode: string; uploadBody: Record<string, unknown> | null }> {
     await this.gotoDatalist();
 
-    const processed = this.page
-      .getByRole('button', { name: /Import Processed/i })
-      .first();
-    await expect(processed, 'Tombol Import Processed').toBeVisible({
+    const datalistImport = this.page
+      .getByRole('link', { name: 'Create', exact: true })
+      .locator('xpath=following::button[normalize-space()="Import"][1]');
+    await expect(datalistImport, 'Tombol Import di datalist').toBeVisible({
       timeout: 20_000,
     });
-    await processed.click();
+    await datalistImport.click();
+
+    const processedItem = this.page
+      .getByRole('menuitem', { name: /Import Processed/i })
+      .or(this.page.getByText(/^Import Processed$/i))
+      .first();
+    if (await processedItem.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await processedItem.click();
+    }
 
     const dialog = this.page
       .getByRole('dialog')
@@ -958,7 +960,7 @@ export class SalesOrderGeneralPage {
 
     const uploadResponse = this.page.waitForResponse(
       (response) =>
-        /omnichannel\/sales-order\/upload/.test(response.url()) &&
+        /omnichannel\/sales-order\/(upload|import)/.test(response.url()) &&
         ['PUT', 'POST'].includes(response.request().method()),
       { timeout: 120_000 },
     );
