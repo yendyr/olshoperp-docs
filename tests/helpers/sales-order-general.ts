@@ -907,6 +907,9 @@ export class SalesOrderGeneralPage {
     sku: string;
     benchmarkCogs: number | null;
     productId?: number;
+    priceBeforeVat: number | null;
+    eachPrice: number | null;
+    errors: unknown;
   }> {
     if (!so) return [];
     const details = (so.sales_order_details ??
@@ -916,6 +919,12 @@ export class SalesOrderGeneralPage {
       const product = (d.product ?? {}) as Record<string, unknown>;
       const sku = String(product.sku ?? d.sku ?? '');
       const n = Number(d.benchmark_cogs);
+      const pbv = Number(
+        d.each_price_before_vat ??
+          d.price_before_vat ??
+          d.each_price_before_discount_before_vat,
+      );
+      const each = Number(d.each_price ?? d.price);
       return {
         id: typeof d.id === 'number' ? d.id : Number(d.id) || undefined,
         sku,
@@ -924,8 +933,155 @@ export class SalesOrderGeneralPage {
           typeof d.product_id === 'number'
             ? d.product_id
             : Number(d.product_id) || undefined,
+        priceBeforeVat: Number.isFinite(pbv) ? pbv : null,
+        eachPrice: Number.isFinite(each) ? each : null,
+        errors: d.errors ?? d.error_flags ?? d.error_info ?? d.sales_order_detail_errors,
       };
     });
+  }
+
+  collectCogsErrorState(so: Record<string, unknown> | null): {
+    preventAutoApprove: boolean | null;
+    hasCogsErrorKey: boolean;
+    hasBelowBenchmarkLabel: boolean;
+    flagLabels: string[];
+    blob: string;
+  } {
+    const blob = JSON.stringify(so ?? {});
+    const flagLabels: string[] = [];
+    const walk = (node: unknown): void => {
+      if (!node || typeof node !== 'object') return;
+      if (Array.isArray(node)) {
+        node.forEach(walk);
+        return;
+      }
+      const rec = node as Record<string, unknown>;
+      for (const [k, v] of Object.entries(rec)) {
+        if (typeof v === 'string' && /cogs|benchmark/i.test(`${k} ${v}`)) {
+          flagLabels.push(`${k}=${v}`.slice(0, 180));
+        }
+        if (v && typeof v === 'object') walk(v);
+      }
+    };
+    walk(so);
+    return {
+      preventAutoApprove:
+        so?.prevent_auto_approve === true ||
+        so?.prevent_auto_approve === 1 ||
+        String(so?.prevent_auto_approve) === '1'
+          ? true
+          : so?.prevent_auto_approve === false ||
+              so?.prevent_auto_approve === 0 ||
+              String(so?.prevent_auto_approve) === '0'
+            ? false
+            : null,
+      hasCogsErrorKey: /cogs-error/i.test(blob),
+      hasBelowBenchmarkLabel:
+        /Below Benchmark COGS|below COGS Benchmark|under benchmark/i.test(blob),
+      flagLabels: [...new Set(flagLabels)].slice(0, 30),
+      blob: blob.slice(0, 4000),
+    };
+  }
+
+  async setDetailUnitPriceViaApi(price: number): Promise<{
+    ok: boolean;
+    status: number;
+    body: string;
+  }> {
+    const so = await this.fetchSalesOrderApi();
+    const id = this.currentEditId();
+    const auth = await readAuthFromPage(this.page);
+    const details = (so?.sales_order_details ??
+      so?.details ??
+      []) as Array<Record<string, unknown>>;
+    const detail =
+      details.find((d) => {
+        const product = (d.product ?? {}) as Record<string, unknown>;
+        return /ManualCOGSWithExpirationDate-4/i.test(String(product.sku ?? d.sku ?? ''));
+      }) ?? details[0];
+    if (!so || !id || !auth.token || !detail?.id) {
+      return { ok: false, status: 0, body: 'missing so/detail/token' };
+    }
+    const payload = {
+      product_id: detail.product_id,
+      sales_order_quantity: detail.sales_order_quantity ?? 1,
+      sales_order_quantity_unit_id:
+        detail.sales_order_quantity_unit_id ??
+        (detail.product as { stock_unit_id?: number } | undefined)?.stock_unit_id ??
+        34,
+      each_price_before_discount_before_vat: price,
+      each_price: price,
+    };
+    const res = await this.page.request.put(
+      `${getApiUrl()}/omnichannel/sales-order/${id}/sales-order-detail/${detail.id}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+        data: payload,
+      },
+    );
+    const body = await res.text();
+    if (res.ok()) {
+      await this.page.reload({ waitUntil: 'domcontentloaded' });
+      await dismissStagingBanner(this.page);
+      await this.expandSalesOrderDetail();
+    }
+    return { ok: res.ok(), status: res.status(), body: body.slice(0, 800) };
+  }
+
+  async readErrorFlagUi(sku: string): Promise<{
+    rowText: string;
+    headerText: string;
+    tooltip: string;
+    cellHtml: string;
+    hasIcon: boolean;
+    hasCogsErrorClass: boolean;
+    visibleLabels: string[];
+  }> {
+    await this.expandSalesOrderDetail();
+    await this.showDetailColumn('Error Flag').catch(() => undefined);
+    const row = this.detailRowBySku(sku);
+    const rowText = ((await row.innerText().catch(() => '')) ?? '').replace(/\s+/g, ' ');
+    const cellHtml = ((await row.innerHTML().catch(() => '')) ?? '').slice(0, 2000);
+    const header = this.page.locator(
+      '[class*="error-flag"], [class*="ErrorFlag"], .error-flags, #error_flag',
+    );
+    const headerText = ((await header.first().innerText().catch(() => '')) ?? '').replace(
+      /\s+/g,
+      ' ',
+    );
+    const icons = row
+      .locator(
+        'i.fa-dollar-sign, i.fa-money-bill-trend-down, i.fa-arrow-trend-down, [class*="cogs-error"], svg, .p-tag',
+      )
+      .or(
+        this.page.locator(
+          'i.fa-dollar-sign, i.fa-money-bill-trend-down, i.fa-arrow-trend-down, [class*="cogs-error"]',
+        ),
+      );
+    const n = await icons.count().catch(() => 0);
+    for (let i = 0; i < Math.min(n, 8); i++) {
+      await icons.nth(i).hover().catch(() => undefined);
+      await this.page.waitForTimeout(400);
+    }
+    const tooltip = (
+      (await this.page.locator('[role="tooltip"], .p-tooltip').innerText().catch(() => '')) ??
+      ''
+    ).replace(/\s+/g, ' ');
+    const blob = `${rowText} ${headerText} ${tooltip} ${cellHtml}`;
+    return {
+      rowText,
+      headerText: `${headerText} ${tooltip}`.trim(),
+      tooltip,
+      cellHtml,
+      hasIcon: n > 0,
+      hasCogsErrorClass: /cogs-error|dollar-sign|money-bill-trend-down|below COGS|Below Benchmark/i.test(
+        blob,
+      ),
+      visibleLabels: [rowText, headerText, tooltip].filter(Boolean),
+    };
   }
 
   async openEditByCode(code: string): Promise<void> {
