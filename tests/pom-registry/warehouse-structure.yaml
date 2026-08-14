@@ -60,3 +60,38 @@ elements:
   edit_button:
     strategy: id
     value: updateButton
+
+  child_warehouse_generator_section:
+    strategy: id
+    value: WarehouseGenerator
+    note: "Accordion create-only (v-if=!is_edit). Label: Child Warehouse Generator"
+
+  generator_warehouse_level:
+    strategy: aria-placeholder
+    value: Warehouse Level
+    note: "Per baris generator"
+
+  generator_prefix:
+    strategy: placeholder
+    value: Prefix
+
+  generator_amount:
+    strategy: placeholder
+    value: Amount
+
+  generator_prefix_type:
+    strategy: css
+    value: "#WarehouseGenerator .grid.grid-cols-12 .multiselect:last-child"
+    note: "ETM-8618: tiap baris. Buka via caret/label kiri field. Default Numeric."
+
+  generator_add_row_button:
+    strategy: css
+    value: "#WarehouseGenerator button[type='button']"
+    note: "Icon tambah baris — di sebelah Amount baris pertama"
+
+gotchas:
+  - "Generator hanya di create. Drop Off OFF untuk TC ETM-8618."
+  - "WAJIB isi Code + Name + Type (Basic Information) dulu — generator disabled sampai Type terpilih."
+  - "Prefix teks harus unique + alphabet (V-07). Prefix Type (Numeric/Alphabet) independen per level setelah ETM-8618."
+  - "Prefix Type: klik caret/label multiselect (kiri field search) lalu pilih Numeric/Alphabet."
+  - "Job WarehouseGeneratorV2 async — tunggu child muncul via select2/datalist."

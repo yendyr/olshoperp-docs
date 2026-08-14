@@ -1,8 +1,12 @@
 # POM Element Registry — Assembly (SCM Work Order)
-# Sumber: olshoperp-frontend SCM/master/Assembly/Form.vue + DatalistDetail.vue
+# Sumber FE (scan 2026-08-14):
+#   olshoperp-frontend/src/pages/SCM/master/Assembly/
+#     DataList.vue | Form.vue | DatalistDetail.vue | DatalistLogApproval.vue
+#     ApprovalDialog.vue | HistoryDetail.vue | ImportLog.vue | TreeDetail.vue
 # UI route: /supplychain/assembly
-# API: /supplychain/work-order
+# API: /api/supplychain/work-order (+ work-order-detail)
 # Prefix code: AS*
+# Catatan automation: path FE absolut D:\olshoperp\olshoperp-frontend
 
 menu: supplychain-assembly
 menu_name: Assembly
@@ -11,90 +15,342 @@ api_resource: supplychain/work-order
 create_button_mode: link
 pom_helper: tests/helpers/assembly.ts
 company_default: lumicharmsid
+fe_path: D:/olshoperp/olshoperp-frontend/src/pages/SCM/master/Assembly
 
+# ─── DATALIST (DataList.vue + DataTablesV3) ───────────────────────────────
 elements:
   create_button:
+    strategy: composite
+    selectors:
+      - 'role=link[name="Create"]'
+      - 'button.tour-asm-create'
+      - 'button:has-text("Create")'
+    notes: "router-link Create + class tour-asm-create"
+
+  datalist_search:
     strategy: role
-    role: link
-    name: Create
-
-  code:
-    strategy: id
-    value: code
-    placeholder: Automatically generate by system
-    note: "Auto AS* setelah save"
-
-  transaction_date:
-    strategy: label
-    value: Transaction Date
-    note: "Default dateTimeNow(); autofill"
-
-  building_origin:
-    strategy: aria-placeholder
-    value: Choose Building Origin
-    note: "warehouse_id; level building + WIP & FG configured"
-
-  start_date:
-    strategy: label
-    value: Start Date
-    note: "Default dateTimeNow(); >= transaction_date"
-
-  type:
-    strategy: aria-placeholder
-    value: Choose type
-    note: "Options: Production|Service|Assembly|Other; default data()=Assembly"
-
-  description:
-    strategy: placeholder
-    value: Add description or notes...
-
-  progress_status:
-    strategy: label
-    value: Progress Status
-    note: "Read-only display"
-
-  save_and_next:
-    strategy: role
-    role: button
-    name: Save & Next
-
-  save_all:
-    strategy: role
-    role: button
-    name: Save All
-
-  status_draft:
-    strategy: id
-    value: draft
-
-  status_open:
-    strategy: id
-    value: open
-    note: "Open butuh >=1 detail; trigger generateTrasfer() / TFI"
+    role: searchbox
+    index: first
 
   edit_button:
     strategy: id
     value: updateButton
+    notes: "Ikon edit/show di action datalist"
 
-  select_product:
-    strategy: aria-placeholder
-    value: Select Product
-    note: "Header BOM Active only → POST work-order/{id}/bulk-fifo"
+  datalist_approve_button:
+    strategy: css
+    value: 'button[class*="approve-button"]'
+    scope: row by trx code
+    notes: "Ikon approve di kolom action datalist (bukan tombol Approve di form edit)"
 
-  qty:
-    strategy: column
-    value: QTY
-    note: "PrimeDataTables inline editable (quantity_formatted); integer-only; PUT work-order/{id}/work-order-detail"
+  datalist_delete_button:
+    strategy: css
+    value: 'button[class*="delete-button"]'
+    scope: row by trx code
 
-  detail_section:
-    strategy: disclosure
-    id: ProductDetails
-    name: Assembly Detail
+  advanced_filter:
+    strategy: role
+    role: button
+    name: Advanced Filter
+    notes: "DataTablesV3 :advanced_filter=true"
+
+  export_button:
+    strategy: role
+    role: button
+    name: Export
+    notes: "export_all + ExportFileTable (with/without details)"
+
+  bulk_approve:
+    strategy: css
+    value: "button.bulk-approve"
+    notes: "DataTablesV3 :bulk_approve=true"
+
+  bulk_delete:
+    strategy: css
+    value: "button.delete-bulk"
+    notes: "DataTablesV3 :bulk_delete=true"
+
+  show_deleted:
+    strategy: text
+    value: Show Deleted
+    notes: "DataTablesV3 :is_show_deleted=true"
+
+  datalist_columns:
+    strategy: note
+    values:
+      - "TRX. CODE / TRX. DATE (code_formatted)"
+      - "Building (warehouse_formatted)"
+      - "Product (product_detail_formatted, default hidden)"
+      - "Type (type_formatted)"
+      - "Start Date"
+      - "Progress Status"
+      - "description"
+      - "TRX. STATUS"
+      - "error flag"
+      - "Generated Trx. (trx_ref_formatted)"
+      - "Created By / Created At"
+      - "Updated By / Updated At"
+
+  # ─── FORM — Basic Information (Form.vue #BasicInformation) ─────────────
 
   basic_section:
     strategy: disclosure
     id: BasicInformation
     name: Basic Information
+    aria_current: BasicInformation
+
+  code:
+    strategy: id
+    value: code
+    placeholder: Automatically generate by system
+    label: Transaction Code
+    note: "Auto AS* setelah save; disabled saat is_edit"
+
+  transaction_date:
+    strategy: label
+    value: Transaction Date
+    required: true
+    note: "VueDatePicker format dd-MM-yyyy HH:mm:ss; default dateTimeNow(); auto-save on change di edit"
+
+  building_origin:
+    strategy: aria-placeholder
+    value: Choose Building Origin
+    required: true
+    note: "warehouse_id; select2-warehouse; level building + WIP & FG; auto-save on change di edit"
+
+  start_date:
+    strategy: label
+    value: Start Date
+    required: true
+    note: "VueDatePicker; default dateTimeNow(); auto-save on change di edit"
+
+  type:
+    strategy: aria-placeholder
+    value: Choose type
+    required: true
+    options: [Production, Service, Assembly, Other]
+    note: "default data()=Assembly; auto-save on change di edit"
+
+  progress_status:
+    strategy: label
+    value: Progress Status
+    note: "FormInput disabled — tampil progress% dari API"
+
+  description:
+    strategy: placeholder
+    value: Add description or notes...
+    note: "FormTextarea col-span-3"
+
+  # ─── FORM — sidebar & actions (Form.vue) ───────────────────────────────
+
+  sidebar_basic:
+    strategy: tippy
+    value: Basic Information
+
+  sidebar_detail:
+    strategy: tippy
+    value: Assembly Detail
+
+  sidebar_approval:
+    strategy: tippy
+    value: Approval
+    notes: "Buka slideover Approval log"
+
+  sidebar_audit_log:
+    strategy: tippy
+    value: Audit Log
+    notes: "Hanya aktif di edit"
+
+  sidebar_histories:
+    strategy: text
+    value: Histories
+    notes: "v-if id — buka slideover HistoryDetail"
+
+  print_detail:
+    strategy: tippy
+    value: Print Detail
+    notes: "GET work-order/{id}/print — PDF; hanya is_edit"
+
+  status_draft:
+    strategy: id
+    value: draft
+    note: "Radio; @click update('draft') → PUT work-order/{id}"
+
+  status_open:
+    strategy: id
+    value: open
+    note: "Radio; butuh >=1 detail; trigger generate transfer/TFI; tunggu PUT sebelum aksi berikutnya"
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    note: "Create only → POST work-order → redirect edit/{id}"
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    note: "Edit + can_update → PUT work-order/{id}"
+
+  approve_button:
+    strategy: tippy
+    value: Approve
+    note: "Icon check-double di samping Save All; v-if can_approve; buka ApprovalModal"
+
+  # ─── APPROVAL MODAL (ApprovalModal / ApprovalDialog) ───────────────────
+
+  approval_modal_description:
+    strategy: placeholder
+    value: Add information about why you are approving this transaction.
+
+  approval_modal_approve:
+    strategy: role
+    role: button
+    name: Approve
+
+  approval_modal_reject:
+    strategy: role
+    role: button
+    name: Reject
+
+  approval_slideover_approve_now:
+    strategy: role
+    role: button
+    name: Approve Now
+    notes: "Di slideover Approval (DatalistLogApproval) saat can_approve"
+
+  # ─── DETAIL — Assembly Detail (DatalistDetail.vue #ProductDetails) ─────
+
+  detail_section:
+    strategy: disclosure
+    id: ProductDetails
+    name: Assembly Detail
+    aria_current: ProductDetails
+    note: "Hanya muncul setelah is_edit"
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+    note: "Header BOM Active → POST work-order/{id}/bulk-fifo; draft only"
+
+  detail_columns_draft:
+    strategy: note
+    values:
+      - "System Product SKU / Name (product_formatted_assembly)"
+      - "Max assembly Qty (transaction_stock_formatted, read-only)"
+      - "QTY (quantity_formatted, inline editable, integer)"
+      - "UNIT (unit_formatted) — inline PrimeVue Select (bukan vueform Multiselect); opsi = primary + alternate unit produk FG (label dari master Unit, mis. Pieces/Box — tidak fixed)"
+      - "error flag"
+
+  detail_columns_open:
+    strategy: note
+    values:
+      - "… + Transfer Code / Transfer Date (transfer_formatted)"
+      - "QTY & UNIT locked"
+
+  detail_columns_approved:
+    strategy: note
+    values:
+      - "… + Inbound Code / Inbound Date (inbund_formatted)"
+      - "Stock reserved banner visible"
+
+  qty:
+    strategy: column
+    value: QTY
+    note: "PrimeDataTables inline; PUT work-order/{id}/work-order-detail"
+
+  max_assembly_qty:
+    strategy: column
+    value: Max assembly Qty
+    note: "Read-only; based on transaction assembly date"
+
+  unit_column:
+    strategy: column
+    value: unit
+    note: >
+      Inline PrimeVue Select (primevue/select). Opsi & label mengikuti primary + alternate unit
+      di System Product FG (bukan hardcode Pieces/Box). Method: setUnitOnDetailRow(unitLabel) /
+      readUnitLabelFromDetailRow — unitLabel = nama unit yang tampil di dropdown untuk SKU itu.
+
+  transfer_column:
+    strategy: column
+    value: Transfer Code
+    note: "Visible Open / Approved"
+
+  inbound_column:
+    strategy: column
+    value: Inbound Code
+    note: "Visible Approved (field typo FE: inbund_formatted)"
+
+  stock_reserved_banner:
+    strategy: text
+    value: Stock has been reserved and all related documents have been generated.
+    note: "additional-information slot saat can_update=false"
+
+  detail_import:
+    strategy: note
+    value: "PrimeDataTables import_file + ImportFileTable; template Template-Import-Assembly.xlsx"
+
+  detail_export_excel:
+    strategy: note
+    value: "export_excel / export_excel_side; filename Assembly Detail - {trxCode}"
+
+  detail_print_bulk:
+    strategy: tippy_dropdown
+    options: [SKU, BOX, SID]
+    print_modes: [sku_qr, sku_qr_qty, stock_id_qr]
+    note: "bulk-actions TableDropdown icon=print"
+
+  detail_print_row:
+    strategy: tippy_dropdown
+    note: "action-custom per row jika action.printable"
+
+  # ─── DETAIL EDIT MODAL (Dialog Edit this Item) ─────────────────────────
+
+  detail_modal_title:
+    strategy: text
+    value: Edit this Item
+
+  detail_modal_product:
+    strategy: aria-placeholder
+    value: Choose Product
+
+  detail_modal_unit:
+    strategy: aria-placeholder
+    value: Choose Unit
+
+  detail_modal_availability:
+    strategy: label
+    value: Availability
+    note: "disabled input + unit suffix"
+
+  detail_modal_quantity:
+    strategy: label
+    value: Quantity
+    note: "integer FormInput"
+
+  detail_modal_save:
+    strategy: css
+    value: "[data-modal-save]"
+    note: "Button Save type=submit"
+
+  bom_tree:
+    strategy: component
+    value: BundleProductForm
+    note: "Per FG product; :assembly=true :is_bom=true; show_outbound setelah approved"
+
+apis:
+  create: POST /api/supplychain/work-order
+  update: PUT /api/supplychain/work-order/{id}
+  detail_list: GET /api/supplychain/work-order/{id}/work-order-detail
+  detail_update: PUT /api/supplychain/work-order/{id}/work-order-detail
+  bulk_fifo: POST /api/supplychain/work-order/{id}/bulk-fifo
+  approve: POST /api/supplychain/work-order/{id}/approve
+  print: GET /api/supplychain/work-order/{id}/print
+  select2_warehouse: GET /api/supplychain/work-order/select2-warehouse
+  select2_products: GET /api/supplychain/work-order/{id}/select2-available-products
+  default_values: GET /api/supplychain/work-order/default-values
 
 notes:
   - "AS-IS: fetchDefaultValues() set warehouse_id lalu submit() otomatis — Create sering langsung Edit."
@@ -102,4 +358,9 @@ notes:
   - "UI route assembly ≠ API work-order — assert URL assembly, wait POST/PUT work-order."
   - "Detail: hanya SKU Header BOM Active + Composition Rule; unique FG per WO."
   - "Jangan set Open tanpa detail — A-21. Approve generate TFI+Outbound+Inbound async."
-  - "Setelah ada detail: warehouse_id / transaction_date / start_date terkunci."
+  - "Setelah ada detail: warehouse_id / transaction_date / start_date terkunci (disable_basic_information)."
+  - "Status radio Open/Draft memicu PUT langsung — tunggu response sebelum Save All / Approve."
+  - "Approve form = icon check-double (Tippy Approve), bukan teks button 'Approve' di footer."
+  - "UNIT detail: klik combobox kolom unit di baris FG; opsi = unit master produk (primary/alternate), bukan hardcode Pieces/Box."
+  - "ApprovalDialog.vue lokal ada placeholder description; runtime Form.vue pakai shared ApprovalModal."
+  - "Scan FE path: D:\\olshoperp\\olshoperp-frontend — workspace Cursor tetap terpisah dari QA docs."

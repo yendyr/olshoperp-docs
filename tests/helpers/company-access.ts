@@ -212,9 +212,24 @@ export async function switchCompanyById(
   await expect(companyMenuItem).toBeVisible();
   await companyMenuItem.click();
 
-  await expect(page.getByText('Are you sure?', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Proceed' }).click();
+  // Confirm dialog — copy bisa "Are you sure?" / variasi; tombol Proceed yang stabil
+  const proceed = page.getByRole('button', { name: /^Proceed$/i });
+  const confirmTitle = page
+    .getByText('Are you sure?', { exact: true })
+    .or(page.getByText(/sure|switch company|change company/i))
+    .first();
+  await Promise.race([
+    proceed.waitFor({ state: 'visible', timeout: 15_000 }),
+    confirmTitle.waitFor({ state: 'visible', timeout: 15_000 }),
+  ]).catch(() => undefined);
 
+  if (await proceed.isVisible({ timeout: 3_000 }).catch(() => false)) {
+    await proceed.click();
+  } else {
+    throw new Error(
+      `Switch company ke "${companyLabel}" (id=${companyId}): dialog konfirmasi / tombol Proceed tidak muncul.`,
+    );
+  }
   await page.waitForFunction(
     (expectedId) => {
       const raw = localStorage.getItem('company');

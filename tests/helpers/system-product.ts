@@ -1,5 +1,9 @@
 import { Locator, Page, expect } from '@playwright/test';
 import { dismissStagingBanner } from './company-access';
+import {
+  ImportFileTablePanel,
+  type ImportFailureAssertOptions,
+} from './shared/import-file-table';
 
 export type ProductFormPaths = {
   datalistPath: string;
@@ -1002,6 +1006,78 @@ export class SystemProductPage {
       .filter({ hasText: pattern });
 
     await expect(toast.first()).toBeVisible({ timeout: 30_000 });
+  }
+
+  /** Panel Import (Import History + View Error Logs) — System Product datalist */
+  get importPanel(): ImportFileTablePanel {
+    return new ImportFileTablePanel(this.page);
+  }
+
+  async openImportPanel(): Promise<void> {
+    await this.gotoDatalist();
+    await this.importPanel.openImportPanel();
+  }
+
+  async waitForImportHistoryOrFailureNotification(
+    options?: Pick<ImportFailureAssertOptions, 'timeoutMs'>,
+  ): Promise<void> {
+    await this.importPanel.waitForImportHistoryOrFailureNotification(options);
+  }
+
+  async openViewErrorLogsTab(): Promise<void> {
+    await this.importPanel.openViewErrorLogsTab();
+  }
+
+  /**
+   * Assert expected English error di tab View Error Logs (kolom Message).
+   * Tidak perlu klik baris Import History.
+   */
+  async assertImportViewErrorLogMessage(
+    expected: string | RegExp,
+    options?: Pick<ImportFailureAssertOptions, 'timeoutMs'>,
+  ): Promise<void> {
+    await this.importPanel.assertViewErrorLogMessage(expected, options);
+  }
+
+  async waitForImportFailureAndAssertErrorLog(
+    expected: string | RegExp,
+    options?: ImportFailureAssertOptions,
+  ): Promise<void> {
+    await this.importPanel.waitForImportFailureAndAssertErrorLog(
+      expected,
+      options,
+    );
+  }
+
+  /**
+   * Upload file Excel via UI (hidden input) setelah pilih tipe import di panel.
+   * `importType` contoh: product_images (Import Product Images).
+   */
+  async uploadImportFileViaUi(
+    filePath: string,
+    importTypeLabel: string | RegExp,
+  ): Promise<void> {
+    await this.openImportPanel();
+
+    const importOption = this.page
+      .getByRole('menuitem', { name: importTypeLabel })
+      .or(this.page.getByText(importTypeLabel).first());
+    await importOption.click();
+
+    const fileInput = this.page.locator(
+      'input[type="file"][accept*="sheet"], input[type="file"][accept*="excel"]',
+    );
+    await expect(fileInput.first()).toBeAttached({ timeout: 15_000 });
+
+    const uploadResponse = this.page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' &&
+        /\/import(\?|$)/.test(response.url()),
+      { timeout: 120_000 },
+    );
+
+    await fileInput.first().setInputFiles(filePath);
+    await uploadResponse;
   }
 
   async areSkusVisibleInDatalist(skus: string[]): Promise<boolean> {

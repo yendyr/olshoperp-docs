@@ -16,6 +16,15 @@ export type WarehouseStructureFormData = {
   parentLabel?: string;
 };
 
+export type GeneratorPrefixType = 'Numeric' | 'Alphabet';
+
+export type GeneratorRowData = {
+  levelSearch: string;
+  prefix: string;
+  amount: string;
+  prefixType: GeneratorPrefixType;
+};
+
 /**
  * POM Warehouse Structure — SCM Master Data.
  * Selector dari pom-registry/warehouse-structure.yaml.
@@ -45,6 +54,10 @@ export class WarehouseStructurePage {
 
   get typeCombobox(): Locator {
     return this.multiselect.comboboxByAriaPlaceholder('Choose Type');
+  }
+
+  async readTypeSelectedLabel(): Promise<string> {
+    return this.multiselect.selectedLabel(this.typeCombobox);
   }
 
   get dropOffSwitch(): Locator {
@@ -366,5 +379,337 @@ export class WarehouseStructurePage {
     if (name) {
       await expect(row).toContainText(name);
     }
+  }
+
+  get generatorSection(): Locator {
+    return this.page.locator('#WarehouseGenerator');
+  }
+
+  get generatorRows(): Locator {
+    return this.generatorSection.locator('.grid.grid-cols-12');
+  }
+
+  /**
+   * Code, Name, Type wajib terisi sebelum Child Warehouse Generator bisa dipakai.
+   * Indikator UI: ikon circle-check hijau di sidebar "Basic Information".
+   */
+  async ensureBasicInformationFilled(): Promise<void> {
+    await expect(this.codeInput, 'Code wajib diisi sebelum generator').not.toHaveValue('');
+    await expect(this.nameInput, 'Name wajib diisi sebelum generator').not.toHaveValue('');
+    await this.multiselect.assertFilled(this.typeCombobox, 'Type');
+
+    const basicCheck = this.page
+      .locator('li')
+      .filter({ hasText: /Basic Information/i })
+      .locator('.text-green-500')
+      .first();
+    await expect(
+      basicCheck,
+      'Basic Information belum lengkap (Code, Name, Type)',
+    ).toBeVisible({ timeout: 15_000 });
+  }
+
+  async ensureGeneratorFieldsEnabled(): Promise<void> {
+    const prefixInput = this.generatorSection.locator('[placeholder="Prefix"]').first();
+    await expect(
+      prefixInput,
+      'Prefix generator harus enabled setelah Basic Information terisi',
+    ).toBeEnabled({ timeout: 15_000 });
+  }
+
+  async expandChildWarehouseGenerator(): Promise<void> {
+    await this.ensureBasicInformationFilled();
+    await this.page
+      .locator('li')
+      .filter({ hasText: /Warehouse Generator/i })
+      .first()
+      .click({ timeout: 8_000 })
+      .catch(() => undefined);
+    await this.form.expandAccordion('Child Warehouse Generator');
+    await expect(this.generatorSection).toBeVisible({ timeout: 20_000 });
+    await this.ensureGeneratorFieldsEnabled();
+  }
+
+  async assertGeneratorHiddenOnEdit(): Promise<void> {
+    await expect(
+      this.page.getByRole('button', { name: 'Child Warehouse Generator', exact: true }),
+    ).toHaveCount(0);
+    await expect(this.generatorSection).toHaveCount(0);
+  }
+
+  async fillCreateHeaderWithoutDropOff(data: WarehouseStructureFormData): Promise<void> {
+    await this.codeInput.fill(data.code);
+    await this.nameInput.fill(data.name);
+    if (data.parentLabel) {
+      await this.multiselect.ensureValue(this.parentCombobox, data.parentLabel);
+    }
+    await this.selectType(data.typeLabel);
+    await this.nameInput.click();
+    await this.page.waitForTimeout(400);
+    await this.ensureDropOffOff();
+    await this.ensureActiveOn();
+    await this.ensureShowForAllCompanyOn();
+    await this.ensureBasicInformationFilled();
+  }
+
+  async ensureDropOffOff(): Promise<void> {
+    const sw = this.dropOffSwitch;
+    if (!(await sw.isVisible({ timeout: 5_000 }).catch(() => false))) {
+      return;
+    }
+    if (await sw.isChecked().catch(() => false)) {
+      await sw.click({ force: true });
+      await expect(sw).not.toBeChecked({ timeout: 10_000 });
+    }
+  }
+
+  async addGeneratorRow(): Promise<void> {
+    const addBtn = this.generatorRows.first().locator('button[type="button"]').first();
+    await expect(addBtn, 'Tombol tambah baris generator').toBeVisible({ timeout: 15_000 });
+    await addBtn.click();
+    await this.page.waitForTimeout(400);
+  }
+
+  async fillGeneratorRow(index: number, data: GeneratorRowData): Promise<void> {
+    const row = this.generatorRows.nth(index);
+    await expect(row, `Baris generator ${index + 1}`).toBeVisible({ timeout: 15_000 });
+
+    const level = row.locator('[aria-placeholder="Warehouse Level"]');
+    await this.selectGeneratorLevel(level, data.levelSearch);
+    await this.page.waitForTimeout(400);
+
+    await row.locator('[placeholder="Prefix"]').fill(data.prefix);
+    await row.locator('[placeholder="Amount"]').fill(data.amount);
+
+    await this.selectGeneratorPrefixType(row, data.prefixType);
+  }
+
+  /** Multiselect Prefix Type di kolom kanan baris generator (Numeric / Alphabet). */
+  generatorPrefixTypeMultiselect(row: Locator): Locator {
+    return row.locator('.multiselect').last();
+  }
+
+  async selectGeneratorPrefixType(
+    row: Locator,
+    prefixType: GeneratorPrefixType,
+  ): Promise<void> {
+    const multiselect = this.generatorPrefixTypeMultiselect(row);
+    await expect(
+      multiselect,
+      'Prefix Type multiselect harus tampil di baris generator',
+    ).toBeVisible({ timeout: 15_000 });
+    await expect(multiselect).toBeEnabled({ timeout: 15_000 });
+
+    const singleLabel = multiselect.locator('.multiselect-single-label');
+    const current = (await singleLabel.textContent().catch(() => ''))?.trim() ?? '';
+    const already =
+      new RegExp(`^${prefixType}$`, 'i').test(current) ||
+      (prefixType === 'Numeric' && /^numeric$/i.test(current));
+    if (already && !/prefix type|choose/i.test(current)) {
+      return;
+    }
+
+    // Buka dropdown via area kontrol multiselect (caret/label di kiri field search)
+    const openTarget = multiselect
+      .locator('.multiselect-caret, .multiselect-single-label, .multiselect-placeholder')
+      .first();
+    await openTarget.click({ force: true });
+    await this.page.waitForTimeout(600);
+
+    const combobox = multiselect.locator('[aria-placeholder="Prefix Type"]');
+    if (await combobox.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await combobox.click({ force: true }).catch(() => undefined);
+    }
+
+    const option = this.page
+      .locator('.multiselect-dropdown:visible .multiselect-option:visible')
+      .filter({ hasText: new RegExp(`^${prefixType}$`, 'i') })
+      .first();
+    await expect(option, `Opsi Prefix Type ${prefixType}`).toBeVisible({ timeout: 10_000 });
+    await option.click();
+    await this.page.waitForTimeout(300);
+
+    const after = (await singleLabel.textContent())?.trim() ?? '';
+    expect(
+      after,
+      `Prefix Type baris harus ${prefixType} (sekarang: "${after}")`,
+    ).toMatch(new RegExp(prefixType, 'i'));
+    expect(after, 'Prefix Type tidak boleh kosong/placeholder').not.toMatch(
+      /prefix type|^choose/i,
+    );
+  }
+
+  /**
+   * Pilih Warehouse Level di baris generator tanpa ketik search
+   * (q search sering mengosongkan list). Jika label tidak ketemu, ambil opsi enabled pertama.
+   */
+  async selectGeneratorLevel(combobox: Locator, levelSearch: string): Promise<void> {
+    await this.multiselect.open(combobox);
+    await this.page.waitForTimeout(1_200);
+
+    const options = this.multiselect.visibleOptions();
+    await expect(options.first(), 'Opsi Warehouse Level generator').toBeVisible({
+      timeout: 15_000,
+    });
+
+    const named = options
+      .filter({ hasNotText: /drop\s*off/i })
+      .filter({ hasText: new RegExp(levelSearch, 'i') })
+      .first();
+    if (await named.isVisible().catch(() => false)) {
+      await named.click({ force: true });
+      return;
+    }
+
+    const firstUsable = options.filter({ hasNotText: /drop\s*off/i }).first();
+    await firstUsable.click({ force: true });
+  }
+
+  /** Ambil pesan error dari response API (status.message atau Laravel errors bag). */
+  static extractApiErrorMessage(body: unknown): string {
+    if (!body || typeof body !== 'object') {
+      return '';
+    }
+    const b = body as {
+      status?: { error?: number | boolean; message?: string; errors?: Record<string, string[]> };
+      message?: string;
+      errors?: Record<string, string[]>;
+      data?: { id?: number };
+    };
+    if (b.status?.message) {
+      return String(b.status.message);
+    }
+    if (typeof b.message === 'string' && b.message.trim()) {
+      return b.message.trim();
+    }
+    const bag = b.errors ?? b.status?.errors;
+    if (bag && typeof bag === 'object') {
+      return Object.values(bag)
+        .flat()
+        .map(String)
+        .join(' | ');
+    }
+    return '';
+  }
+
+  async clickSaveAndNextCaptureBody(): Promise<{
+    ok: boolean;
+    status: number;
+    message: string;
+    id?: number;
+  }> {
+    const saveResponse = this.page.waitForResponse(
+      (response) =>
+        /\/supplychain\/warehouse\/?$/.test(new URL(response.url()).pathname) &&
+        response.request().method() === 'POST',
+      { timeout: 120_000 },
+    );
+
+    await this.form.clickSaveAndNext();
+    const response = await saveResponse;
+    const body = (await response.json().catch(() => null)) as {
+      status?: { error?: number | boolean; message?: string };
+      data?: { id?: number };
+    } | null;
+
+    const message = WarehouseStructurePage.extractApiErrorMessage(body);
+    const hasError = Boolean(body?.status?.error) || !response.ok();
+    return {
+      ok: !hasError,
+      status: response.status(),
+      message,
+      id: body?.data?.id,
+    };
+  }
+
+  /**
+   * Isi Code + Name saja (Type opsional). Untuk TC validasi Type kosong.
+   */
+  async fillCreateHeaderCodeName(
+    data: { code: string; name: string; typeLabel?: string },
+    options?: { dropOffOff?: boolean },
+  ): Promise<void> {
+    await this.codeInput.fill(data.code);
+    await this.nameInput.fill(data.name);
+    if (data.typeLabel) {
+      await this.selectType(data.typeLabel);
+      await this.nameInput.click();
+      await this.page.waitForTimeout(400);
+    }
+    if (options?.dropOffOff !== false && data.typeLabel) {
+      await this.ensureDropOffOff();
+    }
+    await this.ensureActiveOn();
+    if (data.typeLabel) {
+      await this.ensureShowForAllCompanyOn().catch(() => undefined);
+    }
+  }
+
+  async setGeneratorPrefix(rowIndex: number, prefix: string): Promise<void> {
+    const row = this.generatorRows.nth(rowIndex);
+    await row.locator('[placeholder="Prefix"]').fill(prefix);
+  }
+
+  async waitForGeneratedChildByPrefix(
+    prefix: string,
+    parentCode: string,
+    timeoutMs = 180_000,
+  ): Promise<void> {
+    const auth = await readAuthFromPage(this.page);
+    const api = getApiUrl();
+    const query = `${prefix}-`;
+    const deadline = Date.now() + timeoutMs;
+
+    while (Date.now() < deadline) {
+      const res = await this.page.request.get(
+        `${api}/supplychain/warehouse/select2?q=${encodeURIComponent(query)}`,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${auth.token}`,
+          },
+        },
+      );
+      const body = (await res.json().catch(() => null)) as {
+        data?: Array<{ code?: string }>;
+      } | null;
+      const found = (body?.data ?? []).some((row) => {
+        const code = String(row.code ?? '').toUpperCase();
+        return (
+          code.startsWith(`${prefix.toUpperCase()}-`) &&
+          code.includes(parentCode.toUpperCase())
+        );
+      });
+      if (found) {
+        return;
+      }
+      await this.page.waitForTimeout(5_000);
+    }
+
+    throw new Error(
+      `Child generator prefix ${prefix} untuk parent ${parentCode} belum muncul dalam ${timeoutMs}ms`,
+    );
+  }
+
+  async countSelect2ByQuery(query: string): Promise<number> {
+    const auth = await readAuthFromPage(this.page);
+    const api = getApiUrl();
+    const res = await this.page.request.get(
+      `${api}/supplychain/warehouse/select2?q=${encodeURIComponent(query)}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+      },
+    );
+    const body = (await res.json().catch(() => null)) as {
+      data?: Array<{ code?: string }>;
+    } | null;
+    return (body?.data ?? []).filter((row) =>
+      String(row.code ?? '')
+        .toUpperCase()
+        .includes(query.toUpperCase()),
+    ).length;
   }
 }

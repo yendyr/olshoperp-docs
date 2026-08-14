@@ -98,3 +98,28 @@ elements:
     strategy: id
     value: "#bundle-toggle-header"
     notes: Toggle Active bundle header — POST activate-bundle
+
+  import_panel_open:
+    strategy: css
+    value: "button.dt-btn-import-history"
+    notes: Toolbar datalist — buka slideover ImportFileTable
+
+  import_tab_history:
+    strategy: role
+    role: button
+    name: Import History
+
+  import_tab_view_error_logs:
+    strategy: role
+    role: button
+    name: View Error Logs
+    notes: Tab assert error — kolom Message (SKU Product + Message). Tanpa klik baris history
+
+  import_error_log_table:
+    strategy: composite
+    notes: DataTablesV3 di tab View Error Logs — assert tbody kolom Message
+
+  import_file_input:
+    strategy: css
+    value: 'input[type="file"][accept*="sheet"]'
+    notes: Hidden input upload Excel — setelah pilih opsi Import Product Images

@@ -10,6 +10,7 @@ export const ASSEMBLY_EDIT_PATH_PATTERN =
 /**
  * POM Assembly (SCM) — UI `/supplychain/assembly`, API `supplychain/work-order`.
  * Selector: tests/pom-registry/assembly.yaml
+ * FE source: D:/olshoperp/olshoperp-frontend/src/pages/SCM/master/Assembly
  *
  * AS-IS: Form.fetchDefaultValues() isi warehouse_id lalu submit() otomatis.
  * Type default = 'Assembly'; prefix code AS*.
@@ -25,6 +26,8 @@ export class AssemblyPage {
     this.form = new OlshopFormActions(page);
     this.multiselect = new OlshopMultiselect(page);
   }
+
+  // ─── Locators — Basic / status / detail ───────────────────────────────
 
   get codeInput(): Locator {
     return this.page.locator('#code');
@@ -42,6 +45,14 @@ export class AssemblyPage {
     return this.page.getByPlaceholder('Add description or notes...');
   }
 
+  get progressStatusInput(): Locator {
+    return this.page
+      .locator('div')
+      .filter({ has: this.page.getByText('Progress Status', { exact: false }) })
+      .locator('input')
+      .first();
+  }
+
   get draftRadio(): Locator {
     return this.page.locator('#draft');
   }
@@ -52,6 +63,86 @@ export class AssemblyPage {
 
   get selectProductCombobox(): Locator {
     return this.multiselect.comboboxByAriaPlaceholder('Select Product');
+  }
+
+  get productDetailsSection(): Locator {
+    return this.page.locator('#ProductDetails').first();
+  }
+
+  /** Icon check-double di samping Save All (Tippy "Approve") — Form.vue. */
+  get approveButton(): Locator {
+    return this.page
+      .locator('button')
+      .filter({ has: this.page.locator('[data-tippy-content="Approve"], .tippy') })
+      .or(
+        this.page
+          .locator('button')
+          .filter({ has: this.page.locator('svg, .fa-check-double, [data-icon="check-double"]') })
+          .filter({ hasNotText: /Save/i }),
+      )
+      .or(this.page.getByRole('button', { name: /^Approve$/i }))
+      .last();
+  }
+
+  get printDetailControl(): Locator {
+    return this.page
+      .locator('[data-tippy-content="Print Detail"]')
+      .or(this.page.locator('font-awesome-icon[icon="print"], .fa-print').first())
+      .first();
+  }
+
+  get approvalModalDescription(): Locator {
+    return this.page.getByPlaceholder(
+      'Add information about why you are approving this transaction.',
+    );
+  }
+
+  get approvalModalApproveButton(): Locator {
+    return this.page.getByRole('button', { name: /^Approve$/i }).last();
+  }
+
+  get approvalModalRejectButton(): Locator {
+    return this.page.getByRole('button', { name: /^Reject$/i });
+  }
+
+  get approveNowButton(): Locator {
+    return this.page.getByRole('button', { name: /Approve Now/i });
+  }
+
+  get stockReservedBanner(): Locator {
+    return this.page.getByText(
+      'Stock has been reserved and all related documents have been generated.',
+    );
+  }
+
+  get detailModalProduct(): Locator {
+    return this.multiselect.comboboxByAriaPlaceholder('Choose Product');
+  }
+
+  get detailModalUnit(): Locator {
+    return this.multiselect.comboboxByAriaPlaceholder('Choose Unit');
+  }
+
+  get detailModalSave(): Locator {
+    return this.page.locator('[data-modal-save]');
+  }
+
+  // ─── Locators — Datalist toolbar ──────────────────────────────────────
+
+  get advancedFilterButton(): Locator {
+    return this.page.getByRole('button', { name: /Advanced Filter/i });
+  }
+
+  get exportButton(): Locator {
+    return this.page.getByRole('button', { name: /^Export$/i });
+  }
+
+  get bulkApproveButton(): Locator {
+    return this.page.locator('button.bulk-approve');
+  }
+
+  get bulkDeleteButton(): Locator {
+    return this.page.locator('button.delete-bulk');
   }
 
   async gotoDatalist(): Promise<void> {
@@ -539,5 +630,528 @@ export class AssemblyPage {
     }
 
     return sku;
+  }
+
+  // ─── Datalist toolbar ─────────────────────────────────────────────────
+
+  async clickAdvancedFilterButton(): Promise<void> {
+    await this.advancedFilterButton.click();
+  }
+
+  async clickExportButton(): Promise<void> {
+    await this.exportButton.click();
+  }
+
+  async clickBulkApproveButton(): Promise<void> {
+    await this.bulkApproveButton.click();
+  }
+
+  async clickBulkDeleteButton(): Promise<void> {
+    await this.bulkDeleteButton.click();
+  }
+
+  // ─── Sidebar panels ───────────────────────────────────────────────────
+
+  async openSidebarApproval(): Promise<void> {
+    await this.page
+      .locator('li')
+      .filter({ hasText: /^Approval/i })
+      .or(this.page.getByText('Approval', { exact: true }))
+      .first()
+      .click();
+    await expect(
+      this.page.getByRole('heading', { name: /Approval/i }).or(this.approveNowButton),
+    )
+      .first()
+      .toBeVisible({ timeout: 15_000 })
+      .catch(() => undefined);
+  }
+
+  async openSidebarAuditLog(): Promise<void> {
+    await this.page
+      .locator('li')
+      .filter({ hasText: /Audit Log/i })
+      .first()
+      .click();
+  }
+
+  async openSidebarHistories(): Promise<void> {
+    await this.page
+      .locator('li')
+      .filter({ hasText: /^Histories$/i })
+      .first()
+      .click();
+    await expect(this.page.getByRole('heading', { name: /Histories/i })).toBeVisible({
+      timeout: 15_000,
+    });
+  }
+
+  // ─── Status / Approve / Print ─────────────────────────────────────────
+
+  /**
+   * Set status radio Draft|Open — tunggu PUT work-order sebelum aksi berikutnya
+   * (radio memicu auto-save + re-render).
+   */
+  async setTransactionStatus(status: 'draft' | 'open'): Promise<void> {
+    const radio = status === 'open' ? this.openRadio : this.draftRadio;
+    await expect(radio).toBeVisible({ timeout: 15_000 });
+
+    const put = this.page
+      .waitForResponse(
+        (response) =>
+          /\/work-order\/\d+\/?$/.test(new URL(response.url()).pathname) &&
+          response.request().method() === 'PUT',
+        { timeout: 60_000 },
+      )
+      .catch(() => null);
+
+    await radio.check();
+    const response = await put;
+    if (response) {
+      const body = (await response.json().catch(() => null)) as {
+        status?: { error?: number | string; message?: string };
+      } | null;
+      if (!response.ok() || Number(body?.status?.error ?? 0)) {
+        throw new Error(
+          `Set status ${status} gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
+        );
+      }
+    }
+    await waitForSuccessToast(this.page, 8_000).catch(() => undefined);
+    await this.page.waitForTimeout(800);
+  }
+
+  async clickApproveIcon(): Promise<void> {
+    const btn = this.page
+      .locator('button')
+      .filter({ has: this.page.locator('.fa-check-double, [data-icon="check-double"]') })
+      .or(this.page.locator('button[class*="bg-info"]').filter({ hasNotText: /Save/i }))
+      .last();
+    await expect(btn, 'Tombol Approve (icon check-double)').toBeVisible({
+      timeout: 20_000,
+    });
+    await btn.click();
+  }
+
+  async fillApprovalDescription(text: string): Promise<void> {
+    await expect(this.approvalModalDescription).toBeVisible({ timeout: 15_000 });
+    await this.approvalModalDescription.fill(text);
+  }
+
+  /**
+   * Approve dari form edit: icon → modal description → Approve.
+   * API: POST work-order/{id}/approve
+   */
+  async approveFromEditForm(description = 'Approved by automation'): Promise<void> {
+    await this.clickApproveIcon();
+    await this.fillApprovalDescription(description);
+
+    const approveResponse = this.page.waitForResponse(
+      (response) =>
+        /\/work-order\/\d+\/approve/.test(response.url()) &&
+        response.request().method() === 'POST',
+      { timeout: 90_000 },
+    );
+
+    await this.approvalModalApproveButton.click();
+    const response = await approveResponse;
+    const body = (await response.json().catch(() => null)) as {
+      status?: { error?: number | string; message?: string };
+    } | null;
+    if (!response.ok() || Number(body?.status?.error ?? 0)) {
+      throw new Error(
+        `Approve Assembly gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
+      );
+    }
+    await waitForSuccessToast(this.page, 15_000).catch(() => undefined);
+  }
+
+  async assertProgressStatusVisible(): Promise<void> {
+    await this.expandBasicInformation();
+    await expect(this.progressStatusInput).toBeVisible({ timeout: 15_000 });
+  }
+
+  async assertStockReservedBannerVisible(): Promise<void> {
+    await this.expandAssemblyDetail();
+    await expect(this.stockReservedBanner).toBeVisible({ timeout: 20_000 });
+  }
+
+  async assertDetailColumnVisible(headerSnippet: string): Promise<void> {
+    await this.expandAssemblyDetail();
+    await expect(
+      this.productDetailsSection.getByText(headerSnippet, { exact: false }).first(),
+    ).toBeVisible({ timeout: 20_000 });
+  }
+
+  /** Assert kolom Transfer muncul (status Open/Approved). */
+  async assertTransferColumnVisible(): Promise<void> {
+    await this.assertDetailColumnVisible('Transfer');
+  }
+
+  /** Assert kolom Inbound muncul (status Approved). */
+  async assertInboundColumnVisible(): Promise<void> {
+    await this.assertDetailColumnVisible('Inbound');
+  }
+
+  async assertMaxAssemblyQtyColumnVisible(): Promise<void> {
+    await this.assertDetailColumnVisible('Max assembly Qty');
+  }
+
+  async readProgressStatus(): Promise<string> {
+    await this.expandBasicInformation();
+    return (await this.progressStatusInput.inputValue()).trim();
+  }
+
+  // ─── ETM-15525 — Max Qty / Unit / QTY conversion ──────────────────────
+
+  private detailRow(skuToken?: string): Locator {
+    const section = this.productDetailsSection;
+    const rows = section
+      .locator('.p-datatable-tbody tr')
+      .filter({ hasNotText: /no (records|data)|empty/i });
+    if (skuToken) {
+      return rows
+        .filter({
+          hasText: new RegExp(
+            skuToken.slice(0, 24).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+            'i',
+          ),
+        })
+        .first();
+    }
+    return rows.first();
+  }
+
+  /**
+   * Select Product by SKU (type filter → bulk-fifo). Return SKU label or null.
+   */
+  async addFinishGoodsBySku(sku: string): Promise<string | null> {
+    await this.expandAssemblyDetail();
+
+    const existing = await this.readFirstDetailSku();
+    if (existing && new RegExp(sku, 'i').test(existing)) {
+      return existing;
+    }
+    if (existing) {
+      // Baris lain sudah ada — cari baris SKU target
+      const row = this.detailRow(sku);
+      if (await row.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        return sku;
+      }
+    }
+
+    let combobox = this.selectProductCombobox;
+    if (!(await combobox.isVisible({ timeout: 8_000 }).catch(() => false))) {
+      const root = this.page
+        .locator('#ProductDetails')
+        .locator('.multiselect')
+        .filter({
+          has: this.page.locator('[aria-placeholder="Select Product"]'),
+        })
+        .first();
+      if (!(await root.isVisible({ timeout: 5_000 }).catch(() => false))) {
+        return null;
+      }
+      await root.click();
+      combobox = root.locator('.multiselect-search').first();
+    }
+
+    await this.multiselect.open(combobox);
+    await combobox.fill(sku);
+    await this.page.waitForTimeout(1_200);
+
+    const option = this.page
+      .locator('.multiselect-option:visible')
+      .filter({ hasText: new RegExp(sku, 'i') })
+      .filter({ hasNotText: 'No results found' })
+      .first();
+
+    if (!(await option.isVisible({ timeout: 15_000 }).catch(() => false))) {
+      await this.page.keyboard.press('Escape').catch(() => undefined);
+      return null;
+    }
+
+    const bulkResponsePromise = this.page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' &&
+        /\/work-order\/\d+\/bulk-fifo/.test(response.url()),
+      { timeout: 45_000 },
+    );
+
+    await option.click();
+    const response = await bulkResponsePromise.catch(() => null);
+    if (response) {
+      const body = (await response.json().catch(() => null)) as {
+        status?: { error?: number | string; message?: string };
+      } | null;
+      if (!response.ok() || Number(body?.status?.error ?? 0)) {
+        throw new Error(
+          `Add FG ${sku} gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
+        );
+      }
+      await waitForSuccessToast(this.page, 15_000).catch(() => undefined);
+    }
+
+    await this.page.waitForTimeout(2_000);
+    await this.assertDetailHasProduct(sku);
+    return sku;
+  }
+
+  /**
+   * Baca angka Max Assembly Qty dari baris detail (kolom "Max assembly Qty").
+   */
+  async readMaxAssemblyQty(skuToken?: string): Promise<number | null> {
+    await this.expandAssemblyDetail();
+    const section = this.productDetailsSection;
+    const row = this.detailRow(skuToken);
+    await expect(row).toBeVisible({ timeout: 30_000 });
+
+    const headers = section.locator('.p-datatable-thead th, thead th');
+    const headerCount = await headers.count();
+    let maxIdx = -1;
+    for (let i = 0; i < headerCount; i++) {
+      const h = ((await headers.nth(i).innerText()) ?? '').replace(/\s+/g, ' ');
+      if (/max\s*assembly\s*qty/i.test(h)) {
+        maxIdx = i;
+        break;
+      }
+    }
+
+    if (maxIdx >= 0) {
+      const cell = row.locator('td').nth(maxIdx);
+      const text = ((await cell.innerText()) ?? '').replace(/\s+/g, ' ').trim();
+      const match = text.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
+      if (match) return Number(match[1]);
+    }
+
+    // Fallback: cell ke-2 setelah product (index ~2 bila ada checkbox)
+    const cells = row.locator('td');
+    for (const idx of [2, 1, 3]) {
+      if (idx >= (await cells.count())) continue;
+      const text = ((await cells.nth(idx).innerText()) ?? '').trim();
+      const match = text.replace(/,/g, '').match(/^(\d+(?:\.\d+)?)$/);
+      if (match) return Number(match[1]);
+    }
+    return null;
+  }
+
+  async readQtyFromDetailRow(skuToken?: string): Promise<number | null> {
+    await this.expandAssemblyDetail();
+    const row = this.detailRow(skuToken);
+    await expect(row).toBeVisible({ timeout: 30_000 });
+
+    const input = row.locator('input.p-inputtext, input[type="text"]').first();
+    if (await input.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      const raw = (await input.inputValue()).replace(/[^\d.]/g, '');
+      return raw ? Number(raw) : null;
+    }
+
+    // Aktifkan edit QTY lalu baca
+    const cells = row.locator('td');
+    const count = await cells.count();
+    for (let i = 0; i < count; i++) {
+      await cells.nth(i).dblclick().catch(() => undefined);
+      const edit = row.locator('input.p-inputtext, input[type="text"]').first();
+      if (await edit.isVisible({ timeout: 800 }).catch(() => false)) {
+        const raw = (await edit.inputValue()).replace(/[^\d.]/g, '');
+        await this.page.keyboard.press('Escape').catch(() => undefined);
+        return raw ? Number(raw) : null;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Ubah UNIT **inline** di baris Assembly Detail (kolom `unit`).
+   * Opsi & label = primary + alternate unit System Product FG (bukan hardcode Pieces/Box).
+   * `unitLabel` = teks yang tampil di dropdown untuk SKU tersebut (contoh ETM-15525 ASS-R: "Box").
+   */
+  async setUnitOnDetailRow(
+    unitLabel: string,
+    skuToken?: string,
+  ): Promise<void> {
+    await this.expandAssemblyDetail();
+    const section = this.productDetailsSection;
+    const row = this.detailRow(skuToken);
+    await expect(row, `Baris detail ${skuToken ?? ''}`).toBeVisible({
+      timeout: 30_000,
+    });
+
+    const headers = section.locator('.p-datatable-thead th, thead th');
+    const headerCount = await headers.count();
+    let unitIdx = -1;
+    for (let i = 0; i < headerCount; i++) {
+      const h = ((await headers.nth(i).innerText()) ?? '').replace(/\s+/g, ' ').trim();
+      if (/^unit$/i.test(h)) {
+        unitIdx = i;
+        break;
+      }
+    }
+    expect(unitIdx, 'Kolom header UNIT di Assembly Detail').toBeGreaterThanOrEqual(0);
+
+    const unitCell = row.locator('td').nth(unitIdx);
+    await unitCell.scrollIntoViewIfNeeded();
+
+    // Combobox UNIT di cell baris (label UI: Pieces / Box) — PrimeVue 4 Select/Dropdown
+    const unitCombo = unitCell
+      .getByRole('combobox')
+      .or(unitCell.locator('.p-dropdown, .p-select'))
+      .first();
+    await expect(unitCombo, 'Combobox UNIT inline di baris ASS-R').toBeVisible({
+      timeout: 15_000,
+    });
+
+    const put = this.page
+      .waitForResponse(
+        (response) =>
+          /\/work-order\/\d+\/work-order-detail/.test(response.url()) &&
+          ['PUT', 'POST', 'PATCH'].includes(response.request().method()),
+        { timeout: 60_000 },
+      )
+      .catch(() => null);
+
+    await unitCombo.click();
+    await this.page.waitForTimeout(500);
+
+    // Overlay di body: PV4 = .p-select-overlay; fallback option role
+    const overlay = this.page.locator(
+      '.p-select-overlay:visible, .p-dropdown-panel:visible, [data-pc-section="overlay"]:visible, [role="listbox"]:visible',
+    ).last();
+
+    if (!(await overlay.isVisible({ timeout: 3_000 }).catch(() => false))) {
+      // Trigger lewat keyboard jika click belum buka panel
+      await unitCombo.focus();
+      await unitCombo.press('Alt+ArrowDown').catch(() => unitCombo.press('ArrowDown'));
+      await this.page.waitForTimeout(400);
+    }
+
+    if (await overlay.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      const filterInput = overlay.locator('input').first();
+      if (await filterInput.isVisible({ timeout: 1_500 }).catch(() => false)) {
+        await filterInput.fill(unitLabel);
+        await this.page.waitForTimeout(400);
+      }
+    }
+
+    const option = this.page
+      .getByRole('option', { name: new RegExp(`^\\s*${unitLabel}\\s*$`, 'i') })
+      .or(this.page.getByRole('option', { name: new RegExp(unitLabel, 'i') }))
+      .or(
+        this.page
+          .locator(
+            '.p-select-option:visible, .p-dropdown-item:visible, [data-pc-section="option"]:visible',
+          )
+          .filter({ hasText: new RegExp(unitLabel, 'i') }),
+      )
+      .first();
+    await expect(option, `Opsi unit inline "${unitLabel}"`).toBeVisible({
+      timeout: 15_000,
+    });
+    await option.click();
+
+    const response = await put;
+    if (response) {
+      const body = (await response.json().catch(() => null)) as {
+        status?: { error?: number | string; message?: string };
+      } | null;
+      if (!response.ok() || Number(body?.status?.error ?? 0)) {
+        throw new Error(
+          `Ganti unit inline ke ${unitLabel} gagal: ${body?.status?.message ?? `HTTP ${response.status()}`}`,
+        );
+      }
+    }
+    await waitForSuccessToast(this.page, 10_000).catch(() => undefined);
+    await this.page.waitForTimeout(1_500);
+
+    // Pastikan label unit di cell sudah berubah (Pieces → Box, dll.)
+    const after = ((await unitCell.innerText()) ?? '').replace(/\s+/g, ' ');
+    expect(
+      after,
+      `UNIT inline harus mengandung "${unitLabel}" setelah pilih. actual="${after}"`,
+    ).toMatch(new RegExp(unitLabel, 'i'));
+  }
+
+  /** Baca label UNIT inline di baris detail (teks dari master unit produk, mis. Pieces / Box / Pack). */
+  async readUnitLabelFromDetailRow(skuToken?: string): Promise<string> {
+    await this.expandAssemblyDetail();
+    const section = this.productDetailsSection;
+    const row = this.detailRow(skuToken);
+    await expect(row).toBeVisible({ timeout: 30_000 });
+
+    const headers = section.locator('.p-datatable-thead th, thead th');
+    const headerCount = await headers.count();
+    let unitIdx = -1;
+    for (let i = 0; i < headerCount; i++) {
+      const h = ((await headers.nth(i).innerText()) ?? '').replace(/\s+/g, ' ').trim();
+      if (/^unit$/i.test(h)) {
+        unitIdx = i;
+        break;
+      }
+    }
+    if (unitIdx < 0) return '';
+    return ((await row.locator('td').nth(unitIdx).innerText()) ?? '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /**
+   * Coba set Open — return hasil tanpa throw (untuk TC validasi gagal).
+   */
+  async trySetOpen(): Promise<{
+    ok: boolean;
+    message: string;
+    draftChecked: boolean;
+  }> {
+    await expect(this.openRadio).toBeVisible({ timeout: 15_000 });
+
+    const put = this.page
+      .waitForResponse(
+        (response) =>
+          /\/work-order\/\d+\/?$/.test(new URL(response.url()).pathname) &&
+          response.request().method() === 'PUT',
+        { timeout: 60_000 },
+      )
+      .catch(() => null);
+
+    await this.openRadio.check();
+    const response = await put;
+    let message = '';
+    let ok = true;
+
+    if (response) {
+      const body = (await response.json().catch(() => null)) as {
+        status?: { error?: number | string; message?: string };
+        message?: string;
+      } | null;
+      message =
+        body?.status?.message ??
+        body?.message ??
+        (await response.text().catch(() => '')) ??
+        '';
+      if (!response.ok() || Number(body?.status?.error ?? 0)) {
+        ok = false;
+      }
+    }
+
+    // Toast error sering muncul meski HTTP 200 dengan status.error
+    const errorToast = this.page
+      .locator('.toast, .Toastify, [class*="notification"]')
+      .filter({ hasText: /stock|stok|BoM|bom|tidak|not enough|insufficient|fail|error/i })
+      .first();
+    if (await errorToast.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      const toastText = ((await errorToast.innerText()) ?? '').trim();
+      if (toastText) {
+        message = message || toastText;
+        ok = false;
+      }
+    }
+
+    await this.page.waitForTimeout(1_200);
+    const draftChecked = await this.draftRadio.isChecked().catch(() => false);
+    if (draftChecked) {
+      ok = false;
+    }
+
+    return { ok, message, draftChecked };
   }
 }

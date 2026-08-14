@@ -4,6 +4,10 @@ export { OlshopMultiselect } from './multiselect';
 export { OlshopFormActions } from './form-actions';
 export { waitForSuccessToast } from './toast';
 export {
+  ImportFileTablePanel,
+  type ImportFailureAssertOptions,
+} from './import-file-table';
+export {
   assertDetailRowOrder,
   evaluateDetailOrder,
   extractIdentifierOrder,
