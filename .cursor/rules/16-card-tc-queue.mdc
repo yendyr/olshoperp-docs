@@ -9,6 +9,8 @@ Antrian rencana uji untuk card Jira **in-flight**. Bukan katalog TC, bukan cover
 
 **File antrian:** `test-queue.yaml` di root repo `olshoperp-docs` (bukan di `qa-docs/`).
 
+**Site Jira (WAJIB):** hanya **ETM** di `https://erpintegration.atlassian.net` — `cloudId` `44cc9820-3372-4c12-884c-698b1397173c`. MCP Rovo melihat dua org; **jangan** `eduqat.atlassian.net`. Setiap JQL/create/get **wajib** `cloudId` ETM. Detail di `olshoperp/.cursor/rules/16-jira-etm-site.mdc`.
+
 ---
 
 ## Trigger — tunggu keyword

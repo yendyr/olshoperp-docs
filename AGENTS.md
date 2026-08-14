@@ -56,7 +56,7 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `09-menu-documentation.mdc` | Protokol **baca** dokumentasi menu |
 | `10-anti-hallucination.mdc` | Larangan mengarang menu/API/status |
 | `11-cross-menu-navigation.mdc` | Trace alur lintas modul & menu terkait |
-| `12-jira-card-format.mdc` | Format Bug / Improvement / Change Requirement + trigger word |
+| `12-jira-card-format.mdc` | Format Bug / Improvement / Change Requirement + trigger word. Site: **ETM** / `erpintegration.atlassian.net` saja — jangan org lain |
 | `13-test-case-format.mdc` | Standar `TC-*.md`, DRAFT naming, `#renumber-tc` (semua menu), expected dari requirement, `origin_jira` / `last_execution` |
 | `14-playwright-e2e.mdc` | Eksekusi Playwright — fidelity TC, run scope, auth, POM |
 | `15-playwright-multi-repo.mdc` | BUILD vs RUN: docs-only re-test jika TC automation lengkap; FE/BE hanya BUILD/debug |

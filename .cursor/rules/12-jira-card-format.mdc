@@ -7,6 +7,8 @@ alwaysApply: true
 
 Gunakan rule ini setiap kali user meminta membuat Jira card, bug report, improvement task, atau change requirement.
 
+**Site Jira:** hanya project **ETM** di `erpintegration.atlassian.net` (`cloudId` `44cc9820-3372-4c12-884c-698b1397173c`). Jangan org lain (`eduqat.atlassian.net`). MCP Rovo wajib `cloudId` ETM di setiap call.
+
 **Sumber AS-IS & Expected:** `olshoperp-docs` (`qa-docs/{slug}/requirement.md`) — **bukan** dari kode `olshoperp` / `olshoperp-frontend`, meski investigasi Playwright memakai repo app. Temuan automation → Actual Result / Additional Context saja (`15-playwright-multi-repo.mdc`).
 
 ---
