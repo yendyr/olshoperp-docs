@@ -65,6 +65,7 @@ export class SalesPlatformPage {
 
     const pending = waitList();
     await this.gotoDatalist();
+    await this.datalist.searchInput.fill('');
     let response = await pending;
     if (search) {
       const searched = waitList();
@@ -76,6 +77,40 @@ export class SalesPlatformPage {
     } | null;
     const data = body?.data;
     return Array.isArray(data) ? (data as Record<string, unknown>[]) : [];
+  }
+
+  async listOrdersViaApi(length = 100): Promise<Record<string, unknown>[]> {
+    await this.gotoDatalist();
+    const auth = await readAuthFromPage(this.page);
+    if (!auth.token) return this.listOrders();
+    const url = `${getApiUrl()}/omnichannel/sales-order/get?type=platform`;
+    const headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${auth.token}`,
+    };
+    const attempts = [
+      () =>
+        this.page.request.get(`${url}&start=0&length=${length}`, { headers }),
+      () =>
+        this.page.request.post(url, {
+          headers,
+          data: { start: 0, length, search: { value: '' } },
+        }),
+      () =>
+        this.page.request.post(url, {
+          headers,
+          form: { start: '0', length: String(length), 'search[value]': '' },
+        }),
+    ];
+    for (const attempt of attempts) {
+      const res = await attempt();
+      if (!res.ok()) continue;
+      const body = (await res.json().catch(() => null)) as { data?: unknown };
+      if (Array.isArray(body?.data) && body.data.length) {
+        return body.data as Record<string, unknown>[];
+      }
+    }
+    return this.listOrders();
   }
 
   async fetchSalesOrderApi(
@@ -131,14 +166,8 @@ export class SalesPlatformPage {
   }
 
   isEditableStatus(row: Record<string, unknown>): boolean {
-    const status = String(
-      row.transaction_status ??
-        row.status ??
-        row.status_name ??
-        row.sales_order_status ??
-        '',
-    );
-    return /draft|open/i.test(status);
+    const internal = String(row.status ?? row.status_name ?? '');
+    return /^(draft|open)$/i.test(internal.trim());
   }
 
   async findOrderIdBySku(sku: string): Promise<string | null> {
@@ -154,7 +183,7 @@ export class SalesPlatformPage {
   }
 
   async findEditableOrderIds(limit = 8): Promise<string[]> {
-    const rows = await this.listOrders();
+    const rows = await this.listOrdersViaApi(100);
     const ids: string[] = [];
     for (const row of rows) {
       if (!this.isEditableStatus(row)) continue;
@@ -163,12 +192,7 @@ export class SalesPlatformPage {
       ids.push(String(id));
       if (ids.length >= limit) break;
     }
-    if (ids.length) return ids;
-    return rows
-      .slice(0, limit)
-      .map((row) => row.id ?? row.sales_order_id)
-      .filter((id) => id != null)
-      .map(String);
+    return ids;
   }
 
   async openEditById(id: string): Promise<void> {
@@ -198,24 +222,46 @@ export class SalesPlatformPage {
   }
 
   async expandPlatformDetail(): Promise<void> {
-    for (const name of ['Platform Detail', 'Sales Order Detail']) {
-      const btn = this.page.getByRole('button', { name: new RegExp(name, 'i') });
-      if (await btn.first().isVisible({ timeout: 3_000 }).catch(() => false)) {
-        await this.form.expandAccordion(
-          ((await btn.first().innerText()) ?? name).trim() || name,
-        ).catch(async () => {
-          if ((await btn.first().getAttribute('aria-expanded')) !== 'true') {
-            await btn.first().click();
-            await this.page.waitForTimeout(700);
-          }
-        });
-        return;
-      }
+    const btn = this.page
+      .getByRole('button', {
+        name: /Sales Platform Detail|Platform Detail|Sales Order Detail/i,
+      })
+      .first();
+    await expect(btn, 'Accordion Sales Platform Detail').toBeVisible({
+      timeout: 20_000,
+    });
+    if ((await btn.getAttribute('aria-expanded')) !== 'true') {
+      await btn.click();
     }
+    await expect(btn).toHaveAttribute('aria-expanded', 'true', { timeout: 15_000 });
+    await this.page
+      .locator('.p-datatable-loading-overlay, .p-datatable-loading')
+      .first()
+      .waitFor({ state: 'hidden', timeout: 30_000 })
+      .catch(() => undefined);
+    await this.page.waitForTimeout(1_000);
   }
 
   async bindSystemSku(sku: string): Promise<Record<string, unknown> | null> {
     await this.expandPlatformDetail();
+    await expect(
+      this.page.getByText(/System SKU/i).first(),
+      'Kolom System SKU',
+    ).toBeVisible({ timeout: 20_000 });
+    await this.page
+      .getByText(/no data available in table/i)
+      .first()
+      .waitFor({ state: 'hidden', timeout: 30_000 })
+      .catch(() => undefined);
+
+    const skuCell = this.page
+      .locator('.p-datatable-tbody tr td, table tbody tr td')
+      .filter({ has: this.page.locator('.multiselect, [role="combobox"], input') })
+      .first();
+    if (await skuCell.isVisible().catch(() => false)) {
+      await skuCell.click();
+      await this.page.waitForTimeout(400);
+    }
 
     const combobox = this.page
       .locator(
@@ -223,8 +269,9 @@ export class SalesPlatformPage {
           '[aria-placeholder="Select Product"]',
           '[aria-placeholder*="System SKU"]',
           '[aria-placeholder*="Select SKU"]',
-          '#PlatformDetail [aria-placeholder]',
-          '#SalesOrderDetail [aria-placeholder="Select Product"]',
+          '[aria-placeholder*="Choose"]',
+          '.p-datatable-tbody .multiselect-search',
+          '.multiselect-search',
         ].join(', '),
       )
       .locator('visible=true')
@@ -289,7 +336,9 @@ export class SalesPlatformPage {
       currency_id: so.currency_id,
       exchange_rate: so.exchange_rate,
       shipping_platform_system_id: so.shipping_platform_system_id,
-      customer_id: so.customer_id,
+      customer_id: Number(
+        (so.customer as { id?: number } | undefined)?.id ?? so.customer_id,
+      ),
       transaction_date: display,
     };
     const res = await this.page.request.put(
