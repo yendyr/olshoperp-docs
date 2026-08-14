@@ -84,19 +84,39 @@ export class SkipWaveProcessPage {
   }
 
   async ensureProcessingOrderDateFilled(): Promise<string> {
-    let value = await this.readProcessingOrderDateValue();
-    if (value) return value;
-
     const input = this.processingOrderDateInput;
-    const now = new Date();
+    await expect(input).toBeVisible({ timeout: 20_000 });
+
+    const now = new Date(Date.now() - 60 * 60 * 1000);
     const pad = (n: number) => String(n).padStart(2, '0');
-    const stamp = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()} 23:59:59`;
+    const stamp = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:00`;
+
+    const putPromise = this.page
+      .waitForResponse(
+        (response) =>
+          /processing-order-date/i.test(response.url()) &&
+          response.request().method() === 'PUT',
+        { timeout: 12_000 },
+      )
+      .catch(() => null);
+
     await input.click({ force: true });
     await input.fill(stamp);
     await this.page.keyboard.press('Enter').catch(() => undefined);
-    await this.page.waitForTimeout(500);
-    value = await this.readProcessingOrderDateValue();
-    return value;
+    await input.blur().catch(() => undefined);
+    await this.page.waitForTimeout(800);
+    await putPromise;
+
+    const futureToast = this.page.getByText(
+      /cannot set to future time/i,
+    );
+    if (await futureToast.isVisible().catch(() => false)) {
+      throw new Error(
+        `Gagal set Processing Order Date "${stamp}": toast future time. Pilih waktu yang sudah lewat.`,
+      );
+    }
+
+    return this.readProcessingOrderDateValue();
   }
 
   get uploadFileItem(): Locator {
@@ -180,6 +200,7 @@ export class SkipWaveProcessPage {
   async dismissConfirmation(): Promise<void> {
     const cancel = this.page
       .getByRole('button', { name: /cancel|no|tutup|close|batal/i })
+      .or(this.page.locator('.swal2-cancel, button.btn-close'))
       .first();
     if (await cancel.isVisible().catch(() => false)) {
       await cancel.click();
