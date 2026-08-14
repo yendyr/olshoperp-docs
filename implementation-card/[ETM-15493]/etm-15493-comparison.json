@@ -1,0 +1,11 @@
+{
+  "method": "select-product",
+  "sku": "SKU-ManualCOGSWithExpirationDate-4",
+  "soCode": "SO-5U4FQN4Z",
+  "soId": "2515616",
+  "url": "https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515616",
+  "masterCogs": 51900,
+  "masterManualCogs": "55.000",
+  "masterDescription": "Last Inbound",
+  "apiCogs": 51900
+}

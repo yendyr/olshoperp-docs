@@ -1,0 +1,13 @@
+{
+  "soCode": "SO-5U4FXFT5",
+  "soId": "2515631",
+  "url": "https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2515631",
+  "description": "ETM-15493 trx_date=01-08-2026 created=14-08-2026 SKU expired Manual. Lock trx vs created_at?",
+  "dateTyped": "01-08-2026 00:00:00",
+  "dateAfterSave": "",
+  "transactionDateApi": "2026-07-31T17:00:00.000000Z",
+  "snapshot": 51900,
+  "formulaExpectedIfNow": 51900,
+  "manualIfTrxDateBeforeExpiry": 55000,
+  "lockSource": "now / created_at (bukan trx date) — Manual sudah expired di 14 Aug"
+}
