@@ -409,7 +409,6 @@ export class SalesPlatformPage {
     return (
       details.find((d) => d.product_id == null) ??
       details.find((d) => Number(d.benchmark_cogs) === 0) ??
-      details[0] ??
       null
     );
   }
