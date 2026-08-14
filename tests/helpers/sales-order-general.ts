@@ -345,7 +345,9 @@ export class SalesOrderGeneralPage {
     return (await this.codeInput.inputValue()).trim();
   }
 
-  async addProductViaSelectProduct(sku: string): Promise<void> {
+  async addProductViaSelectProduct(
+    sku: string,
+  ): Promise<Record<string, unknown> | null> {
     await this.expandSalesOrderDetail();
 
     let combobox = this.selectProductCombobox;
@@ -395,6 +397,71 @@ export class SalesOrderGeneralPage {
 
     await waitForSuccessToast(this.page, 10_000).catch(() => undefined);
     await this.page.waitForTimeout(1_200);
+    return (body as Record<string, unknown> | null) ?? null;
+  }
+
+  /**
+   * Unhide kolom detail (hidden default), mis. Benchmark COGS.
+   */
+  async showDetailColumn(columnName: string): Promise<void> {
+    await this.expandSalesOrderDetail();
+    const toggle = this.page
+      .locator('#SalesOrderDetail')
+      .getByRole('button', { name: /Columns Show\/Hide/i })
+      .or(this.page.getByRole('button', { name: /Columns Show\/Hide/i }))
+      .first();
+    await expect(toggle, 'Columns Show/Hide di Sales Order Detail').toBeVisible({
+      timeout: 20_000,
+    });
+    await toggle.click();
+    const option = this.page
+      .getByRole('checkbox', { name: new RegExp(columnName, 'i') })
+      .or(this.page.getByText(new RegExp(`^${columnName}$`, 'i')))
+      .first();
+    await expect(option, `Opsi kolom ${columnName}`).toBeVisible({
+      timeout: 10_000,
+    });
+    const already = await option.isChecked().catch(() => false);
+    if (!already) {
+      await option.click({ force: true });
+    }
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.waitForTimeout(400);
+  }
+
+  async readBenchmarkCogsFromSkuRow(sku: string): Promise<{
+    cellText: string;
+    number: number | null;
+    rowText: string;
+  }> {
+    await this.expandSalesOrderDetail();
+    const row = this.detailRowBySku(sku);
+    await expect(row, `Baris detail ${sku}`).toBeVisible({ timeout: 30_000 });
+    const rowText = ((await row.innerText()) ?? '').replace(/\s+/g, ' ').trim();
+
+    const headerCells = this.page.locator(
+      '#SalesOrderDetail thead th, #SalesOrderDetail thead td, #SalesOrderDetail .p-datatable-thead th',
+    );
+    const headers: string[] = [];
+    const headerCount = await headerCells.count();
+    for (let i = 0; i < headerCount; i++) {
+      headers.push(
+        ((await headerCells.nth(i).innerText()) ?? '').replace(/\s+/g, ' ').trim(),
+      );
+    }
+    const idx = headers.findIndex((h) => /benchmark\s*cogs/i.test(h));
+    const cells = row.locator('td');
+    let cellText = '';
+    if (idx >= 0 && idx < (await cells.count())) {
+      cellText = ((await cells.nth(idx).innerText()) ?? '').replace(/\s+/g, ' ').trim();
+    }
+    const cleaned = cellText.replace(/[^\d,.-]/g, '');
+    const number = Number.parseFloat(cleaned.replace(/\./g, '').replace(',', '.'));
+    return {
+      cellText: cellText || `(kolom tidak ketemu; headers=${headers.join(' | ')})`,
+      number: Number.isFinite(number) ? number : null,
+      rowText,
+    };
   }
 
   detailRowBySku(sku: string): Locator {
