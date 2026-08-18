@@ -84,11 +84,15 @@ export class StockRemappingPage {
     await this.datalist.gotoAndWait(STOCK_REMAPPING_DATALIST_PATH, 'link');
   }
 
+  async isImportHistoryOpen(): Promise<boolean> {
+    return this.page
+      .getByRole('tab', { name: /^Import History$/i })
+      .isVisible({ timeout: 1_500 })
+      .catch(() => false);
+  }
+
   async expandDetail(): Promise<void> {
-    const importHistory = this.page.getByRole('dialog').filter({
-      hasText: /Import History/i,
-    });
-    if (await importHistory.isVisible({ timeout: 1_000 }).catch(() => false)) {
+    if (await this.isImportHistoryOpen()) {
       return;
     }
     const btn = this.page
@@ -536,6 +540,67 @@ export class StockRemappingPage {
     return parsed;
   }
 
+  async openEditById(id: string): Promise<void> {
+    await this.page.goto(`/accounting/stock-remapping/edit/${id}`, {
+      waitUntil: 'domcontentloaded',
+    });
+    await dismissStagingBanner(this.page);
+    await this.expandBasic();
+    await this.expandDetail();
+  }
+
+  async findEditableWithOriginSkus(skus: string[]): Promise<{
+    id: string;
+    code: string;
+    url: string;
+    details: Array<{ originSku: string; remappedSku: string; qty: number | null }>;
+  } | null> {
+    const auth = await readAuthFromPage(this.page);
+    if (!auth.token) return null;
+    const headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${auth.token}`,
+    };
+    const list = await this.page.request.get(
+      `${getApiUrl()}/accounting/stock-remapping?start=0&length=100`,
+      { headers },
+    );
+    if (!list.ok()) return null;
+    const json = (await list.json().catch(() => null)) as {
+      data?: Array<Record<string, unknown>>;
+    } | null;
+    const rows = json?.data ?? [];
+    const needed = skus.map((sku) => sku.toLowerCase());
+
+    for (const row of rows) {
+      if (row.can_update === false) continue;
+      const status = String(row.transaction_status ?? '').toLowerCase();
+      if (status === 'closed' || status === 'void' || status === 'voided') continue;
+      const id = String(row.id ?? '');
+      if (!id) continue;
+      const detailRes = await this.page.request.get(
+        `${getApiUrl()}/accounting/stock-remapping/${id}`,
+        { headers },
+      );
+      if (!detailRes.ok()) continue;
+      const body = (await detailRes.json().catch(() => null)) as {
+        data?: Record<string, unknown>;
+      } | null;
+      const data = body?.data ?? (body as Record<string, unknown> | null);
+      const details = this.collectDetails(data);
+      const origins = details.map((d) => d.originSku.toLowerCase());
+      if (needed.every((sku) => origins.some((origin) => origin === sku))) {
+        return {
+          id,
+          code: String(row.code ?? ''),
+          url: `https://staging.olshoperp.com/accounting/stock-remapping/edit/${id}`,
+          details,
+        };
+      }
+    }
+    return null;
+  }
+
   async fetchApi(): Promise<Record<string, unknown> | null> {
     const id = this.currentEditId();
     if (!id) return null;
@@ -584,10 +649,7 @@ export class StockRemappingPage {
 
   async importDetailFile(filePath: string): Promise<ApiCallResult> {
     await this.expandDetail();
-    const dialog = this.page.getByRole('dialog').filter({
-      hasText: /Import History/i,
-    });
-    if (!(await dialog.isVisible({ timeout: 2_000 }).catch(() => false))) {
+    if (!(await this.isImportHistoryOpen())) {
       const importBtn = this.page
         .locator('#StockRemappingDetail')
         .getByRole('button', { name: /^Import$/i })
@@ -597,16 +659,23 @@ export class StockRemappingPage {
         timeout: 20_000,
       });
       await importBtn.click();
-      await expect(dialog, 'Dialog Import History').toBeVisible({
-        timeout: 20_000,
-      });
+      await expect(
+        this.page.getByRole('tab', { name: /^Import History$/i }),
+        'Tab Import History',
+      ).toBeVisible({ timeout: 20_000 });
     }
 
-    const importInDialog = dialog.getByRole('button', { name: /^Import$/i }).first();
-    if (await importInDialog.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await importInDialog.click();
-      await this.page.waitForTimeout(500);
-    }
+    const importInDialog = this.page
+      .getByRole('tabpanel', { name: /Import History/i })
+      .getByRole('button', { name: /^Import$/i })
+      .or(
+        this.page
+          .locator('[role="dialog"]')
+          .getByRole('button', { name: /^Import$/i }),
+      )
+      .first();
+    await importInDialog.click({ force: true });
+    await this.page.waitForTimeout(500);
 
     const fileInput = this.page.locator('input[type="file"]').last();
     await expect(fileInput).toBeAttached({ timeout: 20_000 });
@@ -635,29 +704,18 @@ export class StockRemappingPage {
     successRow: number | null;
     errorLogs: string;
   }> {
-    const dialog = this.page.getByRole('dialog').filter({
-      hasText: /Import History/i,
-    });
-    const historyTab = this.page.getByRole('button', {
-      name: /Import History/i,
-    });
+    const historyTab = this.page.getByRole('tab', { name: /^Import History$/i });
     if (await historyTab.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await historyTab.first().click();
+      await historyTab.first().click({ force: true });
     }
     await this.page.waitForTimeout(1_200);
 
     const tableText = (
-      (await dialog
+      (await this.page
         .locator('table')
+        .filter({ hasText: /Failed Row|Success Row|File Name/i })
         .first()
         .innerText()
-        .catch(async () =>
-          this.page
-            .locator('table')
-            .filter({ hasText: /Failed Row|Success Row|File Name/i })
-            .first()
-            .innerText(),
-        )
         .catch(() => '')) ?? ''
     ).replace(/\s+/g, ' ');
 
@@ -665,12 +723,10 @@ export class StockRemappingPage {
     const successMatch = tableText.match(/Success Row[^\d]{0,8}(\d+)/i);
     const trailing = [...tableText.matchAll(/\b(\d+)\b/g)].map((m) => Number(m[1]));
 
-    const errorTab = this.page.getByRole('button', {
-      name: /View Error Logs/i,
-    });
+    const errorTab = this.page.getByRole('tab', { name: /View Error Logs/i });
     let errorLogs = '';
     if (await errorTab.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await errorTab.click();
+      await errorTab.click({ force: true });
       await this.page.waitForTimeout(1_000);
       errorLogs = (
         (await this.page

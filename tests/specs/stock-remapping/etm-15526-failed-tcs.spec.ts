@@ -1,8 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
-import { AdjustmentAdditionPage } from '../../helpers/adjustment-addition';
-import { dismissStagingBanner, prepareSession } from '../../helpers/company-access';
+import { prepareSession } from '../../helpers/company-access';
 import {
   STOCK_REMAPPING_DATALIST_PATH,
   StockRemappingPage,
@@ -43,42 +42,37 @@ async function capture(page: Page, name: string): Promise<void> {
 }
 
 /**
- * ATS Mix/Pink/White sering 0 karena banyak RM Open menahan booked qty.
- * Seed Stock Addition di S-DROPOFF hanya jika Available Products kosong.
+ * ATS Mix/Pink/White sering 0 (booked oleh RM Open).
+ * Kalau Available Products kosong, pakai RM editable yang sudah punya baris Origin.
  */
-async function ensureRmSkusAvailable(
+async function prepareRmWithOrigins(
   page: Page,
   rm: StockRemappingPage,
-): Promise<{ seeded: boolean; aiCode: string | null }> {
-  if (await rm.isSkuInAvailableProducts(SKU_MIX)) {
-    return { seeded: false, aiCode: null };
+  requiredSkus: string[],
+  description: string,
+): Promise<{
+  mode: 'create' | 'reuse';
+  building: string | null;
+  existing: Awaited<ReturnType<StockRemappingPage['findEditableWithOriginSkus']>>;
+}> {
+  await rm.gotoDatalist();
+  await rm.openCreateOrAutoEdit();
+  await rm.fillDescription(description);
+  await rm.clickSaveAllAndWait();
+  const building = await rm.setBuilding('Seruni DROP OFF').catch(() =>
+    rm.setBuilding('DROP OFF').catch(() => null),
+  );
+  if (await rm.isSkuInAvailableProducts(requiredSkus[0])) {
+    return { mode: 'create', building, existing: null };
   }
-  const editUrl = rm.currentEditUrl();
-  const addition = new AdjustmentAdditionPage(page);
-  const aiCode = await addition
-    .seedApprovedStockAtLocation({
-      locationFragment: 'S-DROPOFF',
-      skus: [SKU_MIX, SKU_PINK, SKU_WHITE],
-      qty: 20,
-      description: 'ETM-15526 ATS seed playwright',
-    })
-    .catch(async () =>
-      addition.seedApprovedStockAtLocation({
-        locationFragment: 'Seruni DROP OFF',
-        skus: [SKU_MIX, SKU_PINK, SKU_WHITE],
-        qty: 20,
-        description: 'ETM-15526 ATS seed playwright',
-      }),
+  const existing = await rm.findEditableWithOriginSkus(requiredSkus);
+  if (!existing) {
+    throw new Error(
+      `BLOCKED: ${requiredSkus[0]} tidak ada di Available Products (ATS=0) dan tidak ada RM editable yang sudah punya baris ${requiredSkus.join(', ')}.`,
     );
-  if (editUrl) {
-    await page.goto(editUrl.replace('https://staging.olshoperp.com', ''), {
-      waitUntil: 'domcontentloaded',
-    });
-    await dismissStagingBanner(page);
-    await rm.expandBasic();
-    await rm.expandDetail();
   }
-  return { seeded: true, aiCode };
+  await rm.openEditById(existing.id);
+  return { mode: 'reuse', building, existing };
 }
 
 test.describe('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
@@ -92,18 +86,20 @@ test.describe('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
       targetPath: STOCK_REMAPPING_DATALIST_PATH,
     });
     const rm = new StockRemappingPage(page);
-    await rm.gotoDatalist();
-    await rm.openCreateOrAutoEdit();
-    await rm.fillDescription('ETM-15526 TC-13 self-remap retest');
-    await rm.clickSaveAllAndWait();
-    const building = await rm.setBuilding('Seruni DROP OFF').catch(() =>
-      rm.setBuilding('DROP OFF'),
+    const setup = await prepareRmWithOrigins(
+      page,
+      rm,
+      [SKU_MIX],
+      'ETM-15526 TC-13 self-remap retest',
     );
-    const seeded = await ensureRmSkusAvailable(page, rm);
     const code = await rm.readGeneratedCode();
     const url = rm.currentEditUrl();
 
-    const insert = await rm.addOriginSku(SKU_MIX);
+    let insert: Awaited<ReturnType<StockRemappingPage['addOriginSku']>> | null =
+      null;
+    if (setup.mode === 'create') {
+      insert = await rm.addOriginSku(SKU_MIX);
+    }
     await capture(page, 'tc13-after-insert-origin');
 
     const setSameOnInsert = await rm.setRemappedToOnRow(SKU_MIX, SKU_MIX);
@@ -139,8 +135,8 @@ test.describe('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
     const result = {
       code,
       url,
-      building,
-      seeded,
+      building: setup.building,
+      setup,
       insert,
       setSameOnInsert,
       toastSame,
@@ -182,20 +178,22 @@ test.describe('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
       targetPath: STOCK_REMAPPING_DATALIST_PATH,
     });
     const rm = new StockRemappingPage(page);
-    await rm.gotoDatalist();
-    await rm.openCreateOrAutoEdit();
-    await rm.fillDescription('ETM-15526 TC-14 row order retest');
-    await rm.clickSaveAllAndWait();
-    await rm.setBuilding('Seruni DROP OFF').catch(() => rm.setBuilding('DROP OFF'));
-    const seeded = await ensureRmSkusAvailable(page, rm);
+    const setup = await prepareRmWithOrigins(
+      page,
+      rm,
+      [SKU_MIX, SKU_PINK],
+      'ETM-15526 TC-14 row order retest',
+    );
     const code = await rm.readGeneratedCode();
     const url = rm.currentEditUrl();
 
-    await rm.addOriginSku(SKU_MIX);
-    await rm.setRemappedToOnRow(SKU_MIX, SKU_WHITE);
-    await rm.addOriginSku(SKU_PINK);
-    await rm.setRemappedToOnRow(SKU_PINK, SKU_WHITE);
-    await rm.clickSaveAllAndWait();
+    if (setup.mode === 'create') {
+      await rm.addOriginSku(SKU_MIX);
+      await rm.setRemappedToOnRow(SKU_MIX, SKU_WHITE);
+      await rm.addOriginSku(SKU_PINK);
+      await rm.setRemappedToOnRow(SKU_PINK, SKU_WHITE);
+      await rm.clickSaveAllAndWait();
+    }
 
     const identifiers = [SKU_MIX, SKU_PINK];
     const before = await rm.readOriginOrder(identifiers);
@@ -215,7 +213,7 @@ test.describe('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
     writeJson('tc14-result.json', {
       code,
       url,
-      seeded,
+      setup,
       before,
       afterRemapped,
       afterQty,
