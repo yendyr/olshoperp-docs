@@ -562,7 +562,7 @@ export class StockRemappingPage {
       Authorization: `Bearer ${auth.token}`,
     };
     const list = await this.page.request.get(
-      `${getApiUrl()}/accounting/stock-remapping?start=0&length=100`,
+      `${getApiUrl()}/accounting/stock-remapping?start=0&length=200`,
       { headers },
     );
     if (!list.ok()) return null;
