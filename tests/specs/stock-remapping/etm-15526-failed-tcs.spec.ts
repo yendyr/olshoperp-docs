@@ -59,10 +59,13 @@ test.describe.serial('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
     await rm.openCreateOrAutoEdit();
     await rm.fillDescription('ETM-15526 TC-13 self-remap retest');
     await rm.clickSaveAllAndWait();
+    const building = await rm.setBuilding('Seruni DROP OFF').catch(() =>
+      rm.setBuilding('DROP OFF'),
+    );
     const code = await rm.readGeneratedCode();
     const url = rm.currentEditUrl();
 
-    const insert = await rm.addProductViaSelectProduct(SKU_MIX);
+    const insert = await rm.addOriginSku(SKU_MIX);
     await capture(page, 'tc13-after-insert-origin');
 
     const setSameOnInsert = await rm.setRemappedToOnRow(SKU_MIX, SKU_MIX);
@@ -98,6 +101,7 @@ test.describe.serial('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
     const result = {
       code,
       url,
+      building,
       insert,
       setSameOnInsert,
       toastSame,
@@ -143,12 +147,13 @@ test.describe.serial('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
     await rm.openCreateOrAutoEdit();
     await rm.fillDescription('ETM-15526 TC-14 row order retest');
     await rm.clickSaveAllAndWait();
+    await rm.setBuilding('Seruni DROP OFF').catch(() => rm.setBuilding('DROP OFF'));
     const code = await rm.readGeneratedCode();
     const url = rm.currentEditUrl();
 
-    await rm.addProductViaSelectProduct(SKU_MIX);
+    await rm.addOriginSku(SKU_MIX);
     await rm.setRemappedToOnRow(SKU_MIX, SKU_WHITE);
-    await rm.addProductViaSelectProduct(SKU_PINK);
+    await rm.addOriginSku(SKU_PINK);
     await rm.setRemappedToOnRow(SKU_PINK, SKU_WHITE);
     await rm.clickSaveAllAndWait();
 

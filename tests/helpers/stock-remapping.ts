@@ -156,6 +156,119 @@ export class StockRemappingPage {
     return parsed;
   }
 
+  async closeOverlays(): Promise<void> {
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.waitForTimeout(300);
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.waitForTimeout(300);
+  }
+
+  async setBuilding(fragment: string): Promise<string> {
+    await this.closeOverlays();
+    await this.expandBasic();
+    let combobox = this.buildingCombobox;
+    if (!(await combobox.isVisible({ timeout: 8_000 }).catch(() => false))) {
+      const root = this.page
+        .locator('#BasicInformation .multiselect, .multiselect')
+        .filter({
+          has: this.page.locator('[aria-placeholder="Choose Building"]'),
+        })
+        .first();
+      await root.click();
+      combobox = root.locator('.multiselect-search').first();
+    }
+    await this.multiselect.open(combobox);
+    await combobox.fill('').catch(() => undefined);
+    await combobox.fill(fragment).catch(async () => {
+      await combobox.pressSequentially(fragment, { delay: 40 });
+    });
+    await this.page.waitForTimeout(1_200);
+    const option = this.page
+      .locator('.multiselect-option:visible')
+      .filter({ hasNotText: 'No results found' })
+      .filter({ hasText: new RegExp(fragment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') })
+      .filter({ hasNotText: /Rack/i })
+      .first();
+    await expect(option, `Building ${fragment}`).toBeVisible({ timeout: 25_000 });
+    const label = ((await option.textContent()) ?? '').replace(/\s+/g, ' ').trim();
+    await option.click({ force: true });
+    await this.page.waitForTimeout(500);
+    await this.clickSaveAllAndWait();
+    return label;
+  }
+
+  availableProductsPanel(): Locator {
+    return this.page
+      .locator('div.fixed')
+      .filter({ has: this.page.getByPlaceholder(/find something/i) })
+      .filter({ has: this.page.locator('table') })
+      .first();
+  }
+
+  async openAvailableProducts(): Promise<Locator> {
+    await this.expandDetail();
+    const availableResponse = this.page
+      .waitForResponse(
+        (response) => /available[-_]products/i.test(response.url()),
+        { timeout: 60_000 },
+      )
+      .catch(() => null);
+    await this.page.getByText('Available Products', { exact: true }).click();
+    await availableResponse;
+    await this.page.waitForTimeout(1_200);
+    const panel = this.availableProductsPanel();
+    await expect(panel, 'Panel Available Products').toBeVisible({ timeout: 45_000 });
+    return panel;
+  }
+
+  async addOriginViaAvailableProducts(sku: string): Promise<ApiCallResult> {
+    const panel = await this.openAvailableProducts();
+    const search = panel.getByPlaceholder(/find something/i).first();
+    await expect(search).toBeVisible({ timeout: 15_000 });
+    await search.fill(sku);
+    await this.page.waitForTimeout(1_800);
+
+    const row = panel
+      .locator('tbody tr')
+      .filter({
+        hasText: new RegExp(sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+      })
+      .first();
+    await expect(row, `Available Products ${sku}`).toBeVisible({ timeout: 30_000 });
+    await row.locator('input[type="checkbox"]').first().check({ force: true });
+    await this.page.waitForTimeout(400);
+
+    const useBtn = panel
+      .locator('button.tooltip-use, button[class*="use-button"]')
+      .or(panel.getByRole('button', { name: /^Use$/i }))
+      .first();
+    await expect(useBtn, 'Tombol Use / Bulk Use').toBeVisible({ timeout: 15_000 });
+
+    const post = this.page.waitForResponse(
+      (response) =>
+        /stock-remapping-detail/i.test(response.url()) &&
+        ['POST', 'PUT'].includes(response.request().method()),
+      { timeout: 90_000 },
+    );
+    await useBtn.click();
+    const response = await post;
+    const parsed = await this.parseResponse(response);
+    await waitForSuccessToast(this.page, 8_000).catch(() => undefined);
+    await this.closeOverlays();
+    await this.page.waitForTimeout(800);
+    return parsed;
+  }
+
+  async addOriginSku(sku: string): Promise<ApiCallResult> {
+    const viaSelect = await this.addProductViaSelectProduct(sku).catch(
+      () => null,
+    );
+    if (viaSelect && (viaSelect.ok || viaSelect.status > 0)) {
+      return viaSelect;
+    }
+    return this.addOriginViaAvailableProducts(sku);
+  }
+
   async addProductViaSelectProduct(sku: string): Promise<ApiCallResult> {
     await this.expandDetail();
     let combobox = this.selectProductCombobox;
