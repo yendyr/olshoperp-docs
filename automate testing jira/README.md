@@ -32,3 +32,4 @@ Satu kartu Jira = satu folder `{JIRA-KEY}` (contoh: `ETM-8618`).
 | [ETM-8618](./ETM-8618/) | Warehouse Structure | Prefix Warehouse Bisa Berbeda di Setiap Level | 4 TC, automation `@TC-ETM-8618` |
 | [ETM-15512](./ETM-15512/) | System Product | Default variant create/import + expand leftover | 7 TC, draft `@TC-ETM-15512` |
 | [ETM-15525](./ETM-15525/) | Assembly | Max Assembly Qty & QTY vs unit BOX | 3 TC, automation `@TC-ETM-15525` |
+| [ETM-15526](./ETM-15526/) | Stock Remapping | Remapped To duplicate / Origin Stock ID / Unit Class — retest TC-13..15 | 3 TC FAILED retest `@TC-13` `@TC-14` `@TC-15` |
