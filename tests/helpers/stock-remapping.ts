@@ -85,9 +85,15 @@ export class StockRemappingPage {
   }
 
   async expandDetail(): Promise<void> {
-    const btn = this.page.getByRole('button', {
-      name: /Stock Remapping Detail/i,
+    const importHistory = this.page.getByRole('dialog').filter({
+      hasText: /Import History/i,
     });
+    if (await importHistory.isVisible({ timeout: 1_000 }).catch(() => false)) {
+      return;
+    }
+    const btn = this.page
+      .getByRole('button', { name: /Stock Remapping Detail/i })
+      .or(this.page.getByText(/^Stock Remapping Detail$/i));
     await expect(btn.first()).toBeVisible({ timeout: 45_000 });
     if ((await btn.first().getAttribute('aria-expanded')) !== 'true') {
       await btn.first().click();
@@ -221,6 +227,23 @@ export class StockRemappingPage {
     return panel;
   }
 
+  async isSkuInAvailableProducts(sku: string): Promise<boolean> {
+    const panel = await this.openAvailableProducts();
+    const search = panel.getByPlaceholder(/find something/i).first();
+    await expect(search).toBeVisible({ timeout: 15_000 });
+    await search.fill(sku);
+    await this.page.waitForTimeout(1_800);
+    const row = panel
+      .locator('tbody tr')
+      .filter({
+        hasText: new RegExp(sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+      })
+      .first();
+    const found = await row.isVisible({ timeout: 8_000 }).catch(() => false);
+    await this.closeOverlays();
+    return found;
+  }
+
   async addOriginViaAvailableProducts(sku: string): Promise<ApiCallResult> {
     const panel = await this.openAvailableProducts();
     const search = panel.getByPlaceholder(/find something/i).first();
@@ -260,12 +283,6 @@ export class StockRemappingPage {
   }
 
   async addOriginSku(sku: string): Promise<ApiCallResult> {
-    const viaSelect = await this.addProductViaSelectProduct(sku).catch(
-      () => null,
-    );
-    if (viaSelect && (viaSelect.ok || viaSelect.status > 0)) {
-      return viaSelect;
-    }
     return this.addOriginViaAvailableProducts(sku);
   }
 
@@ -567,16 +584,29 @@ export class StockRemappingPage {
 
   async importDetailFile(filePath: string): Promise<ApiCallResult> {
     await this.expandDetail();
-    const importBtn = this.page
-      .locator('#StockRemappingDetail')
-      .getByRole('button', { name: /^Import$/i })
-      .or(this.page.getByRole('button', { name: /^Import$/i }))
-      .first();
-    await expect(importBtn, 'Tombol Import di detail').toBeVisible({
-      timeout: 20_000,
+    const dialog = this.page.getByRole('dialog').filter({
+      hasText: /Import History/i,
     });
-    await importBtn.click();
-    await this.page.waitForTimeout(800);
+    if (!(await dialog.isVisible({ timeout: 2_000 }).catch(() => false))) {
+      const importBtn = this.page
+        .locator('#StockRemappingDetail')
+        .getByRole('button', { name: /^Import$/i })
+        .or(this.page.getByRole('button', { name: /^Import$/i }))
+        .first();
+      await expect(importBtn, 'Tombol Import di detail').toBeVisible({
+        timeout: 20_000,
+      });
+      await importBtn.click();
+      await expect(dialog, 'Dialog Import History').toBeVisible({
+        timeout: 20_000,
+      });
+    }
+
+    const importInDialog = dialog.getByRole('button', { name: /^Import$/i }).first();
+    if (await importInDialog.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await importInDialog.click();
+      await this.page.waitForTimeout(500);
+    }
 
     const fileInput = this.page.locator('input[type="file"]').last();
     await expect(fileInput).toBeAttached({ timeout: 20_000 });
@@ -595,7 +625,7 @@ export class StockRemappingPage {
     const response = await upload;
     const parsed = await this.parseResponse(response);
     parsed.message = parsed.message || (await this.readToastText());
-    await this.page.waitForTimeout(2_000);
+    await this.page.waitForTimeout(3_000);
     return parsed;
   }
 
@@ -605,23 +635,35 @@ export class StockRemappingPage {
     successRow: number | null;
     errorLogs: string;
   }> {
+    const dialog = this.page.getByRole('dialog').filter({
+      hasText: /Import History/i,
+    });
     const historyTab = this.page.getByRole('button', {
       name: /Import History/i,
     });
-    if (await historyTab.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await historyTab.click();
+    if (await historyTab.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await historyTab.first().click();
     }
+    await this.page.waitForTimeout(1_200);
+
     const tableText = (
-      (await this.page
+      (await dialog
         .locator('table')
-        .filter({ hasText: /Failed|Success|Processing|No data/i })
         .first()
         .innerText()
+        .catch(async () =>
+          this.page
+            .locator('table')
+            .filter({ hasText: /Failed Row|Success Row|File Name/i })
+            .first()
+            .innerText(),
+        )
         .catch(() => '')) ?? ''
     ).replace(/\s+/g, ' ');
 
-    const failedMatch = tableText.match(/failed[^0-9]{0,12}(\d+)/i);
-    const successMatch = tableText.match(/success[^0-9]{0,12}(\d+)/i);
+    const failedMatch = tableText.match(/Failed Row[^\d]{0,8}(\d+)/i);
+    const successMatch = tableText.match(/Success Row[^\d]{0,8}(\d+)/i);
+    const trailing = [...tableText.matchAll(/\b(\d+)\b/g)].map((m) => Number(m[1]));
 
     const errorTab = this.page.getByRole('button', {
       name: /View Error Logs/i,
@@ -629,7 +671,7 @@ export class StockRemappingPage {
     let errorLogs = '';
     if (await errorTab.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await errorTab.click();
-      await this.page.waitForTimeout(800);
+      await this.page.waitForTimeout(1_000);
       errorLogs = (
         (await this.page
           .getByRole('table')
@@ -637,12 +679,21 @@ export class StockRemappingPage {
           .innerText()
           .catch(() => '')) ?? ''
       ).replace(/\s+/g, ' ');
+      await historyTab.first().click().catch(() => undefined);
     }
 
     return {
       text: tableText.slice(0, 800),
-      failedRow: failedMatch ? Number(failedMatch[1]) : null,
-      successRow: successMatch ? Number(successMatch[1]) : null,
+      failedRow: failedMatch
+        ? Number(failedMatch[1])
+        : trailing.length >= 2
+          ? trailing[trailing.length - 2]
+          : null,
+      successRow: successMatch
+        ? Number(successMatch[1])
+        : trailing.length >= 1
+          ? trailing[trailing.length - 1]
+          : null,
       errorLogs: errorLogs.slice(0, 1500),
     };
   }

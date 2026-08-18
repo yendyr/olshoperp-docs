@@ -1,7 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
-import { prepareSession } from '../../helpers/company-access';
+import { AdjustmentAdditionPage } from '../../helpers/adjustment-addition';
+import { dismissStagingBanner, prepareSession } from '../../helpers/company-access';
 import {
   STOCK_REMAPPING_DATALIST_PATH,
   StockRemappingPage,
@@ -36,16 +37,52 @@ function writeJson(name: string, data: unknown): void {
   fs.writeFileSync(path.join(RESULT_DIR, name), `${JSON.stringify(data, null, 2)}\n`);
 }
 
-async function capture(
-  page: import('@playwright/test').Page,
-  name: string,
-): Promise<void> {
+async function capture(page: Page, name: string): Promise<void> {
   fs.mkdirSync(RESULT_DIR, { recursive: true });
   await page.screenshot({ path: path.join(RESULT_DIR, `${name}.png`), fullPage: true });
 }
 
-test.describe.serial('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
-  test.describe.configure({ timeout: 300_000 });
+/**
+ * ATS Mix/Pink/White sering 0 karena banyak RM Open menahan booked qty.
+ * Seed Stock Addition di S-DROPOFF hanya jika Available Products kosong.
+ */
+async function ensureRmSkusAvailable(
+  page: Page,
+  rm: StockRemappingPage,
+): Promise<{ seeded: boolean; aiCode: string | null }> {
+  if (await rm.isSkuInAvailableProducts(SKU_MIX)) {
+    return { seeded: false, aiCode: null };
+  }
+  const editUrl = rm.currentEditUrl();
+  const addition = new AdjustmentAdditionPage(page);
+  const aiCode = await addition
+    .seedApprovedStockAtLocation({
+      locationFragment: 'S-DROPOFF',
+      skus: [SKU_MIX, SKU_PINK, SKU_WHITE],
+      qty: 20,
+      description: 'ETM-15526 ATS seed playwright',
+    })
+    .catch(async () =>
+      addition.seedApprovedStockAtLocation({
+        locationFragment: 'Seruni DROP OFF',
+        skus: [SKU_MIX, SKU_PINK, SKU_WHITE],
+        qty: 20,
+        description: 'ETM-15526 ATS seed playwright',
+      }),
+    );
+  if (editUrl) {
+    await page.goto(editUrl.replace('https://staging.olshoperp.com', ''), {
+      waitUntil: 'domcontentloaded',
+    });
+    await dismissStagingBanner(page);
+    await rm.expandBasic();
+    await rm.expandDetail();
+  }
+  return { seeded: true, aiCode };
+}
+
+test.describe('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
+  test.describe.configure({ timeout: 420_000 });
 
   test('[@ETM-15526][@TC-13] Origin = Remapped To ditolak di semua titik', async ({
     page,
@@ -62,6 +99,7 @@ test.describe.serial('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
     const building = await rm.setBuilding('Seruni DROP OFF').catch(() =>
       rm.setBuilding('DROP OFF'),
     );
+    const seeded = await ensureRmSkusAvailable(page, rm);
     const code = await rm.readGeneratedCode();
     const url = rm.currentEditUrl();
 
@@ -102,6 +140,7 @@ test.describe.serial('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
       code,
       url,
       building,
+      seeded,
       insert,
       setSameOnInsert,
       toastSame,
@@ -148,6 +187,7 @@ test.describe.serial('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
     await rm.fillDescription('ETM-15526 TC-14 row order retest');
     await rm.clickSaveAllAndWait();
     await rm.setBuilding('Seruni DROP OFF').catch(() => rm.setBuilding('DROP OFF'));
+    const seeded = await ensureRmSkusAvailable(page, rm);
     const code = await rm.readGeneratedCode();
     const url = rm.currentEditUrl();
 
@@ -175,6 +215,7 @@ test.describe.serial('ETM-15526 retest FAILED TC-13 / TC-14 / TC-15', () => {
     writeJson('tc14-result.json', {
       code,
       url,
+      seeded,
       before,
       afterRemapped,
       afterQty,
