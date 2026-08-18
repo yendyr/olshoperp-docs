@@ -444,13 +444,14 @@ ETM-11490:
   summary: "[Technical Requirement - All Form] Standarisasi UIX di all form"
 
 ETM-11494:
-  menu: null
+  menu: accounting-settlement-upload
   intent: new
-  status: needs_overview
+  status: ready
   reuse: []
   drafts: []
-  ready_tcs: []
-  jira_status: To Do
+  ready_tcs:
+    - TC-SETU-DRAFT-20260815090500
+  jira_status: RE-OPEN
   jira_type: Improvement
   summary: "[Technical Requirement] Standarisasi Size Height Field Filtering dengan Height Global Search"
 

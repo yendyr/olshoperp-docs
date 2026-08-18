@@ -1,13 +1,21 @@
 # Test Cases — Purchase Order
 
-Konvensi penamaan file: **`TC-PO-[CREATE|READ|UPDATE|DELETE]-NNN.md`**
+Konvensi penamaan file: **`TC-PO-[CREATE|READ|UPDATE|DELETE]-NNN.md`**. DRAFT baru: `TC-PO-DRAFT-{timestamp}.md`.
 
 Urutan tabel mengikuti **urutan pertama → terakhir dijalankan**.
 
+Card terkait: [ETM-15469](https://erpintegration.atlassian.net/browse/ETM-15469) — standardisasi UI export sidebar (12 menu Farrel). Home folder TC lintas-menu = Purchase Order.
+
+Prefix folder: `PO`.
+
 Referensi rekomendasi automation: [`POM-AUTOMATION-RECOMMENDATIONS.md`](../../../POM-AUTOMATION-RECOMMENDATIONS.md) (lihat **REC-02** untuk temuan sesi PO).
 
-| # | File / TC Code | Title | Status | Automated | Last Updated |
-|---|---|---|---|---|---|
-| 1 | `TC-PO-CREATE-001.md` / TC-PO-CREATE-001 | Membuat Purchase Order With PR dari available products — status Draft | draft | ✅ | 2026-07-09 |
-| 2 | `TC-PO-UPDATE-001.md` / TC-PO-UPDATE-001 | Set PO-6A4F5E97 status Open dari show datalist | draft | ✅ | 2026-07-09 |
-| 3 | `TC-PO-UPDATE-002.md` / TC-PO-UPDATE-002 | Menyetujui dokumen PO-6A4F5E97 melalui datalist | draft | ✅ | 2026-07-09 |
+| TC Code | Title | Status | Automated | Last Updated |
+|---------|-------|--------|-----------|-------------|
+| TC-PO-CREATE-001 | Membuat Purchase Order With PR dari available products — status Draft | draft | ✅ | 2026-07-09 |
+| TC-PO-UPDATE-001 | Set PO-6A4F5E97 status Open dari show datalist | draft | ✅ | 2026-07-09 |
+| TC-PO-UPDATE-002 | Menyetujui dokumen PO-6A4F5E97 melalui datalist | draft | ✅ | 2026-07-09 |
+| PENDING-20260817200300 | DATALIST — UI export standar sidebar Export (tanpa Export CSV / Export Excel di halaman utama) — 12 menu Farrel | **passed** | ❌ | 2026-08-17 |
+| PENDING-20260817200310 | DATALIST — trigger export dari sidebar Export; hasil tercatat di history (Purchase Order) | **passed** | ❌ | 2026-08-17 |
+
+`PENDING-20260817200300` / `PENDING-20260817200310` — **PASSED** (17 Agu 2026). 12 menu Farrel memakai sidebar **Export**. Observasi: Outbound External **Export** ON (Farrel sempat catat dimatikan). [ETM-15469](https://erpintegration.atlassian.net/browse/ETM-15469).
