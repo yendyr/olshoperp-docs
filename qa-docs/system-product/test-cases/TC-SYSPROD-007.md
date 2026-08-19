@@ -46,6 +46,7 @@ test_result:
 test_data_used: []
 run_history: []
 origin_jira: ETM-15495
+jira_key: ETM-15557
 last_execution:
   at: null
   jira: null
