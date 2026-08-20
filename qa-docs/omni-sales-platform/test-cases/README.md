@@ -12,8 +12,8 @@ Prefix folder: `SPLG`.
 |---------|-------|--------|-----------|-------------|
 | TC-SPLG-001 | Memverifikasi Datalist Platform Sales Order | draft | ✅ | 2026-07-09 |
 | TC-SPLG-002 | Memverifikasi Detail Order Platform | draft | ✅ | 2026-07-09 |
-| PENDING-20260820200501 | Memastikan Visibility, Counter & Posisi Pill Button Net Sales < COGS di Sales Platform | draft | ❌ | 2026-08-20 |
-| PENDING-20260820200502 | Memastikan Akurasi Filter Datalist saat Pill Net Sales < COGS Aktif di Sales Platform (Positive Filter) | draft | ❌ | 2026-08-20 |
+| PENDING-20260820200501 | Memastikan Visibility, Counter & Posisi Pill Button Net Sales < COGS di Sales Platform | **passed** | ✅ | 2026-08-20 |
+| PENDING-20260820200502 | Memastikan Akurasi Filter Datalist saat Pill Net Sales < COGS Aktif di Sales Platform (Positive Filter) | **passed** | ✅ | 2026-08-20 |
 | PENDING-20260820200503 | Memastikan Deaktivasi Filter Pill (Toggle OFF) Mengembalikan Seluruh Data Platform Sales Order | draft | ❌ | 2026-08-20 |
 | PENDING-20260820200504 | Memastikan Interaksi Single-Active Toggle antar Pill Buttons di Sales Platform | draft | ❌ | 2026-08-20 |
 | PENDING-20260820200505 | Memastikan Kondisi Batas (Boundary: Net Sales == COGS, Net Sales > COGS, dan COGS = 0) Tidak Lolos Filter di Sales Platform | draft | ❌ | 2026-08-20 |
