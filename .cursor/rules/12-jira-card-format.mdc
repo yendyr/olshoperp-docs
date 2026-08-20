@@ -357,3 +357,11 @@ Setiap pembuatan Jira card di project ETM (Error / Test Case / Improvement / Cha
 - **Aturan Penulisan:**
   - Jika card relate / origin memiliki Request ID (misal: `recvqWrTHZ1dOV`), **wajib copy nilai persis ke `customfield_10495`**.
   - Jika benar-benar card baru / mandiri tanpa referensi request user, isi dengan string **`none`**.
+
+
+## Rate Limiting & Jeda Eksekusi Pembuatan/Perubahan Card Jira (MCP Anti Session Drop)
+
+- **Latar Belakang:** Panggilan API Atlassian/Jira yang terlalu beruntun dan cepat dalam jumlah banyak dapat menyebabkan session auth token pada plugin/MCP Atlassian ter-reset atau otomatis sign out.
+- **Aturan Eksekusi Wajib:**
+  - Saat membuat (*create*) atau mengupdate (*edit/link/transition*) beberapa card Jira secara berurutan (batch), **WAJIB memberikan jeda waktu 2-3 detik (`time.sleep(2.5)`)** di antara setiap operasi MCP tool Jira.
+  - Jangan memanggil tool Jira secara paralel atau tanpa jeda pada operasi berulang.
