@@ -336,3 +336,24 @@ expected result perlu dikonfirmasi ke QA lead sebelum card difinalisasi.]
 - [ ] Tidak ada jargon teknis di section utama (Summary/Steps/Expected/Actual)?
 - [ ] Expected Result sudah divalidasi dari requirement.md?
 - [ ] Additional Context kosong ditulis "(tidak ada catatan tambahan)", bukan dihapus?
+
+## Aturan Custom Field Request ID (`customfield_10495`) (WAJIB)
+
+Setiap pembuatan Jira card di project ETM (Error / Test Case / Improvement / Change Requirement):
+- **Wajib mengisi custom field Request ID (`customfield_10495`)**.
+- Jika card relate maupun card origin-nya memiliki `Request ID` (atau terdapat Record ID / Request ID di description/field origin), maka **copy nilai Request ID dari card origin-nya**.
+- Jika card referensi / origin-nya bernilai `null` (tidak memiliki Request ID / card baru), maka isi dengan text **`none`**.
+- Jika ada case khusus/lainnya, konfirmasi ke user terlebih dahulu.
+
+
+## Detail Spesifikasi Custom Field Request ID di Jira ETM
+
+- **Field Name:** `Request ID`
+- **Custom Field Key:** `customfield_10495`
+- **Schema Type:** `string` (text field)
+- **Aturan Pembacaan & Gotcha API Jira:**
+  - Saat membaca issue via API Jira (`getJiraIssue`), respon default seringkali hanya me-render field standar jika tanpa ekspansi `fields=*`. **Jangan berasumsi Request ID kosong hanya dari payload ringkas `getJiraIssue`**.
+  - Wajib periksa `customfield_10495` secara eksplisit atau cek field description / Notion / Airtable request context.
+- **Aturan Penulisan:**
+  - Jika card relate / origin memiliki Request ID (misal: `recvqWrTHZ1dOV`), **wajib copy nilai persis ke `customfield_10495`**.
+  - Jika benar-benar card baru / mandiri tanpa referensi request user, isi dengan string **`none`**.
