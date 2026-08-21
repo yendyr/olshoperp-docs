@@ -1,0 +1,66 @@
+# POM Element Registry — Stock Remapping
+# Sumber UI staging: /accounting/stock-remapping (Form auto-save → edit)
+# Menu: FA > Stock Remapping | prefix RM-
+
+menu: accounting-stock-remapping
+menu_name: Stock Remapping
+route: /accounting/stock-remapping
+create_button_mode: link
+pom_helper: tests/helpers/stock-remapping.ts
+company_default: DEV-STG
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  code:
+    strategy: id
+    value: code
+    placeholder: Generated After Saved
+
+  building:
+    strategy: aria-placeholder
+    value: Choose Building
+
+  description:
+    strategy: placeholder
+    value: Add description or notes...
+
+  status_open:
+    strategy: id
+    value: open
+
+  status_draft:
+    strategy: id
+    value: draft
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+
+  detail_section:
+    strategy: disclosure
+    name: Stock Remapping Detail
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+
+  available_products:
+    strategy: text
+    value: Available Products
+
+  import:
+    strategy: role
+    role: button
+    name: Import
+    scope: Stock Remapping Detail
+
+notes:
+  - "Create sering auto-redirect ke edit (fetchDefaultValues)."
+  - "Self-remap Origin = Remapped To harus ditolak di insert/update/qty/approve (ETM-15526 TC-13)."
+  - "Inline edit Remapped To tidak boleh mengubah urutan baris (TC-14)."
+  - "Import error: failed row = jumlah baris gagal; Qty non-numerik ditolak; semua required error tampil (TC-15)."
