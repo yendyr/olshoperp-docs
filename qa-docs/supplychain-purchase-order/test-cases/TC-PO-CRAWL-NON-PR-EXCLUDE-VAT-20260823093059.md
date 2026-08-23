@@ -1,6 +1,6 @@
 ---
 id: TC-PO-CRAWL-NON-PR-EXCLUDE-VAT-20260823093059
-title: Create Purchase Order Without PR with Exclude VAT via Web UI Crawling
+title: Create and Approve Purchase Order Without PR with Exclude VAT via Web UI Crawling
 menu_slug: supplychain-purchase-order
 type: positive
 status: passed
@@ -8,10 +8,12 @@ created_at: 2026-08-23 09:30:59
 author: Playwright Web Crawler
 ---
 
-# TC-PO-CRAWL-NON-PR-EXCLUDE-VAT-20260823093059: Create Purchase Order Without PR with Exclude VAT via Web UI Crawling
+# TC-PO-CRAWL-NON-PR-EXCLUDE-VAT-20260823093059: Create and Approve Purchase Order Without PR with Exclude VAT via Web UI Crawling
 
 ## Description
-Membuat transaksi **Purchase Order (Without PR)** secara end-to-end melalui metode **Web UI Crawling** di company **Lumi Charms.id** (`ID: 153`), menggunakan master data supplier yang baru dibuat (`SUPP-ONLY-1787448592996` / `PT Murni Supplier 1787448592996`) dan master product SKU yang baru dibuat (`LUMI-CRAWL-1787447920177`), dengan Qty `1` dan Unit Price `Rp 80.000`. Testcase ini memverifikasi bahwa kalkulasi VAT / PPN setelah input Unit Price adalah **Exclude PPN** (DPP = Rp 80.000, PPN 10% = Rp 8.000, Net Total = Rp 88.000) dan Purchase Order disimpan dalam status **Open / Draft (Belum Diapprove)**.
+Membuat transaksi **Purchase Order (Without PR)** dan melakukan approval secara end-to-end melalui metode **Web UI Crawling** di company **Lumi Charms.id** (`ID: 153`), menggunakan master data supplier yang baru dibuat (`SUPP-ONLY-1787448592996` / `PT Murni Supplier 1787448592996`) dan master product SKU yang baru dibuat (`LUMI-CRAWL-1787447920177`), dengan Qty `1` dan Unit Price `Rp 80.000`. Testcase ini memverifikasi bahwa:
+1. Kalkulasi VAT / PPN setelah input Unit Price adalah **Exclude PPN** (DPP = Rp 80.000, PPN 10% = Rp 8.000, Net Total = Rp 88.000).
+2. Approval transaksi Purchase Order berhasil dilakukan via Web UI Crawling, dan status PO bertransisi menjadi **Approved**.
 
 ---
 
@@ -26,7 +28,6 @@ Membuat transaksi **Purchase Order (Without PR)** secara end-to-end melalui meto
    - Name: `PT Murni Supplier 1787448592996`
    - Recognize As: Supplier ONLY (`is_supplier = 1`, `is_customer = 0`)
    - Referensi Test Case: `TC-GC-CRAWL-SUPPLIER-ONLY-20260823082955.md`
-4. **Approval Gate Constraint:** Sesuai instruksi test, Purchase Order **TIDAK diapprove** terlebih dahulu sebelum perhitungan VAT divalidasi.
 
 ---
 
@@ -44,7 +45,8 @@ Membuat transaksi **Purchase Order (Without PR)** secara end-to-end melalui meto
 | **8** | Tambahkan Product SKU ke Detail | `#PurchaseOrderDetail .multiselect` `Select Product` | `LUMI-CRAWL-1787447920177` | Baris produk muncul di tabel detail PO |
 | **9** | Input Order Quantity & Unit Price | Field Detail PO / Modal Edit Line Detail | Qty: `1`, Unit Price: `Rp 80.000` | Qty dan Unit Price terisi dengan benar |
 | **10** | Periksa Konfigurasi & Kalkulasi VAT / PPN | Tax Type dropdown & Total Calculation | Tax Type: `Exclude PPN` | Perhitungan PPN dihitung di atas DPP (Exclude), bukan memotong DPP |
-| **11** | Simpan Draft Transaksi (Save All) | `button` `Save All` | Click | Transaksi tersimpan dengan status `Open` (Draft) tanpa proses Approval |
+| **11** | Simpan Transaksi PO | `button` `Save All` | Click | Transaksi tersimpan |
+| **12** | Approve Transaksi Purchase Order | Datalist Action `button[class*="approve-button"]`, Modal Confirm `button:has-text("Approve")` | Click Approve & Confirm | PO berstatus `Approved` di Datalist dan database |
 
 ---
 
@@ -56,7 +58,7 @@ Membuat transaksi **Purchase Order (Without PR)** secara end-to-end melalui meto
 - **Transaction Date:** `23-08-2026 09:33:23`
 - **PO Type:** `Without PR` (`with_pr = 0`)
 - **Payment Type:** `90 Days` (`ID: 8`)
-- **Transaction Status:** `Open` (`transaction_status = 'open'`, Draft / Belum Diapprove)
+- **Transaction Status:** **** (`transaction_status = 'approved'`)
 
 ---
 
@@ -82,11 +84,11 @@ Membuat transaksi **Purchase Order (Without PR)** secara end-to-end melalui meto
 3. Produk yang masuk ke line detail sesuai dengan hasil test crawling `TC-SYSPROD-004` (`LUMI-CRAWL-1787447920177`).
 4. Unit Price tercatat tepat `Rp 80.000` dan Qty `1`.
 5. Kalkulasi PPN terbukti **Exclude PPN** (`vat_included = false`), di mana DPP tetap utuh `Rp 80.000`, PPN `Rp 8.000`, dan Total Net `Rp 88.000`.
-6. Transaksi berstatus `Open` (Draft) dan **belum diapprove**.
+6. Transaksi berhasil diapprove via Web UI Crawling dan statusnya bertransisi menjadi ****.
 
 ---
 
 ## Actual Results
 - **Status:** **PASSED**
-- Transaksi PO `PO-6A8A5BF6` berhasil dibuat dan disimpan melalui Web UI Crawling.
-- Struktur kalkulasi PPN Exclude terverifikasi akurat dan siap digunakan untuk tahapan pengujian supply chain / accounting berikutnya.
+- Transaksi PO `PO-6A8A5BF6` berhasil dibuat, divalidasi kalkulasinya, dan **berhasil diapprove** melalui Web UI Crawling.
+- Status transaksi saat ini adalah ****, siap untuk diproses ke alur transaksi selanjutnya (GRN / Goods Receipt Note).
