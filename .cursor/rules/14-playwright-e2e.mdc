@@ -305,3 +305,11 @@ npm run test:signoff -- "@TC-SYSPROD-003"
 - [ ] Ringkas **Actual Result** dengan bahasa sederhana, jelas, dan langsung ke poin
 - [ ] Hindari jargon teknis yang tidak perlu atau kalimat ambigu
 - [ ] Lampirkan perintah run yang dipakai
+
+---
+
+## 8. Mode Eksekusi Wajib: Web UI Crawling (Bukan Direct API)
+
+1. **Default Test Execution:** Setiap instruksi menjalankan test case **WAJIB** mengeksekusi interaksi **Web UI Crawling murni** (klik tombol, isi form  / locator, interaksi dropdown , tombol simpan, dan verifikasi tampilan tabel).
+2. **Direct API:** Hanya diperbolehkan jika user secara eksplisit meminta pengujian level API di chat. Jangan mengganti alur UI form submission dengan direct POST API.
+3. **Dokumentasi Hasil:** Semua spec crawling wajib mencatat output UI (row text, status Yes/No pada tabel datalist, tooltip UI) dan menyertakan Step-by-Step UI Crawling secara detail di dokumen test case markdown ().

@@ -267,3 +267,14 @@ Trigger ini hanya dijalankan saat user mengetiknya secara eksplisit. Agent tidak
 ```
 
 Entry DRAFT ditulis dengan `tc_code: PENDING-{timestamp}` sampai renumber dijalankan.
+
+---
+
+## 8. Standar Eksekusi: Wajib Web UI Crawling & Dokumentasi Step UI Detail (WAJIB)
+
+1. **Metode Eksekusi Default adalah Web UI Crawling:**
+   - Setiap kali diminta menjalankan testcase, **HARUS SELALU** menggunakan metode **Crawling Website (Playwright Web UI Crawling / Browser Automation)**: simulasi browser langsung, pengisian form input, pemilihan dropdown, klik tombol UI, dan pengecekan datalist di browser.
+   - **Metode API Testing DILARANG** digunakan sebagai pengganti eksekusi testcase kecuali jika ada permintaan eksplisit dari user di sesi chat (*as requested only*).
+2. **Wajib Dokumentasi Step-by-Step UI Crawling di File TC:**
+   - Pada file dokumen testcase (), bagian  dan Catatan QA **WAJIB** melengkapi langkah-langkah **Step-by-Step UI Crawling** secara mendetail (misal: navigasi route, selector/field ID yang diisi, pilihan dropdown multiselect, tombol yang diklik, hingga cara verifikasi di datalist/tabel UI).
+   - Tujuannya adalah memastikan hasil testing valid, transparan, dan dapat direproduksi ulang via crawling website.
