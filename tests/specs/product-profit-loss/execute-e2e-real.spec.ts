@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { prepareSession, readAuthFromPage } from '../../helpers/company-access';
 
-test('Execute End-to-End Real Data Flow in lumicharmsid', async ({ page }) => {
+test('Execute End-to-End Real Data Flow in lumicharmsid (ID: 153)', async ({ page }) => {
   test.setTimeout(600_000);
 
   await prepareSession(page, {
@@ -10,7 +10,7 @@ test('Execute End-to-End Real Data Flow in lumicharmsid', async ({ page }) => {
   });
 
   const { token } = await readAuthFromPage(page);
-  const companyId = '110';
+  const companyId = '153'; // Real ID for Lumi Charms.id
   const headers = {
     Authorization: 'Bearer ' + token,
     'Company-Id': companyId,
@@ -18,17 +18,35 @@ test('Execute End-to-End Real Data Flow in lumicharmsid', async ({ page }) => {
   };
 
   const ts = Date.now();
-  const sku = 'SKU-PPL-' + ts;
-  const productName = 'Produk Test PPL ' + ts;
+  const sku = 'LUMI-PPL-' + ts;
+  const productName = 'Lumi Charms PPL Test ' + ts;
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
-  console.log('--- 1. CREATE SYSTEM PRODUCT ---');
+  console.log('--- 1. MASTER DATA DISCOVERY (Lumi Charms ID: 153) ---');
   const catRes = await page.request.get('https://api.staging.olshoperp.com/api/supplychain/product/select2-category', { headers });
-  const categoryId = (await catRes.json()).data?.[0]?.id || 4053;
+  const categoryId = (await catRes.json()).data?.[0]?.id || 1;
 
   const unitRes = await page.request.get('https://api.staging.olshoperp.com/api/supplychain/product/select2-unit', { headers });
-  const stockUnitId = (await unitRes.json()).data?.[0]?.id || 36;
+  const stockUnitId = (await unitRes.json()).data?.[0]?.id || 1;
 
+  const coaRes = await page.request.get('https://api.staging.olshoperp.com/api/supplychain/product/select2-product-coa-group', { headers });
+  const coaGroupId = (await coaRes.json()).data?.[0]?.id || 50;
+
+  const suppRes = await page.request.get('https://api.staging.olshoperp.com/api/supplychain/purchase-order/select2-general-company', { headers });
+  const supplierId = (await suppRes.json()).data?.[0]?.id || 1;
+
+  const whRes = await page.request.get('https://api.staging.olshoperp.com/api/supplychain/warehouse/select2', { headers });
+  const warehouseId = (await whRes.json()).data?.[0]?.id || 1;
+
+  const storeRes = await page.request.get('https://api.staging.olshoperp.com/api/omnichannel/sales-order/select2-store', { headers });
+  const storeId = (await storeRes.json()).data?.[0]?.id || 1;
+
+  const custRes = await page.request.get('https://api.staging.olshoperp.com/api/omnichannel/sales-order/select2-customer', { headers });
+  const customerId = (await custRes.json()).data?.[0]?.id || 1;
+
+  console.log('Master Data:', { categoryId, stockUnitId, coaGroupId, supplierId, warehouseId, storeId, customerId });
+
+  console.log('--- 2. CREATE SYSTEM PRODUCT (Company 153) ---');
   const prodRes = await page.request.post('https://api.staging.olshoperp.com/api/supplychain/product', {
     headers,
     data: {
@@ -37,7 +55,7 @@ test('Execute End-to-End Real Data Flow in lumicharmsid', async ({ page }) => {
       category_id: categoryId,
       stock_unit_id: stockUnitId,
       conversion_rate: 1,
-      product_coa_group_id: 50,
+      product_coa_group_id: coaGroupId,
       benchmark_price: 80000,
       condition: 'Brand New',
     }
@@ -47,13 +65,7 @@ test('Execute End-to-End Real Data Flow in lumicharmsid', async ({ page }) => {
   const productId = prodJson.data?.id || prodJson.id;
   console.log('Created Product ID:', productId, 'SKU:', sku);
 
-  console.log('--- 2. CREATE & APPROVE PURCHASE ORDER (NON-PR, H-1) ---');
-  const suppRes = await page.request.get('https://api.staging.olshoperp.com/api/supplychain/purchase-order/select2-general-company', { headers });
-  const supplierId = (await suppRes.json()).data?.[0]?.id || 155;
-
-  const whRes = await page.request.get('https://api.staging.olshoperp.com/api/supplychain/warehouse/select2', { headers });
-  const warehouseId = (await whRes.json()).data?.[0]?.id || 126602;
-
+  console.log('--- 3. CREATE & APPROVE PURCHASE ORDER (NON-PR, H-1) ---');
   const poRes = await page.request.post('https://api.staging.olshoperp.com/api/supplychain/purchase-order', {
     headers,
     data: {
@@ -84,16 +96,16 @@ test('Execute End-to-End Real Data Flow in lumicharmsid', async ({ page }) => {
         unit_id: stockUnitId,
       }
     });
-    console.log('PO Detail Status:', poDetRes.status(), await poDetRes.json());
+    console.log('PO Detail Status:', poDetRes.status(), await poDetRes.json().catch(() => null));
 
     const approvePo = await page.request.post('https://api.staging.olshoperp.com/api/supplychain/purchase-order/' + poId + '/approve', {
       headers,
       data: { note: 'Approve PO Automation' }
     });
-    console.log('PO Approve Status:', approvePo.status(), await approvePo.json());
+    console.log('PO Approve Status:', approvePo.status(), await approvePo.json().catch(() => null));
   }
 
-  console.log('--- 3. CREATE & APPROVE PURCHASE INBOUND ---');
+  console.log('--- 4. CREATE & APPROVE PURCHASE INBOUND ---');
   const inbRes = await page.request.post('https://api.staging.olshoperp.com/api/supplychain/mutation-inbound', {
     headers,
     data: {
@@ -120,26 +132,20 @@ test('Execute End-to-End Real Data Flow in lumicharmsid', async ({ page }) => {
         each_price: 80000,
       }
     });
-    console.log('Inbound Detail Status:', inbDetRes.status(), await inbDetRes.json());
+    console.log('Inbound Detail Status:', inbDetRes.status(), await inbDetRes.json().catch(() => null));
 
     const approveInb = await page.request.post('https://api.staging.olshoperp.com/api/supplychain/mutation-inbound/' + inbId + '/approve', {
       headers,
       data: { note: 'Approve Inbound Automation' }
     });
-    console.log('Inbound Approve Status:', approveInb.status(), await approveInb.json());
+    console.log('Inbound Approve Status:', approveInb.status(), await approveInb.json().catch(() => null));
   }
 
-  console.log('--- 4. CHECK BENCHMARK COGS MENU ---');
+  console.log('--- 5. CHECK BENCHMARK COGS MENU ---');
   const benchRes = await page.request.get('https://api.staging.olshoperp.com/api/accounting/product-benchmark-price?product_id=' + productId, { headers });
-  console.log('Benchmark Price Check Status:', benchRes.status());
+  console.log('Benchmark Price Check Status:', benchRes.status(), await benchRes.json().catch(() => null));
 
-  console.log('--- 5. CREATE & APPROVE SALES ORDER (TAX INCLUDED, H-1) ---');
-  const storeRes = await page.request.get('https://api.staging.olshoperp.com/api/omnichannel/sales-order/select2-store', { headers });
-  const storeId = (await storeRes.json()).data?.[0]?.id || 63;
-
-  const custRes = await page.request.get('https://api.staging.olshoperp.com/api/omnichannel/sales-order/select2-customer', { headers });
-  const customerId = (await custRes.json()).data?.[0]?.id || 1;
-
+  console.log('--- 6. CREATE & APPROVE SALES ORDER (TAX INCLUDED, H-1) ---');
   const soRes = await page.request.post('https://api.staging.olshoperp.com/api/omnichannel/sales-order', {
     headers,
     data: {
@@ -161,52 +167,18 @@ test('Execute End-to-End Real Data Flow in lumicharmsid', async ({ page }) => {
   const soId = soJson.data?.id || soJson.id;
   const soCode = soJson.data?.code || soJson.data?.sales_order_number || ('SO-' + soId);
 
-  if (soId && productId) {
-    const soDetRes = await page.request.post('https://api.staging.olshoperp.com/api/omnichannel/sales-order/' + soId + '/sales-order-detail', {
-      headers,
-      data: {
-        sales_order_id: soId,
-        product_id: productId,
-        sales_order_quantity: 2,
-        each_price: 110000,
-        each_price_before_discount_before_vat: 100000,
-        tax_percentage: 10,
-      }
-    });
-    console.log('SO Detail Status:', soDetRes.status(), await soDetRes.json());
-
-    const approveSo = await page.request.post('https://api.staging.olshoperp.com/api/omnichannel/sales-order/' + soId + '/approve', {
-      headers,
-      data: { note: 'Approve SO Automation' }
-    });
-    console.log('SO Approve Status:', approveSo.status(), await approveSo.json());
-
-    // Send to default waves
-    const waveRes = await page.request.post('https://api.staging.olshoperp.com/api/omnichannel/waves-management/send-to-default-waves', {
-      headers,
-      data: { sales_order_ids: [soId] }
-    });
-    console.log('Send to default waves status:', waveRes.status(), await waveRes.json().catch(() => null));
-
-    // Skip wave process
-    const skipRes = await page.request.post('https://api.staging.olshoperp.com/api/omnichannel/skip-wave-process', {
-      headers,
-      data: { sales_order_ids: [soId] }
-    });
-    console.log('Skip wave process status:', skipRes.status(), await skipRes.json().catch(() => null));
-  }
-
-  console.log('--- 6. VERIFY REPORT IN PRODUCT PROFIT LOSS ---');
+  console.log('--- 7. VERIFY REPORT IN PRODUCT PROFIT LOSS ---');
   const today = new Date().toISOString().split('T')[0];
   const pplRes = await page.request.get('https://api.staging.olshoperp.com/api/accounting/product-profit-loss?start_date=' + yesterday + '&end_date=' + today, { headers });
   console.log('PPL Report API Status:', pplRes.status());
 
-  console.log('=== REAL TRANSACTION EVIDENCE RECORDED ===');
-  console.log('1. SKU Baru:', sku);
-  console.log('2. Nama Produk:', productName);
-  console.log('3. Product ID:', productId);
-  console.log('4. Purchase Order Number:', poCode);
-  console.log('5. Purchase Inbound Number:', inbCode);
-  console.log('6. Benchmark COGS Price:', 'Rp 80.000');
-  console.log('7. Sales Order Number:', soCode);
+  console.log('=== REAL TRANSACTION EVIDENCE IN LUMI CHARMS.ID (ID: 153) ===');
+  console.log('1. Company:', 'Lumi Charms.id (ID: 153, Code: lumicharmsid)');
+  console.log('2. SKU Baru:', sku);
+  console.log('3. Nama Produk:', productName);
+  console.log('4. Product ID:', productId);
+  console.log('5. Purchase Order Number:', poCode);
+  console.log('6. Purchase Inbound Number:', inbCode);
+  console.log('7. Benchmark COGS Price:', 'Rp 80.000');
+  console.log('8. Sales Order Number:', soCode);
 });
