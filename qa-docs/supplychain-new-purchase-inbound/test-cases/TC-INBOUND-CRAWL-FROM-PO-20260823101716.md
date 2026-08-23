@@ -1,22 +1,24 @@
 ---
 id: TC-INBOUND-CRAWL-FROM-PO-20260823101716
-title: Create Purchase Inbound from Approved PO via Web UI Crawling
+title: Create and Approve Purchase Inbound from Approved PO via Web UI Crawling
 menu_slug: supplychain-new-purchase-inbound
 type: positive
 status: passed
 created_at: 2026-08-23 10:17:16
+updated_at: 2026-08-23 10:53:57
 author: Playwright Web Crawler
 ---
 
-# TC-INBOUND-CRAWL-FROM-PO-20260823101716: Create Purchase Inbound from Approved PO via Web UI Crawling
+# TC-INBOUND-CRAWL-FROM-PO-20260823101716: Create and Approve Purchase Inbound from Approved PO via Web UI Crawling
 
 ## Description
-Membuat transaksi **Purchase Inbound (Goods Receipt / Inbound)** secara end-to-end melalui metode **Web UI Crawling** di company **Lumi Charms.id** (`ID: 153`), dari dokumen Purchase Order yang telah diapprove (`PO-6A8A5BF6`) dengan supplier yang sama (`PT Murni Supplier 1787448592996` / `SUPP-ONLY-1787448592996`). 
+Membuat dan menyetujui transaksi **Purchase Inbound (Goods Receipt / Inbound)** secara end-to-end melalui metode **Web UI Crawling** di company **Lumi Charms.id** (`ID: 153`), dari dokumen Purchase Order yang telah diapprove (`PO-6A8A5BF6`) dengan supplier yang sama (`PT Murni Supplier 1787448592996` / `SUPP-ONLY-1787448592996`).
 
 Alur pengujian mencakup:
-1. Menangani fitur auto-save draft saat create Purchase Inbound, kemudian mengupdate nama Supplier ke `PT Murni Supplier 1787448592996` dan melakukan `Save All`.
+1. Menangani auto-save draft saat create Purchase Inbound, kemudian mengupdate nama Supplier ke `PT Murni Supplier 1787448592996` dan Warehouse Destination ke level-20 smallest warehouse (`WH Pusat Zona A1` / `SBY-HUB`), lalu klik `Save All`.
 2. Membuka modal **Available Purchase Order**, memfilter berdasarkan nomor PO `PO-6A8A5BF6`, mencentang checkbox baris PO, dan mengklik tombol **Use** untuk memasukkan detail SKU (`LUMI-CRAWL-1787447920177`, Qty `1`) ke dalam detail transaksi Purchase Inbound.
-3. Memastikan transaksi tersimpan dan **TIDAK diapprove** (status tetap `Open` / Draft).
+3. Melakukan **Approval** transaksi Purchase Inbound melalui tombol checklist biru di halaman edit dan konfirmasi pada modal approval.
+4. Memvalidasi status akhir transaksi berubah menjadi **`Approved`**.
 
 ---
 
@@ -36,7 +38,7 @@ Alur pengujian mencakup:
    - Status: `Approved`
    - Line Item: SKU `LUMI-CRAWL-1787447920177`, Qty `1`, Unit Price `Rp 80.000` (Exclude PPN)
    - Referensi Test Case: `TC-PO-CRAWL-NON-PR-EXCLUDE-VAT-20260823093059.md`
-5. **Constraint:** Transaksi Purchase Inbound **TIDAK diapprove** (hanya sampai insert detail SKU dari PO).
+5. **No-Retry Rule:** Konfigurasi Playwright diset ke `retries: 0` untuk mencegah duplikasi draft pada modul berfitur auto-save.
 
 ---
 
@@ -47,14 +49,15 @@ Alur pengujian mencakup:
 | **1** | Buka menu Purchase Inbound | `page.goto('/supplychain/new-purchase-inbound')` | - | Datalist Purchase Inbound terbuka |
 | **2** | Klik tombol Create Purchase Inbound | `button:has-text("Create")`, `a[href*="/create"]`, `button#createButton` | - | Form create terbuka di URL `/supplychain/new-purchase-inbound/create` |
 | **3** | Tangani Auto-Save Draft | Menunggu redirect ke URL edit | - | Sistem auto-generate draft di URL `/supplychain/new-purchase-inbound/edit/{id}` |
-| **4** | Ubah Supplier | Dropdown Multiselect Supplier | `PT Murni Supplier 1787448592996` | Supplier terpilih sesuai dengan supplier pada `PO-6A8A5BF6` |
-| **5** | Simpan Header Transaksi | Tombol `Save All` | Click | Header Purchase Inbound tersimpan dengan supplier yang sesuai |
+| **4** | Ubah Supplier & Destination Warehouse | Dropdown Supplier & Location Destination | Supplier: `PT Murni Supplier 1787448592996`<br>Warehouse: `WH Pusat Zona A1` (`ID: 72972`) | Field terisi dengan data valid |
+| **5** | Simpan Header Transaksi | Tombol `Save All` | Click | Header Purchase Inbound tersimpan dengan supplier & warehouse yang sesuai |
 | **6** | Buka Modal Available Purchase Order | Link `Available Purchase Order` | Click | Modal `Outstanding Purchase Order` terbuka |
 | **7** | Filter Data Berdasarkan Nomor PO | Input Search pada Modal | `PO-6A8A5BF6` | Tabel modal menampilkan baris data dari PO `PO-6A8A5BF6` |
 | **8** | Pilih Baris PO | Checkbox pada baris `PO-6A8A5BF6` | Checked | Baris data PO terpilih |
 | **9** | Masukkan Detail SKU ke Inbound | Tombol `Use` di bagian atas modal | Click | Detail SKU (`LUMI-CRAWL-1787447920177`) masuk ke tabel Inbound Detail |
-| **10** | Verifikasi Tabel Inbound Detail | Tabel `#InventoryInDetail` | - | Baris SKU `LUMI-CRAWL-1787447920177` dengan Qty `1` muncul di tabel detail |
-| **11** | Pertahankan Status Open (Tanpa Approve) | Tidak mengklik tombol Approve | - | Transaksi berstatus `Open` (Draft) |
+| **10** | Klik Tombol Approve Transaksi | Tombol checklist biru (`button.bg-info.border-info`) | Click | Modal konfirmasi approval terbuka |
+| **11** | Konfirmasi Approval | Tombol `Approve` pada modal konfirmasi | Click | Transaksi disetujui, sistem menampilkan notifikasi sukses dan update status |
+| **12** | Validasi Status Akhir | Backend API / UI | - | Status transaksi berubah menjadi **`Approved`** |
 
 ---
 
@@ -63,9 +66,9 @@ Alur pengujian mencakup:
 - **Company:** Lumi Charms.id (`ID: 153`)
 - **Purchase Inbound Transaction Code:** **`IN-5U7ODE9M`** (Inbound ID: `131633`)
 - **Supplier:** `PT Murni Supplier 1787448592996` (`Code: SUPP-ONLY-1787448592996`, `ID: 1539`)
-- **Warehouse Destination:** `AA-01 WH Prefix Uniform 639318` (`ID: 126602`)
+- **Warehouse Destination:** `WH Pusat Zona A1` (`Code: SBY-HUB`, `ID: 72972`)
 - **Reference PO Code:** **`PO-6A8A5BF6`**
-- **Transaction Status:** **`Open`** (`transaction_status = 'open'`, Draft / Belum Diapprove)
+- **Transaction Status:** **`Approved`** (`transaction_status = 'approved'`)
 
 ---
 
@@ -84,13 +87,14 @@ Alur pengujian mencakup:
 ## Expected Results
 1. Transaksi Purchase Inbound berhasil dibuat via Web UI Crawling di company **Lumi Charms.id** (`ID: 153`).
 2. Supplier berhasil diubah dan disimpan sesuai dengan supplier pada `PO-6A8A5BF6` (`PT Murni Supplier 1787448592996`).
-3. Modal Available Purchase Order dapat dibuka, difilter dengan kode `PO-6A8A5BF6`, dan dicentang untuk dimasukkan ke detail transaksi via tombol Use.
-4. Baris produk `LUMI-CRAWL-1787447920177` berhasil masuk ke tabel Inbound Detail dengan Qty `1`.
-5. Transaksi Purchase Inbound berstatus **`Open` (Draft / Belum Diapprove)**.
+3. Warehouse Destination berhasil diset ke smallest warehouse valid (`WH Pusat Zona A1`).
+4. Modal Available Purchase Order dapat dibuka, difilter dengan kode `PO-6A8A5BF6`, dan dicentang untuk dimasukkan ke detail transaksi via tombol Use.
+5. Baris produk `LUMI-CRAWL-1787447920177` berhasil masuk ke tabel Inbound Detail dengan Qty `1`.
+6. Transaksi Purchase Inbound berhasil diapprove via UI Crawling dan status transaksi menjadi **`Approved`**.
 
 ---
 
 ## Actual Results
 - **Status:** **PASSED**
-- Transaksi Purchase Inbound `IN-5U7ODE9M` berhasil dibuat dan detail SKU dari `PO-6A8A5BF6` berhasil masuk ke Inbound Detail melalui Web UI Crawling.
-- Transaksi berada dalam status `Open` (Draft) dan siap untuk tahapan pengujian selanjutnya.
+- Transaksi Purchase Inbound `IN-5U7ODE9M` berhasil diapprove via Web UI Crawling.
+- Status transaksi: `Approved` (`transaction_status = 'approved'`).
