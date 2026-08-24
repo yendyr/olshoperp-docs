@@ -5,6 +5,7 @@ test-results/
 test-results-*.log
 playwright/.cache/
 tests/.auth/
+.playwright-mcp/
 .env
 .env.local
 
