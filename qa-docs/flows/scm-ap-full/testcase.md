@@ -46,14 +46,14 @@ lalu melanjutkan ke tiga menu accounting.
 |-------|------|-----------|--------------|----------|----------|
 | 1 | supplychain-purchase-requisition | TC-PR-CREATE-001, TC-PR-UPDATE-002 | Data produk dari fixture | — | `pr_code` (Approved) |
 | 2 | supplychain-purchase-order | TC-PO-CREATE-001, TC-PO-UPDATE-001, TC-PO-UPDATE-002 | With PR; outstanding dari `pr_code` | `pr_code` | `po_code` (Approved) |
-| 3 | supplychain-new-purchase-inbound | TC-PI-CREATE-001, TC-PI-APPROVE-001 | **Inbound WAJIB di-approve** — Supplier Invoice hanya bisa menarik inbound approved (requirement SI §2). Memutasi stok. | `po_code` | `pi_code` (Approved) |
+| 3 | supplychain-new-purchase-inbound | TC-PI-CREATE-001, TC-PI-APPROVE-001 | **Inbound WAJIB di-approve** — Supplier Invoice hanya bisa menarik inbound approved (requirement SI §2). Memutasi stok (side-effect belum diassert — lihat TODO). | `po_code` | `pi_code` (Approved), `stock_delta` |
 | 4 | accounting-supplier-invoice | TC-PI-001, TC-PI-002 | Tarik inbound via modal Inbound Transaction difilter `po_code`; Draft → Open → Approve | `po_code` | `invoice_code` (Approved) |
 | 5 | accounting-supplier-payment | TC-APAY-001, TC-APAY-002 | Sumber dana Cash/Bank dari fixture; alokasi Outstanding Purchase Invoice = `invoice_code`; source amount disamakan dengan nilai invoice agar balanced | `invoice_code` | `payment_code` (Approved) |
 | 6 | journal | TC-JRN-005 | Baca kode journal dari kolom Journal di datalist payment, lalu verifikasi isinya | `payment_code` | `journal_code` |
 
 ## Side-effect yang di-assert
 
-- **Phase 3** → stok bertambah (approve inbound). *Belum diautomasi* — lihat TODO.
+- **Phase 3** → stok bertambah setelah approve. **Belum diassert** — lihat TODO.
 - **Phase 4** → Supplier Invoice Approved menerbitkan jurnal AP (Dr Unbilled Goods + Tax + Cost / Cr AP).
 - **Phase 6** → auto-journal dari payment: status Approved, TYPE `Payment to Supplier`, Transaction Reference = `payment_code`, ledger memuat COA cash/bank yang dipakai. **Ini side-effect assertion utama flow** — membuktikan rantai AP tersambung sampai General Ledger.
 
@@ -82,4 +82,19 @@ npx playwright test tests/specs/flows/scm-ap-full.spec.ts
 
 ## TODO
 
-- Side-effect stok setelah phase 3 belum diassert (butuh lookup qty per SKU di helper Real Stock) — sama dengan TODO di flow `scm-inbound`.
+### Side-effect stok belum bisa diassert — dua jalur buntu (investigasi 2026-08-26)
+
+| Sumber | Kendala |
+|---|---|
+| **Real Time Stock** (`supplychain-real-stock`) | Nilainya real-time dan cocok, tapi `requirement.md` masih berstatus `draft` → **ditolak preflight** (rule 17 §0). Perlu requirement dinaikkan ke `review` lebih dulu — keputusan QA lead. |
+| **Stock History V2** (`supplychain-product-mutation-stock`) | Requirement sudah `review`, tapi laporannya **berbasis job terjadwal**: header menampilkan *Latest Calculation* / *Last Job Started* / *Next Job Started* (harian). Mutasi dari inbound yang baru di-approve belum muncul sampai job berikutnya berjalan, sehingga tidak bisa dipakai untuk assertion langsung dalam satu run. |
+
+**Opsi yang tersisa** (perlu keputusan):
+1. Naikkan `requirement.md` Real Time Stock ke `review`, lalu assert delta stok di sana.
+2. Ganti bukti side-effect ke sesuatu yang real-time dan menu-nya sudah matang —
+   mis. **outstanding PO berkurang / status PO berubah** setelah inbound approved
+   (menu Purchase Order, requirement sudah `review`). Ini membuktikan rantai bekerja
+   tanpa bergantung laporan stok.
+
+Sampai salah satunya diputuskan, flow tetap memverifikasi status dokumen di tiap phase
+dan auto-journal di phase 6 — tapi **belum** membuktikan dampak ke stok.

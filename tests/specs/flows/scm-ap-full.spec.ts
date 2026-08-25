@@ -1,4 +1,4 @@
-import { test, type Page, type TestInfo } from '@playwright/test';
+import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 import { prepareSession } from '../../helpers/company-access';
@@ -173,11 +173,24 @@ test.describe.serial('SCM AP Flow — PR → PO → PI → SI → Payment → Jo
     // Wajib approve: Supplier Invoice hanya bisa menarik inbound yang approved.
     await approvePiFromShow(page, piTrxCode);
 
+    // SIDE-EFFECT stok: BELUM diassert — lihat catatan di
+    // qa-docs/flows/scm-ap-full/testcase.md § TODO. Dua sumber yang dicoba
+    // 2026-08-26 sama-sama buntu: Real Time Stock (requirement masih `draft`,
+    // ditolak preflight) dan Stock History V2 (laporan batch — "Latest
+    // Calculation" harian, mutasi baru muncul setelah job terjadwal berjalan).
+
     await attachPhaseResult(testInfo, page, {
       phase: 3,
       menu: 'supplychain-new-purchase-inbound',
-      recalls: [PI_SCENARIO_TCS.createPiFromPoOpen, PI_SCENARIO_TCS.approvePiFromShow],
-      produces: { pi_code: piTrxCode, status: 'Approved', consumed_po: poTrxCode },
+      recalls: [
+        PI_SCENARIO_TCS.createPiFromPoOpen,
+        PI_SCENARIO_TCS.approvePiFromShow,
+      ],
+      produces: {
+        pi_code: piTrxCode,
+        status: 'Approved',
+        consumed_po: poTrxCode,
+      },
     });
   });
 

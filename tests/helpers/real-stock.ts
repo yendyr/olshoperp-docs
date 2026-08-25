@@ -325,6 +325,53 @@ export class RealStockPage {
     ).toBeVisible();
   }
 
+  /**
+   * Baca total qty stok untuk satu SKU dari tab **By SKU** (mode ALL).
+   *
+   * Dipakai flow E2E untuk membuktikan side-effect: stok benar-benar bertambah
+   * setelah Purchase Inbound di-approve — bukan sekadar status dokumen berubah.
+   *
+   * Mengembalikan `0` kalau SKU belum punya baris stok sama sekali (bukan error),
+   * supaya bisa dipakai sebagai baseline sebelum inbound pertama.
+   */
+  async readTotalQtyBySku(sku: string): Promise<number> {
+    await this.gotoReport();
+    await this.switchToBySku();
+    await this.filterBySkuAll();
+    await this.datalist.search(sku, 2_000);
+
+    const skuPattern = new RegExp(
+      sku
+        .trim()
+        .split(/[\s-]+/)
+        .filter(Boolean)
+        .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('[\\s-]+'),
+      'i',
+    );
+
+    const row = this.page
+      .getByRole('row')
+      .filter({ hasText: skuPattern })
+      .filter({ hasNotText: /no data available|no matching records/i })
+      .first();
+
+    if (!(await row.isVisible({ timeout: 10_000 }).catch(() => false))) {
+      return 0; // SKU belum punya stok — baseline sah
+    }
+
+    // Kolom qty berbeda posisi antar warehouse; ambil angka terbesar di baris
+    // sebagai total stok SKU tsb (kolom lain berisi harga/kode yang lebih kecil
+    // atau non-numerik). Cukup untuk assert "bertambah sebanyak N".
+    const cells = await row.getByRole('cell').allTextContents();
+    const numbers = cells
+      .map((c) => c.replace(/[^\d.,-]/g, '').replace(/\.(?=\d{3}\b)/g, '').replace(',', '.'))
+      .map((c) => Number(c))
+      .filter((n) => Number.isFinite(n));
+
+    return numbers.length ? Math.max(...numbers) : 0;
+  }
+
   async assertRowsOrEmpty(): Promise<{ rowCount: number }> {
     await this.page.waitForTimeout(600);
     const empty = this.page.locator('td.dataTables_empty');

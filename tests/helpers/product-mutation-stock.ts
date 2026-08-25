@@ -139,6 +139,30 @@ export class ProductMutationStockPage {
     };
   }
 
+  /**
+   * Buktikan sebuah dokumen inbound MUNCUL di riwayat mutasi produk —
+   * bukti langsung bahwa stok benar-benar bermutasi setelah approve.
+   *
+   * Lebih tahan race daripada membandingkan angka total stok: kalau ada transaksi
+   * lain berjalan bersamaan, angka total bisa bergeser, sedangkan kehadiran baris
+   * ber-referensi kode dokumen tetap deterministik.
+   *
+   * @returns teks baris mutasi yang cocok (untuk bukti di laporan)
+   */
+  async assertMutationRowForDocument(documentCode: string): Promise<string> {
+    const row = this.datalist.table
+      .getByRole('row')
+      .filter({ hasText: new RegExp(documentCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') })
+      .first();
+
+    await expect(
+      row,
+      `Riwayat mutasi harus memuat dokumen ${documentCode} setelah inbound di-approve`,
+    ).toBeVisible({ timeout: 60_000 });
+
+    return ((await row.textContent()) ?? '').replace(/\s+/g, ' ').trim();
+  }
+
   async assertHistoryColumns(): Promise<void> {
     const headers = this.datalist.table.getByRole('columnheader');
     await expect(headers.filter({ hasText: /date/i }).first()).toBeVisible();
