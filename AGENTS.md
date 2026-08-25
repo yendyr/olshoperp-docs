@@ -18,6 +18,13 @@ Konten QA ada di **`qa-docs/`** (langsung di root repo). Bukan `docs/qa-docs/`.
 
 ## Mulai di sini
 
+> **Tugasnya menjalankan / membuat / memperbaiki test Playwright?**
+> Langsung ke **`tests/AGENT-RUNBOOK.md`** — decision tree, perintah, dan 7 aturan
+> mutlak dalam satu halaman. Runbook memberi tahu dokumen mana yang perlu dibuka;
+> **tidak perlu membaca semua rule dulu**.
+
+Untuk tugas dokumentasi/pertanyaan QA:
+
 1. Baca `.cursor/rules/` (alwaysApply)
 2. Baca **`qa-docs/_meta/manifest.yaml`** — 121 menu, source of truth
 3. Triage pertanyaan → `08-question-triage.mdc`

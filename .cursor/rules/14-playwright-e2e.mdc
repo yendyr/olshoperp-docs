@@ -109,6 +109,7 @@ Dua alat sah dipakai di workspace ini, **dengan pembagian tugas yang mengikat**.
 3. **Flow cross-menu wajib CLI.** Menjalankan chain via MCP mem-bypass preflight gate (rule 17 §0), `global-setup`/storageState, reporter summary, dan history — hasilnya tidak reproducible dan tidak tercatat. Dilarang.
 4. **TC hasil crawling MCP wajib berformat rule 13.** Gunakan frontmatter `tc_code`/`menu`/`steps`/`expected_result` dan penamaan `TC-{PREFIX}-DRAFT-{timestamp}` (rule 13 §2). Skema lain (`id:`, `menu_slug:`, `author: Playwright Web Crawler`, nama `TC-*-CRAWL-*`) membuat TC **invisible** bagi `tc:lint`, tidak bisa di-`recalls` oleh flow, dan berisiko jadi duplikat tak terdeteksi. Cek dengan `npm run tc:lint` setelah membuat TC.
 5. **Temuan UX dari MCP wajib dipropagasi.** Kalau crawling menemukan UI berubah (tombol hilang, dialog baru, tombol disabled), update **helper + `ui-components.md` + TC origin** — jangan hanya ditulis di TC baru. Kalau tidak, spec existing diam-diam jadi stale.
+6. **Script sekali pakai wajib berprefix diagnostic** — `check-`, `inspect-`, `probe-`, `debug-`, `diag-`, `find-`, `get-`, `read-`, `log-`, `verify-`. Prefix ini di-`testIgnore` di `playwright.config.ts` sehingga tidak ikut run default. Script eksplorasi tanpa prefix akan ikut dijalankan `npx playwright test`, mengotori staging, dan memperlambat suite. Spec resmi selalu punya tag `@TC-*` / `@FLOW-*`.
 
 ---
 
