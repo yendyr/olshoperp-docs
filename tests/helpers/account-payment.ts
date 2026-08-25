@@ -176,7 +176,8 @@ export class AccountPaymentPage {
         .textContent()
         .catch(() => '')) ?? ''
     ).trim();
-    if (/unbilled\s*goods/i.test(selected)) {
+    const escapedName = supplierName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (new RegExp(`^${escapedName}$`, 'i').test(selected)) {
       return;
     }
 
@@ -194,17 +195,33 @@ export class AccountPaymentPage {
 
     await combobox.click();
     await this.page.waitForTimeout(400);
-    const token = supplierName.replace(/^pt\.?\s*/i, '').trim() || supplierName;
-    await combobox.fill(token);
-    await this.page.waitForTimeout(1_800);
 
-    const option = this.page
-      .locator('.multiselect-option:visible')
-      .filter({ hasText: /Unbilled\s*Goods/i })
-      .first();
-    await expect(option, `Supplier ${supplierName}`).toBeVisible({
-      timeout: 45_000,
-    });
+    // Cari opsi berdasarkan nama yang diminta — JANGAN hardcode nama supplier
+    // tertentu. Coba nama lengkap dulu; sebagian dropdown baru memunculkan hasil
+    // kalau query cocok dari awal token (lihat ui-components.md §1).
+    const visibleOptions = () =>
+      this.page.locator('.multiselect-option:visible').filter({
+        hasNotText: 'No results found',
+      });
+    const exact = new RegExp(`^\\s*${escapedName}\\s*$`, 'i');
+
+    let option = visibleOptions().filter({ hasText: exact }).first();
+    for (const query of [supplierName, supplierName.replace(/^pt\.?\s*/i, '').trim()]) {
+      if (!query) continue;
+      await combobox.fill(query);
+      await this.page.waitForTimeout(1_500);
+      option = visibleOptions().filter({ hasText: exact }).first();
+      if (await option.isVisible().catch(() => false)) break;
+      // Fallback: cocokkan sebagian (nama di master bisa punya suffix).
+      option = visibleOptions().filter({ hasText: new RegExp(escapedName, 'i') }).first();
+      if (await option.isVisible().catch(() => false)) break;
+    }
+
+    await expect(
+      option,
+      `Supplier "${supplierName}" tidak ada di dropdown Account Payment — ` +
+        `menu ini hanya menampilkan supplier yang punya invoice outstanding`,
+    ).toBeVisible({ timeout: 45_000 });
     await option.click();
     await this.page.waitForTimeout(500);
 
@@ -619,5 +636,33 @@ export class AccountPaymentPage {
       timeout: 45_000,
     });
     await expect(row).toContainText(/approved/i);
+  }
+
+  /**
+   * Baca kode journal yang otomatis terbentuk saat payment di-approve
+   * (kolom Journal di datalist berisi link ke /accounting/journal/edit/{id}).
+   * Cermin dari account-receive.ts#getLinkedJournalCodeFromDatalist (sisi AR).
+   */
+  async getLinkedJournalCodeFromDatalist(paymentCode: string): Promise<string> {
+    await this.gotoDatalist();
+    await this.datalist.search(paymentCode, 2_000);
+    const row = this.page.getByRole('row').filter({ hasText: paymentCode }).first();
+    await expect(row, `Payment ${paymentCode}`).toBeVisible({ timeout: 45_000 });
+    await expect(row).toContainText(/approved/i);
+
+    const journalLink = row.locator('a[href*="/accounting/journal/edit/"]').first();
+    await expect(
+      journalLink,
+      `Link journal untuk ${paymentCode} (auto-journal setelah approve)`,
+    ).toBeVisible({ timeout: 45_000 });
+
+    const raw = ((await journalLink.textContent()) ?? '').trim();
+    const code = raw.match(/[A-Z]{2,}-\w+/i)?.[0] ?? raw;
+    if (!code || code === '-' || code.length < 3) {
+      throw new Error(
+        `Journal code tidak terbaca dari datalist payment ${paymentCode}: "${raw}"`,
+      );
+    }
+    return code;
   }
 }

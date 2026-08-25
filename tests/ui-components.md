@@ -206,3 +206,31 @@ sedang re-render (mis. saat supplier & payment type auto-fill berbarengan).
 Helper `open()` kini membungkus **seluruh urutan** (scroll → klik → verifikasi
 `aria-expanded`) dalam `expect(...).toPass()`, bukan hanya klik-nya. Terapkan pola
 yang sama untuk komponen lain yang node-nya bisa diganti saat re-render.
+
+---
+
+## Addendum — jebakan yang ditemukan saat membangun flow AP (Pilot 2)
+
+**Warehouse destination wajib sebelum APPROVE inbound.** Backend menolak dengan
+`The selected destination warehouse must be level of 20 or below and smallest warehouse`
+kalau destination default bukan warehouse terkecil (level ≤20). Tidak terlihat saat
+inbound hanya disimpan Open — baru muncul di flow yang meng-approve. Ditangani
+`purchase-inbound.ts#setLocationDestination`; nilainya datang dari fixture
+(`warehouse_destination`), jangan hardcode.
+
+**Helper jangan hardcode nilai test data.** `account-payment.ts#selectSupplier` dulu
+memilih opsi dropdown dengan pola `/Unbilled Goods/i` — nama supplier dari TC yang
+pertama kali memakainya — sehingga gagal untuk supplier lain padahal parameternya
+sudah benar. Helper harus memilih berdasarkan argumen yang diterima. Kalau menulis
+helper baru: pastikan tidak ada literal nama supplier/SKU/bank di dalamnya.
+
+**Kode dokumen yang di-generate server selalu perlu wait.** Pola `IN-*`, `PR-*`,
+`PO-*` diisi async setelah header tersimpan. Baca dengan
+`expect(input).toHaveValue(/^XX-/)` dulu, jangan `inputValue()` sekali jalan —
+gejalanya flaky "Transaction code XX-* tidak ditemukan di halaman".
+
+**Method helper bisa sudah mencakup langkah sebelumnya.** `ensureEditWithSupplier()`
+di Supplier Invoice sudah memanggil `openCreateForm()` + `selectSupplier()` +
+`fillDescription()` + simpan header. Memanggil `openCreateForm()` lagi sebelum itu
+membuat **dokumen kedua** dan meninggalkan draft orphan. Baca implementasi helper
+sebelum merangkainya di scenario.

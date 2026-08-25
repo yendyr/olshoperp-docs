@@ -23,6 +23,7 @@ export async function createPiFromPoOpen(
   supplierName: string,
   lines: ProductLine[],
   poCode?: string,
+  warehouseDestination?: string,
 ): Promise<{ piCode: string }> {
   const pi = new PurchaseInboundPage(page);
   const skus = lines.map((line) => line.sku);
@@ -33,6 +34,11 @@ export async function createPiFromPoOpen(
   await assertNoBlocker(page, 'setelah PI header tersimpan');
 
   await pi.selectSupplier(supplierName);
+  // Wajib diisi kalau inbound akan di-approve (backend menuntut warehouse
+  // terkecil level ≤20). Lihat helper#setLocationDestination.
+  if (warehouseDestination) {
+    await pi.setLocationDestination(warehouseDestination);
+  }
   await pi.openAvailablePurchaseOrderModal();
   // UI ≥2026-08: bulk Use bisa tetap disabled meski baris ter-ceklis — pakai
   // Use per-baris; tiap Use membuka dialog "Create Inbound Product" tempat

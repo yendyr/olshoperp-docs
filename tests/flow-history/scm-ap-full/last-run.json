@@ -1,0 +1,196 @@
+{
+  "finished_at": "2026-08-25T16:29:37.047Z",
+  "overall": "passed",
+  "phases": [
+    {
+      "flow_id": "scm-ap-full",
+      "run_id": "PWFLOW-MT8VKIKY",
+      "company": "lumicharmsid",
+      "test_data": {
+        "supplier": "PT. SUPPLIER IDR",
+        "product_lines": [
+          {
+            "sku": "SKU-RAINCOAT-hitam",
+            "qty": 5
+          },
+          {
+            "sku": "SKU-RAINCOAT-merah",
+            "qty": 5
+          }
+        ]
+      },
+      "phase": 1,
+      "menu": "supplychain-purchase-requisition",
+      "recalls": [
+        "TC-PR-CREATE-001",
+        "TC-PR-UPDATE-002"
+      ],
+      "produces": {
+        "pr_code": "PR-6A8DC1B0",
+        "status": "Approved"
+      },
+      "test_title": "[@FLOW-SCM-AP-001][phase-1] PR create + approve",
+      "status": "passed",
+      "duration_ms": 14526
+    },
+    {
+      "flow_id": "scm-ap-full",
+      "run_id": "PWFLOW-MT8VKIKY",
+      "company": "lumicharmsid",
+      "test_data": {
+        "supplier": "PT. SUPPLIER IDR",
+        "product_lines": [
+          {
+            "sku": "SKU-RAINCOAT-hitam",
+            "qty": 5
+          },
+          {
+            "sku": "SKU-RAINCOAT-merah",
+            "qty": 5
+          }
+        ]
+      },
+      "phase": 2,
+      "menu": "supplychain-purchase-order",
+      "recalls": [
+        "TC-PO-CREATE-001 + TC-PO-UPDATE-001",
+        "TC-PO-UPDATE-002"
+      ],
+      "produces": {
+        "po_code": "PO-6A8DC1BD",
+        "status": "Approved",
+        "consumed_pr": "PR-6A8DC1B0"
+      },
+      "test_title": "[@FLOW-SCM-AP-001][phase-2] PO With PR create + approve",
+      "status": "passed",
+      "duration_ms": 83568
+    },
+    {
+      "flow_id": "scm-ap-full",
+      "run_id": "PWFLOW-MT8VKIKY",
+      "company": "lumicharmsid",
+      "test_data": {
+        "supplier": "PT. SUPPLIER IDR",
+        "product_lines": [
+          {
+            "sku": "SKU-RAINCOAT-hitam",
+            "qty": 5
+          },
+          {
+            "sku": "SKU-RAINCOAT-merah",
+            "qty": 5
+          }
+        ]
+      },
+      "phase": 3,
+      "menu": "supplychain-new-purchase-inbound",
+      "recalls": [
+        "TC-PI-CREATE-001",
+        "TC-PI-APPROVE-001"
+      ],
+      "produces": {
+        "pi_code": "IN-5U8LX67C",
+        "status": "Approved",
+        "consumed_po": "PO-6A8DC1BD"
+      },
+      "test_title": "[@FLOW-SCM-AP-001][phase-3] Purchase Inbound create + approve",
+      "status": "passed",
+      "duration_ms": 32637
+    },
+    {
+      "flow_id": "scm-ap-full",
+      "run_id": "PWFLOW-MT8VKIKY",
+      "company": "lumicharmsid",
+      "test_data": {
+        "supplier": "PT. SUPPLIER IDR",
+        "product_lines": [
+          {
+            "sku": "SKU-RAINCOAT-hitam",
+            "qty": 5
+          },
+          {
+            "sku": "SKU-RAINCOAT-merah",
+            "qty": 5
+          }
+        ]
+      },
+      "phase": 4,
+      "menu": "accounting-supplier-invoice",
+      "recalls": [
+        "TC-PI-001",
+        "TC-PI-002"
+      ],
+      "produces": {
+        "invoice_code": "PI-6A8DC232",
+        "status": "Approved",
+        "consumed_inbound": "IN-5U8LX67C"
+      },
+      "test_title": "[@FLOW-SCM-AP-001][phase-4] Supplier Invoice create + approve",
+      "status": "passed",
+      "duration_ms": 44374
+    },
+    {
+      "flow_id": "scm-ap-full",
+      "run_id": "PWFLOW-MT8VKIKY",
+      "company": "lumicharmsid",
+      "test_data": {
+        "supplier": "PT. SUPPLIER IDR",
+        "product_lines": [
+          {
+            "sku": "SKU-RAINCOAT-hitam",
+            "qty": 5
+          },
+          {
+            "sku": "SKU-RAINCOAT-merah",
+            "qty": 5
+          }
+        ]
+      },
+      "phase": 5,
+      "menu": "accounting-supplier-payment",
+      "recalls": [
+        "TC-APAY-001",
+        "TC-APAY-002"
+      ],
+      "produces": {
+        "payment_code": "PY-5U8LXMO0",
+        "status": "Approved",
+        "consumed_invoice": "PI-6A8DC232"
+      },
+      "test_title": "[@FLOW-SCM-AP-001][phase-5] Account Payment create + approve",
+      "status": "passed",
+      "duration_ms": 136344
+    },
+    {
+      "flow_id": "scm-ap-full",
+      "run_id": "PWFLOW-MT8VKIKY",
+      "company": "lumicharmsid",
+      "test_data": {
+        "supplier": "PT. SUPPLIER IDR",
+        "product_lines": [
+          {
+            "sku": "SKU-RAINCOAT-hitam",
+            "qty": 5
+          },
+          {
+            "sku": "SKU-RAINCOAT-merah",
+            "qty": 5
+          }
+        ]
+      },
+      "phase": 6,
+      "menu": "journal",
+      "recalls": [
+        "TC-JRN-005"
+      ],
+      "produces": {
+        "journal_code": "GL-5U8LYAW6",
+        "type": "Payment to Supplier",
+        "consumed_payment": "PY-5U8LXMO0"
+      },
+      "test_title": "[@FLOW-SCM-AP-001][phase-6] Verifikasi auto-journal Payment to Supplier",
+      "status": "passed",
+      "duration_ms": 12667
+    }
+  ]
+}

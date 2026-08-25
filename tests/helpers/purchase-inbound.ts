@@ -146,6 +146,21 @@ export class PurchaseInboundPage {
     await this.page.waitForTimeout(1_000);
   }
 
+  /**
+   * Set Location/Warehouse Destination.
+   *
+   * Wajib sebelum APPROVE: backend menolak dengan
+   * "The selected destination warehouse must be level of 20 or below and smallest
+   * warehouse" kalau destination default bukan warehouse terkecil (level ≤20).
+   * Tidak berdampak saat inbound hanya disimpan Open — makanya baru terlihat di
+   * flow yang meng-approve inbound.
+   */
+  async setLocationDestination(warehouseName: string): Promise<void> {
+    await this.form.expandAccordion('Basic Information').catch(() => undefined);
+    await this.multiselect.ensureValue(this.locationDestinationCombobox, warehouseName);
+    await this.page.waitForTimeout(500);
+  }
+
   async hasFiscalPeriodError(): Promise<boolean> {
     const inline = this.page
       .locator('.text-red-500, .text-sm')
@@ -250,6 +265,12 @@ export class PurchaseInboundPage {
 
   async getCurrentTransactionCode(): Promise<string> {
     await expect(this.codeInput).toBeVisible({ timeout: 20_000 });
+    // Kode IN-* diisi async setelah header tersimpan — tunggu nilainya,
+    // jangan baca sekali jalan (pola sama dengan purchase-requisition).
+    await expect(this.codeInput)
+      .toHaveValue(/^IN-[A-Z0-9]+$/i, { timeout: 15_000 })
+      .catch(() => undefined);
+
     const value = (await this.codeInput.inputValue()).trim();
     if (/^IN-/i.test(value)) {
       return value.toUpperCase();

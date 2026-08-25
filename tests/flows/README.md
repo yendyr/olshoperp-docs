@@ -8,7 +8,7 @@ Aturan lengkap (wajib saat **membuat/mengubah** flow): `.cursor/rules/17-e2e-cro
 | flow_id | Chain | Status | TC flow doc | Spec | Fixture default |
 |---------|-------|--------|-------------|------|-----------------|
 | `scm-inbound` | PR → PO With PR → Purchase Inbound | ✅ Stabil (hijau 4× berturut, ~2.1 menit) | `qa-docs/flows/scm-inbound/testcase.md` | `tests/specs/flows/scm-inbound.spec.ts` | `tests/fixtures/flows/scm-inbound.fixture.json` |
-| `scm-ap-full` | PR → PO → PI → Supplier Invoice → Supplier Payment → Journal | 🔜 Belum dibangun (TC origin 7/7 siap; 2 masih DRAFT menunggu `#renumber-tc`) | — | — | — |
+| `scm-ap-full` | PR → PO → Purchase Inbound → Supplier Invoice → Account Payment → Journal | ✅ Stabil (hijau 3× berturut, ~5.4 menit) | `qa-docs/flows/scm-ap-full/testcase.md` | `tests/specs/flows/scm-ap-full.spec.ts` | `tests/fixtures/flows/scm-ap-full.fixture.json` |
 | `fulfillment-omni` | SO → Waves → Picking → Checking → Packing → DO | ⛔ Blocked — requirement 4 menu omni masih draft | — | — | — |
 
 ## Menjalankan flow
@@ -40,7 +40,8 @@ npm run tc:lint
 OLSHOP_FLOW_FIXTURE=tests/fixtures/flows/custom-run.json npx playwright test tests/specs/flows/scm-inbound.spec.ts
 ```
 
-- `approve_inbound: true` di fixture = PI ikut di-approve → **memutasi stok**. Default `false`.
+- `approve_inbound: true` di fixture = PI ikut di-approve → **memutasi stok**. Default `false` di `scm-inbound`.
+- Flow `scm-ap-full` **selalu** meng-approve inbound (Supplier Invoice hanya bisa menarik inbound approved) → selalu memutasi stok, dan `warehouse_destination` di fixture wajib warehouse terkecil level ≤20.
 
 ## Membaca hasil
 

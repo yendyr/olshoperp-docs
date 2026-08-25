@@ -1,0 +1,27 @@
+{
+  "flow_id": "scm-ap-full",
+  "flow_name": "SCM + Accounting AP — PR to Journal",
+  "company_code": "lumicharmsid",
+  "company_id": 153,
+  "supplier_name": "PT. SUPPLIER IDR",
+  "cash_bank_label": "Bank BCA 001",
+  "bank_account_hint": "Bank BCA",
+  "warehouse_destination": "WH Pusat Zona A1",
+  "product_lines": [
+    {
+      "sku": "SKU-RAINCOAT-hitam",
+      "qty": 5
+    },
+    {
+      "sku": "SKU-RAINCOAT-merah",
+      "qty": 5
+    }
+  ],
+  "notes": [
+    "Phase 3 (Purchase Inbound) SELALU di-approve — Supplier Invoice hanya bisa menarik inbound yang approved. Konsekuensinya flow ini memutasi stok.",
+    "qty sengaja kecil (5) supaya dampak ke stok dan nilai AP minimal.",
+    "cash_bank_label harus punya available balance > 0 pada tanggal transaksi.",
+    "Supplier wajib punya Product COA (Unbilled Goods, Tax, AP) ter-mapping — syarat approve Supplier Invoice.",
+    "warehouse_destination WAJIB warehouse terkecil level <=20 — syarat approve inbound (backend menolak kalau tidak)."
+  ]
+}
