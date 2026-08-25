@@ -41,13 +41,6 @@ export default defineConfig({
     {
       name: 'authenticated',
       testMatch: '**/specs/**/*.spec.ts',
-      // Script scratch/diagnostic sekali pakai (hasil eksplorasi MCP/debug) —
-      // bukan test case, tidak boleh ikut run default: bikin data sampah di
-      // staging dan memperlambat suite. Beri prefix ini kalau menulis script
-      // sekali pakai; jalankan manual dengan menyebut path-nya.
-      testIgnore: [
-        '**/specs/**/{check,inspect,probe,debug,diag,find,get,read,log,intercept,discover,verify}-*.spec.ts',
-      ],
       use: {
         ...sharedUse,
         ...chromiumDevice,

@@ -81,8 +81,9 @@ Boleh pakai **Browser MCP**. Tapi hasilnya **bukan** status test — lihat atura
 Kalau perlu menulis **script sekali pakai** (dump DOM, cek API, reproduksi bug):
 **jangan beri tag `@TC-`/`@FLOW-`** — `npm test` hanya menjalankan spec bertag, jadi
 script tanpa tag otomatis tidak ikut run. Beri juga prefix `check-`/`inspect-`/`probe-`/
-`debug-`/`diag-`/`find-`/`get-`/`read-`/`log-`/`verify-` sebagai lapis kedua
-(`testIgnore` di `playwright.config.ts`). Jalankan manual dengan menyebut path-nya.
+`debug-`/`diag-`/`find-`/`get-`/`read-`/`log-`/`verify-` sebagai penanda bagi manusia.
+Jalankan manual dengan menyebut path-nya (`npx playwright test path/ke/file.spec.ts`).
+Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 
 > **Konsekuensinya:** spec resmi **wajib** bertag. Spec tanpa tag = scratch, tidak
 > akan pernah jalan di suite — termasuk kalau kamu lupa memberi tag pada spec sungguhan.

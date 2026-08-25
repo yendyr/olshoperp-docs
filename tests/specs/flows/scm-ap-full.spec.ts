@@ -15,6 +15,7 @@ import {
 import {
   createPoWithPrOpen,
   approvePoFromDatalist,
+  assertPoCompleteAfterFullInbound,
   PO_SCENARIO_TCS,
 } from '../../scenarios/purchase-order.scenario';
 import {
@@ -173,11 +174,12 @@ test.describe.serial('SCM AP Flow — PR → PO → PI → SI → Payment → Jo
     // Wajib approve: Supplier Invoice hanya bisa menarik inbound yang approved.
     await approvePiFromShow(page, piTrxCode);
 
-    // SIDE-EFFECT stok: BELUM diassert — lihat catatan di
-    // qa-docs/flows/scm-ap-full/testcase.md § TODO. Dua sumber yang dicoba
-    // 2026-08-26 sama-sama buntu: Real Time Stock (requirement masih `draft`,
-    // ditolak preflight) dan Stock History V2 (job kalkulasi berjalan tiap ~1 jam,
-    // sedangkan flow ini selesai ~5 menit — mutasinya belum terhitung).
+    // SIDE-EFFECT cross-menu: seluruh qty PO sudah diterima → status PO otomatis
+    // menjadi Complete, tanpa aksi manual di menu PO. Bukti real-time bahwa rantai
+    // PO → Inbound tersambung. (Bukti lewat laporan stok tidak dipakai: Real Time
+    // Stock requirement-nya masih `draft`, sedangkan Stock History punya delay
+    // kalkulasi ~1 jam — lihat § TODO di TC flow doc.)
+    await assertPoCompleteAfterFullInbound(page, poTrxCode);
 
     await attachPhaseResult(testInfo, page, {
       phase: 3,
@@ -185,11 +187,13 @@ test.describe.serial('SCM AP Flow — PR → PO → PI → SI → Payment → Jo
       recalls: [
         PI_SCENARIO_TCS.createPiFromPoOpen,
         PI_SCENARIO_TCS.approvePiFromShow,
+        PO_SCENARIO_TCS.assertPoCompleteAfterFullInbound,
       ],
       produces: {
         pi_code: piTrxCode,
         status: 'Approved',
         consumed_po: poTrxCode,
+        side_effect: { po_status: 'Complete' },
       },
     });
   });

@@ -13,6 +13,8 @@ export const PO_SCENARIO_TCS = {
   createPoWithPrDraft: 'TC-PO-CREATE-001',
   createPoWithPrOpen: 'TC-PO-CREATE-001 + TC-PO-UPDATE-001',
   approvePoFromDatalist: 'TC-PO-UPDATE-002',
+  // TC cross-menu masih DRAFT — samakan dengan nomor final setelah #renumber-tc.
+  assertPoCompleteAfterFullInbound: 'PENDING-20260826140000',
 } as const;
 
 async function createPoWithPr(
@@ -92,4 +94,18 @@ export async function approvePoFromDatalist(page: Page, poCode: string): Promise
   await po.clickApproveFromDatalist(poCode);
   await assertNoBlocker(page, 'setelah PO approve');
   await po.assertPoStatusApprovedInDatalist(poCode);
+}
+
+/**
+ * CROSS-MENU — Implements: (TC DRAFT PENDING-20260826140000)
+ * "Status PO otomatis menjadi Complete setelah seluruh qty diterima via Purchase Inbound".
+ *
+ * Side-effect assertion: dipanggil SETELAH inbound di-approve. Membuktikan rantai
+ * PO → Inbound tersambung, tanpa aksi manual apa pun di menu Purchase Order.
+ */
+export async function assertPoCompleteAfterFullInbound(
+  page: Page,
+  poCode: string,
+): Promise<void> {
+  await new PurchaseOrderPage(page).assertPoStatusCompleteInDatalist(poCode);
 }

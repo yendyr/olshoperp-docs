@@ -470,6 +470,26 @@ export class PurchaseOrderPage {
   /**
    * Buka PO dari datalist — tombol ikon show/edit di kolom action (`#updateButton`).
    */
+  /**
+   * Status PO otomatis menjadi **Complete** ketika seluruh qty sudah diterima
+   * lewat Purchase Inbound approved (requirement § Status machine:
+   * Σ order_quantity_in_base_unit = Σ processed_to_grn_quantity).
+   *
+   * Dipakai sebagai side-effect assertion cross-menu — perubahan ini terjadi tanpa
+   * aksi manual di menu PO, jadi membuktikan rantai PO → Inbound tersambung.
+   */
+  async assertPoStatusCompleteInDatalist(trxCode: string): Promise<void> {
+    await this.searchDatalist(trxCode);
+    const row = this.page.getByRole('row').filter({ hasText: trxCode }).first();
+    await expect(row, `PO ${trxCode} harus tampil di datalist`).toBeVisible({
+      timeout: 45_000,
+    });
+    await expect(
+      row,
+      `Status PO ${trxCode} harus Complete setelah seluruh qty diterima inbound`,
+    ).toContainText(/complete/i, { timeout: 30_000 });
+  }
+
   async openShowFromDatalistByTrxCode(trxCode: string): Promise<void> {
     await this.openEditFromDatalistByTrxCode(trxCode);
   }
