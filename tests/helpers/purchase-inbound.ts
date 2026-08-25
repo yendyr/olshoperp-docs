@@ -456,6 +456,82 @@ export class PurchaseInboundPage {
       .toBeGreaterThanOrEqual(minRows);
   }
 
+  /**
+   * Klik tombol Use pada satu baris outstanding (UI ≥2026-08: tombol bulk Use
+   * bisa disabled meski baris ter-ceklis — jalur per-baris lebih andal).
+   */
+  async clickUseOnOutstandingRow(
+    sku: string,
+    poTrxCode?: string,
+    inboundQty?: number,
+  ): Promise<void> {
+    const row = await this.findOutstandingRow(sku, poTrxCode);
+    const useButton = row
+      .locator('button.tooltip-use, button:has-text("Use")')
+      .first();
+    await expect(useButton).toBeEnabled({ timeout: 15_000 });
+    await useButton.click();
+
+    // UI ≥2026-08: Use membuka dialog "Create Inbound Product" —
+    // isi Max Inbound Qty (default = outstanding) lalu Save.
+    // Dialog bisa telat render (fetch data) — tunggu sampai 15s sebelum
+    // menyimpulkan UI lama tanpa dialog.
+    // NB: wrapper [role=dialog] headlessui dinilai hidden oleh Playwright
+    // (zero-size) — deteksi kemunculan via heading di dalamnya, dan scope
+    // aksi ke wrapper tanpa syarat visible.
+    const dialog = this.page
+      .locator('[role="dialog"]')
+      .filter({
+        has: this.page.getByRole('heading', { name: /create inbound product/i }),
+      })
+      .last();
+    const dialogHeading = dialog
+      .getByRole('heading', { name: /create inbound product/i })
+      .first();
+    const dialogAppeared = await dialogHeading
+      .waitFor({ state: 'visible', timeout: 15_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (dialogAppeared) {
+      if (inboundQty !== undefined) {
+        const qtyInput = dialog.getByPlaceholder('e.g: 10').first();
+        await qtyInput.click({ clickCount: 3 });
+        await qtyInput.fill(String(inboundQty));
+        await expect(qtyInput).toHaveValue(String(inboundQty), { timeout: 5_000 });
+      }
+
+      // Max Inbound Qty saja belum cukup — quantity alokasi diisi lewat
+      // tombol "Allocate Full Qty (Clearing)"; tanpa ini Save ditolak 422
+      // "The quantity field is required".
+      const allocateButton = dialog.getByRole('button', {
+        name: /allocate full qty/i,
+      });
+      if (
+        await allocateButton
+          .waitFor({ state: 'visible', timeout: 5_000 })
+          .then(() => true)
+          .catch(() => false)
+      ) {
+        await allocateButton.click();
+        await this.page.waitForTimeout(500);
+      }
+
+      const saveResponse = this.page
+        .waitForResponse(
+          (response) =>
+            response.url().includes('mutation-inbound-detail') &&
+            response.request().method() === 'POST',
+          { timeout: 90_000 },
+        )
+        .catch(() => null);
+
+      await dialog.getByRole('button', { name: /^save$/i }).click();
+      await saveResponse;
+      await expect(dialogHeading).toBeHidden({ timeout: 20_000 });
+    }
+    await this.page.waitForTimeout(800);
+  }
+
   async clickBulkUseOnOutstanding(): Promise<void> {
     const bulkUse = this.outstandingPanel()
       .locator('button.tooltip-use')

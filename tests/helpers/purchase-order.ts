@@ -38,7 +38,9 @@ export class PurchaseOrderPage {
 
   async openCreateForm(): Promise<void> {
     await this.datalist.clickCreate('link');
-    await this.page.waitForURL(/\/supplychain\/purchase-order\/create/, {
+    // UI baru (≥2026-08): klik Create auto-membuat draft PO di server dan
+    // langsung redirect ke /edit/{id} — terima kedua bentuk URL.
+    await this.page.waitForURL(/\/supplychain\/purchase-order\/(create|edit\/\d+)/, {
       timeout: 45_000,
     });
     await this.waitForCreateFormReady();
@@ -115,9 +117,12 @@ export class PurchaseOrderPage {
 
   async assertPaymentTypeAutoFilled(): Promise<void> {
     await expect(this.paymentTypeCombobox).toBeVisible();
-    const label = await this.multiselect.selectedLabel(this.paymentTypeCombobox);
-    expect(label, 'Payment Type harus terisi otomatis').not.toMatch(/^choose payment type$/i);
-    expect(label.length).toBeGreaterThan(0);
+    // Auto-fill datang async setelah form render — poll, jangan baca sekali jalan.
+    await expect(async () => {
+      const label = await this.multiselect.selectedLabel(this.paymentTypeCombobox);
+      expect(label, 'Payment Type harus terisi otomatis').not.toMatch(/^choose payment type$/i);
+      expect(label.length).toBeGreaterThan(0);
+    }).toPass({ timeout: 15_000 });
   }
 
   async selectSupplier(supplierName: string): Promise<void> {
@@ -127,8 +132,11 @@ export class PurchaseOrderPage {
   }
 
   async selectWithPr(): Promise<void> {
-    await this.withPrRadio.scrollIntoViewIfNeeded();
-    await this.withPrRadio.check({ force: true });
+    // Radio bisa detach saat form re-render (auto-draft UI baru) — retry.
+    await expect(async () => {
+      await this.withPrRadio.scrollIntoViewIfNeeded();
+      await this.withPrRadio.check({ force: true });
+    }).toPass({ timeout: 15_000 });
     await expect(this.withPrRadio).toBeChecked({ timeout: 10_000 });
   }
 

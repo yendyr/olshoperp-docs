@@ -61,6 +61,7 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `14-playwright-e2e.mdc` | Eksekusi Playwright — fidelity TC, run scope, auth, POM |
 | `15-playwright-multi-repo.mdc` | BUILD vs RUN: docs-only re-test jika TC automation lengkap; FE/BE hanya BUILD/debug |
 | `16-card-tc-queue.mdc` | `#card-tc` → antrian `test-queue.yaml`; tes card `ETM-xxxxx` = cek TC existing dulu, baru DRAFT jika delta |
+| `17-e2e-cross-menu-flow.mdc` | E2E chain ≥2 menu: TC flow = recall TC origin (no duplikasi step), scenario layer `tests/scenarios/`, 1 spec kanonik per flow, fresh data per run, history last/prev-run |
 
 ## Playwright — dua mode (ringkas)
 

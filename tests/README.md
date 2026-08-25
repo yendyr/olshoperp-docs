@@ -6,7 +6,9 @@ Automation staging: **https://staging.olshoperp.com**
 |---------|-----|
 | **`POM-AUTOMATION-ROADMAP.md`** | Roadmap fase, checklist, progress, template prompt Notion-style |
 | **`QA-AUTOMATION-GUIDE.md`** | Panduan QA tanpa codebase — prompt, perintah, aturan |
+| **`flows/README.md`** | Registry E2E cross-menu flow: daftar flow, cara run, fixture override, cara baca summary/history |
 | `.cursor/rules/14-playwright-e2e.mdc` | SOP eksekusi lengkap untuk agent |
+| `.cursor/rules/17-e2e-cross-menu-flow.mdc` | Aturan flow chain ≥2 menu: scenario recall, 1 spec kanonik, fresh data |
 | `pom-registry/README.md` | Kamus elemen per menu |
 
 ---
@@ -24,9 +26,15 @@ tests/
 │   └── purchase-order.yaml
 ├── specs/
 │   ├── smoke/pom-smoke.spec.ts  # @smoke — 4 menu datalist + PO create
+│   ├── flows/                   # E2E cross-menu chain (lihat flows/README.md)
 │   ├── system-product/
 │   ├── pricelist-category/
 │   └── purchase-requisition/
+├── scenarios/                   # 1 fungsi = 1 TC origin (dipakai spec origin & flow)
+├── flows/README.md              # Registry flow + cara run
+├── fixtures/flows/              # Test data per flow (override: OLSHOP_FLOW_FIXTURE)
+├── flow-history/                # last-run + prev-run per flow (banding before/after)
+├── reporters/                   # flow-summary-reporter (summary per run)
 └── helpers/
     ├── shared/                  # datalist, multiselect, form-actions, toast
     ├── company-access.ts

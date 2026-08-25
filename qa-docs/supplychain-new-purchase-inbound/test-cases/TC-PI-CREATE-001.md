@@ -7,7 +7,7 @@ title: "Membuat dokumen inbound barang dari PO yang sudah di-approve — status 
 summary: "Create Purchase Inbound dari Available Purchase Order (supplier Lumi), checklist SKU outstanding, isi Inbound Qty 100, Save All, verifikasi di datalist status Open."
 status: draft
 owner: QA - Cursor
-last_updated: 2026-07-10
+last_updated: 2026-08-24
 requirement_ref: "qa-docs/supplychain-new-purchase-inbound/requirement.md"
 automated: true
 automated_spec: "tests/specs/purchase-inbound/pi-create-from-po.spec.ts"
@@ -44,15 +44,16 @@ steps:
   - "Pilih supplier PT. Supplier Lumi 001 Taxable (FE mewajibkan supplier sebelum Save & Next)."
   - "Klik Save & Next; simpan transaction code IN-* yang tergenerate."
   - "Pada section Inbound Detail, klik Available Purchase Order."
-  - "Checklist SKU sesuai test data, lalu klik bulk Use."
-  - "Isi Inbound Qty 100 untuk masing-masing SKU."
+  - "Per SKU sesuai test data: klik tombol Use pada baris outstanding. (UX ≥2026-08: tombol bulk Use disabled meski baris ter-ceklis — pakai Use per-baris.)"
+  - "Pada dialog Create Inbound Product yang terbuka: isi Max Inbound Qty sesuai test data, klik Allocate Full Qty (Clearing) untuk mengisi alokasi quantity, lalu klik Save. (Tanpa Allocate, Save ditolak backend: 'The quantity field is required'.)"
+  - "Ulangi Use + dialog untuk SKU berikutnya sampai semua baris masuk ke Inbound Detail."
   - "Klik Save All."
   - "Cari transaction code di datalist Purchase Inbound; verifikasi status Open."
 expected_result: |
   Purchase Inbound berhasil tersimpan.
   Transaction code IN-* terbentuk setelah Save & Next.
-  Detail dari Available Purchase Order masuk ke Inbound Detail.
-  Inbound Qty per SKU sesuai input.
+  Tiap Use membuka dialog Create Inbound Product; setelah Allocate Full Qty + Save,
+  baris masuk ke Inbound Detail dengan qty sesuai alokasi.
   Data tampil di datalist dengan status Open.
 test_result:
   status: passed
@@ -77,6 +78,10 @@ test_data_used:
   - field: "Run command"
     value: "npx playwright test tests/specs/purchase-inbound/pi-create-from-po.spec.ts -g @TC-PI-CREATE-001 --retries=0"
 run_history:
+  - at: "2026-08-24"
+    status: revised
+    environment: staging
+    note: "Steps direvisi mengikuti UX baru: bulk Use disabled, Use per-baris membuka dialog Create Inbound Product (Max Inbound Qty + Allocate Full Qty + Save). Terverifikasi via flow @FLOW-SCM-INBOUND-001 phase 3 (scenario createPiFromPoOpen)."
   - at: "2026-07-10"
     status: passed
     environment: staging

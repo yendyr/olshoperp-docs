@@ -1,0 +1,71 @@
+---
+description: Standar E2E cross-menu flow — scenario recall, 1 spec kanonik per flow, fresh data, history
+alwaysApply: true
+---
+
+# E2E Cross-Menu Flow Standard
+
+Rule ini berlaku untuk semua E2E yang melibatkan chain ≥2 menu (flow). Single-menu tetap ikut `13-test-case-format.mdc` + `14-playwright-e2e.mdc`. Rule 11 (cross-menu navigation) adalah panduan *menjawab pertanyaan* lintas menu; rule ini panduan *otomasi*-nya.
+
+Contoh referensi lengkap (pilot): flow `scm-inbound` —
+`qa-docs/flows/scm-inbound/testcase.md` + `tests/specs/flows/scm-inbound.spec.ts` + `tests/scenarios/purchase-*.scenario.ts` + `tests/fixtures/flows/scm-inbound.fixture.json`.
+
+---
+
+## 0. Gate wajib: preflight & lint (machine-enforced)
+
+- **Sebelum mengeksekusi flow apa pun**: `npm run flow:preflight -- {flow-id}` harus ✅.
+  Preflight gagal = chain belum lengkap (TC origin hilang/PENDING, scenario belum ada,
+  requirement menu masih draft, fixture/spec belum ada) → **DILARANG eksekusi**;
+  agent wajib melaporkan gap ke user/prompter dan menunggu jawaban atau melengkapinya
+  dulu. Spec flow juga menjalankan gate ini di `beforeAll` — bypass tidak mungkin.
+- **Sebelum membuat TC baru** (single-menu maupun flow): `npm run tc:lint` harus tanpa
+  error — mencegah tc_code/judul duplikat dan recall yang menunjuk TC tidak ada.
+  Setelah membuat TC pun jalankan lagi untuk memastikan tidak menambah duplikat.
+
+## 1. Anti-duplikasi: TC flow = tabel recall, BUKAN step ulang
+
+- TC flow hidup di `qa-docs/flows/{flow-id}/testcase.md`, frontmatter `doc_type: e2e-flow-test-case`, `tc_code: TC-FLOW-*`, dan **wajib** field `recalls:` (daftar `tc_code` TC origin yang dieksekusi flow).
+- Isi TC flow **dilarang** menulis ulang step per menu. Hanya boleh berisi **glue E2E**: tabel chain (phase, menu, recall TC, consumes/produces, catatan varian), side-effect yang di-assert, strategi test data, cara run.
+- Step per menu hanya hidup di TC origin `qa-docs/{menu-slug}/test-cases/TC-*.md`. Perubahan requirement/UX menu → update TC origin + scenario menu itu; TC flow tidak diubah selama urutan chain tetap.
+- **Larangan keras:** flow tidak boleh punya langkah menu yang tidak ber-TC-origin. Kalau langkah yang dibutuhkan belum ada TC-nya → buat TC origin baru di menu asalnya dulu (per rule 03 & 13, dengan konfirmasi user), baru di-recall.
+- Dampak perubahan dicek dua arah: `grep -rl "TC-XXX" qa-docs/flows/` menunjukkan flow mana yang me-recall sebuah TC origin.
+
+## 2. Layer kode: scenario di antara helper dan spec
+
+```
+pom-registry (selector) → helpers (aksi atomik) → tests/scenarios/ → specs
+```
+
+- `tests/scenarios/{menu}.scenario.ts` — **1 fungsi scenario = 1 TC origin**, header komentar wajib `Implements: TC-xxx`, dan export konstanta pemetaan (mis. `PR_SCENARIO_TCS`) untuk dilaporkan reporter.
+- Scenario menerima `page` + data terparameterisasi, mengembalikan `produces` (kode dokumen dsb.). Tidak boleh berisi selector mentah — tetap lewat helper/POM.
+- Spec flow **dan** spec single-menu memanggil scenario yang sama. Spec flow hanya berisi glue: `prepareSession`, panggilan scenario, handoff variabel antar phase, attachment reporter.
+- Urutan langkah sebuah TC tidak boleh ada di dua tempat. Kalau menulis flow baru menuntut copy-paste langkah dari spec lain → langkah itu harus dipromosikan jadi scenario dulu.
+
+## 3. Satu spec kanonik per flow
+
+- 1 flow = 1 file `tests/specs/flows/{flow-id}.spec.ts`, **permanen, tidak digandakan per request**.
+  - Request beda **data** → spec sama + fixture override (§4). Tidak ada file spec baru.
+  - Request beda **alur** (phase bertambah/berubah) → `flow_id` baru + TC flow doc baru; phase yang sama tetap recall scenario yang sama.
+- Struktur spec: `test.describe.serial`, 1 `test()` per phase dengan tag `[@FLOW-{ID}][phase-N]`, shared state via `let`, `test.skip(!produced)` di phase berikutnya agar chain berhenti rapi, `test.setTimeout` per phase (budget per phase, bukan per chain).
+
+## 4. Test data: selalu fresh, summary = history
+
+- Re-execution flow **selalu membuat data fresh dari phase 1**. Dilarang bergantung pada dokumen run sebelumnya (outstanding sudah terkonsumsi / data bisa terhapus).
+- Sumber data per run: default `tests/fixtures/flows/{flow-id}.fixture.json`; tester-specified via env `OLSHOP_FLOW_FIXTURE=/path/custom.json`. Spec membaca fixture, tidak hardcode data.
+- Setiap run punya `run_id` unik (`PWFLOW-*`) yang tercatat di attachment & summary.
+- Company: flow order platform / integrasi platform → `FAT` (112); selain itu default `lumicharmsid` (153); tester boleh menentukan lain per request.
+
+## 5. Metode: UI crawling untuk act & assert
+
+- Semua langkah yang *diuji* (act) dan verifikasi (assert) wajib Web UI crawling — konsisten dengan rule 13/14 §8. API testing hanya jika user eksplisit meminta.
+- Wait wajib condition-based (element/response); `page.waitForTimeout` statis dilarang di scenario/spec flow baru.
+
+## 6. Reporting & history
+
+- Tiap phase attach `flow-phase` (JSON: run_id, test data, `recalls`, `produces`) + screenshot — dibaca `tests/reporters/flow-summary-reporter.ts`.
+- Reporter menulis `playwright-report/flow-summary.md|json` dan history per flow di `tests/flow-history/{flow-id}/`: `last-run.*` dirotasi ke `prev-run.*` tiap run baru (**maks 2 snapshot** — untuk banding before/after). Data di summary adalah **history eksekusi**, bukan input run berikutnya.
+
+## 7. Side-effect assertion
+
+- Jika TC flow mendefinisikan side-effect (stok berubah, outstanding berkurang, journal tercipta), spec wajib meng-assert-nya via UI di menu terdampak — E2E yang hanya assert menu terakhir belum dianggap lengkap. Side-effect yang belum terautomasi wajib ditulis sebagai TODO eksplisit di TC flow doc.

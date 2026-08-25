@@ -128,10 +128,35 @@ export class OlshopMultiselect {
 
     await this.open(combobox);
     const searchToken = expectedLabel.replace(/&/g, '').trim();
-    await combobox.fill(searchToken).catch(async () => {
-      await combobox.pressSequentially(searchToken, { delay: 50 });
-    });
+    // Komponen bisa me-reset search input saat re-render awal setelah open —
+    // ketikan pertama kadang ditelan. Verifikasi nilainya masuk, retry jika kosong.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      // Dropdown bisa menutup sendiri saat re-render/gagal fill — pastikan
+      // tetap terbuka sebelum mengetik, kalau tidak ketikan jatuh ke void.
+      if ((await combobox.getAttribute('aria-expanded')) !== 'true') {
+        await this.open(combobox);
+      }
+      if (attempt === 0) {
+        await combobox.fill(searchToken).catch(() => {});
+      } else {
+        // fill() (input event sintetis) bisa dioverride v-model komponen —
+        // ketik ulang pakai real key events.
+        await combobox.fill('').catch(() => {});
+        await combobox.pressSequentially(searchToken, { delay: 30 });
+      }
+      const typed = await expect(combobox)
+        .toHaveValue(searchToken, { timeout: 2_000 })
+        .then(() => true)
+        .catch(() => false);
+      if (typed) break;
+    }
     await this.page.waitForTimeout(500);
+
+    // Guard terakhir: kalau dropdown sempat menutup setelah ketikan, buka lagi
+    // supaya option benar-benar visible sebelum diklik.
+    if ((await combobox.getAttribute('aria-expanded')) !== 'true') {
+      await this.open(combobox);
+    }
 
     const multiselect = this.multiselectRoot(combobox);
     const scopedOptions = multiselect.getByRole('option', { name: pattern });
@@ -153,7 +178,18 @@ export class OlshopMultiselect {
       await blurTarget.click();
     }
 
-    const selected = await this.selectedLabel(combobox);
-    expect(selected, `Dropdown harus menampilkan "${expectedLabel}"`).toMatch(pattern);
+    // Tutup dropdown sebelum baca label — kalau masih terbuka, textContent
+    // multiselect ikut membawa teks seluruh option dan assert jadi false negatif.
+    // Penutupan diretry di dalam loop karena satu Escape tidak selalu cukup.
+    await expect(async () => {
+      // Deteksi via option yang masih terlihat (aria-expanded tidak selalu ada);
+      // tutup dengan Escape + klik di luar komponen.
+      if ((await this.visibleOptions().count()) > 0) {
+        await this.page.keyboard.press('Escape').catch(() => {});
+        await this.page.mouse.click(2, 2);
+      }
+      const selected = await this.selectedLabel(combobox);
+      expect(selected, `Dropdown harus menampilkan "${expectedLabel}"`).toMatch(pattern);
+    }).toPass({ timeout: 15_000 });
   }
 }

@@ -302,10 +302,21 @@ export class PurchaseRequisitionPage {
       .first();
 
     await qtyInput.scrollIntoViewIfNeeded();
-    await qtyInput.click();
-    await qtyInput.fill(String(requestQty));
-    await qtyInput.blur();
-    await this.page.waitForTimeout(300);
+    // Input qty pakai komponen numeric-mask (data-old-value) yang bisa
+    // menggabungkan nilai lama dengan hasil fill — select-all dulu dan
+    // verifikasi hasilnya, retry jika nilai tercampur.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await qtyInput.click({ clickCount: 3 });
+      await qtyInput.fill(String(requestQty)).catch(async () => {
+        await qtyInput.pressSequentially(String(requestQty), { delay: 30 });
+      });
+      await qtyInput.blur();
+      const applied = await expect(qtyInput)
+        .toHaveValue(String(requestQty), { timeout: 2_000 })
+        .then(() => true)
+        .catch(() => false);
+      if (applied) break;
+    }
 
     await expect(qtyInput).toHaveValue(String(requestQty));
   }
@@ -621,17 +632,14 @@ export class PurchaseRequisitionPage {
   }
 
   private async getTransactionCodeFromBasicInformation(): Promise<string | null> {
-    const input = this.transactionCodeInput;
-    if (!(await input.isVisible({ timeout: 5_000 }).catch(() => false))) {
+    // Kode PR-* diisi async setelah save — tunggu nilainya, jangan baca sekali jalan.
+    const input = this.transactionCodeInput.first();
+    try {
+      await expect(input).toHaveValue(/^PR-[A-F0-9]+$/i, { timeout: 15_000 });
+    } catch {
       return null;
     }
-
-    const value = (await input.inputValue()).trim();
-    if (/^PR-[A-F0-9]+$/i.test(value)) {
-      return value.toUpperCase();
-    }
-
-    return null;
+    return (await input.inputValue()).trim().toUpperCase();
   }
 
   private async getTransactionDateDisplayValue(): Promise<string> {

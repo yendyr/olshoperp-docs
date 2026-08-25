@@ -86,7 +86,14 @@ npm run test:system-product:tc -- "SKU-WENTER"
 
 # Laporan HTML jika FAIL
 npm run test:report
+
+# E2E cross-menu flow (chain antar menu, mis. PR → PO → PI)
+npx playwright test tests/specs/flows/scm-inbound.spec.ts
 ```
+
+**E2E flow antar menu**: daftar flow tersedia, cara override test data, dan cara baca
+summary/history ada di **`tests/flows/README.md`** — hasil tiap run terangkum di
+`playwright-report/flow-summary.md` (dokumen tercipta per phase + TC origin yang di-recall).
 
 ---
 

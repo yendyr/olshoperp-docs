@@ -26,6 +26,8 @@
     "test:qa": "cross-env PW_QA_VIDEO=1 playwright test --project=authenticated",
     "test:ui": "playwright test --ui",
     "test:report": "playwright show-report",
+    "tc:lint": "node tests/tools/tc-lint.mjs",
+    "flow:preflight": "node tests/tools/flow-preflight.mjs",
     "postinstall": "playwright install chromium"
   },
   "devDependencies": {

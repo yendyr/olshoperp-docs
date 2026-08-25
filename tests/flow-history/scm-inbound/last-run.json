@@ -1,0 +1,100 @@
+{
+  "finished_at": "2026-08-25T13:56:47.098Z",
+  "overall": "passed",
+  "phases": [
+    {
+      "flow_id": "scm-inbound",
+      "run_id": "PWFLOW-MT8Q8B0M",
+      "company": "lumicharmsid",
+      "test_data": {
+        "supplier": "PT. SUPPLIER IDR",
+        "product_lines": [
+          {
+            "sku": "SKU-RAINCOAT-hitam",
+            "qty": 25
+          },
+          {
+            "sku": "SKU-RAINCOAT-merah",
+            "qty": 25
+          }
+        ]
+      },
+      "phase": 1,
+      "menu": "supplychain-purchase-requisition",
+      "recalls": [
+        "TC-PR-CREATE-001",
+        "TC-PR-UPDATE-002"
+      ],
+      "produces": {
+        "pr_code": "PR-6A8D9EA9",
+        "status": "Approved"
+      },
+      "test_title": "[@FLOW-SCM-INBOUND-001][phase-1] PR create + approve",
+      "status": "passed",
+      "duration_ms": 14103
+    },
+    {
+      "flow_id": "scm-inbound",
+      "run_id": "PWFLOW-MT8Q8B0M",
+      "company": "lumicharmsid",
+      "test_data": {
+        "supplier": "PT. SUPPLIER IDR",
+        "product_lines": [
+          {
+            "sku": "SKU-RAINCOAT-hitam",
+            "qty": 25
+          },
+          {
+            "sku": "SKU-RAINCOAT-merah",
+            "qty": 25
+          }
+        ]
+      },
+      "phase": 2,
+      "menu": "supplychain-purchase-order",
+      "recalls": [
+        "TC-PO-CREATE-001 + TC-PO-UPDATE-001",
+        "TC-PO-UPDATE-002"
+      ],
+      "produces": {
+        "po_code": "PO-6A8D9EB5",
+        "status": "Approved",
+        "consumed_pr": "PR-6A8D9EA9"
+      },
+      "test_title": "[@FLOW-SCM-INBOUND-001][phase-2] PO With PR create + approve",
+      "status": "passed",
+      "duration_ms": 82356
+    },
+    {
+      "flow_id": "scm-inbound",
+      "run_id": "PWFLOW-MT8Q8B0M",
+      "company": "lumicharmsid",
+      "test_data": {
+        "supplier": "PT. SUPPLIER IDR",
+        "product_lines": [
+          {
+            "sku": "SKU-RAINCOAT-hitam",
+            "qty": 25
+          },
+          {
+            "sku": "SKU-RAINCOAT-merah",
+            "qty": 25
+          }
+        ]
+      },
+      "phase": 3,
+      "menu": "supplychain-new-purchase-inbound",
+      "recalls": [
+        "TC-PI-CREATE-001"
+      ],
+      "produces": {
+        "pi_code": "IN-5U8KJYCW",
+        "status": "Open",
+        "consumed_po": "PO-6A8D9EB5"
+      },
+      "test_title": "[@FLOW-SCM-INBOUND-001][phase-3] PI dari approved PO",
+      "status": "passed",
+      "duration_ms": 25361
+    }
+  ]
+}

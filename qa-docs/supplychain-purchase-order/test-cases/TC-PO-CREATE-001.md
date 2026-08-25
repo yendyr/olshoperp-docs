@@ -7,7 +7,7 @@ title: "Membuat Purchase Order With PR dari available products — status Draft"
 summary: "Create PO dengan supplier PT. SUPPLIER IDR, pilih outstanding PR di Available Products, isi PO Qty, simpan sebagai Draft, verifikasi di datalist."
 status: draft
 owner: QA - Cursor
-last_updated: 2026-07-09
+last_updated: 2026-08-24
 requirement_ref: "qa-docs/supplychain-purchase-order/requirement.md"
 automated: true
 automated_spec: "tests/specs/purchase-order/po-create-with-pr.spec.ts"
@@ -48,11 +48,11 @@ test_data:
     value: "Draft"
 steps:
   - "Dari menu Purchase Requisition, buka datalist Purchase Order lalu klik Create."
+  - "Validasi sistem auto-membuat draft PO dan langsung mendarat di halaman edit (/purchase-order/edit/{id}); transaction code PO-* tergenerate. (UX ≥2026-08: tidak ada lagi tombol Save & Next; supplier default terisi otomatis.)"
   - "Pastikan field Transaction Date terisi otomatis."
   - "Pastikan field Payment Type terisi otomatis."
-  - "Pilih supplier PT. SUPPLIER IDR."
-  - "Pilih radio With PR pada Purchase Order Type."
-  - "Klik Save & Next; validasi halaman edit terbuka dan transaction code PO-* tergenerate."
+  - "Ganti supplier ke PT. SUPPLIER IDR."
+  - "Pastikan radio With PR pada Purchase Order Type terpilih (default With PR)."
   - "Pada section Purchase Order Detail, klik Available Products."
   - "Centang semua SKU sesuai test data di tabel outstanding, lalu klik bulk Use di atas tabel."
   - "Isi PO Qty per baris detail sesuai test data."
@@ -62,7 +62,7 @@ steps:
   - "Verifikasi PO tampil di datalist dengan status Draft."
 expected_result: |
   Purchase Order baru berhasil tersimpan ke sistem.
-  Transaction code PO-* terbentuk saat proses Save & Next.
+  Transaction code PO-* terbentuk otomatis saat masuk halaman create (auto-draft).
   Detail produk dari outstanding PR berhasil ditambahkan ke Purchase Order Detail.
   PO Qty per SKU tersimpan sesuai test data.
   Data transaksi tampil di datalist Purchase Order dengan status Draft.
@@ -90,6 +90,10 @@ test_data_used:
   - field: "Cleanup command (opsional)"
     value: "npx playwright test tests/specs/purchase-order/po-cleanup-draft-playwright.spec.ts -g @TC-PO-CLEANUP-DRAFT --retries=0"
 run_history:
+  - at: "2026-08-24"
+    status: revised
+    environment: staging
+    note: "Steps direvisi mengikuti UX baru: Create auto-membuat draft & langsung ke edit (Save & Next dihapus, supplier default auto-terisi). Terverifikasi via flow @FLOW-SCM-INBOUND-001 phase 2 (scenario createPoWithPrOpen). Catatan: tiap klik Create meninggalkan draft PO orphan jika tidak diselesaikan."
   - at: "2026-07-09"
     status: passed
     environment: staging

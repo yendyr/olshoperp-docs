@@ -1,0 +1,17 @@
+{
+  "flow_id": "scm-inbound",
+  "flow_name": "SCM Inbound — PR to Purchase Inbound",
+  "company_code": "lumicharmsid",
+  "company_id": 153,
+  "supplier_name": "PT. SUPPLIER IDR",
+  "product_lines": [
+    { "sku": "SKU-RAINCOAT-hitam", "qty": 25 },
+    { "sku": "SKU-RAINCOAT-merah", "qty": 25 }
+  ],
+  "approve_inbound": false,
+  "notes": [
+    "SKU harus muncul di outstanding PR untuk supplier ini pada modal PO With PR.",
+    "qty dipakai untuk request qty PR, PO qty, dan inbound qty (full receive).",
+    "Side-effect stock assertion belum diimplement (real-stock helper belum punya lookup qty per SKU) — tercatat sebagai TODO di summary."
+  ]
+}
