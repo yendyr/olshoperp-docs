@@ -1,0 +1,57 @@
+---
+tc_code: TC-ASO-002
+title: Memastikan Re-check Failed Process Mengupdate Error Flag Unavailable Stock Setelah Stok Ditambahkan via Stock Opname
+menu_slug: all-sales-order
+status: draft
+automated: true
+automated_spec: tests/specs/all-sales-order/recheck-failed-process.spec.ts
+execution_company:
+  id: 112
+  code: FAT
+related_menus:
+  - omni-sales-platform
+  - supplychain-stock-opname
+preconditions:
+  - Terdapat Sales Order dengan status approved yang memiliki error flag 'Unavailable Stock' (icon fa-boxes-stacked) di section Failed Process
+  - Stok produk pada gudang yang bersangkutan telah ditambahkan (misal via Stock Opname atau Inbound) sehingga ATS > 0
+test_data:
+  - field: sales_order_code_single_flag
+    value: SO-5TT5DGP5
+  - field: sales_order_code_double_flag
+    value: SO-5T3F7KHQ
+steps:
+  - Buka menu All Sales Order (/businessdevelopment/all-sales-order) atau Dev - Sales Platform (/omni/sales-order)
+  - Cari data Sales Order target (misal SO-5TT5DGP5 / SO-5T3F7KHQ) pada tab Failed Process / Datalist
+  - Amati icon flag yang terpasang pada order tersebut sebelum re-check
+  - Klik tombol 'Recheck failed process'
+  - Tunggu hingga background job selesai dieksekusi (tombol kembali aktif)
+  - Refresh datalist / periksa kembali baris Sales Order target
+  - Verifikasi apakah flag 'Unavailable Stock' (fa-boxes-stacked) telah hilang dan timestamp Last Checked telah diperbarui
+  - Untuk order dengan multiple flags (misal Unavailable Stock + Shipping Unbinded), verifikasi bahwa flag yang sudah teratasi hilang sementara flag yang masih bermasalah tetap muncul
+expected_result: |
+  Setelah proses Re-check Failed Process selesai dieksekusi, evaluasi error flag berjalan secara granular. Icon error flag 'Unavailable Stock' (fa-boxes-stacked) harus hilang jika stok produk sudah tersedia, timestamp Last Checked diperbarui, dan flag lain yang belum selesai (seperti Shipping Unbinded) tetap dipertahankan.
+test_result:
+  status: passed
+  started_at: "2026-08-19T11:29:00+07:00"
+  finished_at: "2026-08-19T11:29:35+07:00"
+  executed_by: playwright@gmail.com
+  environment: staging
+  log_summary: "Datalist search SO dan trigger Recheck failed process berhasil dieksekusi di Staging FAT."
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: ETM-15350
+last_execution:
+  at: null
+  jira: null
+---
+
+# Catatan QA & Referensi
+
+## Konteks Jira ETM-15350 / ETM-15194
+Fitur ini mengevaluasi status error flags pada Sales Order ketika user men-trigger recheck manual.
+
+## Catatan Pengujian Sebelumnya (Jeiniffer - 23 Juli 2026):
+- **T05 (SO Single Flag Unavailable Stock - SO-5TT5DGP5):** FAILED — SO sudah ditrigger re-check dan last checked updated, namun icon flag Unavailable Stock masih muncul padahal stok sudah ditambahkan lewat Opname tgl 15 Juli 2026.
+- **T06 (SO Double Flag Unavailable Stock + Shipping Unbinded - SO-5T3F7KHQ):** FAILED — Flag Unavailable Stock tidak hilang setelah stok ditambah via opname.
+- **T08 & T09 (Partial failure & reason log):** FAILED — Error flag Unavailable Stock tidak hilang dan tidak tercatat sebagai failed di log datanya.

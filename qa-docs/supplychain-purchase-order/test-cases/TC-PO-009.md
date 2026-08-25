@@ -1,0 +1,55 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-PO-009
+menu: supplychain-purchase-order
+menu_name: "Purchase Order"
+title: "Memastikan Mekanisme Fallback Cerdas Saat VAT=yes Dengan Kolom VAT Code / VAT Type Kosong Mengikuti Master Produk"
+summary: "Verifikasi dan pencatatan gap analisis AS-IS (error missing fields) vs ekspektasi TO-BE fallback default pajak produk saat VAT=yes parsial kosong."
+status: draft
+owner: QA - Cursor
+last_updated: 2026-08-19
+requirement_ref: "qa-docs/supplychain-purchase-order/requirement.md"
+automated: true
+automated_spec: tests/specs/purchase-order/po-import-vat-tc6-tc7.spec.ts
+execution_company:
+  id: 153
+  code: lumicharmsid
+related_menus: []
+preconditions:
+  - Dokumen Purchase Order berstatus Draft telah dibuat
+  - System Product memiliki master konfigurasi Purchase VAT (single atau multiple tax)
+  - Company aktif: lumicharmsid (id: 153)
+test_data:
+  - field: skenario_vat_yes_empty_code_type
+    value: "SKU dengan master Tax | VAT: yes | VAT Code: (kosong) | VAT Type: (kosong)"
+  - field: skenario_vat_yes_with_code_empty_type
+    value: "SKU dengan master Tax | VAT: yes | VAT Code: PPN12 | VAT Type: (kosong)"
+steps:
+  - Buka menu Supply Chain Management -> Purchase Order (/supplychain/purchase-order)
+  - Buat dokumen PO Without PR baru
+  - Upload file Excel dengan baris VAT=yes tapi Code & Type kosong
+  - Upload file Excel dengan baris VAT=yes, Code=PPN12 tapi Type kosong
+  - Amati respon sistem pada Import Log dan PO detail
+expected_result: |
+  - [AS-IS / Current Behaviour]: Sistem menolak baris dengan pesan error missing fields ('VAT Code and VAT Type must be filled when VAT (yes/no) is YES' atau 'VAT Type must be filled').
+  - [TO-BE / Improvement Note]: Sistem diharapkan dapat melakukan fallback cerdas mengambil default Tax Code & Tax Type dari master Purchase VAT produk.
+test_result:
+  status: passed
+  started_at: "2026-08-19T21:36:50+07:00"
+  finished_at: "2026-08-19T21:37:25+07:00"
+  executed_by: playwright@gmail.com
+  environment: staging
+  log_summary: "Automated Playwright E2E test PASSED pada dokumen PO Without PR (#2575) di Staging (Company: lumicharmsid): Validasi error missing fields saat VAT=yes tercatat akurat sesuai rule sistem saat ini."
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: ETM-15425
+last_execution:
+  at: "2026-08-19 21:37:25"
+  jira: ETM-15425
+---
+
+# Catatan QA & Referensi
+Mengacu pada pembahasan skenario edge-case card **ETM-15425** (TC-7):
+- Kasus VAT=yes dengan parameter parsial kosong (analisis AS-IS vs ekspektasi fallback default produk).
+- Terkait Bug Card Kasus D: [ETM-15598](https://erpintegration.atlassian.net/browse/ETM-15598) (Error).

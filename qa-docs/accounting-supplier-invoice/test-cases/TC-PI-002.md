@@ -1,0 +1,57 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-PI-002
+menu: accounting-supplier-invoice
+menu_name: "Purchase Invoice"
+title: "APPROVE — PI Draft → Open → Approve (jurnal AP terbit)"
+summary: "Dari PI Draft (hasil create dari inbound), set radio Open + Save All, lalu Approve; verifikasi status Approved read-only dan journal linked terbit."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-08-24
+requirement_ref: "qa-docs/accounting-supplier-invoice/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 153
+  code: lumicharmsid
+related_menus:
+  - supplychain-new-purchase-inbound
+  - journal
+preconditions:
+  - "PI ber-status Draft tersedia (mis. hasil TC-PI-001) dengan minimal 1 baris detail dari inbound approved."
+  - "Product COA (Unbilled Goods, Tax, AP) sudah ter-mapping — wajib sebelum approve (requirement §2)."
+  - "Fiscal period Open cover Transaction Date."
+test_data:
+  - pi_code: "{PI Draft dari precondition — parameterizable, jangan hardcode}"
+steps:
+  - "Buka /accounting/supplier-invoice → search pi_code → verifikasi status Draft."
+  - "Buka Edit dari datalist."
+  - "Pilih radio status Open → Save All (requirement §3: Open dipilih manual, syarat Approve)."
+  - "Datalist: verifikasi status Open."
+  - "Klik Approve (action datalist / form — Approve hanya tersedia saat Open, SF-DL-06)."
+  - "Konfirmasi modal approve."
+  - "Datalist: verifikasi status Approved; action tersisa Show/Print (form read-only)."
+expected_result: |
+  Status PI menjadi Approved dan tidak bisa diedit (Show only, requirement §3).
+  Jurnal AP terbit: Dr Unbilled Goods + Tax + Cost / Cr AP + Disc (requirement §1
+  AP recognition) — verifikasi detail jurnalnya di TC journal terkait.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+---
+
+# TC-PI-002
+
+## Catatan
+
+- TC ini melengkapi TC-PI-001 (create Draft) — dibutuhkan flow `TC-FLOW-SCM-AP-001`
+  (Pilot 2: PR → PO → PI inbound → Supplier Invoice → Payment → Journal).
+- Test data diparameterisasi: saat dipakai di flow, `pi_code` datang dari phase
+  sebelumnya (consumes), bukan dokumen statis.
+- Perhatikan tabrakan prefix: `TC-PI-*` di menu ini = Purchase Invoice, sedangkan
+  `TC-PI-*` di supplychain-new-purchase-inbound = Purchase Inbound.
