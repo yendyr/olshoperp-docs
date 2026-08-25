@@ -47,8 +47,13 @@ npm run tc:lint                              # sebelum & sesudah
    Ragu apakah duplikat? Tandai `duplicate_candidate: {kode TC}` di frontmatter —
    lint akan memblokir `#renumber-tc` sampai diputuskan (bukan diam-diam lolos jadi nomor resmi).
 2. Format & penamaan `TC-{PREFIX}-DRAFT-{timestamp}.md` → Baca: rule `13`.
-3. Expected result **wajib** dari `requirement.md`, bukan karangan.
-4. Lint harus bersih (0 error) sebelum selesai.
+3. **Cek status `requirement.md` menu itu dulu** (rule 13 §5A):
+   `review`/`approved` → lanjut · `draft`/tidak ada → **lempar balik ke prompter**,
+   jangan mengarang expected result. Pengecualian hanya permintaan dari card Jira —
+   itu pun deskripsi card **wajib divalidasi silang** ke requirement repo (deskripsi
+   card sering hasil AI dan belum tentu sesuai requirement asli).
+4. Expected result **wajib** dari `requirement.md`, bukan karangan.
+5. Lint harus bersih (0 error) sebelum selesai.
 
 **Sebelum `#renumber-tc`**: `npm run tc:lint` wajib 0 error. Begitu DRAFT dapat nomor
 final, duplikat jadi "resmi" dan sulit dicabut. → Baca: rule `13` § Gate wajib sebelum renumber.

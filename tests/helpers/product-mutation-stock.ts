@@ -147,6 +147,12 @@ export class ProductMutationStockPage {
    * lain berjalan bersamaan, angka total bisa bergeser, sedangkan kehadiran baris
    * ber-referensi kode dokumen tetap deterministik.
    *
+   * PENTING — ada delay: kalkulasi stok dijalankan job tiap ~1 jam (header laporan
+   * menampilkan Latest Calculation / Last Job Started / Next Job Started). Dokumen
+   * yang baru di-approve BELUM muncul sampai job berikutnya berjalan. Jangan pakai
+   * method ini untuk assertion langsung setelah approve dalam satu run E2E —
+   * cocoknya untuk TC terjadwal (verifikasi mutasi dokumen dari periode sebelumnya).
+   *
    * @returns teks baris mutasi yang cocok (untuk bukti di laporan)
    */
   async assertMutationRowForDocument(documentCode: string): Promise<string> {

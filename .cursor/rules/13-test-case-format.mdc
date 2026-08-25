@@ -196,6 +196,37 @@ Jika ditemukan duplikat atau sangat mirip:
 
 ---
 
+## 5A. Status requirement — syarat sebelum menulis TC
+
+`expected_result` hanya sah kalau ada requirement yang bisa dirujuk. Karena itu status
+`requirement.md` menu terkait menentukan boleh/tidaknya TC dibuat:
+
+| Status `requirement.md` | Boleh buat TC? | Tindakan |
+|---|---|---|
+| `review` / `approved` | ✅ Ya | Lanjut normal. **`review` sudah cukup** — status ini berarti requirement sudah lewat masukan QA lead; tidak perlu menunggu `approved`/final. |
+| `draft` | ❌ Tidak | **Lempar balik ke prompter yang meminta.** Sampaikan: menu ini requirement-nya masih draft, mohon dilengkapi/dinaikkan dulu supaya expected result punya dasar. Jangan mengarang expected result dari kode atau asumsi umum ERP. |
+| Tidak ada `requirement.md` | ❌ Tidak | Sama seperti `draft` — lempar balik. |
+
+**Pengecualian: permintaan dari card Jira.** TC boleh dibuat meski requirement belum
+matang, **tetapi wajib dibandingkan dengan `requirement.md` di repo**:
+
+1. Baca deskripsi card, lalu **bandingkan dengan requirement menu terkait**.
+2. Kalau cocok → tulis TC, `expected_result` mengacu requirement.
+3. Kalau **berbeda** → jangan pilih salah satu diam-diam. Tulis expected result versi
+   requirement, lalu laporkan selisihnya ke prompter (pola di §6).
+4. Kalau requirement belum mencakup sama sekali → tandai `[MENUNGGU REQUIREMENT]` (§6)
+   dan laporkan sebagai gap.
+
+> [!CAUTION]
+> **Deskripsi card Jira bukan sumber kebenaran.** Sebagian besar ditulis dengan bantuan
+> AI dan belum tentu sesuai requirement asli. Selalu validasi silang ke
+> `qa-docs/{menu-slug}/requirement.md` sebelum menjadikannya expected result.
+
+Untuk **flow E2E** aturan setara ditegakkan otomatis: `npm run flow:preflight` menolak
+flow yang menyentuh menu ber-requirement `draft` (rule `17` §0).
+
+---
+
 ## 6. Expected result wajib dari requirement
 
 `expected_result` di frontmatter **harus** berdasarkan `requirement.md` menu terkait.

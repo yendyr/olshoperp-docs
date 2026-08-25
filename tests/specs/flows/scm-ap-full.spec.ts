@@ -176,8 +176,8 @@ test.describe.serial('SCM AP Flow — PR → PO → PI → SI → Payment → Jo
     // SIDE-EFFECT stok: BELUM diassert — lihat catatan di
     // qa-docs/flows/scm-ap-full/testcase.md § TODO. Dua sumber yang dicoba
     // 2026-08-26 sama-sama buntu: Real Time Stock (requirement masih `draft`,
-    // ditolak preflight) dan Stock History V2 (laporan batch — "Latest
-    // Calculation" harian, mutasi baru muncul setelah job terjadwal berjalan).
+    // ditolak preflight) dan Stock History V2 (job kalkulasi berjalan tiap ~1 jam,
+    // sedangkan flow ini selesai ~5 menit — mutasinya belum terhitung).
 
     await attachPhaseResult(testInfo, page, {
       phase: 3,

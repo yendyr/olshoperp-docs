@@ -87,14 +87,19 @@ npx playwright test tests/specs/flows/scm-ap-full.spec.ts
 | Sumber | Kendala |
 |---|---|
 | **Real Time Stock** (`supplychain-real-stock`) | Nilainya real-time dan cocok, tapi `requirement.md` masih berstatus `draft` → **ditolak preflight** (rule 17 §0). Perlu requirement dinaikkan ke `review` lebih dulu — keputusan QA lead. |
-| **Stock History V2** (`supplychain-product-mutation-stock`) | Requirement sudah `review`, tapi laporannya **berbasis job terjadwal**: header menampilkan *Latest Calculation* / *Last Job Started* / *Next Job Started* (harian). Mutasi dari inbound yang baru di-approve belum muncul sampai job berikutnya berjalan, sehingga tidak bisa dipakai untuk assertion langsung dalam satu run. |
+| **Stock History V2** (`supplychain-product-mutation-stock`) | Requirement sudah `review`, datanya **mendekati real-time tapi ada delay**: job berjalan **tiap 1 jam**, memeriksa seluruh transaksi SCM yang memutasi stok; kalau ada pergerakan, kalkulasi dijalankan dan waktunya menjadi *Latest Calculation*. Job yang berjalan tidak selalu menghasilkan kalkulasi (bisa saja tidak ada pergerakan). Konsekuensinya: mutasi dari inbound yang baru di-approve **baru muncul setelah job berikutnya** — sampai ~1 jam. Flow E2E selesai dalam ~5 menit, jadi tidak bisa dipakai untuk assertion dalam satu run. |
 
 **Opsi yang tersisa** (perlu keputusan):
-1. Naikkan `requirement.md` Real Time Stock ke `review`, lalu assert delta stok di sana.
+1. Naikkan `requirement.md` Real Time Stock ke `review`, lalu assert delta stok di sana
+   (real-time, tanpa menunggu job).
 2. Ganti bukti side-effect ke sesuatu yang real-time dan menu-nya sudah matang —
    mis. **outstanding PO berkurang / status PO berubah** setelah inbound approved
    (menu Purchase Order, requirement sudah `review`). Ini membuktikan rantai bekerja
-   tanpa bergantung laporan stok.
+   tanpa bergantung laporan stok. **Rekomendasi.**
+3. Stock History tetap dipakai, tapi sebagai **TC terpisah yang dijalankan terjadwal**
+   (bukan bagian flow) — mis. verifikasi harian bahwa mutasi dari dokumen inbound
+   kemarin sudah terhitung. Helper-nya sudah tersedia
+   (`product-mutation-stock#assertMutationRowForDocument`).
 
 Sampai salah satunya diputuskan, flow tetap memverifikasi status dokumen di tiap phase
 dan auto-journal di phase 6 — tapi **belum** membuktikan dampak ke stok.
