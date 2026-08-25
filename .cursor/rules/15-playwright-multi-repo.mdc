@@ -105,10 +105,19 @@ Prioritas requirement: `requirement.md` > `knowledge-base.md` > `technical.md` (
 
 ## Lokasi kode Playwright per repo
 
-| Repo | Folder automation | Kapan dipakai |
-|------|-------------------|---------------|
-| `olshoperp-docs` | `tests/` | Semua mode — sumber utama POM + spec TC-driven |
-| `olshoperp-frontend` | `e2e/` | Legacy regression; mode BUILD atau debug |
+| Repo | Folder automation | Status |
+|------|-------------------|--------|
+| `olshoperp-docs` | `tests/` | **Satu-satunya lokasi yang ditulis & dijalankan agent** — POM, helper, scenario, spec TC-driven, flow |
+| `olshoperp-frontend` | `e2e/` | **Legacy, READ-ONLY** — boleh dibaca sebagai referensi pola, **tidak boleh diubah**, dan tidak dijalankan dari workspace ini |
+
+> [!IMPORTANT]
+> Beberapa TC lama memakai `automated_spec: e2e/…` yang menunjuk ke folder legacy di
+> repo frontend. Spec itu **tidak dapat dijalankan** dari `olshoperp-docs` dan tidak
+> di-maintain dari sini (lihat § Kontrak read-only). `npm run tc:lint` menandainya
+> sebagai warning `automated_spec tidak ditemukan` — itu **memang benar** dari sudut
+> pandang repo ini. Kalau TC tersebut mau diaktifkan kembali: tulis spec baru di
+> `tests/specs/` mengikuti standar sekarang (scenario + POM + tag `@TC-*`), lalu
+> perbarui `automated_spec`-nya. Jangan menyunting `e2e/` di repo frontend.
 
 Sebelum tulis/ubah spec: tentukan mode BUILD vs RUN dari § Kriteria lengkap.
 
