@@ -132,6 +132,11 @@ export default class FlowSummaryReporter implements Reporter {
     // last-run.* dirotasi ke prev-run.* setiap ada run baru — maks 2 snapshot per flow.
     for (const [, phases] of byFlow) {
       const flowId = phases[0].flow_id;
+      // Phase yang gagal SEBELUM sempat attach hanya punya data fallback dari tag
+      // (run_id 'unknown', flow_id turunan tag). Grup seperti ini tetap tampil di
+      // summary sebagai bukti kegagalan, tapi TIDAK boleh menulis history —
+      // kalau ditulis, ia membuat folder flow palsu di tests/flow-history/.
+      if (phases[0].run_id === 'unknown') continue;
       const historyDir = path.resolve(process.cwd(), 'tests', 'flow-history', flowId);
       fs.mkdirSync(historyDir, { recursive: true });
       for (const ext of ['md', 'json']) {

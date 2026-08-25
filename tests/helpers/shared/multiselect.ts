@@ -58,9 +58,14 @@ export class OlshopMultiselect {
   }
 
   async open(combobox: Locator): Promise<void> {
-    await combobox.scrollIntoViewIfNeeded();
-    await combobox.click();
-    await expect(combobox).toHaveAttribute('aria-expanded', 'true', { timeout: 15_000 });
+    // Komponen sering re-render saat form memuat data (supplier/payment type
+    // auto-fill), sehingga node lama detach di tengah scroll/klik. Retry seluruh
+    // urutan buka, jangan hanya klik-nya.
+    await expect(async () => {
+      await combobox.scrollIntoViewIfNeeded();
+      await combobox.click();
+      await expect(combobox).toHaveAttribute('aria-expanded', 'true', { timeout: 5_000 });
+    }).toPass({ timeout: 25_000 });
   }
 
   async selectOption(

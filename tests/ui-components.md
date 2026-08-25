@@ -189,3 +189,14 @@ kedua menu berperilaku sama**.
 | Nilai yang diisi FE secara async **wajib di-poll** | `expect(...).toPass()` / `toHaveValue()` — jangan baca sekali jalan |
 | Judul `describe`/`test` **wajib statis** | Judul dinamis → "Test not found in the worker process" |
 | Selector baru **wajib dari source Vue**, bukan DOM scraping | Fondasi stabilitas; lihat rule 14 § kontrak tooling |
+
+---
+
+## Addendum — flaky yang sudah ditangani di `shared/multiselect.ts#open()`
+
+`scrollIntoViewIfNeeded` / `click` pada combobox bisa gagal dengan
+`Element is not attached to the DOM` atau "element is not stable" ketika form
+sedang re-render (mis. saat supplier & payment type auto-fill berbarengan).
+Helper `open()` kini membungkus **seluruh urutan** (scroll → klik → verifikasi
+`aria-expanded`) dalam `expect(...).toPass()`, bukan hanya klik-nya. Terapkan pola
+yang sama untuk komponen lain yang node-nya bisa diganti saat re-render.

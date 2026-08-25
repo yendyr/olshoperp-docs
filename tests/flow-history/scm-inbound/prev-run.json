@@ -1,10 +1,10 @@
 {
-  "finished_at": "2026-08-25T13:05:30.824Z",
+  "finished_at": "2026-08-25T15:30:07.114Z",
   "overall": "passed",
   "phases": [
     {
       "flow_id": "scm-inbound",
-      "run_id": "PWFLOW-MT8OECA9",
+      "run_id": "PWFLOW-MT8TK9UL",
       "company": "lumicharmsid",
       "test_data": {
         "supplier": "PT. SUPPLIER IDR",
@@ -26,16 +26,16 @@
         "TC-PR-UPDATE-002"
       ],
       "produces": {
-        "pr_code": "PR-6A8D92A2",
+        "pr_code": "PR-6A8DB486",
         "status": "Approved"
       },
       "test_title": "[@FLOW-SCM-INBOUND-001][phase-1] PR create + approve",
       "status": "passed",
-      "duration_ms": 13189
+      "duration_ms": 14695
     },
     {
       "flow_id": "scm-inbound",
-      "run_id": "PWFLOW-MT8OECA9",
+      "run_id": "PWFLOW-MT8TK9UL",
       "company": "lumicharmsid",
       "test_data": {
         "supplier": "PT. SUPPLIER IDR",
@@ -57,17 +57,17 @@
         "TC-PO-UPDATE-002"
       ],
       "produces": {
-        "po_code": "PO-6A8D92AF",
+        "po_code": "PO-6A8DB493",
         "status": "Approved",
-        "consumed_pr": "PR-6A8D92A2"
+        "consumed_pr": "PR-6A8DB486"
       },
       "test_title": "[@FLOW-SCM-INBOUND-001][phase-2] PO With PR create + approve",
       "status": "passed",
-      "duration_ms": 83887
+      "duration_ms": 83854
     },
     {
       "flow_id": "scm-inbound",
-      "run_id": "PWFLOW-MT8OECA9",
+      "run_id": "PWFLOW-MT8TK9UL",
       "company": "lumicharmsid",
       "test_data": {
         "supplier": "PT. SUPPLIER IDR",
@@ -88,13 +88,13 @@
         "TC-PI-CREATE-001"
       ],
       "produces": {
-        "pi_code": "IN-5U8K32HI",
+        "pi_code": "IN-5U8LEOFC",
         "status": "Open",
-        "consumed_po": "PO-6A8D92AF"
+        "consumed_po": "PO-6A8DB493"
       },
       "test_title": "[@FLOW-SCM-INBOUND-001][phase-3] PI dari approved PO",
       "status": "passed",
-      "duration_ms": 26355
+      "duration_ms": 26139
     }
   ]
 }
