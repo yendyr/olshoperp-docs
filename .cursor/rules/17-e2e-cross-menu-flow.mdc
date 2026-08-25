@@ -29,6 +29,7 @@ Contoh referensi lengkap (pilot): flow `scm-inbound` —
 - Isi TC flow **dilarang** menulis ulang step per menu. Hanya boleh berisi **glue E2E**: tabel chain (phase, menu, recall TC, consumes/produces, catatan varian), side-effect yang di-assert, strategi test data, cara run.
 - Step per menu hanya hidup di TC origin `qa-docs/{menu-slug}/test-cases/TC-*.md`. Perubahan requirement/UX menu → update TC origin + scenario menu itu; TC flow tidak diubah selama urutan chain tetap.
 - **Larangan keras:** flow tidak boleh punya langkah menu yang tidak ber-TC-origin. Kalau langkah yang dibutuhkan belum ada TC-nya → buat TC origin baru di menu asalnya dulu (per rule 03 & 13, dengan konfirmasi user), baru di-recall.
+- **TC yang masih `PENDING-*` boleh di-recall dan flow boleh dieksekusi.** Penomoran itu urusan administratif — jangan menahan pengujian karenanya. Yang wajib: `#renumber-tc` memperbarui rujukan ini (rule `13` §9 langkah 8). `tc:lint` dan `flow:preflight` hanya mengingatkan, tidak memblokir.
 - Dampak perubahan dicek dua arah: `grep -rl "TC-XXX" qa-docs/flows/` menunjukkan flow mana yang me-recall sebuah TC origin.
 
 ## 2. Layer kode: scenario di antara helper dan spec

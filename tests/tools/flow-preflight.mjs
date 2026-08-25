@@ -25,6 +25,7 @@ if (!flowId) {
 }
 
 const gaps = [];
+const notes = [];
 const ok = [];
 
 const flowDocPath = path.join(root, 'qa-docs', 'flows', flowId, 'testcase.md');
@@ -72,7 +73,10 @@ const scenarioText = fs.existsSync(scenarioDir)
 const menusInvolved = new Set();
 for (const code of recalls) {
   if (/^PENDING-/.test(code)) {
-    gaps.push(`Recall ${code} masih DRAFT/PENDING — jalankan #renumber-tc dulu`);
+    // TIDAK memblokir: TC-nya ada dan sudah bisa diuji. Penomoran itu urusan
+    // administratif — jangan menahan eksekusi karenanya. Yang dijaga: rujukan
+    // diperbarui saat #renumber-tc (rule 13 §9 langkah 8).
+    notes.push(`Recall ${code} belum bernomor — ingat perbarui rujukan saat #renumber-tc`);
     continue;
   }
   const origin = tcIndex.get(code);
@@ -117,6 +121,7 @@ for (const [label, rel] of [
 
 console.log(`Flow Preflight — ${flowId}`);
 for (const o of ok) console.log(`  ✅ ${o}`);
+for (const n of notes) console.log(`  ℹ️  ${n}`);
 for (const g of gaps) console.log(`  ❌ ${g}`);
 if (gaps.length) {
   console.log(

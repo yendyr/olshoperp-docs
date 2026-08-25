@@ -348,8 +348,16 @@ Menu tanpa file `TC-*-DRAFT-*.md` → dilewati (bukan error).
 5. Tentukan nomor lanjutan dari TC bernomor terakhir yang sudah ada (jika belum ada, mulai dari 001)
 6. `{PREFIX}` — dari TC bernomor existing di folder yang sama; jika folder kosong (hanya DRAFT), derive dari slug (contoh: `accounting-customer-payment` → `ARCP`)
 7. Rename file DRAFT → `TC-{PREFIX}-{NNN}.md` dan update `tc_code` di frontmatter
-8. Update `test-cases/README.md` menu tersebut dengan daftar TC final
-9. Lanjut ke menu berikutnya yang punya DRAFT
+8. **Update semua rujukan ke kode lama** — wajib, kalau tidak rujukan jadi putus:
+   - `qa-docs/flows/*/testcase.md` → daftar `recalls:`
+   - `tests/scenarios/*.ts` → konstanta `*_SCENARIO_TCS`
+   - tag `@TC-*` di spec, kalau tag-nya memakai kode TC (tag deskriptif tidak perlu diubah)
+   Cara cepat menemukannya: `grep -rn "PENDING-{timestamp}" qa-docs tests`
+9. Update `test-cases/README.md` menu tersebut dengan daftar TC final
+10. Lanjut ke menu berikutnya yang punya DRAFT
+
+Setelah semua menu selesai: `npm run tc:lint` wajib 0 error (memastikan tidak ada
+rujukan yang putus akibat renumber).
 
 ### Laporan ke user
 

@@ -5,7 +5,8 @@
  * Cek (ERROR = exit 1):
  *  1. tc_code duplikat antar file mana pun (single-menu maupun flow)
  *  2. `recalls:` di TC flow menunjuk tc_code yang tidak ada
- *  3. `recalls:` di TC flow menunjuk kode PENDING-* (belum di-renumber → flow belum sah)
+ *  3. (dipindah ke WARNING) `recalls:` menunjuk kode PENDING — TC-nya ada dan boleh
+ *     dieksekusi; renumber yang wajib memperbarui rujukannya
  *  4. Judul (title) identik dalam menu yang sama
  *  5. File TC tanpa `tc_code` (skema non-rule-13, mis. hasil crawling MCP yang
  *     memakai `id:`/`menu_slug:`) — invisible bagi lint & tidak bisa di-recall flow
@@ -191,7 +192,12 @@ for (const file of walkTcFiles(qaDocs)) {
 for (const doc of allDocs) {
   for (const recalled of doc.recalls) {
     if (/^PENDING-/.test(recalled)) {
-      errors.push(`${doc.rel} me-recall kode PENDING (${recalled}) — jalankan #renumber-tc dulu`);
+      // Bukan error: TC-nya ADA dan boleh dieksekusi. Yang perlu diingat hanya
+      // bahwa #renumber-tc wajib memperbarui rujukan ini (rule 13 §9 langkah 8).
+      warnings.push(
+        `${doc.rel} me-recall TC yang belum bernomor (${recalled}) —` +
+          ` pastikan #renumber-tc ikut memperbarui rujukan ini`,
+      );
     } else if (!byCode.has(recalled)) {
       errors.push(`${doc.rel} me-recall TC yang tidak ada: ${recalled}`);
     }
