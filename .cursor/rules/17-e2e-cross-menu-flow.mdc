@@ -15,8 +15,9 @@ Contoh referensi lengkap (pilot): flow `scm-inbound` —
 ## 0. Gate wajib: preflight & lint (machine-enforced)
 
 - **Sebelum mengeksekusi flow apa pun**: `npm run flow:preflight -- {flow-id}` harus ✅.
-  Preflight gagal = chain belum lengkap (TC origin hilang/PENDING, scenario belum ada,
+  Preflight gagal = chain belum lengkap (TC origin hilang, scenario belum ada,
   requirement menu masih draft, fixture/spec belum ada) → **DILARANG eksekusi**;
+  *(TC yang masih `PENDING-*` **tidak** memblokir — lihat §1)*;
   agent wajib melaporkan gap ke user/prompter dan menunggu jawaban atau melengkapinya
   dulu. Spec flow juga menjalankan gate ini di `beforeAll` — bypass tidak mungkin.
 - **Sebelum membuat TC baru** (single-menu maupun flow): `npm run tc:lint` harus tanpa
