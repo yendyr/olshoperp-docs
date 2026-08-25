@@ -232,6 +232,21 @@ Contoh:
 
 Menu tanpa file `TC-*-DRAFT-*.md` → dilewati (bukan error).
 
+### Gate wajib sebelum renumber
+
+> [!CAUTION]
+> **`npm run tc:lint` harus 0 error sebelum `#renumber-tc` dijalankan.**
+> Renumber memberi nomor final ke setiap DRAFT — begitu bernomor, TC duplikat
+> menjadi "resmi" dan jauh lebih sulit dicabut (sudah bisa di-`recalls` flow,
+> dirujuk spec, masuk laporan). Ini membuat seluruh disiplin anti-duplikat sia-sia.
+>
+> Khususnya, lint **menolak** TC yang punya frontmatter `duplicate_candidate: {kode}`.
+> Selesaikan dulu, pilih salah satu:
+> - **Hapus** file DRAFT-nya kalau memang duplikat (langkah gabungan antar TC
+>   seharusnya jadi flow ber-`recalls` per rule `17`, bukan TC baru yang menyalin langkah), atau
+> - **Hapus field `duplicate_candidate`** kalau setelah ditinjau ternyata unik —
+>   dan jelaskan pembedanya di `summary`.
+
 ### Alur per menu (dijalankan berulang untuk tiap menu yang punya DRAFT)
 
 1. Scan file `TC-*.md` di `qa-docs/{menu-slug}/test-cases/`

@@ -39,9 +39,14 @@ npm run tc:lint                              # sebelum & sesudah
 ```
 
 1. **Cek TC existing dulu** — kalau sudah ada yang mengcover, reuse/retest, jangan bikin file baru.
+   Ragu apakah duplikat? Tandai `duplicate_candidate: {kode TC}` di frontmatter —
+   lint akan memblokir `#renumber-tc` sampai diputuskan (bukan diam-diam lolos jadi nomor resmi).
 2. Format & penamaan `TC-{PREFIX}-DRAFT-{timestamp}.md` → Baca: rule `13`.
 3. Expected result **wajib** dari `requirement.md`, bukan karangan.
 4. Lint harus bersih (0 error) sebelum selesai.
+
+**Sebelum `#renumber-tc`**: `npm run tc:lint` wajib 0 error. Begitu DRAFT dapat nomor
+final, duplikat jadi "resmi" dan sulit dicabut. → Baca: rule `13` § Gate wajib sebelum renumber.
 
 ### D. "Automate TC yang belum ada spec-nya" (mode BUILD)
 

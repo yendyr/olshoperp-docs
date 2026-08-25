@@ -57,8 +57,31 @@ function parseFrontmatter(rawText) {
     title: get('title'),
     menu: get('menu'),
     automated_spec: get('automated_spec'),
+    duplicate_candidate: get('duplicate_candidate'),
     recalls,
   };
+}
+
+/** Kata signifikan judul untuk deteksi duplikat semantik (buang kata umum). */
+const STOPWORDS = new Set([
+  'dan','atau','dari','ke','di','pada','untuk','dengan','yang','via','the','a','an',
+  'create','update','delete','verify','memastikan','membuat','lalu','then','status',
+  'test','case','new','baru','—','-','+','&',
+]);
+function titleTokens(title) {
+  return new Set(
+    (title ?? '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, ' ')
+      .split(/[\s-]+/)
+      .filter((w) => w.length > 2 && !STOPWORDS.has(w)),
+  );
+}
+function similarity(a, b) {
+  if (!a.size || !b.size) return 0;
+  let shared = 0;
+  for (const w of a) if (b.has(w)) shared++;
+  return shared / Math.min(a.size, b.size);
 }
 
 const errors = [];
@@ -115,6 +138,16 @@ for (const file of walkTcFiles(qaDocs)) {
     warnings.push(`DRAFT menunggu #renumber-tc: ${rel} (${fm.tc_code})`);
   }
 
+  // Gate anti-duplikat: TC yang ditandai kandidat duplikat TIDAK BOLEH lolos ke
+  // #renumber-tc — begitu dapat nomor final, duplikat jadi "resmi" dan sulit dicabut.
+  if (fm.duplicate_candidate) {
+    errors.push(
+      `TC ditandai kandidat duplikat dari ${fm.duplicate_candidate}: ${rel}` +
+        ` → putuskan SEBELUM #renumber-tc: hapus file ini, ATAU hapus field` +
+        ` \`duplicate_candidate\` kalau sudah dipastikan unik (jelaskan bedanya di summary)`,
+    );
+  }
+
   if (fm.automated_spec && fm.automated_spec !== 'null') {
     const specPath = path.join(root, fm.automated_spec);
     if (!fs.existsSync(specPath)) {
@@ -129,6 +162,12 @@ for (const file of walkTcFiles(qaDocs)) {
     }
   }
 }
+
+// Catatan: deteksi duplikat via kemiripan judul sengaja TIDAK dipakai — TC ERP
+// memang berpola (mis. "X CREATE — …" vs "X IMPORT — …" adalah varian sah), sehingga
+// noise-nya tinggi, sementara duplikat nyata sering berjudul beda bahasa (ID vs EN)
+// dan lolos. Anti-duplikat ditegakkan lewat: (a) proses "cek TC existing sebelum buat
+// baru" (rule 13), (b) gate `duplicate_candidate` di atas yang memblokir #renumber-tc.
 
 for (const doc of allDocs) {
   for (const recalled of doc.recalls) {
