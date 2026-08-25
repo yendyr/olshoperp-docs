@@ -7,9 +7,12 @@
  *  2. `recalls:` di TC flow menunjuk tc_code yang tidak ada
  *  3. `recalls:` di TC flow menunjuk kode PENDING-* (belum di-renumber → flow belum sah)
  *  4. Judul (title) identik dalam menu yang sama
+ *  5. File TC tanpa `tc_code` (skema non-rule-13, mis. hasil crawling MCP yang
+ *     memakai `id:`/`menu_slug:`) — invisible bagi lint & tidak bisa di-recall flow
  * Cek (WARNING saja):
- *  5. `automated_spec` menunjuk file yang tidak ada
- *  6. File TC dengan tc_code PENDING-* (menunggu #renumber-tc)
+ *  6. `automated_spec` menunjuk file yang tidak ada
+ *  7. File TC dengan tc_code PENDING-* (menunggu #renumber-tc)
+ *  8. Penamaan file di luar pola rule 13 (TC-{PREFIX}-{NNN}.md / TC-{PREFIX}-DRAFT-{ts}.md)
  *
  * Pakai: node tests/tools/tc-lint.mjs   (atau: npm run tc:lint)
  */
@@ -35,8 +38,9 @@ function* walkTcFiles(dir) {
   }
 }
 
-function parseFrontmatter(text) {
-  const match = text.match(/^---\n([\s\S]*?)\n---/);
+function parseFrontmatter(rawText) {
+  const text = rawText.replace(/^﻿/, ''); // sebagian file punya BOM
+  const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return {};
   const fm = match[1];
   const get = (key) => fm.match(new RegExp(`^${key}:\\s*"?([^"\\n]*)"?\\s*$`, 'm'))?.[1]?.trim();
@@ -65,8 +69,31 @@ const allDocs = [];
 
 for (const file of walkTcFiles(qaDocs)) {
   const rel = path.relative(root, file);
-  const fm = parseFrontmatter(fs.readFileSync(file, 'utf-8'));
-  if (!fm.tc_code) continue;
+  const raw = fs.readFileSync(file, 'utf-8');
+  const fm = parseFrontmatter(raw);
+
+  if (!fm.tc_code) {
+    // Skema non-rule-13 (mis. hasil crawling MCP: `id:` + `menu_slug:` + author
+    // "Playwright Web Crawler"). Tidak punya tc_code → tak bisa di-recall flow,
+    // tak terdeteksi duplikat, dan status "passed"-nya tidak reproducible.
+    const legacyId = raw.match(/^id:\s*"?([^"\n]+)"?\s*$/m)?.[1]?.trim();
+    errors.push(
+      `Skema TC tidak sesuai rule 13 (tanpa \`tc_code\`): ${rel}` +
+        (legacyId ? ` — memakai \`id: ${legacyId}\`` : '') +
+        ` → konversi ke frontmatter rule 13 (tc_code/menu/steps/expected_result) + nama TC-{PREFIX}-DRAFT-{timestamp}.md`,
+    );
+    continue;
+  }
+
+  const base = path.basename(file);
+  // Pola sah: TC-{PREFIX}[-{SEGMEN}...]-{NNN}.md atau TC-{PREFIX}-DRAFT-{timestamp}.md
+  if (
+    base !== 'testcase.md' &&
+    !/^TC-[A-Z0-9]+(?:-[A-Z0-9]+)*-(?:\d{3}|DRAFT-\d{14})\.md$/.test(base)
+  ) {
+    warnings.push(`Nama file di luar pola rule 13 §2: ${rel}`);
+  }
+
   allDocs.push({ rel, ...fm });
 
   if (byCode.has(fm.tc_code)) {

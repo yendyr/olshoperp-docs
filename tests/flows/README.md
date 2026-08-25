@@ -67,7 +67,15 @@ Spec origin dan spec flow memanggil **scenario yang sama** (`tests/scenarios/` �
 4. Buat `tests/fixtures/flows/{flow-id}.fixture.json` + spec `tests/specs/flows/{flow-id}.spec.ts` (`describe.serial`, judul test **statis**, attach `flow-phase` per phase).
 5. Run sampai hijau 3× berturut-turut sebelum dinyatakan stabil; daftarkan di tabel registry di atas.
 
+## Alat eksekusi: MCP vs CLI
+
+- **Browser MCP / browser subagent** — untuk **eksplorasi & diagnosa** (menelusuri UI menu baru, membaca DOM, mereproduksi bug). Temuannya wajib mendarat di `pom-registry/`, `helpers/`, `ui-components.md`, atau revisi TC origin.
+- **Playwright CLI** — **satu-satunya jalur eksekusi** TC dan flow. Menjalankan flow via MCP mem-bypass preflight gate, storageState, reporter, dan history → **dilarang**.
+- Status `passed` hanya sah dari CLI. Detail: rule `14` §6B.
+
 ## Gotcha teknis yang sudah dipelajari (jangan diulang)
+
+> Katalog lengkap per komponen UI (dengan pola kode yang benar): **`tests/ui-components.md`**.
 
 - Judul `describe`/`test` **wajib statis** — nilai dinamis bikin "Test not found in worker".
 - `locator.isVisible()` tidak menunggu (timeout diabaikan) — pakai `waitFor`/`expect`.

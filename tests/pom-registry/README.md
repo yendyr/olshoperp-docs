@@ -2,6 +2,12 @@
 
 Kamus selector Playwright per menu OlshopERP. **Dibuat dari source Vue**, bukan dari POM generator.
 
+> [!NOTE]
+> Registry ini level **field** ("field X di menu Y selectornya apa").
+> Untuk level **komponen** ("komponen multiselect/dialog perilakunya bagaimana, cara
+> interaksi yang benar apa") lihat **`tests/ui-components.md`** — wajib dibaca sebelum
+> menulis interaksi UI baru.
+
 ## Cara pakai (QA)
 
 1. Cari file menu: `{menu-slug}.yaml`

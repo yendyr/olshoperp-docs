@@ -91,6 +91,27 @@ Browser selalu tutup setelah test selesai — ini normal, bukan bug.
 
 ---
 
+## 6B. Kontrak tooling — Browser MCP vs Playwright CLI
+
+Dua alat sah dipakai di workspace ini, **dengan pembagian tugas yang mengikat**. Berlaku untuk semua agent (Cursor, Antigravity, Claude Code, dll.).
+
+| | **Browser MCP / browser subagent** | **Playwright CLI** (`npx playwright test`) |
+|---|---|---|
+| Peran | Alat **eksplorasi & diagnosa** (mode BUILD) | **Satu-satunya jalur eksekusi resmi** TC & flow |
+| Boleh dipakai untuk | Menelusuri UI menu baru, membaca snapshot DOM, mengukur elemen, mereproduksi bug, memverifikasi hipotesis selector, menemukan perubahan UX | Menjalankan TC bertag `@TC-*`, flow `@FLOW-*`, regression, sign-off |
+| **Dilarang** | Menandai TC `passed`/`executed`; menjadi jalur eksekusi flow cross-menu; menjadi sumber selector yang langsung disalin ke spec | — |
+| Output sah | Temuan → **mendarat di** `pom-registry/{menu}.yaml`, `helpers/`, `ui-components.md`, atau revisi TC origin | Status TC, `flow-summary.md`, `flow-history/`, HTML report |
+
+**Aturan turunan (wajib):**
+
+1. **Selector dari source Vue, bukan DOM scraping.** MCP boleh dipakai untuk *memastikan* sebuah selector benar, tapi selector yang masuk ke registry/helper harus punya dasar di source (`olshoperp-frontend`). Ini fondasi stabilitas jangka panjang — DOM scraping menghasilkan selector yang pecah tiap re-render.
+2. **Status "passed" hanya sah dari CLI.** Verifikasi via MCP boleh dicatat sebagai temuan/observasi (`status: draft` + catatan), **tidak boleh** menjadikan TC `automated: true` atau `status: passed`. TC dianggap otomatis hanya jika punya `automated_spec` yang benar-benar ada dan pernah hijau via CLI.
+3. **Flow cross-menu wajib CLI.** Menjalankan chain via MCP mem-bypass preflight gate (rule 17 §0), `global-setup`/storageState, reporter summary, dan history — hasilnya tidak reproducible dan tidak tercatat. Dilarang.
+4. **TC hasil crawling MCP wajib berformat rule 13.** Gunakan frontmatter `tc_code`/`menu`/`steps`/`expected_result` dan penamaan `TC-{PREFIX}-DRAFT-{timestamp}` (rule 13 §2). Skema lain (`id:`, `menu_slug:`, `author: Playwright Web Crawler`, nama `TC-*-CRAWL-*`) membuat TC **invisible** bagi `tc:lint`, tidak bisa di-`recalls` oleh flow, dan berisiko jadi duplikat tak terdeteksi. Cek dengan `npm run tc:lint` setelah membuat TC.
+5. **Temuan UX dari MCP wajib dipropagasi.** Kalau crawling menemukan UI berubah (tombol hilang, dialog baru, tombol disabled), update **helper + `ui-components.md` + TC origin** — jangan hanya ditulis di TC baru. Kalau tidak, spec existing diam-diam jadi stale.
+
+---
+
 ## 6A. Standar eksekusi run (background, non-live)
 
 - Jalankan Playwright via command line di background (non-interactive), bukan live demo browser.
@@ -166,6 +187,7 @@ Tag `@TC-*` wajib untuk traceability ke `qa-docs/.../test-cases/`.
 
 Menu baru atau automation belum lengkap — terutama pola transaksi **SCM** (Create, Save & Next, Save All, multiselect, status radio):
 
+0. **`tests/ui-components.md`** — kontrak interaksi per komponen UI (multiselect, dialog headlessui, input numeric-mask, datepicker, radio status, modal outstanding). **Wajib dibaca sebelum menulis interaksi UI apa pun**; semua jebakan di sana pernah bikin test FAIL/flaky nyata dan sudah ditangani di helper — jangan tulis interaksi komponen dari nol.
 1. `tests/helpers/shared/` — datalist, multiselect, form-actions, toast
 2. Bandingkan `tests/pom-registry/purchase-requisition.yaml` dan `tests/pom-registry/purchase-order.yaml`
 3. `tests/pom-registry/{menu}.yaml` menu target
