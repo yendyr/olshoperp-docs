@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-JRN-005
 menu: journal
 menu_name: "Journal"
+test_type: cross-menu
 title: "VERIFY — Auto journal dari Account Payment (Payment to Supplier)"
 summary: "Dari Account Payment Approved, buka journal linked; assert Approved, TYPE Payment to Supplier, Transaction Reference = kode payment, ledger Dr AP / Cr cash-bank COA."
 status: draft

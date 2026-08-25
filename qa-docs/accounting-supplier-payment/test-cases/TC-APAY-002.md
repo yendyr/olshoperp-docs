@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-APAY-002
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
+test_type: happy
 title: "APPROVE — Form detail Open → Approve"
 summary: "Dari form edit payment (sudah ada source + PI), ubah status radio ke Open lalu Approve via modal."
 status: automated

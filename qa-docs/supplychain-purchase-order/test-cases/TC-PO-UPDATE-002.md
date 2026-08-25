@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-UPDATE-002
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: happy
 title: "Menyetujui dokumen PO-6A4F5E97 melalui datalist"
 summary: "Pastikan status Open, klik ikon approve pada datalist, verifikasi status berubah menjadi Approved."
 status: draft

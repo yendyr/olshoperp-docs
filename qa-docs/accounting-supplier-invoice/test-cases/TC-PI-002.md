@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PI-002
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
+test_type: happy
 title: "APPROVE — PI Draft → Open → Approve (jurnal AP terbit)"
 summary: "Dari PI Draft (hasil create dari inbound), set radio Open + Save All, lalu Approve; verifikasi status Approved read-only dan journal linked terbit."
 status: draft

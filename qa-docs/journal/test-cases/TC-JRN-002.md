@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-JRN-002
 menu: journal
 menu_name: "Journal"
+test_type: happy
 title: "CREATE — Journal manual 2 store + debit/credit + Open"
 summary: "Create journal; store Store Barang Mahal + Offline Store LUMI; ledger 1-10002 Debit 10000 + 1-10003 Credit 10000; set Description automation playwright; radio Open."
 status: draft

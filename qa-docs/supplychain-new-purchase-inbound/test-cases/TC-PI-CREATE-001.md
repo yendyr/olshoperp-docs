@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PI-CREATE-001
 menu: supplychain-new-purchase-inbound
 menu_name: "Purchase Inbound"
+test_type: happy
 title: "Membuat dokumen inbound barang dari PO yang sudah di-approve — status Open"
 summary: "Create Purchase Inbound dari Available Purchase Order (supplier Lumi), checklist SKU outstanding, isi Inbound Qty 100, Save All, verifikasi di datalist status Open."
 status: draft

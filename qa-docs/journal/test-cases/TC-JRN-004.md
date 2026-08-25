@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-JRN-004
 menu: journal
 menu_name: "Journal"
+test_type: cross-menu
 title: "VERIFY — Auto journal dari Account Receive (Payment from Customer)"
 summary: "Warm-up W2 CBR: dari AR Approved, buka journal linked; assert Approved, TYPE Payment from Customer, Transaction Reference = RC, ledger COA Bank BCA."
 status: executed

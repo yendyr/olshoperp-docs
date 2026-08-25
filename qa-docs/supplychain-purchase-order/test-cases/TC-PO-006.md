@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-006
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: edge
 title: "Memastikan Konsistensi Penerapan Pajak (Tax) pada Fitur Allocate Full Qty Clearing dan Bulk Use PR"
 summary: "Verifikasi penerapan pajak konsisten dan otomatis pada fitur Allocate Full Qty Clearing dan Bulk Use PR sesuai konfigurasi supplier/produk."
 status: draft

@@ -55,6 +55,7 @@ function parseFrontmatter(rawText) {
   return {
     tc_code: get('tc_code'),
     title: get('title'),
+    test_type: get('test_type'),
     menu: get('menu'),
     automated_spec: get('automated_spec'),
     duplicate_candidate: get('duplicate_candidate'),
@@ -86,6 +87,7 @@ function similarity(a, b) {
 
 const errors = [];
 const warnings = [];
+const untyped = [];
 const byCode = new Map();
 const byMenuTitle = new Map();
 const allDocs = [];
@@ -138,6 +140,23 @@ for (const file of walkTcFiles(qaDocs)) {
     warnings.push(`DRAFT menunggu #renumber-tc: ${rel} (${fm.tc_code})`);
   }
 
+  // Klasifikasi jenis pengujian (rule 13 §3A). Wajib untuk TC baru; TC lama
+  // di-backfill bertahap (lihat `npm run tc:coverage`).
+  const VALID_TEST_TYPES = ['happy', 'negative', 'edge', 'permission', 'regression', 'cross-menu'];
+  if (fm.test_type && !VALID_TEST_TYPES.includes(fm.test_type)) {
+    errors.push(
+      `test_type tidak sah "${fm.test_type}": ${rel} → pilih salah satu: ${VALID_TEST_TYPES.join(', ')}`,
+    );
+  } else if (!fm.test_type) {
+    if (/^PENDING-/.test(fm.tc_code)) {
+      errors.push(
+        `TC baru tanpa \`test_type\`: ${rel} → wajib diisi (rule 13 §3A): ${VALID_TEST_TYPES.join(', ')}`,
+      );
+    } else {
+      untyped.push(rel);
+    }
+  }
+
   // Gate anti-duplikat: TC yang ditandai kandidat duplikat TIDAK BOLEH lolos ke
   // #renumber-tc — begitu dapat nomor final, duplikat jadi "resmi" dan sulit dicabut.
   if (fm.duplicate_candidate) {
@@ -180,6 +199,12 @@ for (const doc of allDocs) {
 }
 
 console.log(`TC Lint — ${allDocs.length} dokumen TC dipindai`);
+if (untyped.length) {
+  console.log(
+    `  ℹ️  ${untyped.length} TC lama belum punya \`test_type\` (rule 13 §3A) —` +
+      ` backfill bertahap, cek prioritas: npm run tc:coverage`,
+  );
+}
 for (const w of warnings) console.log(`  ⚠️  ${w}`);
 for (const e of errors) console.log(`  ❌ ${e}`);
 if (errors.length) {

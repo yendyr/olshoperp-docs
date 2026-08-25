@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PR-CREATE-001
 menu: supplychain-purchase-requisition
 menu_name: "Purchase Requisition"
+test_type: happy
 title: "Membuat Purchase Requisition dengan 2 produk WENTER00 dan verifikasi status Open"
 summary: "Create PR dari datalist, isi 2 SKU WENTER00, lalu verifikasi status Open di datalist."
 status: draft

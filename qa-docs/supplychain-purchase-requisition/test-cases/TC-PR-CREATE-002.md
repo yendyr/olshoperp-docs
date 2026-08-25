@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PR-CREATE-002
 menu: supplychain-purchase-requisition
 menu_name: "Purchase Requisition"
+test_type: happy
 title: "Membuat Purchase Requisition dengan 3 produk SPIDOL dan verifikasi status Open"
 summary: "Create PR dari datalist, isi 3 SKU SPIDOL, lalu verifikasi status Open di datalist."
 status: draft

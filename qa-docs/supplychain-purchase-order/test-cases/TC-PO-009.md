@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-009
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: edge
 title: "Memastikan Mekanisme Fallback Cerdas Saat VAT=yes Dengan Kolom VAT Code / VAT Type Kosong Mengikuti Master Produk"
 summary: "Verifikasi dan pencatatan gap analisis AS-IS (error missing fields) vs ekspektasi TO-BE fallback default pajak produk saat VAT=yes parsial kosong."
 status: draft

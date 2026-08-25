@@ -47,6 +47,7 @@ doc_type: e2e-test-case
 tc_code: PENDING-{timestamp}        # diisi PENDING saat draft; diganti saat renumber
 menu: {menu-slug}
 menu_name: "{Nama Menu}"
+test_type: happy                    # WAJIB — lihat §3A
 title: "{Judul lengkap test case}"
 summary: "{Ringkasan satu baris untuk datalist UI}"
 status: draft
@@ -106,6 +107,33 @@ last_execution:
 - Saat `automated: true` + spec + registry + POM lengkap → re-run TC mengikuti mode **RUN** docs-only (`15-playwright-multi-repo.mdc` § Dua mode) — agent tidak perlu baca `olshoperp` / `olshoperp-frontend` lagi kecuali debug FAIL
 
 ---
+
+## 3A. `test_type` — klasifikasi jenis pengujian (WAJIB)
+
+Tanpa field ini cakupan tidak bisa diukur, dan produksi TC cenderung menumpuk di
+happy path saja (kondisi awal repo ini: 89% happy). Nilai yang sah:
+
+| `test_type` | Untuk apa | Contoh |
+|---|---|---|
+| `happy` | Alur normal yang diharapkan berhasil | Create PR 2 produk → status Open |
+| `negative` | Sistem **harus menolak** — input invalid, syarat tak terpenuhi, guard backend | Import PO dengan baris invalid → partial success; approve tanpa Product COA → ditolak |
+| `edge` | Batas/varian tak lazim yang tetap harus benar | Produk tanpa setting VAT; qty = outstanding persis; fallback VAT=yes tanpa kode |
+| `permission` | Hak akses & visibilitas per role/company | Menu tidak muncul untuk role X; tombol Approve hilang saat bukan approver |
+| `regression` | Menjaga perilaku lama tetap jalan setelah perubahan | Template import versi lama tetap diterima |
+| `cross-menu` | Verifikasi dampak di menu lain (side-effect) | Auto-journal muncul setelah payment approve; outstanding PR berkurang setelah PO |
+
+**Aturan:**
+- TC baru (DRAFT) **wajib** punya `test_type` — `npm run tc:lint` menolak kalau kosong.
+- TC lama tanpa field ini terhitung `unclassified` di `npm run tc:coverage`; backfill
+  bertahap, dahulukan menu yang dipakai flow E2E.
+- Satu TC = satu `test_type`. Kalau sebuah skenario mencakup dua maksud (mis. create
+  lalu cek dampak di menu lain), pecah — bagian side-effect jadi TC `cross-menu`
+  tersendiri supaya bisa di-`recalls` flow.
+- **Menu transaksional** (menyentuh stok/GL/status machine) tidak dianggap tercakup
+  hanya dengan `happy`: minimal harus punya `negative` untuk guard utamanya dan `edge`
+  untuk batas status machine-nya.
+
+Cek cakupan: `npm run tc:coverage` (matrix menu × test_type + daftar prioritas).
 
 ## 4. Kredensial default Playwright
 

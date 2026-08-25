@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-008
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: edge
 title: "Memastikan Penanganan Kolom VAT Type Terisi Saat System Product Tanpa Setting VAT atau Setting Auto Add Supplier = NO"
 summary: "Verifikasi perilaku kolom VAT Type terisi parsial saat supplier atau produk tidak memiliki master konfigurasi auto-add pajak aktif."
 status: draft

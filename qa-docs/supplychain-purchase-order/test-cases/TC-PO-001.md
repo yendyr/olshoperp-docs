@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-001
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: happy
 title: "DATALIST — UI export standar sidebar Export (tanpa Export CSV / Export Excel di halaman utama) — 12 menu Farrel"
 summary: "12 menu yang baru distandarisasi: tombol Export CSV/Excel tidak di halaman utama; opsi With Details / Without Details / This Page Only di sidebar Export."
 status: draft

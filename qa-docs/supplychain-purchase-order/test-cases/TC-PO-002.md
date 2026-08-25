@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-002
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: happy
 title: "DATALIST — trigger export dari sidebar Export; hasil tercatat di history (Purchase Order)"
 summary: "PO: klik Export → pilih This Page Only atau With Details di sidebar; baris history muncul; tanpa tombol CSV/Excel terpisah."
 status: draft

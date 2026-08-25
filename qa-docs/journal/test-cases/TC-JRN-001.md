@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-JRN-001
 menu: journal
 menu_name: "Journal"
+test_type: happy
 title: "VIEW — buka datalist Journal"
 summary: "Load /accounting/journal; verifikasi Create."
 status: draft

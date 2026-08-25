@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-APAY-001
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
+test_type: happy
 title: "CREATE — Payment Unbilled Goods + Bank BCA 001 + PI-6960CB30"
 summary: "Create Account Payment; supplier PT Unbilled Goods; Use Bank BCA 001; Outstanding PI PI-6960CB30 Use."
 status: automated

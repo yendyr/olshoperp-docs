@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PR-DELETE-001
 menu: supplychain-purchase-requisition
 menu_name: "Purchase Requisition"
+test_type: happy
 title: "Delete PR-6A4DF63B dari datalist"
 summary: "Klik ikon delete di kolom action datalist, konfirmasi modal Delete, verifikasi dokumen hilang dari datalist."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-005
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: negative
 title: "Memastikan Import Detail PO Bersifat Partial Success Ketika Terdapat Baris Invalid"
 summary: "Verifikasi mekanisme partial success: baris invalid ditolak per-baris dan tercatat di Import Log tanpa membatalkan baris yang valid."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-CREATE-001
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: happy
 title: "Membuat Purchase Order With PR dari available products — status Draft"
 summary: "Create PO dengan supplier PT. SUPPLIER IDR, pilih outstanding PR di Available Products, isi PO Qty, simpan sebagai Draft, verifikasi di datalist."
 status: draft

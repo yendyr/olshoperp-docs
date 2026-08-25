@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PI-BULK-DELETE-001
 menu: supplychain-new-purchase-inbound
 menu_name: "Purchase Inbound"
+test_type: happy
 title: "Bulk delete dokumen inbound IN-6A506737 / IN-6A506584 / IN-6A506544"
 summary: "Checklist tiga Purchase Inbound di datalist DEV-STG, klik Bulk Delete di samping Bulk Approve, verifikasi hilang dari datalist aktif dan masih bisa tampil saat Show deleted data ON."
 status: draft

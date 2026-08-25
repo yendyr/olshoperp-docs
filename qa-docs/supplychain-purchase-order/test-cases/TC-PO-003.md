@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-003
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: regression
 title: "Memastikan Template Import PO Memiliki Kolom VAT dan File Template Lama Tetap Berhasil Diimport (Backward Compatibility)"
 summary: "Verifikasi 3 kolom baru (VAT, VAT Code, VAT Type) di template Excel import PO With PR & Without PR serta backward compatibility file template lama."
 status: draft

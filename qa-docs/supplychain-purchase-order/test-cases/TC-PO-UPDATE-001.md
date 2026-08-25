@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-UPDATE-001
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: happy
 title: "Set PO-6A4F5E97 status Open dari show datalist"
 summary: "Buka PO dari ikon show di datalist, pilih radio Open, Save All, verifikasi status Open di datalist."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PI-APPROVE-001
 menu: supplychain-new-purchase-inbound
 menu_name: "Purchase Inbound"
+test_type: happy
 title: "Approve dokumen inbound IN-6A506EAC dari halaman show — status Approved"
 summary: "Buka show dari datalist, klik checklist biru Approve, verifikasi toast sukses, form read-only, dan status Approved di datalist."
 status: draft

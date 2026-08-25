@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PR-UPDATE-001
 menu: supplychain-purchase-requisition
 menu_name: "Purchase Requisition"
+test_type: happy
 title: "Update Request Qty SKU-SPIDOL-hitam menjadi 25 lalu Approve PR-6A4E067D"
 summary: "Buka PR Open dari datalist, ubah qty SKU-SPIDOL-hitam ke 25, pastikan status Open, klik ikon ceklis biru Approve, verifikasi status Approved."
 status: draft

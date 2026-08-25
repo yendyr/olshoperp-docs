@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-007
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: negative
 title: "Memastikan Kegagalan Global Format File Excel Membatalkan Seluruh Proses Import"
 summary: "Verifikasi validasi level file: file kosong, header rusak, atau template mismatch membatalkan seluruh import (all-or-nothing)."
 status: draft

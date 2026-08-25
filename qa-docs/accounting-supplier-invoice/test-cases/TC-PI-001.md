@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PI-001
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
+test_type: happy
 title: "CREATE — PI dari inbound PO-6A589088 (Draft)"
 summary: "Create PI; supplier PT Supplier IDR; modal Inbound Transaction search PO-6A589088; ceklis; Use; Save All; verifikasi Draft di datalist."
 status: draft

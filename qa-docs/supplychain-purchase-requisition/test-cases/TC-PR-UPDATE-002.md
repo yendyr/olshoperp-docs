@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PR-UPDATE-002
 menu: supplychain-purchase-requisition
 menu_name: "Purchase Requisition"
+test_type: happy
 title: "Approve PR-6A4F0A91 dari datalist"
 summary: "Verifikasi status Open, klik ikon approve di kolom action datalist, konfirmasi modal, verifikasi status Approved."
 status: draft

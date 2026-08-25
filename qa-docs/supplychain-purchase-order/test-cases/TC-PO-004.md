@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PO-004
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
+test_type: edge
 title: "Memastikan Penentuan VAT Melalui Import Excel Berfungsi Eksplisit (Override Auto Add dan VAT No)"
 summary: "Verifikasi override eksplisit nilai VAT pada file import Excel (VAT=yes + VAT Code vs VAT=no) mengabaikan auto-add default supplier."
 status: draft

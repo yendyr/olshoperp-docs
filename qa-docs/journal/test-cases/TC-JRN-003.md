@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-JRN-003
 menu: journal
 menu_name: "Journal"
+test_type: happy
 title: "SEARCH — journal code di datalist"
 summary: "Search code journal yang dibuat TC-JRN-002; baris tampil."
 status: draft
