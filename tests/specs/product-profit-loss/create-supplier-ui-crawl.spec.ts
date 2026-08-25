@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { prepareSession } from '../../helpers/company-access';
 
-test('Create New General Company Recognized As Supplier via Web UI Crawling (Company 153 - Lumi Charms.id)', async ({ page }) => {
+test('[@TC-GC-CRAWL-DEFAULT-20260823082354] Create New General Company Recognized As Supplier via Web UI Crawling (Company 153 - Lumi Charms.id)', async ({ page }) => {
   test.setTimeout(300_000);
   const companyCode = 'lumicharmsid';
   const ts = Date.now();

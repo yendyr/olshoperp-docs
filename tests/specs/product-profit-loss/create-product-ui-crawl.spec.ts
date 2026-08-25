@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { prepareSession } from '../../helpers/company-access';
 
-test('Create New System Product via Web UI Crawling (Company 153 - Lumi Charms.id)', async ({ page }) => {
+test('[@TC-SYSPROD-004] Create New System Product via Web UI Crawling (Company 153 - Lumi Charms.id)', async ({ page }) => {
   test.setTimeout(300_000);
   const companyCode = 'lumicharmsid';
   const ts = Date.now();

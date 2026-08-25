@@ -60,10 +60,13 @@ Urutan lookup **sebelum** buka repo app (hemat token, hindari salah selector):
 Boleh pakai **Browser MCP**. Tapi hasilnya **bukan** status test — lihat aturan #2 di bawah.
 
 Kalau perlu menulis **script sekali pakai** (dump DOM, cek API, reproduksi bug):
-beri nama berprefix `check-`, `inspect-`, `probe-`, `debug-`, `diag-`, `find-`,
-`get-`, `read-`, `log-`, `verify-` → otomatis **di-exclude dari run default**
-(`playwright.config.ts` → `testIgnore`), jalankan manual dengan menyebut path-nya.
-Script tanpa prefix itu akan ikut ter-run oleh `npx playwright test` dan mengotori staging.
+**jangan beri tag `@TC-`/`@FLOW-`** — `npm test` hanya menjalankan spec bertag, jadi
+script tanpa tag otomatis tidak ikut run. Beri juga prefix `check-`/`inspect-`/`probe-`/
+`debug-`/`diag-`/`find-`/`get-`/`read-`/`log-`/`verify-` sebagai lapis kedua
+(`testIgnore` di `playwright.config.ts`). Jalankan manual dengan menyebut path-nya.
+
+> **Konsekuensinya:** spec resmi **wajib** bertag. Spec tanpa tag = scratch, tidak
+> akan pernah jalan di suite — termasuk kalau kamu lupa memberi tag pada spec sungguhan.
 
 ---
 

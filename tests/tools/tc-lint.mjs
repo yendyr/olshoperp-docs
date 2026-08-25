@@ -116,8 +116,16 @@ for (const file of walkTcFiles(qaDocs)) {
   }
 
   if (fm.automated_spec && fm.automated_spec !== 'null') {
-    if (!fs.existsSync(path.join(root, fm.automated_spec))) {
+    const specPath = path.join(root, fm.automated_spec);
+    if (!fs.existsSync(specPath)) {
       warnings.push(`automated_spec tidak ditemukan: ${fm.automated_spec} (di ${rel})`);
+    } else if (!/@(TC|FLOW)-/.test(fs.readFileSync(specPath, 'utf-8'))) {
+      // `npm test` hanya menjalankan spec bertag — spec tanpa tag tidak akan
+      // pernah jalan di suite walau TC-nya mengklaim automated.
+      errors.push(
+        `Spec dirujuk TC tapi TIDAK bertag @TC-*/@FLOW-*: ${fm.automated_spec} (dirujuk ${rel})` +
+          ` → tambahkan tag di judul test, kalau tidak spec ini tidak ikut \`npm test\``,
+      );
     }
   }
 }
