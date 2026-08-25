@@ -11,6 +11,8 @@ import { assertNoBlocker, type ProductLine } from './support';
 export const PI_SCENARIO_TCS = {
   createPiFromPoOpen: 'TC-PI-CREATE-001',
   approvePiFromShow: 'TC-PI-APPROVE-001',
+  // TC negative masih DRAFT — samakan dengan nomor final setelah #renumber-tc.
+  qtyExceedsOutstandingRejected: 'PENDING-20260826101500',
 } as const;
 
 /**
@@ -65,4 +67,42 @@ export async function approvePiFromShow(page: Page, piCode: string): Promise<voi
   await assertNoBlocker(page, 'setelah PI approve');
   await pi.gotoDatalist();
   await pi.assertInboundApprovedInDatalist(piCode);
+}
+
+/**
+ * NEGATIVE — Implements: (TC DRAFT PENDING-20260826101500)
+ * "Over-receive dicegah: Inbound Qty tidak bisa melebihi Outstanding PO".
+ *
+ * Requirement §6 tabel *Qty vs PO*. Skenario digali lewat `npm run guard:scan`
+ * (guard ★ "Input Quantity exceeds Outstanding PO. Max allowed: {n}").
+ *
+ * Catatan AS-IS: penolakan berbentuk **clamp**, bukan pesan error — lihat
+ * helper#attemptInboundQtyExceedingOutstanding.
+ *
+ * @returns qty yang benar-benar tersimpan (harus = outstanding, bukan qty input)
+ */
+export async function assertInboundQtyCannotExceedOutstanding(
+  page: Page,
+  supplierName: string,
+  sku: string,
+  poCode: string,
+  qtyExceeding: number,
+  warehouseDestination?: string,
+): Promise<{ piCode: string; savedQty: number }> {
+  const pi = new PurchaseInboundPage(page);
+
+  await pi.gotoDatalist();
+  await pi.openCreateForm();
+  const piCode = await pi.ensureInboundHeaderSaved(supplierName);
+  await assertNoBlocker(page, 'setelah PI header tersimpan (skenario negatif)');
+
+  await pi.selectSupplier(supplierName);
+  if (warehouseDestination) {
+    await pi.setLocationDestination(warehouseDestination);
+  }
+  await pi.openAvailablePurchaseOrderModal();
+
+  const savedQty = await pi.attemptInboundQtyExceedingOutstanding(sku, poCode, qtyExceeding);
+
+  return { piCode, savedQty };
 }

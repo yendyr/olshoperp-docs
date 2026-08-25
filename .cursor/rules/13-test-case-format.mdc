@@ -155,6 +155,19 @@ Aturan pakai:
 4. Kalau guard mengungkap aturan yang **belum ada di requirement**, itu temuan —
    laporkan sebagai gap dokumen (rule `07`), jangan diam-diam jadi expected result.
 
+> [!CAUTION]
+> **Guard backend ≠ perilaku UI. Hasil `guard:scan` adalah kandidat, bukan kebenaran final.**
+> Contoh nyata (terverifikasi 2026-08-26): guard *"Input Quantity exceeds Outstanding PO"*
+> ada di controller Purchase Inbound, tapi **tidak pernah tercapai dari UI** — dialog
+> Create Inbound Product membatasi (clamp) alokasi ke outstanding sebelum request dikirim.
+> TC yang expected result-nya disalin mentah dari pesan backend akan **gagal padahal
+> sistemnya benar**. Selalu jalankan skenarionya dulu dan tulis expected result sesuai
+> perilaku AS-IS; pesan backend hanya salah satu bentuk penolakan yang mungkin —
+> bentuk lain: clamp, field disabled, tombol hilang, baris tidak muncul di daftar.
+> Contoh TC yang mengikuti pola ini:
+> `qa-docs/supplychain-new-purchase-inbound/test-cases/TC-PI-DRAFT-20260826101500.md`
+> + spec `tests/specs/purchase-inbound/pi-qty-exceeds-outstanding.spec.ts`.
+
 ## 4. Kredensial default Playwright
 
 Selalu gunakan kredensial berikut untuk semua referensi akun E2E di docs:

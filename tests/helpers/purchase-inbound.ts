@@ -481,6 +481,82 @@ export class PurchaseInboundPage {
    * Klik tombol Use pada satu baris outstanding (UI ≥2026-08: tombol bulk Use
    * bisa disabled meski baris ter-ceklis — jalur per-baris lebih andal).
    */
+  /** Wrapper dialog "Create Inbound Product" + heading-nya (deteksi via heading —
+   *  wrapper [role=dialog] headlessui dinilai hidden oleh Playwright). */
+  createInboundProductDialog(): { dialog: Locator; heading: Locator } {
+    const dialog = this.page
+      .locator('[role="dialog"]')
+      .filter({
+        has: this.page.getByRole('heading', { name: /create inbound product/i }),
+      })
+      .last();
+    return {
+      dialog,
+      heading: dialog.getByRole('heading', { name: /create inbound product/i }).first(),
+    };
+  }
+
+  /**
+   * Coba isi Max Inbound Qty MELEBIHI outstanding PO, lalu simpan.
+   *
+   * Perilaku AS-IS (terverifikasi 2026-08-26): UI **tidak** menampilkan pesan error.
+   * Sistem membatasi (clamp) alokasi ke maksimum outstanding — tombol "Allocate Full
+   * Qty (Clearing)" mengisi sebanyak yang tersedia, sehingga baris tersimpan dengan
+   * qty = outstanding, bukan qty yang diinput. Guard backend
+   * "Input Quantity exceeds Outstanding PO" karena itu tidak dapat dipicu lewat
+   * jalur UI normal (hanya via API/import).
+   *
+   * Dipakai TC negative: membuktikan over-receive TIDAK mungkin dari UI.
+   *
+   * @returns qty yang benar-benar tersimpan di baris Inbound Detail
+   */
+  async attemptInboundQtyExceedingOutstanding(
+    sku: string,
+    poTrxCode: string,
+    attemptedQty: number,
+  ): Promise<number> {
+    const row = await this.findOutstandingRow(sku, poTrxCode);
+    await row.locator('button.tooltip-use, button:has-text("Use")').first().click();
+
+    const { dialog, heading } = this.createInboundProductDialog();
+    await heading.waitFor({ state: 'visible', timeout: 15_000 });
+
+    const qtyInput = dialog.getByPlaceholder('e.g: 10').first();
+    await qtyInput.click({ clickCount: 3 });
+    await qtyInput.fill(String(attemptedQty));
+
+    const allocate = dialog.getByRole('button', { name: /allocate full qty/i });
+    if (await allocate.waitFor({ state: 'visible', timeout: 5_000 }).then(() => true).catch(() => false)) {
+      await allocate.click();
+      await this.page.waitForTimeout(500);
+    }
+
+    await dialog.getByRole('button', { name: /^save$/i }).click();
+    await expect(heading, 'Dialog harus tertutup setelah Save').toBeHidden({ timeout: 20_000 });
+    await this.page.waitForTimeout(1_000);
+
+    return this.readInboundQtyForSku(sku);
+  }
+
+  /** Nilai Inbound Qty yang tersimpan pada baris detail SKU tertentu. */
+  async readInboundQtyForSku(sku: string): Promise<number> {
+    await this.form.expandAccordion('Inbound Detail').catch(() => undefined);
+    const row = this.page
+      .getByRole('row')
+      .filter({ hasText: this.skuPattern(sku) })
+      .filter({ hasNotText: /no data available/i })
+      .last();
+    await expect(row, `Baris Inbound Detail untuk ${sku}`).toBeVisible({ timeout: 30_000 });
+
+    const qtyInput = row
+      .getByRole('spinbutton')
+      .or(row.locator('input[type="number"], input[type="text"]'))
+      .first();
+    await expect(qtyInput).toBeVisible({ timeout: 15_000 });
+    const raw = (await qtyInput.inputValue()).replace(/[^\d.-]/g, '');
+    return Number(raw);
+  }
+
   async clickUseOnOutstandingRow(
     sku: string,
     poTrxCode?: string,
