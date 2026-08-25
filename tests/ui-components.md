@@ -11,6 +11,12 @@ bagaimana, dan cara benar berinteraksi dengannya seperti apa"**.
 > Kalau komponen baru belum ada di sini: tambahkan helper di `tests/helpers/shared/`
 > **dan** entri di dokumen ini, jangan copy-paste selector ke helper menu.
 
+> [!NOTE]
+> **Sinkron dengan source.** Tiap komponen di bawah di-anchor ke file source di
+> `olshoperp-frontend` + versi library-nya lewat `tests/component-anchors.json`.
+> Jalankan `npm run component:sync` untuk mendeteksi kalau frontend berubah dan
+> katalog ini jadi stale. Repo app **hanya dibaca** (rule `15`).
+
 ---
 
 ## 1. Multiselect — `@vueform/multiselect`

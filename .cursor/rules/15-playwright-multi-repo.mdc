@@ -114,6 +114,51 @@ Sebelum tulis/ubah spec: tentukan mode BUILD vs RUN dari § Kriteria lengkap.
 
 ---
 
+## Kontrak read-only repo app
+
+> [!CAUTION]
+> **`olshoperp` dan `olshoperp-frontend` HANYA BOLEH DIBACA dari workspace ini.**
+> Agent dilarang membuat, mengedit, memindahkan, menghapus, atau memformat file apa
+> pun di kedua repo tersebut — termasuk saat user meminta "perbaiki bug-nya",
+> "tambahkan test id", atau "rapikan komponen". Semua tulisan hanya di `olshoperp-docs`.
+> Kalau perbaikan memang perlu di repo app: **laporkan sebagai temuan/bug candidate**
+> (rule `12`), jangan kerjakan sendiri.
+>
+> Pengecualian satu-satunya: folder dokumentasi QA (`qa-docs/` atau turunannya) **jika
+> memang ada** di repo app — itu pun tetap tunduk pada rule `03`. Saat ini kedua repo
+> app **tidak** punya folder tersebut, jadi praktisnya: nol tulisan di repo app.
+
+**Yang boleh dibaca** dan untuk apa:
+
+| Repo | Dibaca untuk |
+|------|--------------|
+| `olshoperp-frontend` | Selector dari source Vue, perilaku komponen UI, perubahan UX, route |
+| `olshoperp` | Validasi & error message backend, status machine, aturan bisnis yang tak terlihat di UI — saat menyusun expected result TC atau mendiagnosa FAIL |
+
+## Sinkronisasi pengetahuan komponen — `npm run component:sync`
+
+Kontrak interaksi komponen di `tests/ui-components.md` diturunkan dari source frontend.
+Supaya tidak **stale diam-diam** saat frontend berubah, tiap komponen di-anchor ke file
+source + versi library di `tests/component-anchors.json`, dan diperiksa oleh:
+
+```bash
+npm run component:sync              # laporkan drift (exit 1 kalau ada)
+npm run component:sync -- --update  # setujui kondisi sekarang jadi baseline
+```
+
+Yang dideteksi: versi library berubah/hilang, file source komponen berubah/dipindah.
+
+**Kapan wajib dijalankan:**
+1. Sebelum mulai **BUILD** automation menu baru (memastikan katalog komponen masih valid).
+2. Saat sebuah TC/flow **FAIL karena UI tidak cocok** — cek dulu apakah penyebabnya drift.
+3. Setelah tahu ada rilis/perubahan besar di frontend.
+
+**Kalau drift terdeteksi:** baca perubahannya di repo frontend (read-only), sesuaikan
+**helper + `tests/ui-components.md`** kalau perilakunya memang berubah, baru setujui
+baseline baru dengan `--update`. Jangan `--update` tanpa meninjau — itu menghapus sinyal.
+
+---
+
 ## Larangan scope bleed
 
 | Konteks | Repo app | AS-IS requirement |

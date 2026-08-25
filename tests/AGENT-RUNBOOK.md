@@ -50,6 +50,10 @@ final, duplikat jadi "resmi" dan sulit dicabut. → Baca: rule `13` § Gate waji
 
 ### D. "Automate TC yang belum ada spec-nya" (mode BUILD)
 
+```bash
+npm run component:sync    # cek dulu: katalog komponen masih sinkron dgn frontend?
+```
+
 Urutan lookup **sebelum** buka repo app (hemat token, hindari salah selector):
 
 1. `tests/ui-components.md` — perilaku komponen + pola interaksi benar
@@ -93,6 +97,7 @@ script tanpa tag otomatis tidak ikut run. Beri juga prefix `check-`/`inspect-`/`
 
 1. Baca error + `error-context.md` di `test-results/{...}/` (ada page snapshot — sering langsung ketahuan).
 2. Cek apakah penyebabnya **komponen UI** → `tests/ui-components.md` (multiselect, dialog headlessui, numeric-mask, radio detach — semua jebakan umum ada di sana).
+   Jalankan `npm run component:sync` — kalau ada drift, berarti frontend berubah dan katalog/helper perlu disesuaikan.
 3. Kalau ternyata **UX aplikasi berubah**: perbaiki helper/scenario + update TC origin + catat di `ui-components.md`. Jangan tambal di spec.
 4. Retry maksimal sesuai rule `14` §5 — kalau tetap merah, laporkan dengan bukti, jangan paksa hijau.
 
@@ -119,4 +124,12 @@ npm run flow:preflight -- {flow-id}          # gate kelengkapan chain (wajib seb
 npm run test:tc -- "@TC-XXX"                 # jalankan TC by tag
 npm run test:smoke                           # smoke 4 menu
 npm run test:report                          # buka HTML report
+npm run component:sync                       # cek drift katalog komponen vs source frontend
 ```
+
+## Repo app = READ-ONLY
+
+`olshoperp` (backend) & `olshoperp-frontend` boleh **dibaca** — selector dari source Vue,
+validasi/error backend untuk menyusun expected result. **Dilarang menulis apa pun** ke
+sana; perbaikan yang perlu di repo app dilaporkan sebagai temuan, bukan dikerjakan.
+→ Baca: rule `15` § Kontrak read-only repo app.

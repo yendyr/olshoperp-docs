@@ -1,0 +1,120 @@
+{
+  "_doc": "Anchor komponen UI ke source di olshoperp-frontend. Dipakai `npm run component:sync` untuk mendeteksi drift antara kontrak interaksi di tests/ui-components.md dan source aplikasi yang sebenarnya. Repo app HANYA DIBACA — lihat rule 15.",
+  "_how_to_update": "Kalau component:sync melaporkan drift: (1) tinjau perubahan di source, (2) sesuaikan helper + tests/ui-components.md bila perilakunya berubah, (3) perbarui `version` / `fingerprint` di sini lewat `npm run component:sync -- --update`.",
+  "frontend_repo": "../olshoperp-frontend",
+  "components": [
+    {
+      "id": "multiselect",
+      "doc_section": "tests/ui-components.md §1",
+      "helper": "tests/helpers/shared/multiselect.ts",
+      "library": "@vueform/multiselect",
+      "version": "^2.6.2",
+      "sources": [
+        "src/base-components/Select/AsyncSelect.vue"
+      ],
+      "fingerprints": {
+        "src/base-components/Select/AsyncSelect.vue": "500ffec3c722"
+      }
+    },
+    {
+      "id": "dialog-headlessui",
+      "doc_section": "tests/ui-components.md §2",
+      "helper": "(pola di helpers/purchase-inbound.ts, purchase-order.ts)",
+      "library": "@headlessui/vue",
+      "version": "^1.7.3",
+      "sources": [],
+      "fingerprints": {}
+    },
+    {
+      "id": "numeric-mask-input",
+      "doc_section": "tests/ui-components.md §3",
+      "helper": "tests/helpers/purchase-requisition.ts#fillRequestQtyForSku",
+      "library": null,
+      "version": null,
+      "sources": [
+        "src/base-components/Form/FormInput.vue"
+      ],
+      "fingerprints": {
+        "src/base-components/Form/FormInput.vue": "d36128f411c8"
+      }
+    },
+    {
+      "id": "datepicker",
+      "doc_section": "tests/ui-components.md §4",
+      "helper": "tests/helpers/purchase-inbound.ts#transactionDateInput",
+      "library": "primevue",
+      "version": "^4.0",
+      "sources": [
+        "src/base-components/project/VueDatePicker/VueDatePicker.vue",
+        "src/base-components/project/Form/FormDatePicker.vue"
+      ],
+      "fingerprints": {
+        "src/base-components/project/VueDatePicker/VueDatePicker.vue": "0472d104634b",
+        "src/base-components/project/Form/FormDatePicker.vue": "2ae6f6f5eabc"
+      }
+    },
+    {
+      "id": "datatables",
+      "doc_section": "tests/ui-components.md §5",
+      "helper": "tests/helpers/shared/datalist.ts",
+      "library": "datatables.net",
+      "version": "^3.0",
+      "sources": [
+        "src/components/project/DataTables/PrimeDataTables.vue"
+      ],
+      "fingerprints": {
+        "src/components/project/DataTables/PrimeDataTables.vue": "2fea3444e423"
+      }
+    },
+    {
+      "id": "toast",
+      "doc_section": "tests/ui-components.md §8",
+      "helper": "tests/helpers/shared/toast.ts",
+      "library": "toastify-js",
+      "version": "^1.12.0",
+      "sources": [],
+      "fingerprints": {}
+    },
+    {
+      "id": "po-form-actions",
+      "doc_section": "tests/ui-components.md §9",
+      "helper": "tests/helpers/purchase-order.ts",
+      "library": null,
+      "version": null,
+      "sources": [
+        "src/pages/SCM/PurchaseOrder/Form.vue"
+      ],
+      "note": "UX ≥2026-08: Save & Next dihapus, Create auto-membuat draft. Perubahan file ini hampir selalu berdampak ke scenario PO.",
+      "fingerprints": {
+        "src/pages/SCM/PurchaseOrder/Form.vue": "6d5d2b439a57"
+      }
+    },
+    {
+      "id": "pi-outstanding-modal",
+      "doc_section": "tests/ui-components.md §10",
+      "helper": "tests/helpers/purchase-inbound.ts#clickUseOnOutstandingRow",
+      "library": null,
+      "version": null,
+      "sources": [
+        "src/pages/SCM/PurchaseOrder/AvailableProducts.vue"
+      ],
+      "note": "Bulk Use disabled; Use per-baris membuka dialog Create Inbound Product yang wajib Allocate Full Qty.",
+      "fingerprints": {
+        "src/pages/SCM/PurchaseOrder/AvailableProducts.vue": "f432d83ac2a4"
+      }
+    },
+    {
+      "id": "pr-form",
+      "doc_section": "tests/ui-components.md §3, §7",
+      "helper": "tests/helpers/purchase-requisition.ts",
+      "library": null,
+      "version": null,
+      "sources": [
+        "src/pages/SCM/PurchaseRequisition/Form.vue"
+      ],
+      "fingerprints": {
+        "src/pages/SCM/PurchaseRequisition/Form.vue": "a09d9f8a28aa"
+      }
+    }
+  ]
+}
