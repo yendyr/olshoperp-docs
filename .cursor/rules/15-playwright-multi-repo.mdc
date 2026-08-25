@@ -142,7 +142,7 @@ Sebelum tulis/ubah spec: tentukan mode BUILD vs RUN dari § Kriteria lengkap.
 | Repo | Dibaca untuk |
 |------|--------------|
 | `olshoperp-frontend` | Selector dari source Vue, perilaku komponen UI, perubahan UX, route |
-| `olshoperp` | Validasi & error message backend, status machine, aturan bisnis yang tak terlihat di UI — saat menyusun expected result TC atau mendiagnosa FAIL |
+| `olshoperp` | Validasi & error message backend, status machine, aturan bisnis yang tak terlihat di UI — saat menyusun expected result TC atau mendiagnosa FAIL. Terotomasi lewat `npm run guard:scan` (guard backend → kandidat TC `negative`, lihat rule `13` §3A) |
 
 ## Sinkronisasi pengetahuan komponen — `npm run component:sync`
 

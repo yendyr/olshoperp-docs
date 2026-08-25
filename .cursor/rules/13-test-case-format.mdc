@@ -135,6 +135,26 @@ happy path saja (kondisi awal repo ini: 89% happy). Nilai yang sah:
 
 Cek cakupan: `npm run tc:coverage` (matrix menu × test_type + daftar prioritas).
 
+### Menulis TC `negative` — gali dari guard backend, jangan dikarang
+
+```bash
+npm run guard:scan -- --menu {menu-slug}
+```
+
+Backend memuat kondisi-yang-harus-ditolak secara eksplisit beserta pesan errornya
+(mis. *"Input Quantity exceeds Outstanding PO"*, *"Expired Date cannot be earlier than
+Transaction Date"*). Itu sumber negative TC yang jauh lebih akurat daripada asumsi —
+pesannya sekaligus jadi bahan `expected_result`.
+
+Aturan pakai:
+1. Ambil kandidat bertanda **★** (merumuskan aturan bisnis) lebih dulu.
+2. **Verifikasi dapat dipicu dari UI.** Guard internal/race (mis. *"Parent not found"*)
+   dilewati — bukan semua guard layak jadi TC.
+3. `expected_result` tetap mengacu `requirement.md`; pesan backend dipakai sebagai
+   bentuk penolakan yang diverifikasi, bukan menggantikan requirement.
+4. Kalau guard mengungkap aturan yang **belum ada di requirement**, itu temuan —
+   laporkan sebagai gap dokumen (rule `07`), jangan diam-diam jadi expected result.
+
 ## 4. Kredensial default Playwright
 
 Selalu gunakan kredensial berikut untuk semua referensi akun E2E di docs:

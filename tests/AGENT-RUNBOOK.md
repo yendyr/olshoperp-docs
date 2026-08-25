@@ -36,6 +36,7 @@ Daftar flow + override test data → Baca: `tests/flows/README.md`.
 
 ```bash
 npm run tc:coverage                          # gap apa yang perlu diisi di menu ini?
+npm run guard:scan -- --menu {slug}          # kandidat negative TC dari guard backend
 npm run tc:lint                              # sebelum & sesudah
 ```
 
@@ -125,6 +126,7 @@ script tanpa tag otomatis tidak ikut run. Beri juga prefix `check-`/`inspect-`/`
 ```bash
 npm run tc:lint                              # anti-duplikat TC (wajib sebelum tambah TC)
 npm run tc:coverage                          # matrix cakupan menu x test_type + prioritas gap
+npm run guard:scan                           # guard backend -> kandidat negative TC per menu
 npm run flow:preflight -- {flow-id}          # gate kelengkapan chain (wajib sebelum flow)
 npm run test:tc -- "@TC-XXX"                 # jalankan TC by tag
 npm run test:smoke                           # smoke 4 menu
