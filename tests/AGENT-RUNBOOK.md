@@ -55,8 +55,13 @@ npm run tc:lint                              # sebelum & sesudah
 4. Expected result **wajib** dari `requirement.md`, bukan karangan.
 5. Lint harus bersih (0 error) sebelum selesai.
 
-**Sebelum `#renumber-tc`**: `npm run tc:lint` wajib 0 error. Begitu DRAFT dapat nomor
-final, duplikat jadi "resmi" dan sulit dicabut. → Baca: rule `13` § Gate wajib sebelum renumber.
+**Sebelum `#renumber-tc`**:
+- `npm run tc:lint` wajib 0 error — begitu DRAFT dapat nomor final, duplikat jadi
+  "resmi" dan sulit dicabut (rule `13` § Gate wajib sebelum renumber).
+- `npm run tc:refs` — peta semua rujukan ke tiap kode PENDING (flow `recalls:`,
+  konstanta scenario, tag spec). **Rujukan ini WAJIB ikut diperbarui** saat renumber,
+  kalau tidak jadi rujukan putus (rule `13` §9 langkah 8).
+- Sesudah renumber: `npm run tc:lint` lagi, harus tetap 0 error.
 
 ### D. "Automate TC yang belum ada spec-nya" (mode BUILD)
 
@@ -132,6 +137,7 @@ Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 ```bash
 npm run tc:lint                              # anti-duplikat TC (wajib sebelum tambah TC)
 npm run tc:coverage                          # matrix cakupan menu x test_type + prioritas gap
+npm run tc:refs                              # peta rujukan TC PENDING (wajib sebelum #renumber-tc)
 npm run guard:scan                           # guard backend -> kandidat negative TC per menu
 npm run flow:preflight -- {flow-id}          # gate kelengkapan chain (wajib sebelum flow)
 npm run test:tc -- "@TC-XXX"                 # jalankan TC by tag

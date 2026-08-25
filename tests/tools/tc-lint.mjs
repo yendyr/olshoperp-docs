@@ -183,6 +183,29 @@ for (const file of walkTcFiles(qaDocs)) {
   }
 }
 
+// Jaring pengaman pasca-renumber: konstanta di tests/scenarios/ yang menunjuk kode TC
+// yang tidak ada lagi = rujukan putus (biasanya karena renumber lupa memperbaruinya,
+// rule 13 §9 langkah 8). Dicek terpisah dari `recalls:` karena letaknya di kode.
+const scenarioDir = path.join(root, 'tests', 'scenarios');
+if (fs.existsSync(scenarioDir)) {
+  for (const f of fs.readdirSync(scenarioDir)) {
+    if (!f.endsWith('.ts')) continue;
+    const rel = `tests/scenarios/${f}`;
+    const text = fs.readFileSync(path.join(scenarioDir, f), 'utf-8');
+    for (const m of text.matchAll(/'((?:TC|PENDING)-[A-Z0-9-]+)'/g)) {
+      const code = m[1];
+      // Nilai konstanta bisa gabungan ("TC-A + TC-B") — pecah dan cek satu per satu.
+      for (const part of code.split(/\s*\+\s*/)) {
+        if (!part || byCode.has(part)) continue;
+        errors.push(
+          `${rel} menunjuk TC yang tidak ada: ${part}` +
+            ` → rujukan putus. Cek \`npm run tc:refs\` dan perbarui (rule 13 §9 langkah 8)`,
+        );
+      }
+    }
+  }
+}
+
 // Catatan: deteksi duplikat via kemiripan judul sengaja TIDAK dipakai — TC ERP
 // memang berpola (mis. "X CREATE — …" vs "X IMPORT — …" adalah varian sah), sehingga
 // noise-nya tinggi, sementara duplikat nyata sering berjudul beda bahasa (ID vs EN)

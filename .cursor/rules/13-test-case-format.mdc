@@ -348,11 +348,20 @@ Menu tanpa file `TC-*-DRAFT-*.md` → dilewati (bukan error).
 5. Tentukan nomor lanjutan dari TC bernomor terakhir yang sudah ada (jika belum ada, mulai dari 001)
 6. `{PREFIX}` — dari TC bernomor existing di folder yang sama; jika folder kosong (hanya DRAFT), derive dari slug (contoh: `accounting-customer-payment` → `ARCP`)
 7. Rename file DRAFT → `TC-{PREFIX}-{NNN}.md` dan update `tc_code` di frontmatter
-8. **Update semua rujukan ke kode lama** — wajib, kalau tidak rujukan jadi putus:
-   - `qa-docs/flows/*/testcase.md` → daftar `recalls:`
-   - `tests/scenarios/*.ts` → konstanta `*_SCENARIO_TCS`
+8. **Update semua rujukan ke kode lama** — wajib, kalau tidak rujukan jadi putus.
+   **Jangan mengandalkan ingatan atau grep manual** — jalankan dulu:
+
+   ```bash
+   npm run tc:refs                      # peta SEMUA TC PENDING + rujukannya
+   npm run tc:refs -- PENDING-{ts}      # satu kode saja
+   ```
+
+   Outputnya menyebut file + nomor baris + jenis rujukan, sehingga tidak ada yang
+   terlewat. Yang biasanya perlu diperbarui:
+   - `qa-docs/flows/*/testcase.md` → daftar `recalls:` **dan** penyebutan di tabel chain/catatan
+   - `tests/scenarios/*.ts` → konstanta `*_SCENARIO_TCS` **dan** header `Implements:`
    - tag `@TC-*` di spec, kalau tag-nya memakai kode TC (tag deskriptif tidak perlu diubah)
-   Cara cepat menemukannya: `grep -rn "PENDING-{timestamp}" qa-docs tests`
+   - TC lain yang menyebutnya di catatan
 9. Update `test-cases/README.md` menu tersebut dengan daftar TC final
 10. Lanjut ke menu berikutnya yang punya DRAFT
 
