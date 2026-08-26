@@ -13,8 +13,7 @@ export const PO_SCENARIO_TCS = {
   createPoWithPrDraft: 'TC-PO-CREATE-001',
   createPoWithPrOpen: 'TC-PO-CREATE-001 + TC-PO-UPDATE-001',
   approvePoFromDatalist: 'TC-PO-UPDATE-002',
-  // TC cross-menu masih DRAFT — samakan dengan nomor final setelah #renumber-tc.
-  assertPoCompleteAfterFullInbound: 'PENDING-20260826140000',
+  assertPoCompleteAfterFullInbound: 'TC-PO-011',
 } as const;
 
 async function createPoWithPr(
@@ -97,7 +96,7 @@ export async function approvePoFromDatalist(page: Page, poCode: string): Promise
 }
 
 /**
- * CROSS-MENU — Implements: (TC DRAFT PENDING-20260826140000)
+ * CROSS-MENU — Implements: (TC PO-011)
  * "Status PO otomatis menjadi Complete setelah seluruh qty diterima via Purchase Inbound".
  *
  * Side-effect assertion: dipanggil SETELAH inbound di-approve. Membuktikan rantai

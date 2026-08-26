@@ -21,12 +21,12 @@ recalls:
   - TC-PO-UPDATE-002
   - TC-PI-CREATE-001
   - TC-PI-APPROVE-001
-  - TC-PI-001
-  - TC-PI-002
+  - TC-PINV-001
+  - TC-PINV-002
   - TC-APAY-001
   - TC-APAY-002
   - TC-JRN-005
-  - PENDING-20260826140000
+  - TC-PO-011
 ---
 
 # TC-FLOW-SCM-AP-001 — SCM + Accounting AP Flow
@@ -47,8 +47,8 @@ lalu melanjutkan ke tiga menu accounting.
 |-------|------|-----------|--------------|----------|----------|
 | 1 | supplychain-purchase-requisition | TC-PR-CREATE-001, TC-PR-UPDATE-002 | Data produk dari fixture | — | `pr_code` (Approved) |
 | 2 | supplychain-purchase-order | TC-PO-CREATE-001, TC-PO-UPDATE-001, TC-PO-UPDATE-002 | With PR; outstanding dari `pr_code` | `pr_code` | `po_code` (Approved) |
-| 3 | supplychain-new-purchase-inbound + supplychain-purchase-order | TC-PI-CREATE-001, TC-PI-APPROVE-001, PENDING-20260826140000 (cross-menu) | **Inbound WAJIB di-approve** — Supplier Invoice hanya bisa menarik inbound approved (requirement SI §2). Memutasi stok. Side-effect diverifikasi: status PO otomatis menjadi **Complete**. | `po_code` | `pi_code` (Approved), `stock_delta` |
-| 4 | accounting-supplier-invoice | TC-PI-001, TC-PI-002 | Tarik inbound via modal Inbound Transaction difilter `po_code`; Draft → Open → Approve | `po_code` | `invoice_code` (Approved) |
+| 3 | supplychain-new-purchase-inbound + supplychain-purchase-order | TC-PI-CREATE-001, TC-PI-APPROVE-001, TC-PO-011 (cross-menu) | **Inbound WAJIB di-approve** — Supplier Invoice hanya bisa menarik inbound approved (requirement SI §2). Memutasi stok. Side-effect diverifikasi: status PO otomatis menjadi **Complete**. | `po_code` | `pi_code` (Approved), `stock_delta` |
+| 4 | accounting-supplier-invoice | TC-PINV-001, TC-PINV-002 | Tarik inbound via modal Inbound Transaction difilter `po_code`; Draft → Open → Approve | `po_code` | `invoice_code` (Approved) |
 | 5 | accounting-supplier-payment | TC-APAY-001, TC-APAY-002 | Sumber dana Cash/Bank dari fixture; alokasi Outstanding Purchase Invoice = `invoice_code`; source amount disamakan dengan nilai invoice agar balanced | `invoice_code` | `payment_code` (Approved) |
 | 6 | journal | TC-JRN-005 | Baca kode journal dari kolom Journal di datalist payment, lalu verifikasi isinya | `payment_code` | `journal_code` |
 
@@ -58,7 +58,7 @@ lalu melanjutkan ke tiga menu accounting.
   (requirement PO § Status machine: Σ order_quantity = Σ processed_to_grn_quantity).
   **Terautomasi** di spec. Bukti real-time bahwa rantai PO → Inbound tersambung, tanpa
   aksi manual di menu PO.
-  > ℹ️ TC origin-nya masih bernomor `PENDING-20260826140000`. Itu **tidak menghalangi
+  > ℹ️ TC origin-nya masih bernomor `TC-PO-011`. Itu **tidak menghalangi
   > eksekusi** — `#renumber-tc` yang bertanggung jawab memperbarui rujukan ini beserta
   > konstanta `PO_SCENARIO_TCS.assertPoCompleteAfterFullInbound` (rule 13 §9 langkah 8).
 - **Phase 3** → stok bertambah. **Belum diassert langsung** — lihat TODO di bawah.

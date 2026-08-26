@@ -11,8 +11,7 @@ import { assertNoBlocker, type ProductLine } from './support';
 export const PI_SCENARIO_TCS = {
   createPiFromPoOpen: 'TC-PI-CREATE-001',
   approvePiFromShow: 'TC-PI-APPROVE-001',
-  // TC negative masih DRAFT — samakan dengan nomor final setelah #renumber-tc.
-  qtyExceedsOutstandingRejected: 'PENDING-20260826101500',
+  qtyExceedsOutstandingRejected: 'TC-PI-013',
 } as const;
 
 /**
@@ -70,7 +69,7 @@ export async function approvePiFromShow(page: Page, piCode: string): Promise<voi
 }
 
 /**
- * NEGATIVE — Implements: (TC DRAFT PENDING-20260826101500)
+ * NEGATIVE — Implements: (TC PI-013)
  * "Over-receive dicegah: Inbound Qty tidak bisa melebihi Outstanding PO".
  *
  * Requirement §6 tabel *Qty vs PO*. Skenario digali lewat `npm run guard:scan`

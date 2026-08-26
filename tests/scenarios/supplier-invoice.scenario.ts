@@ -5,8 +5,8 @@ import { assertNoBlocker } from './support';
 /**
  * Scenario Supplier Invoice (menu UI: Purchase Invoice, route /accounting/supplier-invoice)
  * — implementasi runnable TC origin:
- *   - createSupplierInvoiceDraft → Implements: TC-PI-001
- *   - approveSupplierInvoice     → Implements: TC-PI-002
+ *   - createSupplierInvoiceDraft → Implements: TC-PINV-001
+ *   - approveSupplierInvoice     → Implements: TC-PINV-002
  *
  * Catatan prefix: `TC-PI-*` di menu ini = Purchase Invoice (accounting).
  * Jangan tertukar dengan `TC-PI-CREATE-001`/`TC-PI-APPROVE-001` di
@@ -14,10 +14,9 @@ import { assertNoBlocker } from './support';
  */
 
 export const SINV_SCENARIO_TCS = {
-  createSupplierInvoiceDraft: 'TC-PI-001',
-  approveSupplierInvoice: 'TC-PI-002',
-  // TC cross-menu negatif masih DRAFT — samakan saat #renumber-tc (cek `npm run tc:refs`).
-  unapprovedInboundNotSelectable: 'PENDING-20260826160000',
+  createSupplierInvoiceDraft: 'TC-PINV-001',
+  approveSupplierInvoice: 'TC-PINV-002',
+  unapprovedInboundNotSelectable: 'TC-PINV-003',
 } as const;
 
 /**
@@ -70,7 +69,7 @@ export async function approveSupplierInvoice(
 }
 
 /**
- * CROSS-MENU NEGATIF — Implements: (TC DRAFT PENDING-20260826160000)
+ * CROSS-MENU NEGATIF — Implements: (TC PINV-003)
  * "Inbound yang belum approved TIDAK muncul di modal Inbound Transaction".
  *
  * Menguji gerbang antar menu: kondisi di Purchase Inbound (status Open) harus

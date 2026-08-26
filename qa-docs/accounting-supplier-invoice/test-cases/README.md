@@ -2,8 +2,8 @@
 
 | TC | Title | Spec |
 |----|-------|------|
-| TC-PI-001 | CREATE — PI dari inbound (Draft) | `purchase-invoice-create-from-inbound.spec.ts` |
-| TC-PI-002 | APPROVE — PI Draft → Open → Approve (jurnal AP terbit) | |
+| TC-PINV-001 | CREATE — PI dari inbound (Draft) | `purchase-invoice-create-from-inbound.spec.ts` |
+| TC-PINV-002 | APPROVE — PI Draft → Open → Approve (jurnal AP terbit) | |
 
 Company: **lumicharmsid (153)** · Route: `/accounting/supplier-invoice` (menu UI = Purchase Invoice)
 
