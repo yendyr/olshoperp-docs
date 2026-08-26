@@ -109,6 +109,20 @@ Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 
 Sebagian besar TC di katalog dijalankan orang, bukan mesin. Alurnya:
 
+**Cari dulu yang hasilnya belum tercatat:**
+
+```bash
+npm run tc:pending            # semua yang belum ada hasil, dipisah 2 kelompok
+npm run tc:pending -- --ask   # hanya yang HARUS ditanyakan ke orang
+```
+
+- **Punya rujukan card** (`last_execution.jira` / `origin_jira` / `card_ref`) → hasilnya
+  bisa ditelusuri sendiri: buka card-nya, lihat Done with passed / failed / blocked.
+- **Tanpa rujukan card** → tidak ada jejak siapa pun. **Tanyakan ke prompter/penguji.**
+  Jangan menebak, jangan biarkan menggantung.
+
+Alur pencatatannya:
+
 1. Agent membuat/menyiapkan TC → `last_execution.status: not_run`, `via: null`
 2. Penguji menjalankan manual, lalu **mengisi hasilnya sendiri**:
 

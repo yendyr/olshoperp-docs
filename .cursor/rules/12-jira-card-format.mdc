@@ -27,11 +27,11 @@ Gunakan rule ini setiap kali user meminta membuat Jira card, bug report, improve
 > Kalau menemukan pola ini, laporkan; jangan menambal dengan menulis hasil karangan.
 
 > [!WARNING]
-> **Agent tidak membuat, mengedit, atau menggeser card Jira tanpa permintaan eksplisit
-> di sesi itu.** Membuat card = tindakan keluar yang dilihat seluruh tim dan memicu
-> alur kerja orang lain. Menyusun *draft* card di chat boleh; mengirimkannya tidak,
-> sampai diminta. Menggeser status card (mis. ke *Done*) tidak pernah jadi wewenang
-> agent — itu keputusan orang yang mengerjakannya.
+> **Create / edit / link / transition card itu operasi sah** (lihat § Rate Limiting) —
+> **tapi hanya atas permintaan di sesi itu.** Menyusun draft card di chat boleh kapan
+> saja; mengirimkannya ke Jira tidak, sampai diminta. Yang tidak pernah boleh: menggeser
+> card ke *Done* atas **inisiatif sendiri** karena merasa pengujian sudah beres —
+> penilaian selesai/tidak ada pada orang yang mengerjakan.
 
 ---
 
