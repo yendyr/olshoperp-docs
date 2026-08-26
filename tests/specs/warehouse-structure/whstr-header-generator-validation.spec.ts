@@ -1,15 +1,14 @@
-import { test, expect } from '@playwright/test';
-import { prepareSession } from '../../helpers/company-access';
-import {
-  WAREHOUSE_STRUCTURE_DATALIST_PATH,
-  WAREHOUSE_STRUCTURE_EDIT_PATH_PATTERN,
-  WarehouseStructurePage,
-} from '../../helpers/warehouse-structure';
-
-/**
- * Validasi Basic Information + Child Warehouse Generator.
- * Sumber TC: automate testing jira/WHSTR-validation/test-cases/
- * Company: lumicharmsid (153)
+import { test, expect } from '@playwright/test';
+import { prepareSession } from '../../helpers/company-access';
+import {
+  WAREHOUSE_STRUCTURE_DATALIST_PATH,
+  WAREHOUSE_STRUCTURE_EDIT_PATH_PATTERN,
+  WarehouseStructurePage,
+} from '../../helpers/warehouse-structure';
+
+/**
+ * Validasi Basic Information + Child Warehouse Generator.
+ * Sumber TC: qa-docs/supplychain-warehouse-structure/WHSTR-validation/test-cases/ * Company: lumicharmsid (153)
  */
 test.describe('WHSTR — Validasi Header & Generator', () => {
   test.beforeEach(async ({ page }) => {

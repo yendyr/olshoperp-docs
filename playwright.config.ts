@@ -7,7 +7,7 @@ const authFile = getAuthStoragePath();
 const qaVideoEnabled = process.env.PW_QA_VIDEO === '1';
 
 const sharedUse = {
-  headless: process.env.PW_HEADLESS !== 'false',
+  headless: true,
   trace: 'retain-on-failure' as const,
   screenshot: 'only-on-failure' as const,
   video: (qaVideoEnabled ? 'retain-on-failure' : 'off') as const,

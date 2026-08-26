@@ -1,41 +1,55 @@
 # POM Element Registry — Stock Remapping (FA)
 # Route: /accounting/stock-remapping · prefix RM-
-# Kartu: ETM-15584 — Approve gagal baca availability 0 dari alokasi dokumen yang sama
-# Catatan BUILD: olshoperp-frontend sibling tidak ada; selector diverifikasi run staging.
-
-menu: accounting-stock-remapping
-menu_name: Stock Remapping
-route: /accounting/stock-remapping
-create_button_mode: link
-pom_helper: tests/helpers/stock-remapping.ts
 company_default: DEV-STG
 
 elements:
   create:
+  create_button:
+  code:
+    strategy: id
+    value: code
+    placeholder: Generated After Saved
+  building:
+    strategy: aria-placeholder
+    value: Choose Building
+  description:
+    strategy: placeholder
+    value: Add description or notes...
+  status_open:
+    strategy: id
+    value: open
+  status_draft:
+    strategy: id
+    value: draft
+  save_all:
     strategy: role
-    role: link
-    name: Create
-
+    role: button
+    name: Save All
+  detail_section:
+    strategy: disclosure
+    name: Stock Remapping Detail
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
   warehouse_origin:
     strategy: aria-placeholder
     value: Choose Warehouse
     fallback:
       - Choose Building
       - Lobby Tanrise
-
-  available_products:
-    strategy: text
-    value: Available Products
-
   remapped_to:
     strategy: aria-placeholder
     value: Choose Product
     notes: Kolom Remapped To di detail / modal Use Product
-
   approve:
     strategy: role
     role: button
     name: Approve
+  import:
+    strategy: role
+    role: button
+    name: Import
+    scope: Stock Remapping Detail
 
 gotchas:
   - Modal Available Products sudah 1 baris per Stock ID (DEV-STG: 534154=13, 534155=2)
@@ -44,3 +58,9 @@ gotchas:
   - Approve wajib hitung reserved milik dokumen ini sebagai stok sah (ETM-15584 / GAP-RM-03)
   - Origin & Remapped To harus variant 1 parent
   - Error bug: "Insufficient stock. SKU Origin ... only has 0 base units available for the selected stock."
+
+notes:
+  - "Create sering auto-redirect ke edit (fetchDefaultValues)."
+  - "Self-remap Origin = Remapped To harus ditolak di insert/update/qty/approve (ETM-15526 TC-13)."
+  - "Inline edit Remapped To tidak boleh mengubah urutan baris (TC-14)."
+  - "Import error: failed row = jumlah baris gagal; Qty non-numerik ditolak; semua required error tampil (TC-15)."

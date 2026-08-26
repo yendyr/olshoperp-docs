@@ -1,0 +1,49 @@
+{
+  "code": "RM-5U68Z9LH",
+  "url": "https://staging.olshoperp.com/accounting/stock-remapping/edit/131463",
+  "empty": {
+    "upload": {
+      "ok": false,
+      "status": 404,
+      "message": "The route api/accounting/stock-remapping-detail/131463/import-history/upload could not be found.",
+      "bodyPreview": "{\"status\":{\"error\":1,\"title\":\"Failed to process your request\",\"message\":\"The route api/accounting/stock-remapping-detail/131463/import-history/upload could not be found.\"},\"data\":[]}"
+    },
+    "history": {
+      "text": "Action File Name Imported By Imported At Status Total Failed Row Total Success Row no data available in table",
+      "failedRow": null,
+      "successRow": null,
+      "errorLogs": "Product Message Date no data available in table"
+    }
+  },
+  "i5": {
+    "upload": {
+      "ok": false,
+      "status": 404,
+      "message": "The route api/accounting/stock-remapping-detail/131463/import-history/upload could not be found.",
+      "bodyPreview": "{\"status\":{\"error\":1,\"title\":\"Failed to process your request\",\"message\":\"The route api/accounting/stock-remapping-detail/131463/import-history/upload could not be found.\"},\"data\":[]}"
+    },
+    "history": {
+      "text": "Action File Name Imported By Imported At Status Total Failed Row Total Success Row no data available in table",
+      "failedRow": null,
+      "successRow": null,
+      "errorLogs": "Product Message Date no data available in table"
+    },
+    "i5SneakedIn": false,
+    "details": []
+  },
+  "required": {
+    "upload": {
+      "ok": false,
+      "status": 404,
+      "message": "The route api/accounting/stock-remapping-detail/131463/import-history/upload could not be found.",
+      "bodyPreview": "{\"status\":{\"error\":1,\"title\":\"Failed to process your request\",\"message\":\"The route api/accounting/stock-remapping-detail/131463/import-history/upload could not be found.\"},\"data\":[]}"
+    },
+    "history": {
+      "text": "Action File Name Imported By Imported At Status Total Failed Row Total Success Row no data available in table",
+      "failedRow": null,
+      "successRow": null,
+      "errorLogs": "Product Message Date no data available in table"
+    },
+    "requiredErrorCount": 0
+  }
+}

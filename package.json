@@ -39,6 +39,7 @@
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.0",
     "cross-env": "^7.0.3",
+    "exceljs": "^4.4.0",
     "typescript": "^5.8.3"
   }
 }

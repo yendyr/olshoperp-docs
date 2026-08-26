@@ -824,13 +824,21 @@ export class SystemProductPage {
   }
 
   async selectVariantOptions(options: string[]): Promise<void> {
+    await this.selectVariantOptionsAt(0, options);
+  }
+
+  async selectVariantOptionsAt(
+    groupIndex: number,
+    options: string[],
+  ): Promise<void> {
+    const optionsCombobox = this.variantOptionsComboboxAt(groupIndex);
     const optionsContainer = this.page
       .locator('.multiselect')
-      .filter({ has: this.variantOptionsCombobox })
+      .filter({ has: optionsCombobox })
       .first();
 
     for (const option of options) {
-      await this.variantOptionsCombobox.click();
+      await optionsCombobox.click();
       await this.page.waitForTimeout(300);
 
       const listboxOption = this.page.getByRole('option', {
@@ -847,6 +855,150 @@ export class SystemProductPage {
     for (const option of options) {
       await expect(optionsContainer).toContainText(option);
     }
+  }
+
+  async clickAddNewVariantGroup(): Promise<void> {
+    const addVariant = this.page
+      .getByText('Add New Variant', { exact: true })
+      .or(this.page.getByText('Add Variant', { exact: true }))
+      .first();
+
+    await addVariant.scrollIntoViewIfNeeded();
+    await addVariant.click({ force: true });
+    await this.page.waitForTimeout(1_500);
+  }
+
+  async addVariantGroup(variantName: string, options: string[]): Promise<void> {
+    const emptyTypesBefore = await this.emptyVariantTypeComboboxes.count();
+    await this.clickAddNewVariantGroup();
+    await expect(this.emptyVariantTypeComboboxes).toHaveCount(
+      emptyTypesBefore + 1,
+      { timeout: 30_000 },
+    );
+
+    const typeCombobox = this.emptyVariantTypeComboboxes.last();
+    await typeCombobox.click();
+    await this.page.waitForTimeout(300);
+
+    const listboxOption = this.page.getByRole('option', {
+      name: variantName,
+      exact: true,
+    });
+    if (await listboxOption.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await listboxOption.click();
+    } else {
+      await this.dropdownOptions.filter({ hasText: variantName }).first().click();
+    }
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.waitForTimeout(1_000);
+
+    // Group baru: opsi masih kosong (belum ada tag). Jangan pakai .last() global —
+    // itu sering kena dropdown Ukuran/Default yang sudah terisi.
+    const optionsContainer = this.page
+      .locator('.multiselect')
+      .filter({
+        has: this.page.locator(this.variantOptionsSelector),
+      })
+      .filter({ hasNot: this.page.locator('.multiselect-tag') })
+      .last();
+    await expect(
+      optionsContainer,
+      `Dropdown opsi kosong untuk group "${variantName}"`,
+    ).toBeVisible({ timeout: 15_000 });
+
+    const optionsCombobox = optionsContainer
+      .locator(this.variantOptionsSelector)
+      .locator('visible=true')
+      .first();
+
+    for (const option of options) {
+      await optionsCombobox.click();
+      await this.page.waitForTimeout(300);
+
+      const optionItem = this.page.getByRole('option', {
+        name: option,
+        exact: true,
+      });
+      if (await optionItem.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await optionItem.click();
+      } else {
+        await this.dropdownOptions.filter({ hasText: option }).first().click();
+      }
+    }
+
+    for (const option of options) {
+      await expect(optionsContainer).toContainText(option);
+    }
+  }
+
+  async selectVariantTypeAt(
+    groupIndex: number,
+    variantName: string,
+  ): Promise<void> {
+    const combobox = this.variantTypeComboboxAt(groupIndex);
+    await combobox.click();
+    await this.page.waitForTimeout(300);
+
+    const listboxOption = this.page.getByRole('option', {
+      name: variantName,
+      exact: true,
+    });
+    if (await listboxOption.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await listboxOption.click();
+    } else {
+      await this.dropdownOptions.filter({ hasText: variantName }).first().click();
+    }
+
+    await this.page.waitForTimeout(1_000);
+  }
+
+  /**
+   * Popup expand leftover (GAP-SP-18) — Proceed jika muncul.
+   * @returns true jika popup muncul dan di-Proceed
+   */
+  async confirmVariantExpandProceedIfVisible(): Promise<boolean> {
+    const dialogText = this.page.getByText(
+      /existing variants with stock|Proceed with saving|kept as Leftovers/i,
+    );
+    const visible = await dialogText
+      .first()
+      .isVisible({ timeout: 8_000 })
+      .catch(() => false);
+    if (!visible) {
+      return false;
+    }
+
+    const proceed = this.page.getByRole('button', { name: /^Proceed$/i });
+    await expect(proceed).toBeVisible({ timeout: 10_000 });
+    await proceed.click();
+    await this.page.waitForTimeout(800);
+    return true;
+  }
+
+  async clickSaveAllWithExpandConfirm(): Promise<boolean> {
+    await this.saveAllButton.scrollIntoViewIfNeeded();
+    await this.saveAllButton.click();
+    const confirmed = await this.confirmVariantExpandProceedIfVisible();
+    await this.waitForVariantSaveCompleted();
+    return confirmed;
+  }
+
+  async readProductIdFromUrl(): Promise<string> {
+    const match = this.page.url().match(/\/edit\/(\d+)/);
+    if (!match?.[1]) {
+      throw new Error(`Halaman bukan edit product: ${this.page.url()}`);
+    }
+    return match[1];
+  }
+
+  async assertSkuNotInDatalist(sku: string): Promise<void> {
+    await this.searchDatalist(sku);
+    const link = this.page.getByRole('link', { name: sku, exact: true });
+    const text = this.page.getByText(sku, { exact: true });
+    await expect(
+      link.or(text).first(),
+      `SKU ${sku} tidak boleh tampil di datalist (soft delete)`,
+    ).not.toBeVisible({ timeout: 10_000 });
   }
 
   async clickSaveAll(): Promise<void> {
@@ -1477,35 +1629,57 @@ export class SystemProductPage {
   }
 
   private get variantTypeCombobox(): Locator {
-    return this.page
-      .locator(
-        [
-          '[placeholder="e.g: Flavour"]',
-          '[aria-placeholder="e.g: Flavour"]',
-          '.multiselect-search[aria-placeholder*="Flavour"]',
-          '[placeholder*="Flavour"]',
-          '[placeholder*="Flavor"]',
-          '[aria-placeholder*="Flavour"]',
-          '[aria-placeholder*="Flavor"]',
-        ].join(', '),
-      )
-      .locator('visible=true')
-      .first();
+    return this.variantTypeComboboxAt(0);
+  }
+
+  /** Type field kosong (placeholder Flavour) — row baru setelah Add New Variant. */
+  private get emptyVariantTypeComboboxes(): Locator {
+    return this.page.locator(this.variantTypeSelector).locator('visible=true');
+  }
+
+  private get variantTypeComboboxes(): Locator {
+    return this.emptyVariantTypeComboboxes;
+  }
+
+  private get variantOptionsComboboxes(): Locator {
+    return this.page.locator(this.variantOptionsSelector).locator('visible=true');
+  }
+
+  private variantTypeComboboxAt(index: number): Locator {
+    return this.variantTypeComboboxes.nth(index);
   }
 
   private get variantOptionsCombobox(): Locator {
+    return this.variantOptionsComboboxAt(0);
+  }
+
+  private variantOptionsComboboxAt(index: number): Locator {
     return this.page
-      .locator(
-        [
-          '[placeholder="Choose Option"]',
-          '[aria-placeholder="Choose Option"]',
-          '.multiselect-search[aria-placeholder*="Choose Option"]',
-          '[placeholder*="Choose Option"]',
-          '[aria-placeholder*="Choose Option"]',
-        ].join(', '),
-      )
+      .locator(this.variantOptionsSelector)
       .locator('visible=true')
-      .first();
+      .nth(index);
+  }
+
+  private get variantTypeSelector(): string {
+    return [
+      '[placeholder="e.g: Flavour"]',
+      '[aria-placeholder="e.g: Flavour"]',
+      '.multiselect-search[aria-placeholder*="Flavour"]',
+      '[placeholder*="Flavour"]',
+      '[placeholder*="Flavor"]',
+      '[aria-placeholder*="Flavour"]',
+      '[aria-placeholder*="Flavor"]',
+    ].join(', ');
+  }
+
+  private get variantOptionsSelector(): string {
+    return [
+      '[placeholder="Choose Option"]',
+      '[aria-placeholder="Choose Option"]',
+      '.multiselect-search[aria-placeholder*="Choose Option"]',
+      '[placeholder*="Choose Option"]',
+      '[aria-placeholder*="Choose Option"]',
+    ].join(', ');
   }
 
   private get dropdownOptions(): Locator {

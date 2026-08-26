@@ -1,23 +1,22 @@
-import { test, expect } from '@playwright/test';
-import { prepareSession } from '../../helpers/company-access';
-import { ASSEMBLY_DATALIST_PATH, AssemblyPage } from '../../helpers/assembly';
-
-/**
- * ETM-15525 — Max Assembly Qty & QTY vs alternative unit BOX
- *
- * Mapping TC → POM:
- * | # | Langkah TC | Method | Halaman |
- * | 1 | Create + Select ASS-CHARMBUN | openCreateForm / addFinishGoodsBySku | edit |
- * | 2 | Catat Max (PCS) | readMaxAssemblyQty | edit |
- * | 3 | Ganti UNIT BOX | setUnitOnDetailRow | edit |
- * | 4 | Catat Max / QTY | readMaxAssemblyQty / readQtyFromDetailRow | edit |
- * | 5 | QTY oversized + Open | setQtyOnDetailRow + trySetOpen | edit |
- *
- * Company: DEV-STG (13)
- * Data: ASS-R, COMP-R1/COMP-R2 @ 500 PCS, BOX=10 PCS
- *
- * TC docs: automate testing jira/ETM-15525/test-cases/
- */
+import { test, expect } from '@playwright/test';
+import { prepareSession } from '../../helpers/company-access';
+import { ASSEMBLY_DATALIST_PATH, AssemblyPage } from '../../helpers/assembly';
+
+/**
+ * ETM-15525 — Max Assembly Qty & QTY vs alternative unit BOX
+ *
+ * Mapping TC → POM:
+ * | # | Langkah TC | Method | Halaman |
+ * | 1 | Create + Select ASS-CHARMBUN | openCreateForm / addFinishGoodsBySku | edit |
+ * | 2 | Catat Max (PCS) | readMaxAssemblyQty | edit |
+ * | 3 | Ganti UNIT BOX | setUnitOnDetailRow | edit |
+ * | 4 | Catat Max / QTY | readMaxAssemblyQty / readQtyFromDetailRow | edit |
+ * | 5 | QTY oversized + Open | setQtyOnDetailRow + trySetOpen | edit |
+ *
+ * Company: DEV-STG (13)
+ * Data: ASS-R, COMP-R1/COMP-R2 @ 500 PCS, BOX=10 PCS
+ *
+ * TC docs: qa-docs/supplychain-assembly/ETM-15525/test-cases/ */
 const FG_SKU = 'ASS-R';
 const COMPANY = 'DEV-STG';
 

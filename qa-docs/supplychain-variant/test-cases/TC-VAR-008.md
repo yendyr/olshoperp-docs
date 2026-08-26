@@ -9,8 +9,8 @@ status: draft
 owner: QA - Yemima
 last_updated: 2026-08-14
 requirement_ref: "qa-docs/supplychain-variant/requirement.md"
-automated: false
-automated_spec: null
+automated: true
+automated_spec: "tests/specs/variant/variant-fail-cases.spec.ts"
 execution_company:
   id: 112
   code: FAT

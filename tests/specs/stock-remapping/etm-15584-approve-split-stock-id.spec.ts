@@ -133,7 +133,7 @@ test.describe.serial('ETM-15584 Stock Remapping approve split Stock ID', () => {
       notes.push(`Transaksi baru: ${rmCode} ${rmUrl}`);
       await rm.screenshot('02-header-open.png');
 
-      const apiRows = await rm.openAvailableProducts(ORIGIN_SKU);
+      const apiRows = await rm.openAvailableProductsWithData(ORIGIN_SKU);
       const fromApi = rm.parseAvailableFromApi(ORIGIN_SKU, apiRows);
       const fromTable = await rm.parseAvailableFromTable(ORIGIN_SKU);
       available = fromApi.length > 0 ? fromApi : fromTable;
