@@ -154,6 +154,12 @@ Sebelum tulis/ubah spec: tentukan mode BUILD vs RUN dari § Kriteria lengkap.
 developer, dekat sumbernya. `olshoperp-docs` ada untuk kebutuhan **test case & testing**,
 jadi ia *menumpang baca* dokumen sistem dan *memiliki* artefak pengujian.
 
+**Mirror TC ke developer itu WAJIB, bukan opsional.** Help Center Documentation
+menampilkan test case berdampingan dengan requirement-nya, dan halaman itu dibangun dari
+repo developer. TC yang tidak termirror = tidak muncul di Help Center = tidak terlihat
+siapa pun di luar tim QA. Karena itu `docs:drift` menolak (exit 1) kalau ada artefak uji
+yang belum termirror, bukan sekadar memperingatkan.
+
 **Konsekuensi keras bagi agent QA:**
 - **Jangan pernah mengedit dokumen sistem di `olshoperp-docs`.** Itu salinan. Suntinganmu
   akan hilang saat sync berikutnya, dan lebih buruk: bisa ikut ter-push menimpa aslinya.

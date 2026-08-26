@@ -110,12 +110,14 @@ Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 Sebelum menyerahkan pekerjaan, **wajib hijau**:
 
 ```bash
-npm run docs:drift     # salinan requirement di sini masih sama dgn repo developer?
+npm run docs:drift     # sinkron dua arah dgn repo developer? (requirement ditarik, TC didorong)
 npm run tc:selftest    # apakah gate-nya sendiri masih bekerja?
 npm run tc:lint        # apakah dokumenmu lolos gate?
 ```
 
-`docs:drift` merah → `npm run docs:sync` dulu, **sebelum** menulis TC apa pun.
+`docs:drift` merah → `npm run docs:sync` dulu, **sebelum** menulis TC apa pun, dan
+lagi **sesudah** selesai membuat TC — mirror TC ke repo developer wajib, karena Help Center
+Documentation dibangun dari sana. TC yang tak termirror tidak muncul bersama requirement-nya.
 Dokumen sistem (requirement/technical/knowledge-base/user-guide/capabilities) **dimiliki
 repo developer**; yang ada di sini cuma salinan. Mengeditnya di sini percuma dan berbahaya —
 suntinganmu hilang saat sync, atau malah ikut menimpa aslinya. Perlu ubah requirement?

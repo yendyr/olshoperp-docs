@@ -1,27 +1,29 @@
 #!/usr/bin/env node
 /**
- * Docs Drift — menjaga salinan dokumen sistem di `olshoperp-docs` tetap sama dengan
- * sumbernya di repo developer (`olshoperp/docs/qa-docs/`).
+ * Sync Check — menjaga `olshoperp-docs` dan `olshoperp/docs/qa-docs` konsisten,
+ * masing-masing pada arah yang benar (rule 15).
  *
- * Pembagian kepemilikan (rule 15):
- *   dokumen sistem (requirement/technical/knowledge-base/user-guide/feature-map/
- *   capabilities/README menu/_meta/sot)  -> milik repo DEVELOPER, di sini cuma salinan
- *   artefak pengujian (test-cases/, flows/, card.md, results/)  -> milik repo INI
+ *   dokumen sistem  (requirement/technical/knowledge-base/user-guide/feature-map/
+ *                    capabilities/README menu/_meta)
+ *        sumber = REPO DEVELOPER   ->  ditarik ke sini
  *
- * Kenapa perlu: `expected_result` sebuah TC hanya sah kalau requirement yang dirujuknya
- * mutakhir. Drift diam-diam pernah membuat 15 TC Purchase Inbound divalidasi terhadap
- * requirement v2.3 sementara developer sudah v2.4.
+ *   artefak pengujian (test-cases/, flows/, card.md, results/)
+ *        sumber = REPO INI         ->  didorong ke developer
+ *
+ * Kenapa dua-duanya wajib:
+ *  - Requirement usang di sini bikin `expected_result` divalidasi ke perilaku lama.
+ *  - TC yang tidak termirror tidak muncul di Help Center Documentation, yang menampilkan
+ *    test case berdampingan dengan requirement-nya. TC yang tak termirror = tak terlihat.
  *
  * Pakai:
- *   node tests/tools/docs-drift.mjs            # periksa saja (exit 1 kalau drift)
- *   node tests/tools/docs-drift.mjs --fix      # tarik versi developer ke sini
- *   OLSHOP_DEV_REPO=/path/ke/olshoperp node tests/tools/docs-drift.mjs
+ *   node tests/tools/docs-drift.mjs           # periksa (exit 1 kalau tidak sinkron)
+ *   node tests/tools/docs-drift.mjs --fix     # jalankan sync dua arah
+ *   OLSHOP_DEV_REPO=/path/ke/olshoperp ...
  */
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// `DOCS_DRIFT_ROOT` dipakai `tc:selftest` untuk menguji tool ini di repo tiruan.
 const root = process.env.DOCS_DRIFT_ROOT
   ? path.resolve(process.env.DOCS_DRIFT_ROOT)
   : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -31,13 +33,12 @@ const there = path.join(devRepo, 'docs', 'qa-docs');
 const FIX = process.argv.includes('--fix');
 
 if (!fs.existsSync(there)) {
-  console.log(`Repo developer tidak ditemukan di ${there}`);
-  console.log(`Set OLSHOP_DEV_REPO kalau letaknya lain. Dilewati.`);
+  console.log(`Repo developer tidak ditemukan di ${there} — set OLSHOP_DEV_REPO. Dilewati.`);
   process.exit(0);
 }
 
-/** Artefak milik repo ini — bukan urusan drift. */
-const OWNED_HERE = (rel) =>
+/** Artefak pengujian: sumbernya repo ini. Sisanya dokumen sistem: sumbernya developer. */
+const isTestArtifact = (rel) =>
   rel.includes('/test-cases/') ||
   rel.startsWith('flows/') ||
   /(^|\/)card\.md$/.test(rel) ||
@@ -50,45 +51,49 @@ function* walk(dir, base = dir) {
     if (e.isDirectory()) {
       if (['node_modules', '_legacy'].includes(e.name)) continue;
       yield* walk(full, base);
-    } else if (e.name.endsWith('.md')) {
-      yield path.relative(base, full);
-    }
+    } else if (e.name.endsWith('.md')) yield path.relative(base, full);
   }
 }
 
-const drifted = [];
-const missing = [];
+const same = (a, b) => fs.existsSync(a) && fs.existsSync(b) && fs.readFileSync(a).equals(fs.readFileSync(b));
+const pull = []; // developer -> sini
+const push = []; // sini -> developer
+
 for (const rel of walk(there)) {
-  if (OWNED_HERE(rel)) continue;
-  const mine = path.join(here, rel);
-  const theirs = path.join(there, rel);
-  if (!fs.existsSync(mine)) {
-    missing.push(rel);
-    continue;
-  }
-  if (!fs.readFileSync(mine).equals(fs.readFileSync(theirs))) drifted.push(rel);
+  if (isTestArtifact(rel)) continue;
+  if (!same(path.join(here, rel), path.join(there, rel))) pull.push(rel);
+}
+for (const rel of walk(here)) {
+  if (!isTestArtifact(rel)) continue;
+  if (!same(path.join(here, rel), path.join(there, rel))) push.push(rel);
 }
 
 if (FIX) {
-  for (const rel of [...drifted, ...missing]) {
-    const dest = path.join(here, rel);
+  const copy = (from, to, rel) => {
+    const dest = path.join(to, rel);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.copyFileSync(path.join(there, rel), dest);
+    fs.copyFileSync(path.join(from, rel), dest);
+  };
+  for (const rel of pull) copy(there, here, rel);
+  for (const rel of push) copy(here, there, rel);
+  console.log(`Sync — ${pull.length} dokumen ditarik dari developer, ${push.length} artefak uji didorong ke developer.`);
+  if (push.length) {
+    console.log(`Verifikasi sekarang: git -C ${path.relative(root, devRepo)} status --short docs/qa-docs/`);
   }
-  console.log(`Docs Drift — ${drifted.length + missing.length} file ditarik dari repo developer.`);
   process.exit(0);
 }
 
-console.log(`Docs Drift — membandingkan dokumen sistem dengan ${path.relative(root, there)}`);
-for (const rel of missing) console.log(`  ❌ belum ada di sini: ${rel}`);
-for (const rel of drifted) console.log(`  ❌ beda dari sumbernya: ${rel}`);
+console.log(`Sync Check — ${path.relative(root, there)}`);
+for (const rel of pull) console.log(`  ❌ dokumen sistem tidak sinkron (sumber: developer): ${rel}`);
+for (const rel of push) console.log(`  ❌ artefak uji belum termirror ke developer: ${rel}`);
 
-if (drifted.length || missing.length) {
+if (pull.length || push.length) {
   console.log(
-    `\n${drifted.length + missing.length} dokumen tidak sinkron dengan repo developer.` +
-      `\nTarik dulu: npm run docs:sync` +
-      `\nJANGAN mengedit dokumen ini di sini — sumbernya ada di repo developer (rule 15).`,
+    `\n${pull.length} dokumen perlu ditarik, ${push.length} artefak uji perlu didorong.` +
+      `\nJalankan: npm run docs:sync` +
+      `\nIngat arahnya: dokumen sistem TIDAK BOLEH diedit di sini; TC WAJIB termirror ke` +
+      ` developer supaya muncul di Help Center Documentation bersama requirement-nya.`,
   );
   process.exit(1);
 }
-console.log(`Sinkron — salinan dokumen sistem sama dengan repo developer.`);
+console.log(`Sinkron dua arah — dokumen sistem sama dengan developer, artefak uji sudah termirror.`);
