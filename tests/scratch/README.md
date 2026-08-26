@@ -17,12 +17,13 @@ mencakup `**/specs/**/*.spec.ts`, jadi apa pun di sini otomatis di luar run.
 | `product-profit-loss/*` (60+ file) | Sesi investigasi/crawling MCP untuk card **ETM-15485** (Product Profit & Loss), Agustus 2026 | Beku — nilainya hanya sebagai catatan penelusuran |
 | `product-profit-loss/etm-15485-fresh-source-e2e.spec.ts` | E2E chain 5+ menu, 587 baris, **campur UI crawling + direct API**, `waitForTimeout` statis | **Legacy** — contoh nyata kenapa infrastruktur flow dibuat. Akan digantikan flow ber-`recalls` (rule `17`); jangan direfactor, tulis ulang saat flow penggantinya dibangun |
 | `product-profit-loss/etm-15485-continue-from-po.spec.ts` | Lanjutan spec di atas | Legacy — sama |
+| `one-off/*` | Spec yang menargetkan **satu dokumen spesifik** (kode dokumen di nama file: `GL-5TVAETMA`, `OC-358481`, `PI-6A5DC78E`) | Dipindah 2026-08-26 — tidak dirujuk TC manapun dan tidak reusable. `purchase-invoice-approve-pi-6a5dc78e` juga duplikat semantik dari TC-PI-002 yang sudah punya spec via scenario. |
 
 ## Kalau butuh script sekali pakai lagi
 
 Tulis di sini (atau di `tests/specs/` dengan prefix diagnostic `check-`/`inspect-`/
 `probe-`/`debug-`/`diag-`/`find-`/`get-`/`read-`/`log-`/`verify-`), dan **jangan beri
-tag `@TC-*`/`@FLOW-*`** — `npm test` hanya menjalankan spec bertag.
+tag `@TC-*`/`@FLOW-*`/`@ETM-*`** — `npm test` hanya menjalankan spec bertag.
 
 Jalankan manual dengan menyebut path-nya:
 

@@ -109,7 +109,11 @@ Dua alat sah dipakai di workspace ini, **dengan pembagian tugas yang mengikat**.
 3. **Flow cross-menu wajib CLI.** Menjalankan chain via MCP mem-bypass preflight gate (rule 17 §0), `global-setup`/storageState, reporter summary, dan history — hasilnya tidak reproducible dan tidak tercatat. Dilarang.
 4. **TC hasil crawling MCP wajib berformat rule 13.** Gunakan frontmatter `tc_code`/`menu`/`steps`/`expected_result` dan penamaan `TC-{PREFIX}-DRAFT-{timestamp}` (rule 13 §2). Skema lain (`id:`, `menu_slug:`, `author: Playwright Web Crawler`, nama `TC-*-CRAWL-*`) membuat TC **invisible** bagi `tc:lint`, tidak bisa di-`recalls` oleh flow, dan berisiko jadi duplikat tak terdeteksi. Cek dengan `npm run tc:lint` setelah membuat TC.
 5. **Temuan UX dari MCP wajib dipropagasi.** Kalau crawling menemukan UI berubah (tombol hilang, dialog baru, tombol disabled), update **helper + `ui-components.md` + TC origin** — jangan hanya ditulis di TC baru. Kalau tidak, spec existing diam-diam jadi stale.
-6. **Spec resmi WAJIB bertag `@TC-*` / `@FLOW-*`.** `npm test` hanya menjalankan spec bertag (`--grep "@(TC|FLOW)-"`); spec tanpa tag dianggap scratch dan tidak ikut run — jalankan manual dengan menyebut path-nya. Tag juga syarat traceability ke `qa-docs/.../test-cases/`.
+6. **Spec resmi WAJIB bertag.** Tag yang dikenali `npm test` (`--grep "@(TC|FLOW|ETM)-"`):
+   - `@TC-*` — spec TC single-menu (traceability ke `qa-docs/.../test-cases/`)
+   - `@FLOW-*` — spec flow cross-menu
+   - `@ETM-*` — regression per card Jira (mis. `@ETM-15214`), untuk kasus yang belum/tidak punya TC origin tersendiri
+   Spec tanpa salah satu tag di atas dianggap scratch dan tidak ikut run — jalankan manual dengan menyebut path-nya.
 7. **Script sekali pakai: jangan diberi tag, dan beri prefix diagnostic** — `check-`, `inspect-`, `probe-`, `debug-`, `diag-`, `find-`, `get-`, `read-`, `log-`, `verify-`. Tanpa tag ia otomatis tidak ikut `npm test` (poin 6); prefix berfungsi sebagai penanda bagi manusia. Script semacam ini **tetap bisa dijalankan manual** dengan menyebut path-nya — jangan pakai `testIgnore` untuk menyembunyikannya, karena itu juga memblokir pemakaian manual. Script sekali pakai yang sudah selesai dipakai: pindahkan ke `tests/scratch/` (di luar `testMatch`) atau hapus.
 
 ---
