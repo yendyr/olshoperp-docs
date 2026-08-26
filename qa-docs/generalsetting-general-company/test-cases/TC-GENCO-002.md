@@ -12,7 +12,7 @@ requirement_ref: '§3 Tab General, §14 create validation'
 automated: true
 automated_spec: e2e/general-company-create-customer.spec.ts
 related_menus:
-  - menu_slug: generalsetting-general-company
+  - generalsetting-general-company
     menu_name: 'General Company'
     role: primary
     note: 'Form create dan verifikasi datalist/edit setelah simpan'

@@ -15,7 +15,7 @@ execution_company:
   code: FAT
   id: 112
 related_menus:
-  - menu_slug: accounting-customer-payment
+  - accounting-customer-payment
     menu_name: Account Receive
     role: primary
     note: Modal Available + sub-modal single use

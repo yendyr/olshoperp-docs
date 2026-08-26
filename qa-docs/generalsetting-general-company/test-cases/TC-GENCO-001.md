@@ -15,7 +15,7 @@ execution_company:
   code: FAT
   id: 112
 related_menus:
-  - menu_slug: generalsetting-general-company
+  - generalsetting-general-company
     menu_name: General Company
     role: primary
     note: Menu utama yang diuji (aksi Delete di datalist)

@@ -16,7 +16,7 @@ execution_company:
   id: 153
   code: lumicharmsid
 related_menus:
-  - supplychain-purchase-inbound
+  - supplychain-new-purchase-inbound
 preconditions:
   - "Supplier: PT Supplier IDR tersedia."
   - "PO-6A589088 punya outstanding inbound untuk supplier tersebut."

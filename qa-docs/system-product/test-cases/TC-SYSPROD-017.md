@@ -16,7 +16,7 @@ execution_company:
   code: FAT
 related_menus:
   - supplychain-variant
-  - supplychain-bill-of-material
+  - bill-of-material
 preconditions:
   - "User login: playwright@gmail.com / 12345678."
   - "Master Default ON. Create System Product **Set as Product Bundle ON** + Default path (header sudah Variant, bukan Single dulu). Isi resep bundle valid (§6.4)."

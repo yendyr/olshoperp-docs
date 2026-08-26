@@ -15,9 +15,9 @@ execution_company:
  id: 153
  code: lumicharmsid
 related_menus:
- - "gate-user"
- - "sidebar-menu"
- - "accounting-product-coa-group"
+ - gate-user
+ - sidebar-menu
+ - accounting-product-coa-group
 preconditions:
  - "Akun playwright@gmail.com aktif dan dapat login ke staging."
  - "User memiliki akses company lumicharmsid (id 153)."

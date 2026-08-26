@@ -18,8 +18,8 @@ related_menus:
   - accounting-sales-return
   - accounting-customer-invoice
   - accounting-customer-payment
-  - omni-sales-order
-  - supplychain-outbound-transfer
+  - omni-sales-order-report
+  - supplychain-mutation-outbound
 card_ref: "ETM-15537 (relates ETM-15442 QA Review + ETM-15534; sumber TC berbeda)"
 preconditions:
   - "Company lumicharmsid (id 153). Login punya privilege SO, wave/skip processing, Outbound, Sales Invoice, Account Receive, Sales Return (Complete), Credit Note."

@@ -121,6 +121,25 @@ Agent **tidak perlu** mengisinya manual. Jangan simpan daftar semua card yang pe
 me-retest TC ini. Antrian card in-flight → `16-card-tc-queue.mdc` (`test-queue.yaml`,
 trigger `#card-tc`).
 
+### Aturan `related_menus`
+
+Daftar **slug menu lain** yang tersentuh TC ini — dipakai untuk menelusuri dampak lintas
+menu (dan menemukan TC yang perlu ikut diuji saat sebuah menu berubah).
+
+```yaml
+related_menus: []                       # kalau murni satu menu
+related_menus:
+  - supplychain-purchase-order          # slug langsung, tanpa key/value, tanpa tanda kutip
+  - supplychain-new-purchase-inbound
+```
+
+Divalidasi `npm run tc:lint`:
+- **ERROR** — format `- menu_slug: xxx` (harus `- xxx`), atau slug yang tidak ada di
+  `qa-docs/` (biasanya salah ejaan, mis. `supplychain-purchase-inbound` padahal slug
+  yang benar `supplychain-new-purchase-inbound`).
+- **WARNING** — menyebut menunya sendiri, atau `test_type: cross-menu` tapi
+  `related_menus` kosong (dampak lintas menunya jadi tidak bisa ditelusuri).
+
 ### Aturan `execution_company`
 
 - Default: `id: 112, code: FAT`

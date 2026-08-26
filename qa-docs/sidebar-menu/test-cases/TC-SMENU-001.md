@@ -15,7 +15,7 @@ execution_company:
   code: FAT
   id: 112
 related_menus:
-  - menu_slug: sidebar-menu
+  - sidebar-menu
     menu_name: "Sidebar Menu (Gate)"
     role: primary
     note: TopBar dropdown Switch Company + refresh sidebar

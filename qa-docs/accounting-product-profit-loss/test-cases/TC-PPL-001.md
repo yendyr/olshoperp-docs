@@ -17,12 +17,12 @@ execution_company:
 related_menus:
   - accounting-product-profit-loss
   - supplychain-purchase-order
-  - supplychain-purchase-inbound
+  - supplychain-new-purchase-inbound
   - accounting-product-benchmark-price
   - all-sales-order
   - omni-waves-management
   - supplychain-delivery-order
-  - supplychain-outbound
+  - supplychain-mutation-outbound
 preconditions:
   - "User login ke staging dengan akun yang memiliki hak akses menu lengkap"
   - "Company aktif: lumicharmsid (ID: 110)"

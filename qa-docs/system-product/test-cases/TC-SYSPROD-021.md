@@ -16,7 +16,7 @@ execution_company:
   code: FAT
 related_menus:
   - supplychain-variant
-  - omni-sales-order
+  - omni-sales-order-report
 preconditions:
   - "User login: playwright@gmail.com / 12345678."
   - "Siapkan **3 produk Default** terpisah, masing-masing child hanya punya **satu** jenis relasi: (1) SO saja; (2) assembly saja; (3) transfer internal saja. Tidak ada PR/PO/inbound/outbound/BOM."

@@ -15,7 +15,7 @@ execution_company:
   id: 112
   code: FAT
 related_menus:
-  - menu_slug: supplychain-new-purchase-inbound
+  - supplychain-new-purchase-inbound
     menu_name: "Purchase Inbound"
     role: involved
     note: "Precondition type sudah dipakai Colli code"

@@ -15,7 +15,7 @@ execution_company:
   id: 112
   code: FAT
 related_menus:
-  - menu_slug: generalsetting-internal-company
+  - generalsetting-internal-company
     menu_name: "Internal Company"
     role: involved
     note: "Section Show Public Data — toggle allow lihat public data company A"

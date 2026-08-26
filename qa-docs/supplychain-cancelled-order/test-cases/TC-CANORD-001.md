@@ -15,7 +15,7 @@ execution_company:
   id: 153
   code: lumicharmsid
 related_menus:
-  - sales-order
+  - all-sales-order
   - sales-order-general
 preconditions:
   - "User login: playwright@gmail.com / 12345678."

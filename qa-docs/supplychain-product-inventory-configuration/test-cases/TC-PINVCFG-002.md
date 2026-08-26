@@ -15,7 +15,7 @@ execution_company:
   id: 153
   code: lumicharmsid
 related_menus:
-  - menu_slug: supplychain-product-general-configuration
+  - supplychain-product-general-configuration
     menu_name: Product General Configuration
     role: sumber SKU seed (create)
     note: "-"

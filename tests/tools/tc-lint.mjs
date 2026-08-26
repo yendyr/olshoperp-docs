@@ -14,6 +14,8 @@
  *  6. `automated_spec` menunjuk file yang tidak ada
  *  7. File TC dengan tc_code PENDING-* (menunggu #renumber-tc)
  *  8. Penamaan file di luar pola rule 13 (TC-{PREFIX}-{NNN}.md / TC-{PREFIX}-DRAFT-{ts}.md)
+ *  9. `related_menus` format salah / menunjuk menu tidak ada (ERROR), menyebut menu
+ *     sendiri, atau `test_type: cross-menu` tanpa `related_menus` (WARNING)
  *
  * Pakai: node tests/tools/tc-lint.mjs   (atau: npm run tc:lint)
  */
@@ -53,6 +55,14 @@ function parseFrontmatter(rawText) {
       if (code) recalls.push(code);
     }
   }
+
+  // related_menus: `[]` (kosong) atau daftar slug (`- menu-slug`).
+  // Blok mentah disimpan supaya format menyimpang bisa dilaporkan apa adanya.
+  const relatedRaw = fm.match(/^related_menus:\n((?:\s+-\s+.+\n?)+)/m)?.[1] ?? '';
+  const relatedMenus = relatedRaw
+    .split('\n')
+    .map((l) => l.match(/-\s+(.+?)\s*$/)?.[1])
+    .filter(Boolean);
   return {
     tc_code: get('tc_code'),
     title: get('title'),
@@ -60,6 +70,7 @@ function parseFrontmatter(rawText) {
     menu: get('menu'),
     automated_spec: get('automated_spec'),
     duplicate_candidate: get('duplicate_candidate'),
+    relatedMenus,
     recalls,
   };
 }
@@ -85,6 +96,14 @@ function similarity(a, b) {
   for (const w of a) if (b.has(w)) shared++;
   return shared / Math.min(a.size, b.size);
 }
+
+// Slug menu yang sah = folder di qa-docs/ (di luar _meta, _legacy, flows).
+const validMenuSlugs = new Set(
+  fs
+    .readdirSync(qaDocs, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && !d.name.startsWith('_') && d.name !== 'flows')
+    .map((d) => d.name),
+);
 
 const errors = [];
 const warnings = [];
@@ -156,6 +175,31 @@ for (const file of walkTcFiles(qaDocs)) {
     } else {
       untyped.push(rel);
     }
+  }
+
+  // `related_menus` — daftar slug menu lain yang tersentuh TC ini. Dipakai manusia
+  // untuk menelusuri dampak lintas menu; formatnya harus konsisten supaya bisa
+  // di-grep dan (nanti) dibaca tooling.
+  for (const entry of fm.relatedMenus) {
+    if (/:/.test(entry)) {
+      errors.push(
+        `related_menus format salah di ${rel}: "${entry}" —` +
+          ` tulis slug langsung (\`- ${entry.split(':').pop().trim()}\`), bukan pasangan key/value`,
+      );
+    } else if (!validMenuSlugs.has(entry)) {
+      errors.push(
+        `related_menus menunjuk menu yang tidak ada: "${entry}" (di ${rel})` +
+          ` — cek ejaan slug terhadap folder qa-docs/`,
+      );
+    } else if (entry === fm.menu) {
+      warnings.push(`related_menus menyebut menunya sendiri (${entry}): ${rel}`);
+    }
+  }
+  if (fm.test_type === 'cross-menu' && fm.relatedMenus.length === 0) {
+    warnings.push(
+      `test_type cross-menu tapi \`related_menus\` kosong: ${rel}` +
+        ` — isi menu lain yang tersentuh supaya dampak lintas menunya bisa ditelusuri`,
+    );
   }
 
   // Gate anti-duplikat: TC yang ditandai kandidat duplikat TIDAK BOLEH lolos ke

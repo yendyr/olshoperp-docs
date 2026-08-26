@@ -15,7 +15,7 @@ execution_company:
   code: FAT
   id: 112
 related_menus:
-  - menu_slug: gate-user
+  - gate-user
     menu_name: "User (Gate)"
     role: primary
     note: Identitas login & token Sanctum (POST /api/login)

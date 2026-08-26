@@ -15,7 +15,7 @@ execution_company:
   id: 153
   code: lumicharmsid
 related_menus:
-  - supplychain-product
+  - system-product
   - supplychain-variant
 preconditions:
   - "User login ke staging: playwright@gmail.com / 12345678"

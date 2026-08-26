@@ -16,7 +16,7 @@ execution_company:
   id: 112
   code: FAT
 related_menus:
-  - menu_slug: supplychain-colli-type
+  - supplychain-colli-type
     menu_name: "Colli Type"
     role: involved
     note: "Master Choose Colli Type"

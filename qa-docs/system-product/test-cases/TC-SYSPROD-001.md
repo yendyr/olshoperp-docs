@@ -15,7 +15,7 @@ execution_company:
   code: lumicharmsid
   id: 153
 related_menus:
-  - menu_slug: system-product
+  - system-product
     menu_name: "System Product"
     role: primary
     note: Datalist & form create/edit `/supplychain/product`

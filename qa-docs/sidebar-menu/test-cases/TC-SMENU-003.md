@@ -15,7 +15,7 @@ execution_company:
   code: DEV-STG
   id: 13
 related_menus:
-  - menu_slug: sidebar-menu
+  - sidebar-menu
     menu_name: "Sidebar Menu (Gate)"
     role: primary
     note: TopBar Switch Company — skenario terakhir dengan delay 5 detik di spec
