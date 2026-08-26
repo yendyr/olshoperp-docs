@@ -110,6 +110,7 @@ Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 | 5 | **Selector dari source Vue, bukan DOM scraping**, dan mendarat di `pom-registry`/`helpers` — bukan hardcoded di spec | Fondasi stabilitas; selector scraping pecah tiap re-render |
 | 6 | **Temuan UX baru wajib dipropagasi** ke helper + `ui-components.md` + TC origin | Kalau tidak, spec lain diam-diam jadi stale |
 | 7 | **Web UI crawling untuk act & assert.** API testing hanya jika user eksplisit minta | Rule `13`/`14` §8 |
+| 8 | **Satu TC dipakai di banyak tempat** — jangan bikin TC baru hanya karena datang dari card Jira lain. `origin_jira` = asal-usul, bukan kepemilikan; `last_execution` cukup satu dan diperbarui otomatis tiap run (termasuk saat flow me-recall-nya) | Rule `13` § origin_jira dan last_execution |
 
 ---
 
@@ -148,6 +149,7 @@ npm run test:tc -- "@TC-XXX"                 # jalankan TC by tag
 npm run test:smoke                           # smoke 4 menu
 npm run test:report                          # buka HTML report
 npm run component:sync                       # cek drift katalog komponen vs source frontend
+OLSHOP_RUN_JIRA=ETM-15647 npm run test:tc -- "@TC-XXX"   # run untuk card tertentu (tercatat di last_execution.jira)
 ```
 
 ## Repo app = READ-ONLY

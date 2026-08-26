@@ -34,6 +34,7 @@ export default defineConfig({
     ['list'],
     ['html', { open: 'never' }],
     ['./tests/reporters/flow-summary-reporter.ts'],
+    ['./tests/reporters/tc-execution-reporter.ts'],
   ],
   timeout: 180_000,
   expect: { timeout: 15_000 },

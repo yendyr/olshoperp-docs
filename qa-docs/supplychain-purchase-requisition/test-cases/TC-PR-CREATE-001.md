@@ -70,4 +70,9 @@ run_history:
     status: failed
     executor: "Cursor Agent (Playwright)"
     notes: "PR berhasil tersimpan (false negative assertion): extractor transaction code salah sumber (breadcrumb/URL), seharusnya field Transaction Code di Basic Information."
+last_execution:
+  at: "2026-08-26"
+  jira: null
+  status: passed
+  via: "tests/specs/flows/scm-inbound.spec.ts"
 ---

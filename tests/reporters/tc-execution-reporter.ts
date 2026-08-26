@@ -1,0 +1,125 @@
+import type { Reporter, TestCase, TestResult } from '@playwright/test/reporter';
+import * as fs from 'fs';
+import * as path from 'path';
+
+/**
+ * TC Execution Reporter — memperbarui `last_execution` di file TC origin setiap kali
+ * TC tersebut dieksekusi, baik langsung maupun lewat flow yang me-recall-nya.
+ *
+ * Konsep yang ditegakkan (rule 13): **satu TC origin dipakai di banyak tempat.**
+ * TC bisa dijalankan sendiri, dipanggil flow cross-menu, atau diuji ulang untuk card
+ * Jira tertentu — semuanya eksekusi atas TC yang sama. Karena itu `last_execution`
+ * cukup SATU dan terus diperbarui; card Jira yang melahirkan TC dicatat sekali di
+ * `origin_jira` sebagai asal-usul, bukan kepemilikan, dan tidak pernah ditimpa.
+ *
+ * Sumber kode TC yang dieksekusi:
+ *   1. tag `@TC-*` di judul test (spec single-menu)
+ *   2. daftar `recalls` di attachment `flow-phase` (spec flow) — inilah yang membuat
+ *      TC origin ikut ter-update saat flow berjalan, karena rantainya nyata
+ */
+export default class TcExecutionReporter implements Reporter {
+  private executed = new Map<string, { status: string; via: string }>();
+
+  onTestEnd(test: TestCase, result: TestResult): void {
+    const via = path.relative(process.cwd(), test.location.file);
+
+    for (const m of test.title.matchAll(/@(TC-[A-Z0-9-]+)/g)) {
+      this.record(m[1], result.status, via);
+    }
+
+    const attachment = result.attachments.find((a) => a.name === 'flow-phase' && a.body);
+    if (!attachment) return;
+    try {
+      const phase = JSON.parse(attachment.body!.toString('utf-8')) as {
+        recalls?: string[];
+      };
+      for (const raw of phase.recalls ?? []) {
+        // Nilai konstanta bisa gabungan ("TC-A + TC-B") — pecah jadi kode terpisah.
+        for (const code of raw.split(/\s*\+\s*/).map((c) => c.trim())) {
+          if (code) this.record(code, result.status, via);
+        }
+      }
+    } catch {
+      /* attachment rusak — abaikan, bukan tugas reporter memvalidasi */
+    }
+  }
+
+  private record(code: string, status: string, via: string): void {
+    const prev = this.executed.get(code);
+    // Kalau satu TC dieksekusi beberapa kali dalam satu run (mis. retry atau dipakai
+    // dua flow), status gagal lebih informatif untuk dicatat daripada lulus.
+    if (prev && prev.status !== 'passed') return;
+    this.executed.set(code, { status, via });
+  }
+
+  onEnd(): void {
+    if (this.executed.size === 0) return;
+
+    const qaDocs = path.resolve(process.cwd(), 'qa-docs');
+    if (!fs.existsSync(qaDocs)) return;
+
+    // Index tc_code → path file, sekali saja.
+    const index = new Map<string, string>();
+    for (const menu of fs.readdirSync(qaDocs)) {
+      const dir = path.join(qaDocs, menu, 'test-cases');
+      if (!fs.existsSync(dir)) continue;
+      for (const f of fs.readdirSync(dir)) {
+        if (!/^TC-.*\.md$/.test(f)) continue;
+        const full = path.join(dir, f);
+        const code = fs
+          .readFileSync(full, 'utf-8')
+          .replace(/^﻿/, '')
+          .match(/^tc_code:\s*"?([^"\n]+)"?\s*$/m)?.[1]
+          ?.trim();
+        if (code) index.set(code, full);
+      }
+    }
+
+    const today = new Date().toISOString().slice(0, 10);
+    const jira = process.env.OLSHOP_RUN_JIRA?.trim() || null;
+    const updated: string[] = [];
+    const missing: string[] = [];
+
+    for (const [code, { status, via }] of this.executed) {
+      const file = index.get(code);
+      if (!file) {
+        missing.push(code);
+        continue;
+      }
+
+      const raw = fs.readFileSync(file, 'utf-8');
+      const block =
+        `last_execution:\n` +
+        `  at: "${today}"\n` +
+        `  jira: ${jira ? `"${jira}"` : 'null'}\n` +
+        `  status: ${status}\n` +
+        `  via: "${via}"\n`;
+
+      // Ganti blok lama kalau ada; kalau belum ada, sisipkan sebelum penutup frontmatter.
+      // `origin_jira` TIDAK pernah disentuh — itu asal-usul, bukan riwayat eksekusi.
+      let next: string;
+      if (/^last_execution:\n(?:[ \t]+\S.*\n)*/m.test(raw)) {
+        next = raw.replace(/^last_execution:\n(?:[ \t]+\S.*\n)*/m, block);
+      } else {
+        next = raw.replace(/\n---\n/, `\n${block}---\n`);
+      }
+
+      if (next !== raw) {
+        fs.writeFileSync(file, next, 'utf-8');
+        updated.push(`${code} (${status})`);
+      }
+    }
+
+    if (updated.length) {
+      // eslint-disable-next-line no-console
+      console.log(`\nlast_execution diperbarui di ${updated.length} TC: ${updated.join(', ')}`);
+    }
+    if (missing.length) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `Catatan: ${missing.length} kode TC tidak ditemukan di qa-docs (${missing.join(', ')})` +
+          ` — kemungkinan tag deskriptif tanpa TC origin, atau TC belum dibuat.`,
+      );
+    }
+  }
+}

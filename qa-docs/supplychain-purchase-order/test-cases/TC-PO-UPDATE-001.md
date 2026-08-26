@@ -58,4 +58,9 @@ run_history:
     status: passed
     environment: staging
     note: "Show datalist + radio Open + Save All — status Open OK"
+last_execution:
+  at: "2026-08-26"
+  jira: null
+  status: passed
+  via: "tests/specs/flows/scm-inbound.spec.ts"
 ---

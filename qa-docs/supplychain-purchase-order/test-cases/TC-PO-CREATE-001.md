@@ -107,4 +107,9 @@ run_history:
     status: failed
     environment: staging
     note: "BLOCKER — SKU-SPIDOL-hitam tidak tersedia di outstanding; diganti SKUSINGLE-001"
+last_execution:
+  at: "2026-08-26"
+  jira: null
+  status: passed
+  via: "tests/specs/flows/scm-inbound.spec.ts"
 ---

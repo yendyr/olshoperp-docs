@@ -87,11 +87,39 @@ last_execution:
 ---
 ```
 
-### `origin_jira` dan `last_execution`
+### `origin_jira` dan `last_execution` — TC itu SATU, dipakai di banyak tempat
 
-- TC baru dari card Jira: isi `origin_jira: ETM-xxxxx` sekali. Field lama `card_ref` = origin yang sama; jangan ditimpa saat re-test.
-- Setiap run: update `last_execution.at`. Isi `last_execution.jira` hanya jika run itu untuk card tertentu; kalau tidak, biarkan `null`.
-- Jangan simpan daftar semua card yang pernah me-retest TC ini. Antrian card in-flight → `16-card-tc-queue.mdc` (`test-queue.yaml`, trigger `#card-tc`).
+> [!IMPORTANT]
+> **Satu TC origin bisa dieksekusi di mana saja** — dijalankan sendiri, dipanggil flow
+> cross-menu, atau diuji ulang untuk card Jira tertentu. Semuanya eksekusi atas TC yang
+> **sama**, bukan TC baru. Karena itu:
+> - `origin_jira` = **asal-usul, bukan kepemilikan.** Card yang melahirkan TC dicatat
+>   sekali dan **tidak pernah ditimpa**; card lain yang me-retest TC ini tidak mengubahnya.
+> - `last_execution` **cukup satu** dan terus diperbarui tiap kali TC dijalankan —
+>   berapa kali pun, lewat jalur apa pun.
+> - Jangan membuat TC baru hanya karena permintaannya datang dari card berbeda. Cek TC
+>   existing dulu (§1, §5); kalau sudah ada yang mengcover → reuse/retest.
+
+**Pembaruan `last_execution` berjalan otomatis** — `tests/reporters/tc-execution-reporter.ts`
+menulisnya setiap run, dari dua sumber:
+1. tag `@TC-*` di judul test (spec single-menu), dan
+2. daftar `recalls` pada flow — sehingga **menjalankan satu flow ikut memperbarui semua
+   TC origin yang dirantainya**. Contoh nyata: satu run `scm-inbound` memperbarui
+   6 TC sekaligus (PR create+approve, PO create/open/approve, Purchase Inbound create).
+
+Bentuk yang ditulis:
+
+```yaml
+last_execution:
+  at: "2026-08-26"                              # tanggal run terakhir
+  jira: null                                    # isi via env OLSHOP_RUN_JIRA saat run untuk card tertentu
+  status: passed                                # hasil run terakhir
+  via: "tests/specs/flows/scm-inbound.spec.ts"  # dieksekusi lewat spec/flow mana
+```
+
+Agent **tidak perlu** mengisinya manual. Jangan simpan daftar semua card yang pernah
+me-retest TC ini. Antrian card in-flight → `16-card-tc-queue.mdc` (`test-queue.yaml`,
+trigger `#card-tc`).
 
 ### Aturan `execution_company`
 
