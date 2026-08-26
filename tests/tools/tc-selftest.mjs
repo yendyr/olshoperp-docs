@@ -93,6 +93,31 @@ const CASES = [
         .replace('last_execution:', 'test_result:\n  status: pass\nlast_execution:') },
     expect: 'test_result.status tidak sah' },
 
+  { name: 'run manual dengan nama + notes diterima',
+    files: { 'TC-SELF-001.md': render({ last_execution: { at: '"2026-08-26"', jira: 'null',
+      status: 'passed', via: '"manual:QA - Jeiniffer"', notes: '"Semua field tersimpan; datalist sesuai."' } }) },
+    expect: null },
+
+  { name: 'run manual tanpa nama penguji ditolak',
+    files: { 'TC-SELF-001.md': render({ last_execution: { at: '"2026-08-26"', jira: 'null',
+      status: 'passed', via: '"manual:"', notes: '"ok"' } }) },
+    expect: 'manual tanpa nama' },
+
+  { name: 'run manual tanpa notes (actual result) ditolak',
+    files: { 'TC-SELF-001.md': render({ last_execution: { at: '"2026-08-26"', jira: 'null',
+      status: 'passed', via: '"manual:QA - Jeiniffer"' } }) },
+    expect: 'tanpa `notes`' },
+
+  { name: 'failed pun wajib menyebut asalnya',
+    files: { 'TC-SELF-001.md': render({ last_execution: { at: '"2026-08-26"', jira: 'null',
+      status: 'failed', via: 'null' } }) },
+    expect: 'tanpa `via`' },
+
+  { name: 'notes tidak boleh dipakai di luar run manual',
+    files: { 'TC-SELF-001.md': render({ last_execution: { at: 'null', jira: 'null',
+      status: 'not_run', via: 'null', notes: '"nyelundup"' } }) },
+    expect: 'menyimpang' },
+
   { name: 'tc_code duplikat',
     files: { 'TC-SELF-001.md': render(), 'TC-SELF-001b.md': render({ title: '"Selftest — kembaran"' }) },
     expect: 'tc_code DUPLIKAT' },

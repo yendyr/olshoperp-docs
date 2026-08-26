@@ -128,6 +128,8 @@ const errors = [];
 const warnings = [];
 const untyped = [];
 const unverified = [];
+const manual = [];
+const cliVerified = [];
 const byCode = new Map();
 const byMenuTitle = new Map();
 const allDocs = [];
@@ -210,6 +212,8 @@ for (const file of walkTcFiles(qaDocs)) {
 
   const RUN_STATUS = ['passed', 'failed', 'blocked', 'skipped', 'unknown', 'not_run'];
   const LE_KEYS = ['at', 'jira', 'status', 'via'];
+  // `notes` hanya sah untuk run manual — di situlah actual result ditulis manusia.
+  const LE_KEYS_MANUAL = [...LE_KEYS, 'notes'];
   const le = fm.last_execution;
   if (!le) {
     errors.push(
@@ -218,7 +222,8 @@ for (const file of walkTcFiles(qaDocs)) {
     );
   } else {
     const missing = LE_KEYS.filter((k) => !le.keys.includes(k));
-    const extra = le.keys.filter((k) => !LE_KEYS.includes(k));
+    const allowed = le.via?.startsWith('manual:') ? LE_KEYS_MANUAL : LE_KEYS;
+    const extra = le.keys.filter((k) => !allowed.includes(k));
     if (missing.length || extra.length) {
       errors.push(
         `Bentuk \`last_execution\` menyimpang: ${rel} →` +
@@ -235,6 +240,7 @@ for (const file of walkTcFiles(qaDocs)) {
     // Aturan mutlak #1/#2 ditegakkan mesin: hasil hanya sah dari run Playwright CLI,
     // dan buktinya adalah `via` yang menunjuk file spec yang benar-benar ada.
     const viaLegacy = le.via?.startsWith('legacy:');
+    const viaManual = le.via?.startsWith('manual:');
     const viaMcp = /mcp/i.test(le.via ?? '');
     if (viaMcp) {
       errors.push(
@@ -242,17 +248,37 @@ for (const file of walkTcFiles(qaDocs)) {
           ` verifikasi lewat MCP BUKAN hasil test (aturan mutlak #1/#2).` +
           ` Set status: unknown + via: "legacy:manual", atau jalankan ulang lewat Playwright CLI`,
       );
-    } else if (le.status === 'passed' && !viaLegacy) {
+    } else if (['passed', 'failed'].includes(le.status) && !viaLegacy) {
+      // Hasil apa pun wajib menyebut SIAPA/APA yang menghasilkannya.
       if (!le.via || le.via === 'null') {
         errors.push(
-          `last_execution.status: passed tanpa \`via\`: ${rel} →` +
-            ` passed hanya sah kalau ada spec yang menghasilkannya (aturan mutlak #2)`,
+          `last_execution.status: ${le.status} tanpa \`via\`: ${rel} →` +
+            ` hasil wajib menyebut asalnya: path spec (run CLI) atau \`manual:{Nama}\``,
         );
+      } else if (viaManual) {
+        const who = le.via.slice('manual:'.length).trim();
+        if (!who) {
+          errors.push(
+            `last_execution.via manual tanpa nama: ${rel} →` +
+              ` tulis \`manual:{Nama Penguji}\`. Run manual tidak reproducible,` +
+              ` jadi penanggung jawabnya harus jelas`,
+          );
+        }
+        if (!le.keys.includes('notes')) {
+          errors.push(
+            `Run manual tanpa \`notes\`: ${rel} →` +
+              ` tulis actual result singkat di \`notes\`. Tanpa itu "${le.status}" cuma klaim,` +
+              ` tidak ada yang bisa direview`,
+          );
+        }
+        manual.push(rel);
       } else if (!fs.existsSync(path.join(root, le.via))) {
         errors.push(
           `last_execution.via menunjuk spec yang tidak ada: ${le.via} (di ${rel}) →` +
-            ` status passed tidak bisa dipertanggungjawabkan`,
+            ` kalau ini run manual, tulis \`manual:{Nama}\` + \`notes\`, bukan path spec`,
         );
+      } else {
+        cliVerified.push(rel);
       }
     }
     if (viaLegacy && ['passed', 'failed'].includes(le.status)) unverified.push(rel);
@@ -362,6 +388,10 @@ for (const doc of allDocs) {
 }
 
 console.log(`TC Lint — ${allDocs.length} dokumen TC dipindai`);
+console.log(
+  `  ℹ️  Asal hasil: ${cliVerified.length} run CLI · ${manual.length} manual ·` +
+    ` ${unverified.length} warisan (belum terverifikasi)`,
+);
 if (unverified.length) {
   console.log(
     `  ℹ️  ${unverified.length} TC hasilnya masih warisan (\`via: legacy:*\`) — belum pernah` +

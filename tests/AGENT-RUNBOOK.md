@@ -105,6 +105,31 @@ Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 
 ---
 
+## Kalau TC-nya dijalankan manual (bukan Playwright)
+
+Sebagian besar TC di katalog dijalankan orang, bukan mesin. Alurnya:
+
+1. Agent membuat/menyiapkan TC → `last_execution.status: not_run`, `via: null`
+2. Penguji menjalankan manual, lalu **mengisi hasilnya sendiri**:
+
+```yaml
+last_execution:
+  at: "2026-08-26"
+  jira: ETM-15522
+  status: failed
+  via: "manual:QA - Jeiniffer"
+  notes: "Tombol Approve tetap aktif padahal fiscal Closed. Expected STOP, actual tersimpan."
+```
+
+3. `npm run tc:lint` — wajib 0 error sebelum di-commit
+4. `npm run docs:sync` — supaya hasilnya ikut muncul di Help Center
+
+**Yang tidak boleh:** mengisi `passed` tanpa `notes`, tanpa nama penguji, atau
+menganggap card Jira yang sudah *Done* sebagai bukti TC lulus. Lint menolak dua yang
+pertama; yang ketiga tidak bisa dideteksi mesin — itu tanggung jawab reviewer.
+
+---
+
 ## Gate — apa yang dijaga mesin, apa yang tidak
 
 Sebelum menyerahkan pekerjaan, **wajib hijau**:
@@ -140,7 +165,8 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 | # | Aturan | Kenapa |
 |---|---|---|
 | 1 | **Eksekusi test = Playwright CLI.** MCP hanya eksplorasi/diagnosa | MCP mem-bypass preflight, storageState, reporter, history → hasil tidak reproducible |
-| 2 | **Status `passed`/`automated: true` hanya sah dari CLI run** — ditegakkan `tc:lint`: `last_execution.status: passed` wajib punya `via:` ke file spec yang ada; `via` bermuatan "MCP" ditolak | Verifikasi via MCP dicatat sebagai observasi (`status: draft` + catatan) |
+| 2 | **Tiap hasil wajib menyebut asalnya.** `passed`/`failed` harus punya `via:` — path spec (run CLI) **atau** `manual:{Nama}` + `notes` berisi actual result. `via` bermuatan "MCP" ditolak | Run manual itu sah dan wajib tercatat; yang dilarang adalah hasil tanpa penanggung jawab. Verifikasi lewat MCP bukan hasil test — catat sebagai observasi |
+| 2b | **Status card Jira tidak pernah menulis hasil TC.** Card *Done* = pekerjaan selesai; TC `passed` = pengujian terbukti. Card Done + TC `not_run` → laporkan, jangan tambal | Rule `12` |
 | 3 | **TC hasil crawling wajib format rule 13** (`tc_code`, `menu`, `steps`, `expected_result`) | Skema lain (`id:`, `menu_slug:`) invisible bagi `tc:lint`, tak bisa di-recall flow, jadi duplikat tak terdeteksi |
 | 4 | **Jangan duplikasi langkah TC.** Langkah hidup di `tests/scenarios/` (1 fungsi = 1 TC origin); flow me-*recall*, tidak menyalin | Kalau UX berubah, cukup update 1 tempat — bukan berburu salinan |
 | 4b | **Dokumen sistem milik repo developer.** requirement/technical/knowledge-base/user-guide/capabilities di sini = salinan. Jangan diedit; `docs:drift` sebelum kerja | Salinan tertinggal pernah bikin 15 TC Purchase Inbound divalidasi ke requirement v2.3 padahal developer sudah v2.4 |

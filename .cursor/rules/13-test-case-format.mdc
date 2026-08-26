@@ -133,6 +133,39 @@ last_execution:
 >   `tc:lint` melaporkan jumlahnya; angka itu turun sendiri begitu spec-nya dijalankan
 >   sungguhan. Jangan pernah menulis `legacy:*` untuk TC baru.
 
+### Run manual — jalur sah, bukan kelas dua
+
+Sebagian besar TC di katalog ini dijalankan **manual** oleh anggota tim, bukan lewat
+Playwright. Itu sah dan hasilnya wajib tercatat. Bentuknya:
+
+```yaml
+last_execution:
+  at: "2026-08-26"
+  jira: ETM-15522                      # opsional, kalau run untuk card tertentu
+  status: passed                       # atau failed / blocked
+  via: "manual:QA - Jeiniffer"         # WAJIB bernama — run manual tidak reproducible
+  notes: "Semua field tersimpan; datalist sesuai. Toast sukses muncul."
+```
+
+- `via: manual:{Nama}` **wajib menyebut nama penguji.** Run manual tidak bisa diulang
+  mesin, jadi satu-satunya jaminan mutunya adalah orang yang bertanggung jawab.
+- `notes` **wajib** untuk run manual — isinya **actual result** singkat. Tanpa itu,
+  `passed` cuma klaim yang tidak bisa direview siapa pun. `notes` **hanya** boleh ada
+  pada run manual; di run CLI reporter yang menulis, tidak perlu catatan tangan.
+- Ini satu-satunya tempat manusia boleh menulis `last_execution` dengan tangan.
+
+**Tingkat kekuatan bukti** — bukan semua hasil setara, dan itu harus terlihat:
+
+| `via` | Arti | Bisa diulang? |
+|---|---|---|
+| `tests/specs/...spec.ts` | run Playwright CLI, ditulis reporter | ✅ ya |
+| `manual:{Nama}` | dijalankan orang, actual result di `notes` | ❌ tidak |
+| `legacy:*` | klaim warisan sebelum gate ada | ❌ tidak, jangan dipakai untuk TC baru |
+| `null` | belum pernah jalan (`status: not_run`) | — |
+
+`tc:lint` melaporkan komposisinya tiap run. Kalau angka manual besar dan CLI kecil,
+itu bukan pelanggaran — itu peta prioritas otomasi.
+
 > [!CAUTION]
 > **Jangan pernah menyuruh siapa pun mengisi `last_execution` dengan tangan** — termasuk
 > dalam ringkasan/instruksi eksekusi yang kamu tulis untuk manusia. Kalimat seperti

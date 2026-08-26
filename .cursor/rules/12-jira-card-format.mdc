@@ -13,6 +13,28 @@ Gunakan rule ini setiap kali user meminta membuat Jira card, bug report, improve
 
 ---
 
+> [!CAUTION]
+> **Status card Jira BUKAN hasil test, dan tidak pernah menulis `last_execution`.**
+> Card digeser ke *Done* oleh alur kerja tim — bisa "done passed", bisa "done failed",
+> bisa juga ditutup karena alasan lain. Itu status **pekerjaan**, bukan status
+> **pengujian**. Hasil pengujian hidup di `last_execution` TC-nya (rule `13`).
+>
+> Konsekuensinya, dua-duanya harus dicatat terpisah:
+> - TC lulus saat diuji manual → `last_execution` diisi `via: manual:{Nama}` + `notes`
+> - Card selesai → digeser di Jira oleh manusia
+>
+> **Card Done sementara TC-nya masih `not_run` = pekerjaan belum benar-benar terbukti.**
+> Kalau menemukan pola ini, laporkan; jangan menambal dengan menulis hasil karangan.
+
+> [!WARNING]
+> **Agent tidak membuat, mengedit, atau menggeser card Jira tanpa permintaan eksplisit
+> di sesi itu.** Membuat card = tindakan keluar yang dilihat seluruh tim dan memicu
+> alur kerja orang lain. Menyusun *draft* card di chat boleh; mengirimkannya tidak,
+> sampai diminta. Menggeser status card (mis. ke *Done*) tidak pernah jadi wewenang
+> agent — itu keputusan orang yang mengerjakannya.
+
+---
+
 ## Aturan Judul Card (WAJIB semua tipe)
 
 Format: `[Nama Menu] - short desc`
