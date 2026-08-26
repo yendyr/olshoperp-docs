@@ -133,6 +133,19 @@ last_execution:
 >   `tc:lint` melaporkan jumlahnya; angka itu turun sendiri begitu spec-nya dijalankan
 >   sungguhan. Jangan pernah menulis `legacy:*` untuk TC baru.
 
+> [!CAUTION]
+> **Jangan pernah menyuruh siapa pun mengisi `last_execution` dengan tangan** — termasuk
+> dalam ringkasan/instruksi eksekusi yang kamu tulis untuk manusia. Kalimat seperti
+> "saat dieksekusi, `last_execution.jira` dapat diperbarui di masing-masing file TC"
+> mengundang persis kebocoran yang ditutup gate ini: hasil yang diketik, bukan dihasilkan
+> run. Cara yang benar untuk mencatat card:
+>
+> ```bash
+> OLSHOP_RUN_JIRA=ETM-15522 npm run test:tc -- "@TC-CBR-004"
+> ```
+>
+> Reporter yang menuliskannya, lengkap dengan `via` yang bisa dipertanggungjawabkan.
+
 Agent **tidak perlu** mengisinya manual. Jangan simpan daftar semua card yang pernah
 me-retest TC ini. Antrian card in-flight → `16-card-tc-queue.mdc` (`test-queue.yaml`,
 trigger `#card-tc`).

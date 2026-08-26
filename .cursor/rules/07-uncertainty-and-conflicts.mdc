@@ -15,6 +15,20 @@ alwaysApply: true
 
 Sebut status di jawaban jika layer yang dipakai bukan `review`.
 
+## Dokumen bertabrakan dengan datanya sendiri
+
+Kalau prosa/komentar di sebuah file menyatakan sesuatu yang **dibantah oleh data di file
+yang sama** — mis. header `test-queue.yaml` menulis "belum ada status ready" padahal ada
+entry `status: ready` — maka:
+
+1. **Ikuti datanya**, bukan prosanya. Data punya pemilik dan diperbarui; prosa membeku.
+2. **Laporkan kontradiksinya di jawaban.** Diam berarti kontradiksi itu bertahan dan
+   menyesatkan pembaca (atau agent) berikutnya.
+
+Bekerja dengan benar tapi tidak melaporkan tabrakannya = setengah pekerjaan. Yang menemukan
+tabrakan itu punya konteks paling murah untuk memperbaikinya; menundanya berarti orang
+berikutnya harus menemukannya dari nol.
+
 ## Gap dokumentasi
 
 Jika pertanyaan tidak terjawab di docs:

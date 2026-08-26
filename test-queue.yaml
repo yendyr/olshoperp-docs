@@ -2,7 +2,9 @@
 # Card Done atau dihapus di Jira → hapus entry. Jangan simpan history di file ini.
 # Trigger agent: #card-tc  (lihat .cursor/rules/16-card-tc-queue.mdc)
 # Sync: 2026-08-14 — 53 card actionable. Epic / Sub-task / Sub Story To Do (legacy) tidak masuk antrian.
-# Belum ada status ready — jangan run TC dari antrian ini dulu.
+# Status per-card ada di field `status:` masing-masing entry — JANGAN menaruh klaim
+# status agregat di header ini. Klaim seperti itu jadi usang diam-diam dan bertabrakan
+# dengan datanya sendiri (pernah tertulis "belum ada status ready" padahal sudah ada).
 
 ETM-15508:
   menu: supplychain-warehouse-structure
