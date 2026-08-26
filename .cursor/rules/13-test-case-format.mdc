@@ -51,7 +51,7 @@ test_type: happy                    # WAJIB — lihat §3A
 title: "{Judul lengkap test case}"
 summary: "{Ringkasan satu baris untuk datalist UI}"
 status: draft                       # daur hidup DOKUMEN: draft | review | approved | deprecated
-owner: QA - {nama pembuat}
+owner: QA - {nama pembuat}      # orang yang MEMINTA/menyusun TC ini, bukan nilai default
 last_updated: {YYYY-MM-DD}
 requirement_ref: "qa-docs/{menu-slug}/requirement.md"
 automated: false
@@ -132,6 +132,13 @@ last_execution:
 > - `via: legacy:*` menandai klaim warisan yang **belum pernah** lewat reporter CLI.
 >   `tc:lint` melaporkan jumlahnya; angka itu turun sendiri begitu spec-nya dijalankan
 >   sungguhan. Jangan pernah menulis `legacy:*` untuk TC baru.
+
+> [!WARNING]
+> **`owner` bukan nilai default.** Isi dengan nama orang yang benar-benar meminta atau
+> menyusun TC itu. Repo ini dipakai beberapa anggota QA; kalau semua TC ditandai satu
+> nama yang sama, jejak siapa mengerjakan apa hilang — dan saat TC gagal, tidak jelas
+> siapa yang paling paham konteksnya. Kalau agent tidak tahu siapa yang meminta,
+> **tanyakan**, jangan tebak.
 
 ### Run manual — jalur sah, bukan kelas dua
 
