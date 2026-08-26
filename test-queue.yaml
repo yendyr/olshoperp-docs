@@ -502,11 +502,16 @@ ETM-15120:
 ETM-15487:
   menu: accounting-purchase-report
   intent: new
-  status: needs_overview
+  status: in_overview
   reuse: []
-  drafts: []
+  drafts:
+    - PENDING-JENNI-2026082601
+    - PENDING-JENNI-2026082602
+    - PENDING-JENNI-2026082603
+    - PENDING-JENNI-2026082604
+    - PENDING-JENNI-2026082605
   ready_tcs: []
-  jira_status: To Do
+  jira_status: RE-OPEN
   jira_type: Improvement
   summary: "[Purchase Report] POV Purchase Order - New Report format 'Purchase Report' di module finance"
 
@@ -641,3 +646,14 @@ ETM-15605:
   jira_status: QA Review
   jira_type: Improvement
   summary: "[Dev - Sales Order] Tambahan fitur extract this bundle di halaman detail sales order"
+
+ETM-15652:
+  menu: accounting-purchase-report
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Purchase Report] - SQL Error 500 Column Not Found 'scm_purchase_order_details.supplier_name' saat Advance Filter Supplier"
