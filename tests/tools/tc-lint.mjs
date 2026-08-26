@@ -71,16 +71,24 @@ function parseFrontmatter(rawText) {
   const leBlock = fm.match(/^last_execution:\n((?:[ \t]+.*\n?)+)/m)?.[1] ?? null;
   const leGet = (k) =>
     leBlock?.match(new RegExp(`^\\s+${k}:\\s*"?([^"\\n]*)"?\\s*$`, 'm'))?.[1]?.trim() ?? null;
+  // `expected_result` bisa blok (`|`) maupun skalar satu baris — dua-duanya dipakai.
+  const expected =
+    fm.match(/^expected_result:\s*[|>]-?\s*\n([\s\S]*?)(?=\n[a-z_]+:|$)/m)?.[1] ??
+    fm.match(/^expected_result:\s*"?(.+?)"?\s*$/m)?.[1] ??
+    '';
   const trStatus = fm
     .match(/^test_result:\n((?:[ \t]+.*\n?)+)/m)?.[1]
     ?.match(/^\s+status:\s*"?([a-zA-Z_]+)"?\s*$/m)?.[1];
 
   return {
     doc_status: get('status'),
+    origin_jira: get('origin_jira'),
+    expected_result: expected,
     automated: get('automated'),
     test_result_status: trStatus ?? null,
     last_execution: leBlock
       ? { at: leGet('at'), jira: leGet('jira'), status: leGet('status'), via: leGet('via'),
+          notes: leBlock.match(/^\s+notes:\s*"?([^"\n]*)"?\s*$/m)?.[1] ?? null,
           keys: [...leBlock.matchAll(/^\s+([a-z_]+):/gm)].map((m) => m[1]) }
       : null,
     tc_code: get('tc_code'),
@@ -269,6 +277,38 @@ for (const file of walkTcFiles(qaDocs)) {
             `Run manual tanpa \`notes\`: ${rel} →` +
               ` tulis actual result singkat di \`notes\`. Tanpa itu "${le.status}" cuma klaim,` +
               ` tidak ada yang bisa direview`,
+          );
+        }
+        // `notes` harus ACTUAL result. Kalau isinya cuma mengulang expected_result,
+        // artinya tidak ada informasi baru — penguji tidak benar-benar melaporkan apa
+        // yang terjadi, atau agent mengarang dari expected.
+        const words = (t) =>
+          new Set(
+            (t || '')
+              .toLowerCase()
+              .replace(/[^a-z0-9\s]/g, ' ')
+              .split(/\s+/)
+              .filter((w) => w.length > 3),
+          );
+        const n = words(le.notes);
+        const e = words(fm.expected_result);
+        if (n.size >= 3 && e.size) {
+          let shared = 0;
+          for (const w of n) if (e.has(w)) shared++;
+          if (shared / n.size >= 0.6) {
+            errors.push(
+              `\`notes\` cuma mengulang expected_result: ${rel} →` +
+                ` notes harus ACTUAL result (apa yang BENAR-BENAR terjadi: pesan persis,` +
+                ` nilai yang muncul), bukan salinan yang diharapkan. Kalau penguji tidak` +
+                ` menyebutkannya, TANYAKAN — jangan diisi sendiri`,
+            );
+          }
+        }
+        // `jira` di last_execution = card untuk run INI, bukan asal-usul TC.
+        if (le.jira && le.jira !== 'null' && le.jira === fm.origin_jira) {
+          warnings.push(
+            `last_execution.jira sama dengan origin_jira (${le.jira}): ${rel} —` +
+              ` pastikan run ini memang untuk card itu, bukan hasil menyalin asal-usul`,
           );
         }
         manual.push(rel);

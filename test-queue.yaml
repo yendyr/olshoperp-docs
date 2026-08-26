@@ -553,17 +553,6 @@ ETM-15520:
   jira_type: Improvement
   summary: "REOPEN [Purchase Requisition] Menambahkan new button 'Choose Product' untuk bisa select multiple sku dari modal add to detail PR"
 
-ETM-15526:
-  menu: supplychain-stock-remapping
-  intent: new
-  status: needs_overview
-  reuse: []
-  drafts: []
-  ready_tcs: []
-  jira_status: To Do
-  jira_type: Improvement
-  summary: "REOPEN - [Stock Remapping] - Remapped To boleh duplicate, Origin pilih per Stock ID, tambah validasi Unit Class (batasan 1 parent tetap)"
-
 ETM-15527:
   menu: supplychain-stock-remapping
   intent: new

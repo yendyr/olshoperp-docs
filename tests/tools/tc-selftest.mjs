@@ -118,6 +118,21 @@ const CASES = [
       status: 'not_run', via: 'null', notes: '"nyelundup"' } }) },
     expect: 'menyimpang' },
 
+  { name: 'notes yang cuma mengulang expected_result ditolak',
+    files: { 'TC-SELF-001.md': render({
+      expected_result: '"Save diblok. Code dan Name kosong wajib diisi required."',
+      last_execution: { at: '"2026-08-26"', jira: 'null', status: 'passed',
+        via: '"manual:QA - Jeiniffer"', notes: '"Save diblok, Code dan Name kosong required."' } }) },
+    expect: 'cuma mengulang expected_result' },
+
+  { name: 'notes berisi actual result nyata diterima',
+    files: { 'TC-SELF-001.md': render({
+      expected_result: '"Save diblok. Code dan Name kosong wajib diisi required."',
+      last_execution: { at: '"2026-08-26"', jira: 'null', status: 'passed',
+        via: '"manual:QA - Jeiniffer"',
+        notes: '"Toast merah muncul di kanan atas, tetap di halaman /create, tombol Save nonaktif 2 detik."' } }) },
+    expect: null },
+
   { name: 'tc_code duplikat',
     files: { 'TC-SELF-001.md': render(), 'TC-SELF-001b.md': render({ title: '"Selftest — kembaran"' }) },
     expect: 'tc_code DUPLIKAT' },

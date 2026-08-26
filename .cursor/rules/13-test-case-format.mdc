@@ -161,6 +161,26 @@ last_execution:
   pada run manual; di run CLI reporter yang menulis, tidak perlu catatan tangan.
 - Ini satu-satunya tempat manusia boleh menulis `last_execution` dengan tangan.
 
+> [!CAUTION]
+> **Mencatat run baru TIDAK BOLEH memperburuk arsip.** Blok `test_result` menyimpan bukti
+> run sebelumnya — sering berisi salinan pesan UI persis dan temuan halus. Saat mencatat
+> run manual:
+> - **Jangan menimpa `test_result`.** Itu arsip run lain. Run manualmu masuk ke
+>   `last_execution` (+ satu entry di `run_history` kalau perlu).
+> - Kalau tetap harus menyentuhnya, isi baru **wajib minimal sedetail** yang lama.
+>   Mengganti `toast "The code field is required. (and 1 more error)"` dengan
+>   "validation error field Code required" adalah **kehilangan informasi**, bukan
+>   perapian. Bukti yang kabur tidak bisa dipakai membedakan lulus sungguhan dari
+>   lulus yang kebetulan.
+>
+> **Jangan pernah menebak identitas penguji.** Prompter yang bilang "aku jalankan manual"
+> belum tentu pemilik repo — repo ini dipakai beberapa anggota QA, dan tiap orang punya
+> sesi agent sendiri. **Tanyakan namanya.** `via: manual:{Nama}` yang salah orang lebih
+> buruk daripada tidak ada, karena saat TC gagal, yang ditanya jadi orang yang keliru.
+>
+> **`last_execution.jira` bukan `origin_jira`.** Jangan menyalin asal-usul TC ke situ.
+> Kalau run ini tidak untuk card tertentu, isi `null`.
+
 **Tingkat kekuatan bukti** — bukan semua hasil setara, dan itu harus terlihat:
 
 | `via` | Arti | Bisa diulang? |
