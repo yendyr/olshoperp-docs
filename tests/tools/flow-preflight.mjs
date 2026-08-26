@@ -103,7 +103,20 @@ if (recalls.length && ![...recalls].some((c) => gaps.find((g) => g.includes(c)))
 }
 
 for (const menu of menusInvolved) {
+  // Requirement di sini hanya SALINAN; sumbernya repo developer (rule 15). Salinan yang
+  // tertinggal = expected_result yang divalidasi terhadap perilaku lama.
+  const devReq = path.join(
+    process.env.OLSHOP_DEV_REPO ?? path.resolve(root, '..', 'olshoperp'),
+    'docs', 'qa-docs', menu, 'requirement.md',
+  );
   const reqPath = path.join(qaDocs, menu, 'requirement.md');
+  if (fs.existsSync(devReq) && fs.existsSync(reqPath) &&
+      !fs.readFileSync(devReq).equals(fs.readFileSync(reqPath))) {
+    gaps.push(
+      `requirement.md menu ${menu} BEDA dari repo developer — salinan di sini tertinggal.` +
+        ` Jalankan \`npm run docs:sync\` dulu; TC yang divalidasi ke salinan usang tidak sah`,
+    );
+  }
   if (!fs.existsSync(reqPath)) {
     gaps.push(`requirement.md menu ${menu} tidak ada — lengkapi requirement dulu`);
     continue;

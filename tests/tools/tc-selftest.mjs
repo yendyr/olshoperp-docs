@@ -156,7 +156,71 @@ function runCase(c) {
   }
 }
 
-console.log(`TC Selftest — ${CASES.length} gate diuji\n`);
+/**
+ * Gate arah dokumen (rule 15): salinan dokumen sistem di sini wajib sama dengan
+ * repo developer. Diuji terpisah karena melibatkan dua repo, bukan satu file TC.
+ */
+function runDriftCases() {
+  const out = [];
+  const mk = () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'drift-'));
+    const dev = path.join(tmp, 'dev', 'docs', 'qa-docs', 'menu-x');
+    const qa = path.join(tmp, 'qa', 'qa-docs', 'menu-x');
+    fs.mkdirSync(dev, { recursive: true });
+    fs.mkdirSync(path.join(qa, 'test-cases'), { recursive: true });
+    return { tmp, dev, qa };
+  };
+  const run = (tmp, args = []) =>
+    spawnSync(process.execPath, [path.join(realRoot, 'tests/tools/docs-drift.mjs'), ...args], {
+      env: {
+        ...process.env,
+        DOCS_DRIFT_ROOT: path.join(tmp, 'qa'),
+        OLSHOP_DEV_REPO: path.join(tmp, 'dev'),
+      },
+      encoding: 'utf-8',
+    });
+
+  // 1. requirement berbeda isi -> harus ketahuan
+  {
+    const { tmp, dev, qa } = mk();
+    fs.writeFileSync(path.join(dev, 'requirement.md'), 'version: 2.4\n');
+    fs.writeFileSync(path.join(qa, 'requirement.md'), 'version: 2.3\n');
+    const r = run(tmp);
+    out.push({
+      name: 'requirement tertinggal dari repo developer terdeteksi',
+      ok: r.status === 1 && r.stdout.includes('beda dari sumbernya'),
+      why: `exit ${r.status}: ${r.stdout.trim().split('\n').pop()}`,
+    });
+    // 2. --fix menarik versi developer
+    const f = run(tmp, ['--fix']);
+    out.push({
+      name: 'docs:sync menarik versi developer',
+      ok: f.status === 0 && fs.readFileSync(path.join(qa, 'requirement.md'), 'utf-8').includes('2.4'),
+      why: 'isi tidak ikut diperbarui',
+    });
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+
+  // 3. test case milik repo ini TIDAK boleh dianggap drift
+  {
+    const { tmp, dev, qa } = mk();
+    fs.writeFileSync(path.join(dev, 'requirement.md'), 'sama\n');
+    fs.writeFileSync(path.join(qa, 'requirement.md'), 'sama\n');
+    fs.mkdirSync(path.join(dev, 'test-cases'), { recursive: true });
+    fs.writeFileSync(path.join(dev, 'test-cases', 'TC-X-001.md'), 'versi backend\n');
+    fs.writeFileSync(path.join(qa, 'test-cases', 'TC-X-001.md'), 'versi QA lebih baru\n');
+    const r = run(tmp);
+    out.push({
+      name: 'test case (milik repo ini) tidak dianggap drift',
+      ok: r.status === 0,
+      why: `TC ikut diklaim drift — arah kepemilikan salah:\n${r.stdout}`,
+    });
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+  return out;
+}
+
+console.log(`TC Selftest — ${CASES.length + 3} gate diuji\n`);
 let failed = 0;
 for (const c of CASES) {
   const r = runCase(c);
@@ -167,6 +231,11 @@ for (const c of CASES) {
     console.log(`  ❌ ${c.name}\n       ${r.why.replace(/\n/g, '\n       ')}`);
   }
 }
+for (const r of runDriftCases()) {
+  if (r.ok) console.log(`  ✅ ${r.name}`);
+  else { failed++; console.log(`  ❌ ${r.name}\n       ${r.why}`); }
+}
+
 if (failed) {
   console.log(`\n${failed} gate TIDAK bekerja — aturannya cuma imbauan sampai ini hijau.`);
   process.exit(1);

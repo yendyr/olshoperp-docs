@@ -110,9 +110,16 @@ Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 Sebelum menyerahkan pekerjaan, **wajib hijau**:
 
 ```bash
+npm run docs:drift     # salinan requirement di sini masih sama dgn repo developer?
 npm run tc:selftest    # apakah gate-nya sendiri masih bekerja?
 npm run tc:lint        # apakah dokumenmu lolos gate?
 ```
+
+`docs:drift` merah → `npm run docs:sync` dulu, **sebelum** menulis TC apa pun.
+Dokumen sistem (requirement/technical/knowledge-base/user-guide/capabilities) **dimiliki
+repo developer**; yang ada di sini cuma salinan. Mengeditnya di sini percuma dan berbahaya —
+suntinganmu hilang saat sync, atau malah ikut menimpa aslinya. Perlu ubah requirement?
+Laporkan sebagai temuan (rule `12`), jangan kerjakan sendiri.
 
 `tc:selftest` menjalankan `tc-lint` di atas repo tiruan berisi pelanggaran buatan dan
 memastikan tiap pelanggaran benar-benar ditangkap. Gunanya: **aturan yang tidak punya
@@ -134,6 +141,7 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 | 2 | **Status `passed`/`automated: true` hanya sah dari CLI run** — ditegakkan `tc:lint`: `last_execution.status: passed` wajib punya `via:` ke file spec yang ada; `via` bermuatan "MCP" ditolak | Verifikasi via MCP dicatat sebagai observasi (`status: draft` + catatan) |
 | 3 | **TC hasil crawling wajib format rule 13** (`tc_code`, `menu`, `steps`, `expected_result`) | Skema lain (`id:`, `menu_slug:`) invisible bagi `tc:lint`, tak bisa di-recall flow, jadi duplikat tak terdeteksi |
 | 4 | **Jangan duplikasi langkah TC.** Langkah hidup di `tests/scenarios/` (1 fungsi = 1 TC origin); flow me-*recall*, tidak menyalin | Kalau UX berubah, cukup update 1 tempat — bukan berburu salinan |
+| 4b | **Dokumen sistem milik repo developer.** requirement/technical/knowledge-base/user-guide/capabilities di sini = salinan. Jangan diedit; `docs:drift` sebelum kerja | Salinan tertinggal pernah bikin 15 TC Purchase Inbound divalidasi ke requirement v2.3 padahal developer sudah v2.4 |
 | 5 | **Selector dari source Vue, bukan DOM scraping**, dan mendarat di `pom-registry`/`helpers` — bukan hardcoded di spec | Fondasi stabilitas; selector scraping pecah tiap re-render |
 | 6 | **Temuan UX baru wajib dipropagasi** ke helper + `ui-components.md` + TC origin | Kalau tidak, spec lain diam-diam jadi stale |
 | 6b | **Sync mirror ke `olshoperp`: salin FILE, jangan `cp -r` folder.** Sesudahnya wajib `git -C ../olshoperp status --short docs/qa-docs/` | `cp -r` bisa menimpa versi backend yang lebih baru; tanpa verifikasi kamu tidak tahu apa yang tersentuh (rule `15`) |

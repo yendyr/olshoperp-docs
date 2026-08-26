@@ -133,18 +133,39 @@ Sebelum tulis/ubah spec: tentukan mode BUILD vs RUN dari § Kriteria lengkap.
 > Kalau perbaikan memang perlu di repo app: **laporkan sebagai temuan/bug candidate**
 > (rule `12`), jangan kerjakan sendiri.
 >
-> **Pengecualian: mirror dokumentasi QA di backend.** Repo `olshoperp` punya
-> `docs/qa-docs/` (133 menu, ter-track di git) sebagai salinan dokumentasi QA. Menyalin
-> file docs/TC ke sana **sah** dan memang praktik tim — tetap tunduk rule `03`
-> (konfirmasi user untuk isi di luar `test-cases/`). Repo `olshoperp-frontend` tidak
-> punya folder serupa → nol tulisan ke sana.
->
-> **Aturan sync yang aman** (arah selalu `olshoperp-docs` → `olshoperp`, tidak pernah balik):
-> - Salin **hanya file yang berubah**, jangan `cp -r` folder utuh. Kalau folder tujuan
->   sudah ada isinya, `cp -r` bisa menimpa versi di backend yang mungkin lebih baru.
-> - Verifikasi dampaknya sebelum selesai: `git -C ../olshoperp status --short docs/qa-docs/`
->   — pastikan yang berubah hanya file yang kamu maksud.
-> - `olshoperp-docs` tetap sumber kebenaran; mirror di backend adalah salinan baca.
+> **Pengecualian: folder `qa-docs`.** Repo `olshoperp` punya `docs/qa-docs/` (ter-track
+> di git) dan folder itu **boleh ditulis**. `olshoperp-frontend` tidak punya folder
+> serupa → nol tulisan ke sana.
+
+### Arah sumber kebenaran — dua-duanya, tergantung JENIS dokumen
+
+> [!CAUTION]
+> **Ini pernah terbalik di rules dan menyebabkan drift diam-diam.** Pernah terjadi
+> `requirement.md` Purchase Inbound tertinggal di v2.3 (23 Jul) di sini sementara repo
+> developer sudah v2.4 (14 Agu) — 15 TC divalidasi terhadap requirement usang tanpa
+> ada yang tahu. Jangan dibalik lagi.
+
+| Jenis | Sumber kebenaran | Arah sync |
+|---|---|---|
+| `requirement.md`, `technical.md`, `knowledge-base.md`, `user-guide.md`, `feature-map.md`, `capabilities/`, README menu, `_meta/sot/` | **`olshoperp` (repo developer)** | developer → `olshoperp-docs` |
+| `test-cases/`, `flows/`, `{CARD}/card.md`, `{CARD}/results/`, `tests/` | **`olshoperp-docs`** | `olshoperp-docs` → developer (mirror opsional) |
+
+**Kenapa begitu:** dokumen sistem lahir dari kode dan keputusan produk — tempatnya di repo
+developer, dekat sumbernya. `olshoperp-docs` ada untuk kebutuhan **test case & testing**,
+jadi ia *menumpang baca* dokumen sistem dan *memiliki* artefak pengujian.
+
+**Konsekuensi keras bagi agent QA:**
+- **Jangan pernah mengedit dokumen sistem di `olshoperp-docs`.** Itu salinan. Suntinganmu
+  akan hilang saat sync berikutnya, dan lebih buruk: bisa ikut ter-push menimpa aslinya.
+  Perlu perubahan requirement? **Laporkan sebagai temuan** (rule `12`), jangan kerjakan.
+- Sebelum menulis/menjalankan TC, pastikan salinan dokumennya mutakhir:
+  `npm run docs:drift` — kalau merah, `npm run docs:sync` dulu. Requirement usang =
+  `expected_result` usang.
+
+**Aturan sync yang aman:**
+- Salin **hanya file yang berubah**, jangan `cp -r` folder utuh.
+- Verifikasi sesudahnya: `git -C ../olshoperp status --short docs/qa-docs/` — pastikan
+  yang berubah hanya yang kamu maksud, dan tidak ada file di luar `qa-docs`.
 
 **Yang boleh dibaca** dan untuk apa:
 
