@@ -267,8 +267,19 @@ Jika ditemukan duplikat atau sangat mirip:
 | Status `requirement.md` | Boleh buat TC? | Tindakan |
 |---|---|---|
 | `review` / `approved` | ✅ Ya | Lanjut normal. **`review` sudah cukup** — status ini berarti requirement sudah lewat masukan QA lead; tidak perlu menunggu `approved`/final. |
-| `draft` | ❌ Tidak | **Lempar balik ke prompter yang meminta.** Sampaikan: menu ini requirement-nya masih draft, mohon dilengkapi/dinaikkan dulu supaya expected result punya dasar. Jangan mengarang expected result dari kode atau asumsi umum ERP. |
-| Tidak ada `requirement.md` | ❌ Tidak | Sama seperti `draft` — lempar balik. |
+| `draft` | ❌ Tidak menulis file | **Lempar balik ke prompter.** Boleh menyusun rancangan TC dan menyajikannya di chat — yang dilarang adalah **menulis file** dan **mengarang** expected result. Syaratnya semua terpenuhi: (a) status `draft` disebut di awal, bukan di catatan kaki; (b) nol file ditulis ke `qa-docs/`; (c) tiap expected result menyebut pasal requirement yang jadi dasarnya; (d) bagian requirement yang memang belum matang ditandai eksplisit sebagai belum bisa diuji. |
+| Tidak ada `requirement.md` | ❌ Tidak | Lebih ketat dari `draft`: **jangan menyusun rancangan sama sekali.** Tanpa requirement, tidak ada yang bisa dirujuk — rancangan apa pun otomatis karangan. Cek dulu apakah requirement-nya ada di repo developer tapi belum tersalin ke sini (`npm run docs:drift`). |
+
+> [!WARNING]
+> **Rancangan lengkap dari requirement `draft` itu menekan, bukan netral.** Menyajikan 8 TC
+> siap-tulis lalu menutup dengan "tinggal konfirmasi" membuat prompter memilih antara
+> "ya" dan membatalkan kerja yang sudah terlihat jadi — padahal yang seharusnya ia nilai
+> adalah **apakah requirement draft-nya layak dipercaya**. Karena itu penutupnya wajib
+> menyebut **apa yang perlu diputuskan**, bukan sekadar meminta izin menulis file.
+>
+> **Requirement `draft` yang isinya sudah rinci = label statusnya yang basi**, dan itu
+> temuan yang wajib dilaporkan. Requirement dimiliki repo developer (rule `15`), jadi
+> menaikkan statusnya **bukan wewenang agent QA** — laporkan, jangan ubah sendiri.
 
 **Pengecualian: permintaan dari card Jira.** TC boleh dibuat meski requirement belum
 matang, **tetapi wajib dibandingkan dengan `requirement.md` di repo**:
