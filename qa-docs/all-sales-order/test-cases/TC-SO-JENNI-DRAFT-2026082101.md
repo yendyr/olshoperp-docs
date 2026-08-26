@@ -4,6 +4,7 @@ tc_code: PENDING-JENNI-2026082101
 title: "UI Visibility: Tombol Extract This Bundle hanya muncul pada SKU ter-flagging BUNDLE"
 module: BusinessDevelopment
 menu: All Sales Order
+test_type: edge
 menu_slug: all-sales-order
 type: functional
 priority: high

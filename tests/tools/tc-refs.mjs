@@ -41,7 +41,7 @@ for (const d of SEARCH_DIRS) for (const f of walk(path.join(root, d))) files.pus
 /** Semua tc_code yang ada, plus lokasi definisinya. */
 const defined = new Map();
 for (const file of files) {
-  if (!/qa-docs\/.*\/(test-cases|flows)\/.*\.md$/.test(file.replace(/\\/g, '/'))) continue;
+  if (!/qa-docs\/.*(test-cases|flows)\/.*\.md$/.test(file.replace(/\\/g, '/'))) continue;
   const code = fs
     .readFileSync(file, 'utf-8')
     .replace(/^﻿/, '')

@@ -4,6 +4,7 @@ tc_code: PENDING-JENNI-2026082104
 title: "Extract SKU Bundle tipe VARIANT RANDOM pada Detail Sales Order"
 module: BusinessDevelopment
 menu: All Sales Order
+test_type: happy
 menu_slug: all-sales-order
 type: functional
 priority: high

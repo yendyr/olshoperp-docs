@@ -45,6 +45,21 @@ Agent **boleh** membuat folder `qa-docs/{menu-slug}/test-cases/` jika belum ada,
 - Menyimpang dari struktur `qa-docs/{menu-slug}/test-cases/`
 - Mengedit `manifest.yaml`, `README.md` menu induk, atau file layer doc (`knowledge-base.md`, `requirement.md`, `technical.md`) — tetap read-only; update manifest `test_cases:` dilakukan QA lead manual
 
+### Struktur per card: `qa-docs/{menu-slug}/{CARD}/test-cases/`
+
+Selain `qa-docs/{menu-slug}/test-cases/`, **bentuk sah kedua** adalah pengelompokan per
+card/topik: `qa-docs/{menu-slug}/ETM-xxxxx/test-cases/TC-*.md`, biasanya berdampingan
+dengan `card.md`, `README.md`, dan `results/` untuk card tersebut. Berguna saat satu card
+melahirkan beberapa TC sekaligus dan hasil runnya ingin disimpan bersama.
+
+Syaratnya sama persis dengan folder standar:
+- File TC tetap `TC-*.md` dengan **frontmatter rule 13 lengkap** (`tc_code`, `menu`,
+  `test_type`, `steps`, `expected_result`) — tanpa itu TC invisible bagi `tc:lint`,
+  tidak bisa di-`recalls` flow, dan `last_execution`-nya tidak bisa terisi otomatis.
+- `origin_jira` diisi kode card-nya.
+- Seluruh tooling (`tc:lint`, `tc:coverage`, `tc:refs`, `flow:preflight`,
+  reporter `last_execution`) sudah memindai sub-folder ini.
+
 ### Edit di folder `test-cases/` yang sudah ada
 
 Agent **boleh** mengedit file di dalam subfolder `test-cases/` yang sudah ada jika user memberi konfirmasi eksplisit.

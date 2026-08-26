@@ -4,6 +4,7 @@ tc_code: PENDING-JENNI-2026082105
 title: "Extract SKU Bundle pada Sales Order dengan > 100 baris detail SKU"
 module: BusinessDevelopment
 menu: All Sales Order
+test_type: edge
 menu_slug: all-sales-order
 type: functional
 priority: high

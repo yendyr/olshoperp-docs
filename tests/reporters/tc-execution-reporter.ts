@@ -58,22 +58,26 @@ export default class TcExecutionReporter implements Reporter {
     const qaDocs = path.resolve(process.cwd(), 'qa-docs');
     if (!fs.existsSync(qaDocs)) return;
 
-    // Index tc_code → path file, sekali saja.
+    // Index tc_code → path file, sekali saja. Termasuk sub-folder per card
+    // (`{menu}/ETM-xxxxx/test-cases/`) yang dipakai untuk mengelompokkan TC + card.md.
     const index = new Map<string, string>();
-    for (const menu of fs.readdirSync(qaDocs)) {
-      const dir = path.join(qaDocs, menu, 'test-cases');
-      if (!fs.existsSync(dir)) continue;
-      for (const f of fs.readdirSync(dir)) {
-        if (!/^TC-.*\.md$/.test(f)) continue;
-        const full = path.join(dir, f);
-        const code = fs
-          .readFileSync(full, 'utf-8')
-          .replace(/^﻿/, '')
-          .match(/^tc_code:\s*"?([^"\n]+)"?\s*$/m)?.[1]
-          ?.trim();
-        if (code) index.set(code, full);
+    const walk = (dir: string, depth = 0): void => {
+      if (!fs.existsSync(dir) || depth > 4) return;
+      for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, e.name);
+        if (e.isDirectory()) {
+          if (!e.name.startsWith('_')) walk(full, depth + 1);
+        } else if (/^TC-.*\.md$/.test(e.name) && /[\\/]test-cases[\\/]/.test(full)) {
+          const code = fs
+            .readFileSync(full, 'utf-8')
+            .replace(/^﻿/, '')
+            .match(/^tc_code:\s*"?([^"\n]+)"?\s*$/m)?.[1]
+            ?.trim();
+          if (code) index.set(code, full);
+        }
       }
-    }
+    };
+    walk(qaDocs);
 
     const today = new Date().toISOString().slice(0, 10);
     const jira = process.env.OLSHOP_RUN_JIRA?.trim() || null;

@@ -47,24 +47,39 @@ const menus = fs
   .map((d) => d.name)
   .filter((m) => m !== 'flows');
 
+/**
+ * Kumpulkan file TC milik sebuah menu — termasuk yang ditaruh di sub-folder per card
+ * (`{menu}/ETM-xxxxx/test-cases/`), pola yang dipakai tim untuk mengelompokkan TC,
+ * card.md, dan hasil run dalam satu tempat.
+ */
+function tcFilesOfMenu(menu) {
+  const out = [];
+  const walk = (dir, depth) => {
+    if (!fs.existsSync(dir) || depth > 3) return;
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full, depth + 1);
+      else if (/^TC-.*\.md$/.test(e.name) && /[\\/]test-cases[\\/]/.test(full)) out.push(full);
+    }
+  };
+  walk(path.join(qaDocs, menu), 0);
+  return out;
+}
+
 const stats = new Map();
 for (const menu of menus) {
-  const tcDir = path.join(qaDocs, menu, 'test-cases');
   const row = { menu, total: 0, unclassified: 0, negHint: 0 };
   for (const t of TYPES) row[t] = 0;
 
-  if (fs.existsSync(tcDir)) {
-    for (const f of fs.readdirSync(tcDir)) {
-      if (!/^TC-.*\.md$/.test(f)) continue;
-      const fm = readFm(path.join(tcDir, f));
-      if (!fm.tc_code) continue;
-      tcToMenu.set(fm.tc_code, menu);
-      row.total++;
-      if (fm.test_type && TYPES.includes(fm.test_type)) row[fm.test_type]++;
-      else {
-        row.unclassified++;
-        if (NEGATIVE_HINT.test(fm.title)) row.negHint++;
-      }
+  for (const file of tcFilesOfMenu(menu)) {
+    const fm = readFm(file);
+    if (!fm.tc_code) continue;
+    tcToMenu.set(fm.tc_code, menu);
+    row.total++;
+    if (fm.test_type && TYPES.includes(fm.test_type)) row[fm.test_type]++;
+    else {
+      row.unclassified++;
+      if (NEGATIVE_HINT.test(fm.title)) row.negHint++;
     }
   }
   stats.set(menu, row);

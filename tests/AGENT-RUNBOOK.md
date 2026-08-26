@@ -51,6 +51,8 @@ npm run tc:lint                              # sebelum & sesudah
    Ragu apakah duplikat? Tandai `duplicate_candidate: {kode TC}` dan lanjut kerja —
    lint menahannya di gerbang `#renumber-tc`, jadi keraguan tidak memblokir hari ini.
 2. Format & penamaan `TC-{PREFIX}-DRAFT-{timestamp}.md` → Baca: rule `13`.
+   Lokasi: `qa-docs/{menu}/test-cases/` **atau** `qa-docs/{menu}/{CARD}/test-cases/`
+   (pengelompokan per card, sama sahnya) — frontmatter rule 13 tetap wajib di keduanya.
 3. **Cek status `requirement.md` menu itu dulu** (rule 13 §5A):
    `review`/`approved` → lanjut · `draft`/tidak ada → **lempar balik ke prompter**,
    jangan mengarang expected result. Pengecualian hanya permintaan dari card Jira —

@@ -4,6 +4,7 @@ tc_code: PENDING-JENNI-2026082102
 title: "Extract SKU Bundle tipe Single pada Detail Sales Order"
 module: BusinessDevelopment
 menu: All Sales Order
+test_type: happy
 menu_slug: all-sales-order
 type: functional
 priority: high

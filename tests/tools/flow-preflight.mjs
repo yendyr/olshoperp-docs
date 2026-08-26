@@ -46,17 +46,26 @@ if (!fs.existsSync(flowDocPath)) {
 // Index semua TC origin: tc_code → { file, menu }
 const tcIndex = new Map();
 const qaDocs = path.join(root, 'qa-docs');
+// Termasuk sub-folder per card (`{menu}/ETM-xxxxx/test-cases/`).
+function walkTc(dir, depth = 0) {
+  const out = [];
+  if (!fs.existsSync(dir) || depth > 3) return out;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) out.push(...walkTc(full, depth + 1));
+    else if (/^TC-.*\.md$/.test(e.name) && /[\\/]test-cases[\\/]/.test(full)) out.push(full);
+  }
+  return out;
+}
 for (const menuDir of fs.readdirSync(qaDocs, { withFileTypes: true })) {
-  if (!menuDir.isDirectory()) continue;
-  const tcDir = path.join(qaDocs, menuDir.name, 'test-cases');
-  if (!fs.existsSync(tcDir)) continue;
-  for (const f of fs.readdirSync(tcDir)) {
-    if (!/^TC-.*\.md$/.test(f)) continue;
+  if (!menuDir.isDirectory() || menuDir.name.startsWith('_')) continue;
+  for (const file of walkTc(path.join(qaDocs, menuDir.name))) {
     const code = fs
-      .readFileSync(path.join(tcDir, f), 'utf-8')
+      .readFileSync(file, 'utf-8')
+      .replace(/^\ufeff/, '')
       .match(/^tc_code:\s*"?([^"\n]+)"?\s*$/m)?.[1]
       ?.trim();
-    if (code) tcIndex.set(code, { file: `qa-docs/${menuDir.name}/test-cases/${f}`, menu: menuDir.name });
+    if (code) tcIndex.set(code, { file: path.relative(root, file), menu: menuDir.name });
   }
 }
 
