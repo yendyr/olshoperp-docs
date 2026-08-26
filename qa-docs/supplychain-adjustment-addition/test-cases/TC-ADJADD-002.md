@@ -48,6 +48,11 @@ run_history:
   - at: "2026-07-15"
     status: passed
     note: "Playwright @TC-ADJADD-002 — chain setelah create"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ADJADD-002

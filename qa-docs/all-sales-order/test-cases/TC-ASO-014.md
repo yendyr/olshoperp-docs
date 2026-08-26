@@ -44,6 +44,8 @@ origin_jira: ETM-15605
 last_execution:
   at: null
   jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-ASO-014: Extract SKU Bundle tipe VARIANT RANDOM pada Detail Sales Order

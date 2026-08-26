@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Create page load; fixture Open terikat untuk serial UPDATE.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T07:59:40Z"
   finished_at: "2026-07-15T07:59:58Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS CREATE smoke /create · AS-IS Origin Multiselect absent · datalist Void kosong di lumicharmsid · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-MTVOD-001

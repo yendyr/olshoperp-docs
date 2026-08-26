@@ -27,13 +27,18 @@ steps:
 expected_result: |
   Description ter-update; status Open tersimpan.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T04:45:00Z"
   finished_at: "2026-07-15T04:48:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "3/3 PASS · UPDATE description + Open OK · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-MPL-002

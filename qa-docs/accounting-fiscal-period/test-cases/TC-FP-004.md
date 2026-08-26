@@ -26,13 +26,18 @@ steps:
 expected_result: |
   Minimal 1 baris period Dec 2024 tampil.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T05:55:00Z"
   finished_at: "2026-07-20T05:56:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS · TC-FP-004 SEARCH December 2024"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-FP-004

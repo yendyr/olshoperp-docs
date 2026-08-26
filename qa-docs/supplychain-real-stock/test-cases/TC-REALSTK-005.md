@@ -25,13 +25,18 @@ steps:
 expected_result: |
   Shell By SKU siap; data belum load sampai WH dipilih atau mode ALL.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-16T01:53:00Z"
   finished_at: "2026-07-16T01:53:15Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS VIEW By SKU shell WH/Sales/ALL + Buildings Multiselect · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-16"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-REALSTK-005

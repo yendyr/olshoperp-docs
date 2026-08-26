@@ -45,6 +45,11 @@ run_history:
   - at: "2026-07-15"
     status: passed
     note: "Playwright @TC-ADJADD-003 — serial 3/3 PASS"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ADJADD-003

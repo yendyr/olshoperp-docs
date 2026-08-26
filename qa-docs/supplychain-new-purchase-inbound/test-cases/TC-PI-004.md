@@ -57,6 +57,8 @@ origin_jira: ETM-15528
 last_execution:
   at: null
   jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-PI-DRAFT-20260820091827

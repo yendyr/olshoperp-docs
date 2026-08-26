@@ -33,6 +33,11 @@ test_result:
   environment: staging
   log_summary: "SKIPPED — datalist Transfer Void kosong di lumicharmsid (tidak ada fixture TFV* Open); form create AS-IS tidak bisa isi Origin"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: blocked
+  via: "legacy:test_result"
 ---
 
 # TC-MTVOD-002

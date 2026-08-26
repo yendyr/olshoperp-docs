@@ -5,7 +5,7 @@ menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
 title: "CREATE — Customer Supplier China + Outstanding SO SKUSINGLE-194/195 + Approve"
 summary: "Create SI; customer supplier china; Save All; Outstanding Sales Order Use 2 SKU; Open; Approve; search datalist Approved."
-status: executed
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-23
 requirement_ref: "qa-docs/accounting-customer-invoice/knowledge-base.md"
@@ -32,13 +32,18 @@ steps:
 expected_result: |
   Detail invoice berisi kedua SKU; invoice Approved di datalist (eligible Outstanding SI / AR).
 test_result:
-  status: pass
+  status: passed
   started_at: 2026-07-20T15:53:00+07:00
   finished_at: 2026-07-23
   executed_by: Cursor automation
   environment: staging
   log_summary: "SI-5TVBTC4Y Approved (2026-07-23) — Open→Approve follow-up after create 2026-07-20."
   report_url: null
+last_execution:
+  at: "2026-07-23"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-SINV-001

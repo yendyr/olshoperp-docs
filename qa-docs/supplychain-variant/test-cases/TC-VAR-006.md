@@ -30,7 +30,7 @@ steps:
 expected_result: |
   Save ditolak dengan notifikasi jelas; Default tidak tersimpan ON jika option count > 1 (requirement §6.2 V-01 / V-06). Berlaku create dan edit.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-14 06:15"
   finished_at: "2026-08-14 06:23"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -55,7 +55,9 @@ run_history:
 origin_jira: ETM-15511
 last_execution:
   at: "2026-08-14 06:23"
-  jira: ETM-15511
+  jira: "ETM-15511"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-VAR-006

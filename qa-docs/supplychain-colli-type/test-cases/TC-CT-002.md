@@ -76,7 +76,9 @@ run_history:
 origin_jira: ETM-15543
 last_execution:
   at: "2026-08-14 12:23"
-  jira: ETM-15543
+  jira: "ETM-15543"
+  status: blocked
+  via: "legacy:test_result"
 ---
 
 # TC-CT-002

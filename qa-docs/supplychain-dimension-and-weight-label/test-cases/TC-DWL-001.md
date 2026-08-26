@@ -59,6 +59,11 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-DWL-001 — 2/2 serial PASS (~1.8m)"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-DWL-001

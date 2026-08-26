@@ -30,13 +30,18 @@ steps:
 expected_result: |
   Redirect /edit/{id}; Other Cost tersimpan.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T06:00:00Z"
   finished_at: "2026-07-20T06:01:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS other-cost-crud.spec.ts � TC-OC-002 � company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-OC-002

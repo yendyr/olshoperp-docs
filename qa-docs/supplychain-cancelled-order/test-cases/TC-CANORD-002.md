@@ -27,13 +27,18 @@ steps:
 expected_result: |
   Search berhasil; baris relevan tampil (atau empty jika tidak ada match).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T03:29:30Z"
   finished_at: "2026-07-15T03:31:18Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "2/2 PASS · SEARCH by SO code OK · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-CANORD-002

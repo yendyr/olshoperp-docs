@@ -27,13 +27,18 @@ steps:
 expected_result: |
   KPI ter-refresh untuk product; tab Mutation accessible.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T08:55:13Z"
   finished_at: "2026-07-15T08:55:32Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS FILTER Choose Product → data KPI SKU filled + tab Mutation · company lumicharmsid · 2/2"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PTHIST-002

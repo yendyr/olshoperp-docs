@@ -30,13 +30,18 @@ steps:
 expected_result: |
   Shell laporan load; filter Product siap; read-only.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T08:36:00Z"
   finished_at: "2026-07-15T08:36:12Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS VIEW shell · Choose Product + Apply + manual calculation · no Create · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PMUT-001

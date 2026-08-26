@@ -25,13 +25,18 @@ steps:
 expected_result: |
   Shell By Location siap; Manual Calculate belum muncul.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-16T01:52:00Z"
   finished_at: "2026-07-16T01:52:13Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS VIEW By Location shell + Multiselect WH · no Create · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-16"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-REALSTK-003

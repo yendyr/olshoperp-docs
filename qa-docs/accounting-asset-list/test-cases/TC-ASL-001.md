@@ -5,7 +5,7 @@ menu: accounting-asset-list
 menu_name: "Asset List"
 title: "VIEW — shell warehouse gate tanpa Create"
 summary: "Load /accounting/asset-list; verifikasi Choose Warehouse + Apply; tidak ada Create."
-status: pass
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-24
 requirement_ref: "qa-docs/accounting-asset-list/knowledge-base.md"
@@ -29,9 +29,14 @@ steps:
 expected_result: |
   Shell filter warehouse tampil; Create tidak ada.
 test_result:
-  status: pass
+  status: passed
   environment: staging
   log_summary: "5/5 PASS asset-list-view.spec.ts · TC-ASL-001 · company lumicharmsid"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ASL-001

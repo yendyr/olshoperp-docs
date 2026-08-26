@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Filter type ter-apply; API sukses.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T04:03:30Z"
   finished_at: "2026-07-20T04:04:20Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS · TC-TRXH-003 ~11.9s · transaction_type=Stock Addition OK"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-TRXH-003

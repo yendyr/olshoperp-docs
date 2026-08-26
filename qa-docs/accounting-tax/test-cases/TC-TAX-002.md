@@ -30,13 +30,18 @@ steps:
 expected_result: |
   Redirect /edit/{id}; Tax tersimpan.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T04:32:30Z"
   finished_at: "2026-07-20T04:33:30Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS · TC-TAX-002 CREATE AT-TAX-* Tariff 11 + Purchase/Sales COA"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-TAX-002

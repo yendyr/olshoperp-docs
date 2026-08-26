@@ -5,7 +5,7 @@ menu: accounting-asset-list
 menu_name: "Asset List"
 title: "DETAIL — buka /accounting/asset-list/{id} + section"
 summary: "Klik link Asset Code; verifikasi Basic Information, Product Trx History, Certificate, Product Interchange."
-status: pass
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-24
 requirement_ref: "qa-docs/accounting-asset-list/knowledge-base.md"
@@ -25,9 +25,14 @@ steps:
 expected_result: |
   Halaman detail load; empat section terlihat.
 test_result:
-  status: pass
+  status: passed
   environment: staging
   log_summary: "5/5 PASS · TC-ASL-004 · company lumicharmsid"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ASL-004

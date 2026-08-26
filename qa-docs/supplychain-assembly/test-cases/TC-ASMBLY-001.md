@@ -49,6 +49,11 @@ run_history:
   - at: "2026-07-15"
     status: passed
     note: "Playwright @TC-ASMBLY-001 — serial 3/3 PASS (~2.2m)"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ASMBLY-001

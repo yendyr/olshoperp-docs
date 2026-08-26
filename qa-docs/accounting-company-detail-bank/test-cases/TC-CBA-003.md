@@ -26,13 +26,18 @@ steps:
 expected_result: |
   Label ter-update di form.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T04:42:30Z"
   finished_at: "2026-07-20T04:43:10Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS · TC-CBA-003 UPDATE Label + Description"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-CBA-003

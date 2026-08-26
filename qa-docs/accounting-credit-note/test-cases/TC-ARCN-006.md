@@ -46,7 +46,7 @@ expected_result: |
   CN yang seluruh fund-nya type COA tidak kena cash bank reconcile lock (requirement §7.3b).
   Approve tetap ditolak jika tidak ada fund sama sekali, atau amount masih 0 (requirement §7.5 #5 #6).
 test_result:
-  status: fail
+  status: failed
   started_at: "2026-08-13 15:34"
   finished_at: "2026-08-13 15:40"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -66,6 +66,11 @@ run_history:
   - at: "2026-08-13 15:40"
     status: fail
     by: "QA - Yemima (Playwright MCP)"
+last_execution:
+  at: "2026-08-13"
+  jira: null
+  status: failed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Datalist load; Create terlihat.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T06:30:00Z"
   finished_at: "2026-07-20T06:31:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "3/3 PASS journal-manual-create.spec.ts � TC-JRN-001 � company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-JRN-001

@@ -50,7 +50,7 @@ expected_result: |
   File Free COA: upload 422, pesan Row 2: COA code is not registered in Master Cash/Bank. Tidak ada CN terbentuk (all-or-nothing §6.5 / §7.1 #16–19).
   File Cash/Bank: import success, CN Open, currency primary, fund type Cash/Bank (bukan COA), GL Acc = COA Master Cash/Bank.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-13 16:16"
   finished_at: "2026-08-13 16:26"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -68,6 +68,11 @@ run_history:
   - at: "2026-08-13 16:26"
     status: pass
     by: "QA - Yemima (Playwright MCP)"
+last_execution:
+  at: "2026-08-13"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

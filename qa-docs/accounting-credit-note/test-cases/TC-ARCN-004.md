@@ -35,7 +35,7 @@ expected_result: |
   Approve ditolak jika amount fund kurang dari sama dengan 0.
   Pesan: All amount must be greater than 0 (requirement §7.5 #6).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-13 14:16"
   finished_at: "2026-08-13 14:18"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -51,6 +51,11 @@ run_history:
   - at: "2026-08-13 14:18"
     status: pass
     by: "QA - Yemima (Playwright MCP)"
+last_execution:
+  at: "2026-08-13"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

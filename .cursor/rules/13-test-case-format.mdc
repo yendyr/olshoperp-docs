@@ -50,7 +50,7 @@ menu_name: "{Nama Menu}"
 test_type: happy                    # WAJIB — lihat §3A
 title: "{Judul lengkap test case}"
 summary: "{Ringkasan satu baris untuk datalist UI}"
-status: draft
+status: draft                       # daur hidup DOKUMEN: draft | review | approved | deprecated
 owner: QA - {nama pembuat}
 last_updated: {YYYY-MM-DD}
 requirement_ref: "qa-docs/{menu-slug}/requirement.md"
@@ -81,9 +81,11 @@ test_result:
 test_data_used: []
 run_history: []
 origin_jira: null                 # card yang melahirkan TC; jangan ditimpa saat re-test
-last_execution:
+last_execution:                   # skema TETAP 4 key — diisi otomatis reporter CLI
   at: null                        # run terakhir; null jika belum pernah
   jira: null                      # card run terakhir; null jika run tanpa card
+  status: not_run                 # passed | failed | blocked | skipped | unknown | not_run
+  via: null                       # path spec yang menghasilkannya
 ---
 ```
 
@@ -116,6 +118,20 @@ last_execution:
   status: passed                                # hasil run terakhir
   via: "tests/specs/flows/scm-inbound.spec.ts"  # dieksekusi lewat spec/flow mana
 ```
+
+> [!WARNING]
+> **`last_execution` adalah satu-satunya sumber kebenaran hasil eksekusi.**
+> - `status:` di frontmatter = daur hidup **dokumen** (`draft`/`review`/`approved`/
+>   `deprecated`). Menulis `pass`/`executed`/`automated` di sana **ditolak `tc:lint`**.
+> - `test_result:` (kalau masih ada di file lama) = **arsip diagnostik** — `log_summary`,
+>   timestamp, `executed_by`. Tidak ada tooling yang membacanya sebagai hasil. Jangan
+>   dipakai untuk mengklaim lulus.
+> - `status: passed` hanya sah kalau `via:` menunjuk **file spec yang benar-benar ada**.
+>   `via` yang menyebut MCP **ditolak lint** (aturan mutlak #1/#2 — verifikasi MCP itu
+>   observasi, bukan hasil test).
+> - `via: legacy:*` menandai klaim warisan yang **belum pernah** lewat reporter CLI.
+>   `tc:lint` melaporkan jumlahnya; angka itu turun sendiri begitu spec-nya dijalankan
+>   sungguhan. Jangan pernah menulis `legacy:*` untuk TC baru.
 
 Agent **tidak perlu** mengisinya manual. Jangan simpan daftar semua card yang pernah
 me-retest TC ini. Antrian card in-flight → `16-card-tc-queue.mdc` (`test-queue.yaml`,

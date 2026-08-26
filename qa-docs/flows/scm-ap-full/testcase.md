@@ -27,6 +27,11 @@ recalls:
   - TC-APAY-002
   - TC-JRN-005
   - TC-PO-011
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-FLOW-SCM-AP-001 — SCM + Accounting AP Flow

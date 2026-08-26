@@ -49,7 +49,9 @@ run_history: []
 origin_jira: ETM-15425
 last_execution:
   at: "2026-08-19 13:37:25"
-  jira: ETM-15425
+  jira: "ETM-15425"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # Catatan QA & Referensi

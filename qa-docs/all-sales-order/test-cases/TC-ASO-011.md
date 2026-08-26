@@ -44,6 +44,8 @@ origin_jira: ETM-15605
 last_execution:
   at: null
   jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-ASO-011: UI Visibility: Tombol Extract This Bundle hanya muncul pada SKU ter-flagging BUNDLE

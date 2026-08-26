@@ -37,7 +37,7 @@ expected_result: |
   Konsekuensi bisnis: hutang ke supplier tidak bisa diakui atas barang yang
   penerimaannya belum disahkan.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-26"
   finished_at: "2026-08-26"
   executed_by: "Playwright local (olshoperp-docs)"
@@ -50,8 +50,10 @@ test_data_used: []
 run_history: []
 origin_jira: null
 last_execution:
-  at: null
+  at: "2026-08-26"
   jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PI-003

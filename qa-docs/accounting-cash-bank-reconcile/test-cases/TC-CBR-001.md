@@ -5,7 +5,7 @@ menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "CREATE — Period + Bank BCA 001 + Open (warm-up W3)"
 summary: "Create header CBR; isi Period (hari journal AR); Cash Bank Account Bank BCA 001; Save & Next; set Open; search datalist."
-status: executed
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-23
 requirement_ref: "qa-docs/accounting-cash-bank-reconcile/knowledge-base.md"
@@ -36,13 +36,18 @@ steps:
 expected_result: |
   Dokumen BR Open; Cash/Bank Bank BCA; siap import bank statement (W4).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-23"
   finished_at: "2026-07-23"
   executed_by: "Cursor Auto"
   environment: staging
   log_summary: "BR-6A617F12 Open; Bank BCA 001; Period 23-07-2026; ready for W4 import"
   report_url: null
+last_execution:
+  at: "2026-07-23"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-CBR-001

@@ -66,7 +66,9 @@ origin_jira: ETM-15485
 request_id: none
 last_execution:
   at: "2026-08-21T17:23:45+07:00"
-  jira: ETM-15635
+  jira: "ETM-15635"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # Catatan QA & Referensi Data Testing (Evidence)

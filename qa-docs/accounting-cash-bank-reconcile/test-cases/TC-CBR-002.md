@@ -5,7 +5,7 @@ menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
 title: "IMPORT — 1 baris Received bank statement (warm-up W4)"
 summary: "Buka BR Open; tab Bank Statement; upload template Received exact amount+date; assert baris muncul (tanpa assert auto-match)."
-status: executed
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-23
 requirement_ref: "qa-docs/accounting-cash-bank-reconcile/knowledge-base.md"
@@ -36,13 +36,18 @@ expected_result: |
   Minimal 1 baris Bank Statement dengan tanggal 23-07-2026 dan Debit/Received 16.000.
   (Auto-match Reconciled tidak wajib di warm-up W4.)
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-23"
   finished_at: "2026-07-23"
   executed_by: "Cursor Auto"
   environment: staging
   log_summary: "BR-6A617F12 import Received 16000 tgl 23/07/2026 — baris Bank Statement OK (API upload)"
   report_url: null
+last_execution:
+  at: "2026-07-23"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-CBR-002

@@ -5,7 +5,7 @@ menu: accounting-product-coa-group
 menu_name: "Product COA Group"
 title: "Soft DELETE + Show deleted data"
 summary: "Bulk soft-delete baris automation; hilang dari list aktif; muncul saat Show deleted ON."
-status: pass
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-24
 requirement_ref: "qa-docs/accounting-product-coa-group/knowledge-base.md"
@@ -27,9 +27,14 @@ steps:
 expected_result: |
   Soft delete sukses; aktif hilang; deleted masih terlihat via toggle.
 test_result:
-  status: pass
+  status: passed
   environment: staging
   log_summary: "6/6 PASS · TC-PCG-005 Soft DELETE · company lumicharmsid"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PCG-005

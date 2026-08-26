@@ -52,4 +52,9 @@ run_history:
     status: passed
     environment: staging
     note: "Delete ikon datalist + modal Delete — PR hilang dari datalist OK"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---

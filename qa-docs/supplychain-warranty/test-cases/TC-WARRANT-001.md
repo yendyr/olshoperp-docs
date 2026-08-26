@@ -60,6 +60,11 @@ run_history:
   - at: "2026-07-15"
     status: passed
     note: "Playwright @TC-WARRANT-001 — 2/2 serial PASS (~1.2m)"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-WARRANT-001

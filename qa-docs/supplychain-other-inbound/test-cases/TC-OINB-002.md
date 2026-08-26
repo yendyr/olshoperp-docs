@@ -27,13 +27,18 @@ steps:
 expected_result: |
   Edit form + Inbound Detail terverifikasi. Detail baru hanya jika Select Product viable.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T08:20:27Z"
   finished_at: "2026-07-15T08:20:38Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS UPDATE verify Basic Info + Inbound Detail · Select Product slot AS-IS absen · detail existing OK · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-OINB-002

@@ -27,13 +27,18 @@ steps:
 expected_result: |
   History load untuk product terpilih; kolom qty/balance terlihat.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T08:36:12Z"
   finished_at: "2026-07-15T08:36:26Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS FILTER Choose Product → history · Date/In/Out/Ending Balance · company lumicharmsid · 2/2 VIEW+FILTER"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PMUT-002

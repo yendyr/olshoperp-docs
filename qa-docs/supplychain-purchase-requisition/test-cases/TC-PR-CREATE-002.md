@@ -67,4 +67,9 @@ run_history:
     status: passed
     executor: "Cursor Agent (Playwright)"
     notes: "Run scoped: npm run test:purchase-requisition:tc -- \"@TC-PR-DRAFT\"; result 1 passed. Section detail aktif; status Open tervalidasi di datalist."
+last_execution:
+  at: "2026-07-08"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---

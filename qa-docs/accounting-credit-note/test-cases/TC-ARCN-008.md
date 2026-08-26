@@ -79,7 +79,7 @@ expected_result: |
   Journal default General (requirement §6.7): Debit COA fund (Sales COA) / Kredit Customer's Deposit COA. Platform invert out of scope.
   CN yang seluruh fund-nya type COA tidak kena cash bank reconcile lock (requirement §7.3b). Complete return tidak gagal hanya karena tidak ada baris Cash/Bank.
 test_result:
-  status: fail
+  status: failed
   started_at: "2026-08-13 19:30"
   finished_at: "2026-08-13 21:10"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -107,6 +107,11 @@ run_history:
   - at: "2026-08-13 21:10"
     status: fail
     by: "QA - Yemima (Playwright MCP)"
+last_execution:
+  at: "2026-08-13"
+  jira: null
+  status: failed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

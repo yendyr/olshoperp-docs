@@ -6,7 +6,7 @@ menu_name: "Account Payment"
 test_type: happy
 title: "CREATE — Payment Unbilled Goods + Bank BCA 001 + PI-6960CB30"
 summary: "Create Account Payment; supplier PT Unbilled Goods; Use Bank BCA 001; Outstanding PI PI-6960CB30 Use."
-status: automated
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-20
 requirement_ref: "qa-docs/accounting-supplier-payment/knowledge-base.md"
@@ -36,13 +36,18 @@ steps:
 expected_result: |
   Payment source Bank BCA 001 terpasang; detail PI-6960CB30 ter-use; status Approved.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T08:21:00Z"
   finished_at: "2026-07-20T08:22:00Z"
   executed_by: "Cursor Agent"
   environment: staging
   log_summary: "PASS — PY-5TVBFUBZ; Unbilled Goods + Bank BCA 001 + PI-6960CB30; Open → Approve form; amount source disamakan dengan paid amount PI (4.000,00)."
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-APAY-001

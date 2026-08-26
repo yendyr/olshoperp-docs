@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Description ter-update; line detail tersimpan (SKU terlihat).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T06:24:00Z"
   finished_at: "2026-07-15T06:25:38Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS mutation-inbound · UPDATE description + Select Product · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-MUTIN-002

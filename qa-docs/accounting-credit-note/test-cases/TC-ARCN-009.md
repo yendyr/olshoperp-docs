@@ -43,7 +43,7 @@ expected_result: |
   Free COA Equity (bukan Deposit, bukan bound Cash/Bank) tetap muncul — picker tidak rusak.
   Bound Cash/Bank exclude sudah diuji terpisah di TC-ARCN-002.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-13 21:40"
   finished_at: "2026-08-13 21:45"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -63,6 +63,11 @@ run_history:
   - at: "2026-08-13 21:45"
     status: pass
     by: "QA - Yemima (Playwright MCP)"
+last_execution:
+  at: "2026-08-13"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

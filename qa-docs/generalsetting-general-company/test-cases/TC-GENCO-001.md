@@ -48,6 +48,11 @@ test_result:
   report_url: null
 test_data_used: []
 run_history: []
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 ## Catatan QA

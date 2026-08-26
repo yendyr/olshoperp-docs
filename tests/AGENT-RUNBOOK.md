@@ -105,12 +105,33 @@ Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 
 ---
 
+## Gate — apa yang dijaga mesin, apa yang tidak
+
+Sebelum menyerahkan pekerjaan, **wajib hijau**:
+
+```bash
+npm run tc:selftest    # apakah gate-nya sendiri masih bekerja?
+npm run tc:lint        # apakah dokumenmu lolos gate?
+```
+
+`tc:selftest` menjalankan `tc-lint` di atas repo tiruan berisi pelanggaran buatan dan
+memastikan tiap pelanggaran benar-benar ditangkap. Gunanya: **aturan yang tidak punya
+case di `tests/tools/tc-selftest.mjs` tidak dijaga siapa pun** — anggap imbauan, dan
+jangan berasumsi agent lain mematuhinya. Menambah aturan baru = menambah case di sana,
+kalau tidak aturan itu lahir sudah mati.
+
+Yang **tidak** bisa dijaga mesin (di sinilah review manusia masih perlu):
+`expected_result` benar-benar berasal dari `requirement.md`, `test_type` cocok dengan
+isi TC, dan langkah TC benar-benar menguji yang dimaksud.
+
+---
+
 ## 7 aturan mutlak (paling sering dilanggar)
 
 | # | Aturan | Kenapa |
 |---|---|---|
 | 1 | **Eksekusi test = Playwright CLI.** MCP hanya eksplorasi/diagnosa | MCP mem-bypass preflight, storageState, reporter, history → hasil tidak reproducible |
-| 2 | **Status `passed`/`automated: true` hanya sah dari CLI run** | Verifikasi via MCP dicatat sebagai observasi (`status: draft` + catatan) |
+| 2 | **Status `passed`/`automated: true` hanya sah dari CLI run** — ditegakkan `tc:lint`: `last_execution.status: passed` wajib punya `via:` ke file spec yang ada; `via` bermuatan "MCP" ditolak | Verifikasi via MCP dicatat sebagai observasi (`status: draft` + catatan) |
 | 3 | **TC hasil crawling wajib format rule 13** (`tc_code`, `menu`, `steps`, `expected_result`) | Skema lain (`id:`, `menu_slug:`) invisible bagi `tc:lint`, tak bisa di-recall flow, jadi duplikat tak terdeteksi |
 | 4 | **Jangan duplikasi langkah TC.** Langkah hidup di `tests/scenarios/` (1 fungsi = 1 TC origin); flow me-*recall*, tidak menyalin | Kalau UX berubah, cukup update 1 tempat — bukan berburu salinan |
 | 5 | **Selector dari source Vue, bukan DOM scraping**, dan mendarat di `pom-registry`/`helpers` — bukan hardcoded di spec | Fondasi stabilitas; selector scraping pecah tiap re-render |

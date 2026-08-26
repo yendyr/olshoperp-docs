@@ -35,7 +35,7 @@ steps:
 expected_result: |
   Save diblok. Code / Name kosong = required (requirement §7, AC CT-01).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-14 12:29"
   finished_at: "2026-08-14 12:31"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -57,7 +57,9 @@ run_history:
 origin_jira: ETM-15543
 last_execution:
   at: "2026-08-14 12:31"
-  jira: ETM-15543
+  jira: "ETM-15543"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-CT-005

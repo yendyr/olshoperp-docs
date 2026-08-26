@@ -5,7 +5,7 @@ menu: accounting-product-coa-group
 menu_name: "Product COA Group"
 title: "Audit Log — buka slideover dari edit"
 summary: "Create record audit terpisah; buka Audit Log di sidenav edit."
-status: pass
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-24
 requirement_ref: "qa-docs/accounting-product-coa-group/knowledge-base.md"
@@ -26,9 +26,14 @@ steps:
 expected_result: |
   Panel Audit Log tampil (judul Audit Log).
 test_result:
-  status: pass
+  status: passed
   environment: staging
   log_summary: "6/6 PASS · TC-PCG-006 Audit Log · company lumicharmsid"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PCG-006

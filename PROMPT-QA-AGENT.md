@@ -41,6 +41,7 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
    expected berubah = UPDATE TC existing (jangan bikin kembarannya).
 
 PERINTAH GATE — jalankan sesuai konteks, jangan dilewati:
+  npm run tc:selftest                  # gate-nya sendiri masih bekerja? (wajib 17/17 hijau)
   npm run tc:lint                      # sebelum & sesudah menambah/mengubah TC (wajib 0 error)
   npm run tc:coverage                  # lihat gap coverage sebelum menulis TC baru
   npm run guard:scan -- --menu {slug}  # kandidat negative TC dari guard backend

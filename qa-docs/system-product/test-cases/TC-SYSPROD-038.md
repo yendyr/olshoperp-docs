@@ -42,7 +42,7 @@ expected_result: |
   - Case 4.1: Failed row = 1. Log: 'Parent SKU not found in import file'.
   - Case 4.2: Failed row = 1. Log: 'Invalid SKU Parent'.
 test_result:
-  status: pass
+  status: passed
   started_at: 2026-08-21T14:53:00+07:00
   finished_at: 2026-08-21T14:56:00+07:00
   executed_by: User
@@ -61,6 +61,8 @@ run_history:
     jira: ETM-15512
 origin_jira: ETM-15512
 last_execution:
-  at: 2026-08-21T14:56:00+07:00
-  jira: ETM-15512
+  at: "2026-08-21T14:56:00+07:00"
+  jira: "ETM-15512"
+  status: passed
+  via: "legacy:test_result"
 ---

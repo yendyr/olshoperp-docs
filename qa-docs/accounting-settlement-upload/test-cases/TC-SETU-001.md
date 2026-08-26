@@ -55,7 +55,7 @@ expected_result: |
   [CATATAN QA] Requirement Instant Settlement §4.2 I-01 hanya mewajibkan pilih Store di filter atas sebelum Import — tidak mengatur height/width. Expected ukuran = TO-BE [ETM-11494](https://erpintegration.atlassian.net/browse/ETM-11494) (Technical Requirement 3 Nov 2025).
   Referensi terdekat: qa-docs/accounting-settlement-upload/requirement.md §4.2 I-01.
 test_result:
-  status: fail
+  status: failed
   started_at: "2026-08-15 09:04"
   finished_at: "2026-08-15 09:10"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -104,7 +104,9 @@ run_history:
 origin_jira: ETM-11494
 last_execution:
   at: "2026-08-15 09:10"
-  jira: ETM-11494
+  jira: "ETM-11494"
+  status: failed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

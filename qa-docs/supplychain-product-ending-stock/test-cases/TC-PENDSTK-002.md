@@ -27,13 +27,18 @@ steps:
 expected_result: |
   Tab By SKU load; kolom agregat terlihat; search (jika dijalankan) tidak error.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T08:28:14Z"
   finished_at: "2026-07-15T08:28:27Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS FILTER tab By SKU · On hand/ATS/Availability · search soft · company lumicharmsid · 2/2 VIEW+FILTER"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PENDSTK-002

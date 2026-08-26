@@ -77,6 +77,11 @@ run_history:
     status: passed
     environment: staging
     note: Execute otomatis Playwright — create variant + bundle parent + activate bundle
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

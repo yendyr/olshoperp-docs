@@ -34,7 +34,7 @@ expected_result: |
   Toggle Enable Variations berhasil dinonaktifkan setelah menekan Proceed.
   Produk berhasil disimpan sebagai produk Single (tergenerate 1 SKU saja yaitu SKU-HANDUK).
 test_result:
-  status: pass
+  status: passed
   started_at: 2026-08-21T14:51:00+07:00
   finished_at: 2026-08-21T14:52:00+07:00
   executed_by: User
@@ -50,6 +50,8 @@ run_history:
     jira: ETM-15512
 origin_jira: ETM-15512
 last_execution:
-  at: 2026-08-21T14:52:00+07:00
-  jira: ETM-15512
+  at: "2026-08-21T14:52:00+07:00"
+  jira: "ETM-15512"
+  status: passed
+  via: "legacy:test_result"
 ---

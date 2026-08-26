@@ -29,13 +29,18 @@ steps:
 expected_result: |
   Redirect /edit/{id}; account tersimpan.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T04:42:30Z"
   finished_at: "2026-07-20T04:43:10Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS · TC-CBA-002 CREATE (patch is_default=0 staging AS-IS)"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-CBA-002

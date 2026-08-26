@@ -32,7 +32,7 @@ expected_result: |
   Import berhasil. Produk Single otomatis di-convert menjadi Variant.
   Terbuat SKU-HANGER-(PARENT) sebagai parent dan SKU-HANGER sebagai child.
 test_result:
-  status: pass
+  status: passed
   started_at: 2026-08-21T14:52:00+07:00
   finished_at: 2026-08-21T14:53:00+07:00
   executed_by: User
@@ -48,6 +48,8 @@ run_history:
     jira: ETM-15512
 origin_jira: ETM-15512
 last_execution:
-  at: 2026-08-21T14:53:00+07:00
-  jira: ETM-15512
+  at: "2026-08-21T14:53:00+07:00"
+  jira: "ETM-15512"
+  status: passed
+  via: "legacy:test_result"
 ---

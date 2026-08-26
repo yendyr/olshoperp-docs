@@ -44,6 +44,8 @@ origin_jira: ETM-15605
 last_execution:
   at: null
   jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-ASO-013: Extract SKU Bundle tipe VARIANT pada Detail Sales Order

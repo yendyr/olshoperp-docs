@@ -37,7 +37,7 @@ expected_result: |
   Save sukses. Opsi tersimpan hanya opsi user (contoh Standard) — **tanpa** opsi `random` (requirement §6.2 create Default ON + 1 opsi).
   Toggle Default tetap ON setelah save.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-14 06:13"
   finished_at: "2026-08-14 06:15"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -60,7 +60,9 @@ run_history:
 origin_jira: ETM-15511
 last_execution:
   at: "2026-08-14 06:15"
-  jira: ETM-15511
+  jira: "ETM-15511"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-VAR-004

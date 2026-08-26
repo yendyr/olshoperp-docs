@@ -29,7 +29,7 @@ steps:
 expected_result: |
   Opsi print **COLLI DEV** (`sku_qr_qty_dev`) tampil bersama opsi print detail lain (SKU, COLLI ID/BOX, SID jika Approved).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-14 07:12"
   finished_at: "2026-08-14 07:13"
   executed_by: "QA - Yemima (Cursor browser)"
@@ -47,7 +47,9 @@ run_history:
 origin_jira: ETM-15479
 last_execution:
   at: "2026-08-14 07:13"
-  jira: ETM-15479
+  jira: "ETM-15479"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-SOPNAME-007

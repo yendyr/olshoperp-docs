@@ -41,8 +41,10 @@ test_data_used: []
 run_history: []
 origin_jira: ETM-15350
 last_execution:
-  at: null
+  at: "2026-08-19"
   jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # Catatan QA & Referensi

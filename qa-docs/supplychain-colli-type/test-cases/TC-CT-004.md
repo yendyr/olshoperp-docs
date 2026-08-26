@@ -35,7 +35,7 @@ expected_result: |
   Maksimal **1** Default Data ON per company. Type B = ON; type A dipaksa **OFF** (requirement §6.1, §6.4 kasus 3, §7 Set Default ON, AC CT-02).
   Audit toggle Default → TC-CT-015.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-14 12:28"
   finished_at: "2026-08-14 12:29"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -59,7 +59,9 @@ run_history:
 origin_jira: ETM-15543
 last_execution:
   at: "2026-08-14 12:29"
-  jira: ETM-15543
+  jira: "ETM-15543"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-CT-004

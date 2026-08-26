@@ -36,7 +36,7 @@ expected_result: |
   Description berisi informasi job auto sync + tanggal window (card: job auto sync {date} {store name lookback sync}).
   Store lookback terlihat (di kolom Store dan/atau di description, sesuai implementasi).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-13 21:55"
   finished_at: "2026-08-13 22:00"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -54,6 +54,11 @@ run_history:
   - at: "2026-08-13 22:00"
     status: pass
     by: "QA - Yemima (Playwright MCP)"
+last_execution:
+  at: "2026-08-13"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

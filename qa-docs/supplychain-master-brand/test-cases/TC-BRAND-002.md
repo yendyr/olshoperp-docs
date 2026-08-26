@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Update sukses; datalist menampilkan name baru.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T05:57:00Z"
   finished_at: "2026-07-15T05:58:50Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "2/2 PASS · UPDATE Name+Description OK · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-BRAND-002

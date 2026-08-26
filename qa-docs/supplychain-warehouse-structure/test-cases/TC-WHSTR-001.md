@@ -71,6 +71,11 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-WHSTR-001 — 2/2 serial PASS"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-WHSTR-001

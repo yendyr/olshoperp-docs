@@ -30,13 +30,18 @@ steps:
 expected_result: |
   Shell laporan load; filter siap; datalist read-only dengan kolom utama.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T04:03:30Z"
   finished_at: "2026-07-20T04:04:20Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS transaction-history-view-filter.spec.ts (~49s) · TC-TRXH-001 ~6.9s · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-TRXH-001

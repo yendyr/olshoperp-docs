@@ -41,7 +41,7 @@ expected_result: |
     - Outstanding PO Qty menjadi 0
   Verifikasi utama: qty tersimpan == outstanding, bukan qty berlebih yang diinput.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-26"
   finished_at: "2026-08-26"
   executed_by: "Playwright local (olshoperp-docs)"
@@ -54,8 +54,10 @@ test_data_used: []
 run_history: []
 origin_jira: null
 last_execution:
-  at: null
+  at: "2026-08-26"
   jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PI-013

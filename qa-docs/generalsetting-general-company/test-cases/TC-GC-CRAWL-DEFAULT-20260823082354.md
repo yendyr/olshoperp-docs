@@ -42,6 +42,11 @@ test_data_used:
     is_supplier: true
     status: 1
     company_scope: "Lumi Charms.id (ID: 153)"
+last_execution:
+  at: "2026-08-23"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # Catatan Testing & Referensi Data (Evidence)

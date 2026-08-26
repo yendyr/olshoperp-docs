@@ -34,13 +34,18 @@ steps:
 expected_result: |
   Brand tersimpan; name tampil di datalist; redirect edit.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T05:57:00Z"
   finished_at: "2026-07-15T05:58:50Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "2/2 PASS master-brand-create-update.spec.ts · CREATE Brand OK · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-BRAND-001

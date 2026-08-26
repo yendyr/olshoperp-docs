@@ -35,7 +35,7 @@ expected_result: |
   Parent SKU yang ter-generate adalah SKU-LAPMEJA-(PARENT).
   Child SKU yang ter-generate adalah SKU-LAPMEJA (menggunakan kode user).
 test_result:
-  status: pass
+  status: passed
   started_at: 2026-08-21T14:50:00+07:00
   finished_at: 2026-08-21T14:51:00+07:00
   executed_by: User
@@ -51,6 +51,8 @@ run_history:
     jira: ETM-15512
 origin_jira: ETM-15512
 last_execution:
-  at: 2026-08-21T14:51:00+07:00
-  jira: ETM-15512
+  at: "2026-08-21T14:51:00+07:00"
+  jira: "ETM-15512"
+  status: passed
+  via: "legacy:test_result"
 ---

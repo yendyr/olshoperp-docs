@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Datalist load; Create terlihat; kolom utama tampil.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T04:10:00Z"
   finished_at: "2026-07-20T04:11:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS chart-of-account-crud.spec.ts · TC-COA-001 VIEW · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-COA-001

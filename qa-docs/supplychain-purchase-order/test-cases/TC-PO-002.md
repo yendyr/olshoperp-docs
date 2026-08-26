@@ -47,7 +47,7 @@ expected_result: |
   Requirement masih menyebut "tab Export File"; UI = slideover judul **Export**. Card AC menyebut **History Audit Log Export** dan **Active Page Only**; label opsi UI/requirement = **This Page Only**.
   Referensi: qa-docs/supplychain-purchase-order/requirement.md §3.3 & §13.2.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-17 20:25"
   finished_at: "2026-08-17 20:27"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -68,7 +68,9 @@ run_history:
 origin_jira: ETM-15469
 last_execution:
   at: "2026-08-17 20:27"
-  jira: ETM-15469
+  jira: "ETM-15469"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

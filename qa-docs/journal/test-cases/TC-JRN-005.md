@@ -41,6 +41,11 @@ test_result:
   environment: staging
   log_summary: null
   report_url: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-JRN-005

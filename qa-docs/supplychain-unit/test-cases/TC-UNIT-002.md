@@ -71,6 +71,11 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-UNIT-002 — tests/specs/unit/unit-update.spec.ts"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-UNIT-002

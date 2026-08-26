@@ -36,7 +36,7 @@ expected_result: |
   Nilai = ALL count jumlah order dalam 1 job sync tsb (field backend total_order).
   Kolom tampil di Log Data Dev - Sales Platform (komponen SyncLog yang sama dipakai All Sales Order).
 test_result:
-  status: fail
+  status: failed
   started_at: "2026-08-13 21:53"
   finished_at: "2026-08-13 22:00"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -52,6 +52,11 @@ run_history:
   - at: "2026-08-13 22:00"
     status: fail
     by: "QA - Yemima (Playwright MCP)"
+last_execution:
+  at: "2026-08-13"
+  jira: null
+  status: failed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

@@ -31,7 +31,7 @@ steps:
 expected_result: |
   Print sukses. Header Transaction Code tetap tampil. Body tabel **No data available**. Approved By `-` jika belum approve.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-14 07:14"
   finished_at: "2026-08-14 07:14"
   executed_by: "QA - Yemima (Cursor browser)"
@@ -49,7 +49,9 @@ run_history:
 origin_jira: ETM-15479
 last_execution:
   at: "2026-08-14 07:14"
-  jira: ETM-15479
+  jira: "ETM-15479"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-SOPNAME-006

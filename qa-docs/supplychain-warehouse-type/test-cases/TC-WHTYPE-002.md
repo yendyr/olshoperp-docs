@@ -57,6 +57,11 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-WHTYPE-002 — chain setelah TC-WHTYPE-001"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-WHTYPE-002

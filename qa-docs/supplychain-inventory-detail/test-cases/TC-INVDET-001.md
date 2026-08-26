@@ -31,13 +31,18 @@ steps:
 expected_result: |
   Datalist HTTP 200; warehouse level terisi; shell read-only + kolom stok tampil.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T03:37:00Z"
   finished_at: "2026-07-15T03:38:14Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "2/2 PASS inventory-detail-view-filter.spec.ts · VIEW OK · warehouse level auto · lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-INVDET-001

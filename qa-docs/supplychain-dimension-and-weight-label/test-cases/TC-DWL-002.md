@@ -55,6 +55,11 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-DWL-002 — chain setelah create"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-DWL-002

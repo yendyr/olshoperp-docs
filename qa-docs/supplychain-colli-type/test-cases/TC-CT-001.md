@@ -54,7 +54,7 @@ expected_result: |
   Form Create/Edit punya **Code**, **Name**, **Description**, **Set as Default Data**, **Active**, **Show for all company** (requirement §5).
   Setelah save: setiap kolom datalist dan setiap field edit menampilkan **nilai yang sama dengan input**. Tidak ada Code/Name/Description/Default Data/Active/Show for all company yang kosong atau null padahal diisi. Description yang diisi tetap tampil (bukan blank). Created by | Created at terisi (bukan null).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-14 12:16"
   finished_at: "2026-08-14 12:18"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -90,7 +90,9 @@ run_history:
 origin_jira: ETM-15543
 last_execution:
   at: "2026-08-14 12:18"
-  jira: ETM-15543
+  jira: "ETM-15543"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-CT-001

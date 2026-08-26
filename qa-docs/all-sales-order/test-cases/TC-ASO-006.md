@@ -48,7 +48,9 @@ origin_jira: ETM-15446
 request_id: recvqWrTHZ1dOV
 last_execution:
   at: "2026-08-20 19:25:28"
-  jira: ETM-15446
+  jira: "ETM-15446"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # Catatan QA & Referensi

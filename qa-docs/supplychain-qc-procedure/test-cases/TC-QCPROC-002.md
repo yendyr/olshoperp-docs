@@ -32,13 +32,18 @@ steps:
 expected_result: |
   Header ter-update; activity detail tersimpan (sequence unik 1–30).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T09:10:21Z"
   finished_at: "2026-07-15T09:10:49Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS UPDATE name + Procedure Detail activity seq=1 · company lumicharmsid · 2/2"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-QCPROC-002

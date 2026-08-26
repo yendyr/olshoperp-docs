@@ -5,7 +5,7 @@ menu: accounting-asset-list
 menu_name: "Asset List"
 title: "SEARCH + Availability modal"
 summary: "Search SKU baris pertama (jika ada); klik Availability → modal Available."
-status: pass
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-24
 requirement_ref: "qa-docs/accounting-asset-list/knowledge-base.md"
@@ -26,9 +26,14 @@ steps:
 expected_result: |
   Modal Available tampil (ada data) ATAU empty state jelas (tanpa data).
 test_result:
-  status: pass
+  status: passed
   environment: staging
   log_summary: "5/5 PASS · TC-ASL-003 · data AST-KND-0001 · company lumicharmsid"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ASL-003

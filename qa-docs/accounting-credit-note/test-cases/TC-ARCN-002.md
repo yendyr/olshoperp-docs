@@ -34,7 +34,7 @@ expected_result: |
   COA yang sudah terikat Master Cash Bank aktif tidak muncul di pilihan Free COA.
   Bound Cash/Bank harus lewat field Cash/Bank (requirement §5.2).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-13 14:14"
   finished_at: "2026-08-13 14:15"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -48,6 +48,11 @@ run_history:
   - at: "2026-08-13 14:15"
     status: pass
     by: "QA - Yemima (Playwright MCP)"
+last_execution:
+  at: "2026-08-13"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

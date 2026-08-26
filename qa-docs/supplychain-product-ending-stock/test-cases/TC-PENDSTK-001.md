@@ -32,13 +32,18 @@ steps:
 expected_result: |
   Report load (GET product-ending-stock OK); shell read-only; kolom By Warehouse terlihat.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T08:28:00Z"
   finished_at: "2026-07-15T08:28:14Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS VIEW By Warehouse · Availability/Unit/Status · Manual Calculate+Log · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PENDSTK-001

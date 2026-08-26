@@ -33,13 +33,18 @@ steps:
 expected_result: |
   Header tersimpan dengan code TFI-*; tampil di datalist.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T07:12:33Z"
   finished_at: "2026-07-15T07:13:10Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "2/2 PASS mutation-transfer-internal-create-update.spec.ts · CREATE TFI* · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-MTIN-001

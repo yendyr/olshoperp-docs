@@ -60,6 +60,11 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-PINVCFG-001 — 2/2 serial PASS (~1.3m)"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PINVCFG-001

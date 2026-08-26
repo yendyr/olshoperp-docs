@@ -32,13 +32,18 @@ steps:
 expected_result: |
   Header tersimpan dengan code PL-*; tampil di datalist.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T04:45:00Z"
   finished_at: "2026-07-15T04:48:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "3/3 PASS manual-picking-list-create-update.spec.ts · CREATE PL-* · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-MPL-001

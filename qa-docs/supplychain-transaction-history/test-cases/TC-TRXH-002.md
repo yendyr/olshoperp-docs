@@ -30,13 +30,18 @@ steps:
 expected_result: |
   Filter building ter-apply; datalist scoped warehouse.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T04:03:30Z"
   finished_at: "2026-07-20T04:04:20Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS · TC-TRXH-002 ~9.9s · Building Gayungsari warehouse_id OK"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-TRXH-002

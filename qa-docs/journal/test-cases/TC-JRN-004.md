@@ -6,7 +6,7 @@ menu_name: "Journal"
 test_type: cross-menu
 title: "VERIFY — Auto journal dari Account Receive (Payment from Customer)"
 summary: "Warm-up W2 CBR: dari AR Approved, buka journal linked; assert Approved, TYPE Payment from Customer, Transaction Reference = RC, ledger COA Bank BCA."
-status: executed
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-23
 requirement_ref: "qa-docs/journal/knowledge-base.md"
@@ -34,13 +34,18 @@ steps:
 expected_result: |
   Journal auto dari AR Approved; eligible seed CBR (ref Payment from Customer + COA cash/bank).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-23"
   finished_at: "2026-07-23"
   executed_by: "Cursor Auto"
   environment: staging
   log_summary: "RC-5TWBHOUX → GL-5TWBI5XV Approved; TYPE Payment from Customer; ref RC; ledger Bank BCA"
   report_url: null
+last_execution:
+  at: "2026-07-23"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-JRN-004

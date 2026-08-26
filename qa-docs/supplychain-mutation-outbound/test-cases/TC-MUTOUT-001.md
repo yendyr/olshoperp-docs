@@ -35,13 +35,18 @@ steps:
 expected_result: |
   Header tersimpan dengan code OT-*; tampil di datalist.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T06:35:40Z"
   finished_at: "2026-07-15T06:36:25Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "3/3 PASS mutation-outbound-create-update.spec.ts · CREATE OT* · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-MUTOUT-001

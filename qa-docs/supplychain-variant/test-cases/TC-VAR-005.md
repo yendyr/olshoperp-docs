@@ -36,7 +36,7 @@ steps:
 expected_result: |
   Save sukses. Opsi tersimpan `[random, Red]` — inject `random` AS-IS (requirement §6.2 create Default OFF).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-14 06:17"
   finished_at: "2026-08-14 06:18"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -58,7 +58,9 @@ run_history:
 origin_jira: ETM-15511
 last_execution:
   at: "2026-08-14 06:18"
-  jira: ETM-15511
+  jira: "ETM-15511"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-VAR-005

@@ -31,7 +31,7 @@ expected_result: |
   - Redirect ke `/generalsetting/general-company/edit/{id}`.
   - Role Customer = Yes; Supplier/Shipper/Manufacturer = No pada data yang dibuat.
 test_result:
-  status: error
+  status: failed
   started_at: '2026-06-26 16:53:52'
   finished_at: '2026-06-28 20:47:35'
   executed_by: system
@@ -55,6 +55,11 @@ run_history:
     executed_by: system
     environment: staging
     log_summary: 'E2E runner belum dikonfigurasi. Deploy runner VM + set QA_DOCS_E2E_STUB=false (PR-3).'
+last_execution:
+  at: "'2026-06-2"
+  jira: null
+  status: failed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

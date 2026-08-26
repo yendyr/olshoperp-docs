@@ -34,7 +34,7 @@ expected_result: |
   Datalist punya kolom **Default** (Yes/No).
   Default toggle awal = OFF.
 test_result:
-  status: fail
+  status: failed
   started_at: "2026-08-14 06:11"
   finished_at: "2026-08-14 06:16"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -60,7 +60,9 @@ run_history:
 origin_jira: ETM-15511
 last_execution:
   at: "2026-08-14 06:16"
-  jira: ETM-15511
+  jira: "ETM-15511"
+  status: failed
+  via: "legacy:test_result"
 ---
 
 # TC-VAR-003

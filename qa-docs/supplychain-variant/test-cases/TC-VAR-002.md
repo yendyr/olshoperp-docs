@@ -61,6 +61,11 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-VAR-002 — re-run lumicharmsid"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-VAR-002

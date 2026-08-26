@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Datalist load per warehouse; metrik stok terlihat.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T09:20:25Z"
   finished_at: "2026-07-15T09:20:46Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS FILTER warehouse → GET by-location · On Hand/ATS/Availability · Manual Calculate+Log · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-REALSTK-002

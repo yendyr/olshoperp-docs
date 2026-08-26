@@ -76,7 +76,9 @@ origin_jira: ETM-15495
 jira_key: ETM-15554
 last_execution:
   at: "2026-08-23T08:18:54+07:00"
-  jira: ETM-15554
+  jira: "ETM-15554"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA & Analisa Teknis

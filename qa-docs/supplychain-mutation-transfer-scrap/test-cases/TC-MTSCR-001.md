@@ -34,13 +34,18 @@ expected_result: |
   Header tersimpan di URL edit scrap; code auto (AS-IS store sering TFI* — seharusnya TFS*).
   Deskripsi tersimpan di form.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T07:46:00Z"
   finished_at: "2026-07-15T07:47:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "2/2 PASS mutation-transfer-scrap · CREATE (AS-IS TFI*) · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-MTSCR-001

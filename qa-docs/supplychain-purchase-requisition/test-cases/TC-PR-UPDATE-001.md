@@ -63,4 +63,9 @@ run_history:
     status: passed
     executor: "Cursor Agent (Playwright) + konfirmasi QA"
     notes: "Hasil bisnis tercapai: qty hitam 25 + status Approved. Rerun automation setelah itu tampak FAIL karena PR sudah read-only — dikoreksi sebagai false FAIL automation, bukan fail expected result."
+last_execution:
+  at: "2026-07-08"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---

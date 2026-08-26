@@ -46,6 +46,8 @@ origin_jira: ETM-15605
 last_execution:
   at: null
   jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-ASO-015: Extract SKU Bundle pada Sales Order dengan > 100 baris detail SKU

@@ -92,7 +92,9 @@ run_history:
 origin_jira: ETM-15611
 last_execution:
   at: "2026-08-20"
-  jira: ETM-15611
+  jira: "ETM-15611"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PI-DRAFT-20260824124900

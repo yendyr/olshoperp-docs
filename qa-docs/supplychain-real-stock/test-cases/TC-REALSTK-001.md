@@ -29,13 +29,18 @@ steps:
 expected_result: |
   Shell laporan load; filter warehouse siap; read-only.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T09:20:00Z"
   finished_at: "2026-07-15T09:20:25Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS VIEW shell By Location + By SKU + Multiselect warehouse · no Create · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-REALSTK-001

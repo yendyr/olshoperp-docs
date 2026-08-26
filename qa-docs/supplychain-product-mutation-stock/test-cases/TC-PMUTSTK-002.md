@@ -27,13 +27,18 @@ steps:
 expected_result: |
   History per warehouse load; kolom qty/balance terlihat.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T08:45:06Z"
   finished_at: "2026-07-15T08:45:16Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS FILTER Product+Apply · API stock-history · Date/In/Out/Ending Balance · company lumicharmsid · 2/2"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PMUTSTK-002

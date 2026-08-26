@@ -28,6 +28,7 @@
     "test:ui": "playwright test --ui",
     "test:report": "playwright show-report",
     "tc:lint": "node tests/tools/tc-lint.mjs",
+    "tc:selftest": "node tests/tools/tc-selftest.mjs",
     "tc:coverage": "node tests/tools/tc-coverage.mjs",
     "tc:refs": "node tests/tools/tc-refs.mjs",
     "guard:scan": "node tests/tools/guard-scan.mjs",

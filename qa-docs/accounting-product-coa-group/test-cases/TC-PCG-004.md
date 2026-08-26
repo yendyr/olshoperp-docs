@@ -24,13 +24,18 @@ steps:
 expected_result: |
   Search menemukan PCG.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T04:25:00Z"
   finished_at: "2026-07-20T04:26:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS · TC-PCG-004 SEARCH Code"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PCG-004

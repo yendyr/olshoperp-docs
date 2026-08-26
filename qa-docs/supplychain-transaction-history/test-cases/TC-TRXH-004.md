@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Search menemukan transaksi terkait SKU; Trx. Code link valid.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T04:03:30Z"
   finished_at: "2026-07-20T04:04:20Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "4/4 PASS · TC-TRXH-004 ~19.9s · AUTO-SKU001 + Trx. Code link OK"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-TRXH-004

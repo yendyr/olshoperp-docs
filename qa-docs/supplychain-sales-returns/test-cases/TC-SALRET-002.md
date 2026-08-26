@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Qty tersimpan; status tetap open; menunggu Finance Complete.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T09:36:06Z"
   finished_at: "2026-07-15T09:36:35Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS UPDATE Restock↔Lost fill → PATCH details + toast Waiting for Finance · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-SALRET-002

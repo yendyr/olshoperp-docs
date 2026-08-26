@@ -31,7 +31,7 @@ steps:
 expected_result: |
   FE izinkan remove Random. Update tidak re-inject `random` jika user menghapus dan opsi unused (requirement §6.2 / §6.5).
 test_result:
-  status: fail
+  status: failed
   started_at: "2026-08-14 06:18"
   finished_at: "2026-08-14 06:19"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -55,7 +55,9 @@ run_history:
 origin_jira: ETM-15511
 last_execution:
   at: "2026-08-14 06:19"
-  jira: ETM-15511
+  jira: "ETM-15511"
+  status: failed
+  via: "legacy:test_result"
 ---
 
 # TC-VAR-008

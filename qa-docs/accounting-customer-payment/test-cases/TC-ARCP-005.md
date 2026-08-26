@@ -5,7 +5,7 @@ menu: accounting-customer-payment
 menu_name: "Account Receive"
 title: "CREATE — PT. Customer Lumi 001 + Available SI Use + Bank BCA 001 + Approve"
 summary: "Warm-up W1 CBR: Create AR; customer PT. Customer Lumi 001; Available SI bulk Use; Receiving Destination Bank BCA 001; Open; Approve; search datalist."
-status: executed
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-23
 requirement_ref: "qa-docs/accounting-customer-payment/knowledge-base.md"
@@ -38,13 +38,18 @@ steps:
 expected_result: |
   AR Approved; detail berisi SI; Receiving Destination Bank BCA 001; muncul di datalist status Approved.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-23"
   finished_at: "2026-07-23"
   executed_by: "Cursor Auto"
   environment: staging
   log_summary: "RC-5TWBHOUX Approved; customer PT. Customer Lumi 001; SI-5TO0EERH; Bank BCA 001 synced via /primevue fund API"
   report_url: null
+last_execution:
+  at: "2026-07-23"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ARCP-005

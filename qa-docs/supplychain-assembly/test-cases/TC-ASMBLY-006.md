@@ -55,6 +55,8 @@ origin_jira: ETM-15519
 last_execution:
   at: null
   jira: null
+  status: not_run
+  via: null
 ---
 
 ## Catatan QA

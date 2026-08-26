@@ -16,6 +16,11 @@ execution_company:
   id: 153
   code: lumicharmsid
 related_menus: []
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 > [!NOTE]

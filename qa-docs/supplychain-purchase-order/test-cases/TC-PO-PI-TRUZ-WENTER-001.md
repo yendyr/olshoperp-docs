@@ -53,6 +53,11 @@ test_result:
   environment: staging
   log_summary: "PASS ~8m — PO Without PR 8 SKU approve + PI Open 8 baris (lumicharmsid)"
   report_url: null
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 ## Catatan

@@ -47,7 +47,7 @@ expected_result: |
   Type tetap Active ON selama Colli code masih ada.
   Lanjutan setelah inbound + Colli code dihapus → TC-CT-013.
 test_result:
-  status: fail
+  status: failed
   started_at: "2026-08-14 12:32"
   finished_at: "2026-08-14 12:37"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -76,7 +76,9 @@ run_history:
 origin_jira: ETM-15543
 last_execution:
   at: "2026-08-14 12:37"
-  jira: ETM-15543
+  jira: "ETM-15543"
+  status: failed
+  via: "legacy:test_result"
 ---
 
 # TC-CT-007

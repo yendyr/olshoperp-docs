@@ -5,7 +5,7 @@ menu: accounting-asset-category
 menu_name: "Asset Category"
 title: "VIEW — buka datalist Asset Category"
 summary: "Load /accounting/asset-category; verifikasi Create + kolom utama."
-status: pass
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-24
 requirement_ref: "qa-docs/accounting-asset-category/knowledge-base.md"
@@ -27,13 +27,18 @@ steps:
 expected_result: |
   Datalist load; Create terlihat; kolom utama tampil.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-24T08:00:00Z"
   finished_at: "2026-07-24T08:20:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "6/6 PASS asset-category-crud.spec.ts · TC-ASC-001 VIEW · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-24"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ASC-001

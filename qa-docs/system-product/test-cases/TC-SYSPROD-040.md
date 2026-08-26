@@ -43,4 +43,6 @@ origin_jira: ETM-15512
 last_execution:
   at: null
   jira: null
+  status: not_run
+  via: null
 ---

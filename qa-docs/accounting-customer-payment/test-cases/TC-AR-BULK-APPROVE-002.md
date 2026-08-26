@@ -53,4 +53,9 @@ run_history:
     status: passed
     environment: staging
     note: "Kode beda prefix → UI selection lintas-filter tidak stabil; automation rewrite data_ids sambil tetap klik tombol Approve UI"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---

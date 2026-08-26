@@ -35,13 +35,18 @@ steps:
 expected_result: |
   Purchase Invoice Draft terbuat dan tampil di datalist.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T06:55:00Z"
   finished_at: "2026-07-20T06:56:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS � PI-6A5DC78E Draft � supplier PT. Supplier IDR � PO-6A589088 � lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-PI-001

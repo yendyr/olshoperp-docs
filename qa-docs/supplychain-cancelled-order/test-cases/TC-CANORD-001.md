@@ -31,13 +31,18 @@ steps:
 expected_result: |
   Datalist HTTP 200; shell read-only; kolom monitoring tampil.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T03:29:30Z"
   finished_at: "2026-07-15T03:31:18Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "2/2 PASS cancelled-order-view-search.spec.ts · VIEW OK · 2 Void rows (SO-69AD8DB2 dkk) · lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-CANORD-001

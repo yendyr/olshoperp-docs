@@ -5,7 +5,7 @@ menu: accounting-asset-category
 menu_name: "Asset Category"
 title: "Soft DELETE + Show deleted data"
 summary: "Bulk soft-delete baris automation; hilang dari list aktif; muncul saat Show deleted ON."
-status: pass
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-24
 requirement_ref: "qa-docs/accounting-asset-category/knowledge-base.md"
@@ -27,13 +27,18 @@ steps:
 expected_result: |
   Soft delete sukses; aktif hilang; deleted masih terlihat via toggle.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-24T08:00:00Z"
   finished_at: "2026-07-24T08:20:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "6/6 PASS · TC-ASC-005 Soft DELETE · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-24"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ASC-005

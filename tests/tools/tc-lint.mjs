@@ -23,7 +23,11 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+// `TC_LINT_ROOT` dipakai `tc:selftest` untuk melint repo tiruan berisi pelanggaran
+// buatan — sehingga gate-nya sendiri ikut teruji, bukan cuma dipercaya.
+const root = process.env.TC_LINT_ROOT
+  ? path.resolve(process.env.TC_LINT_ROOT)
+  : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const qaDocs = path.join(root, 'qa-docs');
 
 function* walkTcFiles(dir) {
@@ -63,7 +67,22 @@ function parseFrontmatter(rawText) {
     .split('\n')
     .map((l) => l.match(/-\s+(.+?)\s*$/)?.[1])
     .filter(Boolean);
+  // Blok `last_execution` — SATU-SATUNYA sumber hasil eksekusi (rule 13).
+  const leBlock = fm.match(/^last_execution:\n((?:[ \t]+.*\n?)+)/m)?.[1] ?? null;
+  const leGet = (k) =>
+    leBlock?.match(new RegExp(`^\\s+${k}:\\s*"?([^"\\n]*)"?\\s*$`, 'm'))?.[1]?.trim() ?? null;
+  const trStatus = fm
+    .match(/^test_result:\n((?:[ \t]+.*\n?)+)/m)?.[1]
+    ?.match(/^\s+status:\s*"?([a-zA-Z_]+)"?\s*$/m)?.[1];
+
   return {
+    doc_status: get('status'),
+    automated: get('automated'),
+    test_result_status: trStatus ?? null,
+    last_execution: leBlock
+      ? { at: leGet('at'), jira: leGet('jira'), status: leGet('status'), via: leGet('via'),
+          keys: [...leBlock.matchAll(/^\s+([a-z_]+):/gm)].map((m) => m[1]) }
+      : null,
     tc_code: get('tc_code'),
     title: get('title'),
     test_type: get('test_type'),
@@ -108,6 +127,7 @@ const validMenuSlugs = new Set(
 const errors = [];
 const warnings = [];
 const untyped = [];
+const unverified = [];
 const byCode = new Map();
 const byMenuTitle = new Map();
 const allDocs = [];
@@ -175,6 +195,76 @@ for (const file of walkTcFiles(qaDocs)) {
     } else {
       untyped.push(rel);
     }
+  }
+
+  // ── Status dokumen vs hasil eksekusi (rule 13 §3) ──────────────────────────
+  // `status` = daur hidup DOKUMEN. Hasil run TIDAK pernah tinggal di sini —
+  // tempatnya `last_execution`, dan hanya reporter CLI yang berhak mengisinya.
+  const DOC_STATUS = ['draft', 'review', 'approved', 'deprecated'];
+  if (fm.doc_status && !DOC_STATUS.includes(fm.doc_status)) {
+    errors.push(
+      `status dokumen tidak sah "${fm.doc_status}": ${rel} → pilih: ${DOC_STATUS.join(', ')}.` +
+        ` Hasil eksekusi bukan status dokumen — tempatnya \`last_execution.status\``,
+    );
+  }
+
+  const RUN_STATUS = ['passed', 'failed', 'blocked', 'skipped', 'unknown', 'not_run'];
+  const LE_KEYS = ['at', 'jira', 'status', 'via'];
+  const le = fm.last_execution;
+  if (!le) {
+    errors.push(
+      `Tidak ada blok \`last_execution\`: ${rel} → wajib ada (boleh semua null/not_run).` +
+        ` Ini satu-satunya tempat hasil eksekusi dicatat`,
+    );
+  } else {
+    const missing = LE_KEYS.filter((k) => !le.keys.includes(k));
+    const extra = le.keys.filter((k) => !LE_KEYS.includes(k));
+    if (missing.length || extra.length) {
+      errors.push(
+        `Bentuk \`last_execution\` menyimpang: ${rel} →` +
+          (missing.length ? ` kurang ${missing.join(', ')};` : '') +
+          (extra.length ? ` key asing ${extra.join(', ')};` : '') +
+          ` wajib tepat {${LE_KEYS.join(', ')}} (rule 13 §3)`,
+      );
+    }
+    if (le.status && !RUN_STATUS.includes(le.status)) {
+      errors.push(
+        `last_execution.status tidak sah "${le.status}": ${rel} → pilih: ${RUN_STATUS.join(', ')}`,
+      );
+    }
+    // Aturan mutlak #1/#2 ditegakkan mesin: hasil hanya sah dari run Playwright CLI,
+    // dan buktinya adalah `via` yang menunjuk file spec yang benar-benar ada.
+    const viaLegacy = le.via?.startsWith('legacy:');
+    const viaMcp = /mcp/i.test(le.via ?? '');
+    if (viaMcp) {
+      errors.push(
+        `last_execution.via menyebut MCP: ${rel} ("${le.via}") →` +
+          ` verifikasi lewat MCP BUKAN hasil test (aturan mutlak #1/#2).` +
+          ` Set status: unknown + via: "legacy:manual", atau jalankan ulang lewat Playwright CLI`,
+      );
+    } else if (le.status === 'passed' && !viaLegacy) {
+      if (!le.via || le.via === 'null') {
+        errors.push(
+          `last_execution.status: passed tanpa \`via\`: ${rel} →` +
+            ` passed hanya sah kalau ada spec yang menghasilkannya (aturan mutlak #2)`,
+        );
+      } else if (!fs.existsSync(path.join(root, le.via))) {
+        errors.push(
+          `last_execution.via menunjuk spec yang tidak ada: ${le.via} (di ${rel}) →` +
+            ` status passed tidak bisa dipertanggungjawabkan`,
+        );
+      }
+    }
+    if (viaLegacy && ['passed', 'failed'].includes(le.status)) unverified.push(rel);
+  }
+
+  // `test_result` = arsip diagnostik (log_summary/timestamp), BUKAN sumber kebenaran.
+  const TR_STATUS = ['passed', 'failed', 'blocked', 'skipped', 'not_run'];
+  if (fm.test_result_status && !TR_STATUS.includes(fm.test_result_status)) {
+    errors.push(
+      `test_result.status tidak sah "${fm.test_result_status}": ${rel} →` +
+        ` pilih: ${TR_STATUS.join(', ')} (dan ingat: yang dibaca tooling adalah \`last_execution\`)`,
+    );
   }
 
   // `related_menus` — daftar slug menu lain yang tersentuh TC ini. Dipakai manusia
@@ -272,6 +362,13 @@ for (const doc of allDocs) {
 }
 
 console.log(`TC Lint — ${allDocs.length} dokumen TC dipindai`);
+if (unverified.length) {
+  console.log(
+    `  ℹ️  ${unverified.length} TC hasilnya masih warisan (\`via: legacy:*\`) — belum pernah` +
+      ` diverifikasi reporter CLI. Angka ini HARUS turun tiap run nyata; kalau tidak turun,` +
+      ` berarti spec-nya tidak benar-benar jalan.`,
+  );
+}
 if (untyped.length) {
   console.log(
     `  ℹ️  ${untyped.length} TC lama belum punya \`test_type\` (rule 13 §3A) —` +

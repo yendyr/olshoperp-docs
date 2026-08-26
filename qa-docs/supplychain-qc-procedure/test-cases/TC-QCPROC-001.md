@@ -32,13 +32,18 @@ steps:
 expected_result: |
   Header tersimpan; URL edit qc-procedure; code unik.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T09:10:00Z"
   finished_at: "2026-07-15T09:10:21Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS CREATE QC header QCAT* · Save → edit · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-QCPROC-001

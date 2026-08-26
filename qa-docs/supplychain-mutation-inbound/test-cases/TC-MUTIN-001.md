@@ -35,13 +35,18 @@ steps:
 expected_result: |
   Header tersimpan dengan code IN-*; tampil di datalist.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T06:22:00Z"
   finished_at: "2026-07-15T06:24:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "3/3 PASS mutation-inbound-create-update.spec.ts · CREATE IN* · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-MUTIN-001

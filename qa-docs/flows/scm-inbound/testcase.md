@@ -21,6 +21,11 @@ recalls:
   - TC-PO-UPDATE-002
   - TC-PI-CREATE-001
   - TC-PI-APPROVE-001
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-FLOW-SCM-INBOUND-001 — SCM Inbound Flow

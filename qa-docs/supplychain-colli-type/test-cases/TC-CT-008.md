@@ -42,7 +42,7 @@ expected_result: |
   Type tetap ada di datalist (bukan *already deleted*).
   Lanjutan setelah inbound + Colli code dihapus → TC-CT-014.
 test_result:
-  status: fail
+  status: failed
   started_at: "2026-08-14 12:38"
   finished_at: "2026-08-14 12:40"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -75,7 +75,9 @@ run_history:
 origin_jira: ETM-15543
 last_execution:
   at: "2026-08-14 14:41"
-  jira: ETM-15546
+  jira: "ETM-15546"
+  status: failed
+  via: "legacy:test_result"
 ---
 
 # TC-CT-008

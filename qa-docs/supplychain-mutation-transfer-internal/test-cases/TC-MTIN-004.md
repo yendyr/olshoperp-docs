@@ -62,7 +62,9 @@ run_history:
 origin_jira: ETM-15553
 last_execution:
   at: "2026-08-24"
-  jira: ETM-15553
+  jira: "ETM-15553"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-MTIN-DRAFT-20260824150650

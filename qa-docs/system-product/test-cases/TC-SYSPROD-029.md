@@ -52,6 +52,8 @@ jira_key: ETM-15579
 last_execution:
   at: null
   jira: null
+  status: not_run
+  via: null
 ---
 
 ## Catatan QA

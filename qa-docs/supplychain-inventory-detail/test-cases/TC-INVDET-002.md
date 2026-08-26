@@ -25,13 +25,18 @@ steps:
 expected_result: |
   Request filter sukses; tabel menampilkan subset OOS atau empty.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T03:37:00Z"
   finished_at: "2026-07-15T03:38:14Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "2/2 PASS · FILTER Out of Stock card → filter= OK · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-INVDET-002

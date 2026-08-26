@@ -6,7 +6,7 @@ menu_name: "Account Payment"
 test_type: happy
 title: "APPROVE — Form detail Open → Approve"
 summary: "Dari form edit payment (sudah ada source + PI), ubah status radio ke Open lalu Approve via modal."
-status: automated
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-20
 requirement_ref: "qa-docs/accounting-supplier-payment/knowledge-base.md"
@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Payment status Approved; redirect ke datalist; baris menampilkan Approved.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-20T08:21:00Z"
   finished_at: "2026-07-20T08:22:00Z"
   executed_by: "Cursor Agent"
   environment: staging
   log_summary: "PASS — bagian approve dalam TC-APAY-001; PY-5TVBFUBZ Approved via form."
   report_url: null
+last_execution:
+  at: "2026-07-20"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-APAY-002

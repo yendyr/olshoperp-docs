@@ -28,13 +28,18 @@ steps:
 expected_result: |
   Description ter-update; line detail tersimpan (SKU terlihat di table, bukan opsi Multiselect hidden).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T06:36:25Z"
   finished_at: "2026-07-15T06:37:15Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS mutation-outbound · UPDATE description + Select Product · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-MUTOUT-002

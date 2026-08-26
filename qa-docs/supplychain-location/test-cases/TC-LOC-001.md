@@ -40,13 +40,18 @@ steps:
 expected_result: |
   Location tersimpan; code+name tampil di datalist.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-15T03:06:18Z"
   finished_at: "2026-07-15T03:09:12Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "2/2 PASS location-create-update.spec.ts (~2.4m) · CREATE ~49.8s · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-15"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 

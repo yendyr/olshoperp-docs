@@ -5,7 +5,7 @@ menu: accounting-asset-list
 menu_name: "Asset List"
 title: "EXPORT — buka panel Export"
 summary: "Setelah warehouse dipilih, buka UI Export; verifikasi kontrol Export (All/Active Page)."
-status: pass
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-24
 requirement_ref: "qa-docs/accounting-asset-list/knowledge-base.md"
@@ -24,9 +24,14 @@ steps:
 expected_result: |
   Panel export terbuka; tombol/dropdown Export siap dipakai.
 test_result:
-  status: pass
+  status: passed
   environment: staging
   log_summary: "5/5 PASS · TC-ASL-005 · company lumicharmsid"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ASL-005

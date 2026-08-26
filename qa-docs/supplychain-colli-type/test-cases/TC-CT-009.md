@@ -36,7 +36,7 @@ expected_result: |
   **Show deleted** menampilkan baris dengan keterangan *already deleted*.
   Audit soft delete → TC-CT-015.
 test_result:
-  status: fail
+  status: failed
   started_at: "2026-08-14 12:40"
   finished_at: "2026-08-14 12:41"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -62,7 +62,9 @@ run_history:
 origin_jira: ETM-15543
 last_execution:
   at: "2026-08-14 14:41"
-  jira: ETM-15547
+  jira: "ETM-15547"
+  status: failed
+  via: "legacy:test_result"
 ---
 
 # TC-CT-009

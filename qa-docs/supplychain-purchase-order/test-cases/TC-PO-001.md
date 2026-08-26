@@ -65,7 +65,7 @@ expected_result: |
   Scope run = 12 menu di komentar Farrel 14 Agu 2026 — bukan "seluruh module yang punya export". Menu lain di luar daftar ini tidak diuji di TC ini.
   Referensi: qa-docs/supplychain-purchase-order/requirement.md §3.3 & §13.2; qa-docs/supplychain-purchase-requisition/requirement.md §9.2; qa-docs/supplychain-assembly/requirement.md A-05 / §9.1.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-17 20:24"
   finished_at: "2026-08-17 20:30"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -104,7 +104,9 @@ run_history:
 origin_jira: ETM-15469
 last_execution:
   at: "2026-08-17 20:30"
-  jira: ETM-15469
+  jira: "ETM-15469"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 ## Catatan QA

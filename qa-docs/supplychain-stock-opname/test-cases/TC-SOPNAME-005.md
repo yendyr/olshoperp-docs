@@ -37,7 +37,7 @@ expected_result: |
   Data baris sesuai Edit (SKU, qty, unit, location). Footer Approved By terisi jika sudah approve.
   (requirement.md belum dokumentasikan print — expected mengacu AC user ETM-15479 + attachment Template Print Out Stock Opname.xlsx, bukan AC AI upload .docx/.jrxml.)
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-14 07:05"
   finished_at: "2026-08-14 07:12"
   executed_by: "QA - Yemima (Playwright MCP / Cursor browser)"
@@ -61,7 +61,9 @@ run_history:
 origin_jira: ETM-15479
 last_execution:
   at: "2026-08-14 07:12"
-  jira: ETM-15479
+  jira: "ETM-15479"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-SOPNAME-005

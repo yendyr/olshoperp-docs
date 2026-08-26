@@ -42,6 +42,11 @@ run_history:
   - at: "2026-07-15"
     status: passed
     note: "Playwright @TC-SOPNAME-004 — clear detail SP-6A56E465"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-SOPNAME-004

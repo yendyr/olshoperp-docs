@@ -5,7 +5,7 @@ menu: accounting-asset-category
 menu_name: "Asset Category"
 title: "CREATE — Asset Category + Depreciation Details"
 summary: "Create kategori baru dengan method Straight Line dan parameter depresiasi."
-status: pass
+status: approved
 owner: QA - Cursor
 last_updated: 2026-07-24
 requirement_ref: "qa-docs/accounting-asset-category/knowledge-base.md"
@@ -34,13 +34,18 @@ steps:
 expected_result: |
   Toast sukses; URL edit; Code tersimpan; field depresiasi terisi.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-24T08:00:00Z"
   finished_at: "2026-07-24T08:20:00Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "6/6 PASS · TC-ASC-002 CREATE · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-24"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-ASC-002

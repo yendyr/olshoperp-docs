@@ -53,6 +53,11 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-WHSTR-002 — chain setelah create; workaround Drop Off update bug"
+last_execution:
+  at: null
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-WHSTR-002

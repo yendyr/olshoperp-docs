@@ -64,6 +64,8 @@ origin_jira: ETM-15522
 last_execution:
   at: null
   jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-CBR-013

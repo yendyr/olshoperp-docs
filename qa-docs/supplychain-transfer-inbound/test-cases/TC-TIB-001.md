@@ -42,13 +42,18 @@ expected_result: |
   Broken/Lost tersimpan; setelah Approve inbound dokumen berhasil diterima
   (stok destination ter-update; broken → scrap WH jika applicable).
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-17T01:30:00Z"
   finished_at: "2026-07-17T01:30:46Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS TFE-5TU41QH5 Show → Broken=2 AUTO-SKU002 · Lost=1 AUTO-SKU001 → Approve · description automation playwright · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-17"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-TIB-001

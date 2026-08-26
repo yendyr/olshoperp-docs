@@ -42,7 +42,7 @@ expected_result: |
   Nilai after save di datalist dan edit sama dengan input, bukan null.
   Audit before/after → TC-CT-015.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-08-14 12:42"
   finished_at: "2026-08-14 12:54"
   executed_by: "QA - Yemima (Playwright MCP)"
@@ -66,7 +66,9 @@ run_history:
 origin_jira: ETM-15543
 last_execution:
   at: "2026-08-14 12:54"
-  jira: ETM-15543
+  jira: "ETM-15543"
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-CT-010

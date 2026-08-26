@@ -26,13 +26,18 @@ steps:
 expected_result: |
   Datalist By SKU load; kolom pivot + Latest Calculation terlihat.
 test_result:
-  status: pass
+  status: passed
   started_at: "2026-07-16T01:53:15Z"
   finished_at: "2026-07-16T01:53:29Z"
   executed_by: "Playwright local (olshoperp-docs)"
   environment: staging
   log_summary: "PASS FILTER By SKU mode ALL → by-sku · System Product/Unit/Latest Calculation · company lumicharmsid"
   report_url: null
+last_execution:
+  at: "2026-07-16"
+  jira: null
+  status: passed
+  via: "legacy:test_result"
 ---
 
 # TC-REALSTK-006
