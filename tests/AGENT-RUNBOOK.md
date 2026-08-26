@@ -43,9 +43,13 @@ npm run tc:lint                              # sebelum & sesudah
 0. **`test_type` wajib** (rule 13 §3A): `happy` / `negative` / `edge` / `permission` /
    `regression` / `cross-menu`. Menu transaksional tidak dianggap tercakup kalau hanya
    punya `happy` — minimal ada `negative` untuk guard utamanya.
-1. **Cek TC existing dulu** — kalau sudah ada yang mengcover, reuse/retest, jangan bikin file baru.
-   Ragu apakah duplikat? Tandai `duplicate_candidate: {kode TC}` di frontmatter —
-   lint akan memblokir `#renumber-tc` sampai diputuskan (bukan diam-diam lolos jadi nomor resmi).
+1. **Cek TC existing dulu.** Dari card Jira? Ikuti pohon keputusan rule `13` §5B:
+   belum ada TC → **bikin baru** (wajar untuk improvement/change requirement) ·
+   expected sama → **reuse/retest** · expected berubah → **update TC existing**
+   (+ catat di `run_history` sebagai `revised`) · perilaku lama masih berlaku untuk
+   kondisi lain → **TC baru**, perjelas kondisi pembedanya di judul keduanya.
+   Ragu apakah duplikat? Tandai `duplicate_candidate: {kode TC}` dan lanjut kerja —
+   lint menahannya di gerbang `#renumber-tc`, jadi keraguan tidak memblokir hari ini.
 2. Format & penamaan `TC-{PREFIX}-DRAFT-{timestamp}.md` → Baca: rule `13`.
 3. **Cek status `requirement.md` menu itu dulu** (rule 13 §5A):
    `review`/`approved` → lanjut · `draft`/tidak ada → **lempar balik ke prompter**,
@@ -110,7 +114,7 @@ Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 | 5 | **Selector dari source Vue, bukan DOM scraping**, dan mendarat di `pom-registry`/`helpers` — bukan hardcoded di spec | Fondasi stabilitas; selector scraping pecah tiap re-render |
 | 6 | **Temuan UX baru wajib dipropagasi** ke helper + `ui-components.md` + TC origin | Kalau tidak, spec lain diam-diam jadi stale |
 | 7 | **Web UI crawling untuk act & assert.** API testing hanya jika user eksplisit minta | Rule `13`/`14` §8 |
-| 8 | **Satu TC dipakai di banyak tempat** — jangan bikin TC baru hanya karena datang dari card Jira lain. `origin_jira` = asal-usul, bukan kepemilikan; `last_execution` cukup satu dan diperbarui otomatis tiap run (termasuk saat flow me-recall-nya) | Rule `13` § origin_jira dan last_execution |
+| 8 | **Satu TC dipakai di banyak tempat.** `origin_jira` = asal-usul (tidak ditimpa); `last_execution` cukup satu, diperbarui otomatis tiap run termasuk saat flow me-recall-nya. Card baru → **cek dulu**: belum ada TC = bikin baru · expected sama = reuse · expected berubah = **update TC existing** (jangan bikin kembarannya) | Rule `13` §5B pohon keputusan |
 
 ---
 

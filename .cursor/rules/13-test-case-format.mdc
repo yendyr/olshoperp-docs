@@ -17,7 +17,7 @@ Sebelum membuat TC baru, agent wajib:
 1. Baca `qa-docs/_meta/manifest.yaml` — verifikasi `{menu-slug}` valid
 2. Scan seluruh `TC-*.md` di folder `qa-docs/{menu-slug}/test-cases/` — cek duplikasi
 3. Baca `qa-docs/{menu-slug}/requirement.md` — verifikasi expected result
-4. Jika permintaan terkait card Jira (`ETM-xxxxx`): cek `test-queue.yaml` + grep `origin_jira` / `card_ref` dulu (`16-card-tc-queue.mdc` § Testing specific Jira card). TC existing → reuse/retest, jangan file baru kecuali ada delta.
+4. Jika permintaan terkait card Jira (`ETM-xxxxx`): cek `test-queue.yaml` + grep `origin_jira` / `card_ref` dulu (`16-card-tc-queue.mdc` § Testing specific Jira card), lalu tentukan lewat **pohon keputusan §5B** — TC baru, reuse, atau update TC existing. Card improvement/change requirement **wajar** melahirkan TC baru; yang dihindari hanya duplikat.
 
 ---
 
@@ -97,8 +97,8 @@ last_execution:
 >   sekali dan **tidak pernah ditimpa**; card lain yang me-retest TC ini tidak mengubahnya.
 > - `last_execution` **cukup satu** dan terus diperbarui tiap kali TC dijalankan —
 >   berapa kali pun, lewat jalur apa pun.
-> - Jangan membuat TC baru hanya karena permintaannya datang dari card berbeda. Cek TC
->   existing dulu (§1, §5); kalau sudah ada yang mengcover → reuse/retest.
+> - Yang dilarang adalah **TC duplikat**, bukan TC baru. Card *improvement* /
+>   *change requirement* memang wajar melahirkan TC baru — lihat pohon keputusan §5B.
 
 **Pembaruan `last_execution` berjalan otomatis** — `tests/reporters/tc-execution-reporter.ts`
 menulisnya setiap run, dari dua sumber:
@@ -252,6 +252,60 @@ matang, **tetapi wajib dibandingkan dengan `requirement.md` di repo**:
 
 Untuk **flow E2E** aturan setara ditegakkan otomatis: `npm run flow:preflight` menolak
 flow yang menyentuh menu ber-requirement `draft` (rule `17` §0).
+
+---
+
+## 5B. Card Jira masuk — TC baru, reuse, atau update? (pohon keputusan)
+
+Card *improvement* / *change requirement* **boleh** melahirkan TC baru. Yang harus
+dihindari hanya **duplikat**: dua TC dengan alur sama yang saling bertentangan.
+Tentukan dengan urutan ini:
+
+**1. Sudah ada TC yang mengcover alur ini?**
+- **Belum** → **TC BARU**. Isi `origin_jira: ETM-xxxxx`. Ini kasus paling umum untuk
+  fitur/field/aturan baru.
+- **Sudah** → lanjut ke 2.
+
+**2. Expected result-nya masih sama?**
+- **Ya** (card cuma minta verifikasi/regression) → **REUSE**. Jalankan TC existing,
+  jangan bikin file baru. `last_execution.jira` terisi otomatis saat run
+  (`OLSHOP_RUN_JIRA=ETM-xxxxx`); `origin_jira` **tidak** berubah.
+- **Tidak** (requirement berubah) → lanjut ke 3.
+
+**3. Perilaku lama masih berlaku untuk kondisi tertentu?**
+- **Tidak** — perilaku lama **digantikan** → **UPDATE TC EXISTING.** Ubah
+  `expected_result`, `steps` bila perlu, lalu catat jejaknya di `run_history`:
+
+  ```yaml
+  run_history:
+    - at: "{YYYY-MM-DD}"
+      status: revised
+      environment: staging
+      note: "Expected diubah mengikuti ETM-xxxxx: {perilaku lama} → {perilaku baru}."
+  ```
+
+  **Jangan** membuat TC baru di sini. Dua TC dengan alur sama tapi expected berbeda
+  saling bertentangan: yang lama akan gagal terus padahal sistemnya benar, dan tidak
+  jelas mana yang jadi acuan.
+- **Ya** — jadi dua kondisi berbeda (mis. perilaku lama untuk tipe A, baru untuk tipe B)
+  → **TC BARU** untuk kondisi baru, TC lama dipertahankan. Perjelas kondisi pembeda di
+  `title`/`summary` **keduanya** supaya tidak terbaca sebagai duplikat.
+
+**4. Improvement menambah langkah/field di alur yang sudah ada?**
+- Bagian tak terpisahkan dari alur itu → **update TC existing**.
+- Skenario yang berdiri sendiri (mis. validasi baru, opsi baru) → **TC baru**,
+  biasanya `test_type: negative` atau `edge`.
+
+> [!TIP]
+> **Kalau expected berubah, dampaknya lebih luas dari satu TC.** Perbarui juga
+> `tests/scenarios/` yang mengimplementasikannya — dan otomatis semua flow yang
+> me-`recall` TC itu ikut benar, tanpa disentuh satu per satu. Itu sebabnya langkah
+> tidak boleh disalin antar spec (rule `17` §1–2). Cari dampaknya dengan
+> `npm run tc:refs -- {tc_code}`.
+
+**Ragu?** Tandai `duplicate_candidate: {kode TC}` di frontmatter dan lanjut kerja —
+lint akan menahannya di gerbang `#renumber-tc` sampai diputuskan, jadi keraguan tidak
+memblokir pekerjaan hari ini.
 
 ---
 
