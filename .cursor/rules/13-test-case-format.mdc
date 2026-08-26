@@ -323,6 +323,23 @@ Jika ditemukan duplikat atau sangat mirip:
 | `draft` | ❌ Tidak menulis file | **Lempar balik ke prompter.** Boleh menyusun rancangan TC dan menyajikannya di chat — yang dilarang adalah **menulis file** dan **mengarang** expected result. Syaratnya semua terpenuhi: (a) status `draft` disebut di awal, bukan di catatan kaki; (b) nol file ditulis ke `qa-docs/`; (c) tiap expected result menyebut pasal requirement yang jadi dasarnya; (d) bagian requirement yang memang belum matang ditandai eksplisit sebagai belum bisa diuji. |
 | Tidak ada `requirement.md` | ❌ Tidak | Lebih ketat dari `draft`: **jangan menyusun rancangan sama sekali.** Tanpa requirement, tidak ada yang bisa dirujuk — rancangan apa pun otomatis karangan. Cek dulu apakah requirement-nya ada di repo developer tapi belum tersalin ke sini (`npm run docs:drift`). |
 
+> [!CAUTION]
+> **Rancangan yang cuma disajikan di chat TIDAK lewat gate mana pun.** `tc:lint` hanya
+> memeriksa file. Jadi saat requirement `draft` dan kamu merancang di chat, kamu sendiri
+> yang jadi gate-nya. Dua hal yang paling sering salah dan wajib dicek manual:
+>
+> 1. **Slug menu** — jangan ditebak dari nama menu. `Master Brand` → `supplychain-master-brand`,
+>    tapi `System Product` → `system-product`, **bukan** `supplychain-system-product`.
+>    Cek dulu: `npm run tc:menus -- --check {slug}`
+> 2. **Pesan error** — kalau requirement cuma menulis "Laravel validation" tanpa salinan
+>    persisnya, **jangan mengarang string-nya**. Tulis "pesan belum ditetapkan di
+>    requirement — perlu dikonfirmasi saat run", jangan `"The name field is required."`
+>    seolah sudah pasti.
+>
+> Aturan §5A(d) menuntut bagian yang belum matang **ditandai eksplisit**. Rancangan yang
+> semua butirnya tampak sama pastinya = pembaca tidak bisa tahu mana yang perlu
+> dikonfirmasi dulu.
+
 > [!WARNING]
 > **Rancangan lengkap dari requirement `draft` itu menekan, bukan netral.** Menyajikan 8 TC
 > siap-tulis lalu menutup dengan "tinggal konfirmasi" membuat prompter memilih antara

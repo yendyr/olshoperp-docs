@@ -30,6 +30,7 @@
     "tc:lint": "node tests/tools/tc-lint.mjs",
     "docs:drift": "node tests/tools/docs-drift.mjs",
     "docs:sync": "node tests/tools/docs-drift.mjs --fix",
+    "tc:menus": "node tests/tools/tc-menus.mjs",
     "tc:pending": "node tests/tools/tc-pending.mjs",
     "tc:selftest": "node tests/tools/tc-selftest.mjs",
     "tc:coverage": "node tests/tools/tc-coverage.mjs",
