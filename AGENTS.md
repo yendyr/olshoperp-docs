@@ -18,6 +18,10 @@ Konten QA ada di **`qa-docs/`** (langsung di root repo). Bukan `docs/qa-docs/`.
 
 ## Mulai di sini
 
+> **Agent baru di repo ini (Antigravity/Cursor/dll)?** Prompt pembuka siap-pakai ada di
+> **`PROMPT-QA-AGENT.md`** — salin ke pesan pertama sesi supaya aturan & gate diketahui
+> sejak awal.
+>
 > **Tugasnya menjalankan / membuat / memperbaiki test Playwright?**
 > Langsung ke **`tests/AGENT-RUNBOOK.md`** — decision tree, perintah, dan 7 aturan
 > mutlak dalam satu halaman. Runbook memberi tahu dokumen mana yang perlu dibuka;
