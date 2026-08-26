@@ -8,6 +8,7 @@ Menu **Default VAT** (Finance Accounting → Master) — template VAT Purchase/S
 | Requirement | [requirement.md](./requirement.md) | PM, QA, Dev | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
+| Test Cases | [test-cases/](./test-cases/) | QA | draft (TC-DVAT-DRAFT-*) |
 
 **PM source:** Default VAT Source of Truth **v1.0** (5 Agustus 2026)  
 **3 layer version:** 1.0 · **User-guide:** 1.0 (`source_version` 1.0)  
