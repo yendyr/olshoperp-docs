@@ -76,11 +76,14 @@ ETM-15447:
   summary: "[Sales Platform] Add new pill button for filter order detail yg harganya under benchmark COGS"
 
 ETM-15485:
-  menu: omni-product-profit-loss
-  intent: new
-  status: needs_overview
-  reuse: []
-  drafts: []
+  menu: accounting-product-profit-loss
+  intent: extend
+  status: in_overview
+  reuse:
+    - TC-PPL-001
+  drafts:
+    - PENDING-20260826222101
+    - PENDING-20260826222102
   ready_tcs: []
   jira_status: QA Review
   jira_type: Improvement
