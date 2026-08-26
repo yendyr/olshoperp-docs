@@ -16,6 +16,8 @@ import { assertNoBlocker } from './support';
 export const SINV_SCENARIO_TCS = {
   createSupplierInvoiceDraft: 'TC-PI-001',
   approveSupplierInvoice: 'TC-PI-002',
+  // TC cross-menu negatif masih DRAFT — samakan saat #renumber-tc (cek `npm run tc:refs`).
+  unapprovedInboundNotSelectable: 'PENDING-20260826160000',
 } as const;
 
 /**
@@ -65,4 +67,31 @@ export async function approveSupplierInvoice(
   await si.approveFromForm();
   await assertNoBlocker(page, 'setelah Supplier Invoice approve');
   await si.assertApprovedInDatalist(invoiceCode);
+}
+
+/**
+ * CROSS-MENU NEGATIF — Implements: (TC DRAFT PENDING-20260826160000)
+ * "Inbound yang belum approved TIDAK muncul di modal Inbound Transaction".
+ *
+ * Menguji gerbang antar menu: kondisi di Purchase Inbound (status Open) harus
+ * memblokir penarikannya ke Supplier Invoice — requirement §1 ("eligible to invoice
+ * hanya barang yang punya inbound approved") dan §5.
+ *
+ * @returns teks empty-state modal sebagai bukti
+ */
+export async function assertUnapprovedInboundNotSelectable(
+  page: Page,
+  supplierName: string,
+  poCode: string,
+): Promise<{ invoiceCode: string; evidence: string }> {
+  const si = new PurchaseInvoicePage(page);
+
+  await si.gotoDatalist();
+  const invoiceCode = await si.ensureEditWithSupplier(supplierName);
+  await assertNoBlocker(page, 'setelah header Supplier Invoice tersimpan (skenario negatif)');
+
+  await si.openInboundTransactionModal();
+  const evidence = await si.assertPoNotAvailableInInboundModal(poCode);
+
+  return { invoiceCode, evidence };
 }

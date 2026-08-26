@@ -273,6 +273,36 @@ export class PurchaseInvoicePage {
     await this.page.waitForTimeout(1_000);
   }
 
+  /**
+   * Pastikan sebuah PO **tidak** muncul di modal Inbound Transaction — dipakai TC
+   * cross-menu negatif: inbound yang belum approved tidak boleh bisa ditarik ke
+   * Supplier Invoice (requirement §1 & §5).
+   *
+   * @returns teks status tabel modal sebagai bukti (mis. "no data available")
+   */
+  async assertPoNotAvailableInInboundModal(poCode: string): Promise<string> {
+    const modal = this.outstandingModal;
+    const search = modal.getByRole('searchbox').first();
+    await search.fill(poCode);
+    await this.page.waitForTimeout(2_500);
+
+    const matchingRow = modal
+      .getByRole('row')
+      .filter({ hasText: new RegExp(poCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') })
+      .filter({ hasNotText: /no data available|no matching records/i });
+
+    await expect(
+      matchingRow,
+      `PO ${poCode} TIDAK boleh muncul di modal Inbound Transaction ` +
+        `selama inbound-nya belum approved`,
+    ).toHaveCount(0, { timeout: 20_000 });
+
+    const emptyState = modal
+      .getByText(/no data available|no matching records|showing 0 to 0/i)
+      .first();
+    return (await emptyState.textContent().catch(() => '')) ?? '(tabel kosong)';
+  }
+
   async clickSaveAllAndWait(): Promise<void> {
     const saveResponse = this.page
       .waitForResponse(
