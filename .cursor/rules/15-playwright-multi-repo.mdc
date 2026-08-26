@@ -133,9 +133,18 @@ Sebelum tulis/ubah spec: tentukan mode BUILD vs RUN dari § Kriteria lengkap.
 > Kalau perbaikan memang perlu di repo app: **laporkan sebagai temuan/bug candidate**
 > (rule `12`), jangan kerjakan sendiri.
 >
-> Pengecualian satu-satunya: folder dokumentasi QA (`qa-docs/` atau turunannya) **jika
-> memang ada** di repo app — itu pun tetap tunduk pada rule `03`. Saat ini kedua repo
-> app **tidak** punya folder tersebut, jadi praktisnya: nol tulisan di repo app.
+> **Pengecualian: mirror dokumentasi QA di backend.** Repo `olshoperp` punya
+> `docs/qa-docs/` (133 menu, ter-track di git) sebagai salinan dokumentasi QA. Menyalin
+> file docs/TC ke sana **sah** dan memang praktik tim — tetap tunduk rule `03`
+> (konfirmasi user untuk isi di luar `test-cases/`). Repo `olshoperp-frontend` tidak
+> punya folder serupa → nol tulisan ke sana.
+>
+> **Aturan sync yang aman** (arah selalu `olshoperp-docs` → `olshoperp`, tidak pernah balik):
+> - Salin **hanya file yang berubah**, jangan `cp -r` folder utuh. Kalau folder tujuan
+>   sudah ada isinya, `cp -r` bisa menimpa versi di backend yang mungkin lebih baru.
+> - Verifikasi dampaknya sebelum selesai: `git -C ../olshoperp status --short docs/qa-docs/`
+>   — pastikan yang berubah hanya file yang kamu maksud.
+> - `olshoperp-docs` tetap sumber kebenaran; mirror di backend adalah salinan baca.
 
 **Yang boleh dibaca** dan untuk apa:
 
