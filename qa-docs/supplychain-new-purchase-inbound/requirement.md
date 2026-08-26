@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 2.3
-last_updated: 2026-07-23
+version: 2.4
+last_updated: 2026-08-14
 owner: QA - Yemima
 status: review
-aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI]
+aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI, colli v2]
 ---
 
 # Purchase Inbound (GRN) — Requirement Documentation
@@ -19,7 +19,7 @@ aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI]
 **UI route (BETA):** `/supplychain/new-purchase-inbound`  
 **UI route (legacy):** `/supplychain/mutation-inbound` — same API, UI lama  
 
-**PM sources:** `purchase-inbound-requirement.md` v1.0 (14 Jan 2026) · COLLI BETA v2.0 (27 Mar 2026) · COLLI v2.1 (8 Apr 2026)
+**PM sources:** `purchase-inbound-requirement.md` v1.0 · COLLI BETA v2.0/v2.1 · **Colli v2 SOT** `_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md` v1.0 (14 Agu 2026)
 
 **Legacy menu doc:** [supplychain-mutation-inbound](../supplychain-mutation-inbound/README.md) — pointer ke canonical ini
 
@@ -34,12 +34,13 @@ aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI]
 | 2.1 | 2026-07-05 | QA - Yemima | §11.1 Product COA Group type: Service (no stock), Fix Asset (Assets debit) |
 | 2.2 | 2026-07-17 | QA - Yemima | Compliance qa-docs-standard: Prasyarat/FAQ; Mermaid rantai; trim path/class; user-guide |
 | 2.3 | 2026-07-23 | QA - Yemima | Cross-ref Rounding SoT PO: basis harga GRN = `each_price_before_vat`; VAT hanya di PI |
+| 2.4 | 2026-08-14 | QA - Yemima | Colli v2 (wadah multi-SKU) parity BETA + legacy; takedown Colli ID v1 UX; Gap GAP-CIV2-01..09 |
 
 ---
 
 ## 1. Ringkasan Eksekutif
 
-**Purchase Inbound (GRN)** mencatat penerimaan barang ke gudang berdasarkan **Purchase Order (PO) approved/processed**. Mendukung partial receiving, serial/batch/expired, import Excel, dan fitur **COLLI** (kemasan fisik koli) di menu BETA.
+**Purchase Inbound (GRN)** mencatat penerimaan barang ke gudang berdasarkan **Purchase Order (PO) approved/processed**. Mendukung partial receiving, serial/batch/expired, import Excel, dan **Colli v2** (wadah multi-SKU) — **parity** di BETA dan legacy.
 
 ```mermaid
 flowchart LR
@@ -53,16 +54,18 @@ flowchart LR
 |------------------|------------------------|
 | Traceability PO → GRN → stok | `purchase_order_detail_id`; `prepared_to_grn_quantity` / `processed_to_grn_quantity` |
 | Partial receiving | Multiple GRN per PO; PO → `processed` / `complete` |
-| Akurasi kemasan (COLLI) | Middle detail: jumlah koli × isi/koli → N Stock ID |
+| Akurasi kemasan (Colli v2) | Satu Colli code = wadah banyak SKU di **satu** Location Destination; qty availability setelah Approve |
 | Pajak pembelian | **Tidak** di GRN — jurnal harga murni; VAT di Supplier Invoice |
 | Unbilled goods | Debit Inventory / Assets / Op. Expense (by COA group type) · Credit Unbilled Goods |
 
 ### 1.1 Dua UI, satu backend
 
-| Menu | Route | COLLI | Catatan |
-|------|-------|-------|---------|
-| **BETA - New Purchase Inbound** | `/supplychain/new-purchase-inbound` | ✓ Group view + middle detail | **Canonical QA** |
-| **Purchase Inbound (legacy)** | `/supplychain/mutation-inbound` | Partial / UI berbeda | Same `mutation-inbound` API |
+| Menu | Route | Colli v2 | Catatan |
+|------|-------|----------|---------|
+| **BETA - New Purchase Inbound** | `/supplychain/new-purchase-inbound` | ✓ **Parity** Existing/New + Type | **Canonical QA** |
+| **Purchase Inbound (legacy)** | `/supplychain/mutation-inbound` | ✓ **Parity** aturan sama | Same `mutation-inbound` API |
+
+Deep change Colli v2 tidak mengganggu flow GRN existing; **aturan Colli v2 identik** di kedua UI. Master tipe: [Colli Type](../supplychain-colli-type/requirement.md).
 
 Datalist BETA: query `from_menu=newInobound` (typo preserved) — link edit ke route BETA.
 
@@ -75,7 +78,8 @@ Datalist BETA: query `from_menu=newInobound` (typo preserved) — link edit ke r
 |-----------|--------|---------|
 | PO approved/processed + sisa qty | Purchase Order | Tanggal PO sebelum tanggal GRN |
 | Supplier punya PO outstanding | Select2 supplier | Tanpa PO → dropdown kosong |
-| Warehouse fisik tanpa sub | Master warehouse | Leaf / no_child |
+| Warehouse fisik tanpa sub | Master warehouse | Leaf / no_child — **Location Destination = WH terkecil** (filter Existing Colli exact) |
+| Minimal satu Colli Type Active | [Colli Type](../supplychain-colli-type/requirement.md) | Untuk **New Colli**; Default ON = preselect |
 | Product COA Group lengkap | Product COA Group | Inventory/Assets/OpEx + Unbilled Goods per type |
 | Fiscal period terbuka | Accounting period | Trx date ≤ today |
 
@@ -114,7 +118,7 @@ stateDiagram-v2
 | **Trx Ref** | PO codes dari detail lines |
 | **Qty** | Total qty received |
 | **Trx Status** | draft / open / approved / rejected |
-| **Item Stock Status** | Progress % saat async approve (COLLI job) |
+| **Item Stock Status** | AS-IS v1: progress % async approve (job koli). TO-BE Colli v2: availability setelah Approve, bukan N Stock ID per koli |
 | **Description** | Optional, max 150 |
 
 **Toolbar:** bulk delete, bulk approve, export (with/without details), create, show deleted.
@@ -176,11 +180,11 @@ stateDiagram-v2
 
 **Default saat insert (PM vs AS-IS):**
 
-| Mode | COLLI default | Inbound Qty default |
-|------|---------------|---------------------|
-| Single Use modal | `0 @ 0` primary unit | User input |
-| Bulk Use | `0 @ 0` | Max outstanding PO |
-| Select Product shortcut | `0 @ 0` | **1** |
+| Mode | Colli v2 default | Inbound Qty default (tidak diubah) |
+|------|------------------|-------------------------------------|
+| Single Use modal | Existing/New + Type di modal (opsional) | User input (default all outstanding, editable) |
+| Bulk Use | Field Colli + **Use** → banyak SKU **satu** colli | Max outstanding PO |
+| Select Product shortcut | Assign setelah baris ada (bulk/inline) | **1** |
 
 ---
 
@@ -218,64 +222,91 @@ stateDiagram-v2
 
 ---
 
-## 8. Fitur COLLI (BETA — Update 8 Apr 2026)
+## 8. Fitur Colli v2 (TO-BE — 14 Agu 2026)
 
-> Modul kemasan fisik — sinkronkan jumlah koli lapangan dengan Stock ID sistem.
+> **Canonical Colli:** wadah multi-SKU. **Parity** BETA + legacy. SoT: `_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md`.  
+> **Takedown Colli ID v1:** jumlah koli × isi → N Stock ID (`InboundColly` / import `colli` × `colli_qty`) **diganti** UX v2. Qty GRN / outstanding **tidak diubah**. Void inbound × colli = deferred (GAP-CIV2-08).
 
-### 8.1 Before vs After
+### 8.1 Konsep
 
-| Komponen | Standard (colli=0) | COLLI mode |
-|----------|-------------------|------------|
-| Stock ID | 1 detail row → 1 ItemStock (or N for serial) | **N Stock ID** = jumlah koli |
-| Input utama | Inbound Qty manual | Jumlah COLLI + Isi per Colli |
-| Inbound Qty | Editable | **Read-only** when colli > 0; = colli × isi |
+Satu **Colli code** (prefix `COL`) menampung banyak baris SKU di **satu Location Destination (WH terkecil / exact)**. Availability qty di dalam colli baru bermakna setelah inbound **Approved** (Item Stock). Assign colli **opsional** (NULL OK). Maks **1** colli per baris detail.
 
-### 8.2 UI — kolom "COLLI & Inbound Qty"
+Master jenis wadah: [Colli Type](../supplychain-colli-type/requirement.md) (Active + Default preselect New Colli). Colli Type → New Colli → Multisku code; Existing Colli → code yang sama WH; Approve → Item Stock availability.
 
-```
-Baris atas:  [Jumlah Koli] COLLI @ [Isi Koli] [Unit dropdown]
-Baris bawah: [Inbound Qty] [Unit dropdown]
-```
+### 8.2 Existing vs New
 
-### 8.3 Logic saat COLLI diisi
+| Mode | Aturan |
+|------|--------|
+| **Existing Colli** | Select colli code; filter **exact** WH = Location Destination header. WH mismatch → tolak |
+| **New Colli** | Generate code baru; lokasi = WH header; **Choose Colli Type** (Active only; Default ON preselect) |
+| Toolbar / modal / inline | Checkbox bulk → Assign Existing/New + Type + **Save**; Available bulk **Use** = multi SKU satu colli; Single Use: field Colli setelah Serial, sebelum Description |
 
-| Rule | Behavior |
-|------|----------|
-| Jumlah colli > 0 | Isi colli auto dari **last trx** SKU (`latest_colly` API) atau **1** jika safety |
-| Safety limit | Jika `colli × latest_colly > outstanding + current qty` → isi = **1** (integer only) |
-| Inbound qty | Auto = `qty_in_colly × qty_each_colly`; unit locked to colli unit |
-| colli = 0 | Manual inbound qty mode (standard) |
+### 8.3 Tiga jalur insert SKU (qty = AS-IS, tidak diubah)
 
-**Auto-fill isi colli (PM 8 Apr):** dari transaksi COLLI terakhir SKU yang sama (unit dikonversi, dibulatkan ke bawah). Detail API: [technical §8](./technical.md#8-po-qty--colli).
+| Jalur | Qty default | Assign colli |
+|-------|-------------|--------------|
+| Select product | Qty **1** (bulk product path) | Setelah baris ada: checkbox / inline |
+| Available **bulk Use** | Qty = **all outstanding** | Field Colli + **Use** → banyak SKU **satu** colli |
+| Available **single Use** | All outstanding, **editable** | Colli method + Type di modal → **Save** |
 
-### 8.4 Stock ID generation — Background Job
+Selama ada detail, destination WH terkunci (existing) → mismatch colli vs header lewat edit header **tidak terjadi**.
 
-| Phase | Behavior |
-|-------|----------|
-| Approve click | Header → **approved**; stock generation **deferred** if middle detail exists |
-| Job | Background job chunked (200 rows/chunk) |
-| Colli stock | 1 ItemStock per koli; `is_colly` flag on ItemStock |
-| Progress | `Item Stock Status` column % on datalist |
-| **Job fail** | Toast error; status reverted to **open**; stock/journal rolled back; user can **Re-approve** |
+### 8.4 Lifecycle Colli code
 
-**PM fix (8 Apr):** mengatasi crash limit ~300 row insert real-time.
+| Event inbound | Colli **baru** (belum pernah Approve di inbound mana pun) | Colli existing / pernah Approve |
+|---------------|----------------------------------------------------------|----------------------------------|
+| Assign, belum Approve | Boleh muncul di list Multisku Colli; **bisa hilang** jika semua inbound draft yang mereferensikan dihapus | Tetap |
+| **Approve** | **Permanen** | — |
+| Reject lalu Delete / Delete draft | Hilang jika tidak direferensikan inbound lain yang masih hidup | Tidak hapus |
+| Inbound-2 pakai colli Inbound-1, hapus Inbound-1 | Tetap selama Inbound-2 masih referensi | — |
 
-**Re-approve AS-IS:** failed job sets `transaction_status = open`, deletes partial stock/journal → user clicks Approve again.
+Tidak ada status draft khusus di entity colli (GAP-CIV2-01 implementasi).
+
+### 8.5 Import Colli v2 (TO-BE)
+
+Satu kolom **Colli**:
+
+| Isi sel | Arti |
+|---------|------|
+| Numbering sama di banyak baris | Satu **New Colli** bersama → satu code baru |
+| Code colli yang sudah ada | **Existing** — WH colli **exact** = header |
+| Kosong | Tanpa Colli v2 (NULL) |
+
+AS-IS template v1 (`colli` × `colli_qty`) diganti (GAP-CIV2-02).
+
+### 8.6 Contoh kasus
+
+| # | Situasi | Expected |
+|---|---------|----------|
+| 1 | Select 3 SKU, bulk New Colli type Box | 1 COL baru; 3 baris linked |
+| 2 | Bulk Use 2 SKU + Existing COL WH sama | Kedua baris ke COL itu |
+| 3 | Existing COL beda WH | Tolak — exact WH |
+| 4 | Single Use qty 50 (sisa 100) + New Colli | Qty 50; linked |
+| 5 | Baris tanpa colli | NULL OK |
+| 6 | 1 baris 2 colli | Tidak boleh |
+| 7 | Hapus inbound draft; COL baru tidak dipakai lain, belum Approve | COL hilang dari list |
+| 8 | Reject lalu delete (belum Approve) | Sama — COL baru hilang |
+| 9 | Import numbering `1` + code `COL-ABC` | Group 1 → 1 new COL; existing jika WH match |
+| 10 | New Colli tanpa Type, ada default master | Type = Default ON |
+
+### 8.7 AS-IS Colli ID v1 (takedown)
+
+Sampai v2 live: Group view + jumlah koli × isi → N Stock ID, async job, import colli × isi. **Target UX = §8.1–8.6** di **kedua** menu (GAP-CIV2-03).
 
 ---
 
 ## 9. Import Excel
 
-Import standard atau COLLI (template colli). Class/path: [technical §10](./technical.md#10-import--config).
+Import standard atau **Colli v2** (1 kolom Colli). Class/path: [technical §10](./technical.md#10-import--config).
 
 ### 9.1 Standard columns (PM)
 
 `PO Code*`, `Product ID`, `Product SKU*`, `Inbound Qty*`, `Unit*`  
 Optional: Batch, Serial, Location, Expired Date
 
-### 9.2 COLLI columns (AS-IS)
+### 9.2 Colli v2 column (TO-BE)
 
-Includes colli qty + colli isi; rule: `Inbound Qty = Colli × Colli Qty`
+Satu kolom **Colli**: numbering sama = satu New Colli; code existing = Existing (WH exact); kosong = NULL. AS-IS v1 `colli × colli_qty` → GAP-CIV2-02.
 
 ### 9.3 Validations
 
@@ -309,8 +340,9 @@ Includes colli qty + colli isi; rule: `Inbound Qty = Colli × Colli Qty`
 
 | Path | When | Result |
 |------|------|--------|
-| **Sync** | No middle detail / standard lines | Approve inline |
-| **Async** | Middle detail (COLLI) exists | Background job → pesan *Approval in progress* |
+| **Sync** | Standard lines (tanpa middle v1) | Approve inline |
+| **Async** | AS-IS v1: middle detail (koli) exists | Background job → *Approval in progress* |
+| **Colli v2** | Link `multisku_colli_id`; availability setelah Approve | Qty GRN unchanged; GAP-CIV2-03 UI |
 
 ### 10.3 Reject
 
@@ -322,7 +354,7 @@ Includes colli qty + colli isi; rule: `Inbound Qty = Colli × Colli Qty`
 |--------|--------|
 | PO detail | `prepared_to_grn` ↓, `processed_to_grn` ↑ |
 | PO header | → `processed` (partial) or `complete` (full all lines) |
-| ItemStock | Created per detail/colli |
+| ItemStock | Created per detail; Colli v2: `multisku_colli_id` setelah Approve |
 | Journal | Auto-journal Unbilled Goods |
 | Inspection | Auto RIR from template on header update |
 
@@ -378,7 +410,7 @@ SKU dengan Product COA Group type **`Fix Asset`** tetap **generate Stock ID** se
 | Aspek | AS-IS |
 |-------|-------|
 | **Stock ID** | ✅ Dibuat — flag `is_fix_asset` pada `ItemStock` |
-| **COLLI** | Berlaku sama (N koli → N Stock ID) jika middle detail colli dipakai |
+| **Colli v2** | Wadah multi-SKU; bukan N Stock ID per koli. AS-IS v1 middle masih berlaku sampai takedown |
 | **Validasi approve** | `"Please Configure \"Asset COA\" for this Product: {sku}"` jika Assets COA kosong |
 
 **Perbandingan ringkas:**
@@ -411,7 +443,7 @@ If config `inbound-with-unbilled-goods` = **false** → Credit **Account Payable
 | Action | AS-IS |
 |--------|-------|
 | **Delete** (open) | ✓ Reverts `prepared_to_grn_quantity` |
-| **Delete detail** | Blocked if linked colli (`qty_in_colly > 0`) or has children |
+| **Delete detail** | AS-IS v1: blocked if `qty_in_colly > 0`. Colli v2: unlink; colli baru boleh hilang jika tidak direferensikan & belum Approve |
 | **Void** (approved) | UI void ada; backend **menolak** — **GAP-PI-01** |
 | **Close** | `can_closed` needs `processed` header — GRN never reaches it — **GAP-PI-02** |
 | **Unapprove** | `GET unapprove` — **development/local only** |
@@ -457,8 +489,10 @@ Detail: [Purchase Order requirement §2.3](../supplychain-purchase-order/require
 | Match supplier header = PO supplier | Ganti supplier setelah ada detail |
 | Set batch/expired jika product flag ON | Approve dengan 0 detail |
 | Configure Inventory + Unbilled Goods COA | Expect VAT journal at GRN |
-| Re-approve jika COLLI job gagal | Delete detail yang sudah linked colli |
-| Use COLLI for bulk packaging | Force >10000 lines without chunk plan |
+| Re-approve jika job approve v1 gagal | Hapus inbound Approved hanya untuk “bersihkan” colli |
+| Assign Existing Colli di WH yang sama | Existing Colli beda WH |
+| Isi Colli Type Active sebelum New Colli | Dua colli di satu baris detail |
+| Pakai colli opsional (NULL OK) | Force >10000 lines without chunk plan |
 
 ---
 
@@ -470,12 +504,14 @@ Detail: [Purchase Order requirement §2.3](../supplychain-purchase-order/require
 4. Approve **Service** line → **no** ItemStock; journal Dr Operational Expense / Cr Unbilled Goods  
 5. Approve **Fix Asset** line → ItemStock (`is_fix_asset`) + journal Dr **Assets** / Cr Unbilled Goods  
 6. Partial GRN → PO processed; full all lines → PO complete  
-7. COLLI 10×5 → 10 ItemStock after async job  
-8. Job fail → toast + status open + re-approve works  
-9. Serial product → max 50 per operation  
-10. Import colli template → qty = colli × isi  
-11. Reject open GRN → rejected status  
-12. Print PDF + RIR available
+7. Colli v2: 3 SKU bulk New Colli → 1 COL code; qty GRN tidak berubah  
+8. Existing Colli beda WH → ditolak  
+9. Hapus inbound draft (COL baru, belum Approve, tidak dipakai lain) → COL hilang  
+10. Import 1 kolom numbering sama → satu New Colli (TO-BE GAP-CIV2-02)  
+11. Serial product → max 50 per operation  
+12. Reject open GRN → rejected status  
+13. Print PDF + RIR available  
+14. AS-IS v1 (sampai takedown): job fail → Open + re-approve |
 
 ---
 
@@ -511,6 +547,8 @@ Full spec: [Purchase Invoice requirement](../accounting-supplier-invoice/require
 |------|--------|
 | [System Product](../system-product/requirement.md) | Batch/serial/expired flags |
 | [Master Unit](../supplychain-unit/requirement.md) | Unit conversion |
+| [Colli Type](../supplychain-colli-type/requirement.md) | Jenis wadah New Colli |
+| Multisku Colli | List colli code (lifecycle QA; GAP-CIV2-06) |
 | [Other Inbound](../supplychain-other-inbound/) | Inbound non-PO (keluarga controller sama) |
 
 ---
@@ -530,6 +568,15 @@ Full spec: [Purchase Invoice requirement](../accounting-supplier-invoice/require
 | GAP-PI-09 | Over-receipt tolerance | Hard cap inBalance | No % tolerance | **PM decision** |
 | GAP-PI-10 | Completion summary | — | No dialog post-approve | **Not implemented** |
 | GAP-PI-11 | Legacy edit URLs in journal | — | Points to `mutation-inbound/edit` | **Low drift** |
+| GAP-CIV2-01 | Persistensi colli: belum Approve boleh hilang; pernah Approve permanen | Flag/ref-count/approved-inbound | Entity tanpa status colli | Open — Dev |
+| GAP-CIV2-02 | Import 1 kolom numbering/existing | Mengganti template v1 | Masih `colli` × `colli_qty` | Open |
+| GAP-CIV2-03 | UI Existing/New + Type + takedown v1 | Parity classic + BETA | WIP vs staging | Open |
+| GAP-CIV2-04 | Select2 existing filter exact WH | WH terkecil = header | Missing | Open |
+| GAP-CIV2-05 | Preselect Colli Type Default | `is_default` ON | Depends GAP-CT-01 | Open |
+| GAP-CIV2-06 | Menu Multisku Colli docs/CRUD | List untuk QA lifecycle | Staging URL ada | Open |
+| GAP-CIV2-07 | Pesan EN WH mismatch / type required | FormRequest setelah implement | Unverified | Open |
+| GAP-CIV2-08 | Void inbound × lifecycle colli | Next topic | Deferred | **Deferred** |
+| GAP-CIV2-09 | Cara teknis remove kode v1 | Out of scope SOT | UX v2 replaces v1 | Resolved for SOT |
 
 ---
 
@@ -545,15 +592,15 @@ DEV-PI-01…05 (void/close wiring, ClosedDialog, unapprove policy, typo from_men
 | **P-PI-01** | 🔴 **Highest** | **Dev + QA** | **Void approved GRN — fix or remove UI?** (GAP-PI-01) | VoidDialog broken |
 | **P-PI-02** | 🔴 **Major** | **PM + Ops** | **Graduate BETA menu to production?** (GAP-PI-03) | Two menus coexist |
 | **P-PI-03** | 🔴 **Major** | **Finance** | **Unapprove di staging/production untuk koreksi?** (GAP-PI-06) | Dev/local only |
-| **P-PI-04** | 🟡 Medium | **Ops** | COLLI default isi dari last trx — include draft/open? | Yes — any status |
-| **P-PI-05** | 🟡 Medium | **QA** | Async approve timeout 20 min — SLA expectation? | Job + cache |
+| **P-PI-04** | 🟡 Medium | **Ops** | Colli v2 Default Type / lifecycle hapus — lihat GAP-CIV2 | TO-BE |
+| **P-PI-05** | 🟡 Medium | **QA** | Async approve timeout 20 min — SLA expectation? | Job + cache (v1 COLLI job; v2 stock path verify) |
 
 **Confirmed OK:**
 
 - VAT not at GRN ✓  
 - Unbilled Goods journal default ✓  
-- COLLI background job + re-approve on fail ✓  
-- max 10000 details ✓
+- max 10000 details ✓  
+- Colli v2 **parity** kedua menu (aturan) ✓ — implementasi GAP-CIV2-03
 
 ---
 
@@ -569,8 +616,17 @@ A: Belum berfungsi (GAP-PI-01 / P-PI-01) — UI ada, backend menolak.
 **Q: PPN di GRN?**  
 A: Tidak — di Purchase Invoice (GAP-PI-05 confirmed OK).
 
-**Q: COLLI job gagal?**  
-A: Status kembali Open; approve ulang setelah cek notifikasi.
+**Q: Colli v2 vs Colli ID lama?**  
+A: v2 = satu kode wadah banyak SKU di satu lokasi. v1 = pecah Stock ID per koli per SKU — UX v1 ditakedown.
+
+**Q: Wajib pakai colli?**  
+A: Tidak — baris boleh tanpa colli.
+
+**Q: Kapan colli tidak terhapus?**  
+A: Setelah minimal satu inbound yang memakai colli itu **Approved**. Hapus semua draft yang mereferensikan (belum pernah Approve) → colli bisa hilang.
+
+**Q: COLLI job gagal (AS-IS v1)?**  
+A: Status kembali Open; approve ulang. Path v2: availability setelah Approve, bukan N Stock ID per koli.
 
 **Q: Service vs Fix Asset?**  
 A: Service = tanpa Stock ID + jurnal OpEx. Fix Asset = Stock ID + jurnal Assets.
@@ -582,5 +638,7 @@ A: Service = tanpa Stock ID + jurnal OpEx. Fix Asset = Stock ID + jurnal Assets.
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
 | User Guide | [user-guide.md](./user-guide.md) |
+| Colli Type | [../supplychain-colli-type/requirement.md](../supplychain-colli-type/requirement.md) |
+| Colli v2 SoT | [../_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md](../_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md) |
 | Legacy UI menu | [../supplychain-mutation-inbound/README.md](../supplychain-mutation-inbound/README.md) |
 | Purchase Order | [../supplychain-purchase-order/requirement.md](../supplychain-purchase-order/requirement.md) |

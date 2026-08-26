@@ -50,5 +50,8 @@ Disalin dari `~/Downloads` (file chat lama yang belum masuk repo). Fiscal Period
 | `accounting-balance-sheet-source-of-truth.md` | accounting-balance-sheet | 4/4 review |
 | `accounting-debit-note-source-of-truth.md` | accounting-debit-note | 4/4 review (+ Feature Map/Lingo) |
 | `supplychain-product-mutation-stock-source-of-truth.md` | supplychain-product-mutation-stock | 4/4 review |
+| `supplychain-colli-type-source-of-truth.md` | supplychain-colli-type | 4/4 review |
+| `accounting-customer-invoice-source-of-truth.md` | accounting-customer-invoice | 5/5 review (split 2026-08-24) |
+| `supplychain-purchase-inbound-colli-v2-source-of-truth.md` | supplychain-new-purchase-inbound (+ mutation-inbound parity) | split 2026-08-14 — Colli v2 di BETA v2.4 |
 
-**Belum ada SOT di folder ini** untuk menu lain di manifest (mis. Balance Sheet, Trial Balance, dll.).
+**Belum ada SOT di folder ini** untuk menu lain di manifest (mis. Trial Balance, dll.).

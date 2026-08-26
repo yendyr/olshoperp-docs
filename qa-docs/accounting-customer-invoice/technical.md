@@ -2,161 +2,196 @@
 doc_type: technical
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 1.0
-last_updated: 2026-06-19
+version: 2.0
+last_updated: 2026-08-24
 owner: QA - Yemima
-status: draft
-related_docs:
-  - ./knowledge-base.md
-  - ./requirement.md
+status: review
+aliases: [SI technical, customer invoice API, sales invoice code]
 ---
 
 # Sales Invoice — Technical Documentation
 
-> **DRAFT** — Dokumentasi AS-IS dari codebase (19 Juni 2026). Belum final review QA/PM.
+**API prefix:** `accounting/customer-invoice`  
+**Module:** `Modules/Accounting`  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.0  
+**Source SoT:** [../_meta/sot/accounting-customer-invoice-source-of-truth.md](../_meta/sot/accounting-customer-invoice-source-of-truth.md) v1.0
 
-## 1. Architecture Overview
+---
 
-Full CRUD transaction module dengan approval workflow dan auto-journal. Header `CustomerInvoice` (SI); lines `CustomerInvoiceDetailItem` link ke `SalesOrderDetail`. Approve → `ApprovalHandlerTrait` + `JournalProcess::customerInvoiceAutoJournal`.
+## 1. File Map
 
-```mermaid
-flowchart TB
-    subgraph FE["Vue SPA"]
-        DL[DataList.vue]
-        FM[Form.vue]
-        AD[ApprovalDialog.vue]
-    end
+### Backend
 
-    subgraph BE["Laravel Accounting"]
-        CIC[CustomerInvoiceController]
-        CID[CustomerInvoiceDetailItemController]
-        JP[JournalProcess]
-    end
+| Layer | Path |
+|-------|------|
+| Controller | `Modules/Accounting/Http/Controllers/CustomerInvoiceController.php` |
+| Detail items | `Modules/Accounting/Http/Controllers/CustomerInvoiceDetailItemController.php` |
+| Entity header | `Modules/Accounting/Entities/CustomerInvoice.php` |
+| Detail / tax / other | `CustomerInvoiceDetailItem`, taxes, other cost/discount entities |
+| Journal | `app/Helpers/Accounting/JournalProcess.php` → `customerInvoiceAutoJournal` |
+| Import | `Modules/Accounting/Imports/CustomerInvoiceImport.php` · `Jobs/CustomerInvoiceImportJob.php` |
+| Export | `Modules/Accounting/Jobs/CustomerInvoiceExportJob.php` |
+| Policy | `CustomerInvoicePolicy` |
+| Routes | `Modules/Accounting/Routes/api.php` — `customer-invoice*` · outstanding detail routes |
 
-    subgraph Data[("MySQL")]
-        CI[accounting_customer_invoices]
-        CIDI[accounting_customer_invoice_detail_items]
-        J[accounting_journals]
-    end
+### Frontend
 
-    DL --> CIC
-    FM --> CIC
-    FM --> CID
-    AD -->|"POST approve"| CIC
-    CIC --> CI
-    CID --> CIDI
-    CIC --> JP
-    JP --> J
-```
+| Layer | Path |
+|-------|------|
+| Pages | `olshoperp-frontend/src/pages/Accounting/AccountReceivable/CustomerInvoice/**` |
+| Pinia | `src/stores/project/SalesInvoices/` |
+| Route UI | `/accounting/customer-invoice` |
 
-## 2. Frontend File Map
+---
 
-**Root:** `olshoperp-frontend/src/pages/Accounting/AccountReceivable/CustomerInvoice/`
-
-| File | Role | Key API |
-|------|------|---------|
-| `DataList.vue` | Index, export, import | `GET/POST accounting/customer-invoice` |
-| `Form.vue` | Create/edit shell | `POST/PUT accounting/customer-invoice/{id}` |
-| `HeaderBasicInformation.vue` | Header fields | show, select2 customer/currency |
-| `DatalistDetail.vue` | Line items PrimeVue | `customer-invoice-detail` resource |
-| `OutstandingSalesOrderDetail.vue` | Pick SO lines | `outstanding-sales-order` |
-| `OutstandingSalesOrderGroup.vue` | Group SO | `outstanding-group-sales-order` |
-| `OtherCost.vue` / `OtherCostForm.vue` | Other cost | `customer-invoice-other-cost` |
-| `OtherDiscount.vue` / `OtherDiscountForm.vue` | Other discount | `customer-invoice-other-discount` |
-| `ApprovalDialog.vue` | Approve/reject/void | `POST .../approve` |
-| `ApprovalEligibility.vue` | Eligibility grid | `approval-eligibility/{id}` |
-| `DatalistLogApproval.vue` | Approval log | `log/approve` |
-
-**Routes** (`src/router/index.ts`):
-
-| Path | Name |
-|------|------|
-| `/accounting/customer-invoice` | `accounting_customer-invoice_index` |
-| `/accounting/customer-invoice/create` | create |
-| `/accounting/customer-invoice/edit/:id` | edit |
-
-## 3. Backend File Map
-
-| File | Role |
-|------|------|
-| `Modules/Accounting/Http/Controllers/CustomerInvoiceController.php` | CRUD, approve, export, import, print |
-| `Modules/Accounting/Http/Controllers/CustomerInvoiceDetailItemController.php` | Lines, SO outstanding, bulk |
-| `Modules/Accounting/Http/Controllers/CustomerInvoiceOtherCostController.php` | Other cost |
-| `Modules/Accounting/Http/Controllers/CustomerInvoiceOtherDiscountController.php` | Other discount |
-| `Modules/Accounting/Entities/CustomerInvoice.php` | Model, `code_identifier = SI` |
-| `Modules/Accounting/Entities/CustomerInvoiceDetailItem.php` | Line, `sales_order_detail_id` |
-| `Modules/Accounting/Entities/CustomerInvoiceApproval.php` | Approval log |
-| `Modules/Accounting/Entities/CustomerInvoiceApprovalEligibility.php` | Multi-level matrix |
-| `Modules/Accounting/Policies/CustomerInvoicePolicy.php` | Extends `MainPolicy` |
-| `app/Helpers/Accounting/JournalProcess.php` | `customerInvoiceAutoJournal` |
-| `app/Helpers/Accounting/CustomerInvoicePrice.php` | Price/total helpers |
-| `Modules/Accounting/Jobs/CustomerInvoiceExportJob.php` | Async export |
-| `Modules/Accounting/Import/CustomerInvoiceImport.php` | Excel import |
-
-## 4. API Routes (utama)
+## 2. API (utama)
 
 | Method | Path | Action |
 |--------|------|--------|
-| GET | `/api/accounting/customer-invoice` | index (datalist) |
-| POST | `/api/accounting/customer-invoice` | store |
-| GET | `/api/accounting/customer-invoice/{id}` | show |
-| PUT | `/api/accounting/customer-invoice/{id}` | update |
-| DELETE | `/api/accounting/customer-invoice/{id}` | destroy |
-| POST | `/api/accounting/customer-invoice/{id}/approve` | approve |
-| GET | `/api/accounting/customer-invoice/approval-eligibility/{id}` | eligibility |
-| GET | `/api/accounting/customer-invoice/{id}/log/approve` | approval log |
-| GET | `/api/accounting/customer-invoice-detail/{ci}/outstanding-sales-order` | SO lines |
-| POST | `/api/accounting/customer-invoice-detail/{ci}/create-group` | bulk lines |
-| GET | `/api/accounting/customer-invoice/export-excel` | trigger export |
-| POST | `/api/accounting/customer-invoice/upload` | import |
+| CRUD | `accounting/customer-invoice` | Index/store/show/update/destroy |
+| POST | `…/{id}/approve` | Approve / reject |
+| GET/POST | detail / outstanding / group Use | Lines dari SO |
+| POST | import upload + progress/log | Import saldo awal |
+| GET | export | Header / with detail (job) |
+| GET | print | PDF |
 
-**Auth:** `auth:sanctum`, `auth_verified`; company via `getToken()->company_id`.
+---
 
-## 5. Database Schema
+## 3. Data model (konsep)
 
-| Table | Purpose |
-|-------|---------|
-| `accounting_customer_invoices` | Header SI |
-| `accounting_customer_invoice_detail_items` | Lines, FK `sales_order_detail_id` |
-| `accounting_customer_invoice_detail_taxes` | VAT per line |
-| `accounting_customer_invoice_approvals` | Approval history |
-| `accounting_customer_invoice_approval_eligibilities` | Approver matrix |
-| `accounting_customer_invoice_other_costs` | Header other cost |
-| `accounting_customer_invoice_other_discounts` | Header other discount |
+| Table / area | Notes |
+|--------------|-------|
+| `accounting_customer_invoices` | Header; prefix **SI**; status draft/open/approved/rejected (+ badge void/closed/…) |
+| Detail items | FK `sales_order_detail_id`; qty = remaining on Use |
+| SO detail counters | `prepared_to_invoice_quantity` / `processed_to_invoice_quantity` |
+| AR COA | `store_id` → Store AR; else Company AR |
+| Soft delete | Show deleted di datalist |
 
-**Code generation:** `$code_identifier = 'SI'`, `$code_with_random_bits = true` on model.
+---
 
-## 6. Jobs / Observers / Events
-
-| Component | Role |
-|-----------|------|
-| `CustomerInvoiceExportJob` | Chunked Excel export |
-| `CustomerInvoiceImportJob` | Async import processing |
-| `AuditHandlerTrait` | Audit on controller |
-
-## 7. Approve → Journal (sequence)
+## 4. Approve flow
 
 ```mermaid
 sequenceDiagram
-    participant UI as ApprovalDialog
-    participant CIC as CustomerInvoiceController
-    participant INV as CustomerInvoice
-    participant SOD as SalesOrderDetail
+    participant FE
+    participant CTL as CustomerInvoiceController
+    participant SO as SalesOrderDetail
     participant JP as JournalProcess
-    participant JRN as Journal
 
-    UI->>CIC: POST approve
-    CIC->>CIC: validate_fiscal_period
-    CIC->>INV: processApproval
-    INV->>INV: approve status
-  loop each detail
-        CIC->>SOD: increment processed_to_invoice_qty
+    FE->>CTL: POST approve
+    CTL->>CTL: fiscal, detail>=1, COA, qty prepared
+    alt reject platform
+        CTL-->>FE: cannot reject platform
+    else approve
+        CTL->>SO: prepared↓ processed↑
+        CTL->>JP: customerInvoiceAutoJournal autoApprove=true
+        CTL-->>FE: approved + journal approved
     end
-    CIC->>JP: customerInvoiceAutoJournal
-    JP->>JRN: create/update journal + details
 ```
 
-## 8. Related db-schema docs
+**Import path:** job creates SI **open**; intent journal **not** final to GL until SI Approve. Residual: job may still call `customerInvoiceAutoJournal($si, false, 'Opening Balance')` — see GAP-SI-02.
 
-- `docs/db-schema/accounting/accounting_customer_invoice_detail_items.md`
-- `docs/db-schema/accounting/accounting_customer_invoice_detail_others.md`
+---
+
+## 5. Invariants
+
+| ID | Invariant |
+|----|-----------|
+| INV-SI-01 | 1 Use from outstanding SO line = **full remaining** invoicable qty |
+| INV-SI-02 | Platform SI: no reject / no delete |
+| INV-SI-03 | Approve: bump processed qty + post journal (auto-approved on normal approve) |
+| INV-SI-04 | AR COA from store if `store_id`, else customer company |
+| INV-SI-05 | Manual create only General customer + General SO outstanding |
+| INV-SI-06 | Import: General SO only; result status **open**; all-or-nothing rows |
+| INV-SI-07 | Header customer/currency/dates locked after detail exists |
+| INV-SI-08 | Primary currency → exchange rate must be 1 |
+| INV-SI-09 | Other cost/discount outside product VAT base |
+| INV-SI-10 | Void × SI lifecycle details deferred outside this doc if not in SoT |
+
+---
+
+## 6. Journal mapping (approve)
+
+| Side | COA | Amount |
+|------|-----|--------|
+| Dr | AR (company/store) | Net = credits − other discount |
+| Cr | Sales (product COA group) | Before VAT local |
+| Cr | Tax sales COA | VAT |
+| Cr | Other cost COA | Other cost |
+| Dr | Other discount COA | Other discount |
+
+---
+
+## 7. Failure modes
+
+| Mode | Expected |
+|------|----------|
+| Fiscal closed | Block store/update date/approve |
+| Missing AR / Sales / Tax COA | Approve error with configure message |
+| Insufficient prepared qty | Cannot approve — SKU message |
+| Platform reject/delete | Hard block message |
+| Import 1 bad row | Entire import failed + log |
+| Update after approved | Blocked |
+| Change customer/currency/date with details | Blocked until details cleared |
+
+---
+
+## 8. Import rules (code-facing)
+
+| Rule | Behavior |
+|------|----------|
+| Template | Transaction Date · Order Number · Platform Order ID |
+| XOR keys | Exactly one of Order Number / Platform Order ID |
+| SO type | General only |
+| Status out | **open** |
+| Journal | Intent: on SI approve; verify GAP-SI-02 residual Open journal call |
+
+---
+
+## 9. Frontend behaviors
+
+| Behavior | Note |
+|----------|------|
+| Auto-save create | Last saved customer/currency/rate |
+| Status radio | Draft/Open; rejected → FE forces draft on edit save |
+| Qty with-SO | Disabled — full remaining on Use |
+| Platform form | Customer/store show-only; no reject/delete |
+| Column Instant Settlement | Default hidden |
+
+---
+
+## 10. Tests & QA notes
+
+1. Create → draft (AS-IS) → Open → Approve → journal approved + SO processed↑  
+2. Use one of two SKUs → partial SO; qty not partially editable  
+3. Approve missing COA / no detail → error  
+4. Platform SI reject/delete blocked  
+5. Import General → open; Approve → journal  
+6. Import platform → rejected  
+7. GAP-SI-01: document TO-BE Open on create vs AS-IS draft  
+
+---
+
+## 11. Known gaps
+
+| ID | Issue |
+|----|-------|
+| GAP-SI-01 | Create default Open (TO-BE) vs draft (AS-IS) |
+| GAP-SI-02 | Import journal call residual vs “no journal until Approve” |
+| GAP-SI-03 | FE xlsx vs BE csv/xls |
+| GAP-SI-05 | Currency error text may say “purchase order” |
+
+Full registry: [requirement §9](./requirement.md).
+
+---
+
+## Related Documents
+
+| Doc | Path |
+|-----|------|
+| Requirement | [requirement.md](./requirement.md) |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
+| Account Receive | [../accounting-customer-payment/technical.md](../accounting-customer-payment/technical.md) |
+| Credit Note | [../accounting-credit-note/technical.md](../accounting-credit-note/technical.md) |
+| Journal helper | `app/Helpers/Accounting/JournalProcess.php` |

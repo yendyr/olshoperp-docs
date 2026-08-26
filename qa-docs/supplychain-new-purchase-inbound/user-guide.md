@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 1.2
-last_updated: 2026-07-28
+version: 1.3
+last_updated: 2026-08-14
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.3
+source_version: 2.4
 owner: QA - Yemima
 status: review
 ---
@@ -17,7 +17,7 @@ status: review
 **Kode transaksi:** dimulai dengan `IN-`  
 **Feature Map / Lingo:** [feature-map.md](./feature-map.md)
 
-> Ada juga menu Purchase Inbound lama (tanpa COLLI). Backend sama; panduan ini untuk UI BETA.
+> Ada juga menu Purchase Inbound lama. Backend sama; **aturan [Colli v2](#sf-lingo:SF-INB-01) identik** di kedua UI. Panduan langkah memakai label UI BETA.
 
 ---
 
@@ -83,6 +83,7 @@ Pastikan:
 - [ ] **Gudang** tujuan = gudang fisik tanpa sub-gudang.
 - [ ] **Tanggal** ≤ hari ini dan periode fiskal masih terbuka.
 - [ ] **Akun produk** (COA Group) lengkap — termasuk Unbilled Goods; untuk Fix Asset / Service sesuai tipenya.
+- [ ] **Colli Type** Active siap jika akan buat **New Colli** (type Default biasanya terpilih otomatis).
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -97,10 +98,11 @@ Setelah GRN **di-approve**:
 3. Qty di PO ter-update → Processed atau Complete.
 4. Lanjut **Purchase Invoice** untuk tagihan + PPN.
 5. Opsional: **Print** PDF GRN atau **Print RIR**.
+6. Qty di dalam [Colli v2](#sf-lingo:SF-INB-01) baru bermakna setelah Approve (stok di wadah).
 
-Jika pakai **[COLLI](#sf-lingo:SF-INB-01)** dan job gagal: status kembali **Open**, dapat notifikasi — **Approve ulang**.
+Jika colli **baru** belum pernah Approve, hapus semua inbound draft yang memakai kode itu → kode bisa hilang dari daftar. Setelah Approve, kode colli **permanen**.
 
-> Void GRN yang sudah approved **belum berfungsi** di sistem saat ini. Koordinasikan dengan admin/dev jika perlu koreksi.
+> Void GRN yang sudah approved **belum berfungsi**. Jangan hapus inbound Approved hanya untuk “bersihkan” colli.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -114,7 +116,8 @@ Jika pakai **[COLLI](#sf-lingo:SF-INB-01)** dan job gagal: status kembali **Open
 - **Kalau produk serial**, satu baris = satu pcs; maksimal 50 sekaligus.
 - **Kalau approve tanpa baris**, atau masih ada import berjalan / proses approve lain, sistem menolak.
 - **Kalau lebih dari sekitar 10.000 baris**, approve ditolak.
-- **Kalau hapus baris yang sudah punya data COLLI**, ditolak — hapus/edit COLLI dulu.
+- **Kalau kamu pilih Existing Colli di gudang lain**, sistem menolak — colli harus di Location Destination yang sama.
+- **Kalau kamu hapus inbound draft** yang generate colli baru (belum Approve, tidak dipakai dokumen lain), kode colli bisa hilang.
 - **Kalau Product COA belum lengkap**, Approve gagal dengan pesan konfigurasi akun.
 - **Kalau PO sudah void/closed** untuk sisa qty, baris tidak bisa ditambah sesuai pesan sistem.
 - **Kalau SKU random**, tidak bisa di-inbound.
@@ -145,22 +148,23 @@ Jika pakai **[COLLI](#sf-lingo:SF-INB-01)** dan job gagal: status kembali **Open
    - [**Select Product**](#sf-lingo:SF-DET-01) — shortcut satu SKU.
    - [**Allocate Full Qty**](#sf-lingo:SF-DET-02) — ambil sisa penuh (bantu selisih desimal unit).
 3. Pastikan qty ≤ sisa PO.
-4. Opsional massal: [**Import Excel**](#sf-lingo:SF-IMP-01) (standard atau colli).
+4. Opsional massal: [**Import Excel**](#sf-lingo:SF-IMP-01) (satu kolom Colli: numbering sama = New Colli bersama; kode existing = Existing).
 
-### Langkah 3 — COLLI (opsional)
+### Langkah 3 — Colli v2 (opsional)
 
-1. Aktifkan **Group view**.
-2. Isi **jumlah koli** dan **isi per koli** ([COLLI](#sf-lingo:SF-INB-01)).
-3. Inbound Qty terisi otomatis.
-4. Kalau colli = 0 → isi qty manual seperti biasa.
+1. Colli **tidak wajib** — baris tanpa colli tetap valid.
+2. Pilih **Existing Colli** (kode di gudang yang sama) atau **New Colli** + **Colli Type** ([Colli v2](#sf-lingo:SF-INB-01)).
+3. Banyak SKU ke **satu** wadah: centang baris → Save, atau Bulk Use + field Colli.
+4. Satu baris = maksimal satu colli.
+5. Contoh: 3 SKU + New Colli type Box → satu kode `COL`; Existing di gudang lain → ditolak.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
 ### Langkah 4 — Approve
 
 1. Klik **Approve**.
-2. Tanpa COLLI: proses langsung.
-3. Dengan COLLI: proses background — pantau **Item Stock Status**; jika gagal, approve ulang.
+2. Qty penerimaan tidak berubah karena colli — colli hanya mengikat wadah.
+3. Setelah Approve, qty di dalam colli terlihat di stok.
 
 ### Langkah 5 — Lanjutan
 
@@ -175,13 +179,15 @@ Jika pakai **[COLLI](#sf-lingo:SF-INB-01)** dan job gagal: status kembali **Open
 ## 7. Tips & Hal yang Sering Bikin Bingung
 
 - **Supplier kosong?** Approve PO dulu.
-- **BETA vs menu lama?** BETA = COLLI + UI baru; backend sama.
+- **BETA vs menu lama?** UI berbeda; backend sama; Colli v2 aturannya sama.
 - **Partial OK** — boleh beberapa kali terima sampai penuh.
+- **[Colli v2](#sf-lingo:SF-INB-01)** = satu kode wadah banyak SKU di satu lokasi — bukan pecah Stock ID per koli.
+- **Existing colli kosong?** Cek gudang tujuan (harus sama persis).
+- **Colli hilang setelah hapus draft?** Belum Approve + tidak dipakai inbound lain — normal.
 - **[Service](#sf-lingo:SF-INB-03)** = tidak ada Stock ID; jurnal biaya operasional.
 - **[Fix Asset](#sf-lingo:SF-INB-03)** = ada Stock ID; jurnal Debit Assets.
-- **COLLI stuck?** Tunggu progress; kalau error, approve ulang.
 - **Void tidak jalan?** Known issue — hubungi admin/dev.
-- **Import:** PO harus approved, SKU di PO, qty ≤ sisa; ada template colli.
+- **Import:** PO harus approved, SKU di PO, qty ≤ sisa; kolom Colli = numbering / kode existing / kosong.
 
 ---
 
@@ -192,10 +198,10 @@ Jika pakai **[COLLI](#sf-lingo:SF-INB-01)** dan job gagal: status kembali **Open
 | [feature-map.md](./feature-map.md) | Indeks sub-feature + Lingo |
 | [knowledge-base.md](./knowledge-base.md) | SOP operator, troubleshooting, FAQ |
 | [requirement.md](./requirement.md) | Aturan bisnis, validasi, gap |
-| [technical.md](./technical.md) | API, job COLLI, jurnal teknis |
+| [technical.md](./technical.md) | API, Colli v2 FK, jurnal teknis |
 
-**Menu terkait:** Purchase Order · Purchase Invoice · Purchase Inbound (legacy) · Other Inbound
+**Menu terkait:** Purchase Order · Purchase Invoice · Purchase Inbound (legacy) · Colli Type · Other Inbound
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.3 — tanpa menambah fakta baru di luar sumber. Feature Map v1.0 ditautkan untuk Lingo.*
+*Derivatif dari requirement / knowledge-base / technical v2.4 — tanpa menambah fakta baru di luar sumber. Feature Map v1.1 ditautkan untuk Lingo.*

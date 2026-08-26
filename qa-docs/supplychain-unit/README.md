@@ -13,6 +13,12 @@ Menu **Unit** (Supply Chain — Master Data).
 **Route UI:** `/supplychain/unit`  
 **Maintenance owner:** QA — Yemima
 
+## Related menus
+
+| Menu | Relasi |
+|------|--------|
+| [Colli Type](../supplychain-colli-type/README.md) | Jenis wadah colli — **bukan** Unit |
+
 ## Changelog
 
 | Version | Date | Changes |

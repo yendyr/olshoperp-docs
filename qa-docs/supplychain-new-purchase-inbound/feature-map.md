@@ -2,11 +2,11 @@
 doc_type: feature-map
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 1.0
-last_updated: 2026-07-28
+version: 1.1
+last_updated: 2026-08-14
 owner: QA - Yemima
-status: draft
-aliases: [GRN feature map, purchase inbound features, COLLI features]
+status: review
+aliases: [GRN feature map, purchase inbound features, COLLI features, colli v2]
 ---
 
 # Purchase Inbound (GRN) — Feature Map
@@ -21,7 +21,7 @@ Indeks sub-feature / capability di menu **BETA - New Purchase Inbound**.
 | **stub / detailed / missing** | Kedalaman dokumen card |
 | **N/A** | Menu tidak punya fitur ini |
 
-Legacy UI (`/supplychain/mutation-inbound`) memakai API yang sama; COLLI + Group view = keunggulan BETA. Proposal: [`_meta/proposals/feature-map-and-capability-lingo.md`](../_meta/proposals/feature-map-and-capability-lingo.md).
+Legacy UI (`/supplychain/mutation-inbound`) memakai API yang sama; **Colli v2 parity** (Existing/New + Type). Proposal: [`_meta/proposals/feature-map-and-capability-lingo.md`](../_meta/proposals/feature-map-and-capability-lingo.md).
 
 | ID | Label UI | Jenis | Status | Depth | Card (referensi) | KB | UG |
 |----|----------|-------|--------|-------|------------------|----|-----|
@@ -35,7 +35,7 @@ Legacy UI (`/supplychain/mutation-inbound`) memakai API yang sama; COLLI + Group
 | SF-HDR-01 | Create header (Supplier / Warehouse / Date) | menu | AS-IS | stub | KB · Alur kerja / requirement Basic Info | Ya | overview |
 | SF-DET-01 | [Bulk Use / Single Use / Select Product](#sf-lingo:SF-DET-01) | menu | AS-IS | detailed | capabilities · sf-det-01 | Ya | overview |
 | SF-DET-02 | [Allocate Full Qty](#sf-lingo:SF-DET-02) | menu | AS-IS | detailed | capabilities · sf-det-02 | Ya | slice |
-| SF-INB-01 | [COLLI / Group view](#sf-lingo:SF-INB-01) | menu | AS-IS | detailed | capabilities · sf-inb-01 | Ya | overview |
+| SF-INB-01 | [Colli v2 (wadah multi-SKU)](#sf-lingo:SF-INB-01) | menu | TO-BE | detailed | capabilities · sf-inb-01 | Ya | overview |
 | SF-INB-02 | [Partial receiving](#sf-lingo:SF-INB-02) | menu | AS-IS | detailed | capabilities · sf-inb-02 | Ya | overview |
 | SF-INB-03 | [Service / Fix Asset / Inventory](#sf-lingo:SF-INB-03) | menu | AS-IS | detailed | capabilities · sf-inb-03 | Ya | tips |
 | SF-IMP-01 | [Import Excel](#sf-lingo:SF-IMP-01) | menu | AS-IS | detailed | capabilities · sf-imp-01 | Ya | overview |
@@ -46,5 +46,5 @@ Legacy UI (`/supplychain/mutation-inbound`) memakai API yang sama; COLLI + Group
 | SF-LOG-02 | [Audit Log](#sf-lingo:SF-LOG-02) | shared | AS-IS | stub | shared · approval-audit-log | — | slice |
 | SF-PRICE-01 | DPP & VAT di detail | — | N/A | — | GRN tidak tampil DPP/VAT baris; harga sebelum PPN ke Unbilled | — | — |
 
-**Siap Lingo (ada card):** shared datalist/export/log + Bulk/Single Use, Allocate Full, COLLI, Partial receiving, Service/Fix Asset/Inventory, Import.  
+**Siap Lingo (ada card):** shared datalist/export/log + Bulk/Single Use, Allocate Full, Colli v2, Partial receiving, Service/Fix Asset/Inventory, Import.  
 **Backlog card:** Bulk datalist actions, Attachment, Print (depth naik), Void (setelah fitur siap).

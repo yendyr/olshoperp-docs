@@ -58,4 +58,4 @@ Cara mengisi detail Purchase Inbound dari **Outstanding PO**. Kamu memilih baris
 
 - [Allocate Full Qty](#sf-lingo:SF-DET-02)
 - [Partial receiving](#sf-lingo:SF-INB-02)
-- [COLLI / Group view](#sf-lingo:SF-INB-01)
+- [Colli v2](#sf-lingo:SF-INB-01)

@@ -1,26 +1,34 @@
-# Sales Invoice — Dokumentasi
+# Sales Invoice — Dokumentasi QA
 
-Menu **Sales Invoice** (Accounting) — faktur penjualan / piutang usaha (AR).
+Menu **Sales Invoice** (Accounting / Account Receivable) — faktur penjualan / piutang usaha (AR).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 
-**Maintenance owner:** QA — Yemima
+**UI route:** `/accounting/customer-invoice`  
+**SoT:** [`_meta/sot/accounting-customer-invoice-source-of-truth.md`](../_meta/sot/accounting-customer-invoice-source-of-truth.md) v1.0  
+**3 layer version:** 2.0 · **User-guide:** v1.0 · `source_version` 2.0 · **Last updated:** 2026-08-24
 
-## Route & code
+## Changelog
 
-- FE: `/accounting/customer-invoice` → `olshoperp-frontend/src/pages/Accounting/AccountReceivable/CustomerInvoice/`
-- BE: `Modules/Accounting/Http/Controllers/CustomerInvoiceController.php`
-- Tabel: `accounting_customer_invoices` — prefix kode **SI**
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0–1.1 | 2026-06 | Draft AS-IS codebase + Instant Settlement cross-ref |
+| 2.0 | 2026-08-24 | Full 5-file dari SoT v1.0: status cycle, partial per SKU, import Open-only, journal on Approve, GAP-SI-01..05 |
+| 2.1 | 2026-08-25 | Help Center overview authored: end-user guide, lifecycle matrix, partial invoice rules, and troubleshooting |
 
 ## Related menus
 
-| Menu | Relasi |
-|------|--------|
-| Sales Order | Baris invoice dari `SalesOrderDetail` (outstanding SO) |
-| Account Receive (Customer Payment) | Alokasi pembayaran ke invoice approved |
-| Journal | Auto-generate saat approve |
-| Instant Settlement | Invoice platform dari settlement upload |
+| Menu | Link |
+|------|------|
+| Sales Order General | Sumber outstanding invoice manual |
+| Instant Settlement | Generate SI platform |
+| Account Receive | [../accounting-customer-payment/](../accounting-customer-payment/) — pelunasan |
+| Credit Note | [../accounting-credit-note/](../accounting-credit-note/) — koreksi AR |
+| Purchase Invoice | [../accounting-supplier-invoice/](../accounting-supplier-invoice/) — cermin AP |
+
+**Maintenance owner:** QA — Yemima

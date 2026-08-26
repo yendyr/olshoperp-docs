@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-mutation-inbound
 menu_name: "Purchase Inbound"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-08-14
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -26,7 +26,9 @@ Dokumen penerimaan barang dari supplier (Goods Receipt / GRN). Header disimpan d
 | Tabel header | `scm_stock_mutations` |
 | Tabel detail | `scm_inbound_mutation_details` (`InboundMutationDetail`) + optional middle `scm_inbound_mutation_middle_details` |
 
-**Tujuan:** Mencatat barang masuk dari Purchase Order atau penerimaan manual supplier ke gudang tujuan.
+**Tujuan:** Mencatat barang masuk dari Purchase Order ke gudang tujuan.
+
+> **Canonical operator SOP:** [BETA knowledge-base](../supplychain-new-purchase-inbound/knowledge-base.md). Menu ini UI lama; **Colli v2 aturannya sama** — Existing/New + Colli Type; colli opsional; satu kode = banyak SKU di gudang yang sama.
 
 ## 2. Glosarium
 
@@ -102,8 +104,11 @@ approveInbound"]
 **Q: Apa beda menu ini dengan Stock Adjustment?**  
 A: Menu mutation (`mutation-inbound/outbound/transfer`) untuk alur operasional normal. Menu `adjustment-addition/deduction` khusus `is_inventory_adjustment = 1` dengan approval finance terpisah.
 
+**Q: Colli v2 di menu lama?**  
+A: Aturan sama dengan BETA. Detail operator: [BETA KB §4](../supplychain-new-purchase-inbound/knowledge-base.md). Master jenis: [Colli Type](../supplychain-colli-type/knowledge-base.md).
+
 **Q: Dokumen terkait menu lain?**  
-A: Lihat: supplychain-purchase-order, supplychain-new-purchase-inbound, accounting-supplier-invoice.
+A: Lihat: supplychain-purchase-order, supplychain-new-purchase-inbound, supplychain-colli-type, accounting-supplier-invoice.
 
 **Q: Bagaimana cara approve?**  
 A: POST `mutation-inbound/{id}/approve` → `ItemStockMutation::approveInbound()` — update item stock, QC/inspection jika ada, set `transaction_status = approved`.

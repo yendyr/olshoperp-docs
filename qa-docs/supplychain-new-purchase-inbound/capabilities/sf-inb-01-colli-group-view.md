@@ -2,55 +2,56 @@
 doc_type: menu-capability
 menu: supplychain-new-purchase-inbound
 id: SF-INB-01
-title: COLLI / Group view
-aliases: [COLLI, koli, group view, isi per koli]
+title: Colli v2 (wadah multi-SKU)
+aliases: [COLLI, colli v2, New Colli, Existing Colli, koli, group view]
 scope: menu
 summary: >-
-  Fitur BETA untuk barang dikemas per koli: isi jumlah koli × isi per koli
-  → Inbound Qty otomatis; Approve membuat 1 Stock ID per koli (background).
-version: 1.0
-last_updated: 2026-07-28
-status: draft
+  Satu kode colli menampung banyak SKU di satu gudang tujuan. Assign
+  Existing atau New (plus Colli Type). Opsional; qty penerimaan tidak berubah.
+version: 1.1
+last_updated: 2026-08-14
+status: review
 ---
 
-# COLLI / Group view
+# Colli v2 (wadah multi-SKU)
 
 ## Apa ini
 
-**COLLI** mencatat penerimaan berdasarkan **kemasan koli** (box/pallet). Di **Group view**, kamu mengisi **jumlah koli** dan **isi per koli**; Inbound Qty = koli × isi. Saat Approve, sistem membuat **satu Stock ID per koli** lewat proses background.
+**Colli v2** adalah **wadah** (box/pallet) dengan satu kode (`COL`) yang bisa berisi **banyak SKU** di **satu Location Destination**. Bukan pecah Stock ID per koli. Qty penerimaan dari PO **tidak berubah** karena colli.
 
 ## Kapan dipakai
 
-- Barang datang dalam koli/box yang ingin dilacak per kemasan.
-- Perlu qty otomatis dari rumus koli × isi.
-- **Tanpa COLLI** (jumlah koli = 0): isi Inbound Qty manual seperti biasa.
+- Beberapa SKU datang dalam satu box/pallet di lokasi yang sama.
+- Pakai kode colli yang sudah ada (**Existing**) atau buat baru (**New** + jenis dari Colli Type).
+- **Tanpa colli** juga boleh — baris tetap valid.
 
 ## Cara pakai
 
-1. Tambah baris dari Outstanding PO.
-2. Aktifkan **Group view** di detail.
-3. Isi **jumlah koli** dan **isi per koli** (isi per koli sering terisi dari transaksi terakhir SKU yang sama, atau 1 jika melebihi sisa).
-4. Cek Inbound Qty otomatis = koli × isi (tidak boleh > sisa PO).
-5. **Approve** → pantau **Item Stock Status** (%) di daftar.
-6. Jika gagal: notifikasi → status kembali **Open** → **Approve ulang**.
+1. Tambah baris dari Outstanding PO (qty seperti biasa).
+2. Pilih **Existing Colli** (hanya kode di gudang yang sama) atau **New Colli** + **Colli Type**.
+3. Banyak SKU ke satu wadah: centang baris → **Save**, atau **Bulk Use** + field Colli.
+4. **Approve** — qty di dalam colli baru bermakna setelah stok terbit.
+5. Master jenis wadah: menu **Colli Type** (Default biasanya sudah terpilih).
 
 ## Catatan
 
-- Hanya di UI **BETA**; menu legacy tidak punya alur COLLI yang sama.
-- Hapus/edit baris yang sudah punya data COLLI: hapus/edit COLLI dulu.
-- Import punya **template colli** terpisah dari template standard.
-- Proses stock per koli bisa asynchronous — jangan anggap gagal hanya karena loading sebentar.
+- Aturan sama di BETA dan Purchase Inbound lama.
+- Satu baris = maksimal satu colli.
+- Colli baru bisa hilang jika semua inbound draft yang memakainya dihapus **dan** belum pernah Approve. Setelah Approve, kode permanen.
+- Existing colli di gudang lain ditolak.
 
 ## Contoh
 
 | Given | Aksi | Hasil |
 |-------|------|--------|
-| Sisa PO 100; 10 koli × 10 isi | Isi COLLI lalu Approve | Inbound Qty 100; 10 Stock ID (1 per koli) |
-| Colli = 0 | Isi qty manual 40 | Satu alur non-COLLI seperti biasa |
-| Job COLLI gagal | Lihat notifikasi | Status Open → Approve ulang |
+| 3 SKU, New Colli type Box | Save | Satu kode COL; 3 baris terikat |
+| Existing COL di gudang lain | Pilih Existing | Ditolak |
+| Hapus inbound draft; COL baru tidak dipakai lain | Delete | COL hilang dari daftar |
+| Baris tanpa colli | Skip assign | OK |
 
 ## Lihat juga
 
 - [Bulk Use / Single Use](#sf-lingo:SF-DET-01)
 - [Import Excel](#sf-lingo:SF-IMP-01)
-- Knowledge Base: [§4 Fitur COLLI](../knowledge-base.md)
+- Knowledge Base: [§4 Colli v2](../knowledge-base.md)
+- Colli Type: [../supplychain-colli-type/](../supplychain-colli-type/)

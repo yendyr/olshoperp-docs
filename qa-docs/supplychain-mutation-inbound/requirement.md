@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-mutation-inbound
 menu_name: "Purchase Inbound"
-version: 1.1
-last_updated: 2026-07-04
+version: 1.2
+last_updated: 2026-08-14
 owner: QA - Yemima
 status: draft
 ---
@@ -13,9 +13,9 @@ status: draft
 > **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
 
 
-**Modul:** SupplyChain  
-**Audience:** PM, Operations, QA, Support, Developer  
-**Status:** Sesuai perilaku sistem saat ini (AS-IS)
+> **Canonical GRN + Colli v2:** [BETA - New Purchase Inbound requirement](../supplychain-new-purchase-inbound/requirement.md) v2.4. Folder ini = UI legacy + **parity note** — jangan duplikasi AC penuh.
+
+**Colli v2 (parity):** Existing/New + Colli Type; satu kode = wadah multi-SKU di WH destination exact; colli opsional; maks 1 per baris; availability setelah Approve; import 1 kolom. Void × colli deferred. Detail + contoh T01–T10: requirement BETA §8.
 
 ---
 
@@ -25,6 +25,7 @@ status: draft
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
 | 1.1 | 2026-07-04 | QA - Yemima | Cross-reference Relasi Master Unit; pointer ke Other Inbound / Assembly |
+| 1.2 | 2026-08-14 | QA - Yemima | Pointer Colli v2 parity (canonical di BETA) |
 
 ## 1. Ringkasan Eksekutif
 
@@ -95,7 +96,7 @@ Validasi gudang tujuan level ≤20 (smallest warehouse). Blok jika import detail
 
 ## 6. Relasi Menu
 
-Menu terkait: **supplychain-purchase-order, supplychain-new-purchase-inbound, accounting-supplier-invoice, [Other Inbound](../supplychain-other-inbound/), [Master Unit](../supplychain-unit/)**.
+Menu terkait: **supplychain-purchase-order, supplychain-new-purchase-inbound, supplychain-colli-type, accounting-supplier-invoice, [Other Inbound](../supplychain-other-inbound/), [Master Unit](../supplychain-unit/)**.
 
 > **Catatan:** Penerimaan stok **tanpa supplier** (hasil Assembly, dll.) bukan scope menu ini — lihat [Other Inbound](../supplychain-other-inbound/requirement.md). Assembly auto-generate Other Inbound via `WorkOrderApprovalJob`, bukan Purchase Inbound.
 
@@ -128,7 +129,7 @@ Menu terkait: **supplychain-purchase-order, supplychain-new-purchase-inbound, ac
 
 - SCM Stock Deduction: route approve tidak terdaftar di SupplyChain Routes — approve hanya via Accounting.
 - SCM Stock Addition: tombol approve disembunyikan di `menu=scm`; verifikasi E2E dengan Accounting.
-- Middle detail (inbound/outbound/transfer): behavior async approve perlu test terpisah.
+- Middle detail (inbound/outbound/transfer): Colli ID v1 async — takedown; Colli v2 GAP-CIV2-03.
 
 ## Related Documents
 
@@ -136,4 +137,6 @@ Menu terkait: **supplychain-purchase-order, supplychain-new-purchase-inbound, ac
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| Canonical BETA | [../supplychain-new-purchase-inbound/requirement.md](../supplychain-new-purchase-inbound/requirement.md) |
+| Colli Type | [../supplychain-colli-type/requirement.md](../supplychain-colli-type/requirement.md) |
 | Manifest | [../_meta/manifest.yaml](../_meta/manifest.yaml) |

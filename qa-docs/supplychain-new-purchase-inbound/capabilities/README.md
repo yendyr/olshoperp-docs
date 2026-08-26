@@ -1,9 +1,9 @@
 ---
 doc_type: menu-capability-index
 menu: supplychain-new-purchase-inbound
-version: 1.0
-last_updated: 2026-07-28
-status: draft
+version: 1.1
+last_updated: 2026-08-14
+status: review
 ---
 
 # Purchase Inbound (GRN) — Capability cards
@@ -16,7 +16,7 @@ Struktur body: **Apa ini** → **Kapan dipakai** → **Cara pakai** → **Catata
 |----|------|--------------|
 | SF-DET-01 | [sf-det-01-bulk-single-use.md](./sf-det-01-bulk-single-use.md) | detailed + contoh |
 | SF-DET-02 | [sf-det-02-allocate-full-qty.md](./sf-det-02-allocate-full-qty.md) | detailed |
-| SF-INB-01 | [sf-inb-01-colli-group-view.md](./sf-inb-01-colli-group-view.md) | detailed + contoh |
+| SF-INB-01 | [sf-inb-01-colli-group-view.md](./sf-inb-01-colli-group-view.md) | detailed + contoh (Colli v2) |
 | SF-INB-02 | [sf-inb-02-partial-receiving.md](./sf-inb-02-partial-receiving.md) | detailed + contoh |
 | SF-INB-03 | [sf-inb-03-service-fix-asset-inventory.md](./sf-inb-03-service-fix-asset-inventory.md) | detailed |
 | SF-IMP-01 | [sf-imp-01-import-excel.md](./sf-imp-01-import-excel.md) | detailed |

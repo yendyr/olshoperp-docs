@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-mutation-inbound
 menu_name: "Purchase Inbound"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-08-14
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -43,6 +43,8 @@ flowchart TB
 ```
 
 **Approve flow:** POST `mutation-inbound/{id}/approve` → `ItemStockMutation::approveInbound()` — update item stock, QC/inspection jika ada, set `transaction_status = approved`.
+
+**Colli v2 (parity BETA):** FE `InventoryIn/**`; FK `multisku_colli_id` on details + item_stocks; entity `MultiskuColli` (`COL`). Takedown `InboundColly` / import v1. Canonical: [BETA technical](../supplychain-new-purchase-inbound/technical.md) §8 + invariants INV-INB-08…14.
 
 ## 2. Frontend File Map
 
@@ -136,4 +138,6 @@ Detail nested: `supplychain/mutation-inbound/{id}/...-detail` — lihat `Modules
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Requirement | [requirement.md](./requirement.md) |
+| Canonical BETA | [../supplychain-new-purchase-inbound/technical.md](../supplychain-new-purchase-inbound/technical.md) |
+| Colli Type | [../supplychain-colli-type/technical.md](../supplychain-colli-type/technical.md) |
 | Mermaid style | [../_meta/MERMAID_STYLE_GUIDE.md](../_meta/MERMAID_STYLE_GUIDE.md) |

@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 2.3
-last_updated: 2026-07-23
+version: 2.4
+last_updated: 2026-08-14
 owner: QA - Yemima
 status: review
-aliases: [GRN, goods receipt, purchase inbound, barang masuk, COLLI, receiving]
+aliases: [GRN, goods receipt, purchase inbound, barang masuk, COLLI, colli v2, receiving]
 ---
 
 # Purchase Inbound (GRN) — Knowledge Base
@@ -15,7 +15,7 @@ aliases: [GRN, goods receipt, purchase inbound, barang masuk, COLLI, receiving]
 **Path:** Supply Chain → Inbound → **BETA - New Purchase Inbound** (`/supplychain/new-purchase-inbound`)  
 **Prefix dokumen:** `IN-`
 
-> Menu **Purchase Inbound** lama memakai backend yang sama — UI berbeda; BETA punya fitur **COLLI**.
+> Menu **Purchase Inbound** lama memakai backend yang sama. **Aturan Colli v2 identik** di kedua UI. Master jenis wadah: [Colli Type](../supplychain-colli-type/knowledge-base.md).
 
 ---
 
@@ -44,7 +44,7 @@ Setelah PO disetujui dan barang datang, buat GRN untuk mencatat penerimaan.
 flowchart TD
     A["Inbound → BETA New Purchase Inbound → Create"] --> B["Isi Supplier, Gudang, Tanggal"]
     B --> C["Outstanding PO\nBulk / Single Use"]
-    C --> D["Cek qty / batch / serial\n(+ COLLI opsional)"]
+    C --> D["Cek qty / batch / serial\n(+ Colli v2 opsional)"]
     D --> E["Approve"]
     E --> F["Stok + jurnal\nPO Processed/Complete"]
     F --> G["Purchase Invoice"]
@@ -55,24 +55,43 @@ flowchart TD
 - **Create:** Supplier hanya yang punya PO outstanding; gudang = fisik tanpa sub-gudang; tanggal ≤ hari ini + periode fiskal aktif.
 - **Outstanding PO:** Bulk Use (banyak baris, qty = sisa), Single Use (detail batch/serial/expired), atau Select Product.
 - **Keranjang:** qty tidak boleh melebihi sisa PO. Setelah ada detail, supplier/gudang/tanggal terkunci.
-- **COLLI (opsional):** Group view → isi jumlah koli + isi per koli; qty inbound otomatis. Tanpa COLLI (0) → isi qty manual.
-- **Approve:** stok + jurnal. PO partial → Processed; semua baris penuh → Complete.
+- **Colli v2 (opsional):** assign **Existing** (kode di WH yang sama) atau **New** (kode `COL` baru + jenis dari Colli Type). Qty penerimaan **tidak berubah**. Tanpa colli = boleh.
+- **Approve:** stok + jurnal. Qty di dalam colli baru bermakna setelah Approve. PO partial → Processed; semua baris penuh → Complete.
 - **Lanjut:** tagih di Purchase Invoice (termasuk PPN).
 
 ---
 
-## 4. Fitur COLLI (kemasan koli)
+## 4. Fitur Colli v2 (wadah multi-SKU)
 
-Untuk barang dikemas per **koli** (box/pallet):
+Satu **kode colli** (awalan `COL`) = satu wadah (box/pallet) yang bisa berisi **banyak SKU** di **satu gudang tujuan** (lokasi terkecil, harus sama persis). Bukan lagi “jumlah koli × isi → banyak Stock ID”.
 
-1. Aktifkan **Group view** di detail.
-2. Isi **jumlah koli** dan **isi per koli** — Inbound Qty otomatis = koli × isi.
-3. Isi per koli sering terisi dari transaksi terakhir SKU yang sama (atau 1 jika melebihi sisa).
-4. Saat Approve — sistem buat **1 Stock ID per koli** (background job).
-5. Pantau **Item Stock Status** di daftar (% progress).
-6. Jika gagal → notifikasi → status kembali Open → **Approve ulang**.
+| Mode | Kapan | Syarat |
+|------|--------|--------|
+| **Existing Colli** | Pakai kode yang sudah ada | Hanya colli di **gudang yang sama** dengan header |
+| **New Colli** | Buat kode baru | Pilih **Colli Type** Active; type Default biasanya sudah terpilih |
+| **Tanpa colli** | Baris biasa | Boleh — colli tidak wajib |
 
-**Tanpa COLLI (colli = 0):** input Inbound Qty manual seperti biasa.
+**Cara assign (setelah baris ada):**
+
+1. Centang beberapa SKU → toolbar **Existing** atau **New** + Type → **Save** (banyak SKU masuk **satu** colli).
+2. **Bulk Use** di Outstanding: isi Colli lalu **Use** — banyak SKU satu colli.
+3. **Single Use:** field Colli setelah Serial, sebelum Description → **Save**.
+
+**Siklus kode colli:**
+
+- Baru dibuat, inbound belum Approve → masih bisa **hilang** jika semua inbound draft yang memakai kode itu dihapus.
+- Setelah **minimal satu** inbound Approved memakai colli itu → kode **permanen**.
+- Reject lalu hapus (belum pernah Approve) = sama seperti hapus draft.
+
+**Contoh:**
+
+| Situasi | Hasil |
+|---------|--------|
+| 3 SKU, New Colli type Box | Satu kode COL baru; 3 baris terikat |
+| Existing COL di gudang lain | Ditolak |
+| Hapus inbound draft; COL baru tidak dipakai lain, belum Approve | COL hilang dari daftar |
+| Baris tanpa colli | OK |
+| Satu baris dua colli | Tidak boleh |
 
 ---
 
@@ -84,7 +103,7 @@ Untuk barang dikemas per **koli** (box/pallet):
 | **Approve** | Post stok + jurnal (hanya Open) |
 | **Reject** | Tolak dokumen Open |
 | **Delete** | Hapus draft/open (kembalikan qty reserved di PO) |
-| **Export / Import** | Excel (standard atau template colli) |
+| **Export / Import** | Excel; TO-BE satu kolom Colli (numbering / kode existing) |
 | **Print / Print RIR** | PDF GRN / Receiving Inspection Report |
 | **Allocate Full Qty** | Ambil sisa PO penuh (modal) — bantu selisih desimal unit |
 
@@ -93,9 +112,9 @@ Untuk barang dikemas per **koli** (box/pallet):
 ## 6. Import Excel
 
 - **Standard** — PO, SKU, Qty, Unit (+ batch/serial/expired)
-- **Colli** — template colli (qty = koli × isi)
+- **Colli v2 (TO-BE):** satu kolom **Colli** — numbering sama di banyak baris = satu New Colli; isi kode yang sudah ada = Existing (gudang harus sama); kosong = tanpa colli
 
-Aturan: PO approved, SKU ada di PO, qty ≤ sisa, supplier cocok.
+Aturan: PO approved, SKU ada di PO, qty ≤ sisa, supplier cocok. Template lama (koli × isi) akan diganti.
 
 ---
 
@@ -122,8 +141,11 @@ Aturan: PO approved, SKU ada di PO, qty ≤ sisa, supplier cocok.
 | Qty exceed outstanding | Input > sisa PO | Kurangi qty / cek GRN lain |
 | Approve: no detail | Keranjang kosong | Tambah baris dari outstanding |
 | Approve: COA error | Product COA Group incomplete | Lengkapi akun produk + Unbilled Goods |
-| COLLI stuck loading | Background job | Tunggu / cek Item Stock Status; re-approve jika error |
-| Cannot delete detail | Sudah linked colli | Hapus/edit colli dulu |
+| Existing colli tidak muncul | Colli di gudang lain | Samakan Location Destination (WH terkecil) |
+| Colli hilang setelah hapus inbound | Belum pernah Approve + tidak dipakai inbound lain | Normal — buat New Colli lagi jika perlu |
+| Colli masih ada setelah hapus | Masih dipakai inbound lain, atau sudah pernah Approve | Jangan hapus colli lewat hapus inbound Approved |
+| Type kosong di New Colli | Belum ada Colli Type Active / Default | Isi master Colli Type dulu |
+| Job approve v1 stuck (AS-IS sampai takedown) | Background koli lama | Tunggu / Item Stock Status; re-approve jika error |
 | PO sudah closed | Sisa di-close manual | Tidak bisa inbound sisa |
 | Void tidak jalan | Fitur belum berfungsi | Hubungi admin/dev |
 
@@ -132,7 +154,16 @@ Aturan: PO approved, SKU ada di PO, qty ≤ sisa, supplier cocok.
 ## 9. FAQ
 
 **Q: Beda BETA vs Purchase Inbound lama?**  
-A: BETA punya **COLLI** + UI baru. Backend sama.
+A: UI berbeda; backend sama. **Colli v2** aturannya sama di kedua menu.
+
+**Q: Wajib pakai colli?**  
+A: Tidak.
+
+**Q: Kapan colli tidak terhapus?**  
+A: Setelah minimal satu inbound yang memakai colli itu **Approved**.
+
+**Q: Colli v2 vs Colli ID lama?**  
+A: Lama = pecah Stock ID per koli per SKU. Baru = satu kode wadah banyak SKU di satu lokasi.
 
 **Q: Partial receiving?**  
 A: Ya — beberapa GRN per PO sampai qty penuh.
@@ -164,3 +195,5 @@ A: Tidak.
 | Technical | [technical.md](./technical.md) |
 | Purchase Order | [../supplychain-purchase-order/knowledge-base.md](../supplychain-purchase-order/knowledge-base.md) |
 | Purchase Invoice | [../accounting-supplier-invoice/knowledge-base.md](../accounting-supplier-invoice/knowledge-base.md) |
+| Colli Type | [../supplychain-colli-type/knowledge-base.md](../supplychain-colli-type/knowledge-base.md) |
+| Legacy UI | [../supplychain-mutation-inbound/knowledge-base.md](../supplychain-mutation-inbound/knowledge-base.md) |

@@ -2,128 +2,153 @@
 doc_type: knowledge-base
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 1.0
-last_updated: 2026-06-23
+version: 2.0
+last_updated: 2026-08-24
 owner: QA - Yemima
-status: draft
-audience: operator
-sections:
-  core: [what-is, glossary, can-cannot, faq, help]
-  modular: [status-badge, how-to, troubleshooting]
+status: review
+aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, piutang]
 ---
 
-# Sales Invoice — Knowledge Base
+# Sales Invoice — Knowledge Base (Operator)
 
-> **DRAFT** — Dokumentasi AS-IS dari codebase (19 Juni 2026). Belum final review QA/PM.
+**Audience:** Finance AR, sales admin, support  
+**Route:** Accounting → Sales Invoice (`/accounting/customer-invoice`)  
+**Kode dokumen:** diawali **SI**
+
+---
 
 ## 1. Apa itu Sales Invoice?
 
-**Sales Invoice** (Faktur Penjualan) mencatat tagihan kepada pelanggan atas penjualan barang/jasa. Invoice approved menjadi **piutang** di buku besar dan dapat dialokasikan di menu **Account Receive**.
+Sales Invoice (SI) adalah dokumen **tagihan ke pelanggan**. Dari sini sistem mencatat **piutang** dan **penjualan** (plus PPN / biaya / diskon lain jika ada).
 
-**Menu:** FA → Account Receivable → Sales Invoice (`/accounting/customer-invoice`)
+- **Customer General:** buat SI dari Sales Order General yang sudah approved, lalu Approve.
+- **Customer platform:** SI biasanya muncul otomatis dari **Instant Settlement** — biasanya hanya bisa dilihat (tidak reject/hapus seperti SI biasa).
 
-Nomor transaksi otomatis dengan prefix **SI** (contoh: `SI-2026-00001`).
+Setelah SI **Approved**, lanjut pelunasan di **Account Receive**.
 
-## 2. Glosarium
+---
 
-| Istilah | Arti |
-|---------|------|
-| SI | Prefix kode Sales Invoice |
-| AR / Piutang | Account Receivable — saldo yang belum dibayar pelanggan |
-| Outstanding SO | Baris Sales Order yang belum/sebagian di-invoice |
-| General customer | Pelanggan master (`Company` sebagai customer) — `type_customer = general` |
-| Platform customer | Invoice dari toko marketplace — `type_customer = platform`, `store_id` terisi |
-| Other Cost / Other Discount | Biaya atau diskon tambahan di level header invoice |
-| Instant Settlement | Upload settlement yang menghasilkan invoice platform otomatis |
+## 2. Kapan dipakai?
 
-## 3. Yang Bisa / Tidak Bisa Dilakukan
+| ✅ Buat / proses SI jika | ❌ Jangan jika |
+|--------------------------|----------------|
+| Ada SO General approved dengan sisa belum ditagih | Mau tagih order marketplace lewat Create manual |
+| AR COA customer/store & Sales COA produk sudah siap | COA belum lengkap — Approve akan gagal |
+| Periode fiskal tanggal SI masih terbuka | Periode tutup |
+| Import saldo awal SO General | Import order platform / SO sudah full di-invoice |
 
-### Bisa
+---
 
-- Buat invoice manual (Draft/Open) untuk customer aktif
-- Tambah baris dari **outstanding Sales Order detail** (`SalesOrderDetail`)
-- Tambah other cost & other discount
-- Simpan lampiran (attachment)
-- Submit approval multi-level (sesuai eligibility user/posisi)
-- Approve → generate **journal otomatis** (tipe Sales Invoice)
-- Export Excel (dengan/tanpa detail), import Excel (template)
-- Print invoice
-- Void / reject (sesuai status & permission)
-
-### Tidak Bisa
-
-- Edit header/detail setelah **Approved** (kecuali void flow)
-- Ubah customer, currency, exchange rate, atau tanggal jika sudah ada baris detail
-- Reject invoice **platform** (dari settlement) — sistem menolak reject
-- Approve tanpa minimal 1 baris detail (kecuali flag internal `allow_empty_detail`)
-- Transaksi di luar **fiscal period** aktif
-
-## 4. Status transaksi
+## 3. Alur kerja standar (General)
 
 ```mermaid
-flowchart LR
-    D[Draft] --> O[Open]
-    O --> A[Approved]
-    O --> R[Rejected]
-    R --> D
-    A --> V[Void]
+flowchart TD
+    A["Sales Invoice → Create"] --> B["Cek header customer / tanggal / kurs"]
+    B --> C["Use Outstanding SO\n(per SKU atau per SO)"]
+    C --> D["Opsional Other Cost / Discount"]
+    D --> E["Status Open → Save"]
+    E --> F["Approve"]
+    F --> G["Jurnal + piutang\n→ Account Receive"]
 ```
 
-| Status | Arti untuk operator |
-|--------|---------------------|
-| Draft | Masih diedit; belum siap approval |
-| Open | Siap diajukan / di-approve |
-| Approved | Final — piutang tercatat, journal terbentuk |
-| Rejected | Ditolak; bisa diedit lalu submit ulang |
-| Void | Dibatalkan setelah approved |
+**Langkah teks:**
 
-## 5. Cara Pakai (How-To)
+1. **Create** — sistem sering mengisi customer/kurs dari SI terakhir; tanggal = hari ini.
+2. **Tambah barang** dari Outstanding SO (satu SKU penuh sisa, atau semua sisa satu SO).
+3. Status **Open** + Save (jika masih Draft).
+4. **Approve** — stok qty “sudah di-invoice” di SO naik; jurnal piutang + penjualan terbit.
+5. Tagih bayar di **Account Receive**.
 
-### Skenario: Invoice dari Sales Order
+> AS-IS: Create baru biasanya masuk **Draft** dulu — pilih **Open** sebelum Approve. (Target nanti: Create langsung Open.)
 
-1. **Create** → isi customer, tanggal, currency, due date
-2. Tab **Item Configuration** → pilih outstanding SO (per baris atau group)
-3. Pastikan qty/price sesuai; simpan baris
-4. (Opsional) Other Cost / Other Discount
-5. Ubah status ke **Open** jika masih Draft
-6. **Approve** — cek eligibility approver; isi keterangan jika perlu
-7. Setelah approved, cek **Journal** (auto) dan lanjut **Account Receive** saat pelanggan bayar
+---
 
-### Skenario: Import Excel
+## 4. Partial invoice — yang perlu dipahami
 
-1. Download template dari datalist
-2. Upload file → pantau progress & import log
-3. Review invoice yang terbentuk → approve seperti biasa
+- Satu SO boleh punya **beberapa SI**.
+- Dari tombol Use: sistem mengambil **seluruh sisa** baris SKU itu — **tidak** bisa isi “5 dari 10” di UI.
+- Boleh tagih SKU-A dulu (penuh 10), SKU-B di SI berikutnya.
 
-## 6. Troubleshooting
+**Contoh:** SO-001: SKU-A 10 pcs, SKU-B 10 pcs → SI-1 Use SKU-A saja → qty 10. SKU-B tetap outstanding.
 
-| Gejala | Penyebab umum | Solusi |
-|--------|---------------|--------|
-| Approve gagal: AR COA | Customer/store belum punya Account Receivable COA | Konfigurasi COA di master customer/store |
-| Approve gagal: no detail | Belum ada baris item | Tambah baris dari SO atau manual |
-| Tidak bisa ubah customer | Sudah ada detail | Hapus detail dulu atau buat invoice baru |
-| Invalid rate | Currency utama tapi rate ≠ 1 | Set exchange rate = 1 untuk primary currency |
-| Fiscal period error | Tanggal di luar periode aktif | Ubah tanggal atau buka fiscal period |
-| Platform invoice tidak bisa reject | Rule bisnis platform | Hubungi admin; void/alur settlement |
+---
 
-## 7. FAQ
+## 5. Status singkat
 
-**Q: Dari mana baris invoice?**  
-A: Umumnya dari **Sales Order Detail** yang masih outstanding (`prepared_to_invoice_quantity` / `processed_to_invoice_quantity`).
+| Status | Arti | Bisa edit? |
+|--------|------|------------|
+| Draft | Belum siap approve | Ya |
+| Open | Siap Approve / Reject | Ya |
+| Approved | Terkunci; sudah ada jurnal & piutang | Tidak (lihat saja) |
+| Rejected | Ditolak — setelah Save edit biasanya jadi **Draft** lagi | Ya |
 
-**Q: Kapan journal dibuat?**  
-A: Saat **approve** berhasil — `JournalProcess::customerInvoiceAutoJournal`.
+**Platform:** tidak bisa Reject / Delete dari UI normal.
 
-**Q: Apa beda general vs platform customer?**  
-A: General memakai master customer; platform memakai **store** marketplace dan sering terhubung **Instant Settlement**.
+---
 
-**Q: Hubungan dengan pembayaran?**  
-A: Invoice approved muncul di **Account Receive** sebagai outstanding invoice untuk dialokasi pembayaran.
+## 6. Import Excel (saldo awal)
 
-**Q: Hubungan dengan Instant Settlement?**  
-A: Upload settlement bisa **generate SI otomatis** per order. Cek selisih di panel settlement (**Difference Settlement-SI**). SI manual tetap bisa dibuat terpisah; AR manual pada SI mempengaruhi Approve settlement (Smart AR).
+Template **3 kolom:** Transaction Date · Order Number · Platform Order ID.
 
-Detail: [Instant Settlement](../accounting-settlement-upload/requirement.md)
+- Isi **salah satu** Order Number **atau** Platform Order ID (jangan keduanya kosong / keduanya terisi).
+- Hanya **SO General/internal**. Platform ditolak.
+- Hasil import: SI status **Open** — **belum** Approve, jurnal belum dari proses import.
+- Satu baris rusak → **seluruh** import gagal.
+
+---
+
+## 7. Tombol & aksi
+
+| Tombol | Fungsi |
+|--------|--------|
+| Create | SI baru (auto-save dari last saved) |
+| Approve | Post jurnal + kunci dokumen (hanya Open) |
+| Reject | Tolak Open (bukan platform) |
+| Delete | Hapus draft/open/rejected non-platform |
+| Import / Export | Excel + log |
+| Print | Semua status |
+
+---
+
+## 8. Troubleshooting
+
+| Gejala | Cek / tindakan |
+|--------|----------------|
+| Tidak bisa Approve dari Draft | Ubah status ke **Open** dulu |
+| Outstanding kosong | SO belum approved, atau sisa sudah full prepared/processed |
+| Approve gagal COA | AR Company/Store + Sales COA produk + Tax sales |
+| SI platform tidak bisa hapus/reject | Normal — dari platform |
+| Import gagal semua | Satu baris invalid menggagalkan batch; cek log |
+| Rejected jadi Draft setelah Save | Normal — set Open lagi lalu Approve |
+
+---
+
+## 9. FAQ
+
+**Q: Beda SI manual vs Instant Settlement?**  
+A: Manual = SO General. Platform = dari settlement; sering auto-approved & terbatas edit.
+
+**Q: Wajib Other Cost?**  
+A: Tidak.
+
+**Q: Kapan jurnal muncul?**  
+A: Saat SI **Approve** (bukan saat import berhenti di Open).
+
+**Q: Customer Create dari mana?**  
+A: Company General as customer + AR COA + SO outstanding — bukan store platform.
+
+---
+
+## Kamus singkat
+
+| Istilah | Awam |
+|---------|------|
+| Prepared to invoice | Qty sudah masuk SI belum approved |
+| Processed to invoice | Qty sudah di SI approved |
+| Net Sales | Total tagihan (setelah VAT & other cost/disc) |
+| Instant Settlement | Upload settle marketplace yang otomatis bikin SI |
+
+---
 
 ## Related Documents
 
@@ -131,3 +156,6 @@ Detail: [Instant Settlement](../accounting-settlement-upload/requirement.md)
 |-----|------|
 | Requirement | [requirement.md](./requirement.md) |
 | Technical | [technical.md](./technical.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
+| Account Receive | [../accounting-customer-payment/knowledge-base.md](../accounting-customer-payment/knowledge-base.md) |
+| Credit Note | [../accounting-credit-note/knowledge-base.md](../accounting-credit-note/knowledge-base.md) |
