@@ -117,6 +117,17 @@ function titleTokens(title) {
       .filter((w) => w.length > 2 && !STOPWORDS.has(w)),
   );
 }
+/** Kata bermakna dalam sebuah catatan — dipakai membandingkan notes vs expected. */
+function words(t) {
+  return new Set(
+    (t || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length > 3),
+  );
+}
+
 function similarity(a, b) {
   if (!a.size || !b.size) return 0;
   let shared = 0;
@@ -282,28 +293,45 @@ for (const file of walkTcFiles(qaDocs)) {
         // `notes` harus ACTUAL result. Kalau isinya cuma mengulang expected_result,
         // artinya tidak ada informasi baru — penguji tidak benar-benar melaporkan apa
         // yang terjadi, atau agent mengarang dari expected.
-        const words = (t) =>
-          new Set(
-            (t || '')
-              .toLowerCase()
-              .replace(/[^a-z0-9\s]/g, ' ')
-              .split(/\s+/)
-              .filter((w) => w.length > 3),
-          );
         const n = words(le.notes);
         const e = words(fm.expected_result);
         if (n.size >= 3 && e.size) {
           let shared = 0;
           for (const w of n) if (e.has(w)) shared++;
           if (shared / n.size >= 0.6) {
-            errors.push(
-              `\`notes\` cuma mengulang expected_result: ${rel} →` +
+            warnings.push(
+              `\`notes\` mirip sekali dengan expected_result: ${rel} →` +
                 ` notes harus ACTUAL result (apa yang BENAR-BENAR terjadi: pesan persis,` +
-                ` nilai yang muncul), bukan salinan yang diharapkan. Kalau penguji tidak` +
-                ` menyebutkannya, TANYAKAN — jangan diisi sendiri`,
+                ` idealnya notes berisi apa yang BENAR-BENAR terlihat (pesan persis,` +
+                ` nilai yang muncul). Kalau memang tidak ada revisi dari expected, abaikan.`,
             );
           }
         }
+        // Status card Jira BUKAN bukti pengujian (rule 12). Pola "Card X Done" sebagai
+        // isi notes berarti tidak ada satu pun perilaku yang benar-benar diamati.
+        const CARD_AS_PROOF =
+          /^\s*(card\s+)?[A-Z]{2,}-\d+\s*(sudah\s+)?(done|closed|selesai|resolved)\s*\.?\s*$/i;
+        if (le.notes && CARD_AS_PROOF.test(le.notes)) {
+          errors.push(
+            `Status card dipakai sebagai bukti lulus: ${rel} (notes: "${le.notes}") →` +
+              ` card Done = pekerjaan selesai, BUKAN pengujian terbukti (rule 12).` +
+              ` Tulis apa yang benar-benar diamati saat TC ini dijalankan, atau kembalikan` +
+              ` ke status: not_run dan tanyakan hasilnya ke penguji`,
+          );
+        } else if (le.notes && words(le.notes).size < 5) {
+          errors.push(
+            `\`notes\` terlalu tipis untuk jadi actual result: ${rel} (notes: "${le.notes}") →` +
+              ` sebutkan yang teramati (pesan/nilai/kondisi layar), bukan satu frasa status`,
+          );
+        }
+        if (/^manual:\s*(qa|tim|team|all|semua)\b/i.test(le.via ?? '')) {
+          warnings.push(
+            `Penguji manual tidak spesifik: ${rel} (via: "${le.via}") —` +
+              ` "${le.via.split(':')[1]?.trim()}" bukan orang. Kalau TC ini gagal, tidak ada` +
+              ` yang bisa ditanya`,
+          );
+        }
+
         // `jira` di last_execution = card untuk run INI, bukan asal-usul TC.
         if (le.jira && le.jira !== 'null' && le.jira === fm.origin_jira) {
           warnings.push(

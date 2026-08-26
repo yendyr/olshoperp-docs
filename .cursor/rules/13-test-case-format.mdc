@@ -173,10 +173,10 @@ last_execution:
 >   perapian. Bukti yang kabur tidak bisa dipakai membedakan lulus sungguhan dari
 >   lulus yang kebetulan.
 >
-> **Jangan pernah menebak identitas penguji.** Prompter yang bilang "aku jalankan manual"
-> belum tentu pemilik repo — repo ini dipakai beberapa anggota QA, dan tiap orang punya
-> sesi agent sendiri. **Tanyakan namanya.** `via: manual:{Nama}` yang salah orang lebih
-> buruk daripada tidak ada, karena saat TC gagal, yang ditanya jadi orang yang keliru.
+> **`via: manual:{Nama}` harus menunjuk ORANG.** Menyimpulkan nama penguji dari prompter
+> boleh — biasanya memang dia yang menjalankan. Yang tidak boleh adalah label kolektif
+> (`manual:QA - Team`, `manual:Tim`): kalau TC-nya gagal, tidak ada yang bisa ditanya.
+> Lint memperingatkan pola ini.
 >
 > **`last_execution.jira` bukan `origin_jira`.** Jangan menyalin asal-usul TC ke situ.
 > Kalau run ini tidak untuk card tertentu, isi `null`.

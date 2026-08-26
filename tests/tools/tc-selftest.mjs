@@ -118,12 +118,14 @@ const CASES = [
       status: 'not_run', via: 'null', notes: '"nyelundup"' } }) },
     expect: 'menyimpang' },
 
-  { name: 'notes yang cuma mengulang expected_result ditolak',
+  // Keputusan Yemima 2026-08-27: alur timnya me-review expected lewat test plan dulu,
+  // jadi notes yang mengikuti expected itu wajar. Diperingatkan, TIDAK memblokir.
+  { name: 'notes mirip expected_result hanya diperingatkan, tidak memblokir',
     files: { 'TC-SELF-001.md': render({
       expected_result: '"Save diblok. Code dan Name kosong wajib diisi required."',
       last_execution: { at: '"2026-08-26"', jira: 'null', status: 'passed',
         via: '"manual:QA - Jeiniffer"', notes: '"Save diblok, Code dan Name kosong required."' } }) },
-    expect: 'cuma mengulang expected_result' },
+    expect: null },
 
   { name: 'notes berisi actual result nyata diterima',
     files: { 'TC-SELF-001.md': render({
@@ -132,6 +134,16 @@ const CASES = [
         via: '"manual:QA - Jeiniffer"',
         notes: '"Toast merah muncul di kanan atas, tetap di halaman /create, tombol Save nonaktif 2 detik."' } }) },
     expect: null },
+
+  { name: 'status card Jira dipakai sebagai bukti lulus ditolak',
+    files: { 'TC-SELF-001.md': render({ last_execution: { at: '"2026-08-26"', jira: '"ETM-15526"',
+      status: 'passed', via: '"manual:QA - Team"', notes: '"Card ETM-15526 Done."' } }) },
+    expect: 'Status card dipakai sebagai bukti' },
+
+  { name: 'notes satu frasa status ditolak (terlalu tipis)',
+    files: { 'TC-SELF-001.md': render({ last_execution: { at: '"2026-08-26"', jira: 'null',
+      status: 'passed', via: '"manual:QA - Jeiniffer"', notes: '"Sudah oke."' } }) },
+    expect: 'terlalu tipis' },
 
   { name: 'tc_code duplikat',
     files: { 'TC-SELF-001.md': render(), 'TC-SELF-001b.md': render({ title: '"Selftest — kembaran"' }) },
