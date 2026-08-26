@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TAX-001
 menu: accounting-tax
 menu_name: "Tax"
+test_type: happy
 title: "VIEW — buka datalist Tax"
 summary: "Load /accounting/tax; verifikasi Create + kolom code/Name/Tariff."
 status: draft

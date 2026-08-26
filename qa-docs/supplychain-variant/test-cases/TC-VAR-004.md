@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-VAR-004
 menu: supplychain-variant
 menu_name: "Master Variant"
+test_type: edge
 title: "Create Default Variant ON + 1 opsi — save tanpa inject random"
 summary: "Create Variant Group dengan Default ON dan satu Option Name tersimpan tanpa opsi random."
 status: draft

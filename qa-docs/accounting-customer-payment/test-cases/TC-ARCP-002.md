@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCP-002
 menu: accounting-customer-payment
 menu_name: Account Receive
+test_type: negative
 title: Single use — Save tanpa paid amount ditolak
 summary: Sub-modal alokasi tanpa amount → error validasi, detail tidak terinsert
 status: review

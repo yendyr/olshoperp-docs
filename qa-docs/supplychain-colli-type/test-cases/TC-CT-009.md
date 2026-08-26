@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-009
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: happy
 title: "Delete Colli Type yang belum dipakai — soft delete dan Show deleted already deleted"
 summary: "Type tanpa Multisku Colli bisa dihapus; Show deleted menampilkan baris already deleted."
 status: draft

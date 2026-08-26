@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-023
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Import New — skip auto-default karena SKU dipakai sebagai Parent di row lain"
 summary: "Row parent + child merefer Parent. SKU parent-used tidak di-auto-default."
 status: draft

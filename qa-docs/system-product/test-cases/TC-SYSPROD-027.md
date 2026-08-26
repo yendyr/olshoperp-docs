@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-027
 menu: system-product
 menu_name: "System Product"
+test_type: happy
 title: "Import Update Product — Default Variant sudah persist, update field saja"
 summary: "Update Product (bukan New, bukan Update Variant). Ubah name/price child atau parent. Tree Default dan Stock ID tidak boleh berubah."
 status: draft

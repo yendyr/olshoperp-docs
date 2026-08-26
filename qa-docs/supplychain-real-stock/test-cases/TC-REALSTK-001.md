@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-REALSTK-001
 menu: supplychain-real-stock
 menu_name: "Real Time Stock"
+test_type: happy
 title: "Buka Real Time Stock — shell By Location"
 summary: "Load report; verifikasi tab By Location/By SKU + filter warehouse Multiselect; tanpa Create; data belum load sampai warehouse dipilih."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-011
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: permission
 title: "Show for all company ON di company A — company B tidak melihat data jika Show Public Data OFF"
 summary: "Colli Type public milik A tidak muncul di datalist B selama B tidak allow data dari A di Internal Company Show Public Data."
 status: draft

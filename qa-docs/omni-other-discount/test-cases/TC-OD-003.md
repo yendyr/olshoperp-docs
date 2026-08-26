@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-OD-003
 menu: omni-other-discount
 menu_name: "Other Discount"
+test_type: happy
 title: "UPDATE — Name + Description"
 summary: "Edit by Code; ubah Name; Description = automation playwright; Save All."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-003
 menu: omni-sales-platform
 menu_name: "Platform Sales Order"
+test_type: happy
 title: "Memastikan Visibility, Counter & Posisi Pill Button Net Sales < COGS di Sales Platform"
 summary: "Verifikasi tombol pill Net Sales < COGS muncul di urutan ke-4, berstatus warning (kuning), dan counter menampilkan jumlah SO platform under COGS yang akurat di company FAT."
 status: draft

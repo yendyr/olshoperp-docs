@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-013
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "OFF Enable Variations — Default sudah Save, zero relation, cek identitas SKU"
 summary: "Parent SKU-(PARENT) + child = SKU user sudah persist, belum stok/trx. OFF+Save tidak boleh meninggalkan Single palsu atau menghapus SKU user."
 status: draft

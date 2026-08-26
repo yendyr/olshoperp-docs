@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-VAR-007
 menu: supplychain-variant
 menu_name: "Master Variant"
+test_type: edge
 title: "Mutual exclusive Default Variant — ON baru men-OFF yang lama"
 summary: "Hanya satu Default Variant ON per company; record lama otomatis OFF."
 status: draft

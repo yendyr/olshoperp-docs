@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MPL-002
 menu: supplychain-manual-picking-list
 menu_name: "Manual Picking List"
+test_type: happy
 title: "Update description + status Open"
 summary: "Ubah description via Save All; set status Open (syarat Start Picking)."
 status: draft

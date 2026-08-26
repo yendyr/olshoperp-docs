@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SMENU-001
 menu: sidebar-menu
 menu_name: "Sidebar Menu (Gate)"
+test_type: happy
 title: Switch company ke FAT (Company ID 112)
 summary: Login → Switch Company FAT → Proceed → company context id 112
 status: review

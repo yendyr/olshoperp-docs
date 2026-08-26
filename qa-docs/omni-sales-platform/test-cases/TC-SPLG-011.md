@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-011
 menu: omni-sales-platform
 menu_name: "Platform Sales Order"
+test_type: cross-menu
 title: "Memastikan Deteksi Realtime Under Benchmark COGS (Icon cogs-error & Counter Update) Pasca Binding Platform SKU"
 summary: "Verifikasi setelah platform SKU di-binding ke System Product dengan Benchmark COGS tinggi, snapshot COGS terisi dan sistem secara realtime memicu cogs-error serta menambah counter Net Sales < COGS."
 status: draft

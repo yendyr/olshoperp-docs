@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-QCPROC-001
 menu: supplychain-qc-procedure
 menu_name: "QC Procedure"
+test_type: happy
 title: "Create QC Procedure header"
 summary: "Membuat header template QC: Code + Instruction Name; Save → edit."
 status: draft

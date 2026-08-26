@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-WHTYPE-001
 menu: supplychain-warehouse-type
 menu_name: "Warehouse Level"
+test_type: happy
 title: "Create Warehouse Level"
 summary: "Membuat tingkatan hierarki gudang baru secara valid untuk mengatur tingkatan struktur penempatan aset atau area operasional logistik."
 status: draft

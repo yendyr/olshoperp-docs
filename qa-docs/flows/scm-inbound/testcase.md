@@ -2,6 +2,7 @@
 doc_type: e2e-flow-test-case
 tc_code: TC-FLOW-SCM-INBOUND-001
 flow_id: scm-inbound
+test_type: cross-menu
 title: "SCM Inbound — PR → PO With PR → Purchase Inbound (fresh chain)"
 summary: "Chain 3 menu procurement: create+approve PR, tarik outstanding-nya ke PO With PR lalu approve, buat Purchase Inbound dari PO tersebut (opsional approve). Murni UI crawling."
 status: draft

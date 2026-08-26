@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SETU-001
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
+test_type: edge
 title: "DATALIST — tinggi field filtering = Global Search; lebar = Choose Store (Platform Product)"
 summary: "15 halaman filter: height 38px (Global Search); width sama Choose Store di Manage Platform Product."
 status: draft

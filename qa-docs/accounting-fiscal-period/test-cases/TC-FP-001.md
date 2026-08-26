@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-FP-001
 menu: accounting-fiscal-period
 menu_name: "Fiscal Period"
+test_type: happy
 title: "VIEW — buka datalist Fiscal Period"
 summary: "Load /accounting/fiscal-period; verifikasi Create dan kolom NAME/PERIOD/DESCRIPTION/STATUS."
 status: draft

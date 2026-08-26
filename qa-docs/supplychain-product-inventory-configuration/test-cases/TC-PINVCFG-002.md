@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PINVCFG-002
 menu: supplychain-product-inventory-configuration
 menu_name: "Product Inventory Configuration"
+test_type: happy
 title: "Update Product Inventory Configuration"
 summary: "Set Expired Date warning days dan Minimum Stock Qty di Inventory Management, lalu Save All."
 status: draft

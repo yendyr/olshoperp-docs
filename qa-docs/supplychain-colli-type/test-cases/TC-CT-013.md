@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-013
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: edge
 title: "Active OFF boleh setelah inbound dan Colli code dihapus — history DB tidak mengunci"
 summary: "Jika Purchase Inbound dihapus dan Colli code ikut hilang (termasuk yang already deleted), type bisa di-Inactive meski ada history di DB."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-017
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "OFF Enable Variations — header bundle sudah Variant (Default create)"
 summary: "§6.3.1: create bundle lewat Default → header sudah Variant. OFF Variations vs lock bundle (`product_relation` / `variant_bundle_transaction`)."
 status: draft

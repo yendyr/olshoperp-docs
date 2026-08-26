@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TAG-001
 menu: supplychain-tagging
 menu_name: "Tagging"
+test_type: happy
 title: "Create new Tagging"
 summary: "Membuat Tagging baru secara valid untuk mengelompokkan label/tag produk di dalam sistem."
 status: draft

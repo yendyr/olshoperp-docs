@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SOPNAME-004
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
+test_type: happy
 title: "Clear Opname Detail (delete all products)"
 summary: "Edit SP-6A56E465, hapus semua baris product di Opname Detail hingga kosong."
 status: draft

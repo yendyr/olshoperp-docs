@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-002
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
+test_type: happy
 title: "LOG DATA — jenis log lookback Job Auto Sync Order (action Sync Order)"
 summary: "System lookback sync muncul di Log Data dengan action Sync Order dan description Job Auto Sync Order + rentang tanggal."
 status: draft

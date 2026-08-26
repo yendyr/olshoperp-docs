@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-OINB-001
 menu: supplychain-other-inbound
 menu_name: "Other Inbound"
+test_type: happy
 title: "Create page smoke + bind Open/existing IN fixture"
 summary: "AS-IS form create semua field disabled + no submit() — smoke /create lalu bind dokumen existing dari datalist."
 status: draft

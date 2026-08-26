@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PCG-004
 menu: accounting-product-coa-group
 menu_name: "Product COA Group"
+test_type: happy
 title: "SEARCH — cari Code di datalist"
 summary: "Search Code PCG automation; baris ditemukan."
 status: draft

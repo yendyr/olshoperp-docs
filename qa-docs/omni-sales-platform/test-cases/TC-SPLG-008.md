@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-008
 menu: omni-sales-platform
 menu_name: "Platform Sales Order"
+test_type: edge
 title: "Memastikan Penanganan Empty State saat 0 Data Memenuhi Kriteria Filter di Sales Platform"
 summary: "Verifikasi tampilan empty state yang informatif (No data available in table) saat filter aktif pada kriteria tanggal/store dengan 0 data under-COGS di Sales Platform."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PMUTSTK-002
 menu: supplychain-product-mutation-stock
 menu_name: "Stock History"
+test_type: happy
 title: "Choose Product + Apply → history per warehouse"
 summary: "Pilih Product → Apply; verifikasi GET product-mutation-stock?product_id= dan kolom Date / Trx. Code / In-Out / Ending Balance."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-031
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Import Update Variant Product — child berelasi/stok: leftover vs hard-block"
 summary: "Inti ETM-15495 lewat import: tambah variant type pada SKU yang sudah stok/relasi. Stock ID leftover tidak berubah; tidak auto-rename."
 status: draft

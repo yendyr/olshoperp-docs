@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-029
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Import Update Product — target child SKU vs parent -(PARENT); stok tidak pindah"
 summary: "Default-origin punya 2 kode. Update salah baris tidak boleh menimpa identitas atau Stock ID child."
 status: draft

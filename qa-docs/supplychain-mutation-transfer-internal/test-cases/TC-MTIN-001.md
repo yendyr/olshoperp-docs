@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MTIN-001
 menu: supplychain-mutation-transfer-internal
 menu_name: "Transfer Internal"
+test_type: happy
 title: "Create Transfer Internal header (TFI*)"
 summary: "Membuat header transfer: Origin + Destination; code auto TFI*."
 status: draft

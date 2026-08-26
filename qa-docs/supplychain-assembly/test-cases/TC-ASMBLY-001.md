@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASMBLY-001
 menu: supplychain-assembly
 menu_name: "Assembly"
+test_type: happy
 title: "Create Assembly header (Building Origin + Type)"
 summary: "Membuat Assembly (Work Order) draft; code auto AS*; field wajib Building Origin, Type, Start Date, Transaction Date."
 status: draft

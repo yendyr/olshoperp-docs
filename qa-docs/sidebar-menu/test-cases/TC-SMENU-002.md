@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SMENU-002
 menu: sidebar-menu
 menu_name: "Sidebar Menu (Gate)"
+test_type: happy
 title: Switch company ke lumicharmsid (Company ID 153)
 summary: Login → Switch Company Lumi Charms.id → Proceed → company context id 153
 status: review

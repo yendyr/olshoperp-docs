@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PGENCFG-002
 menu: supplychain-product-general-configuration
 menu_name: "Product General Configuration"
+test_type: happy
 title: "Update Product General Configuration"
 summary: "Update System Product SKU dan Retail Price pada PGC hasil create."
 status: draft

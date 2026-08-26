@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TAX-004
 menu: accounting-tax
 menu_name: "Tax"
+test_type: happy
 title: "SEARCH — cari Code di datalist"
 summary: "Search Code Tax automation; baris ditemukan."
 status: draft

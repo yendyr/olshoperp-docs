@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-FP-003
 menu: accounting-fiscal-period
 menu_name: "Fiscal Period"
+test_type: edge
 title: "UPDATE — Description periode December 2024"
 summary: "Edit period Open covering Dec 2024; set Description = automation playwright; Save All. Skip jika Closed / fields disabled."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCN-004
 menu: accounting-credit-note
 menu_name: "Credit Note"
+test_type: negative
 title: "APPROVE — ditolak jika amount fund masih 0 (termasuk Free COA)"
 summary: "Add Free COA amount 0 OK; Approve CN ditolak All amount must be greater than 0."
 status: draft

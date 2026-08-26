@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TRXH-003
 menu: supplychain-transaction-history
 menu_name: "BETA - Transaction History"
+test_type: happy
 title: "Filter Transaction Type + Apply"
 summary: "Pilih type Stock Addition lalu Apply; request menyertakan transaction_type=Stock Addition."
 status: draft

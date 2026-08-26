@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-010
 menu: omni-sales-platform
 menu_name: "Platform Sales Order"
+test_type: edge
 title: "Memastikan Platform SKU yang Belum Terbinding (Unbound) Tidak Memicu Filter Net Sales < COGS (benchmark_cogs = 0)"
 summary: "Verifikasi order platform dengan SKU belum terbinding (unbound) memiliki benchmark_cogs = 0 dan tidak masuk ke hasil filter Net Sales < COGS (mencegah false positive)."
 status: draft

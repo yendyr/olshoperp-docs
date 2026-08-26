@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MTSCR-001
 menu: supplychain-mutation-transfer-scrap
 menu_name: "Transfer Broken"
+test_type: happy
 title: "Create Transfer Broken header (TFS*)"
 summary: "Membuat header scrap: Building Origin + Location (scrap); code auto TFS*."
 status: draft

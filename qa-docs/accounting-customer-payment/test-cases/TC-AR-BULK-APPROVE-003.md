@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-AR-BULK-APPROVE-003
 menu: accounting-customer-payment
 menu_name: "Account Receive"
+test_type: negative
 title: "Bulk approve Draft — status tidak berubah + tombol tidak aktif"
 summary: "Centang AR Draft; tombol bulk Approve tidak aktif; status tetap Draft."
 status: draft

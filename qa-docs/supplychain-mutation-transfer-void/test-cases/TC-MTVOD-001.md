@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MTVOD-001
 menu: supplychain-mutation-transfer-void
 menu_name: "Transfer Void"
+test_type: happy
 title: "Create page smoke + bind Open TFV fixture"
 summary: "AS-IS form create tanpa Origin picker — smoke /create lalu pakai TFV Open existing."
 status: draft

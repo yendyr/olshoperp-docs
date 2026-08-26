@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASL-003
 menu: accounting-asset-list
 menu_name: "Asset List"
+test_type: edge
 title: "SEARCH + Availability modal"
 summary: "Search SKU baris pertama (jika ada); klik Availability → modal Available."
 status: approved

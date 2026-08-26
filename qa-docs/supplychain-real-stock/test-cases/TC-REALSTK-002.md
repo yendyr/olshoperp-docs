@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-REALSTK-002
 menu: supplychain-real-stock
 menu_name: "Real Time Stock"
+test_type: happy
 title: "Pilih warehouse → By Location datalist + kolom On Hand/ATS"
 summary: "Select warehouse MultiselectPrime; verifikasi GET by-location?warehouse_id=; kolom System Product/On Hand/ATS/Availability; Manual Calculate + Log."
 status: draft

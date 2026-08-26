@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASO-005
 menu: all-sales-order
 menu_name: "All Sales Order"
+test_type: happy
 title: "Memastikan Akurasi Filter Datalist saat Pill Net Sales < COGS Aktif (Positive Filter)"
 summary: "Verifikasi pengaktifan pill Net Sales < COGS mengirim query param net_sales_below_cogs=true dan hanya menampilkan SO dengan Total Net Sales < Total COGS."
 status: draft

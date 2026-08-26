@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-001
 menu: system-product
 menu_name: "System Product"
+test_type: happy
 title: Membuat SKU Single di datalist System Product (SKU-BLENDER)
 summary: Create SKU single → Sales Category & Product Coa Group auto-fill → Save → SKU muncul di datalist
 status: review

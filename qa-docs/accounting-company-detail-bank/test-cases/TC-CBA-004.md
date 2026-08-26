@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBA-004
 menu: accounting-company-detail-bank
 menu_name: "Cash/Bank Account"
+test_type: happy
 title: "SEARCH — cari Label di datalist"
 summary: "Search Label account automation; baris ditemukan."
 status: draft

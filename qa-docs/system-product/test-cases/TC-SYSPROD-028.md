@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-028
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Import Update Product — existing Single + Master Default ON tidak auto-convert"
 summary: "Single yang sudah hidup jangan diam-diam jadi `-(PARENT)` hanya karena Default ON saat Update."
 status: draft

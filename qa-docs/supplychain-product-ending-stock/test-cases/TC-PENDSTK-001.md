@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PENDSTK-001
 menu: supplychain-product-ending-stock
 menu_name: "Product Ending Stock"
+test_type: happy
 title: "Buka Product Ending Stock — tab By Warehouse"
 summary: "Load report Ending Stock; verify tab By Warehouse, kolom Availability/Unit, Manual Calculate + Log Data; tanpa Create."
 status: draft

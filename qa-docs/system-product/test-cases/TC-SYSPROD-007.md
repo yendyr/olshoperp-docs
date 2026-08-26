@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-007
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Expand Variant Group — child zero-relation: soft delete + regenerate ID baru"
 summary: "Tanpa relasi: child obsolete soft-delete; kombinasi baru ID baru; tidak auto-rename; tidak auto stock remap."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PMUT-002
 menu: supplychain-product-mutation
 menu_name: "Product Mutation History"
+test_type: happy
 title: "Pilih Product → load history + kolom In/Out/Balance"
 summary: "Choose Product + Apply; verifikasi GET product-mutation?product_id= dan kolom Date / stock mutation / Product In-Out / Ending Balance."
 status: draft

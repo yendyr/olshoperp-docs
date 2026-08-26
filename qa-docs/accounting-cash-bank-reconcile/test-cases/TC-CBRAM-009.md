@@ -1,8 +1,9 @@
-﻿---
+---
 doc_type: e2e-test-case
 tc_code: TC-CBRAM-009
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: negative
 title: "Journal AP/AR belum Approved tidak eligible untuk auto-match"
 summary: "Hanya journal Approved yang ikut auto-match; approve belakangan tidak auto-update baris import lama"
 status: draft

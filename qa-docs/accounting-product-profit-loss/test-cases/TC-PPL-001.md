@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PPL-001
 menu: accounting-product-profit-loss
 menu_name: "Product Profit Loss"
+test_type: cross-menu
 title: "E2E Kalkulasi Gross Sales Berbasis Price Before VAT pada Transaksi Tax Included"
 summary: "Eksekusi end-to-end pembuatan produk baru, PO without PR, purchase inbound, verifikasi benchmark COGS, sales order Tax Included (H-1), wave process, DO, outbound, dan verifikasi report Product Profit Loss berbasis Price Before VAT."
 status: approved

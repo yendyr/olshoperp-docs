@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-001
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: happy
 title: "CREATE — Period + Bank BCA 001 + Open (warm-up W3)"
 summary: "Create header CBR; isi Period (hari journal AR); Cash Bank Account Bank BCA 001; Save & Next; set Open; search datalist."
 status: approved

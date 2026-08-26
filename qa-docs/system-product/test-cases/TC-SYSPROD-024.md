@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-024
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Import New — kolom Type = single vs blank (GAP-SP-17 AS-IS vs TO-BE)"
 summary: "AS-IS Type `single` ditolak. TO-BE: path yang menghasilkan Single + Default ON harus jadi Variant. Blank Type = kandidat Single."
 status: draft

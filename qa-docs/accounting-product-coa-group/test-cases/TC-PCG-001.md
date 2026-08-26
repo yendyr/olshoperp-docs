@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PCG-001
 menu: accounting-product-coa-group
 menu_name: "Product COA Group"
+test_type: happy
 title: "VIEW — buka datalist Product COA Group"
 summary: "Load datalist; verifikasi Create + kolom CODE/NAME/TYPE."
 status: draft

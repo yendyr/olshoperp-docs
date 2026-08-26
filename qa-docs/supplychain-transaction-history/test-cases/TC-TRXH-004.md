@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TRXH-004
 menu: supplychain-transaction-history
 menu_name: "BETA - Transaction History"
+test_type: happy
 title: "Search SKU + verifikasi baris / link Trx. Code"
 summary: "Search AUTO-SKU001 di datalist; pastikan baris muncul; link Trx. Code mengarah ke edit mutation."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-004
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: edge
 title: "Set as Default Data ON pada type baru — default lama otomatis OFF"
 summary: "Hanya 1 Default Data ON per company; set PLT Default ON membuat BOX Default OFF."
 status: draft

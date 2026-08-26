@@ -1,8 +1,9 @@
-﻿---
+---
 doc_type: e2e-test-case
 tc_code: TC-CBRAM-005
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: edge
 title: "Amount tidak exact (selisih sedikit) tidak auto-match"
 summary: "Auto-match MVP wajib exact amount; selisih kecil tidak boleh auto-match"
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-VAR-008
 menu: supplychain-variant
 menu_name: "Master Variant"
+test_type: edge
 title: "Edit — hapus opsi random unused tidak di-re-inject"
 summary: "Tag random bisa di-remove di Edit; setelah Save All opsi random tidak kembali jika unused."
 status: draft

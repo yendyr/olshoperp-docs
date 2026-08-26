@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-032
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Import Update Product lalu Update Variant — pipeline create-by-import + update-by-import"
 summary: "SKU lahir dari Import New Default, lalu diubah field (Update Product), lalu expand (Update Variant). Identitas dan leftover tidak pecah di tengah jalan."
 status: draft

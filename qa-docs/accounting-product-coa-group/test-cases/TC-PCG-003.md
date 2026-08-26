@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PCG-003
 menu: accounting-product-coa-group
 menu_name: "Product COA Group"
+test_type: happy
 title: "UPDATE — ubah Name + Description"
 summary: "Edit PCG hasil CREATE; ubah Name + Description; Save All."
 status: draft

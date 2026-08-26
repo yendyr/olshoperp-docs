@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-018
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "OFF Enable Variations — confirm di UI tapi tidak persist / navigasi pergi"
 summary: "Confirm popup tidak sama dengan commit. Reload/back tanpa Save harus tetap Variant; jangan half-state parent tanpa child."
 status: draft

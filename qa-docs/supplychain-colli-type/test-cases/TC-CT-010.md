@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-010
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: edge
 title: "Edit Code dan Name tetap boleh meskipun Colli Type sudah dipakai"
 summary: "Type yang sudah punya Colli code masih bisa ganti Code/Name; nilai after save sama dengan input."
 status: draft

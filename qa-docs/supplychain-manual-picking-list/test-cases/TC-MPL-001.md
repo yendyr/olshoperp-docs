@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MPL-001
 menu: supplychain-manual-picking-list
 menu_name: "Manual Picking List"
+test_type: happy
 title: "Create Manual Picking List header (PL-*)"
 summary: "Membuat dokumen PL ad-hoc; Building Origin wajib; code auto PL-*."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-INVDET-002
 menu: supplychain-inventory-detail
 menu_name: "Inventory Detail"
+test_type: happy
 title: "Quick filter card Out of Stock"
 summary: "Klik card Out of Stock merefresh datalist dengan query filter=."
 status: draft

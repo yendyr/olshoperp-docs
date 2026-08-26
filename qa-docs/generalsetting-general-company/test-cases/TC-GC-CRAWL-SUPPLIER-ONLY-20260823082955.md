@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-GC-CRAWL-SUPPLIER-ONLY-20260823082955
 menu: generalsetting-general-company
 menu_name: "General Company"
+test_type: happy
 title: "Create New General Company Recognized ONLY as Supplier via Web UI Crawling"
 summary: "Pengujian crawling web UI untuk membuat General Company baru yang secara spesifik HANYA berperan sebagai Supplier (mematikan toggle Customer, Shipper, Manufacturer)."
 status: approved

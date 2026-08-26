@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ITEMINT-002
 menu: supplychain-item-interchange
 menu_name: "Product Interchange"
+test_type: happy
 title: "mengubah informasi produk substitusi kedua pada data master product interchange"
 summary: "menguji proses pembaruan data second product dan deskripsi pada dokumen master hubungan antar produk"
 status: draft

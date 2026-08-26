@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TAX-002
 menu: accounting-tax
 menu_name: "Tax"
+test_type: happy
 title: "CREATE — Tax Code/Name/Tariff + Purchase/Sales COA"
 summary: "Create Tax unik AT-TAX-*; Tariff 11; pilih Purchase + Sales COA; Description automation playwright; Save & Next."
 status: draft

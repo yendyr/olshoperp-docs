@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCN-001
 menu: accounting-credit-note
 menu_name: "Credit Note"
+test_type: happy
 title: "EDIT — tambah Receiving Destination via Free COA Equity (modal)"
 summary: "Di CN Draft, pilih Free COA Equity; baris tersimpan type COA amount 0."
 status: draft

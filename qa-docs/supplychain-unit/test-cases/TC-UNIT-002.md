@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-UNIT-002
 menu: supplychain-unit
 menu_name: "Unit"
+test_type: happy
 title: "Update unit"
 summary: "Mengubah data pada sebuah unit yang pernah dibuat sebelumnya (Code/Name + Show for all company)."
 status: draft

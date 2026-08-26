@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-REALSTK-006
 menu: supplychain-real-stock
 menu_name: "Real Time Stock"
+test_type: happy
 title: "By SKU — mode ALL → datalist + Latest Calculation"
 summary: "Klik ALL; tunggu by-sku; verifikasi kolom System Product / Unit / Latest Calculation."
 status: draft

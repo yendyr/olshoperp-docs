@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBA-002
 menu: accounting-company-detail-bank
 menu_name: "Cash/Bank Account"
+test_type: happy
 title: "CREATE — Label + Currency + COA Binding"
 summary: "Create account unik AT-CBA-*; Type Bank; pilih COA Assets bebas; Description automation playwright; Save & Next."
 status: draft

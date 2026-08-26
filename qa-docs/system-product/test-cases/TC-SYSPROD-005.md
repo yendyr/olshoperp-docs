@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-005
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "OFF Enable Variations — form create Default ON, belum persist, zero relation"
 summary: "Baru created di form (belum Save / belum ada child di DB). OFF wajib confirm; Cancel tetap Variant; Confirm jadi Single dengan SKU user."
 status: draft

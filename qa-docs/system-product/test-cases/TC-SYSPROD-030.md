@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-030
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Import Update Variant Product — expand zero-relation (path import, bukan edit UI)"
 summary: "Tambah Variant Type/Option lewat Update Variant Product pada Default-origin tanpa relasi. Soft delete obsolete + SKU baru omit Default."
 status: draft

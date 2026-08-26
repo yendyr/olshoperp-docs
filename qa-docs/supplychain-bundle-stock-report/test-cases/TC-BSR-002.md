@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-BSR-002
 menu: supplychain-bundle-stock-report
 menu_name: "Bundle Stock Report"
+test_type: edge
 title: "Filter Choose Product mengirim product_id"
 summary: "Memilih SKU di Multiselect Choose Product merefresh datalist dengan query product_id."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PINVCFG-001
 menu: supplychain-product-inventory-configuration
 menu_name: "Product Inventory Configuration"
+test_type: happy
 title: "Create Product Inventory Configuration"
 summary: "Seed product via Product General Configuration (workaround), pastikan SKU tampil di datalist Product Inventory Configuration."
 status: draft

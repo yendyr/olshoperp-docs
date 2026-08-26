@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ADJADD-003
 menu: supplychain-adjustment-addition
 menu_name: "Stock Addition"
+test_type: happy
 title: "Add product detail + In Qty"
 summary: "Pada dokumen hasil create, pilih product via Select Product (bulk-create) lalu isi In Qty."
 status: draft

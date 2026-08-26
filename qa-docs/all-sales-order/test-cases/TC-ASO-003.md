@@ -1,5 +1,6 @@
 ---
 tc_code: TC-ASO-003
+test_type: happy
 title: Memastikan Riwayat Log Re-check Failed Process Tercatat per Store dan Tersimpan Sesuai Riwayat Trigger
 menu_slug: all-sales-order
 status: draft

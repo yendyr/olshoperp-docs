@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MTEX-002
 menu: supplychain-mutation-transfer-external
 menu_name: "External Transfer"
+test_type: happy
 title: "Update header + tambah detail Select Product"
 summary: "Ubah description lalu tambah produk via Select Product (satu dokumen edit, sebelum approve)."
 status: draft

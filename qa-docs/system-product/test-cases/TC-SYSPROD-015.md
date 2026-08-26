@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-015
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "OFF Enable Variations — child punya haveRelations (PR/PO/inbound/outbound/WO/binding/BOM/bundle)"
 summary: "Child sudah dipakai transaksi. OFF tidak boleh menghapus child atau merusak line trx. V-02 diam; sibling leftover melarang hancurkan SKU berelasi."
 status: draft

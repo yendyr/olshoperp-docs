@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-COA-004
 menu: accounting-chart-of-account
 menu_name: "COA"
+test_type: happy
 title: "SEARCH — cari Code di datalist"
 summary: "Search Code COA automation di datalist; baris ditemukan dengan Name hasil update."
 status: draft

@@ -2,6 +2,9 @@
 doc_type: e2e-test-case
 tc_code: TC-PO-PI-TRUZ-WENTER-001
 menu: purchase-order
+related_menus:
+  - supplychain-new-purchase-inbound
+  - system-product
 menu_name: "Purchase Order + Purchase Inbound"
 test_type: cross-menu
 title: PO approve + PI Open — TRUZV1 white/yellow & WENTER 6 warna (8 SKU, 1 dokumen)

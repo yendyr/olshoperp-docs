@@ -1,8 +1,9 @@
-﻿---
+---
 doc_type: e2e-test-case
 tc_code: TC-CBRAM-002
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: happy
 title: "Happy path — auto-match Account Payable (Supplier Payment)"
 summary: "Import bank statement Spent exact amount+date → auto Reconciled ke baris GL COA cash/bank Credit dari Payment to Supplier"
 status: draft

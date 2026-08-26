@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-LOC-001
 menu: supplychain-location
 menu_name: "Location"
+test_type: happy
 title: "Create Processing Location baru"
 summary: "Mendaftarkan master lokasi proses gudang (code + name) untuk Failed Ship / Picking set-location."
 status: draft

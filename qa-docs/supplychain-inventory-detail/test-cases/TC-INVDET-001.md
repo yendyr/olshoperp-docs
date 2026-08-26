@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-INVDET-001
 menu: supplychain-inventory-detail
 menu_name: "Inventory Detail"
+test_type: happy
 title: "Buka Inventory Detail + warehouse level + kolom stok"
 summary: "Memastikan laporan load setelah auto-pilih warehouse level; KPI cards + kolom Availability tampil."
 status: draft

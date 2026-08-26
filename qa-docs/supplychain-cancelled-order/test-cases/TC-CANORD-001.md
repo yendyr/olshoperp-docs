@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CANORD-001
 menu: supplychain-cancelled-order
 menu_name: "Cancelled Order"
+test_type: happy
 title: "Buka Cancelled Order + verifikasi kolom read-only"
 summary: "Memastikan list SO Void/Rejected load; kolom monitoring tampil; tanpa Create."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-021
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "OFF Enable Variations — child hanya SO / assembly / transfer internal"
 summary: "technical.md: checkTransaction tidak cek SO, assembly, TI. leftover §6.3.2 tetap mengunci SO+transfer. Celah lock SKU vs haveRelations."
 status: draft

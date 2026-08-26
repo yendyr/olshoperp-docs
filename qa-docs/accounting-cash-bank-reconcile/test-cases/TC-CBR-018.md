@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-018
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: cross-menu
 title: 'INSTANT SETTLEMENT APPROVE — fiscal Open, lalu CBR lock by date'
 summary: 'Approve Instant Settlement: fiscal Open; Cash/Bank Receiving = Account A; tanggal AR = D_in → gagal lock + BR. Bukan start import.'
 status: draft

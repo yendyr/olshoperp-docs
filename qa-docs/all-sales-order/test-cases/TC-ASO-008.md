@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASO-008
 menu: all-sales-order
 menu_name: "All Sales Order"
+test_type: edge
 title: "Memastikan Kondisi Batas (Boundary: Net Sales == COGS, Net Sales > COGS, dan COGS = 0) Tidak Lolos Filter"
 summary: "Verifikasi logika perbandingan strict (<) dan klausa HAVING SUM(cogs) > 0 mengecualikan SO yang impas, untung, atau tanpa master COGS."
 status: draft

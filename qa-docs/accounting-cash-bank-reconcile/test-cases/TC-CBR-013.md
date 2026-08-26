@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-013
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: cross-menu
 title: 'DEBIT NOTE CREATE — urutan fiscal dulu, lalu CBR lock (manual)'
 summary: 'Debit Note create: D_closed gagal fiscal; D_in + fund Cash/Bank Account A gagal lock + BR.'
 status: draft

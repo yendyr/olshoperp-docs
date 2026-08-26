@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-012
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Error — hard-block haveRelations masih muncul; auto-rename leftover"
 summary: "AS-IS pain: Cannot add variant, Product already have relations. TO-BE cabut. Auto-rename leftover = fail."
 status: draft

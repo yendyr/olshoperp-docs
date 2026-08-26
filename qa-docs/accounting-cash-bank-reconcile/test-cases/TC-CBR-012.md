@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-012
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: cross-menu
 title: 'CREDIT NOTE IMPORT — urutan fiscal dulu, lalu CBR lock'
 summary: 'Import Credit Note: D_closed gagal fiscal; D_in + Cash/Bank Account A gagal lock di awal import.'
 status: draft

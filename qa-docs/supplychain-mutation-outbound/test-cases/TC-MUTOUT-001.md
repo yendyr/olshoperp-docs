@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MUTOUT-001
 menu: supplychain-mutation-outbound
 menu_name: "Outbound External"
+test_type: happy
 title: "Create Outbound External header (OT*)"
 summary: "Membuat header outbound type Other + Building Origin; code auto OT*."
 status: draft

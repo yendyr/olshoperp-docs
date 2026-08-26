@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-OC-004
 menu: omni-other-cost
 menu_name: "Other Cost"
+test_type: happy
 title: "SEARCH — Code di datalist"
 summary: "Searchbox Code AT-OC-*; baris dengan Code + Name updated tampil."
 status: draft

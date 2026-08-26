@@ -1,8 +1,9 @@
-﻿---
+---
 doc_type: e2e-test-case
 tc_code: TC-CBRAM-011
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: edge
 title: "Re-import — baris yang sudah matched tidak diproses ulang, hanya baris baru"
 summary: "Re-import tidak menduplikasi/mengubah baris Reconciled; baris baru tetap bisa auto-match"
 status: draft

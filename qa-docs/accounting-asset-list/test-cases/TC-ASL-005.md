@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASL-005
 menu: accounting-asset-list
 menu_name: "Asset List"
+test_type: happy
 title: "EXPORT — buka panel Export"
 summary: "Setelah warehouse dipilih, buka UI Export; verifikasi kontrol Export (All/Active Page)."
 status: approved

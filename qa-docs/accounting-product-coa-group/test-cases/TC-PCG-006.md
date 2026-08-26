@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PCG-006
 menu: accounting-product-coa-group
 menu_name: "Product COA Group"
+test_type: happy
 title: "Audit Log — buka slideover dari edit"
 summary: "Create record audit terpisah; buka Audit Log di sidenav edit."
 status: approved

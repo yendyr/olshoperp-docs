@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-010
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: cross-menu
 title: 'ACCOUNT RECEIVE IMPORT — urutan fiscal dulu, lalu CBR lock'
 summary: 'Import Account Receive: D_closed gagal fiscal; D_in + Account A gagal lock di awal import (bukan lolos create lalu gagal Approve).'
 status: draft

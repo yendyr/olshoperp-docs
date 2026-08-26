@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-009
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "SKU baru omit opsi Default; kolom Default group hidden di datatable variant"
 summary: "Setelah expand: naming tanpa segment Default; kolom dynamic Default visible false."
 status: draft

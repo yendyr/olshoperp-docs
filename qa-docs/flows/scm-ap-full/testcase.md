@@ -2,6 +2,7 @@
 doc_type: e2e-flow-test-case
 tc_code: TC-FLOW-SCM-AP-001
 flow_id: scm-ap-full
+test_type: cross-menu
 title: "SCM + Accounting AP — PR → PO → Purchase Inbound → Supplier Invoice → Account Payment → Journal"
 summary: "Chain 6 phase procure-to-pay: dari permintaan pembelian sampai pelunasan hutang dan verifikasi auto-journal Payment to Supplier. Murni UI crawling."
 status: draft

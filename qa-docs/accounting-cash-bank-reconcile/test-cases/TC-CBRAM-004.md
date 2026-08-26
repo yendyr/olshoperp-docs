@@ -1,8 +1,9 @@
-﻿---
+---
 doc_type: e2e-test-case
 tc_code: TC-CBRAM-004
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: negative
 title: "Journal manual (bukan AP/AR) dengan nominal sama tidak ikut auto-match"
 summary: "Hanya journal dengan transaction_reference_text Payment to Supplier / Payment from Customer yang eligible auto-match"
 status: draft

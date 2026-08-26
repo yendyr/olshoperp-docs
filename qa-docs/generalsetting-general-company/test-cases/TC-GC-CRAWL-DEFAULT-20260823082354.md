@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-GC-CRAWL-DEFAULT-20260823082354
 menu: generalsetting-general-company
 menu_name: "General Company"
+test_type: happy
 title: "Create New General Company with Default Recognize as Customer & Supplier via Web UI Crawling"
 summary: "Pengujian crawling web UI untuk membuat General Company baru dengan toggle default Recognize As yang menyalakan peran Customer dan Supplier secara bersamaan."
 status: approved

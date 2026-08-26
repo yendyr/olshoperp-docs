@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCN-005
 menu: accounting-credit-note
 menu_name: "Credit Note"
+test_type: negative
 title: "EDIT header — currency tanpa Cash/Bank aktif ditolak"
 summary: "Ganti Transaction Currency ke EUR (tanpa Master Cash/Bank); update header 422 dan currency revert."
 status: draft

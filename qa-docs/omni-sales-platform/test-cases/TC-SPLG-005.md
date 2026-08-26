@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-005
 menu: omni-sales-platform
 menu_name: "Platform Sales Order"
+test_type: happy
 title: "Memastikan Deaktivasi Filter Pill (Toggle OFF) Mengembalikan Seluruh Data Platform Sales Order"
 summary: "Verifikasi klik ulang pada pill aktif menghapus param net_sales_below_cogs dan mengembalikan tampilan datalist Sales Platform semula."
 status: draft

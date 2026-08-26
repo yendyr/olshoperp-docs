@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-OD-004
 menu: omni-other-discount
 menu_name: "Other Discount"
+test_type: happy
 title: "SEARCH — Code di datalist"
 summary: "Searchbox Code AT-OD-*; baris dengan Code + Name updated tampil."
 status: draft

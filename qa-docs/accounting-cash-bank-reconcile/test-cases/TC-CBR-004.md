@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-004
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: edge
 title: 'CBR APPROVE — fiscal Open, lock Account A aktif, tidak bisa undo'
 summary: 'Semua tanggal Period fiscal Open → Approve berhasil; lock COA+Period aktif; tidak ada Void.'
 status: draft

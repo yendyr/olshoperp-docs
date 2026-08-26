@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCP-004
 menu: accounting-customer-payment
 menu_name: Account Receive
+test_type: happy
 title: Bulk select — insert SI dari dropdown Select Invoice
 summary: Pilih SI di multiselect header detail → langsung insert full amount tanpa modal Available
 status: review

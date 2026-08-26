@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TAX-003
 menu: accounting-tax
 menu_name: "Tax"
+test_type: happy
 title: "UPDATE — ubah Name + Description"
 summary: "Edit Tax hasil CREATE; ubah Name + Description; Save All."
 status: draft

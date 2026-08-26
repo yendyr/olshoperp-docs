@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCN-009
 menu: accounting-credit-note
 menu_name: "Credit Note"
+test_type: edge
 title: "EDIT — Free COA picker exclude Customer's Deposit COA"
 summary: "Select Free COA tidak menampilkan Deposit COA actor (General tagging); Equity Free COA tetap muncul."
 status: draft

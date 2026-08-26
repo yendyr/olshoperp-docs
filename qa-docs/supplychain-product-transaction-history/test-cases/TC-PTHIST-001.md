@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PTHIST-001
 menu: supplychain-product-transaction-history
 menu_name: "Product Transaction History"
+test_type: happy
 title: "Buka Product Transaction History — shell filter + KPI"
 summary: "Load dashboard; verifikasi Choose Product / date / status + KPI Product Information + tabs PR/PO/Mutation; tanpa Create."
 status: draft

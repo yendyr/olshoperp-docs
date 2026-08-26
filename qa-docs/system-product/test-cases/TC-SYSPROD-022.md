@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-022
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Import New — skip auto-default karena Variant Group+Option eksplisit"
 summary: "Row sudah isi variant cols. Jangan dipaksa pola Default `-(PARENT)` + child = SKU user."
 status: draft

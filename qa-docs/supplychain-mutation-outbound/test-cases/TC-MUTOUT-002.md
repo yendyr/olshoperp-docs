@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MUTOUT-002
 menu: supplychain-mutation-outbound
 menu_name: "Outbound External"
+test_type: happy
 title: "Update header + tambah detail Select Product"
 summary: "Ubah description lalu tambah produk via Select Product (satu dokumen edit, sebelum approve)."
 status: draft

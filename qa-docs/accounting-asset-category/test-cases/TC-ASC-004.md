@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASC-004
 menu: accounting-asset-category
 menu_name: "Asset Category"
+test_type: happy
 title: "SEARCH — Code di datalist"
 summary: "Cari Code hasil create/update; baris tampil dengan Name terbaru."
 status: approved

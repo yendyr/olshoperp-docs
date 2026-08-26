@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-VAR-005
 menu: supplychain-variant
 menu_name: "Master Variant"
+test_type: edge
 title: "Create Default Variant OFF + 1 opsi — tetap inject random"
 summary: "Create tanpa Default ON masih menambahkan opsi random seperti AS-IS."
 status: draft

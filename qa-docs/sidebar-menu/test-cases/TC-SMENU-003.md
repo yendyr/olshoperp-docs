@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SMENU-003
 menu: sidebar-menu
 menu_name: "Sidebar Menu (Gate)"
+test_type: happy
 title: Switch company ke DEV-STG (Company ID 13)
 summary: Login → Switch Company Dev Staging → Proceed → company context id 13 + pause observasi
 status: review

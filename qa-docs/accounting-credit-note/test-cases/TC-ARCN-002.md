@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCN-002
 menu: accounting-credit-note
 menu_name: "Credit Note"
+test_type: edge
 title: "EDIT — Free COA picker exclude COA terikat Master Cash/Bank"
 summary: "Search GL Cash/Bank bound (1-10015) di Select Free COA; list kosong."
 status: draft

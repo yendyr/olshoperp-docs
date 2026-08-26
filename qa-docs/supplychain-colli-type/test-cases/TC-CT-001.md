@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-001
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: happy
 title: "Create Colli Type — datalist kolom lengkap dan nilai after save sama dengan input (tidak null)"
 summary: "Create mengisi semua field; setelah save, datalist dan form edit menampilkan nilai yang sama — tidak ada kolom/field yang jadi null."
 status: draft

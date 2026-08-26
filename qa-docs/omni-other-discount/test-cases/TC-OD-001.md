@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-OD-001
 menu: omni-other-discount
 menu_name: "Other Discount"
+test_type: happy
 title: "VIEW — buka datalist Other Discount"
 summary: "Load /omni/other-discount; verifikasi Create dan kolom code/Name/Description/COA/Applied Stores."
 status: draft

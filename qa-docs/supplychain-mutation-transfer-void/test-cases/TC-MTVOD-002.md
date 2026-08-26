@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MTVOD-002
 menu: supplychain-mutation-transfer-void
 menu_name: "Transfer Void"
+test_type: happy
 title: "Update status + tambah detail Select Product"
 summary: "Status Open (jika bisa) lalu Select Product pada dokumen Open dari CREATE fixture."
 status: draft

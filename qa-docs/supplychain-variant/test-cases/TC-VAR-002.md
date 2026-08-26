@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-VAR-002
 menu: supplychain-variant
 menu_name: "Variant"
+test_type: happy
 title: "Update Variant Group"
 summary: "Mengubah code, nama kelompok varian, serta menambah/mengurangi daftar pilihan opsi variasi yang sudah terdaftar sebelumnya."
 status: draft

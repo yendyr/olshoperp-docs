@@ -1,5 +1,6 @@
 ---
 tc_code: TC-ASO-001
+test_type: cross-menu
 title: Memastikan Tombol Recheck Failed Process Tersedia dan Dapat Dijalankan di Menu All Sales Order dan Dev Sales Platform
 menu_slug: all-sales-order
 status: draft

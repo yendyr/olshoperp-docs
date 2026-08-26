@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-DWL-001
 menu: supplychain-dimension-and-weight-label
 menu_name: "Dimension & Weight Label"
+test_type: happy
 title: "Create new Dimension & Weight Label"
 summary: "Membuat label dimensi dan berat baru secara valid untuk mengelompokkan standar ukuran volume dan bobot paket atau produk di dalam sistem."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASC-003
 menu: accounting-asset-category
 menu_name: "Asset Category"
+test_type: happy
 title: "UPDATE — Name, Method, Salvage"
 summary: "Ubah Name, Depreciation Method ke Written Down Value, Salvage Value."
 status: approved

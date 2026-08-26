@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-014
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: edge
 title: "Delete Colli Type boleh setelah inbound dan Colli code dihapus — history DB tidak mengunci"
 summary: "Jika Purchase Inbound dihapus dan Colli code ikut hilang (termasuk already deleted), type boleh di-Delete meski ada history di DB."
 status: draft

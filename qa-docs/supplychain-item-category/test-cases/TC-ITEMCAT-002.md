@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ITEMCAT-002
 menu: supplychain-item-category
 menu_name: "Item Category"
+test_type: happy
 title: "Update Item Category"
 summary: "Update Code/Name Item Category hasil create sebelumnya; verifikasi datalist data terbaru."
 status: draft

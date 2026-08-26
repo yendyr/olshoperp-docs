@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SINV-001
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
+test_type: cross-menu
 title: "CREATE — Customer Supplier China + Outstanding SO SKUSINGLE-194/195 + Approve"
 summary: "Create SI; customer supplier china; Save All; Outstanding Sales Order Use 2 SKU; Open; Approve; search datalist Approved."
 status: approved

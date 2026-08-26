@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-025
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Import New — semua Master Default OFF → Single tetap mungkin"
 summary: "Tanpa Default ON, Import New kandidat Single tidak dipaksa Variant / `-(PARENT)`."
 status: draft

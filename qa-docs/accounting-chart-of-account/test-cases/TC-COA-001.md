@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-COA-001
 menu: accounting-chart-of-account
 menu_name: "COA"
+test_type: happy
 title: "VIEW — buka datalist Chart of Account"
 summary: "Load /accounting/chart-of-account; verifikasi Create, kolom CODE/NAME/CLASS, tanpa error."
 status: draft

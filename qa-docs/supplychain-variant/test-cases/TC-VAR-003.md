@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-VAR-003
 menu: supplychain-variant
 menu_name: "Master Variant"
+test_type: happy
 title: "Form toggle Default Variant + kolom list Default"
 summary: "Create/Edit Master Variant menampilkan toggle default; datalist punya kolom Default Yes/No."
 status: draft

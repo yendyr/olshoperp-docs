@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-WHTYPE-002
 menu: supplychain-warehouse-type
 menu_name: "Warehouse Level"
+test_type: happy
 title: "Update Warehouse Level"
 summary: "Mengubah informasi nama, angka tingkatan, atau status aktif pada data tingkatan gudang yang sudah terdaftar sebelumnya."
 status: draft

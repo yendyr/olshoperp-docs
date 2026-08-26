@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-WARRANT-002
 menu: supplychain-warranty
 menu_name: "Warranty"
+test_type: happy
 title: "Update Master Warranty"
 summary: "Mengubah Code, Name, dan Description pada Warranty yang sudah terdaftar."
 status: draft

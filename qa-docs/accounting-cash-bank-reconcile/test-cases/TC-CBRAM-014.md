@@ -1,8 +1,9 @@
-﻿---
+---
 doc_type: e2e-test-case
 tc_code: TC-CBRAM-014
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: happy
 title: "Unmatch setelah auto-match tetap berfungsi normal"
 summary: "Hasil auto-match bisa di-Unmatch dan di-Match manual ulang seperti transaksi biasa"
 status: draft

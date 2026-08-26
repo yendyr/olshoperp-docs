@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-006
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: cross-menu
 title: 'JOURNAL IMPORT — urutan fiscal dulu, lalu CBR lock'
 summary: 'Import Journal: baris tanggal fiscal Closed gagal pesan fiscal; baris D_in + Account A gagal pesan lock di awal import.'
 status: draft

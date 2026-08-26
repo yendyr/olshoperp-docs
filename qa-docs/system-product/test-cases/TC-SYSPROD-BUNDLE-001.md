@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-BUNDLE-001
 menu: system-product
 menu_name: "System Product"
+test_type: happy
 title: Membuat parent SKU bundle dari detail variant + single parent (TRUZZ Doll Collectors Pack)
 summary: Buat SKU variant detail bundle → buat SKU single parent → aktifkan Product Bundle → tambah 2 SKU variant child → toggle Active bundle
 status: review

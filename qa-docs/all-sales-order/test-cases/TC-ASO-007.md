@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASO-007
 menu: all-sales-order
 menu_name: "All Sales Order"
+test_type: edge
 title: "Memastikan Interaksi Single-Active Toggle / Mutual Exclusive dengan Pill Button Lain"
 summary: "Verifikasi perpindahan antar-pill (Failed Process, Ready to Process, Net Sales < COGS) hanya mengaktifkan satu panel filter secara bergantian."
 status: draft

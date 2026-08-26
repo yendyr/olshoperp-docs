@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-019
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "OFF lalu ON lagi Enable Variations — unsaved vs saved zero-relation"
 summary: "Toggle bolak-balik sebelum/sesudah persist. Jangan duplicate child, jangan kehilangan Default group, jangan SKU dobel."
 status: draft

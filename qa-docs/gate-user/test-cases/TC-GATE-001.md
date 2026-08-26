@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-GATE-001
 menu: gate-user
 menu_name: "User (Gate)"
+test_type: happy
 title: Login staging berhasil dengan akun E2E runner
 summary: Email/password valid → redirect dashboard, token auth & company context terisi
 status: review

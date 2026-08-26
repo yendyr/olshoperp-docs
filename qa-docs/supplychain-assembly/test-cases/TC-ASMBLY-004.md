@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASMBLY-004
 menu: supplychain-assembly
 menu_name: "Assembly"
+test_type: edge
 title: "Building Origin — 11 skenario WH level 19/20, WIP/FG, Inactive (Jeiniffer)"
 summary: "Checklist 11 skenario ETM-15519: Building Origin level 19 vs 20 sampai Approve + stok SKU rakitan (kecuali WH yang tidak boleh muncul)."
 status: draft

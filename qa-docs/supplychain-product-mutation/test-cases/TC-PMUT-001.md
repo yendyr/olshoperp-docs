@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PMUT-001
 menu: supplychain-product-mutation
 menu_name: "Product Mutation History"
+test_type: happy
 title: "Buka Product Mutation History — shell filter Product"
 summary: "Load halaman; verifikasi Product* + Apply + manual calculation; tanpa Create; tabel belum muncul sebelum product dipilih."
 status: draft

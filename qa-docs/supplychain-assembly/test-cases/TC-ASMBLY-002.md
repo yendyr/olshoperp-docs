@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASMBLY-002
 menu: supplychain-assembly
 menu_name: "Assembly"
+test_type: happy
 title: "Update Assembly description (remain Draft)"
 summary: "Update Description dokumen hasil create; tetap Draft (Open butuh detail FG)."
 status: draft

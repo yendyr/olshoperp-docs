@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-008
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Expand saat child berelasi — leftover + confirm; Stock ID/qty tidak berubah; tidak auto-rename"
 summary: "Inti ETM-15495: tambah Variant Group; leftover Active; SKU baru; hard-block hilang; stok leftover tetap."
 status: draft

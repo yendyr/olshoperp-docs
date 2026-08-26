@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ITEMINT-001
 menu: supplychain-item-interchange
 menu_name: "Product Interchange"
+test_type: happy
 title: "membuat data master product interchange baru untuk hubungan substitusi produk"
 summary: "menguji proses pendaftaran hubungan substitusi antara dua produk dengan Show for all company active."
 status: draft

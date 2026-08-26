@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-OC-003
 menu: omni-other-cost
 menu_name: "Other Cost"
+test_type: happy
 title: "UPDATE — Name + Description"
 summary: "Edit Other Cost by Code; ubah Name; Description = automation playwright; Save All. Jangan ubah COA/Active (auto-save watcher)."
 status: draft

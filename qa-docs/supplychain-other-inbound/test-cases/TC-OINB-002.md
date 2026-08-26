@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-OINB-002
 menu: supplychain-other-inbound
 menu_name: "Other Inbound"
+test_type: happy
 title: "Verify edit + Inbound Detail (Select Product bila ada)"
 summary: "Buka dokumen dari CREATE fixture; verifikasi Basic Info + Inbound Detail; Select Product jika slot UI ada (AS-IS sering absen)."
 status: draft

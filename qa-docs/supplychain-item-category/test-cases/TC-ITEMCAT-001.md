@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ITEMCAT-001
 menu: supplychain-item-category
 menu_name: "Item Category"
+test_type: happy
 title: "Create Item Category"
 summary: "Create new Item Category (Code + Name + Active) lalu verifikasi tampil di datalist."
 status: draft

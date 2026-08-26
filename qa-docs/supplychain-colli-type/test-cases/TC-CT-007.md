@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-007
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: negative
 title: "Active OFF ditolak jika Colli Type sudah dipakai Colli code dari New Colli inbound"
 summary: "Setelah New Colli di Purchase Inbound memakai type ini, Active OFF ditolak selama Colli code masih ada."
 status: draft

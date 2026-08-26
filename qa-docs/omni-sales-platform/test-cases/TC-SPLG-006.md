@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-006
 menu: omni-sales-platform
 menu_name: "Platform Sales Order"
+test_type: edge
 title: "Memastikan Interaksi Single-Active Toggle antar Pill Buttons di Sales Platform"
 summary: "Verifikasi perpindahan antar-pill (Failed Process, Failed Sync, Ready to Process, Net Sales < COGS) hanya mengaktifkan satu panel filter secara bergantian di Sales Platform."
 status: draft

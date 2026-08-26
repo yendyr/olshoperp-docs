@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-OD-002
 menu: omni-other-discount
 menu_name: "Other Discount"
+test_type: happy
 title: "CREATE — Code/Name + Other Discount COA (All Stores)"
 summary: "Create Other Discount unik AT-OD-*; pilih COA; set All Stores; Description automation playwright; Active ON; Save & Next."
 status: draft

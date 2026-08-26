@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PTHIST-002
 menu: supplychain-product-transaction-history
 menu_name: "Product Transaction History"
+test_type: happy
 title: "Choose Product → KPI data + tab Mutation"
 summary: "Pilih Product; verifikasi GET item-transaction-history/data?product_id=; SKU terisi; switch tab Mutation."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-020
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "OFF Enable Variations — import Default ON, zero relation"
 summary: "Path import (bukan manual create). Setelah row jadi parent/child Default, OFF+Save mengikuti identitas SKU yang sama dengan DRAFT TC-SYSPROD-013."
 status: draft

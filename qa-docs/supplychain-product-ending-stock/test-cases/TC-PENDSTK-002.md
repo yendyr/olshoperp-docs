@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PENDSTK-002
 menu: supplychain-product-ending-stock
 menu_name: "Product Ending Stock"
+test_type: happy
 title: "Switch tab By SKU + verify kolom agregat"
 summary: "Pindah ke tab By SKU; verifikasi API by-sku + kolom On hand / ATS / Availability."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCN-006
 menu: accounting-credit-note
 menu_name: "Credit Note"
+test_type: happy
 title: "CREATE+APPROVE — CN hanya Free COA (tanpa baris Cash/Bank) berhasil di-approve"
 summary: "Create CN, isi Free COA saja (tanpa Cash/Bank), amount > 0, Open, Approve harus lolos."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-002
 menu: system-product
 menu_name: "System Product"
+test_type: happy
 title: Membuat SKU Variant 4 warna di datalist System Product (SKU-EMBER)
 summary: Create parent SKU → enable Warna → 4 opsi warna → Save All → 5 baris SKU di datalist
 status: review

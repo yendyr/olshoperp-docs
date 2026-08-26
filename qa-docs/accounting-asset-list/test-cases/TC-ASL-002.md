@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASL-002
 menu: accounting-asset-list
 menu_name: "Asset List"
+test_type: happy
 title: "FILTER — pilih warehouse → kolom Asset Code + Unit Price"
 summary: "Pilih warehouse; datalist load; kolom Asset Code, System Product, Unit Price, Latest Calculation."
 status: approved

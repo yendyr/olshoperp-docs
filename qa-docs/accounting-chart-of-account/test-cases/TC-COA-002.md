@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-COA-002
 menu: accounting-chart-of-account
 menu_name: "COA"
+test_type: happy
 title: "CREATE — COA baru Code/Name/Class"
 summary: "Create COA unik AT-COA-*; pilih Class; Description automation playwright; Save & Next → edit URL."
 status: draft

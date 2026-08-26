@@ -1,8 +1,9 @@
-﻿---
+---
 doc_type: e2e-test-case
 tc_code: TC-CBRAM-003
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: edge
 title: "Skip-on-tie — dua kandidat GL AP/AR nominal & tanggal sama"
 summary: "Jika >1 kandidat GL eligible dengan amount+date sama, bank statement tidak auto-match"
 status: draft

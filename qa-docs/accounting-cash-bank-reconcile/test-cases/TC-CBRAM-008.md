@@ -1,8 +1,9 @@
-﻿---
+---
 doc_type: e2e-test-case
 tc_code: TC-CBRAM-008
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: negative
 title: "GL yang sudah pernah ter-link tidak boleh double-match"
 summary: "Baris GL yang sudah matched tidak boleh auto-match ke bank statement baru dengan nominal sama"
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASMBLY-005
 menu: supplychain-assembly
 menu_name: "Assembly"
+test_type: negative
 title: "Building Origin — WH level 20 (drop off) yang di-set sebagai WIP atau Finish Goods tidak muncul"
 summary: "Drop off level 20 yang di-state sebagai WIP atau FG tidak boleh dipilih sebagai Building Origin."
 status: draft

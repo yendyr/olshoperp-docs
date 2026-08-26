@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-003
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: negative
 title: 'CBR CREATE/APPROVE — fiscal missing atau Closed dulu, belum ke lock'
 summary: 'Create atau Approve Cash/Bank Reconcile gagal di Fiscal Period (pesan fiscal). Jangan muncul pesan CBR lock.'
 status: draft

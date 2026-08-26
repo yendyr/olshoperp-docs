@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MUTIN-002
 menu: supplychain-mutation-inbound
 menu_name: "Purchase Inbound"
+test_type: happy
 title: "Update header + tambah detail Select Product"
 summary: "Ubah description lalu tambah produk outstanding PO (satu dokumen edit, sebelum approve)."
 status: draft

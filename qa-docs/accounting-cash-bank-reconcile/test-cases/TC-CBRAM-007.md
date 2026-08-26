@@ -1,8 +1,9 @@
-﻿---
+---
 doc_type: e2e-test-case
 tc_code: TC-CBRAM-007
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: negative
 title: "Side tidak sesuai — Received vs posisi Credit di jurnal"
 summary: "Received hanya boleh auto-match ke Debit; Credit tidak eligible untuk Received"
 status: draft

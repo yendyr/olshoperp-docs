@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-009
 menu: omni-sales-platform
 menu_name: "Platform Sales Order"
+test_type: happy
 title: "Memastikan Tampilan Icon Under Benchmark COGS (cogs-error) pada Kolom Error Flag & Baris Detail Order di Sales Platform"
 summary: "Verifikasi Sales Order platform dengan item under-COGS menampilkan icon dollar (cogs-error) di kolom Error Flag (Failed Process) dan muncul di spesifik baris SKU pada halaman Detail Order."
 status: draft

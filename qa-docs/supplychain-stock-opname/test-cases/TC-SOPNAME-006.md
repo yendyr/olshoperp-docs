@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SOPNAME-006
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
+test_type: edge
 title: "Print Detail — dokumen tanpa baris detail tetap generate"
 summary: "Stock Opname Open qty 0 tetap bisa Print Detail; tabel menampilkan No data available."
 status: draft

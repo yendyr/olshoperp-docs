@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-REALSTK-005
 menu: supplychain-real-stock
 menu_name: "Real Time Stock"
+test_type: happy
 title: "By SKU — shell WH/Sales/ALL + Buildings Multiselect"
 summary: "Switch tab By SKU; verifikasi tombol WH Team / Sales Team / ALL; placeholder Buildings (max 5)."
 status: draft

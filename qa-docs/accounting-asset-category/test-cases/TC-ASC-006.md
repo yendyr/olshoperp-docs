@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASC-006
 menu: accounting-asset-category
 menu_name: "Asset Category"
+test_type: happy
 title: "Audit Log — buka slideover dari edit"
 summary: "Dari record deleted (view) atau create ulang singkat; buka Audit Log di sidenav."
 status: approved

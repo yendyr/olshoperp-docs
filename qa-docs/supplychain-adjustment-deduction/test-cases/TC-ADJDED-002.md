@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ADJDED-002
 menu: supplychain-adjustment-deduction
 menu_name: "Stock Deduction"
+test_type: happy
 title: "Update Stock Deduction header (Description / Open)"
 summary: "Update Description dokumen hasil create; opsional status Open."
 status: draft

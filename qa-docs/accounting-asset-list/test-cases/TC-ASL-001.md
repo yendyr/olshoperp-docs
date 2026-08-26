@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASL-001
 menu: accounting-asset-list
 menu_name: "Asset List"
+test_type: happy
 title: "VIEW — shell warehouse gate tanpa Create"
 summary: "Load /accounting/asset-list; verifikasi Choose Warehouse + Apply; tidak ada Create."
 status: approved

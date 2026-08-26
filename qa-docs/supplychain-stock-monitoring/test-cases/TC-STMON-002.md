@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-STMON-002
 menu: supplychain-stock-monitoring
 menu_name: "Dev - Stock Monitoring"
+test_type: happy
 title: "Pilih warehouse → datalist qty breakdown + Latest Calculation"
 summary: "Pilih warehouse WH Gayungsari (Apply otomatis/manual) → datalist load dengan kolom Inbound/Transfer/Used/Availability + banner Latest Calculation."
 status: draft

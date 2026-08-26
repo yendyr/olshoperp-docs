@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-WHSTR-002
 menu: supplychain-warehouse-structure
 menu_name: "Warehouse Structure"
+test_type: happy
 title: "Update Warehouse Structure"
 summary: "Mengubah informasi kode, nama, tipe, atau status relasi kompabilitas distribusi pada data struktur gudang yang telah terdaftar."
 status: draft

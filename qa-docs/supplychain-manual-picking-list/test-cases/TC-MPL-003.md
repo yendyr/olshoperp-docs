@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MPL-003
 menu: supplychain-manual-picking-list
 menu_name: "Manual Picking List"
+test_type: happy
 title: "Add Available Product + Transfer Qty ke detail"
 summary: "Menambah line picking via Available Products (atau Select Product fallback); stok di-reserve."
 status: draft

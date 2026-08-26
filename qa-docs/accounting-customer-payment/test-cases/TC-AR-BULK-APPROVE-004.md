@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-AR-BULK-APPROVE-004
 menu: accounting-customer-payment
 menu_name: "Account Receive"
+test_type: edge
 title: "Tombol bulk Approve inactive tanpa seleksi, active setelah pilih Open"
 summary: "Verifikasi tombol Approve (ikon centang di atas tabel) tidak aktif tanpa seleksi, dan aktif setelah minimal satu AR Open dipilih."
 status: draft

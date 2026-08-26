@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MTEX-001
 menu: supplychain-mutation-transfer-external
 menu_name: "External Transfer"
+test_type: happy
 title: "Create External Transfer header (TFE*)"
 summary: "Membuat header transfer external: Origin + Destination; code auto TFE*."
 status: draft

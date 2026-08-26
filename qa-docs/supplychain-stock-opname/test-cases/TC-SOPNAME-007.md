@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SOPNAME-007
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
+test_type: happy
 title: "Print opsi detail — COLLI DEV muncul di action Print"
 summary: "Pada Stock Opname Detail, opsi print COLLI DEV tersedia (SKU / COLLI ID / SID / COLLI DEV)."
 status: draft

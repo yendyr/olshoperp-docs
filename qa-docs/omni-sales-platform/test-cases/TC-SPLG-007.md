@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-007
 menu: omni-sales-platform
 menu_name: "Platform Sales Order"
+test_type: edge
 title: "Memastikan Kondisi Batas (Boundary: Net Sales == COGS, Net Sales > COGS, dan COGS = 0) Tidak Lolos Filter di Sales Platform"
 summary: "Verifikasi logika perbandingan strict (<) dan klausa HAVING SUM(cogs) > 0 mengecualikan SO platform yang impas, untung, atau tanpa master COGS."
 status: draft

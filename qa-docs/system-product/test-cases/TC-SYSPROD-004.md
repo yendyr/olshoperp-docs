@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-004
 menu: system-product
 menu_name: "System Product"
+test_type: happy
 title: "Create New System Product via Web UI Crawling (Form Input, Default Variant, & Active Status)"
 summary: "Pengujian pembuatan System Product baru secara end-to-end melalui simulasi browser crawling UI (isi SKU, Name, Category, COA Group, Unit, Condition) dan verifikasi status produk langsung Active di Datalist."
 status: approved

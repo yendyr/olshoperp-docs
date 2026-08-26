@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASL-004
 menu: accounting-asset-list
 menu_name: "Asset List"
+test_type: happy
 title: "DETAIL — buka /accounting/asset-list/{id} + section"
 summary: "Klik link Asset Code; verifikasi Basic Information, Product Trx History, Certificate, Product Interchange."
 status: approved

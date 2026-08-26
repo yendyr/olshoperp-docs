@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-LOC-002
 menu: supplychain-location
 menu_name: "Location"
+test_type: happy
 title: "Update Processing Location (Code + Name)"
 summary: "Mengubah Code dan Name dari dokumen hasil create; verifikasi datalist mengikuti code baru."
 status: draft

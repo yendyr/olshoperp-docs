@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-011
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Error/gap — child punya stok tapi zero haveRelations: leftover vs soft-delete"
 summary: "SKU sudah ada item stock, belum PR/SO/dll. Expand group: stok tidak boleh hilang/pindah diam-diam."
 status: draft

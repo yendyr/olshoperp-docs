@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ADJDED-003
 menu: supplychain-adjustment-deduction
 menu_name: "Stock Deduction"
+test_type: happy
 title: "Add Available Product + Quantity"
 summary: "Dari Stock Deduction Detail: Available Products → Use → isi Quantity."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-GENCO-001
 menu: generalsetting-general-company
 menu_name: General Company
+test_type: negative
 title: Delete ditolak jika ada relasi transaksi
 summary: Delete shipper JNE ditolak karena masih dipakai di Sales Order
 status: review

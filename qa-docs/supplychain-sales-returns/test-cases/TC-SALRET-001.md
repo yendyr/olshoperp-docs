@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SALRET-001
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
+test_type: happy
 title: "Create Sales Return — scan SO + WH/CCTV"
 summary: "Pilih WH Location + CCTV Location; scan Sales Order eligible (outbound+invoice); POST accounting/sales-returns → edit SR*."
 status: draft

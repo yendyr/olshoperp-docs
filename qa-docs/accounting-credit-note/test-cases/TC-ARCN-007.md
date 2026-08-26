@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCN-007
 menu: accounting-credit-note
 menu_name: "Credit Note"
+test_type: negative
 title: "IMPORT — Excel tetap bank-only; Free COA di GL Acc ditolak"
 summary: "Import GL Acc Equity ditolak; import GL Acc Master Cash/Bank tetap sukses Open type Cash/Bank."
 status: draft

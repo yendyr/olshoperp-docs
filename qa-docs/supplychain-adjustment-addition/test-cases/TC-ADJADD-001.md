@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ADJADD-001
 menu: supplychain-adjustment-addition
 menu_name: "Stock Addition"
+test_type: happy
 title: "Create Stock Addition header (Location Destination)"
 summary: "Membuat dokumen Stock Addition baru dengan Location Destination wajib; code auto-generate (AI*)."
 status: draft

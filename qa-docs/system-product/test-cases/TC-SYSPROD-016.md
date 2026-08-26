@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-016
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "OFF Enable Variations — setelah leftover expand (banyak child Active)"
 summary: "Worst case: leftover + kombinasi baru sudah hidup. OFF tidak boleh collapse mass-delete semua child jadi satu Single."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TIB-001
 menu: supplychain-transfer-inbound
 menu_name: "Transfer Inbound"
+test_type: happy
 title: "Receive Transfer Inbound — Broken/Lost + Approve"
 summary: "Search TFE-5TU41QH5, Show, set Broken/Lost, Approve receive."
 status: draft

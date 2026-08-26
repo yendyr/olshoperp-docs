@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-015
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: cross-menu
 title: 'LOCK SCOPE — Account A di tanggal luar Period CBR tetap muncul (Journal, Account Payment, Account Receive)'
 summary: 'REOPEN: Account A harus tetap pilihable di D_out (fiscal Open, di luar Period CBR). Transaksi boleh.'
 status: draft

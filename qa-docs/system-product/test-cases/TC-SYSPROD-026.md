@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-026
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "Import New — satu file campur: Single-eligible + skip + row gagal (partial)"
 summary: "Auto-default hanya row eligible. Skip dan error tidak boleh menggagalkan / merusak row sukses."
 status: draft

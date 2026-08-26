@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-014
 menu: system-product
 menu_name: "System Product"
+test_type: edge
 title: "OFF Enable Variations — child punya stok, zero haveRelations"
 summary: "Stok di child bukan syarat leftover/haveRelations. OFF tidak boleh menghilangkan Stock ID/qty atau memindahkan stok diam-diam ke parent."
 status: draft

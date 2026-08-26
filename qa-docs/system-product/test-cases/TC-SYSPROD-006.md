@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-006
 menu: system-product
 menu_name: "System Product"
+test_type: happy
 title: "Import New — Single-eligible + Default ON → parent -(PARENT) + child = SKU file"
 summary: "Happy path Import New (bukan Update). Row tanpa variant eksplisit, bukan parent row lain, jadi Variant Default sama create manual."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASC-002
 menu: accounting-asset-category
 menu_name: "Asset Category"
+test_type: happy
 title: "CREATE — Asset Category + Depreciation Details"
 summary: "Create kategori baru dengan method Straight Line dan parameter depresiasi."
 status: approved

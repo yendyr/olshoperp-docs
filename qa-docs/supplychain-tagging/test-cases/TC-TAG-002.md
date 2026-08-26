@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TAG-002
 menu: supplychain-tagging
 menu_name: "Tagging"
+test_type: happy
 title: "Update Tagging"
 summary: "Mengubah Code dan Tagging Name pada data Tagging yang sudah dibuat sebelumnya."
 status: draft

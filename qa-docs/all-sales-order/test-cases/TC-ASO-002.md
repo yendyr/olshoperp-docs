@@ -1,5 +1,6 @@
 ---
 tc_code: TC-ASO-002
+test_type: happy
 title: Memastikan Re-check Failed Process Mengupdate Error Flag Unavailable Stock Setelah Stok Ditambahkan via Stock Opname
 menu_slug: all-sales-order
 status: draft

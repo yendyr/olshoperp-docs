@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASO-004
 menu: all-sales-order
 menu_name: "All Sales Order"
+test_type: happy
 title: "Memastikan Visibility, Counter & Posisi Pill Button Net Sales < COGS"
 summary: "Verifikasi tombol pill Net Sales < COGS muncul di urutan ke-4, berstatus warning (kuning), dan counter menampilkan jumlah SO under COGS yang akurat."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SOPNAME-005
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
+test_type: happy
 title: "Print Detail — dokumen Stock Opname sesuai layout template user"
 summary: "Ikon Print Detail di Edit menghasilkan printout header + tabel detail tanpa error."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MTSCR-002
 menu: supplychain-mutation-transfer-scrap
 menu_name: "Transfer Broken"
+test_type: happy
 title: "Update status + tambah detail Select Product"
 summary: "Status Open (jika tersedia) lalu Select Product — description locked AS-IS on edit."
 status: draft

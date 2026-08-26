@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-AR-BULK-APPROVE-002
 menu: accounting-customer-payment
 menu_name: "Account Receive"
+test_type: edge
 title: "Bulk approve mix Open + Approved → partial success + error detail"
 summary: "Bulk approve kombinasi 5 Open + 3 Approved; hanya Open yang berubah; sistem tampilkan feedback partial (error_count / dialog)."
 status: draft

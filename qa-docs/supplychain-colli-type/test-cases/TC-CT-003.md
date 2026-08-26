@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-003
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: happy
 title: "Create kedua Colli Type PLT / Pallet tanpa Set as Default Data — Default OFF"
 summary: "Create type ke-2 tanpa set default: Default Data tetap OFF."
 status: draft

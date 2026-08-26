@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-GENCO-002
 menu: generalsetting-general-company
 menu_name: 'General Company'
+test_type: happy
 title: 'Create General Company sebagai Customer saja'
 summary: 'Buat partner baru dengan role Customer ON, role lain OFF'
 status: review

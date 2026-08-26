@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-005
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: negative
 title: "Create Colli Type — Code atau Name kosong diblok save"
 summary: "Code dan Name wajib; kosongkan salah satu lalu simpan harus ditolak."
 status: draft

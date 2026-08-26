@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-BSR-001
 menu: supplychain-bundle-stock-report
 menu_name: "Bundle Stock Report"
+test_type: happy
 title: "Buka Bundle Stock Report + verifikasi kolom read-only"
 summary: "Memastikan laporan Product Bundle load; kolom Availability/Unit/Update At tampil; tanpa Create/warehouse."
 status: draft

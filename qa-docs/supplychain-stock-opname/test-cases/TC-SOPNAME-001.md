@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SOPNAME-001
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
+test_type: happy
 title: "Create Stock Opname header (Building Origin)"
 summary: "Membuat dokumen Stock Opname baru dengan Building Origin wajib; code auto-generate (SP*)."
 status: draft

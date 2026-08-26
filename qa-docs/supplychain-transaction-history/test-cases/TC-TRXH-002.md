@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TRXH-002
 menu: supplychain-transaction-history
 menu_name: "BETA - Transaction History"
+test_type: happy
 title: "Filter Building + Apply → warehouse_id"
 summary: "Pilih Building (Gayungsari) lalu Apply; request GET transaction-history?warehouse_id= sukses."
 status: draft

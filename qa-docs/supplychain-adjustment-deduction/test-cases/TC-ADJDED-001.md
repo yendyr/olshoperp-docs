@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ADJDED-001
 menu: supplychain-adjustment-deduction
 menu_name: "Stock Deduction"
+test_type: happy
 title: "Create Stock Deduction header (Building Origin)"
 summary: "Membuat dokumen Stock Deduction baru dengan Building Origin wajib; code auto-generate (AO*)."
 status: draft

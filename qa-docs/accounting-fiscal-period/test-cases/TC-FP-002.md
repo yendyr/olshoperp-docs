@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-FP-002
 menu: accounting-fiscal-period
 menu_name: "Fiscal Period"
+test_type: happy
 title: "CREATE — pastikan periode December 2024 (01–31 Dec 2024)"
 summary: "Idempotent: search December 2024; jika belum ada, create Name=December 2024, Start=01-12-2024, End=31-12-2024; Description=automation playwright."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-OC-002
 menu: omni-other-cost
 menu_name: "Other Cost"
+test_type: happy
 title: "CREATE — Code/Name + Other Cost COA (All Stores)"
 summary: "Create Other Cost unik AT-OC-*; pilih Expense COA; All Stores; Description automation playwright; Active ON; Save & Next."
 status: draft

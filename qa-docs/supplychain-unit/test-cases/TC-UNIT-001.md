@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-UNIT-001
 menu: supplychain-unit
 menu_name: "Unit"
+test_type: happy
 title: "Create new unit"
 summary: "Buat unit baru (Code, Name, Unit Class, Conversion Rate, Description, Active) lalu verifikasi tampil di datalist."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASO-006
 menu: all-sales-order
 menu_name: "All Sales Order"
+test_type: happy
 title: "Memastikan Deaktivasi Filter Pill (Toggle OFF) Mengembalikan Seluruh Data Sales Order"
 summary: "Verifikasi klik ulang pada pill aktif menghapus param net_sales_below_cogs dan mengembalikan tampilan datalist semula."
 status: draft

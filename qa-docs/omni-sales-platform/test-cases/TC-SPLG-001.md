@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-001
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
+test_type: happy
 title: "LOG DATA — kolom Total Order (platform ALL count) tampil di Sync Log"
 summary: "Slideover Log Data menampilkan kolom count order per job (AC card: Platform Total)."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-016
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: cross-menu
 title: 'LOCK SCOPE — Account B (COA lain) di tanggal Period CBR tetap boleh'
 summary: 'Tanggal D_in (period lock Account A): Account B tidak kena lock; Journal/AP/AR boleh.'
 status: draft

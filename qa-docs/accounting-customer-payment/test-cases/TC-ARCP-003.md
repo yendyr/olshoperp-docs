@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCP-003
 menu: accounting-customer-payment
 menu_name: Account Receive
+test_type: happy
 title: Bulk use — insert beberapa SI dari modal Available (checkbox + Use)
 summary: Centang beberapa SI di modal Available → Use footer → detail terinsert full amount
 status: review

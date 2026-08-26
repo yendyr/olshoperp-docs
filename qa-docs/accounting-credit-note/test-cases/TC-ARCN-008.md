@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCN-008
 menu: accounting-credit-note
 menu_name: "Credit Note"
+test_type: cross-menu
 title: "E2E — Complete Sales Return billed → auto-generate Credit Note type COA"
 summary: "E2E General: SO → SI billed → Sales Return billed → klik Complete → auto CN Approved type COA (Sales COA bukan Master Cash/Bank)."
 status: draft

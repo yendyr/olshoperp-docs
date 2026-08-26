@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PCG-005
 menu: accounting-product-coa-group
 menu_name: "Product COA Group"
+test_type: happy
 title: "Soft DELETE + Show deleted data"
 summary: "Bulk soft-delete baris automation; hilang dari list aktif; muncul saat Show deleted ON."
 status: approved

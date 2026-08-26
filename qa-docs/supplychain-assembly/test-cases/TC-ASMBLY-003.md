@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASMBLY-003
 menu: supplychain-assembly
 menu_name: "Assembly"
+test_type: happy
 title: "Add Finish Goods detail + update QTY"
 summary: "Di Assembly Detail: pilih Select Product (Header BOM) → bulk-fifo; lalu ubah QTY inline (contoh AS-6A56F627 → QTY=10)."
 status: draft

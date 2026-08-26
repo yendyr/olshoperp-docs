@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASMBLY-006
 menu: supplychain-assembly
 menu_name: "Assembly"
+test_type: cross-menu
 title: "Isolasi — filter Building Origin Assembly tidak bocor ke Transfer Internal / Transfer External"
 summary: "Selector gudang TI dan TE tidak memakai filter Assembly (level 20 + exclude WIP/FG khusus Assembly)."
 status: draft

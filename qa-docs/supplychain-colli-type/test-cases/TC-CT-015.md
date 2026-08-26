@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-015
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: cross-menu
 title: "Audit Log mencatat create, update field, toggle Default/Active/Show for all company, dan soft delete"
 summary: "Tiap aksi master Colli Type muncul di Audit Log (before/after), bukan hanya save sukses tanpa jejak."
 status: draft
@@ -14,7 +15,8 @@ automated_spec: null
 execution_company:
   id: 112
   code: FAT
-related_menus: []
+related_menus:
+  - gate-global-audit-log
 preconditions:
   - "User login: playwright@gmail.com / 12345678."
   - "Company aktif: FAT (id: 112)."

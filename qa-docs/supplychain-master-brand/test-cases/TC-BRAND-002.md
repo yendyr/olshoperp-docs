@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-BRAND-002
 menu: supplychain-master-brand
 menu_name: "Master Brand"
+test_type: happy
 title: "Update Name + Description Brand"
 summary: "Mengubah name/description brand hasil create; verifikasi datalist mengikuti name baru."
 status: draft

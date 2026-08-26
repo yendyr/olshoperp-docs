@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-STMON-004
 menu: supplychain-stock-monitoring
 menu_name: "Dev - Stock Monitoring"
+test_type: happy
 title: "Buka detail item stock → tab Product Trx History / Certificate"
 summary: "Dari datalist, klik link SKU AUTO-SKU001 ke halaman detail; verifikasi tab Product Trx History, Certificate, Product Interchange."
 status: draft

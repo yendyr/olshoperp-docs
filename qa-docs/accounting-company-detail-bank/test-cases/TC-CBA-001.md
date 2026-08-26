@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBA-001
 menu: accounting-company-detail-bank
 menu_name: "Cash/Bank Account"
+test_type: happy
 title: "VIEW — buka datalist Cash/Bank Account"
 summary: "Load /accounting/company-detail-bank; verifikasi Create + kolom Type/Label/Curr/COA."
 status: draft

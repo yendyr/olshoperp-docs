@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-DWL-002
 menu: supplychain-dimension-and-weight-label
 menu_name: "Dimension & Weight Label"
+test_type: happy
 title: "Update Dimension & Weight Label"
 summary: "Mengubah Code dan Name pada Dimension & Weight Label yang sudah dibuat sebelumnya."
 status: draft

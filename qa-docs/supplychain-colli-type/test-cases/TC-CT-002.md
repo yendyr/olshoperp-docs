@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-002
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: happy
 title: "Create pertama Colli Type BOX — Default ON, Active ON, Show for all company OFF"
 summary: "Jika company belum punya Colli Type, create Code BOX / Name Box tersimpan dengan Set as Default Data ON."
 status: draft

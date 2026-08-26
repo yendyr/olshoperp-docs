@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASO-010
 menu: all-sales-order
 menu_name: "All Sales Order"
+test_type: happy
 title: "Memastikan Tampilan Icon Under Benchmark COGS (cogs-error) pada Kolom Error Flag & Baris Detail Item Order"
 summary: "Verifikasi Sales Order dengan item under-COGS menampilkan icon dollar (cogs-error) di kolom Error Flag (Failed Process) dan muncul di spesifik baris SKU pada halaman Detail Order."
 status: draft

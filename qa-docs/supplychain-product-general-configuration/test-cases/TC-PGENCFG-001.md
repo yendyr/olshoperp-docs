@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PGENCFG-001
 menu: supplychain-product-general-configuration
 menu_name: "Product General Configuration"
+test_type: happy
 title: "Create Product General Configuration"
 summary: "Buat Product General Configuration baru dengan tipe single."
 status: draft

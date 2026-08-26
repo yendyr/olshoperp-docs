@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-WHSTR-001
 menu: supplychain-warehouse-structure
 menu_name: "Warehouse Structure"
+test_type: happy
 title: "Create Warehouse Structure"
 summary: "Membuat struktur atau area gudang baru untuk memetakan hierarki tata letak fisik tempat penyimpanan barang di dalam sistem ERP."
 status: draft

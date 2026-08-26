@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SOPNAME-002
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
+test_type: happy
 title: "Update Stock Opname header (Description / status Open)"
 summary: "Memperbarui Description dokumen Stock Opname hasil create dan opsional set status Open."
 status: draft

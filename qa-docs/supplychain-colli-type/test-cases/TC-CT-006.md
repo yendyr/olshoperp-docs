@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CT-006
 menu: supplychain-colli-type
 menu_name: "Colli Type"
+test_type: negative
 title: "Create Colli Type — Code duplikat di company yang sama ditolak"
 summary: "Code unik per company; create dengan Code yang sudah ada harus reject unique."
 status: draft

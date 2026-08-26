@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-PMUTSTK-001
 menu: supplychain-product-mutation-stock
 menu_name: "Stock History"
+test_type: happy
 title: "Buka Stock History — shell filter Product/Warehouse"
 summary: "Load Stock History; verifikasi Choose Product + Filter Building + Show data as + Select Period + Apply; tanpa Create."
 status: draft

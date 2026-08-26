@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBA-003
 menu: accounting-company-detail-bank
 menu_name: "Cash/Bank Account"
+test_type: happy
 title: "UPDATE — ubah Label + Description"
 summary: "Edit account hasil CREATE; ubah Label + Description; Save All."
 status: draft

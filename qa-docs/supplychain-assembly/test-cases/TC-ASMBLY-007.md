@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ASMBLY-007
 menu: supplychain-assembly
 menu_name: "Assembly"
+test_type: regression
 title: "Regresi — Single Rack Fulfillment & FIFO: origin bukan Outrack / WIP (menu selain Assembly)"
 summary: "MPL, TI, TE, Outbound External manual, Stock Deduction: alokasi origin tidak boleh dari WH yang di-state Outrack atau WIP."
 status: draft

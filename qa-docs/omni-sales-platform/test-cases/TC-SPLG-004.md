@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SPLG-004
 menu: omni-sales-platform
 menu_name: "Platform Sales Order"
+test_type: happy
 title: "Memastikan Akurasi Filter Datalist saat Pill Net Sales < COGS Aktif di Sales Platform (Positive Filter)"
 summary: "Verifikasi pengaktifan pill Net Sales < COGS mengirim query param type=platform&net_sales_below_cogs=true dan hanya menampilkan SO platform dengan Total Net Sales < Total COGS."
 status: draft

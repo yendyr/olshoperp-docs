@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-VAR-006
 menu: supplychain-variant
 menu_name: "Master Variant"
+test_type: negative
 title: "Create/Edit Default Variant ON + opsi > 1 — save ditolak"
 summary: "Default ON tidak tersimpan jika Option Name lebih dari satu; notifikasi jelas."
 status: draft

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-010
 menu: system-product
 menu_name: "System Product"
+test_type: negative
 title: "Error — Default group hitung ke max 3 types; group ke-4 ditolak (GAP-SP-06 FE only)"
 summary: "Default + 2 group = 3. Tambah group ke-4 harus ditolak. Cek FE vs BE (GAP-SP-06 partial)."
 status: draft

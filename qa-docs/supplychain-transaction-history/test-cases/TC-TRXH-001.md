@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-TRXH-001
 menu: supplychain-transaction-history
 menu_name: "BETA - Transaction History"
+test_type: happy
 title: "Buka Transaction History — shell filter + kolom"
 summary: "Load laporan; verifikasi filter Building/Period/Type + Apply; tanpa Create; kolom Date/Trx. Code/Type/Product tampil."
 status: draft

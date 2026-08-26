@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-STMON-003
 menu: supplychain-stock-monitoring
 menu_name: "Dev - Stock Monitoring"
+test_type: happy
 title: "Search SKU + klik Availability → modal colli"
 summary: "Setelah warehouse dipilih, search AUTO-SKU001; klik angka Availability biru; modal breakdown colli tampil."
 status: draft

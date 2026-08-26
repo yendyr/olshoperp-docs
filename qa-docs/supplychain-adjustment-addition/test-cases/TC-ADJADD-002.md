@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ADJADD-002
 menu: supplychain-adjustment-addition
 menu_name: "Stock Addition"
+test_type: happy
 title: "Update Stock Addition header (Description / status Open)"
 summary: "Memperbarui Description dokumen Stock Addition hasil create dan opsional set status Open."
 status: draft

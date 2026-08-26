@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-BRAND-001
 menu: supplychain-master-brand
 menu_name: "Master Brand"
+test_type: happy
 title: "Create Brand baru"
 summary: "Mendaftarkan master merek produk (name + description + Active)."
 status: draft

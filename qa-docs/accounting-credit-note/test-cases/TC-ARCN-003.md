@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCN-003
 menu: accounting-credit-note
 menu_name: "Credit Note"
+test_type: edge
 title: "EDIT — campur baris Cash/Bank dan Free COA dalam satu CN"
 summary: "Satu CN menampilkan type COA (Equity) dan type Cash/Bank tanpa duplikat GL."
 status: draft

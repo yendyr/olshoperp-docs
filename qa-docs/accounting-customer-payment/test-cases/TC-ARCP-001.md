@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCP-001
 menu: accounting-customer-payment
 menu_name: Account Receive
+test_type: happy
 title: Single use — insert Sales Invoice dari modal Available Sales Invoice
 summary: Use per baris di modal Available SI → alokasi amount → detail AR terinsert
 status: review

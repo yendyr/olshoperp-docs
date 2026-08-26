@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-QCPROC-002
 menu: supplychain-qc-procedure
 menu_name: "QC Procedure"
+test_type: happy
 title: "Update header + add Procedure Detail activity"
 summary: "Update Instruction Name + Description; tambah activity Sequence di Procedure Detail (digabung)."
 status: draft

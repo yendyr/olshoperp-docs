@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-COA-003
 menu: accounting-chart-of-account
 menu_name: "COA"
+test_type: happy
 title: "UPDATE — ubah Name + Description"
 summary: "Edit COA hasil CREATE; ubah Name dan Description; Save All; verifikasi di form."
 status: draft

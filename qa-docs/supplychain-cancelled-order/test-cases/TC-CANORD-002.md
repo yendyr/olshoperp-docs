@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CANORD-002
 menu: supplychain-cancelled-order
 menu_name: "Cancelled Order"
+test_type: happy
 title: "Search Cancelled Order by SO code"
 summary: "Mencari SO di datalist Cancelled Order; baris tetap Void/Rejected."
 status: draft

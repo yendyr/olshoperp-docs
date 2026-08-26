@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-WARRANT-001
 menu: supplychain-warranty
 menu_name: "Warranty"
+test_type: happy
 title: "Create Master Warranty baru"
 summary: "Mendaftarkan label garansi produk (code + name) agar bisa dipakai di Product Configuration dan Purchase Order."
 status: draft

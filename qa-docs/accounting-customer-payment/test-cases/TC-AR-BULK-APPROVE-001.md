@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-AR-BULK-APPROVE-001
 menu: accounting-customer-payment
 menu_name: "Account Receive"
+test_type: happy
 title: "Bulk approve 10 AR status Open → Approved + notifikasi sukses"
 summary: "Centang 10 AR Open, bulk Approve, verifikasi semua jadi Approved dan toast sukses."
 status: draft

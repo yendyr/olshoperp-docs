@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SALRET-002
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
+test_type: happy
 title: "Update Restock Qty — auto-save + toast Finance"
 summary: "Di edit SR open: ubah Restock Qty (NumberSpinner); verifikasi PATCH details + toast Waiting for Finance; tanpa tombol Complete."
 status: draft

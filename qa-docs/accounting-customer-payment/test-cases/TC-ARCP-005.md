@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-ARCP-005
 menu: accounting-customer-payment
 menu_name: "Account Receive"
+test_type: happy
 title: "CREATE — PT. Customer Lumi 001 + Available SI Use + Bank BCA 001 + Approve"
 summary: "Warm-up W1 CBR: Create AR; customer PT. Customer Lumi 001; Available SI bulk Use; Receiving Destination Bank BCA 001; Open; Approve; search datalist."
 status: approved

@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-VAR-001
 menu: supplychain-variant
 menu_name: "Variant"
+test_type: happy
 title: "Create new Variant Group"
 summary: "Menambahkan jenis variasi baru (seperti warna atau ukuran) beserta pilihan opsinya agar produk bisa dibedakan jenisnya dengan rapi di sistem."
 status: draft

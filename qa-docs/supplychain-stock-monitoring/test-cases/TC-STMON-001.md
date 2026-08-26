@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-STMON-001
 menu: supplychain-stock-monitoring
 menu_name: "Dev - Stock Monitoring"
+test_type: happy
 title: "Buka Stock Monitoring — shell warehouse gate"
 summary: "Load report; verifikasi filter Warehouse Name + tombol Apply; tanpa Create; tabel belum render sampai warehouse dipilih."
 status: draft

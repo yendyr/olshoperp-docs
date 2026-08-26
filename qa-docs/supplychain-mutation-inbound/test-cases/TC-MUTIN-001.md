@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-MUTIN-001
 menu: supplychain-mutation-inbound
 menu_name: "Purchase Inbound"
+test_type: happy
 title: "Create Purchase Inbound header (IN*)"
 summary: "Membuat GRN header: Supplier + Location Destination; code auto IN*."
 status: draft

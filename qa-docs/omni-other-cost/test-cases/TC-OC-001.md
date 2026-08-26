@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-OC-001
 menu: omni-other-cost
 menu_name: "Other Cost"
+test_type: happy
 title: "VIEW — buka datalist Other Cost"
 summary: "Load /omni/other-cost; verifikasi Create dan kolom code/Name/Description/COA/Applied Store."
 status: draft

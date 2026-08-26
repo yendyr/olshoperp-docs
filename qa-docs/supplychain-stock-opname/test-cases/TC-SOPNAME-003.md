@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SOPNAME-003
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
+test_type: happy
 title: "Add Available Product + Adjustment Qty on existing Opname"
 summary: "Edit dokumen Stock Opname (SP-6A56E465): buka Available Products, Use 1 product, isi Adjustment Quantity, verifikasi baris di Opname Detail."
 status: draft

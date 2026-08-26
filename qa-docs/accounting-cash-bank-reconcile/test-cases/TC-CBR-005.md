@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-005
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: cross-menu
 title: 'JOURNAL CREATE — urutan fiscal dulu, lalu CBR lock (manual)'
 summary: 'Journal create: tanggal fiscal Closed gagal pesan fiscal; tanggal D_in + Account A gagal pesan lock + BR.'
 status: draft

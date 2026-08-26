@@ -3,6 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-CBR-002
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
+test_type: happy
 title: "IMPORT — 1 baris Received bank statement (warm-up W4)"
 summary: "Buka BR Open; tab Bank Statement; upload template Received exact amount+date; assert baris muncul (tanpa assert auto-match)."
 status: approved
