@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { prepareSession } from '../../helpers/company-access';
 import {
   STOCK_REMAPPING_DATALIST_PATH,

@@ -1,6 +1,6 @@
-import ExcelJS from 'exceljs';
-import fs from 'fs';
-import path from 'path';
+import * as ExcelJS from 'exceljs';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export type StockRemappingImportRow = {
   origin?: string;

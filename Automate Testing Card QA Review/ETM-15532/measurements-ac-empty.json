@@ -1,6 +1,0 @@
-{
-  "confirmWhenEmpty": true,
-  "confirmTextWhenEmpty": "Processing Order Date is empty. All transaction dates for the imported sales orders will automatically use the current date and time. Are you sure you want to proceed?",
-  "dummyFileAttached": true,
-  "dateEmpty": true
-}
