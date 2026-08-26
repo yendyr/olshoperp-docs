@@ -1,0 +1,38 @@
+# POM Element Registry — Skip Wave Process (Omni)
+# Route: /omni/skip-wave-process
+# Kartu: ETM-15532 — confirmation saat import jika Processing Order Date empty
+# Catatan BUILD: olshoperp-frontend sibling tidak ada; selector diverifikasi run staging.
+
+menu: omni-skip-wave-process
+menu_name: Skip Wave Process
+route: /omni/skip-wave-process
+create_button_mode: none
+pom_helper: tests/helpers/skip-wave-process.ts
+company_default: FAT
+
+elements:
+  processing_order_date:
+    strategy: label_or_datepicker
+    value: Processing Order Date
+    fallback:
+      - input.olshoperp-datepicker-input
+      - input.p-datepicker-input
+    notes: Pojok kiri atas; shared Unassign Wave per company. ETM-15532 izinkan empty.
+
+  import_button:
+    strategy: role
+    role: button
+    name: Import
+
+  empty_date_confirm:
+    strategy: text
+    value: Processing Order Date is empty
+    notes: >-
+      Wording kartu: "Processing Order Date is empty. All transaction dates for
+      the imported sales orders will automatically use the current date and time.
+      Are you sure you want to proceed?"
+
+gotchas:
+  - Halaman upload-only — jangan pakai OlshopDatalist.gotoAndWait (Create)
+  - Processing Order Date persist per company — restore nilai semula setelah tes
+  - Jangan Proceed import dummy sampai shipped; Cancel confirmation

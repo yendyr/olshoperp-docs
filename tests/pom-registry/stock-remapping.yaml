@@ -1,0 +1,46 @@
+# POM Element Registry — Stock Remapping (FA)
+# Route: /accounting/stock-remapping · prefix RM-
+# Kartu: ETM-15584 — Approve gagal baca availability 0 dari alokasi dokumen yang sama
+# Catatan BUILD: olshoperp-frontend sibling tidak ada; selector diverifikasi run staging.
+
+menu: accounting-stock-remapping
+menu_name: Stock Remapping
+route: /accounting/stock-remapping
+create_button_mode: link
+pom_helper: tests/helpers/stock-remapping.ts
+company_default: DEV-STG
+
+elements:
+  create:
+    strategy: role
+    role: link
+    name: Create
+
+  warehouse_origin:
+    strategy: aria-placeholder
+    value: Choose Warehouse
+    fallback:
+      - Choose Building
+      - Lobby Tanrise
+
+  available_products:
+    strategy: text
+    value: Available Products
+
+  remapped_to:
+    strategy: aria-placeholder
+    value: Choose Product
+    notes: Kolom Remapped To di detail / modal Use Product
+
+  approve:
+    strategy: role
+    role: button
+    name: Approve
+
+gotchas:
+  - Modal Available Products sudah 1 baris per Stock ID (DEV-STG: 534154=13, 534155=2)
+  - Tombol Use = class use-button / a11y "Direct Use availableProductIvOut" (kolom action DataTables)
+  - Qty Availability di kolom Pieces — jangan parse Stock ID sebagai qty
+  - Approve wajib hitung reserved milik dokumen ini sebagai stok sah (ETM-15584 / GAP-RM-03)
+  - Origin & Remapped To harus variant 1 parent
+  - Error bug: "Insufficient stock. SKU Origin ... only has 0 base units available for the selected stock."

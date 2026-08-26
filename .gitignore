@@ -11,3 +11,5 @@ tests/.auth/
 
 # Catatan pribadi QA — hanya lokal, JANGAN commit/push
 _local/
+
+.local-node/

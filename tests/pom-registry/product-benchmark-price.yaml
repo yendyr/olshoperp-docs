@@ -1,0 +1,41 @@
+# POM Element Registry — Benchmark COGS
+# Route: /accounting/product-benchmark-price
+# Kartu: ETM-15493 (consumer snapshot di Dev - Sales Order)
+# Catatan BUILD: olshoperp-frontend sibling tidak ada; selector diverifikasi run staging.
+
+menu: accounting-product-benchmark-price
+menu_name: Benchmark COGS
+route: /accounting/product-benchmark-price
+create_button_mode: none
+pom_helper: tests/helpers/product-benchmark-price.ts
+company_default: DEV-STG
+
+elements:
+  global_search:
+    strategy: role
+    role: searchbox
+    fallback:
+      - input[type="search"]
+      - .dataTables_filter input
+
+  show_detail:
+    strategy: text
+    value: Show Detail
+    notes: TableSwitch — Off = Single+Parent; On = +Variant
+
+  data_table:
+    strategy: role
+    role: table
+
+columns:
+  - System Product SKU / Name
+  - Type
+  - COGS
+  - Manual COGS
+  - Manual COGS Expiry
+  - Description
+
+gotchas:
+  - Halaman report tanpa Create — jangan pakai OlshopDatalist.gotoAndWait
+  - Kolom Manual COGS / Expiry TO-BE GAP-BM-14; COGS = nilai efektif
+  - Expiry berlaku sampai 23:59:59 Asia/Jakarta tanggal itu

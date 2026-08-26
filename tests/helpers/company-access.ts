@@ -204,12 +204,21 @@ export async function switchCompanyById(
 
   await openCompanySwitcher(page);
 
-  const companyMenuItem = page.getByRole('menuitem', {
-    name: companyLabel,
-    exact: true,
-  });
+  const search = page.getByPlaceholder(/search company|find company|filter company/i);
+  if (await search.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await search.fill(companyLabel);
+    await page.waitForTimeout(400);
+  }
 
-  await expect(companyMenuItem).toBeVisible();
+  const escaped = companyLabel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const companyMenuItem = page
+    .getByRole('menuitem', { name: companyLabel, exact: true })
+    .or(page.getByRole('menuitem').filter({ hasText: new RegExp(escaped, 'i') }))
+    .first();
+
+  await expect(companyMenuItem, `Company ${companyLabel}`).toBeVisible({
+    timeout: 20_000,
+  });
   await companyMenuItem.click();
 
   // Confirm dialog — copy bisa "Are you sure?" / variasi; tombol Proceed yang stabil

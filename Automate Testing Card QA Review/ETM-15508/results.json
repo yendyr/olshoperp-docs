@@ -1,0 +1,131 @@
+{
+  "config": {
+    "argv": [
+      "/Users/admin/olshoperp-docs/.local-node/bin/node",
+      "/Users/admin/olshoperp-docs/node_modules/.bin/playwright",
+      "test",
+      "tests/specs/warehouse-setting/etm-15508-column-show-hide.spec.ts",
+      "--project=authenticated",
+      "-g",
+      "@ETM-15508",
+      "--output=Automate Testing Card QA Review/ETM-15508/test-results",
+      "--reporter=list",
+      "--reporter=html",
+      "--reporter=json"
+    ],
+    "configFile": "/Users/admin/olshoperp-docs/playwright.config.ts",
+    "rootDir": "/Users/admin/olshoperp-docs/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/Users/admin/olshoperp-docs/tests/global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/admin/olshoperp-docs/Automate Testing Card QA Review/ETM-15508/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "authenticated",
+        "name": "authenticated",
+        "testDir": "/Users/admin/olshoperp-docs/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/specs/**/*.spec.ts"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "specs/warehouse-setting/etm-15508-column-show-hide.spec.ts",
+      "file": "specs/warehouse-setting/etm-15508-column-show-hide.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "ETM-15508 Warehouse Setting Column Show/Hide clip",
+          "file": "specs/warehouse-setting/etm-15508-column-show-hide.spec.ts",
+          "line": 46,
+          "column": 15,
+          "specs": [
+            {
+              "title": "[@ETM-15508] Modal Column Show/Hide tidak terpotong saat hasil search 1 baris",
+              "ok": true,
+              "tags": [
+                "ETM-15508]"
+              ],
+              "tests": [
+                {
+                  "timeout": 240000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "authenticated",
+                  "projectName": "authenticated",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 25902,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-14T01:46:18.123Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d0f5fb75c3238043658b-77c42306d64577aebf18",
+              "file": "specs/warehouse-setting/etm-15508-column-show-hide.spec.ts",
+              "line": 47,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-14T01:46:16.671Z",
+    "duration": 28103.546,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

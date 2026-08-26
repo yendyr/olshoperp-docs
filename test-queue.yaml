@@ -620,3 +620,24 @@ ETM-9394:
   jira_type: Improvement
   summary: "[Technical Requirement - Datalist] Kolom 'Action' di takedown dan diganti dengan bulk action di atas datalist"
 
+
+ETM-15605:
+  menu: all-sales-order
+  intent: new
+  status: ready
+  reuse: []
+  drafts:
+    - PENDING-JENNI-2026082101
+    - PENDING-JENNI-2026082102
+    - PENDING-JENNI-2026082103
+    - PENDING-JENNI-2026082104
+    - PENDING-JENNI-2026082105
+  ready_tcs:
+    - PENDING-JENNI-2026082101
+    - PENDING-JENNI-2026082102
+    - PENDING-JENNI-2026082103
+    - PENDING-JENNI-2026082104
+    - PENDING-JENNI-2026082105
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Dev - Sales Order] Tambahan fitur extract this bundle di halaman detail sales order"

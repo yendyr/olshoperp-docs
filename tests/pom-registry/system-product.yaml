@@ -58,6 +58,22 @@ elements:
     name: Save All
     position: last
 
+  import_button:
+    strategy: role
+    role: button
+    name: Import
+    notes: Datalist TopBar membuka modal Import History; di dalam modal ada Import dropdown lagi (New Product, dll.)
+
+  import_new_product:
+    strategy: text
+    value: Upload File
+    notes: Modal Import History → Import dropdown = Upload File / Download Template. Tipe New Product bisa submenu atau dipilih saat upload.
+
+  import_file_input:
+    strategy: css
+    value: 'input[type="file"]'
+    notes: Upload template New Product (.xlsx)
+
   product_details_section:
     strategy: role
     role: button

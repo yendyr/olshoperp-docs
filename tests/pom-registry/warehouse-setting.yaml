@@ -1,0 +1,39 @@
+# POM Element Registry — Warehouse Setting (SCM Master)
+# Route: /supplychain/setting · API: /supplychain/setting-warehouse-scrap-n-void
+# UI: SCM/Setting/Form.vue — inline PrimeDataTables (bukan CRUD Create).
+# Catatan BUILD: olshoperp-frontend sibling tidak ada di mesin ini;
+# selector diverifikasi saat run staging (ETM-15508).
+
+menu: supplychain-setting
+menu_name: Warehouse Setting
+route: /supplychain/setting
+create_button_mode: none
+pom_helper: tests/helpers/warehouse-setting.ts
+company_default: FAT
+
+elements:
+  global_search:
+    strategy: placeholder
+    value: find something ...
+
+  data_table:
+    strategy: role
+    role: table
+
+  column_show_hide:
+    strategy: role
+    role: button
+    name: Columns Show/Hide
+    notes: Label UI "Columns Show/Hide" (plural). Overlay list + Reset to Default.
+
+  column_panel:
+    strategy: filter
+    has:
+      - button Reset to Default
+      - listitem Out Rack Location
+    notes: Panel teleport ke body; bukan p-overlaypanel / dialog
+
+gotchas:
+  - Halaman tanpa tombol Create — jangan pakai OlshopDatalist.gotoAndWait
+  - Tinggi container tabel mengikuti jumlah row; modal Column Show/Hide bisa terpotong (ETM-15508)
+  - Test data kartu: global search KEBOAN → 1 baris (FAT)

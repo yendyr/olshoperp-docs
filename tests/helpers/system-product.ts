@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { Locator, Page, expect } from '@playwright/test';
 import { dismissStagingBanner } from './company-access';
 import {
@@ -47,6 +49,28 @@ export const PRODUCT_INVENTORY_CONFIGURATION_PATHS: ProductFormPaths = {
 export const SYSTEM_PRODUCT_DATALIST_PATH = SYSTEM_PRODUCT_PATHS.datalistPath;
 export const SYSTEM_PRODUCT_CREATE_PATH = SYSTEM_PRODUCT_PATHS.createPath;
 export const SYSTEM_PRODUCT_EDIT_PATH_PATTERN = SYSTEM_PRODUCT_PATHS.editPathPattern;
+
+export const ETM_15556_RESULTS_DIR = path.join(
+  process.cwd(),
+  'Automate Testing Card QA Review',
+  'ETM-15556',
+);
+
+export type DefaultVariantInfo = {
+  id: number | null;
+  name: string;
+  code: string;
+  option: string;
+};
+
+export type ImportRowValues = {
+  sku: string;
+  name: string;
+  salesCategory: string;
+  productCoaGroup: string;
+  condition: string;
+  primaryUnit: string;
+};
 
 export const PRODUCT_GENERAL_CONFIGURATION_DATALIST_PATH =
   PRODUCT_GENERAL_CONFIGURATION_PATHS.datalistPath;
@@ -857,6 +881,259 @@ export class SystemProductPage {
     }
   }
 
+  get importButton(): Locator {
+    return this.page
+      .getByRole('button', { name: /^Import$/i })
+      .or(this.page.getByRole('link', { name: /^Import$/i }))
+      .or(this.page.getByText(/^Import$/i))
+      .first();
+  }
+
+  async screenshot(fileName: string): Promise<string> {
+    fs.mkdirSync(path.join(ETM_15556_RESULTS_DIR, 'screenshots'), {
+      recursive: true,
+    });
+    const filePath = path.join(ETM_15556_RESULTS_DIR, 'screenshots', fileName);
+    await this.page.screenshot({ path: filePath, fullPage: true });
+    return filePath;
+  }
+
+  async findDefaultVariantInCompany(): Promise<DefaultVariantInfo | null> {
+    const auth = await readAuthFromPage(this.page);
+    const api = getApiUrl();
+    const res = await this.page.request.get(`${api}/supplychain/variant`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${auth.token}`,
+      },
+    });
+    const body = (await res.json().catch(() => null)) as {
+      data?: unknown;
+    } | null;
+    const rows = flattenVariantRows(body?.data);
+    for (const row of rows) {
+      if (!isTruthyDefault(row)) continue;
+      const options = extractVariantOptions(row);
+      return {
+        id: typeof row.id === 'number' ? row.id : Number(row.id) || null,
+        name: String(row.name ?? row.variant_name ?? row.code ?? ''),
+        code: String(row.code ?? ''),
+        option: options[0] ?? '',
+      };
+    }
+    return null;
+  }
+
+  async downloadNewProductTemplate(outPath: string): Promise<string[]> {
+    const auth = await readAuthFromPage(this.page);
+    const api = getApiUrl();
+    const res = await this.page.request.get(
+      `${api}/supplychain/product/download-template`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      },
+    );
+    if (!res.ok()) {
+      throw new Error(
+        `Download template New Product gagal: HTTP ${res.status()}`,
+      );
+    }
+    fs.mkdirSync(path.dirname(outPath), { recursive: true });
+    fs.writeFileSync(outPath, Buffer.from(await res.body()));
+    return readXlsxHeaders(outPath);
+  }
+
+  buildSingleEligibleImportFile(
+    templateHeaders: string[],
+    values: ImportRowValues,
+    outPath: string,
+  ): string[] {
+    const skip = /^(variant type|variant option|variant group|option|parent|parent sku|type|product type)$/i;
+    const row = templateHeaders.map((header) => {
+      const key = normalizeHeader(header);
+      if (!key || skip.test(key)) return '';
+      if (/^(sku|sku code|product sku|system product sku)$/.test(key)) {
+        return values.sku;
+      }
+      if (/^(name|product name|system product name)$/.test(key)) {
+        return values.name;
+      }
+      if (/sales category|item category|^category$/.test(key)) {
+        return values.salesCategory;
+      }
+      if (/coa/.test(key)) {
+        return values.productCoaGroup;
+      }
+      if (/condition/.test(key)) {
+        return values.condition;
+      }
+      if (/primary unit|^unit$|^uom$/.test(key)) {
+        return values.primaryUnit;
+      }
+      return '';
+    });
+    writeXlsx(outPath, templateHeaders, [row]);
+    return row;
+  }
+
+  async importNewProductFile(filePath: string): Promise<{
+    status: number;
+    message: string;
+  }> {
+    await this.gotoDatalist();
+    await this.importButton.scrollIntoViewIfNeeded();
+    await expect(this.importButton, 'Tombol Import datalist').toBeVisible({
+      timeout: 30_000,
+    });
+    await this.importButton.click();
+
+    const importHistoryTab = this.page.getByRole('tab', {
+      name: 'Import History',
+      exact: true,
+    });
+    await expect(importHistoryTab, 'Tab Import History').toBeVisible({
+      timeout: 30_000,
+    });
+
+    const historyPanel = this.page
+      .getByRole('tabpanel', { name: /Import History/i })
+      .first();
+    const modalImport = historyPanel
+      .getByRole('button', { name: /^Import$/i })
+      .or(this.page.getByRole('button', { name: /^Import$/i }).nth(1))
+      .first();
+    await expect(modalImport, 'Tombol Import di modal Import History').toBeVisible({
+      timeout: 20_000,
+    });
+    await modalImport.click();
+    await this.page.waitForTimeout(500);
+
+    const uploadFile = this.page
+      .getByRole('button', { name: /^Upload File$/i })
+      .or(this.page.getByText(/^Upload File$/i))
+      .first();
+    await expect(uploadFile, 'Menu Import → Upload File').toBeVisible({
+      timeout: 15_000,
+    });
+
+    const uploadResponse = this.page.waitForResponse(
+      (response) => {
+        if (response.request().method() !== 'POST') return false;
+        return /supplychain\/product\/import-excel/.test(response.url());
+      },
+      { timeout: 90_000 },
+    );
+
+    const fileChooserPromise = this.page
+      .waitForEvent('filechooser', { timeout: 8_000 })
+      .catch(() => null);
+    await uploadFile.click();
+
+    const newProduct = this.page.getByRole('button', { name: /^New Product$/i });
+    if (await newProduct.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await newProduct.click();
+    }
+
+    const chooser = await fileChooserPromise;
+    if (chooser) {
+      await chooser.setFiles(filePath);
+    } else {
+      const fileInput = this.page.locator('input[type="file"]').last();
+      await expect(fileInput, 'Input file Import New Product').toBeAttached({
+        timeout: 20_000,
+      });
+      await fileInput.setInputFiles(filePath);
+    }
+
+    await this.page.waitForTimeout(500);
+    const submit = this.page.getByRole('button', {
+      name: /^(upload|submit|process)$/i,
+    });
+    if (await submit.first().isVisible().catch(() => false)) {
+      await submit.first().click();
+    }
+
+    const response = await uploadResponse.catch(() => null);
+    if (!response) {
+      return { status: 0, message: 'Tidak ada response import-excel' };
+    }
+    const body = (await response.json().catch(() => null)) as {
+      status?: { error?: number; message?: string };
+      message?: string;
+    } | null;
+    return {
+      status: response.status(),
+      message:
+        body?.status?.message ??
+        body?.message ??
+        `HTTP ${response.status()}`,
+    };
+  }
+
+  async waitForImportProgress(timeoutMs = 180_000): Promise<{
+    done: boolean;
+    raw: unknown;
+  }> {
+    const auth = await readAuthFromPage(this.page);
+    const api = getApiUrl();
+    const started = Date.now();
+    let last: unknown = null;
+    while (Date.now() - started < timeoutMs) {
+      const res = await this.page.request.get(
+        `${api}/supplychain/product/progress`,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${auth.token}`,
+          },
+        },
+      );
+      last = await res.json().catch(() => null);
+      if (isImportProgressDone(last)) {
+        return { done: true, raw: last };
+      }
+      await this.page.waitForTimeout(2_000);
+    }
+    return { done: false, raw: last };
+  }
+
+  async readSkuValue(): Promise<string> {
+    return (await this.systemProductSkuInput.inputValue().catch(() => '')).trim();
+  }
+
+  async isVariationsEnabled(): Promise<boolean> {
+    await this.scrollToProductDetails();
+    return this.variantTypeCombobox.isVisible().catch(() => false);
+  }
+
+  async readSelectedVariantType(): Promise<string> {
+    await this.scrollToProductDetails();
+    const labels = this.page.locator('.multiselect-single-label:visible');
+    const count = await labels.count();
+    for (let i = 0; i < count; i += 1) {
+      const text = ((await labels.nth(i).textContent()) ?? '').trim();
+      if (text && !/choose|e\.g/i.test(text)) {
+        const nearFlavour = this.page
+          .locator('.multiselect')
+          .filter({ has: this.variantTypeCombobox })
+          .locator('.multiselect-single-label')
+          .first();
+        if (await nearFlavour.isVisible().catch(() => false)) {
+          return ((await nearFlavour.textContent()) ?? '').trim();
+        }
+        return text;
+      }
+    }
+    const near = this.page
+      .locator('.multiselect')
+      .filter({ hasText: /flavour|flavor|variant/i })
+      .locator('.multiselect-single-label')
+      .first();
+    return ((await near.textContent().catch(() => '')) ?? '').trim();
+  }
+
   async enableProductBundle(): Promise<void> {
     const label = this.setAsProductBundleLabel;
     await label.scrollIntoViewIfNeeded();
@@ -1410,3 +1687,81 @@ export class SystemProductPage {
     }
   }
 }
+
+function normalizeHeader(header: string): string {
+  return header.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function isTruthyDefault(row: Record<string, unknown>): boolean {
+  const value =
+    row.is_default_variant ??
+    row.is_default ??
+    row.default ??
+    row.isDefault;
+  if (value === true || value === 1 || value === '1') return true;
+  if (typeof value === 'string' && /^(yes|on|true)$/i.test(value)) return true;
+  return false;
+}
+
+function extractVariantOptions(row: Record<string, unknown>): string[] {
+  const raw =
+    row.option_formatted ??
+    row.option_name ??
+    row.options ??
+    row.variant_options ??
+    row.option;
+  if (Array.isArray(raw)) {
+    return raw
+      .map((item) => {
+        if (item && typeof item === 'object') {
+          const obj = item as Record<string, unknown>;
+          return String(obj.name ?? obj.option ?? obj.value ?? '');
+        }
+        return String(item ?? '');
+      })
+      .filter((item) => item && item !== '[object Object]');
+  }
+  if (typeof raw === 'string' && raw.trim()) {
+    return raw.split(/[,|]/).map((part) => part.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+function flattenVariantRows(data: unknown): Record<string, unknown>[] {
+  if (!data) return [];
+  if (Array.isArray(data)) {
+    return data.filter(isPlainRecord);
+  }
+  if (typeof data === 'object') {
+    const obj = data as Record<string, unknown>;
+    for (const key of ['data', 'items', 'rows', 'result']) {
+      if (Array.isArray(obj[key])) {
+        return (obj[key] as unknown[]).filter(isPlainRecord);
+      }
+      if (obj[key] && typeof obj[key] === 'object') {
+        const nested = flattenVariantRows(obj[key]);
+        if (nested.length) return nested;
+      }
+    }
+  }
+  return [];
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isImportProgressDone(payload: unknown): boolean {
+  if (!payload || typeof payload !== 'object') return false;
+  const obj = payload as Record<string, unknown>;
+  const data = (obj.data ?? obj) as Record<string, unknown>;
+  const status = String(data.status ?? obj.status ?? '').toLowerCase();
+  const progress = Number(data.progress ?? data.percentage ?? obj.progress ?? -1);
+  if (['done', 'finish', 'finished', 'completed', 'complete', 'success'].includes(status)) {
+    return true;
+  }
+  if (progress >= 100) return true;
+  if (data.processing === false && progress >= 0) return true;
+  return false;
+}
+

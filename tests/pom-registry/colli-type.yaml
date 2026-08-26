@@ -1,0 +1,82 @@
+# POM Element Registry — Colli Type (SCM Master)
+# Route: /supplychain/colli-type
+# Kartu: ETM-15549 (Show deleted = already deleted; recreate after soft delete)
+# Catatan BUILD: olshoperp-frontend sibling tidak ada; selector diverifikasi run staging.
+# SoT: ETM-15543 comment (supplychain-colli-type-source-of-truth.md) — slug belum di manifest.
+
+menu: supplychain-colli-type
+menu_name: Colli Type
+route: /supplychain/colli-type
+create_path: /supplychain/colli-type/create
+edit_path: /supplychain/colli-type/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/colli-type.ts
+company_default: HUAWEI
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  section:
+    strategy: role
+    role: button
+    name: Colli Type
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  description:
+    strategy: css
+    value: "textarea"
+
+  set_as_default_data:
+    strategy: label
+    value: Set as Default Data
+
+  active:
+    strategy: label
+    value: Active
+
+  show_for_all_company:
+    strategy: label
+    value: Show for all company
+
+  save_and_next:
+    strategy: role
+    role: button
+    name: Save & Next
+    position: last
+
+  save_all:
+    strategy: role
+    role: button
+    name: Save All
+    position: last
+
+  show_deleted:
+    strategy: id
+    value: show_deleted_switch
+    fallback: Show deleted data
+
+  row_delete:
+    strategy: css
+    value: 'td:last-child button[class*="delete-button"]'
+    fallback: Action cell last button (ikon trash, a11y name "Show Delete Modal")
+    notes: Konfirmasi modal Are you sure? → Delete
+
+  already_deleted:
+    strategy: text
+    value: already deleted
+
+notes:
+  - "Description = automation playwright."
+  - "Soft delete unused type → Show deleted data menampilkan already deleted (ETM-15549)."
+  - "Create ulang code yang sudah soft-delete diharapkan sukses (REOPEN finding)."
+  - "Slug supplychain-colli-type belum ada di manifest.yaml — expected dari SOT ETM-15543."

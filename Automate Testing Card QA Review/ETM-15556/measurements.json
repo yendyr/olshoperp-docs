@@ -1,0 +1,59 @@
+{
+  "card": "ETM-15556",
+  "tc": "TC-SYSPROD-006",
+  "menu": "System Product",
+  "route": "/supplychain/product",
+  "company": "DEV-STG",
+  "sku": "ETM15556-IN-20260819082904",
+  "parentSku": "ETM15556-IN-20260819082904-(PARENT)",
+  "defaultVariant": {
+    "id": 2970,
+    "name": "Standard",
+    "code": "STD",
+    "option": "<div class=\"flex\">\n                    <div class=\"px-2 py-1 mx-1 text-xs rounded-md bg-success/20 text-center dark:bg-success/30\">\n                        Standard\n                    </div>\n                </div>"
+  },
+  "templateHeaders": [
+    "System Product SKU",
+    "System Product Name",
+    "Variant Type",
+    "Variant Option",
+    "Type",
+    "Parent",
+    "Unit",
+    "Category",
+    "Price",
+    "Dimension & Weight"
+  ],
+  "importRow": [
+    "ETM15556-IN-20260819082904",
+    "ETM-15556 Import New ETM15556-IN-20260819082904",
+    "",
+    "",
+    "",
+    "",
+    "Pieces",
+    "Hobbies & Collections",
+    "",
+    ""
+  ],
+  "importFile": "/Users/admin/olshoperp-docs/Automate Testing Card QA Review/ETM-15556/fixtures/ETM15556-IN-20260819082904.xlsx",
+  "importHttp": {
+    "status": 0,
+    "message": "Tidak ada response import-excel"
+  },
+  "progress": null,
+  "datalistParent": false,
+  "datalistChild": false,
+  "parentFormSku": null,
+  "variationsOn": null,
+  "variantType": null,
+  "parentEditUrl": null,
+  "ac": [],
+  "verdict": "FAIL",
+  "notes": [
+    "Default Variant: Standard / opsi <div class=\"flex\">\n                    <div class=\"px-2 py-1 mx-1 text-xs rounded-md bg-success/20 text-center dark:bg-success/30\">\n                        Standard\n                    </div>\n                </div>",
+    "Header template: System Product SKU | System Product Name | Variant Type | Variant Option | Type | Parent | Unit | Category | Price | Dimension & Weight",
+    "Import HTTP 0: Tidak ada response import-excel",
+    "apiRequestContext.get: Test timeout of 240000ms exceeded."
+  ]
+}

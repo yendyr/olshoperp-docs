@@ -1,0 +1,48 @@
+# POM Element Registry — General Company
+# Sumber: qa-docs/generalsetting-general-company (requirement review)
+
+menu: generalsetting-general-company
+menu_name: General Company
+route: /generalsetting/general-company
+create_path: /generalsetting/general-company/create
+edit_path: /generalsetting/general-company/edit/:id
+create_button_mode: link
+pom_helper: tests/helpers/general-company.ts
+company_default: DEV-STG
+
+elements:
+  create_button:
+    strategy: role
+    role: link
+    name: Create
+
+  section:
+    strategy: id
+    value: BasicInformation
+
+  code:
+    strategy: id
+    value: code
+
+  name:
+    strategy: id
+    value: name
+
+  description:
+    strategy: id
+    value: description
+
+  recognize_as_supplier:
+    strategy: label
+    value: Supplier
+    note: "Toggle Recognize As: Supplier di Basic Information"
+
+  recognize_as_customer:
+    strategy: label
+    value: Customer
+
+notes:
+  - "Create wajib Code + Name. Default form: Customer dan Supplier ON."
+  - "Save & Next bisa memunculkan dialog incomplete data — lanjutkan."
+  - "Role baru copy COA default dari internal company (requirement §3)."
+  - "Description = automation playwright."

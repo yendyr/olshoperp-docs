@@ -57,6 +57,19 @@ elements:
     name: Save All
     position: last
 
+  child_warehouse_generator:
+    strategy: accordion
+    value: Child Warehouse Generator
+    notes: Prefix Type Numeric/Alphabet bisa beda per level (ETM-8618)
+
+  prefix_type:
+    strategy: text
+    value: Numeric / Alphabet
+
+  prefix:
+    strategy: placeholder
+    value: Prefix
+
   edit_button:
     strategy: id
     value: updateButton

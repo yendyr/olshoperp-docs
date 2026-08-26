@@ -1,0 +1,20 @@
+{
+  "card": "ETM-15532",
+  "menu": "Skip Wave Process",
+  "route": "/omni/skip-wave-process",
+  "company": "FAT (112)",
+  "originalDate": "",
+  "dateAfterClear": "",
+  "confirmWhenEmpty": true,
+  "confirmTextWhenEmpty": "Processing Order Date is empty. All transaction dates for the imported sales orders will automatically use the current date and time. Are you sure you want to proceed?",
+  "confirmWhenFilled": false,
+  "dummyFileAttached": true,
+  "verdict": "PASS",
+  "notes": [
+    "Tanggal awal: \"(kosong)\"",
+    "File import: etm-15532-dummy-order-no.xlsx",
+    "Setelah clear: value=\"\", empty-placeholder=true",
+    "confirmWhenEmpty=true",
+    "Tanggal setelah diisi: \"14-08-2026 00:00:00\""
+  ]
+}

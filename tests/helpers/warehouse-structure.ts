@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { Page, expect, Locator } from '@playwright/test';
 import { getApiUrl, readAuthFromPage } from './company-access';
 import { OlshopDatalist, OlshopFormActions, OlshopMultiselect } from './shared';
@@ -7,6 +9,12 @@ import { waitForSuccessToast } from './shared/toast';
 export const WAREHOUSE_STRUCTURE_DATALIST_PATH = '/supplychain/warehouse-structure';
 export const WAREHOUSE_STRUCTURE_EDIT_PATH_PATTERN =
   /\/supplychain\/warehouse-structure\/edit\/\d+/;
+
+export const ETM_8618_RESULTS_DIR = path.join(
+  process.cwd(),
+  'Automate Testing Card QA Review',
+  'ETM-8618',
+);
 
 export type WarehouseStructureFormData = {
   code: string;
@@ -178,7 +186,10 @@ export class WarehouseStructurePage {
     throw new Error(`Gagal memilih Type "${typeLabel}"`);
   }
 
-  async fillCreateForm(data: WarehouseStructureFormData): Promise<void> {
+  async fillCreateForm(
+    data: WarehouseStructureFormData,
+    options?: { dropOff?: boolean; showForAllCompany?: boolean },
+  ): Promise<void> {
     await this.codeInput.fill(data.code);
     await this.nameInput.fill(data.name);
 
@@ -188,10 +199,13 @@ export class WarehouseStructurePage {
 
     await this.selectType(data.typeLabel);
 
-    await this.ensureDropOffOn();
+    if (options?.dropOff !== false) {
+      await this.ensureDropOffOn();
+    }
     await this.ensureActiveOn();
-    // Tanpa parent → Show for all company tampil
-    await this.ensureShowForAllCompanyOn();
+    if (options?.showForAllCompany !== false && !data.parentLabel) {
+      await this.ensureShowForAllCompanyOn();
+    }
   }
 
   async ensureDropOffOn(): Promise<void> {

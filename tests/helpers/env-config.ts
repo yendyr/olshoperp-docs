@@ -28,6 +28,11 @@ const STAGING_COMPANIES = [
   { id: 13, code: 'DEV-STG', label: 'Dev Staging' },
   { id: 810, code: 'Lumielle', label: 'Lumielle' },
   { id: 3, code: 'TANRISE', label: 'TANRISE' },
+  {
+    id: 915,
+    code: 'HUAWEI',
+    label: 'PT Huawei Tech Investment',
+  },
 ] as const satisfies readonly CompanyConfig[];
 
 export const ENV_CONFIGS: Record<EnvName, EnvConfig> = {

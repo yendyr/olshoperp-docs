@@ -1,0 +1,41 @@
+# POM Element Registry — Dev - Sales Order
+# Route: /businessdevelopment/sales-order-general
+# Kartu: ETM-15493 — snapshot Benchmark COGS = effective Manual COGS
+# Catatan BUILD: olshoperp-frontend sibling tidak ada; selector diverifikasi run staging.
+
+menu: sales-order-general
+menu_name: Dev - Sales Order
+route: /businessdevelopment/sales-order-general
+create_button_mode: link
+pom_helper: tests/helpers/sales-order-general.ts
+company_default: DEV-STG
+
+elements:
+  create:
+    strategy: role
+    role: link
+    name: Create
+
+  select_product:
+    strategy: aria-placeholder
+    value: Select Product
+
+  sales_order_detail:
+    strategy: accordion
+    value: Sales Order Detail
+
+  columns_show_hide:
+    strategy: role
+    role: button
+    name: Columns Show/Hide
+    notes: Unhide kolom Benchmark COGS (hidden default)
+
+  benchmark_cogs_column:
+    strategy: column_header
+    value: Benchmark COGS
+
+gotchas:
+  - Create sering auto-Save default values → redirect edit
+  - Capture benchmark_cogs di create-select / update product_id
+  - Snapshot tidak live-update saat master Manual COGS berubah
+  - Status radio Open memicu auto-save — tunggu API sebelum aksi berikutnya

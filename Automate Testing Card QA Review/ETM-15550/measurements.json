@@ -1,0 +1,365 @@
+{
+  "card": "ETM-15550",
+  "company": "DEV-STG",
+  "companyId": 13,
+  "environment": "https://staging.olshoperp.com",
+  "baseline": {
+    "globalSearch": {
+      "width": 167,
+      "height": 38,
+      "found": true,
+      "selectorHint": "global-search"
+    },
+    "chooseStore": {
+      "width": 384,
+      "height": 38,
+      "found": true,
+      "selectorHint": ".multiselect[aria~=\"Choose Store\"]"
+    },
+    "expectedHeight": 38,
+    "expectedWidth": 384,
+    "cardExpectedHeight": 38,
+    "cardExpectedWidth": 539
+  },
+  "tolerancePx": 2,
+  "pages": [
+    {
+      "id": "pricelist",
+      "path": "/businessdevelopment/pricelist",
+      "menuLabel": "Pricelist Product",
+      "accessible": true,
+      "status": "PASS",
+      "filters": [
+        {
+          "label": "Select Pricelist Category",
+          "size": {
+            "width": 384,
+            "height": 38,
+            "found": true,
+            "selectorHint": "placeholder=\"Select Pricelist Category\""
+          },
+          "widthOk": true,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "settlement-upload",
+      "path": "/accounting/settlement-upload",
+      "menuLabel": "Instant Settlement",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "Choose Store",
+          "size": {
+            "width": 176,
+            "height": 38,
+            "found": true,
+            "selectorHint": "nearby:Choose Store"
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "waves-management",
+      "path": "/omni/waves-management",
+      "menuLabel": "Waves Management",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "Choose warehouse",
+          "size": {
+            "width": 414,
+            "height": 36,
+            "found": true,
+            "selectorHint": "aria-placeholder=\"Choose warehouse\""
+          },
+          "widthOk": false,
+          "heightOk": true
+        },
+        {
+          "label": "Choose Warehouse",
+          "size": {
+            "width": 416,
+            "height": 38,
+            "found": true,
+            "selectorHint": ".multiselect[aria~=\"Choose Warehouse\"]"
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "stock-monitoring",
+      "path": "/supplychain/stock-monitoring",
+      "menuLabel": "Stock Monitoring",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "Choose Warehouse",
+          "size": {
+            "width": 537,
+            "height": 36,
+            "found": true,
+            "selectorHint": "aria-placeholder=\"Choose Warehouse\""
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "product-mutation",
+      "path": "/supplychain/product-mutation",
+      "menuLabel": "Product Mutation History",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "Choose Product",
+          "size": {
+            "width": 331,
+            "height": 36,
+            "found": true,
+            "selectorHint": "aria-placeholder=\"Choose Product\""
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "stock-history",
+      "path": "/supplychain/stock-history",
+      "menuLabel": "Stock History",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "Choose Product",
+          "size": {
+            "width": 239,
+            "height": 38,
+            "found": true,
+            "selectorHint": "Choose Product"
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "real-stock",
+      "path": "/supplychain/real-stock",
+      "menuLabel": "Real Time Stock",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "Show data as",
+          "size": {
+            "width": 350,
+            "height": 38,
+            "found": true,
+            "selectorHint": "nearby:Show data as"
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "org-structure",
+      "path": "/hr/org-structure",
+      "menuLabel": "Department Structure",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "Choose Company",
+          "size": {
+            "width": 539,
+            "height": 38,
+            "found": true,
+            "selectorHint": "Choose Company"
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "attendance-calculated",
+      "path": "/hr/attendance-calculated",
+      "menuLabel": "Attendance List",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "Choose Date",
+          "size": {
+            "width": 539,
+            "height": 38,
+            "found": true,
+            "selectorHint": "placeholder=\"Choose Date\""
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "platform-product",
+      "path": "/omni/platform-product",
+      "menuLabel": "Platform Product",
+      "accessible": true,
+      "status": "PASS",
+      "filters": [
+        {
+          "label": "Choose Store",
+          "size": {
+            "width": 384,
+            "height": 38,
+            "found": true,
+            "selectorHint": ".multiselect[aria~=\"Choose Store\"]"
+          },
+          "widthOk": true,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "settlement-mapping",
+      "path": "/accounting/settlement-mapping",
+      "menuLabel": "Settlement Mapping",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "Choose COA",
+          "size": {
+            "width": 284,
+            "height": 36,
+            "found": true,
+            "selectorHint": "aria-placeholder=\"Choose COA\""
+          },
+          "widthOk": false,
+          "heightOk": true
+        },
+        {
+          "label": "Choose Value Type",
+          "size": {
+            "width": 91,
+            "height": 38,
+            "found": true,
+            "selectorHint": "nearby:Choose Value Type"
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "general-ledger",
+      "path": "/accounting/general-ledger",
+      "menuLabel": "General Ledger",
+      "accessible": true,
+      "status": "N/A",
+      "filters": [],
+      "notes": [
+        "Sesuai kartu: hanya Global Search, tidak ada field filtering"
+      ]
+    },
+    {
+      "id": "profit-loss",
+      "path": "/accounting/profit-loss",
+      "menuLabel": "Profit Loss",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "p-datepicker p-component p-inputwrapper ",
+          "size": {
+            "width": 516,
+            "height": 38,
+            "found": true,
+            "selectorHint": "p-datepicker p-component p-inputwrapper "
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "trial-balance",
+      "path": "/accounting/trial-balance",
+      "menuLabel": "Trial Balance",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "p-datepicker p-component p-inputwrapper ",
+          "size": {
+            "width": 539,
+            "height": 38,
+            "found": true,
+            "selectorHint": "p-datepicker p-component p-inputwrapper "
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "balance-sheet",
+      "path": "/accounting/balance-sheet",
+      "menuLabel": "Balance Sheet",
+      "accessible": true,
+      "status": "FAIL",
+      "filters": [
+        {
+          "label": "p-datepicker p-component p-inputwrapper ",
+          "size": {
+            "width": 539,
+            "height": 38,
+            "found": true,
+            "selectorHint": "p-datepicker p-component p-inputwrapper "
+          },
+          "widthOk": false,
+          "heightOk": true
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "summary": {
+    "pass": 2,
+    "fail": 12,
+    "na": 1,
+    "blocked": 0
+  },
+  "verdict": "FAIL",
+  "notes": [
+    "Baseline DEV-STG: Global Search 167×38, Choose Store 384×38",
+    "Kartu ETM-15550 (baseline lama Lumielle): tinggi 38, lebar Choose Store 539 — bandingkan juga di HASIL."
+  ]
+}

@@ -1,7 +1,13 @@
+import fs from 'fs';
+import path from 'path';
 import { Page, expect, Locator } from '@playwright/test';
 import { OlshopDatalist, OlshopFormActions, OlshopMultiselect } from './shared';
 import { dismissStagingBanner } from './shared/staging-banner';
 import { waitForSuccessToast } from './shared/toast';
+import {
+  ETM_15493_RESULTS_DIR,
+  parseMoney,
+} from './product-benchmark-price';
 
 export const SO_GENERAL_DATALIST_PATH = '/businessdevelopment/sales-order-general';
 export const SO_GENERAL_EDIT_PATH_PATTERN =
@@ -67,7 +73,19 @@ export class SalesOrderGeneralPage {
   }
 
   async expandBasicInformation(): Promise<void> {
-    await this.form.expandAccordion('Basic Information');
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await this.form.expandAccordion('Basic Information');
+        return;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (!/not attached|detached/i.test(msg) || attempt === 2) {
+          throw err;
+        }
+        await this.page.waitForLoadState('domcontentloaded').catch(() => undefined);
+        await this.page.waitForTimeout(800);
+      }
+    }
   }
 
   async expandSalesOrderDetail(): Promise<void> {
@@ -99,6 +117,8 @@ export class SalesOrderGeneralPage {
     ]);
 
     await dismissStagingBanner(this.page);
+    await this.page.waitForLoadState('domcontentloaded').catch(() => undefined);
+    await this.page.waitForTimeout(800);
     await this.expandBasicInformation();
 
     if (raced === 'edit') {
@@ -114,6 +134,8 @@ export class SalesOrderGeneralPage {
 
     if (autoEdit) {
       await dismissStagingBanner(this.page);
+      await this.page.waitForLoadState('domcontentloaded').catch(() => undefined);
+      await this.page.waitForTimeout(800);
       await this.expandBasicInformation();
       await expect(this.codeInput).not.toHaveValue('', { timeout: 45_000 });
       return 'edit';
@@ -398,12 +420,16 @@ export class SalesOrderGeneralPage {
   }
 
   detailRowBySku(sku: string): Locator {
-    return this.page
-      .locator('#SalesOrderDetail .p-datatable-tbody tr, #SalesOrderDetail tbody tr')
+    const section = this.page.locator('#SalesOrderDetail');
+    const byAttr = section
+      .locator('tr, [role="row"]')
+      .filter({ has: this.page.locator(`[sku="${sku}"]`) });
+    const byText = section
+      .locator('.p-datatable-tbody tr, tbody tr, [role="row"]')
       .filter({
         hasText: new RegExp(sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
-      })
-      .first();
+      });
+    return byAttr.or(byText).first();
   }
 
   /**
@@ -716,4 +742,311 @@ export class SalesOrderGeneralPage {
 
     return code;
   }
+
+  async screenshot(fileName: string): Promise<string> {
+    fs.mkdirSync(path.join(ETM_15493_RESULTS_DIR, 'screenshots'), {
+      recursive: true,
+    });
+    const filePath = path.join(ETM_15493_RESULTS_DIR, 'screenshots', fileName);
+    await this.page.screenshot({ path: filePath, fullPage: true });
+    return filePath;
+  }
+
+  async readEditUrl(): Promise<string> {
+    return this.page.url();
+  }
+
+  /**
+   * Isi header minimal jika masih di create, atau pastikan sudah di edit.
+   * Pilih opsi pertama Customer / Store / Shipper bila masih placeholder.
+   */
+  async ensureHeaderReadyForDetail(): Promise<string> {
+    const onEdit = SO_GENERAL_EDIT_PATH_PATTERN.test(this.page.url());
+    if (!onEdit) {
+      await this.selectFirstIfPlaceholder(this.customerCombobox, 'Customer');
+      await this.selectFirstIfPlaceholder(this.storeCombobox, 'Store');
+      await this.selectFirstIfPlaceholder(
+        this.shipperServiceCombobox,
+        'Shipper Service',
+      );
+      await this.fillBuyerNotes('automation playwright ETM-15493');
+      await this.clickSaveAndNextAndWaitForEdit();
+    }
+    await this.expandSalesOrderDetail();
+    return this.readGeneratedCode();
+  }
+
+  private async selectFirstIfPlaceholder(
+    combobox: Locator,
+    fieldName: string,
+  ): Promise<void> {
+    if (!(await combobox.isVisible({ timeout: 8_000 }).catch(() => false))) {
+      return;
+    }
+    const current = await this.multiselect.selectedLabel(combobox);
+    if (current && !/^choose\b/i.test(current) && current.length > 2) {
+      return;
+    }
+    await this.multiselect.open(combobox);
+    await this.page.waitForTimeout(800);
+    const option = this.page
+      .locator('.multiselect-option:visible')
+      .filter({ hasNotText: 'No results found' })
+      .first();
+    await expect(option, `Opsi ${fieldName}`).toBeVisible({ timeout: 20_000 });
+    await option.click();
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.waitForTimeout(400);
+  }
+
+  async addProductAndCaptureSnapshot(sku: string): Promise<{
+    sku: string;
+    apiBenchmarkCogs: number | null;
+    apiRaw: unknown;
+  }> {
+    await this.expandSalesOrderDetail();
+
+    let combobox = this.selectProductCombobox;
+    if (!(await combobox.isVisible({ timeout: 8_000 }).catch(() => false))) {
+      const root = this.page
+        .locator('#SalesOrderDetail .multiselect')
+        .filter({
+          has: this.page.locator('[aria-placeholder="Select Product"]'),
+        })
+        .first();
+      await root.click();
+      combobox = root.locator('.multiselect-search').first();
+    }
+
+    const createResponse = this.page.waitForResponse(
+      (response) =>
+        /sales-order-detail\/create-select/.test(response.url()) &&
+        response.request().method() === 'POST',
+      { timeout: 90_000 },
+    );
+
+    await this.multiselect.open(combobox);
+    await combobox.fill('');
+    await combobox.fill(sku).catch(async () => {
+      await combobox.pressSequentially(sku, { delay: 40 });
+    });
+    await this.page.waitForTimeout(1_200);
+
+    const option = this.page
+      .locator('.multiselect-option:visible')
+      .filter({ hasNotText: 'No results found' })
+      .filter({
+        hasText: new RegExp(sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+      })
+      .first();
+    await expect(option, `Product ${sku}`).toBeVisible({ timeout: 25_000 });
+    await option.click();
+
+    const response = await createResponse;
+    const body = (await response.json().catch(() => null)) as Record<
+      string,
+      unknown
+    > | null;
+
+    if (!response.ok() || Number((body?.status as { error?: number })?.error ?? 0)) {
+      throw new Error(
+        `Select Product ${sku} gagal: ${
+          (body?.status as { message?: string })?.message ??
+          `HTTP ${response.status()}`
+        }`,
+      );
+    }
+
+    await waitForSuccessToast(this.page, 10_000).catch(() => undefined);
+    await this.page.waitForTimeout(1_200);
+
+    return {
+      sku,
+      apiBenchmarkCogs: extractBenchmarkCogs(body),
+      apiRaw: body,
+    };
+  }
+
+  async showBenchmarkCogsColumn(): Promise<boolean> {
+    await this.expandSalesOrderDetail();
+    const already = this.page
+      .locator('#SalesOrderDetail th, #SalesOrderDetail thead td')
+      .filter({ hasText: /Benchmark COGS/i });
+    if (await already.first().isVisible().catch(() => false)) {
+      return true;
+    }
+
+    const trigger = this.page
+      .locator('#SalesOrderDetail')
+      .getByRole('button', { name: /Columns Show\/Hide/i })
+      .or(this.page.getByRole('button', { name: /Columns Show\/Hide/i }))
+      .first();
+
+    if (!(await trigger.isVisible({ timeout: 5_000 }).catch(() => false))) {
+      return false;
+    }
+
+    await trigger.click();
+    await this.page.waitForTimeout(700);
+
+    const panel = this.page
+      .locator('div')
+      .filter({ has: this.page.getByRole('listitem', { name: 'Item Stock ID' }) })
+      .filter({ has: this.page.getByRole('listitem', { name: /Benchmark COGS/i }) })
+      .last();
+    const item = panel.getByRole('listitem', { name: /Benchmark COGS/i }).first();
+    await item.scrollIntoViewIfNeeded().catch(() => undefined);
+    if (!(await item.isVisible({ timeout: 8_000 }).catch(() => false))) {
+      await this.page.keyboard.press('Escape').catch(() => undefined);
+      return false;
+    }
+
+    await item.click({ force: true });
+
+    await this.page.waitForTimeout(800);
+    await this.page.keyboard.press('Escape').catch(() => undefined);
+    await this.page.waitForTimeout(400);
+    return this.page
+      .locator('#SalesOrderDetail th, #SalesOrderDetail thead td, #SalesOrderDetail [role="columnheader"]')
+      .filter({ hasText: /Benchmark COGS/i })
+      .first()
+      .isVisible()
+      .catch(() => false);
+  }
+
+  async readUiBenchmarkCogs(sku: string): Promise<{
+    text: string;
+    value: number | null;
+  }> {
+    await this.expandSalesOrderDetail();
+    const row = this.detailRowBySku(sku);
+    if (!(await row.isVisible({ timeout: 8_000 }).catch(() => false))) {
+      return { text: '', value: null };
+    }
+
+    const headers = this.page.locator(
+      '#SalesOrderDetail thead th, #SalesOrderDetail thead td, #SalesOrderDetail [role="columnheader"]',
+    );
+    const headerCount = await headers.count();
+    let col = -1;
+    for (let i = 0; i < headerCount; i++) {
+      const label = ((await headers.nth(i).innerText().catch(() => '')) ?? '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (/benchmark cogs/i.test(label)) {
+        col = i;
+        break;
+      }
+    }
+
+    if (col < 0) {
+      return { text: '', value: null };
+    }
+
+    const text = (
+      (await row.locator('td').nth(col).innerText().catch(() => '')) ?? ''
+    )
+      .replace(/\s+/g, ' ')
+      .trim();
+    return { text, value: parseMoney(text) };
+  }
+
+  async changeProductOnLine(
+    fromSku: string,
+    toSku: string,
+  ): Promise<{
+    apiBenchmarkCogs: number | null;
+    apiRaw: unknown;
+  }> {
+    await this.expandSalesOrderDetail();
+    const row = this.detailRowBySku(fromSku);
+    await expect(row, `Baris detail ${fromSku}`).toBeVisible({ timeout: 20_000 });
+
+    const editBtn = row
+      .locator(
+        '#updateButton, button[class*="update"], button[title*="Edit" i], button[title*="Update" i]',
+      )
+      .first();
+    if (await editBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await editBtn.click();
+    } else {
+      await row.locator('td').last().locator('button').first().click();
+    }
+
+    const productBox = this.page
+      .locator('[aria-placeholder="Select Product"], [aria-placeholder="Choose Product"]')
+      .locator('visible=true')
+      .last();
+
+    await expect(productBox, 'Product di modal edit line').toBeVisible({
+      timeout: 15_000,
+    });
+
+    const updateResponse = this.page.waitForResponse(
+      (response) =>
+        /sales-order\/\d+\/sales-order-detail\/\d+/.test(response.url()) &&
+        ['PUT', 'POST', 'PATCH'].includes(response.request().method()),
+      { timeout: 60_000 },
+    );
+
+    await this.multiselect.open(productBox);
+    await productBox.fill('');
+    await productBox.fill(toSku).catch(async () => {
+      await productBox.pressSequentially(toSku, { delay: 40 });
+    });
+    await this.page.waitForTimeout(1_200);
+    const option = this.page
+      .locator('.multiselect-option:visible')
+      .filter({ hasNotText: 'No results found' })
+      .filter({
+        hasText: new RegExp(toSku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+      })
+      .first();
+    await expect(option, `Product ${toSku}`).toBeVisible({ timeout: 20_000 });
+    await option.click();
+
+    const saveBtn = this.page
+      .locator('[data-modal-save]')
+      .or(this.page.getByRole('button', { name: /^Save$/i }).last());
+    await expect(saveBtn).toBeVisible({ timeout: 10_000 });
+    await saveBtn.click();
+
+    const response = await updateResponse;
+    const body = (await response.json().catch(() => null)) as Record<
+      string,
+      unknown
+    > | null;
+    await waitForSuccessToast(this.page, 10_000).catch(() => undefined);
+    await this.page.waitForTimeout(800);
+
+    return {
+      apiBenchmarkCogs: extractBenchmarkCogs(body),
+      apiRaw: body,
+    };
+  }
+}
+
+function extractBenchmarkCogs(body: unknown): number | null {
+  if (!body || typeof body !== 'object') return null;
+  const walk = (node: unknown, depth: number): number | null => {
+    if (depth > 6 || node == null) return null;
+    if (typeof node === 'number' && Number.isFinite(node)) return null;
+    if (typeof node !== 'object') return null;
+    const rec = node as Record<string, unknown>;
+    for (const key of Object.keys(rec)) {
+      if (/^benchmark_cogs$/i.test(key)) {
+        const v = rec[key];
+        if (typeof v === 'number') return v;
+        if (typeof v === 'string') return parseMoney(v);
+      }
+    }
+    for (const v of Object.values(rec)) {
+      if (v && typeof v === 'object') {
+        const found = walk(v, depth + 1);
+        if (found != null) return found;
+      }
+    }
+    return null;
+  };
+  return walk(body, 0);
 }
