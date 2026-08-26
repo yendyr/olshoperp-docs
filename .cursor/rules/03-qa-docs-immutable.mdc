@@ -25,6 +25,23 @@ TC end-to-end cross-menu (format & aturan: `17-e2e-cross-menu-flow.mdc`) hidup d
 - Isi **wajib** berupa tabel recall TC origin + glue E2E — dilarang menyalin step per menu (anti-duplikasi, lihat rule 17 §1)
 - Setiap `tc_code` di frontmatter `recalls:` harus merujuk TC origin yang benar-benar ada di `qa-docs/{menu-slug}/test-cases/`
 
+## Pengecualian sempit: satu baris indeks di README menu
+
+Sesudah membuat/menghapus TC di `qa-docs/{menu-slug}/test-cases/`, agent **boleh** memperbarui
+**baris indeks Test Cases** di `qa-docs/{menu-slug}/README.md` tanpa konfirmasi terpisah —
+menambah/menyesuaikan satu baris tabel yang menunjuk `test-cases/` beserta statusnya.
+
+Ini konsekuensi wajar dari pekerjaan yang sudah disetujui, bukan pekerjaan baru: README yang
+tidak menyebut TC yang baru dibuat membuat TC itu tak terlihat oleh pembaca berikutnya.
+
+**Batasnya ketat** — di luar ini README tetap terkunci:
+- Hanya baris yang merujuk `test-cases/`. Menyunting ringkasan menu, tabel layer doc,
+  changelog, atau isi lain di README = **tetap butuh konfirmasi**.
+- Hanya menambah/memperbarui, tidak pernah menghapus baris orang lain.
+- Kalau README belum punya tabel indeks sama sekali → konfirmasi dulu, jangan bikin sendiri.
+
+---
+
 ## Pengecualian: qa-docs/{menu-slug}/test-cases/
 
 Satu-satunya subfolder di `qa-docs/` yang boleh ditulis agent — dengan konfirmasi eksplisit user (lihat `01-agent-behavior.mdc`). Tidak ada auto-create/edit tanpa persetujuan.

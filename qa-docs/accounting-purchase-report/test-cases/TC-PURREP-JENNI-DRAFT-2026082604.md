@@ -1,11 +1,13 @@
 ---
+doc_type: e2e-test-case
 owner: QA - Jenni
 tc_code: PENDING-JENNI-2026082604
 title: "POV Purchase Order — Navigasi Hyperlink Trx Code PO & Isolasi Data dari Purchase Invoice / AP"
+status: draft
 module: Accounting
-menu: Purchase Report
-menu_slug: accounting-purchase-report
-type: functional
+menu: accounting-purchase-report
+menu_name: "Purchase Report"
+test_type: cross-menu
 priority: high
 automated: false
 automated_spec: null
@@ -19,6 +21,12 @@ preconditions:
   - "User login ke OlshopERP pada company target (misal Dev Staging ID 13)"
   - "Navigasi ke menu Purchase Report (https://staging.olshoperp.com/accounting/purchase-report)"
   - "Terdapat data transaksi Purchase Order (With PR & Without PR) di database"
+requirement_ref: "qa-docs/accounting-purchase-report/requirement.md"
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 # Test Case: POV Purchase Order — Navigasi Hyperlink Trx Code PO & Isolasi Data dari Purchase Invoice / AP
