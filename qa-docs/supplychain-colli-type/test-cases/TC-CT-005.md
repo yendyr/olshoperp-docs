@@ -60,11 +60,10 @@ run_history:
     by: "QA - Yemima (Manual)"
 origin_jira: ETM-15543
 last_execution:
-  at: "2026-08-27"
+  at: null
   jira: null
-  status: passed
-  via: "manual:Yemima"
-  notes: "Verifikasi manual form create: save diblokir saat Code kosong (Kasus A) atau Name kosong (Kasus B), validasi inline & toast error muncul."
+  status: not_run
+  via: null
 ---
 
 # TC-CT-005
