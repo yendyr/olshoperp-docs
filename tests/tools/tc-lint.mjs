@@ -355,8 +355,8 @@ for (const file of walkTcFiles(qaDocs)) {
         // Ditandai berdasarkan card Jira Done (SOP: Done = sudah ditest). Identitas
         // penguji dari kredensial Jira, jadi tidak perlu nama manual (rule 16 § Card Done).
         const etm = le.via.slice('card:'.length).trim();
-        if (!/^[A-Z]{2,}-\d+$/.test(etm)) {
-          errors.push(`via card tanpa kode card: ${rel} → tulis \`card:{ETM-xxxxx}\``);
+        if (!/^ETM-\d+$/.test(etm)) {
+          errors.push(`via card kode tidak valid: ${rel} ("${etm}") → tulis \`card:ETM-{angka}\``);
         }
         if (!le.jira || le.jira === 'null' || le.jira !== etm) {
           errors.push(
@@ -422,6 +422,24 @@ for (const file of walkTcFiles(qaDocs)) {
       `test_type cross-menu tapi \`related_menus\` kosong: ${rel}` +
         ` — isi menu lain yang tersentuh supaya dampak lintas menunya bisa ditelusuri`,
     );
+  }
+
+  // Konsistensi kode Jira — sumber data yang harus valid (rule 12: site hanya ETM).
+  // origin_jira & last_execution.jira harus `null` atau `ETM-{angka}`. Format rusak
+  // (tanpa dash, typo prefix, angka saja) = error; prefix non-ETM = warning (rule 12).
+  const JIRA_OK = /^ETM-\d+$/;
+  const JIRA_SHAPE = /^[A-Za-z]+-?\d+$/;
+  for (const [field, val] of [['origin_jira', fm.origin_jira], ['last_execution.jira', fm.last_execution?.jira]]) {
+    if (!val || val === 'null' || val === '~') continue;
+    if (JIRA_OK.test(val)) continue;
+    if (/^[A-Z]{2,}-\d+$/.test(val)) {
+      warnings.push(`${field} pakai site non-ETM: ${rel} ("${val}") — rule 12: hanya ETM`);
+    } else {
+      errors.push(
+        `${field} format tidak valid: ${rel} ("${val}") → wajib \`ETM-{angka}\`` +
+          (JIRA_SHAPE.test(val) ? ` (kemungkinan kurang tanda "-" atau salah prefix)` : ``),
+      );
+    }
   }
 
   // Gate anti-duplikat: TC yang ditandai kandidat duplikat TIDAK BOLEH lolos ke

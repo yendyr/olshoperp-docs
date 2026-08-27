@@ -220,6 +220,13 @@ Agent **tidak perlu** mengisinya manual. Jangan simpan daftar semua card yang pe
 me-retest TC ini. Antrian card in-flight → `16-card-tc-queue.mdc` (`test-queue.yaml`,
 trigger `#card-tc`).
 
+### Konsistensi kode Jira (`origin_jira`, `last_execution.jira`, `via: card:`)
+
+Kode Jira adalah sumber data yang harus valid — dipakai menelusuri card asal & run.
+Format **wajib** `ETM-{angka}` (rule 12: site hanya ETM) atau `null`. `tc:lint`:
+- **ERROR** — format rusak: tanpa tanda `-` (`ETM15526`), angka saja (`15526`), typo prefix.
+- **WARNING** — prefix site lain (rule 12 melarang non-ETM).
+
 ### Aturan `related_menus`
 
 Daftar **slug menu lain** yang tersentuh TC ini — dipakai untuk menelusuri dampak lintas
