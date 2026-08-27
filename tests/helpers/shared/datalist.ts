@@ -40,9 +40,25 @@ export class OlshopDatalist {
     await expect(this.createButton(createMode)).toBeVisible({ timeout: 45_000 });
   }
 
+  /**
+   * Spinner "Loading..." muncul di area tabel setiap datalist refetch (search,
+   * toggle filter spt "Show deleted data", ganti page length). Membaca baris
+   * sebelum spinner ini hilang = snapshot mid-load → baris seakan tidak ada.
+   * Additive murni: hanya menunggu bila spinner memang sedang tampil.
+   */
+  async waitForIdle(timeout = 15_000): Promise<void> {
+    const loading = this.page
+      .getByText(/^\s*Loading\.\.\.\s*$/i)
+      .first();
+    if (await loading.isVisible().catch(() => false)) {
+      await loading.waitFor({ state: 'hidden', timeout }).catch(() => undefined);
+    }
+  }
+
   async search(query: string, settleMs = 1_500): Promise<void> {
     await this.searchInput.fill(query);
     await this.page.waitForTimeout(settleMs);
+    await this.waitForIdle();
   }
 
   async clickCreate(createMode: DatalistCreateButtonMode = 'auto'): Promise<void> {

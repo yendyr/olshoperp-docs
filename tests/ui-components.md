@@ -119,11 +119,14 @@ Sudah diterapkan di `purchase-requisition.ts#fillRequestQtyForSku`. Ikuti pola y
 |---|---|
 | Identifikasi DOM | `input.dt-input[placeholder=" find something ..."]`, `Showing X to Y of Z entries` |
 | Helper | `tests/helpers/shared/datalist.ts` |
+| Loading state | Teks **`Loading...`** + spinner muncul di area tabel setiap refetch |
 
 **Jebakan:**
 1. Kolom status/TYPE sering **ter-truncate** (`Payment from Custome...`) — assert pakai **prefix/regex**, jangan string penuh.
 2. Search box bisa ter-intercept portal modal (lihat §2.2).
 3. Page length default kecil — set page size sebelum mencari baris di daftar panjang (`setPageLength`).
+4. **Refetch async → race baca baris.** Setiap `search()`, toggle filter (mis. *Show deleted data*), atau ganti page length memicu **AJAX refetch**; tabel menampilkan `Loading...` dulu. Membaca baris sebelum spinner hilang = snapshot mid-load, baris seakan tidak ada. **Selalu `await datalist.waitForIdle()`** (menunggu `Loading...` detach) setelah aksi yang mengubah isi tabel. `search()` sudah memanggilnya otomatis; toggle/checkbox manual harus dipanggil sendiri.
+5. **`isVisible()` ≠ `toBeVisible()`.** `locator.isVisible({timeout})` **tidak** auto-retry — ia snapshot state saat itu juga (opsi `timeout` menyesatkan). Untuk memastikan baris hadir setelah refetch, pakai `await expect(row).toBeVisible({ timeout })` (polling) — bukan `isVisible()`. Gunakan `isVisible()` hanya untuk cek "ada/tidak" yang memang sudah pasti settle.
 
 ---
 

@@ -182,6 +182,8 @@ export class ColliTypePage {
     if (checked !== on) {
       await sw.click({ force: true });
       await this.page.waitForTimeout(1_500);
+      // toggle memicu refetch datalist — tunggu spinner "Loading..." hilang
+      await this.datalist.waitForIdle();
     }
   }
 
@@ -259,9 +261,20 @@ export class ColliTypePage {
     await this.gotoDatalist();
     await this.setShowDeletedData(true);
     await this.searchCode(code);
+    await this.datalist.waitForIdle();
 
+    // `isVisible()` TIDAK auto-retry (snapshot sekali) — pakai expect().toBeVisible()
+    // yang polling sampai baris ter-render setelah refetch selesai.
+    // Query show-deleted + filter di staging bisa lambat (>20s cold). Samakan
+    // dengan softDeleteByCode yang terbukti stabil di halaman yang sama: 45s.
     const row = this.rowByCode(code);
-    const visible = await row.isVisible({ timeout: 20_000 }).catch(() => false);
+    let visible = false;
+    try {
+      await expect(row).toBeVisible({ timeout: 45_000 });
+      visible = true;
+    } catch {
+      visible = false;
+    }
     if (!visible) {
       return {
         visible: false,
