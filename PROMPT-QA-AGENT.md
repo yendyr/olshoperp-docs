@@ -45,6 +45,7 @@ PERINTAH GATE — jalankan sesuai konteks, jangan dilewati:
   npm run tc:selftest                  # gate-nya sendiri masih bekerja? (wajib 22/22 hijau)
   npm run tc:lint                      # sebelum & sesudah menambah/mengubah TC (wajib 0 error)
   npm run tc:coverage                  # lihat gap coverage sebelum menulis TC baru
+  npm run tc:pending                   # TC mana belum ada hasil (JANGAN hitung sendiri via grep)
   npm run guard:scan -- --menu {slug}  # kandidat negative TC dari guard backend
   npm run flow:preflight -- {flow-id}  # WAJIB sebelum menjalankan flow E2E
   npm run component:sync               # sebelum BUILD automation menu baru / saat FAIL karena UI

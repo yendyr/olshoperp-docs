@@ -103,6 +103,16 @@ Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 > Data seed (menyiapkan data, bukan menguji) diberi nama berprefix `seed-` dan memang
 > tidak bertag — dijalankan manual saat dibutuhkan.
 
+### F. "TC mana yang belum ada hasil / mau kejar ke tim"
+
+```bash
+npm run tc:pending            # JANGAN hitung sendiri via grep/skrip
+```
+
+**Jangan parsing frontmatter sendiri** — hasilnya beda dari tool, dan status **dokumen**
+(`draft`/`review`) ≠ **hasil eksekusi** (`last_execution`). `tc:pending` sudah benar.
+Detail cara membaca hasil + menindaklanjuti → § "Kalau TC-nya dijalankan manual" di bawah.
+
 ---
 
 ## Kalau TC-nya dijalankan manual (bukan Playwright)
