@@ -23,5 +23,6 @@ Prefix folder: `PO`.
 | TC-PO-008 | Memastikan Penanganan Kolom VAT Type Terisi Saat System Product Tanpa Setting VAT atau Setting Auto Add Supplier = NO | **passed** | ✅ | 2026-08-19 |
 | TC-PO-009 | Memastikan Mekanisme Fallback Cerdas Saat VAT=yes Dengan Kolom VAT Code / VAT Type Kosong Mengikuti Master Produk | **passed** | ✅ | 2026-08-19 |
 | `TC-PO-DRAFT-20260826150611.md` / PENDING-20260826150611 | Error 'Failed to load PDF document' saat klik button Print Detail tanpa sorting | draft | ❌ | 2026-08-26 |
+| `TC-PO-DRAFT-20260827083401.md` / PENDING-20260827083401 | Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Purchase Order | draft | ✅ | 2026-08-27 |
 
 `TC-PO-003` (TC 1), `TC-PO-004` (TC 2), dan `TC-PO-005` (TC 3) — **PASSED** (19 Agu 2026 via Playwright E2E di Staging company `lumicharmsid`). Terkait card origin [ETM-15425](https://erpintegration.atlassian.net/browse/ETM-15425) & card error [ETM-15598](https://erpintegration.atlassian.net/browse/ETM-15598).

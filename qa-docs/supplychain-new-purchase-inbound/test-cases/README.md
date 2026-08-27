@@ -16,6 +16,7 @@
 | TC-PI-010 | Single Use — Max Inbound Qty = 0 | draft | ❌ | 2026-08-24 |
 | TC-PI-011 | Select Product — qty 0 → Save All | draft | ❌ | 2026-08-24 |
 | TC-PI-012 | Import Inbound — Validasi Campuran Baris Excel (Edge/Negative cases) | draft | ❌ | 2026-08-24 |
+| `TC-PI-DRAFT-20260827083404.md` / PENDING-20260827083404 | Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - BETA New Purchase Inbound | draft | ✅ | 2026-08-27 |
 
 **Card Colli V2:** [ETM-15528](https://erpintegration.atlassian.net/browse/ETM-15528) & [ETM-15610](https://erpintegration.atlassian.net/browse/ETM-15610) & [ETM-15611](https://erpintegration.atlassian.net/browse/ETM-15611) — DRAFT `TC-PI-002` s/d `…1831` dan `TC-PI-009` s/d `…03`, serta `TC-PI-012` (belum renumber).
 

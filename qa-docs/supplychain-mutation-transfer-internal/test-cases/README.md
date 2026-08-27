@@ -8,3 +8,4 @@
 | TC-MTIN-004 | Pembuatan Transfer Internal dengan Opsi Colli (Null, New, Existing) | draft | ❌ | 2026-08-24 |
 | TC-MTIN-005 | Pengecekan Colli Lokasi Tujuan & Kolom Informasi Khusus (Full Trf & Group View) | draft | ❌ | 2026-08-24 |
 | TC-MTIN-006 | Persetujuan (Approve) Dokumen & Verifikasi Mutasi Stok Colli V2 | draft | ❌ | 2026-08-24 |
+| `TC-MTIN-DRAFT-20260827083405.md` / PENDING-20260827083405 | Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Transfer Internal | draft | ✅ | 2026-08-27 |
