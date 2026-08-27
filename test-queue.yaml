@@ -523,9 +523,15 @@ ETM-15487:
 ETM-15488:
   menu: accounting-purchase-report
   intent: new
-  status: needs_overview
+  status: in_overview
   reuse: []
-  drafts: []
+  drafts:
+    - PENDING-JENNI-2026082701
+    - PENDING-JENNI-2026082702
+    - PENDING-JENNI-2026082703
+    - PENDING-JENNI-2026082704
+    - PENDING-JENNI-2026082705
+    - PENDING-JENNI-2026082706
   ready_tcs: []
   jira_status: To Do
   jira_type: Improvement
