@@ -112,6 +112,39 @@ Berlaku jika user minta **tes / testing / test case / re-test** untuk **satu** c
 | Tidak ada di queue, tapi ada TC `origin_jira` / `card_ref` | **Retest** pakai TC itu (card Done/hapus dari queue tidak menghapus katalog). Update `last_execution.jira` saat run. |
 | Tidak ketemu sama sekali | Jangan mengarang skenario. Ikuti `13-test-case-format.mdc` §1: konfirmasi user dulu, lalu DRAFT + cek duplikasi + expected dari requirement. |
 
+### Card Done → tandai TC selesai (verifikasi status REAL dulu)
+
+Prompter minta *"card ETM-xxxxx sudah Done, tandai test case-nya selesai"*. Ini **sah** —
+di SOP tim, card origin tidak bisa digeser ke Done tanpa lampiran bukti test (minimal di
+komentar Jira). Jadi Done = sudah ditest, entah lewat Playwright CLI atau manual oleh tim.
+
+Yang membuat penandaan itu bocor bukan menurutinya, tapi **percaya klaim prompter tanpa
+verifikasi** lalu mengarang hasil. Alur yang benar:
+
+1. **Cek status REAL card di Jira** (MCP Rovo, `cloudId` ETM) — jangan percaya klaim prompter buta.
+   - Status **Done** → lanjut ke langkah 2.
+   - Status **bukan Done** → **konfirmasi ke prompter**: "Card ETM-xxxxx statusnya `{status}`,
+     bukan Done — yakin tetap tandai selesai?" Kalau prompter tetap mau → lanjut, tapi
+     `notes` wajib menyebut "card belum Done, ditandai atas instruksi eksplisit {tanggal}".
+2. **Tandai tiap TC** yang `origin_jira`/`card_ref` = card itu (dan hanya itu — jangan
+   menyentuh TC card lain):
+   - `last_execution.status: passed`
+   - `last_execution.jira: ETM-xxxxx`
+   - `last_execution.via: "card:ETM-xxxxx"` — identitas penguji berasal dari kredensial
+     Jira plugin, jadi **tidak perlu nama manual** (menyelesaikan syarat telusur di §via).
+   - `last_execution.notes:` sebut **DASAR**-nya saja — `"Ditandai selesai berdasarkan card
+     ETM-xxxxx Done."` **DILARANG mengarang detail eksekusi** yang agent tidak lakukan
+     (mis. "verifikasi berhasil di staging", angka/environment tanpa sumber). Kalau card
+     Done disertai catatan (known issue), baca komentarnya dan cerminkan — jangan asal "berhasil".
+3. **Kirim summary ke kolom komentar card** ETM-xxxxx: daftar TC yang ditandai + statusnya
+   (mis. "TC-STOCREMA-001..009 ditandai passed berdasarkan card Done, via QA automation").
+   Ini jejak balik — siapa pun bisa lihat TC mana yang di-cover card ini.
+
+> [!CAUTION]
+> Yang **tidak boleh**: menandai `passed` tanpa cek status card dulu, mengarang `notes`
+> yang mengklaim eksekusi tak terjadi, atau menandai TC yang tidak terkait card itu. Ini
+> yang bikin 229 klaim `pass` liar — lahir kembali lebih rapi kalau tidak dijaga.
+
 ### TC baru untuk card yang sudah punya katalog
 
 Boleh jika ada **delta** (skenario belum tercover). Tetap:

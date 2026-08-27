@@ -241,7 +241,7 @@ for (const file of walkTcFiles(qaDocs)) {
     );
   } else {
     const missing = LE_KEYS.filter((k) => !le.keys.includes(k));
-    const allowed = le.via?.startsWith('manual:') ? LE_KEYS_MANUAL : LE_KEYS;
+    const allowed = /^(manual|card):/.test(le.via ?? '') ? LE_KEYS_MANUAL : LE_KEYS;
     const extra = le.keys.filter((k) => !allowed.includes(k));
     if (missing.length || extra.length) {
       errors.push(
@@ -260,6 +260,7 @@ for (const file of walkTcFiles(qaDocs)) {
     // dan buktinya adalah `via` yang menunjuk file spec yang benar-benar ada.
     const viaLegacy = le.via?.startsWith('legacy:');
     const viaManual = le.via?.startsWith('manual:');
+    const viaCard = le.via?.startsWith('card:');
     const viaMcp = /mcp/i.test(le.via ?? '');
     if (viaMcp) {
       errors.push(
@@ -277,10 +278,20 @@ for (const file of walkTcFiles(qaDocs)) {
       } else if (viaManual) {
         const who = le.via.slice('manual:'.length).trim();
         if (!who) {
-          errors.push(
+          warnings.push(
             `last_execution.via manual tanpa nama: ${rel} →` +
-              ` tulis \`manual:{Nama Penguji}\`. Run manual tidak reproducible,` +
-              ` jadi penanggung jawabnya harus jelas`,
+              ` boleh (\`manual\` anonim / \`manual:{device}\`), tapi kalau tahu siapa,` +
+              ` tulis \`manual:{Nama}\` — telusur lebih mudah kalau TC ini gagal`,
+          );
+        }
+        // Ditandai dari card Done tapi mengaku run manual → salah jalur. Kalau dasarnya
+        // card (bukan eksekusi manual yang benar-benar dilakukan), via-nya `card:{ETM}`.
+        if (le.notes && /\b[A-Z]{2,}-\d+\b[\s\S]*\b(done|selesai|closed|resolved)\b/i.test(le.notes)) {
+          errors.push(
+            `via manual tapi notes berdasar status card: ${rel} (notes: "${le.notes}") →` +
+              ` kalau TC ini ditandai dari card Done (bukan kamu jalankan manual), pakai` +
+              ` \`via: "card:{ETM-xxxxx}"\` — lihat rule 16 § Card Done. Kalau kamu` +
+              ` BENAR-BENAR menjalankannya, tulis actual result yang teramati, bukan status card`,
           );
         }
         if (!le.keys.includes('notes')) {
@@ -337,6 +348,33 @@ for (const file of walkTcFiles(qaDocs)) {
           warnings.push(
             `last_execution.jira sama dengan origin_jira (${le.jira}): ${rel} —` +
               ` pastikan run ini memang untuk card itu, bukan hasil menyalin asal-usul`,
+          );
+        }
+        manual.push(rel);
+      } else if (viaCard) {
+        // Ditandai berdasarkan card Jira Done (SOP: Done = sudah ditest). Identitas
+        // penguji dari kredensial Jira, jadi tidak perlu nama manual (rule 16 § Card Done).
+        const etm = le.via.slice('card:'.length).trim();
+        if (!/^[A-Z]{2,}-\d+$/.test(etm)) {
+          errors.push(`via card tanpa kode card: ${rel} → tulis \`card:{ETM-xxxxx}\``);
+        }
+        if (!le.jira || le.jira === 'null' || le.jira !== etm) {
+          errors.push(
+            `via card:${etm} tapi last_execution.jira != ${etm}: ${rel} →` +
+              ` isi \`jira: ${etm}\` (card yang jadi dasar penandaan)`,
+          );
+        }
+        if (!le.keys.includes('notes')) {
+          errors.push(`via card tanpa \`notes\`: ${rel} → sebut dasarnya, mis. "Ditandai berdasarkan card ${etm} Done"`);
+        }
+        // via card = pencatat TIDAK menjalankan test sendiri. Notes DILARANG mengarang
+        // detail eksekusi seolah dia yang menjalankan/menyaksikan (celah kegagalan F).
+        if (le.notes && /(di|pada)\s+staging|berhasil\s+di\b|sukses\s+di\b|passed\s+di\b|dijalankan|dieksekusi/i.test(le.notes)) {
+          errors.push(
+            `via card tapi notes mengarang detail eksekusi: ${rel} (notes: "${le.notes}") →` +
+              ` menandai dari card BUKAN menjalankan test. Notes cukup sebut dasarnya` +
+              ` ("berdasarkan card ${etm} Done"); jangan klaim "berhasil di staging" dsb yang` +
+              ` tidak kamu lakukan. Kalau card Done disertai catatan, cerminkan itu`,
           );
         }
         manual.push(rel);

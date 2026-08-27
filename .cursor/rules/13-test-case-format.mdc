@@ -150,12 +150,13 @@ last_execution:
   at: "2026-08-26"
   jira: ETM-15522                      # opsional, kalau run untuk card tertentu
   status: passed                       # atau failed / blocked
-  via: "manual:QA - Jeiniffer"         # WAJIB bernama — run manual tidak reproducible
+  via: "manual:QA - Jeiniffer"         # identitas penguji — dianjurkan bernama (lihat § via)
   notes: "Semua field tersimpan; datalist sesuai. Toast sukses muncul."
 ```
 
-- `via: manual:{Nama}` **wajib menyebut nama penguji.** Run manual tidak bisa diulang
-  mesin, jadi satu-satunya jaminan mutunya adalah orang yang bertanggung jawab.
+- `via: manual:{Nama}` **sebaiknya bernama** — run manual tidak bisa diulang mesin, jadi
+  nama penguji adalah jaminan mutu terbaik kalau nanti gagal. Tapi ketiadaannya bukan
+  blocker; lihat urutan prioritas `via` di § catatan bawah.
 - `notes` **wajib** untuk run manual — isinya **actual result** singkat. Tanpa itu,
   `passed` cuma klaim yang tidak bisa direview siapa pun. `notes` **hanya** boleh ada
   pada run manual; di run CLI reporter yang menulis, tidak perlu catatan tangan.
@@ -173,10 +174,18 @@ last_execution:
 >   perapian. Bukti yang kabur tidak bisa dipakai membedakan lulus sungguhan dari
 >   lulus yang kebetulan.
 >
-> **`via: manual:{Nama}` harus menunjuk ORANG.** Menyimpulkan nama penguji dari prompter
-> boleh — biasanya memang dia yang menjalankan. Yang tidak boleh adalah label kolektif
-> (`manual:QA - Team`, `manual:Tim`): kalau TC-nya gagal, tidak ada yang bisa ditanya.
-> Lint memperingatkan pola ini.
+> **`via` — identitas penguji: dianjurkan, tapi jangan jadi blocker.** Urutan prioritas:
+> `card:{ETM}` (dari kredensial Jira, terbaik) → `manual:{Nama}` (orang) → `manual:{device}`
+> (nama device) → `manual` (anonim). Nama individu **paling** membantu kalau TC gagal
+> nanti — tapi ketiadaannya **tidak menghalangi** pencatatan. Yang tetap dihindari:
+> label kolektif menyesatkan seperti `manual:QA - Team` **saat sebenarnya tahu siapa**
+> (mis. dari prompter atau card) — pakai identitas yang sebenarnya, bukan yang lebih kabur.
+>
+> **notes: sebut DASAR, jangan mengarang DETAIL eksekusi.** Boleh: actual result yang
+> benar-benar diamati, atau dasar penandaan ("berdasarkan card ETM-xxxxx Done"). Dilarang:
+> mengarang detail eksekusi yang agent tidak lakukan/ketahui — "verifikasi berhasil di
+> staging", environment/angka spesifik tanpa sumber. Kalau tidak tahu hasilnya, **tanyakan**;
+> jangan mengisi seolah tahu.
 >
 > **`last_execution.jira` bukan `origin_jira`.** Jangan menyalin asal-usul TC ke situ.
 > Kalau run ini tidak untuk card tertentu, isi `null`.
@@ -186,6 +195,7 @@ last_execution:
 | `via` | Arti | Bisa diulang? |
 |---|---|---|
 | `tests/specs/...spec.ts` | run Playwright CLI, ditulis reporter | ✅ ya |
+| `card:{ETM-xxxxx}` | ditandai berdasarkan card Jira Done (SOP: Done = sudah ditest); identitas dari kredensial Jira | ❌ tidak — lihat `16` § Card Done |
 | `manual:{Nama}` | dijalankan orang, actual result di `notes` | ❌ tidak |
 | `legacy:*` | klaim warisan sebelum gate ada | ❌ tidak, jangan dipakai untuk TC baru |
 | `null` | belum pernah jalan (`status: not_run`) | — |
