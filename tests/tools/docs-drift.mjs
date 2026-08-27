@@ -37,12 +37,30 @@ if (!fs.existsSync(there)) {
   process.exit(0);
 }
 
-/** Artefak pengujian: sumbernya repo ini. Sisanya dokumen sistem: sumbernya developer. */
-const isTestArtifact = (rel) =>
-  rel.includes('/test-cases/') ||
-  rel.startsWith('flows/') ||
-  /(^|\/)card\.md$/.test(rel) ||
-  rel.includes('/results/');
+/**
+ * Dokumen sistem = DAFTAR TERTUTUP. Sisanya milik repo ini.
+ *
+ * Sengaja dibalik: kalau dokumen sistem yang jadi daftar terbuka, file jenis baru
+ * (README folder card, matriks analisis, dsb) diam-diam jatuh ke klasifikasi "milik
+ * developer" lalu tidak pernah didorong DAN tidak pernah dilaporkan. Dengan daftar
+ * tertutup, file tak dikenal default-nya milik QA — ikut termirror, tidak hilang.
+ */
+const SYSTEM_DOC = new Set([
+  'requirement.md',
+  'technical.md',
+  'knowledge-base.md',
+  'user-guide.md',
+  'feature-map.md',
+  'README.md', // hanya di level menu — dicek di bawah
+]);
+const isSystemDoc = (rel) => {
+  const parts = rel.split('/');
+  if (parts[0] === '_meta') return true;
+  if (parts.includes('capabilities')) return true;
+  // Dokumen sistem hidup langsung di bawah folder menu: `{menu}/{nama}.md`
+  return parts.length === 2 && SYSTEM_DOC.has(parts[1]);
+};
+const isTestArtifact = (rel) => !isSystemDoc(rel);
 
 function* walk(dir, base = dir) {
   if (!fs.existsSync(dir)) return;
@@ -63,9 +81,13 @@ for (const rel of walk(there)) {
   if (isTestArtifact(rel)) continue;
   if (!same(path.join(here, rel), path.join(there, rel))) pull.push(rel);
 }
+const orphan = []; // dokumen sistem yang hanya ada di sini — tidak punya sumber
 for (const rel of walk(here)) {
-  if (!isTestArtifact(rel)) continue;
-  if (!same(path.join(here, rel), path.join(there, rel))) push.push(rel);
+  if (isTestArtifact(rel)) {
+    if (!same(path.join(here, rel), path.join(there, rel))) push.push(rel);
+  } else if (!fs.existsSync(path.join(there, rel))) {
+    orphan.push(rel);
+  }
 }
 
 if (FIX) {
@@ -86,6 +108,11 @@ if (FIX) {
 console.log(`Sync Check — ${path.relative(root, there)}`);
 for (const rel of pull) console.log(`  ❌ dokumen sistem tidak sinkron (sumber: developer): ${rel}`);
 for (const rel of push) console.log(`  ❌ artefak uji belum termirror ke developer: ${rel}`);
+for (const rel of orphan)
+  console.log(
+    `  ⚠️  dokumen sistem hanya ada di sini, tidak ada di developer: ${rel}` +
+      ` — sumbernya di repo developer, jadi ini yatim: pindahkan ke sana atau hapus`,
+  );
 
 if (pull.length || push.length) {
   console.log(

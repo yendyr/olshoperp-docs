@@ -258,6 +258,27 @@ function runDriftCases() {
     fs.rmSync(tmp, { recursive: true, force: true });
   }
 
+  // Titik buta: file QA jenis baru (README folder card, matriks analisis) tidak boleh
+  // diam-diam dianggap dokumen sistem lalu hilang dari mirror.
+  {
+    const { tmp, dev, qa } = mk();
+    fs.writeFileSync(path.join(dev, 'requirement.md'), 'sama\n');
+    fs.writeFileSync(path.join(qa, 'requirement.md'), 'sama\n');
+    fs.mkdirSync(path.join(qa, 'ETM-99999'), { recursive: true });
+    fs.writeFileSync(path.join(qa, 'ETM-99999', 'README.md'), 'indeks card\n');
+    fs.writeFileSync(path.join(qa, 'MATRIKS-ANALISIS.md'), 'analisis QA\n');
+    const r = run(tmp);
+    check('file QA jenis baru tetap terdeteksi belum termirror',
+      r.status === 1 && r.stdout.includes('ETM-99999') && r.stdout.includes('MATRIKS'),
+      `titik buta: file QA dianggap dokumen sistem lalu diabaikan\n${r.stdout}`);
+    run(tmp, ['--fix']);
+    check('file QA jenis baru ikut didorong ke developer',
+      fs.existsSync(path.join(dev, 'ETM-99999', 'README.md')) &&
+        fs.existsSync(path.join(dev, 'MATRIKS-ANALISIS.md')),
+      'tidak ikut didorong');
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+
   // Arah tidak boleh tertukar: TC lama di developer TIDAK boleh menimpa versi di sini
   {
     const { tmp, dev, qa } = mk();
@@ -272,7 +293,7 @@ function runDriftCases() {
   return out;
 }
 
-console.log(`TC Selftest — ${CASES.length + 5} gate diuji\n`);
+console.log(`TC Selftest — ${CASES.length + 7} gate diuji\n`);
 let failed = 0;
 for (const c of CASES) {
   const r = runCase(c);
