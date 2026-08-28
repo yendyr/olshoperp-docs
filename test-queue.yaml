@@ -657,3 +657,24 @@ ETM-15652:
   jira_status: To Do
   jira_type: Error
   summary: "[Purchase Report] - SQL Error 500 Column Not Found 'scm_purchase_order_details.supplier_name' saat Advance Filter Supplier"
+
+ETM-15637:
+  menu: all-sales-order
+  intent: new
+  status: ready
+  reuse: []
+  drafts:
+    - PENDING-JENNI-2026082101
+    - PENDING-JENNI-2026082102
+    - PENDING-JENNI-2026082103
+    - PENDING-JENNI-2026082104
+    - PENDING-JENNI-2026082105
+  ready_tcs:
+    - PENDING-JENNI-2026082101
+    - PENDING-JENNI-2026082102
+    - PENDING-JENNI-2026082103
+    - PENDING-JENNI-2026082104
+    - PENDING-JENNI-2026082105
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "REOPEN [Dev - Sales Order] Tambahan fitur extract this bundle di halaman detail sales order"
