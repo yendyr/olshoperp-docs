@@ -43,6 +43,11 @@ npm run tc:lint                              # sebelum & sesudah
 0. **`test_type` wajib** (rule 13 §3A): `happy` / `negative` / `edge` / `permission` /
    `regression` / `cross-menu`. Menu transaksional tidak dianggap tercakup kalau hanya
    punya `happy` — minimal ada `negative` untuk guard utamanya.
+0a. **Sumbernya test plan (banyak skenario)?** JANGAN gabung jadi 1 TC. Rule `13` §5C:
+    persist test plan ke `qa-docs/{menu}/{CARD}/test-plan.md`, tiap skenario bernomor
+    → 1 TC kandidat, section negatif/edge di test plan **wajib** jadi TC `negative`/
+    `edge` tersendiri (bukan baris tambahan di TC happy), lalu laporkan checklist
+    mapping N skenario → M TC ke user sebelum menyatakan selesai.
 1. **Cek TC existing dulu.** Dari card Jira? Ikuti pohon keputusan rule `13` §5B:
    belum ada TC → **bikin baru** (wajar untuk improvement/change requirement) ·
    expected sama → **reuse/retest** · expected berubah → **update TC existing**

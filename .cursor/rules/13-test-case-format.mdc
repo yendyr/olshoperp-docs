@@ -462,6 +462,59 @@ memblokir pekerjaan hari ini.
 
 ---
 
+## 5C. Test Plan → Test Case (pecah per skenario, WAJIB)
+
+Kasus nyata (ETM-15637, 2026-08-28): agent menyusun test plan bagus (4 skenario happy
++ 2 validasi negatif/edge), tapi saat dikonversi ke TC hanya jadi **1 TC happy**
+gabungan — 2 skenario hilang total, bagian "ubah harga unit" di skenario 1 pun ikut
+hilang. Root cause: tidak ada aturan eksplisit yang mengikat konversi test plan → TC
+pada level skenario. Section ini menutup celah itu.
+
+### Persist test plan ke repo — jangan tinggal di folder lokal agent
+
+Test plan (dokumen analisis multi-skenario sebelum jadi TC) **wajib** disimpan ke
+`qa-docs/{menu-slug}/{ETM-xxxxx}/test-plan.md` (folder per-card, pola sama dengan
+`test-cases/` per-card di §8) — **bukan** hanya di folder kerja lokal agent (mis.
+brain folder IDE). Tanpa ini tidak ada sumber kebenaran yang bisa dipakai
+memverifikasi TC sudah mengcover semua skenario — persis yang terjadi di ETM-15637
+(test plan sempat cuma ada di folder lokal `antigravity-ide/brain/...`, di luar repo,
+di luar jangkauan audit atau tooling apa pun).
+
+### Satu skenario test plan = kandidat satu TC
+
+Default: **jangan gabung**. Tiap skenario bernomor eksplisit di test plan (`##
+Skenario N`, `### 2.x`, dsb.) jadi kandidat TC tersendiri. Gabungkan hanya kalau lolos
+cek duplikasi §5 (alur benar-benar identik/subset). Kalau ragu skenario A dan B beda
+atau sama, defaultnya **pisah** — §5 menahan *over*produksi lewat
+`duplicate_candidate`, tapi *under*produksi (skenario hilang diam-diam) tidak punya
+gate mesin selain disiplin di titik konversi ini.
+
+### Section "Validasi Negatif & Batasan" WAJIB jadi TC tersendiri
+
+Item di section negative/edge test plan **tidak boleh** jadi baris tambahan di
+`expected_result` TC happy. Tiap item → TC baru dengan `test_type: negative` atau
+`edge` (§3A). Test plan yang eksplisit memisahkan section negatif berarti sudah
+menilai itu risiko cukup besar untuk diverifikasi sendiri — melebur ke TC happy
+berarti risiko itu tidak pernah benar-benar tereksekusi/tercek.
+
+### origin_jira wajib, last_execution.jira TETAP kosong sampai run nyata
+
+Ikuti §5B poin 1: `origin_jira: ETM-xxxxx` diisi begitu TC dibuat dari card. **Jangan**
+isi `last_execution.jira` di titik pembuatan ini — field itu bukan asal TC, itu bukti
+eksekusi, dan hanya sah terisi lewat run CLI sungguhan (§"origin_jira dan
+last_execution", "TC itu SATU"). `npm run tc:lint` menolak `last_execution.jira`
+terisi selagi `status: not_run` dan `at`/`via` masih kosong — persis pola bug
+ETM-15637 (card diisi ke `last_execution.jira` padahal TC belum pernah dijalankan).
+
+### Setelah konversi: laporkan checklist mapping ke user
+
+Sebelum menyatakan konversi selesai, tampilkan tabel: N skenario di test plan → M TC
+yang dibuat, sebutkan `tc_code` masing-masing, atau tandai **BELUM di-TC-kan** kalau
+sengaja di-skip (dan alasannya). Gap yang terlihat bisa dikoreksi user; gap yang diam-
+diam hilang — seperti 2 skenario ETM-15637 — tidak.
+
+---
+
 ## 6. Expected result wajib dari requirement
 
 `expected_result` di frontmatter **harus** berdasarkan `requirement.md` menu terkait.

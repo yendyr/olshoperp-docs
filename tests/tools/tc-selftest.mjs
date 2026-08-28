@@ -140,6 +140,18 @@ const CASES = [
       status: 'passed', via: '"manual:QA - Team"', notes: '"Card ETM-15526 Done."' } }) },
     expect: 'Status card dipakai sebagai bukti' },
 
+  // Bug nyata ETM-15637 (2026-08-28): Antigravity mengisi last_execution.jira dengan
+  // kode card saat MEMBUAT TC dari test plan, padahal TC itu belum pernah dieksekusi
+  // (status not_run, at & via kosong) — origin_jira & last_execution.jira tertukar.
+  { name: 'last_execution.jira terisi padahal belum pernah run (not_run) ditolak',
+    files: { 'TC-SELF-001.md': render({ last_execution: { at: 'null', jira: '"ETM-15637"',
+      status: 'not_run', via: 'null' } }) },
+    expect: 'ini `origin_jira`, bukan' },
+
+  { name: 'origin_jira terisi + last_execution kosong (belum run) diterima',
+    files: { 'TC-SELF-001.md': render({ origin_jira: 'ETM-15637' }) },
+    expect: null },
+
   { name: 'notes satu frasa status ditolak (terlalu tipis)',
     files: { 'TC-SELF-001.md': render({ last_execution: { at: '"2026-08-26"', jira: 'null',
       status: 'passed', via: '"manual:QA - Jeiniffer"', notes: '"Sudah oke."' } }) },

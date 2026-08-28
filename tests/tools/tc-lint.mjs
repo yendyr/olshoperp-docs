@@ -256,6 +256,24 @@ for (const file of walkTcFiles(qaDocs)) {
         `last_execution.status tidak sah "${le.status}": ${rel} → pilih: ${RUN_STATUS.join(', ')}`,
       );
     }
+    // Bug pola nyata (ETM-15637, 2026-08-28): last_execution.jira diisi kode card
+    // padahal TC belum pernah dieksekusi (status not_run, at & via kosong) —
+    // origin_jira dan last_execution.jira TERTUKAR. origin_jira = asal TC (boleh
+    // diisi kapan saja), last_execution.jira = card run INI (hanya sah kalau memang
+    // sudah run — auto-ditulis reporter CLI, bukan diisi manual saat create TC).
+    if (
+      le.status === 'not_run' &&
+      (!le.at || le.at === 'null') &&
+      (!le.via || le.via === 'null') &&
+      le.jira && le.jira !== 'null'
+    ) {
+      errors.push(
+        `last_execution.jira="${le.jira}" terisi padahal TC belum pernah dieksekusi ` +
+          `(status: not_run, at & via kosong): ${rel} → ini \`origin_jira\`, bukan ` +
+          `\`last_execution.jira\`. Pindahkan ke \`origin_jira: ${le.jira}\`, kosongkan ` +
+          `\`last_execution.jira: null\` (rule 13 §"origin_jira dan last_execution")`,
+      );
+    }
     // Aturan mutlak #1/#2 ditegakkan mesin: hasil hanya sah dari run Playwright CLI,
     // dan buktinya adalah `via` yang menunjuk file spec yang benar-benar ada.
     const viaLegacy = le.via?.startsWith('legacy:');
