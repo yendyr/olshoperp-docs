@@ -59,6 +59,10 @@ run_history:
     status: fail
     note: "ETM-15511 — label toggle + kolom list Default tidak sesuai AC"
 origin_jira: ETM-15511
+first_execution:
+  at: "2026-08-14 06:16"
+  via: "legacy:test_result"
+  jira: "ETM-15511"
 last_execution:
   at: "2026-08-14 06:16"
   jira: "ETM-15511"

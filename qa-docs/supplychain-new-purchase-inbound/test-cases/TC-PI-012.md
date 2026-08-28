@@ -90,6 +90,10 @@ run_history:
       7. Impor alternatif unit (sebagian melebihi outstanding max) sukses terfilter, stock masuk dalam unit pieces.
       8. Uji performa impor 1000 baris sukses dengan cepat.
 origin_jira: ETM-15611
+first_execution:
+  at: "2026-08-20"
+  via: "legacy:test_result"
+  jira: "ETM-15611"
 last_execution:
   at: "2026-08-20"
   jira: "ETM-15611"

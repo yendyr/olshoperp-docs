@@ -16,6 +16,10 @@ execution_company:
   id: 153
   code: lumicharmsid
 related_menus: []
+first_execution:
+  at: null
+  via: null
+  jira: null
 last_execution:
   at: null
   jira: null

@@ -65,6 +65,10 @@ run_history:
     jira_card: "ETM-15635"
 origin_jira: ETM-15485
 request_id: none
+first_execution:
+  at: "2026-08-21T17:23:45+07:00"
+  via: "legacy:test_result"
+  jira: "ETM-15635"
 last_execution:
   at: "2026-08-21T17:23:45+07:00"
   jira: "ETM-15635"

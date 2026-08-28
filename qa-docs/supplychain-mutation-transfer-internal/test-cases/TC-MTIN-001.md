@@ -41,6 +41,10 @@ test_result:
   environment: staging
   log_summary: "2/2 PASS mutation-transfer-internal-create-update.spec.ts · CREATE TFI* · company lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-15"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-15"
   jira: null

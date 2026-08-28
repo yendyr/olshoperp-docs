@@ -55,6 +55,10 @@ run_history:
     status: passed
     environment: staging
     note: "Approve ikon datalist + modal Approve — status Approved OK"
+first_execution:
+  at: "2026-08-26"
+  via: "tests/specs/flows/scm-inbound.spec.ts"
+  jira: null
 last_execution:
   at: "2026-08-26"
   jira: null

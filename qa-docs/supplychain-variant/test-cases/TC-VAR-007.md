@@ -56,6 +56,10 @@ run_history:
     status: pass
     note: "ETM-15511 — mutual exclusive OK; all-OFF last default not separately clicked"
 origin_jira: ETM-15511
+first_execution:
+  at: "2026-08-14 06:25"
+  via: "legacy:test_result"
+  jira: "ETM-15511"
 last_execution:
   at: "2026-08-14 06:25"
   jira: "ETM-15511"

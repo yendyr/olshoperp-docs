@@ -1,7 +1,7 @@
 ---
 doc_type: e2e-test-case
 tc_code: TC-PO-PI-TRUZ-WENTER-001
-menu: purchase-order
+menu: supplychain-purchase-order
 related_menus:
   - supplychain-new-purchase-inbound
   - system-product
@@ -56,6 +56,10 @@ test_result:
   environment: staging
   log_summary: "PASS ~8m — PO Without PR 8 SKU approve + PI Open 8 baris (lumicharmsid)"
   report_url: null
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

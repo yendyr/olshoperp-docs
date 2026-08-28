@@ -48,6 +48,10 @@ run_history:
     status: passed
     environment: staging
     note: "Shared filter RC-5SO3DM + page length agar selection tidak ter-reset DataTables"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

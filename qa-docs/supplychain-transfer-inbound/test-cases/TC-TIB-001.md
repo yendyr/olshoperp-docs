@@ -50,6 +50,10 @@ test_result:
   environment: staging
   log_summary: "PASS TFE-5TU41QH5 Show → Broken=2 AUTO-SKU002 · Lost=1 AUTO-SKU001 → Approve · description automation playwright · company lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-17"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-17"
   jira: null

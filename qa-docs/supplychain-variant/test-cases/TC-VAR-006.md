@@ -54,6 +54,10 @@ run_history:
     status: pass
     note: "ETM-15511 — reject Default ON when options > 1"
 origin_jira: ETM-15511
+first_execution:
+  at: "2026-08-14 06:23"
+  via: "legacy:test_result"
+  jira: "ETM-15511"
 last_execution:
   at: "2026-08-14 06:23"
   jira: "ETM-15511"

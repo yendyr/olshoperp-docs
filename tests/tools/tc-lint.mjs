@@ -67,10 +67,14 @@ function parseFrontmatter(rawText) {
     .split('\n')
     .map((l) => l.match(/-\s+(.+?)\s*$/)?.[1])
     .filter(Boolean);
-  // Blok `last_execution` — SATU-SATUNYA sumber hasil eksekusi (rule 13).
+  // Blok `last_execution` — sumber hasil eksekusi terakhir (rule 13).
   const leBlock = fm.match(/^last_execution:\n((?:[ \t]+.*\n?)+)/m)?.[1] ?? null;
   const leGet = (k) =>
     leBlock?.match(new RegExp(`^\\s+${k}:\\s*"?([^"\\n]*)"?\\s*$`, 'm'))?.[1]?.trim() ?? null;
+  // Blok `first_execution` — tanggal/jalur run PERTAMA (set once).
+  const feBlock = fm.match(/^first_execution:\n((?:[ \t]+.*\n?)+)/m)?.[1] ?? null;
+  const feGet = (k) =>
+    feBlock?.match(new RegExp(`^\\s+${k}:\\s*"?([^"\\n]*)"?\\s*$`, 'm'))?.[1]?.trim() ?? null;
   // `expected_result` bisa blok (`|`) maupun skalar satu baris — dua-duanya dipakai.
   const expected =
     fm.match(/^expected_result:\s*[|>]-?\s*\n([\s\S]*?)(?=\n[a-z_]+:|$)/m)?.[1] ??
@@ -90,6 +94,10 @@ function parseFrontmatter(rawText) {
       ? { at: leGet('at'), jira: leGet('jira'), status: leGet('status'), via: leGet('via'),
           notes: leBlock.match(/^\s+notes:\s*"?([^"\n]*)"?\s*$/m)?.[1] ?? null,
           keys: [...leBlock.matchAll(/^\s+([a-z_]+):/gm)].map((m) => m[1]) }
+      : null,
+    first_execution: feBlock
+      ? { at: feGet('at'), jira: feGet('jira'), via: feGet('via'),
+          keys: [...feBlock.matchAll(/^\s+([a-z_]+):/gm)].map((m) => m[1]) }
       : null,
     tc_code: get('tc_code'),
     title: get('title'),
@@ -231,6 +239,7 @@ for (const file of walkTcFiles(qaDocs)) {
 
   const RUN_STATUS = ['passed', 'failed', 'blocked', 'skipped', 'unknown', 'not_run'];
   const LE_KEYS = ['at', 'jira', 'status', 'via'];
+  const FE_KEYS = ['at', 'via', 'jira'];
   // `notes` hanya sah untuk run manual — di situlah actual result ditulis manusia.
   const LE_KEYS_MANUAL = [...LE_KEYS, 'notes'];
   const le = fm.last_execution;
@@ -406,6 +415,53 @@ for (const file of walkTcFiles(qaDocs)) {
       }
     }
     if (viaLegacy && ['passed', 'failed'].includes(le.status)) unverified.push(rel);
+  }
+
+  const fe = fm.first_execution;
+  if (!fe) {
+    warnings.push(
+      `Tidak ada blok \`first_execution\`: ${rel} → tambahkan { at, via, jira } (null sampai run pertama).` +
+        ` Jalankan \`npm run tc:backfill-first-execution\` untuk backfill massal`,
+    );
+  } else {
+    const feMissing = FE_KEYS.filter((k) => !fe.keys.includes(k));
+    const feExtra = fe.keys.filter((k) => !FE_KEYS.includes(k));
+    if (feMissing.length || feExtra.length) {
+      errors.push(
+        `Bentuk \`first_execution\` menyimpang: ${rel} →` +
+          (feMissing.length ? ` kurang ${feMissing.join(', ')};` : '') +
+          (feExtra.length ? ` key asing ${feExtra.join(', ')};` : '') +
+          ` wajib tepat {${FE_KEYS.join(', ')}} (rule 13 §first_execution)`,
+      );
+    }
+    for (const [field, val] of [['first_execution.jira', fe.jira]]) {
+      if (!val || val === 'null' || val === '~') continue;
+      if (/^ETM-\d+$/.test(val)) continue;
+      if (/^[A-Z]{2,}-\d+$/.test(val)) {
+        warnings.push(`${field} pakai site non-ETM: ${rel} ("${val}") — rule 12: hanya ETM`);
+      } else {
+        errors.push(`${field} format tidak valid: ${rel} ("${val}") → wajib \`ETM-{angka}\``);
+      }
+    }
+    const feAt = fe.at && fe.at !== 'null' ? fe.at.replace(/^"|"$/g, '') : null;
+    const leAt = le?.at && le.at !== 'null' ? le.at.replace(/^"|"$/g, '') : null;
+    if (feAt && leAt && feAt > leAt) {
+      errors.push(
+        `first_execution.at (${feAt}) setelah last_execution.at (${leAt}): ${rel} →` +
+          ` tanggal pertama tidak boleh lebih baru dari terakhir`,
+      );
+    }
+    if (leAt && !feAt && le && le.status && le.status !== 'not_run') {
+      errors.push(
+        `last_execution sudah terisi tapi first_execution.at kosong: ${rel} →` +
+          ` jalankan \`npm run tc:backfill-first-execution\` atau \`#sync-jira-done\``,
+      );
+    }
+    if (feAt && le && le.status === 'not_run' && (!leAt || leAt === 'null')) {
+      warnings.push(
+        `first_execution.at terisi tapi last_execution belum run: ${rel} → verifikasi konsistensi`,
+      );
+    }
   }
 
   // `test_result` = arsip diagnostik (log_summary/timestamp), BUKAN sumber kebenaran.

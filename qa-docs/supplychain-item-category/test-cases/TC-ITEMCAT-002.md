@@ -60,6 +60,10 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-ITEMCAT-002 — chain setelah TC-ITEMCAT-001"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

@@ -35,6 +35,10 @@ test_result:
   environment: staging
   log_summary: "PASS FILTER By Location warehouse → GET by-location · On Hand/ATS/Availability · Manual Calculate+Log · company lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-16"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-16"
   jira: null

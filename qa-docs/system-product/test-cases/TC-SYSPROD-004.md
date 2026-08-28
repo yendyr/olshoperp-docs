@@ -75,6 +75,10 @@ run_history:
     execution_evidence: "LUMI-CRAWL-1787447920177"
 origin_jira: ETM-15495
 jira_key: ETM-15554
+first_execution:
+  at: "2026-08-23T08:18:54+07:00"
+  via: "legacy:test_result"
+  jira: "ETM-15554"
 last_execution:
   at: "2026-08-23T08:18:54+07:00"
   jira: "ETM-15554"

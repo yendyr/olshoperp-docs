@@ -61,6 +61,10 @@ run_history:
     status: fail
     by: "QA - Yemima — filed ETM-15547 (copy Show deleted), ETM-15543 RE-OPEN"
 origin_jira: ETM-15543
+first_execution:
+  at: "2026-08-14 14:41"
+  via: "legacy:test_result"
+  jira: "ETM-15547"
 last_execution:
   at: "2026-08-14 14:41"
   jira: "ETM-15547"

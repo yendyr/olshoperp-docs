@@ -43,6 +43,10 @@ test_result:
   environment: staging
   log_summary: "PASS — PY-5TVBFUBZ; Unbilled Goods + Bank BCA 001 + PI-6960CB30; Open → Approve form; amount source disamakan dengan paid amount PI (4.000,00)."
   report_url: null
+first_execution:
+  at: "2026-07-20"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-20"
   jira: null

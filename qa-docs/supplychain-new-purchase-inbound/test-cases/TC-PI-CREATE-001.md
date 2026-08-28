@@ -95,6 +95,10 @@ run_history:
     status: failed
     environment: staging
     note: "FAIL — supplier TC typo (Suplier/Texable); AS-IS: PT. Supplier Lumi 001 Taxable"
+first_execution:
+  at: "2026-08-26"
+  via: "tests/specs/flows/scm-inbound.spec.ts"
+  jira: null
 last_execution:
   at: "2026-08-26"
   jira: null

@@ -92,23 +92,40 @@ export default class TcExecutionReporter implements Reporter {
       }
 
       const raw = fs.readFileSync(file, 'utf-8');
-      const block =
+      const lastBlock =
         `last_execution:\n` +
         `  at: "${today}"\n` +
         `  jira: ${jira ? `"${jira}"` : 'null'}\n` +
         `  status: ${status}\n` +
         `  via: "${via}"\n`;
 
-      // Ganti blok lama kalau ada; kalau belum ada, sisipkan sebelum penutup frontmatter.
-      // `origin_jira` TIDAK pernah disentuh — itu asal-usul, bukan riwayat eksekusi.
-      let next: string;
-      if (/^last_execution:\n(?:[ \t]+\S.*\n)*/m.test(raw)) {
-        next = raw.replace(/^last_execution:\n(?:[ \t]+\S.*\n)*/m, block);
-      } else {
-        next = raw.replace(/\n---\n/, `\n${block}---\n`);
+      let next = raw;
+
+      // first_execution — set once saat run terminal pertama (rule 13 §first_execution).
+      const feMatch = next.match(/^first_execution:\n(?:[ \t]+\S.*\n)*/m);
+      const feAt = feMatch?.[0]?.match(/^\s+at:\s*(.+)$/m)?.[1]?.trim();
+      const feEmpty = !feAt || feAt === 'null' || feAt === '""';
+      if (feEmpty) {
+        const firstBlock =
+          `first_execution:\n` +
+          `  at: "${today}"\n` +
+          `  via: "${via}"\n` +
+          `  jira: ${jira ? `"${jira}"` : 'null'}\n`;
+        if (feMatch) {
+          next = next.replace(/^first_execution:\n(?:[ \t]+\S.*\n)*/m, firstBlock);
+        } else if (/^last_execution:\n/m.test(next)) {
+          next = next.replace(/^last_execution:\n/m, `${firstBlock}last_execution:\n`);
+        } else {
+          next = next.replace(/\n---\n/, `\n${firstBlock}---\n`);
+        }
       }
 
-      if (next !== raw) {
+      // Ganti blok last_execution; origin_jira TIDAK pernah disentuh.
+      if (/^last_execution:\n(?:[ \t]+\S.*\n)*/m.test(next)) {
+        next = next.replace(/^last_execution:\n(?:[ \t]+\S.*\n)*/m, lastBlock);
+      } else {
+        next = next.replace(/\n---\n/, `\n${lastBlock}---\n`);
+      }
         fs.writeFileSync(file, next, 'utf-8');
         updated.push(`${code} (${status})`);
       }

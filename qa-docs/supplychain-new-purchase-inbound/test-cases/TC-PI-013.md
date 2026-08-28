@@ -53,6 +53,10 @@ test_result:
 test_data_used: []
 run_history: []
 origin_jira: null
+first_execution:
+  at: "2026-08-26"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-08-26"
   jira: null

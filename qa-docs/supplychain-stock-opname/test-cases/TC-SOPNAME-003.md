@@ -57,6 +57,10 @@ run_history:
   - at: "2026-07-15"
     status: passed
     note: "Playwright @TC-SOPNAME-003 — add available product + qty on SP-6A56E465"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

@@ -33,6 +33,10 @@ test_result:
   environment: staging
   log_summary: "PASS VIEW By SKU shell WH/Sales/ALL + Buildings Multiselect · company lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-16"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-16"
   jira: null

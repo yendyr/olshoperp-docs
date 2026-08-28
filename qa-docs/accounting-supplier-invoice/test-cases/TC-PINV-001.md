@@ -42,6 +42,10 @@ test_result:
   environment: staging
   log_summary: "PASS � PI-6A5DC78E Draft � supplier PT. Supplier IDR � PO-6A589088 � lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-20"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-20"
   jira: null

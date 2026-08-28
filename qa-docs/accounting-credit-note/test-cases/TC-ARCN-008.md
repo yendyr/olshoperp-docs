@@ -108,6 +108,10 @@ run_history:
   - at: "2026-08-13 21:10"
     status: fail
     by: "QA - Yemima (Playwright MCP)"
+first_execution:
+  at: "2026-08-13"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-08-13"
   jira: null

@@ -1,0 +1,20 @@
+{
+  "cloud_id": "44cc9820-3372-4c12-884c-698b1397173c",
+  "site": "https://erpintegration.atlassian.net",
+  "project_key": "ETM",
+  "issue_type_test_case": "Test Case",
+  "fields": {
+    "test_result": "customfield_10202",
+    "actual_result": "customfield_10203",
+    "end_date": "customfield_10200",
+    "test_execute_by": "customfield_10201",
+    "testing_environment": "customfield_10231"
+  },
+  "test_result_map": {
+    "Passed": "passed",
+    "Failed": "failed",
+    "Blocked": "blocked"
+  },
+  "done_status_categories": ["done"],
+  "done_status_names": ["Done"]
+}

@@ -54,6 +54,10 @@ run_history:
     status: fail
     note: "ETM-15511 — BE masih keep/re-inject random on update Default OFF"
 origin_jira: ETM-15511
+first_execution:
+  at: "2026-08-14 06:19"
+  via: "legacy:test_result"
+  jira: "ETM-15511"
 last_execution:
   at: "2026-08-14 06:19"
   jira: "ETM-15511"

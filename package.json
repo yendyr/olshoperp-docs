@@ -41,6 +41,9 @@
     "dashboard:build": "node tests/tools/dashboard-build.mjs",
     "dashboard:render": "node tests/tools/dashboard-render.mjs",
     "dashboard": "npm run dashboard:build && npm run dashboard:render",
+    "tc:backfill-first-execution": "node tests/tools/tc-backfill-first-execution.mjs",
+    "tc:jira-drift": "node tests/tools/tc-jira-drift.mjs",
+    "tc:jira-sync": "node tests/tools/tc-jira-sync-apply.mjs",
     "postinstall": "playwright install chromium"
   },
   "devDependencies": {

@@ -63,6 +63,10 @@ run_history:
     status: passed
     environment: staging
     note: "Bulk delete + assert not in datalist + Show deleted data OK (~4m)"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

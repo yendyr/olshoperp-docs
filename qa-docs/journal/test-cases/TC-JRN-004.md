@@ -41,6 +41,10 @@ test_result:
   environment: staging
   log_summary: "RC-5TWBHOUX → GL-5TWBI5XV Approved; TYPE Payment from Customer; ref RC; ledger Bank BCA"
   report_url: null
+first_execution:
+  at: "2026-07-23"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-23"
   jira: null

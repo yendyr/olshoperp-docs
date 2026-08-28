@@ -73,6 +73,7 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `15-playwright-multi-repo.mdc` | BUILD vs RUN: docs-only re-test jika TC automation lengkap; FE/BE hanya BUILD/debug |
 | `16-card-tc-queue.mdc` | `#card-tc` → antrian `test-queue.yaml`; tes card `ETM-xxxxx` = cek TC existing dulu, baru DRAFT jika delta |
 | `17-e2e-cross-menu-flow.mdc` | E2E chain ≥2 menu: TC flow = recall TC origin (no duplikasi step), scenario layer `tests/scenarios/`, 1 spec kanonik per flow, fresh data per run, history last/prev-run |
+| `18-sync-jira-done.mdc` | Trigger `#sync-jira-done` / `#syncjiradone` — sync Jira Test Case Done (Test Result + Actual Result) ke `last_execution` / `first_execution` |
 
 **Sebelum menulis interaksi UI**: baca `tests/ui-components.md` — kontrak per komponen (multiselect, dialog headlessui, input numeric-mask, datepicker, modal outstanding) berisi jebakan yang sudah ditangani helper. Jangan tulis interaksi komponen dari nol.
 

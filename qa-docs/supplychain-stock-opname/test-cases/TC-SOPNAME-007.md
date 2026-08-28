@@ -46,6 +46,10 @@ run_history:
     status: pass
     note: "ETM-15479 — COLLI DEV option visible"
 origin_jira: ETM-15479
+first_execution:
+  at: "2026-08-14 07:13"
+  via: "legacy:test_result"
+  jira: "ETM-15479"
 last_execution:
   at: "2026-08-14 07:13"
   jira: "ETM-15479"

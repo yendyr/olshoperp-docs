@@ -46,6 +46,10 @@ test_result:
   environment: staging
   log_summary: "RC-5TWBHOUX Approved; customer PT. Customer Lumi 001; SI-5TO0EERH; Bank BCA 001 synced via /primevue fund API"
   report_url: null
+first_execution:
+  at: "2026-07-23"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-23"
   jira: null

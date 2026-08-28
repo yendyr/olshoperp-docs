@@ -42,11 +42,12 @@ function main() {
   const { summary, modules, recent_failures, recent_runs, generated_at } = data;
 
   const topFailure = recent_failures[0];
+  const execBreakdown = `${summary.executed_automated_tc ?? 0} otomasi · ${summary.executed_manual_tc ?? 0} manual`;
   const banner = topFailure
     ? `<div class="banner">
         <span class="dot"></span>
         <div class="banner-body">
-          <div class="headline">${summary.failed} dari ${summary.executed_tc} TC ter-otomasi berstatus gagal di eksekusi terakhirnya</div>
+          <div class="headline">${summary.failed} dari ${summary.executed_tc} TC berstatus gagal di eksekusi terakhirnya</div>
           <div class="sub">${esc(topFailure.menu_name)} — ${esc(topFailure.title)}</div>
         </div>
         <a class="cta" href="#needs-attention">Lihat detail ↓</a>
@@ -54,8 +55,8 @@ function main() {
     : `<div class="banner good-banner">
         <span class="dot good-dot"></span>
         <div class="banner-body">
-          <div class="headline">Semua TC ter-otomasi lulus di eksekusi terakhirnya</div>
-          <div class="sub">${summary.executed_tc} dari ${summary.automated_tc} TC ter-otomasi sudah pernah dijalankan.</div>
+          <div class="headline">Semua TC lulus di eksekusi terakhirnya</div>
+          <div class="sub">${summary.executed_tc} dari ${summary.total_tc} TC sudah pernah dijalankan (${execBreakdown}).</div>
         </div>
       </div>`;
 
@@ -72,7 +73,7 @@ function main() {
           <span class="ratio">${m.passed} / ${m.executed}</span>
         </div>
         <div class="bar"><span class="${barClass}" style="width:${pct}%"></span></div>
-        <div class="foot"><span>${m.total} TC ter-otomasi</span><span>${m.last_run ? fmtDate(m.last_run) : 'belum ada run'}</span></div>
+        <div class="foot"><span>${m.total} TC</span><span>${m.last_run ? fmtDate(m.last_run) : 'belum ada run'}</span></div>
       </div>`;
     })
     .join('\n');
@@ -87,7 +88,7 @@ function main() {
         </div>
         <p class="title">${esc(f.menu_name)} — ${esc(f.title)}</p>
         ${f.log_summary ? `<div class="err">${esc(f.log_summary)}</div>` : ''}
-        <div class="spec mono">${esc(f.automated_spec || '—')}</div>
+        <div class="spec mono">${esc(f.automated_spec || f.execution_via || '—')}</div>
       </div>`
     )
     .join('\n');
@@ -225,7 +226,7 @@ function main() {
   <header>
     <div>
       <h1>OlshopERP Test Dashboard</h1>
-      <p>Rekap hasil eksekusi test case yang sudah pernah dijalankan (Playwright, ${esc(summary.executed_tc)} dari ${esc(summary.automated_tc)} TC ter-otomasi) — dibaca langsung dari <span class="mono">qa-docs/**/test-cases/*.md</span>.</p>
+      <p>Rekap hasil eksekusi tim (Playwright CLI &amp; manual QA) — ${esc(summary.executed_tc)} dari ${esc(summary.total_tc)} TC terdaftar (${execBreakdown}).</p>
     </div>
     <div class="meta">
       <strong>Snapshot ${fmtDate(generated_at, true)}</strong>
@@ -252,14 +253,14 @@ function main() {
       <div class="sub">di eksekusi terakhirnya</div>
     </div>
     <div class="stat">
-      <div class="label">TC ter-otomasi</div>
-      <div class="value">${summary.automated_tc}</div>
-      <div class="sub">dari ${summary.total_tc} TC terdaftar</div>
+      <div class="label">Sudah dieksekusi</div>
+      <div class="value">${summary.executed_tc}</div>
+      <div class="sub">${execBreakdown} · ${summary.automated_tc} punya spec otomasi</div>
     </div>
     <div class="stat">
       <div class="label">Belum pernah run</div>
       <div class="value">${summary.never_run_tc}</div>
-      <div class="sub">TC ter-otomasi</div>
+      <div class="sub">dari katalog TC</div>
     </div>
   </div>
 
@@ -288,7 +289,7 @@ ${runRows}
   </div>
 
   <footer class="note">
-    Data dibaca dari frontmatter <span class="mono">test_result</span> / <span class="mono">last_execution</span> TC-*.md di <span class="mono">qa-docs/</span> — bukan menjalankan test baru. Belum ada scheduler otomatis; refresh manual lewat <span class="mono">npm run dashboard:build && npm run dashboard:render</span>. TC yang belum pernah dijalankan (${summary.never_run_tc}) tidak ikut dihitung pass rate.
+    Sumber: <span class="mono">last_execution</span> (utama) + <span class="mono">test_result</span> (fallback) di TC-*.md — bukan menjalankan test baru. Mencakup run Playwright CLI dan manual QA. Refresh manual: <span class="mono">npm run dashboard:build</span>. TC belum pernah run (${summary.never_run_tc}) tidak ikut pass rate.
   </footer>
 </div>
 

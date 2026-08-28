@@ -35,6 +35,10 @@ test_result:
   environment: staging
   log_summary: "PASS — bagian approve dalam TC-APAY-001; PY-5TVBFUBZ Approved via form."
   report_url: null
+first_execution:
+  at: "2026-07-20"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-20"
   jira: null

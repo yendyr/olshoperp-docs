@@ -85,6 +85,10 @@ run_history:
    status: passed
    environment: staging
    note: "Scoped run SKU-WENTER PASS (QA video mode)."
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

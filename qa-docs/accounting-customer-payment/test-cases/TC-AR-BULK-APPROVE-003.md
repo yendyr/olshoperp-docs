@@ -51,6 +51,10 @@ run_history:
     status: passed
     environment: staging
     note: "Expected TC menyebut error notifikasi; AS-IS mencegah aksi dengan hide tombol — dicatat sebagai perilaku UI"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

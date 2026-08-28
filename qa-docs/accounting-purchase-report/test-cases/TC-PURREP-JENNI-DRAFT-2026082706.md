@@ -22,6 +22,10 @@ preconditions:
   - "Navigasi ke menu Purchase Report (https://staging.olshoperp.com/accounting/purchase-report)"
   - "Terdapat data transaksi Purchase Invoice dengan variasi supplier dan nilai tagihan"
 requirement_ref: "qa-docs/accounting-purchase-report/requirement.md"
+first_execution:
+  at: null
+  via: null
+  jira: null
 last_execution:
   at: null
   jira: null

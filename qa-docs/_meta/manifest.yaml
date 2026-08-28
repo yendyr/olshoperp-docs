@@ -858,27 +858,30 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
-      []
+      - docs/qa-docs/_meta/sot/accounting-customer-invoice-source-of-truth.md
     code_globs:
       backend:
         - Modules/Accounting/Http/Controllers/CustomerInvoiceController.php
         - Modules/Accounting/Http/Controllers/CustomerInvoiceDetailItemController.php
         - Modules/Accounting/Entities/CustomerInvoice.php
+        - Modules/Accounting/Imports/CustomerInvoiceImport.php
+        - Modules/Accounting/Jobs/CustomerInvoiceImportJob.php
+        - Modules/Accounting/Jobs/CustomerInvoiceExportJob.php
         - Modules/Accounting/Routes/api.php
         - app/Helpers/Accounting/JournalProcess.php
+      frontend:
         - olshoperp-frontend/src/pages/Accounting/AccountReceivable/CustomerInvoice/**/*
-      frontend: []
 
   accounting-customer-payment:
     menu_name: "Account Receive"
@@ -2455,6 +2458,37 @@ menus:
       frontend:
         - olshoperp-frontend/src/pages/Omni/Processing/CancelledOrder/**/*
 
+  supplychain-colli-type:
+    menu_name: "Colli Type"
+    short_description: "Define colli container types (Box, Pallet) used when creating New Colli."
+    path: supplychain-colli-type
+    module: SupplyChain
+    menu_links:
+      - supplychain/colli-type
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+      user-guide:
+        file: user-guide.md
+        status: review
+    legacy_sources:
+      - docs/qa-docs/_meta/sot/supplychain-colli-type-source-of-truth.md
+    code_globs:
+      backend:
+        - Modules/SupplyChain/Entities/ColliType.php
+        - Modules/SupplyChain/Entities/MultiskuColli.php
+        - Modules/SupplyChain/Database/Migrations/2026_08_12_140135_create_colli_types_table.php
+        - Modules/SupplyChain/Database/Migrations/2026_08_12_140249_create_multisku_collis_table.php
+      frontend: []
+
   supplychain-delivery-order:
     menu_name: "Delivery Order"
     short_description: "Create delivery orders to ship goods to customers."
@@ -2782,7 +2816,7 @@ menus:
         file: user-guide.md
         status: pending
     legacy_sources:
-      []
+      - docs/qa-docs/_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md
     code_globs:
       backend:
         - Modules/SupplyChain/Http/Controllers/StockMutationInboundController.php
@@ -2790,6 +2824,8 @@ menus:
         - Modules/SupplyChain/Http/Controllers/StockMutationInboundMiddleDetailController.php
         - Modules/SupplyChain/Entities/StockMutationInbound.php
         - Modules/SupplyChain/Entities/InboundMutationDetail.php
+        - Modules/SupplyChain/Entities/MultiskuColli.php
+        - Modules/SupplyChain/Entities/ColliType.php
         - Modules/SupplyChain/Routes/api.php
         - app/Helpers/SupplyChain/ItemStockMutation.php
         - app/Helpers/Accounting/JournalProcess.php
@@ -2984,7 +3020,7 @@ menus:
         file: user-guide.md
         status: review
     legacy_sources:
-      []
+      - docs/qa-docs/_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md
     code_globs:
       backend:
         - Modules/SupplyChain/Http/Controllers/StockMutationInboundController.php
@@ -2994,6 +3030,8 @@ menus:
         - Modules/SupplyChain/Entities/StockMutationInbound.php
         - Modules/SupplyChain/Entities/InboundMutationDetail.php
         - Modules/SupplyChain/Entities/InboundMutationMiddleDetail.php
+        - Modules/SupplyChain/Entities/MultiskuColli.php
+        - Modules/SupplyChain/Entities/ColliType.php
         - Modules/SupplyChain/Jobs/ApproveInboundJob.php
         - Modules/SupplyChain/Jobs/GenerateItemStockChunkJob.php
         - Modules/SupplyChain/Import/StockMutationInboundColliImport.php

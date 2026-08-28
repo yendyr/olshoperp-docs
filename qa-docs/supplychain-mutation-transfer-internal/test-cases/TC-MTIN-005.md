@@ -49,6 +49,10 @@ run_history:
     environment: staging
     note: null
 origin_jira: ETM-15553
+first_execution:
+  at: null
+  via: null
+  jira: null
 last_execution:
   at: null
   jira: null

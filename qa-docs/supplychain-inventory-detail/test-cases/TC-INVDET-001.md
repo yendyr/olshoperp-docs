@@ -39,6 +39,10 @@ test_result:
   environment: staging
   log_summary: "2/2 PASS inventory-detail-view-filter.spec.ts · VIEW OK · warehouse level auto · lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-15"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-15"
   jira: null

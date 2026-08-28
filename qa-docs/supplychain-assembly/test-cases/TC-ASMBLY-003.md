@@ -62,6 +62,10 @@ run_history:
   - at: "2026-07-15"
     status: passed
     note: "Playwright @TC-ASMBLY-003 — AS-6A56F627 set QTY=10 (assembly-update-qty.spec.ts)"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

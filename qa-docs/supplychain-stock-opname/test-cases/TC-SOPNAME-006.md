@@ -48,6 +48,10 @@ run_history:
     status: pass
     note: "ETM-15479 — empty detail print"
 origin_jira: ETM-15479
+first_execution:
+  at: "2026-08-14 07:14"
+  via: "legacy:test_result"
+  jira: "ETM-15479"
 last_execution:
   at: "2026-08-14 07:14"
   jira: "ETM-15479"

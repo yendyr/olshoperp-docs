@@ -60,6 +60,10 @@ run_history:
     environment: staging
     note: "PASS — TFI-5U848VM3 colli options saved correctly."
 origin_jira: ETM-15553
+first_execution:
+  at: "2026-08-24"
+  via: "legacy:test_result"
+  jira: "ETM-15553"
 last_execution:
   at: "2026-08-24"
   jira: "ETM-15553"

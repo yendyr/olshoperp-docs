@@ -33,6 +33,10 @@ test_result:
   environment: staging
   log_summary: "3/3 PASS journal-manual-create.spec.ts � TC-JRN-003 � company lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-20"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-20"
   jira: null

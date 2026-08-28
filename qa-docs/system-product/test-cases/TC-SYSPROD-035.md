@@ -50,6 +50,10 @@ run_history:
     at: 2026-08-21T14:51:00+07:00
     jira: ETM-15512
 origin_jira: ETM-15512
+first_execution:
+  at: "2026-08-21T14:51:00+07:00"
+  via: "legacy:test_result"
+  jira: "ETM-15512"
 last_execution:
   at: "2026-08-21T14:51:00+07:00"
   jira: "ETM-15512"

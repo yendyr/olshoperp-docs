@@ -59,6 +59,10 @@ run_history:
     status: pass
     by: "QA - Yemima (Manual)"
 origin_jira: ETM-15543
+first_execution:
+  at: null
+  via: null
+  jira: null
 last_execution:
   at: null
   jira: null

@@ -50,6 +50,10 @@ run_history:
     status: passed
     environment: staging
     note: "UI AS-IS: tombol disembunyikan (display:none) jika selectedRowsIdsOpen kosong — bukan hanya disabled attribute"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

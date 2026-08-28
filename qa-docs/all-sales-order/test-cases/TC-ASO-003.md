@@ -3,6 +3,7 @@ tc_code: TC-ASO-003
 test_type: happy
 title: Memastikan Riwayat Log Re-check Failed Process Tercatat per Store dan Tersimpan Sesuai Riwayat Trigger
 menu_slug: all-sales-order
+menu: all-sales-order
 status: draft
 automated: true
 automated_spec: tests/specs/all-sales-order/recheck-failed-process.spec.ts
@@ -36,6 +37,10 @@ test_result:
 test_data_used: []
 run_history: []
 origin_jira: ETM-15350
+first_execution:
+  at: "2026-08-19"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-08-19"
   jira: null

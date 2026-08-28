@@ -1,7 +1,7 @@
 ---
 doc_type: e2e-test-case
 tc_code: TC-SALEORDE-001
-menu: businessdevelopment-sales-order-general
+menu: sales-order-general
 menu_name: "Sales Order General"
 test_type: happy
 title: "Create Sales Order General + SKU detail unit price 100.000, set Open lalu Approve"
@@ -16,6 +16,10 @@ execution_company:
   id: 153
   code: lumicharmsid
 related_menus: []
+first_execution:
+  at: null
+  via: null
+  jira: null
 last_execution:
   at: null
   jira: null

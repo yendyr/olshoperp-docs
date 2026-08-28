@@ -1,0 +1,120 @@
+---
+description: Trigger #sync-jira-done / #syncjiradone — sinkron hasil Jira Test Case Done ke TC markdown
+alwaysApply: false
+---
+
+# Sync Jira Done → TC Execution (`#sync-jira-done` · `#syncjiradone`)
+
+Rule ini aktif saat user menulis trigger sync execution dari card Jira ke file `TC-*.md`.
+
+## Trigger phrase (dua alias, sama artinya)
+
+```
+#sync-jira-done ETM-15635
+#sync-jira-done ETM-15635 ETM-15485
+#syncjiradone ETM-15635
+```
+
+- Satu atau **banyak** kode `ETM-{angka}` (spasi/koma) = card yang **wajib** di-resync.
+- Tanpa trigger ini, agent **tidak** menulis `last_execution` / `first_execution` dari status card saja.
+
+## Kapan dipakai
+
+| Situasi | Pakai trigger? |
+|---------|----------------|
+| Tim Done di Jira manual, lupa kabari Antigravity | ✅ |
+| Playwright CLI sudah jalan & reporter sudah isi file | ❌ (kecuali `--force`) |
+| Prompter bilang "TC ini sudah Done" | ✅ — tetap **fetch Jira real**, jangan percaya klaim buta |
+
+## Sumber data Jira (WAJIB — site ETM saja)
+
+| Field Jira | Custom field | Dipakai untuk |
+|------------|--------------|---------------|
+| **Status** | `status` | Harus **Done** (statusCategory `done`) |
+| **Test Result** | `customfield_10202` | `passed` / `failed` / `blocked` |
+| **Actual Result** | `customfield_10203` | `last_execution.notes` (ADF → plain text) |
+| **End Date** | `customfield_10200` | `at` (fallback: `updated`) |
+| Issue type | `issuetype` | Prefer **Test Case** — warn jika bukan |
+
+Config lengkap: `tests/tools/jira-etm-config.json`  
+`cloudId`: `44cc9820-3372-4c12-884c-698b1397173c` — jangan site eduqat.
+
+## Alur agent (WAJIB berurutan)
+
+1. Parse semua key `ETM-*` dari pesan user.
+2. **Fetch Jira** tiap key via MCP Rovo (`getJiraIssue`) dengan fields:
+   `status`, `issuetype`, `updated`, `customfield_10202`, `customfield_10203`, `customfield_10200`, `customfield_10201`
+   + `expand: names` bila perlu debug nama field.
+3. Validasi per card:
+   - Status **Done** — kalau belum, **laporkan** ke prompter (jangan sync ke `passed`).
+   - **Test Result** terisi — kalau kosong, skip card itu (rule 17: Actual + Test Result wajib sebelum Done).
+4. Bangun payload JSON `{ "cards": [ ... ] }` — normalize dengan `normalizeJiraIssue()` di `tc-jira-sync-lib.mjs`.
+5. Jalankan:
+   ```bash
+   npm run tc:jira-sync -- --apply /tmp/jira-sync-payload.json
+   npm run tc:lint
+   ```
+6. Laporkan ringkas: card → file TC → status + apakah `first_execution` ikut terisi.
+
+### Opsi CLI
+
+| Flag | Arti |
+|------|------|
+| `--dry-run` | Tampilkan perubahan tanpa tulis file |
+| `--force` | Timpa `last_execution` yang sudah dari Playwright CLI |
+
+Default: **skip** jika `last_execution.via` menunjuk spec Playwright (bukti CLI lebih kuat).
+
+## TC file mana yang di-update?
+
+Semua `qa-docs/**/test-cases/TC-*.md` yang match **salah satu**:
+
+- `origin_jira: ETM-xxxxx`
+- `card_ref: ETM-xxxxx` (legacy)
+- `last_execution.jira: ETM-xxxxx`
+- path `.../ETM-xxxxx/test-cases/...`
+
+Satu card Jira bisa meng-update **beberapa** file TC (folder per-card).
+
+## Yang ditulis ke frontmatter
+
+```yaml
+last_execution:
+  at: "YYYY-MM-DD"
+  jira: "ETM-xxxxx"
+  status: passed|failed|blocked
+  via: "card:ETM-xxxxx"
+  notes: "{Actual Result dari Jira — ringkas, verbatim sebisa mungkin}"
+
+first_execution:          # SET ONCE — hanya jika at masih null
+  at: "YYYY-MM-DD"
+  via: "card:ETM-xxxxx"
+  jira: "ETM-xxxxx"
+```
+
+- **`origin_jira` tidak ditimpa.**
+- **`notes`** dari field Actual Result Jira = sah (bukan klaim agent).
+- Tier bukti: **CLI spec > manual+notes > card sync** (rule 13).
+
+## Deteksi drift (tanpa sync)
+
+```bash
+npm run tc:jira-drift
+npm run tc:jira-drift -- ETM-15635 ETM-15485
+```
+
+Menampilkan TC yang `last_execution` masih `not_run` tapi punya rujukan card — kandidat `#sync-jira-done`.
+
+## Larangan
+
+- Jangan sync jika Test Result kosong meski status Done.
+- Jangan mengarang `notes` di luar Actual Result Jira + dasar sync.
+- Jangan timpa `first_execution` yang sudah terisi.
+- Jangan fetch site selain ETM (`erpintegration.atlassian.net`).
+
+## Relasi rule lain
+
+- Rule `16` § Card Done — pola `via: card:ETM-*` + verifikasi status real (trigger ini **mengotomatisasi** langkah tulis file).
+- Rule `17` — urutan isi Actual Result → Test Result → Done di Jira.
+- Rule `13` — schema `first_execution` / `last_execution`.
+- Rule `12` — card Done ≠ bukti otomatis; sync ini **menyalin** Test Result + Actual Result yang sudah ada di Jira.

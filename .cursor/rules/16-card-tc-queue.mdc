@@ -114,6 +114,10 @@ Berlaku jika user minta **tes / testing / test case / re-test** untuk **satu** c
 
 ### Card Done → tandai TC selesai (verifikasi status REAL dulu)
 
+**Alternatif otomatis (disarankan):** trigger `#sync-jira-done ETM-xxxxx` / `#syncjiradone` —
+rule `18-sync-jira-done.mdc` (fetch Test Result + Actual Result dari Jira, tulis file via
+`npm run tc:jira-sync`). Bisa banyak key sekaligus.
+
 Prompter minta *"card ETM-xxxxx sudah Done, tandai test case-nya selesai"*. Ini **sah** —
 di SOP tim, card origin tidak bisa digeser ke Done tanpa lampiran bukti test (minimal di
 komentar Jira). Jadi Done = sudah ditest, entah lewat Playwright CLI atau manual oleh tim.

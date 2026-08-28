@@ -47,6 +47,10 @@ test_result:
 test_data_used: []
 run_history: []
 origin_jira: ETM-15425
+first_execution:
+  at: "2026-08-19 13:37:25"
+  via: "legacy:test_result"
+  jira: "ETM-15425"
 last_execution:
   at: "2026-08-19 13:37:25"
   jira: "ETM-15425"

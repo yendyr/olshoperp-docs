@@ -30,6 +30,10 @@ test_result:
   status: passed
   environment: staging
   log_summary: "5/5 PASS · TC-ASL-003 · data AST-KND-0001 · company lumicharmsid"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

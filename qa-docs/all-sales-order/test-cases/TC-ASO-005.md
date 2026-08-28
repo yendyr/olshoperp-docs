@@ -48,6 +48,10 @@ test_data_used: []
 run_history: []
 origin_jira: ETM-15446
 request_id: recvqWrTHZ1dOV
+first_execution:
+  at: "2026-08-20 17:16:39"
+  via: "legacy:test_result"
+  jira: "ETM-15446"
 last_execution:
   at: "2026-08-20 17:16:39"
   jira: "ETM-15446"

@@ -44,6 +44,10 @@ test_result:
   environment: staging
   log_summary: "BR-6A617F12 import Received 16000 tgl 23/07/2026 — baris Bank Statement OK (API upload)"
   report_url: null
+first_execution:
+  at: "2026-07-23"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-23"
   jira: null

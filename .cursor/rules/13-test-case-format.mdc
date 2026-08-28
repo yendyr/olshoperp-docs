@@ -81,13 +81,34 @@ test_result:
 test_data_used: []
 run_history: []
 origin_jira: null                 # card yang melahirkan TC; jangan ditimpa saat re-test
-last_execution:                   # skema TETAP 4 key — diisi otomatis reporter CLI
+first_execution:                  # diisi SEKALI saat run pertama; label UI: Pertama diuji
+  at: null
+  via: null
+  jira: null
+last_execution:                   # skema TETAP — diperbarui tiap run; label UI: Terakhir diuji
   at: null                        # run terakhir; null jika belum pernah
   jira: null                      # card run terakhir; null jika run tanpa card
   status: not_run                 # passed | failed | blocked | skipped | unknown | not_run
-  via: null                       # path spec yang menghasilkannya
+  via: null                       # path spec / manual:{Nama} / card:{ETM}
 ---
 ```
+
+### `first_execution` — kapan TC pertama kali diuji
+
+> [!IMPORTANT]
+> **`first_execution` melengkapi `last_execution`, bukan menggantikannya.**
+> - Diisi **sekali** saat run terminal pertama (`passed`, `failed`, `blocked`, `skipped`).
+> - **Tidak pernah ditimpa** saat re-test — meski TC di-run 100×, dashboard tetap 1 baris per TC.
+> - Reporter Playwright + SOP manual QA: tulis hanya jika `first_execution.at` masih kosong.
+
+```yaml
+first_execution:
+  at: "2026-03-15"
+  via: "manual:QA - Yemima"    # atau path spec Playwright
+  jira: ETM-15442              # opsional — card saat first run
+```
+
+Backfill massal TC lama: `npm run tc:backfill-first-execution` (aproksimasi dari `last_execution` bila perlu).
 
 ### `origin_jira` dan `last_execution` — TC itu SATU, dipakai di banyak tempat
 

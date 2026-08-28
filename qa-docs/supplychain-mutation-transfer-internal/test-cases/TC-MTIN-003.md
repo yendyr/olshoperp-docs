@@ -66,6 +66,10 @@ run_history:
     environment: staging
     note: "PASS — Pencarian colli 'COL-6A8BFA70' sukses memfilter hanya SKU-TFI01."
 origin_jira: ETM-15553
+first_execution:
+  at: "2026-08-24"
+  via: "legacy:test_result"
+  jira: "ETM-15553"
 last_execution:
   at: "2026-08-24"
   jira: "ETM-15553"

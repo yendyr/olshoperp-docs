@@ -108,6 +108,30 @@ Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
 > Data seed (menyiapkan data, bukan menguji) diberi nama berprefix `seed-` dan memang
 > tidak bertag — dijalankan manual saat dibutuhkan.
 
+### G. "Card Jira sudah Done tapi file TC belum ke-update"
+
+Tim Done di Jira tanpa kabari Antigravity → drift. **Jangan** isi manual tanpa baca Jira.
+
+```bash
+npm run tc:jira-drift                    # daftar kandidat drift
+npm run tc:jira-drift -- ETM-15635       # scope card tertentu
+```
+
+**Trigger sync (prompter atau Antigravity):**
+
+```text
+#sync-jira-done ETM-15635 ETM-15485
+#syncjiradone ETM-15635
+```
+
+Alur agent: fetch Jira (status Done + `customfield_10202` Test Result + `customfield_10203` Actual Result) → payload JSON → `npm run tc:jira-sync -- --apply payload.json` → `npm run tc:lint`.
+
+Detail field + larangan: rule `18-sync-jira-done.mdc`.
+
+**Tier bukti:** Playwright CLI (`via: tests/specs/...`) > manual+notes > `via: card:ETM-*`. Sync Jira = tier card; default **tidak** timpa bukti CLI kecuali `--force`.
+
+---
+
 ### F. "TC mana yang belum ada hasil / mau kejar ke tim"
 
 ```bash
@@ -228,6 +252,7 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 | SOP eksekusi lengkap, tooling MCP/CLI (§6B) | rule `14-playwright-e2e.mdc` |
 | BUILD vs RUN, repo mana yang boleh dibuka | rule `15-playwright-multi-repo.mdc` |
 | Aturan flow cross-menu (recall, gate, fresh data) | rule `17-e2e-cross-menu-flow.mdc` |
+| Sync Jira Done → `last_execution` / `first_execution` | rule `18-sync-jira-done.mdc` |
 | Apa yang boleh ditulis di `qa-docs/` | rule `03-qa-docs-immutable.mdc` |
 
 ## Perintah lengkap
@@ -242,7 +267,10 @@ npm run test:tc -- "@TC-XXX"                 # jalankan TC by tag
 npm run test:smoke                           # smoke 4 menu
 npm run test:report                          # buka HTML report
 npm run component:sync                       # cek drift katalog komponen vs source frontend
-OLSHOP_RUN_JIRA=ETM-15647 npm run test:tc -- "@TC-XXX"   # run untuk card tertentu (tercatat di last_execution.jira)
+npm run tc:pending                              # TC belum punya hasil eksekusi
+npm run tc:jira-drift                           # drift Jira vs repo (kandidat sync)
+npm run tc:jira-sync -- --apply payload.json    # tulis last/first_execution dari Jira
+OLSHOP_RUN_JIRA=ETM-15647 npm run test:tc -- "@TC-XXX"   # run CLI (tier bukti tertinggi)
 ```
 
 ## Repo app = READ-ONLY

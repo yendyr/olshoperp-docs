@@ -36,6 +36,10 @@ test_result:
   environment: staging
   log_summary: "4/4 PASS chart-of-account-crud.spec.ts · TC-COA-001 VIEW · company lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-20"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-20"
   jira: null

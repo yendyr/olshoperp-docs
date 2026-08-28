@@ -57,6 +57,10 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-PGENCFG-002 — chain setelah create"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

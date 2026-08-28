@@ -55,6 +55,10 @@ run_history:
     environment: staging
     note: "PASS — Ditolak sistem dengan error notification: 'Input Quantity must be greater than 0. Max allowed: 994 Pieces.'"
 origin_jira: ETM-15610
+first_execution:
+  at: "2026-08-20"
+  via: "legacy:test_result"
+  jira: "ETM-15610"
 last_execution:
   at: "2026-08-20"
   jira: "ETM-15610"

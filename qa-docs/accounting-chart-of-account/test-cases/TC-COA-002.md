@@ -37,6 +37,10 @@ test_result:
   environment: staging
   log_summary: "4/4 PASS · TC-COA-002 CREATE AT-COA-* Save & Next → edit"
   report_url: null
+first_execution:
+  at: "2026-07-20"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-20"
   jira: null

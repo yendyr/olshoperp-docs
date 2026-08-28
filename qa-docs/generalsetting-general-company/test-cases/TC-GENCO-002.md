@@ -56,6 +56,10 @@ run_history:
     executed_by: system
     environment: staging
     log_summary: 'E2E runner belum dikonfigurasi. Deploy runner VM + set QA_DOCS_E2E_STUB=false (PR-3).'
+first_execution:
+  at: "'2026-06-2"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "'2026-06-2"
   jira: null

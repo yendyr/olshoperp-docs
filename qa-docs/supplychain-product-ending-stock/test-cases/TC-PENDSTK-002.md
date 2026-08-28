@@ -35,6 +35,10 @@ test_result:
   environment: staging
   log_summary: "PASS FILTER tab By SKU · On hand/ATS/Availability · search soft · company lumicharmsid · 2/2 VIEW+FILTER"
   report_url: null
+first_execution:
+  at: "2026-07-15"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-15"
   jira: null

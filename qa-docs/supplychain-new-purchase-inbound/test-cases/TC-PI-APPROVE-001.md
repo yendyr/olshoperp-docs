@@ -65,6 +65,10 @@ run_history:
     status: failed
     environment: staging
     note: "Approve API sukses (status jadi Approved) tetapi waitForResponse timeout karena race redirect; helper diperbaiki"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

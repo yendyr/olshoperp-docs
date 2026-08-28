@@ -60,6 +60,10 @@ run_history:
     status: pass
     note: "ETM-15479 — document print layout + data"
 origin_jira: ETM-15479
+first_execution:
+  at: "2026-08-14 07:12"
+  via: "legacy:test_result"
+  jira: "ETM-15479"
 last_execution:
   at: "2026-08-14 07:12"
   jira: "ETM-15479"

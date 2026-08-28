@@ -19,6 +19,7 @@ function loadManifestModules() {
   const text = fs.readFileSync(manifestPath, 'utf-8');
   const lines = text.split(/\r?\n/);
   const menuToModule = {};
+  const allModules = new Set();
   let currentMenu = null;
   for (const line of lines) {
     const menuMatch = line.match(/^  ([a-z0-9-]+):\s*$/);
@@ -29,11 +30,22 @@ function loadManifestModules() {
     const moduleMatch = line.match(/^    module:\s*(\S+)\s*$/);
     if (moduleMatch && currentMenu) {
       menuToModule[currentMenu] = moduleMatch[1];
+      allModules.add(moduleMatch[1]);
       currentMenu = null;
     }
   }
-  return menuToModule;
+  return { menuToModule, allModules: [...allModules].sort() };
 }
+
+const MODULE_URL_KEYS = {
+  Accounting: 'accounting',
+  OmniChannel: 'omni',
+  SupplyChain: 'scm',
+  Gate: 'gate',
+  GeneralSetting: 'settings',
+  BusinessDevelopment: 'businessdevelopment',
+  AI: 'ai',
+};
 
 // Parser frontmatter sederhana: cukup untuk skema TC-*.md (flat keys + 1 level nesting
 // test_result/last_execution, termasuk block scalar `key: |` seperti log_summary).
@@ -119,8 +131,54 @@ function walkTcFiles(dir, out = []) {
   return out;
 }
 
+/** Apakah status frontmatter menandakan TC pernah dieksekusi. */
+function isExecutedStatus(status) {
+  return Boolean(status && status !== 'not_run');
+}
+
+/**
+ * Resolve hasil eksekusi terakhir per TC.
+ * last_execution = sumber kebenaran (rule 13); test_result = arsip diagnostik legacy.
+ */
+function resolveExecution(testResult, lastExecution) {
+  const tr = testResult || {};
+  const le = lastExecution || {};
+  const leHasRun = Boolean(le.at) || isExecutedStatus(le.status);
+
+  if (leHasRun) {
+    return {
+      status: le.status || 'unknown',
+      finished_at: le.at || tr.finished_at || null,
+      started_at: tr.started_at || null,
+      environment: tr.environment || null,
+      log_summary: le.notes || tr.log_summary || null,
+      via: le.via || null,
+    };
+  }
+
+  if (isExecutedStatus(tr.status)) {
+    return {
+      status: tr.status,
+      finished_at: tr.finished_at || null,
+      started_at: tr.started_at || null,
+      environment: tr.environment || null,
+      log_summary: tr.log_summary || null,
+      via: null,
+    };
+  }
+
+  return {
+    status: 'not_run',
+    finished_at: null,
+    started_at: null,
+    environment: null,
+    log_summary: null,
+    via: null,
+  };
+}
+
 function main() {
-  const menuToModule = loadManifestModules();
+  const { menuToModule, allModules } = loadManifestModules();
   const files = walkTcFiles(qaDocs);
 
   const tcs = [];
@@ -130,35 +188,43 @@ function main() {
     if (!fm.tc_code) continue;
 
     const automated = fm.automated === 'true';
-    const testResult = fm.test_result || {};
-    const lastExecution = fm.last_execution || {};
-    const status = testResult.status || lastExecution.status || 'not_run';
-    const finishedAt = testResult.finished_at || lastExecution.at || null;
+    const exec = resolveExecution(fm.test_result, fm.last_execution);
+    const firstExecution = fm.first_execution || {};
+    const firstAt = cleanScalar(firstExecution.at ?? '') || null;
+    const firstVia = cleanScalar(firstExecution.via ?? '') || null;
+
+    const menuSlug = fm.menu || fm.menu_slug || '';
+    const moduleName = menuToModule[menuSlug] || 'Unclassified';
+    const moduleUrlKey = MODULE_URL_KEYS[moduleName] || moduleName.toLowerCase().replace(/\s+/g, '');
 
     tcs.push({
       tc_code: fm.tc_code,
       title: fm.title || '',
-      menu: fm.menu || '',
+      menu: menuSlug,
       menu_name: fm.menu_name || fm.menu || '',
-      module: menuToModule[fm.menu] || 'Unclassified',
+      module: moduleName,
+      module_url_key: moduleUrlKey,
       test_type: fm.test_type || 'unclassified',
       automated,
       automated_spec: fm.automated_spec || null,
-      status: automated ? status : 'not_automated',
-      started_at: testResult.started_at || null,
-      finished_at: finishedAt,
-      environment: testResult.environment || null,
-      log_summary: testResult.log_summary || null,
+      status: exec.status,
+      started_at: exec.started_at,
+      finished_at: exec.finished_at,
+      first_execution_at: firstAt,
+      first_execution_via: firstVia,
+      environment: exec.environment,
+      log_summary: exec.log_summary,
+      execution_via: exec.via,
     });
   }
 
   const automatedTcs = tcs.filter((t) => t.automated);
-  const executed = automatedTcs.filter((t) => t.status !== 'not_run');
+  const executed = tcs.filter((t) => t.status !== 'not_run');
   const passed = executed.filter((t) => t.status === 'passed');
   const failed = executed.filter((t) => t.status === 'failed' || t.status === 'error');
 
   const moduleMap = new Map();
-  for (const tc of automatedTcs) {
+  for (const tc of tcs) {
     if (!moduleMap.has(tc.module)) {
       moduleMap.set(tc.module, { module: tc.module, total: 0, executed: 0, passed: 0, failed: 0, last_run: null });
     }
@@ -182,19 +248,39 @@ function main() {
     .sort((a, b) => (b.finished_at || '').localeCompare(a.finished_at || ''))
     .slice(0, 50);
 
+  const executedAutomated = executed.filter((t) => t.automated).length;
+  const executedManual = executed.length - executedAutomated;
+
+  for (const mod of allModules) {
+    if (!moduleMap.has(mod)) {
+      moduleMap.set(mod, { module: mod, total: 0, executed: 0, passed: 0, failed: 0, last_run: null });
+    }
+  }
+
+  const moduleOrder = (a, b) => {
+    if (b.total !== a.total) return b.total - a.total;
+    return a.module.localeCompare(b.module);
+  };
+
+  const modules = [...moduleMap.values()]
+    .filter((m) => m.module !== 'Unclassified' || m.total > 0)
+    .sort(moduleOrder);
+
   const data = {
     generated_at: new Date().toISOString(),
-    source: 'existing test_result / last_execution frontmatter — no new test run',
+    source: 'last_execution (primary) + test_result fallback — no new test run',
     summary: {
       total_tc: tcs.length,
       automated_tc: automatedTcs.length,
       executed_tc: executed.length,
-      never_run_tc: automatedTcs.length - executed.length,
+      executed_automated_tc: executedAutomated,
+      executed_manual_tc: executedManual,
+      never_run_tc: tcs.length - executed.length,
       passed: passed.length,
       failed: failed.length,
       pass_rate: executed.length > 0 ? Math.round((passed.length / executed.length) * 100) : null,
     },
-    modules: [...moduleMap.values()].sort((a, b) => b.total - a.total),
+    modules,
     recent_failures: recentFailures,
     recent_runs: recentRuns,
   };

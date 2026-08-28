@@ -66,6 +66,10 @@ run_history:
     environment: staging
     note: "PASS — Mutasi stok terverifikasi akurat."
 origin_jira: ETM-15553
+first_execution:
+  at: "2026-08-24"
+  via: "legacy:test_result"
+  jira: "ETM-15553"
 last_execution:
   at: "2026-08-24"
   jira: "ETM-15553"

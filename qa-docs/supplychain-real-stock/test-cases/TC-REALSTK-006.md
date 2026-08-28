@@ -34,6 +34,10 @@ test_result:
   environment: staging
   log_summary: "PASS FILTER By SKU mode ALL → by-sku · System Product/Unit/Latest Calculation · company lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-16"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-16"
   jira: null

@@ -59,6 +59,10 @@ run_history:
     status: pass
     note: "ETM-15511 — skip inject random on create Default ON"
 origin_jira: ETM-15511
+first_execution:
+  at: "2026-08-14 06:15"
+  via: "legacy:test_result"
+  jira: "ETM-15511"
 last_execution:
   at: "2026-08-14 06:15"
   jira: "ETM-15511"

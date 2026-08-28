@@ -3,7 +3,7 @@ owner: QA - Jenni
 tc_code: TC-ASO-014
 title: "Extract SKU Bundle tipe VARIANT RANDOM pada Detail Sales Order"
 module: BusinessDevelopment
-menu: All Sales Order
+menu: all-sales-order
 test_type: happy
 menu_slug: all-sales-order
 type: functional
@@ -41,6 +41,10 @@ test_result:
 test_data_used: []
 run_history: []
 origin_jira: ETM-15605
+first_execution:
+  at: null
+  via: null
+  jira: null
 last_execution:
   at: null
   jira: null

@@ -36,6 +36,10 @@ test_result:
   environment: staging
   log_summary: "PASS UPDATE Restock↔Lost fill → PATCH details + toast Waiting for Finance · company lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-15"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-15"
   jira: null

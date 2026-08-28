@@ -35,6 +35,10 @@ test_result:
   environment: staging
   log_summary: "PASS FILTER Choose Product → data KPI SKU filled + tab Mutation · company lumicharmsid · 2/2"
   report_url: null
+first_execution:
+  at: "2026-07-15"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-15"
   jira: null

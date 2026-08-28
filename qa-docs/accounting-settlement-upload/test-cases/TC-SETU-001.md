@@ -103,6 +103,10 @@ run_history:
     status: fail
     by: "QA - Yemima (Playwright MCP)"
 origin_jira: ETM-11494
+first_execution:
+  at: "2026-08-15 09:10"
+  via: "legacy:test_result"
+  jira: "ETM-11494"
 last_execution:
   at: "2026-08-15 09:10"
   jira: "ETM-11494"

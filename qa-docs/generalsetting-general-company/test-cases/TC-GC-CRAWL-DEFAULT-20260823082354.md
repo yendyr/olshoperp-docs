@@ -43,6 +43,10 @@ test_data_used:
     is_supplier: true
     status: 1
     company_scope: "Lumi Charms.id (ID: 153)"
+first_execution:
+  at: "2026-08-23"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-08-23"
   jira: null

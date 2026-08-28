@@ -67,6 +67,10 @@ run_history:
   - at: "2026-07-14"
     status: passed
     note: "Playwright @TC-WHTYPE-001 — 2/2 serial PASS (~1.2m total)"
+first_execution:
+  at: "null"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: null
   jira: null

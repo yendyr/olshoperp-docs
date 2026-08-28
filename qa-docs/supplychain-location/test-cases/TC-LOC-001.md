@@ -48,6 +48,10 @@ test_result:
   environment: staging
   log_summary: "2/2 PASS location-create-update.spec.ts (~2.4m) · CREATE ~49.8s · company lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-15"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-15"
   jira: null

@@ -37,15 +37,17 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
 7. Kalau `requirement.md` menu masih `draft` atau tidak ada: JANGAN mengarang expected
    result. Lempar balik ke yang meminta.
 8. Satu TC dipakai di banyak tempat. Card Jira = asal-usul (`origin_jira`), bukan
-   kepemilikan. Card baru → cek dulu: belum ada TC = bikin baru · expected sama = reuse ·
-   expected berubah = UPDATE TC existing (jangan bikin kembarannya).
+   kepemilikan. Card Done di Jira tanpa update file? → `#sync-jira-done ETM-xxxxx`
+   (rule 18) — fetch Test Result + Actual Result, jangan isi manual tanpa Jira.
 
 PERINTAH GATE — jalankan sesuai konteks, jangan dilewati:
   npm run docs:drift                   # sinkron dua arah dgn developer (WAJIB sebelum & sesudah)
   npm run tc:selftest                  # gate-nya sendiri masih bekerja? (wajib 22/22 hijau)
   npm run tc:lint                      # sebelum & sesudah menambah/mengubah TC (wajib 0 error)
   npm run tc:coverage                  # lihat gap coverage sebelum menulis TC baru
-  npm run tc:pending                   # TC mana belum ada hasil (JANGAN hitung sendiri via grep)
+npm run tc:pending                   # TC mana belum ada hasil (JANGAN hitung sendiri via grep)
+  npm run tc:jira-drift                # drift: card Jira vs last_execution not_run
+  npm run tc:jira-sync -- --apply …    # apply payload Jira (lihat rule 18)
   npm run guard:scan -- --menu {slug}  # kandidat negative TC dari guard backend
   npm run flow:preflight -- {flow-id}  # WAJIB sebelum menjalankan flow E2E
   npm run component:sync               # sebelum BUILD automation menu baru / saat FAIL karena UI
@@ -105,6 +107,16 @@ Wajib berurutan: (1) `npm run tc:lint` harus 0 error, (2) `npm run tc:refs` untu
 rujukan tiap kode PENDING, (3) renumber + UPDATE SEMUA RUJUKAN dari peta itu
 (rule 13 §9 langkah 8), (4) `npm run tc:lint` lagi harus tetap 0 error.
 ```
+
+**Sync hasil Jira Done ke file TC (drift / tim lupa kabari agent):**
+
+```
+#sync-jira-done ETM-15635 ETM-15485
+#syncjiradone ETM-15635
+```
+
+Ikuti rule `18-sync-jira-done.mdc`: fetch Jira (Done + Test Result + Actual Result) →
+`npm run tc:jira-sync -- --apply payload.json` → `npm run tc:lint`.
 
 ---
 

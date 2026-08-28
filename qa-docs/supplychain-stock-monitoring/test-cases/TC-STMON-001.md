@@ -38,6 +38,10 @@ test_result:
   environment: staging
   log_summary: "4/4 PASS stock-monitoring-view-filter.spec.ts (~1.4m) · TC-STMON-001 ~7.9s · company lumicharmsid"
   report_url: null
+first_execution:
+  at: "2026-07-20"
+  via: "legacy:test_result"
+  jira: null
 last_execution:
   at: "2026-07-20"
   jira: null

@@ -3,7 +3,7 @@ owner: QA - Jenni
 tc_code: PENDING-JENNI-2026082105
 title: "Ekstraksi bundle pada Sales Order dengan 100 baris detail SKU sehingga total baris > 100 rows"
 module: BusinessDevelopment
-menu: All Sales Order
+menu: all-sales-order
 menu_slug: all-sales-order
 type: functional
 priority: high
@@ -20,6 +20,10 @@ preconditions:
   - "User login ke OlshopERP pada company target (misal Dev Staging ID 13)"
   - "Navigasi ke menu All Sales Order (https://staging.olshoperp.com/businessdevelopment/all-sales-order)"
   - "Dokumen Sales Order (edit mode) berisi campuran SKU Non-Bundle dan SKU Bundle"
+first_execution:
+  at: "2026-08-21"
+  via: "manual:Jenni"
+  jira: null
 last_execution:
   at: "2026-08-21"
   jira: null
