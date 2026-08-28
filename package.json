@@ -38,6 +38,9 @@
     "guard:scan": "node tests/tools/guard-scan.mjs",
     "flow:preflight": "node tests/tools/flow-preflight.mjs",
     "component:sync": "node tests/tools/component-sync.mjs",
+    "dashboard:build": "node tests/tools/dashboard-build.mjs",
+    "dashboard:render": "node tests/tools/dashboard-render.mjs",
+    "dashboard": "npm run dashboard:build && npm run dashboard:render",
     "postinstall": "playwright install chromium"
   },
   "devDependencies": {

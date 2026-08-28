@@ -1,0 +1,649 @@
+<!doctype html>
+<title>OlshopERP Test Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #eef0f2; --surface: #ffffff; --surface-2: #f6f7f9;
+    --ink: #161a21; --ink-soft: #5a6270; --ink-faint: #8890a0;
+    --border: #dde1e7; --border-strong: #c7cdd6;
+    --accent: #3c4a8c; --accent-soft: #eceefa; --accent-ink: #2c3868;
+    --good: #1c8a5c; --good-soft: #e5f5ee;
+    --warn: #a9750a; --warn-soft: #fbf1de;
+    --bad: #c23d3d; --bad-soft: #fbe9e8;
+    --shadow: 0 1px 2px rgba(20, 24, 33, 0.04), 0 8px 24px -12px rgba(20, 24, 33, 0.12);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0e1116; --surface: #161a22; --surface-2: #1c212b;
+      --ink: #e8eaef; --ink-soft: #a0a7b5; --ink-faint: #6c7484;
+      --border: #262c38; --border-strong: #333a48;
+      --accent: #8b96d9; --accent-soft: #232a48; --accent-ink: #c2c9ee;
+      --good: #3fbf88; --good-soft: #14261f;
+      --warn: #dba13f; --warn-soft: #2b2415;
+      --bad: #e2726c; --bad-soft: #2c1a1a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0e1116; --surface: #161a22; --surface-2: #1c212b;
+    --ink: #e8eaef; --ink-soft: #a0a7b5; --ink-faint: #6c7484;
+    --border: #262c38; --border-strong: #333a48;
+    --accent: #8b96d9; --accent-soft: #232a48; --accent-ink: #c2c9ee;
+    --good: #3fbf88; --good-soft: #14261f;
+    --warn: #dba13f; --warn-soft: #2b2415;
+    --bad: #e2726c; --bad-soft: #2c1a1a;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Public Sans", system-ui, -apple-system, sans-serif; font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 2.25rem 1.5rem 5rem; }
+  .sample-tag { display: inline-flex; align-items: center; gap: 0.4rem; font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); border: 1px solid var(--border-strong); border-radius: 999px; padding: 0.25rem 0.65rem; margin-bottom: 1.1rem; }
+  .sample-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
+  header h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.01em; margin: 0 0 0.3rem; text-wrap: balance; }
+  header p { margin: 0; color: var(--ink-soft); font-size: 0.92rem; max-width: 52ch; }
+  .meta { text-align: right; font-size: 0.82rem; color: var(--ink-faint); }
+  .meta strong { display: block; color: var(--ink-soft); font-weight: 600; font-size: 0.82rem; }
+  .switch { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; padding: 3px; margin-bottom: 1.5rem; }
+  .switch button { font: inherit; font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); background: transparent; border: none; border-radius: 7px; padding: 0.4rem 0.9rem; cursor: pointer; }
+  .switch button.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+  .switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .banner { display: flex; align-items: center; gap: 0.9rem; padding: 1rem 1.15rem; border-radius: 12px; border: 1px solid var(--bad); background: var(--bad-soft); margin-bottom: 1.5rem; }
+  .banner.good-banner { border-color: var(--good); background: var(--good-soft); }
+  .banner .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--bad); flex: none; box-shadow: 0 0 0 4px color-mix(in srgb, var(--bad) 18%, transparent); }
+  .banner .dot.good-dot { background: var(--good); box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 18%, transparent); }
+  .banner-body { flex: 1; min-width: 0; }
+  .banner-body .headline { font-weight: 700; font-size: 0.98rem; color: var(--ink); }
+  .banner-body .sub { font-size: 0.85rem; color: var(--ink-soft); margin-top: 0.15rem; }
+  .banner a.cta { flex: none; font-size: 0.82rem; font-weight: 600; color: var(--bad); text-decoration: none; border: 1px solid color-mix(in srgb, var(--bad) 45%, transparent); border-radius: 8px; padding: 0.45rem 0.8rem; white-space: nowrap; }
+  .banner a.cta:hover { background: color-mix(in srgb, var(--bad) 10%, transparent); }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; margin-bottom: 1.75rem; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.95rem 1.05rem; box-shadow: var(--shadow); }
+  .stat .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); font-weight: 600; }
+  .stat .value { font-family: "IBM Plex Mono", monospace; font-size: 1.65rem; font-weight: 600; margin-top: 0.3rem; letter-spacing: -0.01em; }
+  .stat .value.good { color: var(--good); }
+  .stat .value.bad { color: var(--bad); }
+  .stat .sub { font-size: 0.76rem; color: var(--ink-faint); margin-top: 0.15rem; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 0.8rem; }
+  .section-head h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700; color: var(--ink-soft); margin: 0; }
+  .section-head .count { font-size: 0.78rem; color: var(--ink-faint); font-family: "IBM Plex Mono", monospace; }
+  .modules { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 2rem; }
+  .module-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.85rem 1rem; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 0.5rem; }
+  .module-card .row1 { display: flex; align-items: center; gap: 0.55rem; }
+  .status-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .status-dot.good { background: var(--good); }
+  .status-dot.bad { background: var(--bad); box-shadow: 0 0 0 3px color-mix(in srgb, var(--bad) 20%, transparent); }
+  .module-card .name { font-weight: 600; font-size: 0.92rem; }
+  .module-card .ratio { margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: 0.82rem; color: var(--ink-soft); }
+  .module-card .foot { font-size: 0.76rem; color: var(--ink-faint); display: flex; justify-content: space-between; }
+  .bar { height: 5px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+  .bar > span { display: block; height: 100%; border-radius: 999px; }
+  .bar > span.good { background: var(--good); }
+  .bar > span.bad { background: var(--bad); }
+  .failure { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--bad); border-radius: 10px; padding: 0.9rem 1.05rem; margin-bottom: 0.7rem; box-shadow: var(--shadow); }
+  .failure .top { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
+  .tc-id { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 0.85rem; }
+  .pill { display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; padding: 0.18rem 0.5rem; border-radius: 999px; }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .pill.good { background: var(--good-soft); color: var(--good); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .failure .when { margin-left: auto; font-size: 0.78rem; color: var(--ink-faint); font-family: "IBM Plex Mono", monospace; }
+  .failure .title { font-size: 0.9rem; margin: 0.4rem 0 0; }
+  .failure .err { margin-top: 0.5rem; background: var(--surface-2); border-radius: 7px; padding: 0.5rem 0.7rem; font-family: "IBM Plex Mono", monospace; font-size: 0.76rem; color: var(--bad); overflow-x: auto; white-space: pre-wrap; }
+  .failure .spec { margin-top: 0.5rem; font-size: 0.74rem; color: var(--ink-faint); overflow-x: auto; }
+  .detail-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .detail-row { display: grid; grid-template-columns: 16px 108px 1fr 90px; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 0.6rem 0.85rem; font-size: 0.85rem; }
+  .detail-row .tc { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 0.8rem; }
+  .detail-row .t { color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .detail-row .when { color: var(--ink-faint); font-size: 0.78rem; text-align: right; }
+  .hidden { display: none !important; }
+  footer.note { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--ink-faint); }
+  @media (max-width: 620px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .modules { grid-template-columns: 1fr; }
+    .detail-row { grid-template-columns: 12px 80px 1fr; }
+    .detail-row .when { display: none; }
+    header .meta { text-align: left; }
+  }
+</style>
+
+<div class="wrap">
+  <span class="sample-tag">Snapshot manual — belum ada scheduler otomatis</span>
+
+  <header>
+    <div>
+      <h1>OlshopERP Test Dashboard</h1>
+      <p>Rekap hasil eksekusi test case yang sudah pernah dijalankan (Playwright, 203 dari 208 TC ter-otomasi) — dibaca langsung dari <span class="mono">qa-docs/**/test-cases/*.md</span>.</p>
+    </div>
+    <div class="meta">
+      <strong>Snapshot 28 Agu 2026, 16:54</strong>
+      bukan live — jalankan ulang <span class="mono">dashboard:build</span> untuk refresh
+    </div>
+  </header>
+
+  <div class="switch" role="tablist" aria-label="Dashboard view">
+    <button type="button" class="active" id="btn-exec" role="tab" aria-selected="true">Executive</button>
+    <button type="button" id="btn-eng" role="tab" aria-selected="false">Engineering</button>
+  </div>
+
+  <div class="banner">
+        <span class="dot"></span>
+        <div class="banner-body">
+          <div class="headline">7 dari 203 TC ter-otomasi berstatus gagal di eksekusi terakhirnya</div>
+          <div class="sub">Purchase Inbound (Legacy) — Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Purchase Inbound (Legacy)</div>
+        </div>
+        <a class="cta" href="#needs-attention">Lihat detail ↓</a>
+      </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="label">Pass rate</div>
+      <div class="value good">96%</div>
+      <div class="sub">195 dari 203 eksekusi</div>
+    </div>
+    <div class="stat">
+      <div class="label">Gagal</div>
+      <div class="value bad">7</div>
+      <div class="sub">di eksekusi terakhirnya</div>
+    </div>
+    <div class="stat">
+      <div class="label">TC ter-otomasi</div>
+      <div class="value">208</div>
+      <div class="sub">dari 419 TC terdaftar</div>
+    </div>
+    <div class="stat">
+      <div class="label">Belum pernah run</div>
+      <div class="value">5</div>
+      <div class="sub">TC ter-otomasi</div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>Per module</h2>
+    <span class="count mono">7 module</span>
+  </div>
+  <div class="modules">
+<div class="module-card">
+        <div class="row1">
+          <span class="status-dot bad"></span>
+          <span class="name">SupplyChain</span>
+          <span class="ratio">111 / 118</span>
+        </div>
+        <div class="bar"><span class="bad" style="width:94%"></span></div>
+        <div class="foot"><span>118 TC ter-otomasi</span><span>26 Agu 2026</span></div>
+      </div>
+<div class="module-card">
+        <div class="row1">
+          <span class="status-dot good"></span>
+          <span class="name">Accounting</span>
+          <span class="ratio">58 / 58</span>
+        </div>
+        <div class="bar"><span class="good" style="width:100%"></span></div>
+        <div class="foot"><span>62 TC ter-otomasi</span><span>26 Agu 2026</span></div>
+      </div>
+<div class="module-card">
+        <div class="row1">
+          <span class="status-dot good"></span>
+          <span class="name">OmniChannel</span>
+          <span class="ratio">9 / 9</span>
+        </div>
+        <div class="bar"><span class="good" style="width:100%"></span></div>
+        <div class="foot"><span>9 TC ter-otomasi</span><span>20 Agu 2026</span></div>
+      </div>
+<div class="module-card">
+        <div class="row1">
+          <span class="status-dot good"></span>
+          <span class="name">BusinessDevelopment</span>
+          <span class="ratio">7 / 7</span>
+        </div>
+        <div class="bar"><span class="good" style="width:100%"></span></div>
+        <div class="foot"><span>7 TC ter-otomasi</span><span>20 Agu 2026</span></div>
+      </div>
+<div class="module-card">
+        <div class="row1">
+          <span class="status-dot good"></span>
+          <span class="name">Unclassified</span>
+          <span class="ratio">4 / 4</span>
+        </div>
+        <div class="bar"><span class="good" style="width:100%"></span></div>
+        <div class="foot"><span>4 TC ter-otomasi</span><span>19 Agu 2026</span></div>
+      </div>
+<div class="module-card">
+        <div class="row1">
+          <span class="status-dot good"></span>
+          <span class="name">Gate</span>
+          <span class="ratio">4 / 4</span>
+        </div>
+        <div class="bar"><span class="good" style="width:100%"></span></div>
+        <div class="foot"><span>4 TC ter-otomasi</span><span>belum ada run</span></div>
+      </div>
+<div class="module-card">
+        <div class="row1">
+          <span class="status-dot bad"></span>
+          <span class="name">GeneralSetting</span>
+          <span class="ratio">2 / 3</span>
+        </div>
+        <div class="bar"><span class="bad" style="width:67%"></span></div>
+        <div class="foot"><span>4 TC ter-otomasi</span><span>23 Agu 2026</span></div>
+      </div>
+  </div>
+
+  <div class="section-head" id="needs-attention">
+    <h2>Perlu perhatian</h2>
+    <span class="count mono">7 gagal</span>
+  </div>
+  <div class="failure" id="fail-PENDING-20260827083403">
+        <div class="top">
+          <span class="tc-id">PENDING-20260827083403</span>
+          <span class="pill bad">Failed</span>
+          <span class="when">26 Agu 2026, 00:05</span>
+        </div>
+        <p class="title">Purchase Inbound (Legacy) — Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Purchase Inbound (Legacy)</p>
+        <div class="err">FAIL: Baris terbaru tidak di atas.
+Urutan aktual: sku-testing-046 -&gt; sku-testing-041 -&gt; sku-testing-033 (last added @ index 2 / paling bawah).</div>
+        <div class="spec mono">tests/specs/regression/etm-15214/detail-sorting.spec.ts</div>
+      </div>
+<div class="failure" id="fail-PENDING-20260827083402">
+        <div class="top">
+          <span class="tc-id">PENDING-20260827083402</span>
+          <span class="pill bad">Failed</span>
+          <span class="when">26 Agu 2026, 00:05</span>
+        </div>
+        <p class="title">Outbound External — Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Outbound External</p>
+        <div class="err">FAIL: Baris terbaru jatuh di bawah (first-in-first-row).
+Urutan aktual: SO-6JJHMV4V -&gt; SO-7F1FYJKV (last added at index 1 / bawah).</div>
+        <div class="spec mono">tests/specs/regression/etm-15214/detail-sorting.spec.ts</div>
+      </div>
+<div class="failure" id="fail-PENDING-20260827083406">
+        <div class="top">
+          <span class="tc-id">PENDING-20260827083406</span>
+          <span class="pill bad">Failed</span>
+          <span class="when">26 Agu 2026, 00:05</span>
+        </div>
+        <p class="title">External Transfer — Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - External Transfer</p>
+        <div class="err">FAIL: Baris terbaru di bawah.
+Urutan aktual: JOGGER485 -&gt; JOGGER500 (last added @ index 1 / bawah).</div>
+        <div class="spec mono">tests/specs/regression/etm-15214/detail-sorting.spec.ts</div>
+      </div>
+<div class="failure" id="fail-PENDING-20260827083405">
+        <div class="top">
+          <span class="tc-id">PENDING-20260827083405</span>
+          <span class="pill bad">Failed</span>
+          <span class="when">26 Agu 2026, 00:05</span>
+        </div>
+        <p class="title">Transfer Internal — Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Transfer Internal</p>
+        <div class="err">FAIL: Baris terbaru di bawah.
+Urutan aktual: SKU-0708 -&gt; SKU112 (last added @ index 1 / bawah).</div>
+        <div class="spec mono">tests/specs/regression/etm-15214/detail-sorting.spec.ts</div>
+      </div>
+<div class="failure" id="fail-TC-VAR-008">
+        <div class="top">
+          <span class="tc-id">TC-VAR-008</span>
+          <span class="pill bad">Failed</span>
+          <span class="when">14 Agu 2026, 06:19</span>
+        </div>
+        <p class="title">Master Variant — Edit — hapus opsi random unused tidak di-re-inject</p>
+        <div class="err">Tag random punya tombol remove (FE unlock OK). Setelah klik remove, UI tampil Red saja.
+Save All toast success. PUT /api/supplychain/variant/2965 body option=[&quot;Red&quot;], is_default_variant=false.
+GET setelah save tetap variant_options random (is_random=1) + Red. Random kembali / tidak terhapus.</div>
+        <div class="spec mono">tests/specs/variant/variant-fail-cases.spec.ts</div>
+      </div>
+<div class="failure" id="fail-TC-VAR-003">
+        <div class="top">
+          <span class="tc-id">TC-VAR-003</span>
+          <span class="pill bad">Failed</span>
+          <span class="when">14 Agu 2026, 06:16</span>
+        </div>
+        <p class="title">Master Variant — Form toggle Default Variant + kolom list Default</p>
+        <div class="err">Toggle ada di Create/Edit, default OFF, tooltip ada.
+Label UI = **Default Variant** (bukan **Set as Default System Product**).
+Datalist header FAT: code, variant name, options, description, active, created by/created at, action — kolom **Default** tidak ada.
+Field payload = is_default_variant (bukan is_default).
+FE build Thu Aug 13 16:05 +0700 · API 2026-08-13 16:03:47.</div>
+        <div class="spec mono">tests/specs/variant/variant-fail-cases.spec.ts</div>
+      </div>
+<div class="failure" id="fail-TC-GENCO-002">
+        <div class="top">
+          <span class="tc-id">TC-GENCO-002</span>
+          <span class="pill bad">Failed</span>
+          <span class="when">—</span>
+        </div>
+        <p class="title">&#39;General Company&#39; — &#39;Create General Company sebagai Customer saja&#39;</p>
+        <div class="err">&#39;Run E2E terputus atau stale (status queued/running tanpa job aktif). Silakan Execute lagi.&#39;</div>
+        <div class="spec mono">e2e/general-company-create-customer.spec.ts</div>
+      </div>
+
+  <div id="eng-view" class="hidden">
+    <div class="section-head" style="margin-top:2rem;">
+      <h2>Semua eksekusi terakhir per TC</h2>
+      <span class="count mono">50 dari 50</span>
+    </div>
+    <div class="detail-list">
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">PENDING-20260827083407</span>
+        <span class="t">Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Assembly</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot bad"></span>
+        <span class="tc">PENDING-20260827083403</span>
+        <span class="t">Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Purchase Inbound (Legacy)</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot bad"></span>
+        <span class="tc">PENDING-20260827083402</span>
+        <span class="t">Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Outbound External</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot bad"></span>
+        <span class="tc">PENDING-20260827083406</span>
+        <span class="t">Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - External Transfer</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot bad"></span>
+        <span class="tc">PENDING-20260827083405</span>
+        <span class="t">Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Transfer Internal</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">PENDING-20260827083404</span>
+        <span class="t">Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - BETA New Purchase Inbound</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">PENDING-20260827083401</span>
+        <span class="t">Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Purchase Order</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PINV-003</span>
+        <span class="t">Inbound yang belum approved TIDAK muncul di modal Inbound Transaction</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PI-013</span>
+        <span class="t">Over-receive dicegah — Inbound Qty tidak bisa melebihi Outstanding PO</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PI-CREATE-001</span>
+        <span class="t">Membuat dokumen inbound barang dari PO yang sudah di-approve — status Open</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PO-CREATE-001</span>
+        <span class="t">Membuat Purchase Order With PR dari available products — status Draft</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PO-UPDATE-001</span>
+        <span class="t">Set PO-6A4F5E97 status Open dari show datalist</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PO-UPDATE-002</span>
+        <span class="t">Menyetujui dokumen PO-6A4F5E97 melalui datalist</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PR-UPDATE-002</span>
+        <span class="t">Approve PR-6A4F0A91 dari datalist</span>
+        <span class="when">26 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-GC-CRAWL-SUPPLIER-ONLY-20260823082955</span>
+        <span class="t">Create New General Company Recognized ONLY as Supplier via Web UI Crawling</span>
+        <span class="when">23 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-GC-CRAWL-DEFAULT-20260823082354</span>
+        <span class="t">Create New General Company with Default Recognize as Customer &amp; Supplier via Web UI Crawling</span>
+        <span class="when">23 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-SYSPROD-004</span>
+        <span class="t">Create New System Product via Web UI Crawling (Form Input, Default Variant, &amp; Active Status)</span>
+        <span class="when">23 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PPL-001</span>
+        <span class="t">E2E Kalkulasi Gross Sales Berbasis Price Before VAT pada Transaksi Tax Included</span>
+        <span class="when">21 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-SPLG-007</span>
+        <span class="t">Memastikan Kondisi Batas (Boundary: Net Sales == COGS, Net Sales &gt; COGS, dan COGS = 0) Tidak Lolos Filter di Sales Platform</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-SPLG-008</span>
+        <span class="t">Memastikan Penanganan Empty State saat 0 Data Memenuhi Kriteria Filter di Sales Platform</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-SPLG-009</span>
+        <span class="t">Memastikan Tampilan Icon Under Benchmark COGS (cogs-error) pada Kolom Error Flag &amp; Baris Detail Order di Sales Platform</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-SPLG-010</span>
+        <span class="t">Memastikan Platform SKU yang Belum Terbinding (Unbound) Tidak Memicu Filter Net Sales &lt; COGS (benchmark_cogs = 0)</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-SPLG-011</span>
+        <span class="t">Memastikan Deteksi Realtime Under Benchmark COGS (Icon cogs-error &amp; Counter Update) Pasca Binding Platform SKU</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-SPLG-005</span>
+        <span class="t">Memastikan Deaktivasi Filter Pill (Toggle OFF) Mengembalikan Seluruh Data Platform Sales Order</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-SPLG-006</span>
+        <span class="t">Memastikan Interaksi Single-Active Toggle antar Pill Buttons di Sales Platform</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-SPLG-003</span>
+        <span class="t">Memastikan Visibility, Counter &amp; Posisi Pill Button Net Sales &lt; COGS di Sales Platform</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-SPLG-004</span>
+        <span class="t">Memastikan Akurasi Filter Datalist saat Pill Net Sales &lt; COGS Aktif di Sales Platform (Positive Filter)</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASO-007</span>
+        <span class="t">Memastikan Interaksi Single-Active Toggle / Mutual Exclusive dengan Pill Button Lain</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASO-008</span>
+        <span class="t">Memastikan Kondisi Batas (Boundary: Net Sales == COGS, Net Sales &gt; COGS, dan COGS = 0) Tidak Lolos Filter</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASO-009</span>
+        <span class="t">Memastikan Penanganan Empty State saat 0 Data Memenuhi Kriteria Filter Net Sales &lt; COGS</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASO-010</span>
+        <span class="t">Memastikan Tampilan Icon Under Benchmark COGS (cogs-error) pada Kolom Error Flag &amp; Baris Detail Item Order</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASO-006</span>
+        <span class="t">Memastikan Deaktivasi Filter Pill (Toggle OFF) Mengembalikan Seluruh Data Sales Order</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASO-005</span>
+        <span class="t">Memastikan Akurasi Filter Datalist saat Pill Net Sales &lt; COGS Aktif (Positive Filter)</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASO-004</span>
+        <span class="t">Memastikan Visibility, Counter &amp; Posisi Pill Button Net Sales &lt; COGS</span>
+        <span class="when">20 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PO-008</span>
+        <span class="t">Memastikan Penanganan Kolom VAT Type Terisi Saat System Product Tanpa Setting VAT atau Setting Auto Add Supplier = NO</span>
+        <span class="when">19 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PO-009</span>
+        <span class="t">Memastikan Mekanisme Fallback Cerdas Saat VAT=yes Dengan Kolom VAT Code / VAT Type Kosong Mengikuti Master Produk</span>
+        <span class="when">19 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PO-007</span>
+        <span class="t">Memastikan Kegagalan Global Format File Excel Membatalkan Seluruh Proses Import</span>
+        <span class="when">19 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PO-006</span>
+        <span class="t">Memastikan Konsistensi Penerapan Pajak (Tax) pada Fitur Allocate Full Qty Clearing dan Bulk Use PR</span>
+        <span class="when">19 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PO-005</span>
+        <span class="t">Memastikan Import Detail PO Bersifat Partial Success Ketika Terdapat Baris Invalid</span>
+        <span class="when">19 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PO-004</span>
+        <span class="t">Memastikan Penentuan VAT Melalui Import Excel Berfungsi Eksplisit (Override Auto Add dan VAT No)</span>
+        <span class="when">19 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-PO-003</span>
+        <span class="t">Memastikan Template Import PO Memiliki Kolom VAT dan File Template Lama Tetap Berhasil Diimport (Backward Compatibility)</span>
+        <span class="when">19 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASO-001</span>
+        <span class="t">Memastikan Tombol Recheck Failed Process Tersedia dan Dapat Dijalankan di Menu All Sales Order dan Dev Sales Platform</span>
+        <span class="when">19 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASO-002</span>
+        <span class="t">Memastikan Re-check Failed Process Mengupdate Error Flag Unavailable Stock Setelah Stok Ditambahkan via Stock Opname</span>
+        <span class="when">19 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASO-003</span>
+        <span class="t">Memastikan Riwayat Log Re-check Failed Process Tercatat per Store dan Tersimpan Sesuai Riwayat Trigger</span>
+        <span class="when">19 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot bad"></span>
+        <span class="tc">TC-VAR-008</span>
+        <span class="t">Edit — hapus opsi random unused tidak di-re-inject</span>
+        <span class="when">14 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot bad"></span>
+        <span class="tc">TC-VAR-003</span>
+        <span class="t">Form toggle Default Variant + kolom list Default</span>
+        <span class="when">14 Agu 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASC-001</span>
+        <span class="t">VIEW — buka datalist Asset Category</span>
+        <span class="when">24 Jul 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASC-002</span>
+        <span class="t">CREATE — Asset Category + Depreciation Details</span>
+        <span class="when">24 Jul 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASC-003</span>
+        <span class="t">UPDATE — Name, Method, Salvage</span>
+        <span class="when">24 Jul 2026</span>
+      </div>
+<div class="detail-row">
+        <span class="status-dot good"></span>
+        <span class="tc">TC-ASC-004</span>
+        <span class="t">SEARCH — Code di datalist</span>
+        <span class="when">24 Jul 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="note">
+    Data dibaca dari frontmatter <span class="mono">test_result</span> / <span class="mono">last_execution</span> TC-*.md di <span class="mono">qa-docs/</span> — bukan menjalankan test baru. Belum ada scheduler otomatis; refresh manual lewat <span class="mono">npm run dashboard:build && npm run dashboard:render</span>. TC yang belum pernah dijalankan (5) tidak ikut dihitung pass rate.
+  </footer>
+</div>
+
+<script>
+  var btnExec = document.getElementById('btn-exec');
+  var btnEng = document.getElementById('btn-eng');
+  var engView = document.getElementById('eng-view');
+  function setView(showEng) {
+    engView.classList.toggle('hidden', !showEng);
+    btnExec.classList.toggle('active', !showEng);
+    btnEng.classList.toggle('active', showEng);
+    btnExec.setAttribute('aria-selected', String(!showEng));
+    btnEng.setAttribute('aria-selected', String(showEng));
+  }
+  btnExec.addEventListener('click', function () { setView(false); });
+  btnEng.addEventListener('click', function () { setView(true); });
+</script>
