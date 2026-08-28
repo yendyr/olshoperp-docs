@@ -7,6 +7,7 @@ menu: All Sales Order
 menu_slug: all-sales-order
 type: functional
 priority: high
+test_type: happy
 automated: false
 automated_spec: null
 origin_jira: ETM-15637
@@ -19,6 +20,12 @@ preconditions:
   - "User login ke OlshopERP pada company target (misal Dev Staging ID 13)"
   - "Navigasi ke menu All Sales Order (https://staging.olshoperp.com/businessdevelopment/all-sales-order)"
   - "Dokumen Sales Order (edit mode) berisi campuran SKU Non-Bundle dan SKU Bundle"
+last_execution:
+  at: "2026-08-21"
+  jira: null
+  status: failed
+  via: "manual:Jenni"
+  notes: "Sistem menampilkan notifikasi Error 500 Something Went Wrong saat extract SKU Bundle tipe Single dieksekusi, bukan berhasil terurai jadi komponen Single."
 ---
 
 # Test Case: Eksekusi "Extract this bundle" pada SKU Bundle tipe Single

@@ -7,6 +7,7 @@ menu: All Sales Order
 menu_slug: all-sales-order
 type: functional
 priority: high
+test_type: edge
 automated: false
 automated_spec: null
 origin_jira: ETM-15637
@@ -19,6 +20,12 @@ preconditions:
   - "User login ke OlshopERP pada company target (misal Dev Staging ID 13)"
   - "Navigasi ke menu All Sales Order (https://staging.olshoperp.com/businessdevelopment/all-sales-order)"
   - "Dokumen Sales Order (edit mode) berisi campuran SKU Non-Bundle dan SKU Bundle"
+last_execution:
+  at: "2026-08-21"
+  jira: null
+  status: passed
+  via: "manual:Jenni"
+  notes: "Icon/tombol extract tidak muncul pada SKU Bundle Variant Random, sesuai ekspektasi karena komponennya baru ditentukan saat SO di-send to waves."
 ---
 
 # Test Case: Eksekusi "Extract this bundle" pada SKU Bundle tipe VARIANT 'RANDOM'
