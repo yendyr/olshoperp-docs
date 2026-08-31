@@ -1,0 +1,54 @@
+{
+  "card": "ETM-15549",
+  "menu": "Colli Type",
+  "route": "/supplychain/colli-type",
+  "company": "PT Huawei Tech Investment",
+  "companyId": 915,
+  "code": "CT-QA-15549-664620",
+  "name": "QA ETM-15549 664620",
+  "created": {
+    "ok": true,
+    "httpStatus": 200,
+    "message": "The new data has been successfully saved.",
+    "editUrl": "https://staging.olshoperp.com/supplychain/colli-type/edit/23",
+    "toast": "The new data has been successfully saved.\n✖"
+  },
+  "deleted": {
+    "ok": true,
+    "httpStatus": 200,
+    "message": "The data has been success deleted\n✖",
+    "editUrl": null,
+    "toast": "The data has been success deleted\n✖"
+  },
+  "goneFromActive": true,
+  "deletedRow": {
+    "visible": true,
+    "actionText": "CT-QA-15549-664620\n\t\nQA ETM-15549 664620\n\t\n\nautomation playwright\n\n\t\nNo\n\t\nYes\n\t\n\nPlaywright Use...\n\n27-08-2026 15:18:42\n\n\t\nAlready deleted",
+    "hasAlreadyDeleted": true,
+    "hasDeletedLink": false,
+    "deletedHref": null
+  },
+  "recreate": {
+    "ok": true,
+    "httpStatus": 200,
+    "message": "The new data has been successfully saved.",
+    "editUrl": "https://staging.olshoperp.com/supplychain/colli-type/edit/24",
+    "toast": "The new data has been successfully saved.\n✖"
+  },
+  "ac": [
+    {
+      "id": "AC-01",
+      "title": "Soft delete unused + Show deleted = already deleted",
+      "status": "PASS",
+      "detail": "delete ok=true toast=\"The data has been success deleted\n✖\" | hilang list default=true | show deleted visible=true | already deleted=true | link Deleted=false href=- | actionText=\"CT-QA-15549-664620\\n\\t\\nQA ETM-15549 664620\\n\\t\\n\\nautomation playwright\\n\\n\\t\\nNo\\n\\t\\nYes\\n\\t\\n\\nPlaywright Use...\\n\\n27-08-2026 15:18:42\\n\\n\\t\\nAlready deleted\""
+    },
+    {
+      "id": "AC-02",
+      "title": "Create ulang code yang sudah soft-delete",
+      "status": "PASS",
+      "detail": "ok=true http=200 message=\"The new data has been successfully saved.\" toast=\"The new data has been successfully saved.\n✖\" edit=https://staging.olshoperp.com/supplychain/colli-type/edit/24"
+    }
+  ],
+  "verdict": "PASS",
+  "notes": []
+}
