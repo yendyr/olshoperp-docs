@@ -678,3 +678,51 @@ ETM-15637:
   jira_status: QA Review
   jira_type: Improvement
   summary: "REOPEN [Dev - Sales Order] Tambahan fitur extract this bundle di halaman detail sales order"
+
+ETM-15667:
+  menu: supplychain-mutation-transfer-internal
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Transfer Internal] - Tampilan Group View Muncul Multiple Rows untuk SKU yang Sama Setelah Bulk Use Multiple Stock ID"
+
+ETM-15669:
+  menu: all-sales-order
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[All Sales Order] - Fitur Export All Meng-export Seluruh Sales Order dan Tidak Mengikat pada Filter Pill Button Datalist"
+
+ETM-15671:
+  menu: sales-order-general
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Import History] - Fitur Global Search Belum Dapat Melakukan Pencarian pada Kolom Status Import dan Fulfillment Mode"
+
+ETM-15666:
+  menu: general-ledger
+  intent: extend
+  status: in_overview
+  reuse: []
+  drafts:
+    - PENDING-JENNI-2026083001
+    - PENDING-JENNI-2026083002
+    - PENDING-JENNI-2026083003
+    - PENDING-JENNI-2026083004
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[General Ledger] Tambahkan filter pencarian by 'store name' pada advanced filter & global search"
