@@ -894,16 +894,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
       test_cases:
         path: test-cases/
         status: review
@@ -913,7 +913,15 @@ menus:
       backend:
         - Modules/Accounting/Http/Controllers/CustomerPaymentController.php
         - Modules/Accounting/Http/Controllers/CustomerPaymentDetailController.php
+        - Modules/Accounting/Http/Controllers/CustomerPaymentDetailAdjustmentController.php
         - Modules/Accounting/Http/Controllers/PaymentDetailController.php
+        - Modules/Accounting/Exports/AccountReceive*TemplateSheet.php
+        - Modules/Accounting/Exports/AccountReceiveTemplateExport.php
+        - Modules/Accounting/Import/ReceiveValidate*.php
+        - Modules/Accounting/Import/CustomerPaymentImport.php
+        - Modules/Accounting/Jobs/ImportReceive*.php
+        - Modules/Accounting/Jobs/ReceiveImportPerMutationJob.php
+        - Modules/Accounting/Entities/CustomerPayment.php
         - Modules/Accounting/Routes/api.php
       frontend:
         - olshoperp-frontend/src/pages/Accounting/AccountReceivable/Receive/DatalistDetail.vue
