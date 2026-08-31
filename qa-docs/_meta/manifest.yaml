@@ -3291,24 +3291,6 @@ menus:
         - olshoperp-frontend/src/pages/SCM/Report/ProductTransactionHistory/**/*
       frontend: []
 
-draftpending
-    legacy_sources:
-      []
-    code_globs:
-      backend:
-        - Modules/SupplyChain/Http/Controllers/PurchaseOrderController.php
-        - Modules/SupplyChain/Http/Controllers/PurchaseOrderDetailController.php
-        - Modules/SupplyChain/Http/Controllers/PurchaseOrderOtherCostController.php
-        - Modules/SupplyChain/Http/Controllers/PurchaseOrderOtherDiscountController.php
-        - Modules/SupplyChain/Import/PurchaseOrderWithPrImport.php
-        - Modules/SupplyChain/Import/PurchaseOrderWithoutPrImport.php
-        - Modules/SupplyChain/Entities/PurchaseOrder.php
-        - Modules/SupplyChain/Entities/PurchaseOrderDetail.php
-        - app/Helpers/SupplyChain/PurchaseOrderPrice.php
-        - app/Helpers/SupplyChain/PurchaseOrderDetailPrice.php
-      frontend:
-        - olshoperp-frontend/src/pages/SCM/PurchaseOrder/**
-
   supplychain-purchase-order:
     menu_name: "Purchase Order"
     short_description: "Create purchase orders to buy goods from suppliers."
