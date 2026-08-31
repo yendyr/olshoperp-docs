@@ -1,0 +1,74 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-DVAT-005
+menu: accounting-default-vat
+menu_name: "Default VAT"
+test_type: cross-menu
+title: "Seed otomatis Product Tax saat pembuatan System Product baru dari Default VAT"
+summary: "Memverifikasi bahwa konfigurasi Default VAT (Purchase & Sales) secara otomatis disalin (seeded) ke tab/baris Tax saat membuat System Product baru."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-08-26
+requirement_ref: "qa-docs/accounting-default-vat/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 112
+  code: FAT
+related_menus:
+  - system-product
+  - accounting-tax
+preconditions:
+  - "User login: playwright@gmail.com / 12345678."
+  - "Company aktif: FAT (id: 112)."
+  - "Default VAT Purchase dan Sales sudah terkonfigurasi aktif di menu Default VAT."
+  - "User memiliki hak akses membuat System Product."
+test_data:
+  - field: "Default Purchase VAT"
+    value: "Tax A (Include: YES, Auto Add: YES)"
+  - field: "Default Sales VAT"
+    value: "Tax B (Include: NO, Auto Add: YES)"
+  - field: "New System Product"
+    value: "SKU Produk Uji Seed Default VAT"
+steps:
+  - "Pastikan Default VAT Purchase dan Sales sudah aktif di https://staging.olshoperp.com/accounting/default-vat"
+  - "Buka menu System Product (https://staging.olshoperp.com/system-product/create)."
+  - "Isi data wajib System Product baru (Nama Produk, SKU, Kategori, Brand, Unit, COA Group, dll)."
+  - "Buka bagian konfigurasi Tax / Product Tax pada form pembuatan produk."
+  - "Simpan (Save) System Product baru."
+  - "Buka kembali produk yang baru dibuat pada mode Edit / Detail."
+  - "Periksa tab/tabel Product Tax."
+expected_result: |
+  Sesuai requirement.md §6.2, §8, & AC DV-03:
+  1. System Product baru berhasil dibuat.
+  2. Konfigurasi Product Tax untuk tipe Purchase otomatis terisi (seeded) dengan Tax A, status Include YES, dan Auto Add YES.
+  3. Konfigurasi Product Tax untuk tipe Sales otomatis terisi (seeded) dengan Tax B, status Include NO, dan Auto Add YES.
+  4. Nilai-nilai snapshot pada Product Tax pivot tersimpan lengkap tanpa perlu input manual satu per satu.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: null
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+---
+
+# TC-DVAT-DRAFT-20260826162205
+
+## Catatan QA
+
+- Skenario *cross-menu / side-effect* yang menguji fungsi utama Default VAT sebagai *template seeder* untuk pembuatan master System Product baru.
+- Memverifikasi keterhubungan modul Finance Accounting (`accounting-default-vat`) dengan modul Supply Chain (`system-product`).

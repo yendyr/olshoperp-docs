@@ -29,10 +29,10 @@ Prefix folder: `ASO`.
 `TC-ASO-004` s/d `TC-ASO-010` — Dibuat untuk pengujian fitur Pill Filter `Net Sales < COGS` pada card origin [ETM-15446](https://erpintegration.atlassian.net/browse/ETM-15446).
 `TC-ASO-011` s/d `05` — Dibuat oleh Jenni untuk pengujian fitur Extract This Bundle pada card origin [ETM-15605](https://erpintegration.atlassian.net/browse/ETM-15605).
 
-| PENDING-JENNI-2026082101 | UI Visibility tombol "Extract this bundle" hanya muncul pada SKU yang ter-flagging sebagai BUNDLE | **passed** | ❌ | 2026-08-21 |
-| PENDING-JENNI-2026082102 | Eksekusi "Extract this bundle" pada SKU Bundle tipe Single | **failed** | ❌ | 2026-08-21 |
-| PENDING-JENNI-2026082103 | Eksekusi "Extract this bundle" pada SKU Bundle tipe VARIANT | **failed** | ❌ | 2026-08-21 |
-| PENDING-JENNI-2026082104 | Eksekusi "Extract this bundle" pada SKU Bundle tipe VARIANT 'RANDOM' | **passed** | ❌ | 2026-08-21 |
-| PENDING-JENNI-2026082105 | Ekstraksi bundle pada Sales Order dengan 100 baris detail SKU sehingga total baris > 100 rows | **failed** | ❌ | 2026-08-21 |
+| TC-ASO-016 | UI Visibility tombol "Extract this bundle" hanya muncul pada SKU yang ter-flagging sebagai BUNDLE | **passed** | ❌ | 2026-08-21 |
+| TC-ASO-017 | Eksekusi "Extract this bundle" pada SKU Bundle tipe Single | **failed** | ❌ | 2026-08-21 |
+| TC-ASO-018 | Eksekusi "Extract this bundle" pada SKU Bundle tipe VARIANT | **failed** | ❌ | 2026-08-21 |
+| TC-ASO-019 | Eksekusi "Extract this bundle" pada SKU Bundle tipe VARIANT 'RANDOM' | **passed** | ❌ | 2026-08-21 |
+| TC-ASO-020 | Ekstraksi bundle pada Sales Order dengan 100 baris detail SKU sehingga total baris > 100 rows | **failed** | ❌ | 2026-08-21 |
 
-`PENDING-JENNI-2026082101` s/d `05` — Dibuat oleh Jenni untuk pengujian fitur Extract This Bundle pada card origin [ETM-15637](https://erpintegration.atlassian.net/browse/ETM-15637).
+`TC-ASO-016` s/d `05` — Dibuat oleh Jenni untuk pengujian fitur Extract This Bundle pada card origin [ETM-15637](https://erpintegration.atlassian.net/browse/ETM-15637).

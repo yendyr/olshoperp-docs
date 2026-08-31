@@ -1,0 +1,69 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-DVAT-006
+menu: accounting-default-vat
+menu_name: "Default VAT"
+test_type: edge
+title: "Perubahan Default VAT tidak mengubah konfigurasi Product Tax pada produk existing"
+summary: "Memastikan perubahan nilai Default VAT hanya berlaku sebagai template untuk produk baru dan tidak merevisi (override) Product Tax pada produk yang sudah dibuat sebelumnya."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-08-26
+requirement_ref: "qa-docs/accounting-default-vat/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 112
+  code: FAT
+related_menus:
+  - system-product
+  - accounting-tax
+preconditions:
+  - "User login: playwright@gmail.com / 12345678."
+  - "Company aktif: FAT (id: 112)."
+  - "Terdapat System Product existing (misal: PROD-OLD-01) yang sudah memiliki Product Tax dari konfigurasi Default VAT sebelumnya."
+  - "Tersedia Tax aktif alternatif di master Tax."
+test_data:
+  - field: "Existing Product"
+    value: "PROD-OLD-01 (Product Tax Purchase: Tax A)"
+  - field: "New Default VAT Purchase"
+    value: "Tax C (Include: NO, Auto Add: NO)"
+steps:
+  - "Buka https://staging.olshoperp.com/accounting/default-vat"
+  - "Ganti pilihan Select VAT pada Purchase VAT menjadi 'Tax C' dengan setting Include: NO dan Auto Add: NO."
+  - "Pastikan auto-save berhasil."
+  - "Buka menu System Product dan cari produk existing 'PROD-OLD-01'."
+  - "Buka halaman Edit / Detail produk 'PROD-OLD-01' dan periksa tab Product Tax."
+  - "Verifikasi konfigurasi Product Tax pada produk existing tersebut."
+expected_result: |
+  Sesuai requirement.md §6.3, §10 FAQ, & AC DV-04:
+  1. Konfigurasi Product Tax pada produk existing ('PROD-OLD-01') TIDAK mengalami perubahan (tetap menggunakan Tax A dengan setting awalnya).
+  2. Perubahan Default VAT terbukti bersifat template/seed snapshot dan tidak melakukan update massal secara reaktif ke produk-produk yang sudah ada.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: null
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+---
+
+# TC-DVAT-DRAFT-20260826162206
+
+## Catatan QA
+
+- Skenario *edge / regression* yang memastikan integritas data historis produk existing tidak terpengaruh saat Default VAT diubah.
+- Menguji prinsip bisnis Default VAT: sebagai *template creation time*, bukan kalkulator / lookup runtime transaksi.

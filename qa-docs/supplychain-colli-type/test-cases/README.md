@@ -25,7 +25,7 @@ Requirement: `qa-docs/supplychain-colli-type/requirement.md` (saat draft, sumber
 | TC-CT-013 | Active OFF boleh setelah inbound dan Colli code dihapus — history DB tidak mengunci | draft | ❌ | 2026-08-14 |
 | TC-CT-014 | Delete Colli Type boleh setelah inbound dan Colli code dihapus — history DB tidak mengunci | draft | ❌ | 2026-08-14 |
 | TC-CT-015 | Audit Log mencatat create, update field, toggle Default/Active/Show for all company, dan soft delete | draft | ❌ | 2026-08-14 |
-| PENDING-20260826110000 | Colli Type Active OFF tidak muncul pada pilihan New Colli di Purchase Inbound | draft | ❌ | 2026-08-26 |
+| TC-CT-016 | Colli Type Active OFF tidak muncul pada pilihan New Colli di Purchase Inbound | draft | ❌ | 2026-08-26 |
 
 **Belum di-TC (sengaja):** requirement §6.4 kasus 8 — Active OFF tidak muncul di **New Colli** inbound — konsumen [ETM-15528](https://erpintegration.atlassian.net/browse/ETM-15528).
 

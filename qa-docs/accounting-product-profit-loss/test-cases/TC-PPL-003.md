@@ -1,0 +1,60 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-PPL-003
+menu: accounting-product-profit-loss
+menu_name: "Product Profit Loss"
+test_type: regression
+title: "Verifikasi Export Data dan Refresh Data Laporan Product Profit Loss Berbasis Price Before VAT"
+summary: "Verifikasi keselarasan data export Excel/CSV dan fungsi tombol Refresh Data pada Product Profit Loss agar konsisten mengambil nilai DPP (Price Before VAT)."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-08-26
+requirement_ref: "qa-docs/accounting-product-profit-loss/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 110
+  code: lumicharmsid
+related_menus: []
+preconditions:
+  - "User login ke staging dengan akun yang memiliki hak akses menu lengkap"
+  - "Company aktif: lumicharmsid (ID: 110)"
+  - "Terdapat transaksi SO completed pada periode tanggal yang dipilih"
+test_data: []
+steps:
+  - "1. Open Product Profit Loss report (/accounting/product-profit-loss)"
+  - "2. Set filter date range yang memuat transaksi penjualan"
+  - "3. Hover pada tooltip header kolom Gross Sales, verifikasi teks tooltip tidak menyebut 'including VAT'"
+  - "4. Klik tombol Refresh Data untuk memicu regenerate snapshot laporan"
+  - "5. Verifikasi datalist menampilkan kolom Gross Sales berbasis Price Before VAT"
+  - "6. Klik tombol Export (Excel / CSV) untuk mengunduh laporan"
+  - "7. Buka file hasil export, verifikasi nilai Gross Sales dan metrik turunan (Net Profit, Margin %, Avg Selling Price) persis sama dengan datalist UI"
+expected_result: |
+  Tooltip header kolom Gross Sales telah diperbarui dengan definisi Price Before VAT. Tombol Refresh Data berhasil memperbarui kalkulasi snapshot berbasis DPP tanpa error. File export Excel/CSV memuat nilai Gross Sales dan metrik turunan yang identik dengan datalist laporan Product Profit Loss di UI.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: ETM-15485
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+---
+
+# Catatan QA & Referensi Data Testing (Evidence)
+Mengacu pada card **ETM-15485** ([Product Profit Loss - Gross Sales based on Price Before VAT](https://erpintegration.atlassian.net/browse/ETM-15485)).
+- Jira Test Case: [ETM-15660](https://erpintegration.atlassian.net/browse/ETM-15660).
+- Target Testing Company: **lumicharmsid** (ID: 110).
+- Request ID: `none`.

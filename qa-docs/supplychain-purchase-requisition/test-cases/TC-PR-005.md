@@ -1,0 +1,66 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-PR-005
+menu: supplychain-purchase-requisition
+menu_name: "Purchase Requisition"
+test_type: regression
+title: "Fitur sorting kolom PO Status tidak berfungsi dan urutan print screen tidak sinkron"
+summary: "Verifikasi fungsionalitas sorting kolom PO Status berjalan secara Ascending dan Descending di UI dan print screen."
+status: draft
+owner: QA - Jeiniffer
+last_updated: 2026-08-26
+requirement_ref: "qa-docs/supplychain-purchase-requisition/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 13
+  code: DEV-STG
+related_menus: []
+preconditions:
+  - "Dokumen Purchase Requisition PR-6A8BF9DB (status Complete) memiliki status keterikatan PO (processed)."
+  - "User login menggunakan server tyas.olshoperp.com."
+test_data:
+  - field: "trx_code"
+    value: "PR-6A8BF9DB"
+steps:
+  - "Buka detail dokumen Purchase Requisition PR-6A8BF9DB."
+  - "Klik header kolom PO Status untuk mengaktifkan sorting Ascending."
+  - "Amati urutan baris di UI, lalu klik tombol Print."
+  - "Klik kembali header kolom PO Status untuk beralih ke sorting Descending."
+  - "Amati apakah urutan berubah atau tetap stuck."
+expected_result: |
+  - Sorting kolom PO Status di default screen UI berjalan dengan benar secara Ascending dan Descending.
+  - Urutan baris di print screen sama persis dengan yang tampil di default screen UI.
+test_result:
+  status: failed
+  started_at: "2026-08-26T14:00:00+07:00"
+  finished_at: "2026-08-26T14:15:00+07:00"
+  executed_by: "QA - Jeiniffer"
+  environment: "tyas.olshoperp.com"
+  log_summary: |
+    FAIL: Sorting tidak jalan di UI (acak saat Ascending, dan stuck saat beralih ke Descending). Urutan di print out juga berbeda/tidak sinkron dengan UI.
+  report_url: null
+test_data_used:
+  - "PR-6A8BF9DB"
+run_history:
+  - run_at: "2026-08-26T14:15:00+07:00"
+    status: failed
+    executor: "QA - Jeiniffer"
+    notes: "Sorting PO Status stuck di UI."
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+---
+
+# TC-PR-005
+
+## Catatan QA
+- **Latar Belakang:** Pengujian dilakukan pasca implementasi card ETM-15596 (Sorting di Print Screen).
+- **Hasil Observasi:** Kolom PO Status (kolom tambahan setelah approve) tidak merespons sorting di UI dan print out acak.
+- **Relasi JIRA:** Melahirkan card defect `[Purchase Requisition - Retest ETM-15596] - Temuan Bug Sorting Detail Transaksi & Print Screen` dengan Request ID `recvsfHMQ9Fr1p`.

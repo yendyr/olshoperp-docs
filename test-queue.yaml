@@ -82,8 +82,8 @@ ETM-15485:
   reuse:
     - TC-PPL-001
   drafts:
-    - PENDING-20260826222101
-    - PENDING-20260826222102
+    - TC-PPL-002
+    - TC-PPL-003
   ready_tcs: []
   jira_status: QA Review
   jira_type: Improvement
@@ -510,11 +510,11 @@ ETM-15487:
   status: in_overview
   reuse: []
   drafts:
-    - PENDING-JENNI-2026082601
-    - PENDING-JENNI-2026082602
-    - PENDING-JENNI-2026082603
-    - PENDING-JENNI-2026082604
-    - PENDING-JENNI-2026082605
+    - TC-PURREP-001
+    - TC-PURREP-002
+    - TC-PURREP-003
+    - TC-PURREP-004
+    - TC-PURREP-005
   ready_tcs: []
   jira_status: RE-OPEN
   jira_type: Improvement
@@ -526,12 +526,12 @@ ETM-15488:
   status: in_overview
   reuse: []
   drafts:
-    - PENDING-JENNI-2026082701
-    - PENDING-JENNI-2026082702
-    - PENDING-JENNI-2026082703
-    - PENDING-JENNI-2026082704
-    - PENDING-JENNI-2026082705
-    - PENDING-JENNI-2026082706
+    - TC-PURREP-006
+    - TC-PURREP-007
+    - TC-PURREP-008
+    - TC-PURREP-009
+    - TC-PURREP-010
+    - TC-PURREP-011
   ready_tcs: []
   jira_status: To Do
   jira_type: Improvement
@@ -632,17 +632,17 @@ ETM-15605:
   status: ready
   reuse: []
   drafts:
-    - PENDING-JENNI-2026082101
-    - PENDING-JENNI-2026082102
-    - PENDING-JENNI-2026082103
-    - PENDING-JENNI-2026082104
-    - PENDING-JENNI-2026082105
+    - TC-ASO-016
+    - TC-ASO-017
+    - TC-ASO-018
+    - TC-ASO-019
+    - TC-ASO-020
   ready_tcs:
-    - PENDING-JENNI-2026082101
-    - PENDING-JENNI-2026082102
-    - PENDING-JENNI-2026082103
-    - PENDING-JENNI-2026082104
-    - PENDING-JENNI-2026082105
+    - TC-ASO-016
+    - TC-ASO-017
+    - TC-ASO-018
+    - TC-ASO-019
+    - TC-ASO-020
   jira_status: QA Review
   jira_type: Improvement
   summary: "[Dev - Sales Order] Tambahan fitur extract this bundle di halaman detail sales order"
@@ -664,17 +664,17 @@ ETM-15637:
   status: ready
   reuse: []
   drafts:
-    - PENDING-JENNI-2026082101
-    - PENDING-JENNI-2026082102
-    - PENDING-JENNI-2026082103
-    - PENDING-JENNI-2026082104
-    - PENDING-JENNI-2026082105
+    - TC-ASO-016
+    - TC-ASO-017
+    - TC-ASO-018
+    - TC-ASO-019
+    - TC-ASO-020
   ready_tcs:
-    - PENDING-JENNI-2026082101
-    - PENDING-JENNI-2026082102
-    - PENDING-JENNI-2026082103
-    - PENDING-JENNI-2026082104
-    - PENDING-JENNI-2026082105
+    - TC-ASO-016
+    - TC-ASO-017
+    - TC-ASO-018
+    - TC-ASO-019
+    - TC-ASO-020
   jira_status: QA Review
   jira_type: Improvement
   summary: "REOPEN [Dev - Sales Order] Tambahan fitur extract this bundle di halaman detail sales order"
@@ -718,10 +718,10 @@ ETM-15666:
   status: in_overview
   reuse: []
   drafts:
-    - PENDING-JENNI-2026083001
-    - PENDING-JENNI-2026083002
-    - PENDING-JENNI-2026083003
-    - PENDING-JENNI-2026083004
+    - TC-GL-001
+    - TC-GL-002
+    - TC-GL-003
+    - TC-GL-004
   ready_tcs: []
   jira_status: QA Review
   jira_type: Improvement

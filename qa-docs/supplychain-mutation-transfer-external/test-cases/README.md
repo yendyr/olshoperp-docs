@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | TC-MTEX-001 | Create External Transfer header (TFE*) | draft | ✅ | 2026-07-15 |
 | TC-MTEX-002 | Update header + tambah detail Select Product | draft | ✅ | 2026-07-15 |
-| `TC-MTEX-DRAFT-20260827083406.md` / PENDING-20260827083406 | Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - External Transfer | draft | ✅ | 2026-08-27 |
+| `TC-MTEX-003.md` / TC-MTEX-003 | Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - External Transfer | draft | ✅ | 2026-08-27 |
 
 ## Cross-menu
 
