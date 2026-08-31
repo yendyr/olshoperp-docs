@@ -1073,21 +1073,29 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
-      []
+      - docs/qa-docs/_meta/sot/accounting-opening-stock-source-of-truth.md
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/OpeningStockController.php
+        - Modules/Accounting/Http/Controllers/OpeningStockDetailController.php
+        - Modules/Accounting/Entities/OpeningStock.php
+        - Modules/Accounting/Entities/OpeningStockCoa.php
+        - Modules/SupplyChain/Jobs/ApproveInboundOpeningJob.php
+        - app/Helpers/Accounting/JournalProcess.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/OpeningStock/**/*
+        - olshoperp-frontend/src/pages/SCM/StockOpname/**/*
 
   accounting-platform-account-labels:
     menu_name: "Platform Account Labelling"
