@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.5
-last_updated: 2026-08-12
+version: 1.6
+last_updated: 2026-08-31
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog 1.6 (2026-08-31): AS-IS sync schedule & job split — canonical di [Store technical §9.3](../omni-store-binding/technical.md#93-order-sync) + [requirement SP §5.4](./requirement.md#54-sync-ingestion).  
 > Changelog 1.5 (2026-08-12): TO-BE Benchmark COGS line snapshot = **effective** Manual COGS (`GAP-BM-14`) — [requirement §6.6](./requirement.md#66-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14); [Benchmark technical §4.4](../accounting-product-benchmark-price/technical.md#44-job-vs-manual-cogs-to-be--gap-bm-14).  
 > Changelog 1.4 (2026-08-11): TO-BE Auto Add VAT dari Store (`GAP-ST-VAT-01`) — lihat [Store technical §11.1](../omni-store-binding/technical.md#111-auto-add-vat-platform-orders--to-be-gap-st-vat-01).  
 > Changelog 1.3 (2026-08-11): TO-BE `cogs-error` Below Benchmark COGS — lihat [Benchmark technical §6.5–§6.6](../accounting-product-benchmark-price/technical.md#65-auto-approve-flag); GAP-BM-13.

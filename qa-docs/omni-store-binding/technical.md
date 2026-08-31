@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.3
-last_updated: 2026-08-11
+version: 2.4
+last_updated: 2026-08-31
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # Store — Technical Documentation
 
-> **Status: REVIEW** — v2.3 TO-BE **Auto Add VAT (Platform Orders)** + section split (`GAP-ST-VAT-01`). v2.2 `GAP-ST-CB-01` & v2.1 `GAP-ST-FM-01` tetap.
+> **Status: REVIEW** — v2.4 AS-IS order sync schedule + job split (lihat §9.3). v2.3 TO-BE Auto Add VAT (`GAP-ST-VAT-01`) tetap.
 
 ## 0. Metadata
 
@@ -310,9 +310,21 @@ Priority (verified `Store.php`):
 
 ### 9.3 Order sync
 
-- Scheduled: `SynchronizeCreateCommand` / `SynchronizeUpdateCommand` — filter `initial_sync_product_completed=1`
-- Manual FE: `POST omnichannel/sales-order/synchronize` — same gate
-- Auto: `auto_download=1` + authorized
+| Aspek | Detail AS-IS (2026-08-31) |
+|-------|---------------------------|
+| Schedule | `app/Console/Kernel.php` → `salesOrderSchedules()` |
+| Create | `sales-order:sync-create` / `booking:sync-create` — `everyFiveMinutes()` · `between('06:00','17:59')` · TZ `Asia/Jakarta` |
+| Update (siang) | `sales-order:sync-update` / `booking:sync-update` — `cron(formatCron(config('omni.get_so.work_hours_interval', 60)))` · default **60 menit** · `between('06:00','17:59')` · `withoutOverlapping(30)` |
+| Update (malam) | Same commands — `hourly()` · `between('18:00','05:59')` |
+| Lookback | `SynchronizeUpdateCommand::getTimeRange()` — `N = min(max_backward, 14)`; default `config('omni.get_so.default.max_backward')` = **10** |
+| Split by day | `dispatchJobs`: loop `from` → `endOfDay`, `addDay()` — 1 window per calendar day per store |
+| Split half-day | If day ≠ `to_time` (hari ini): 2× `SalesOrderSynchronizeUpdateJob` (`from`→`midDay()-1s`, `midDay()`→`endOfDay`); hari ini: 1 job |
+| Start Date | `OmniSetting::getSetting` → `min_order_date` clips/`continue` per day |
+| Store filter | `authorization_status=1`, `status=1`, `auto_download=1`, `initial_sync_product_completed=1`, platform API flags |
+| Manual FE | `POST omnichannel/sales-order/synchronize` — same product-sync gate |
+| CLI note | `--subhour` masih di signature update command; **scheduler tidak memanggil** flag itu lagi |
+
+Business narrative: [requirement §4.5](./requirement.md#45-auto-sync-interval-as-is--verified-2026-08-31-kernelphp--configomniphp--synchronizeupdatecommand).
 
 ### 9.4 Warehouse sync
 

@@ -2,20 +2,21 @@
 doc_type: requirement
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.3
-last_updated: 2026-08-11
+version: 2.4
+last_updated: 2026-08-31
 owner: QA - Yemima
 status: review
 ---
 
 # Store — Requirement Documentation
 
-> **Status: REVIEW** — v2.3 TO-BE: pecah Store Configuration + **Auto Add VAT (Platform Orders)** (`GAP-ST-VAT-01`). v2.2 COA vs Cash/Bank (`GAP-ST-CB-01`) & v2.1 Fulfillment Mode (`GAP-ST-FM-01`) tetap berlaku.
+> **Status: REVIEW** — v2.4 AS-IS: jadwal **Auto Sync Order** (interval update + pecah job per hari / half-day). v2.3 TO-BE Auto Add VAT (`GAP-ST-VAT-01`) & gap sebelumnya tetap berlaku.
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.4 | 2026-08-31 | QA - Yemima | AS-IS sync order: update siang = `work_hours_interval` (default **60 mnt**, tanpa `--subhour`); lookback `max_backward` default **10** hari (cap 14); pecah job **per hari** + **half-day** untuk hari lampau — §4.5 |
 | 2.3 | 2026-08-11 | QA - Yemima | TO-BE: split **Ownership & Fulfillment** / **Accounting & Tax**; field **Auto Add VAT (Platform Orders)**; Others disabled+note; konsumen Sales Platform; `GAP-ST-VAT-01` |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial AS-IS draft |
 | 1.1 | 2026-06-22 | QA - Yemima | Sequencing sync platform product on onboarding (§10) |
@@ -127,7 +128,7 @@ Menu **Store** adalah master data toko Omni Channel — merepresentasikan toko/c
 | ID | Fitur | Trigger | Expected result |
 |----|-------|---------|-----------------|
 | F-01 | OAuth Authorize | Tombol Authorize / create redirect | URL platform; cache `store_binding` 180s |
-| F-02 | Auto Sync Order (`auto_download`) | Toggle / inline PATCH | Scheduler order sync tiap **5 menit** (bukan 10–15 menit) |
+| F-02 | Auto Sync Order (`auto_download`) | Toggle / inline PATCH | Store masuk antrian auto sync: **create** tiap **5 menit** (siang); **update/lookback** sesuai §4.5 (bukan interval 10–15 menit bisnis lama) |
 | F-03 | Auto Sync Product (`sync_product`) | Toggle / inline PATCH | Scheduler produk tiap **1 jam**; gates onboarding queue |
 | F-04 | Warehouse Process binding | `PUT process-warehouses` | Set `warehouse_process_id`; auto `include_ats` |
 | F-05 | Warehouse Stock binding | `PUT stock-warehouses` | Multi `omni_store_ats_warehouses` |
@@ -174,19 +175,45 @@ flowchart TD
     C -->|Tidak| E[Omni Channel Global Settings]
 ```
 
-### 4.5 Auto Sync Interval (AS-IS — verified `Kernel.php` + `config/omni.php`)
+### 4.5 Auto Sync Interval (AS-IS — verified 2026-08-31: `Kernel.php` + `config/omni.php` + `SynchronizeUpdateCommand`)
 
-| Job | Schedule | Window | Config |
-|-----|----------|--------|--------|
-| `sales-order:sync-create` | **Every 5 min** | 06:00–17:59 WIB | `create_sync_interval` = 5 menit |
-| `booking:sync-create` | Every 5 min | 06:00–17:59 | Booking orders |
-| `sales-order:sync-update --subhour` | **Every 30 min** | 06:00–17:59 | `max_backward` = 2 hari |
-| `sales-order:sync-update` | **Hourly** | 18:00–05:59 | Same |
+Timezone scheduler: **Asia/Jakarta**.
+
+| Job | Schedule | Window | Config / catatan |
+|-----|----------|--------|------------------|
+| `sales-order:sync-create` | **Setiap 5 menit** | 06:00–17:59 | `create_sync_interval` = 5 — ambil order **baru** di window pendek |
+| `booking:sync-create` | Setiap 5 menit | 06:00–17:59 | Booking orders |
+| `sales-order:sync-update` | Cron dari `work_hours_interval` (default **60** → praktis **tiap 1 jam**) | 06:00–17:59 | Flag CLI `--subhour` **masih ada di signature** tapi **tidak dipakai** scheduler lagi; lookback = `max_backward` |
+| `booking:sync-update` | Sama seperti update SO | 06:00–17:59 | Sama |
+| `sales-order:sync-update` | **Hourly** | 18:00–05:59 | Lookback sama (`max_backward`) |
+| `booking:sync-update` | **Hourly** | 18:00–05:59 | Sama |
 | `product-platform:sync` | **Hourly** | 24/7 | — |
 | `platform-product:onboarding` | Every minute | 24/7 | Hanya store **authorized** |
 | `product-platform:push-stocks` | Daily 22:00 | — | Hanya **authorized** stores |
 
-> Requirement bisnis menyebut 10–15 menit — **tidak match** AS-IS. Interval aktual lebih granular (create 5 menit, update 30 menit/1 jam).
+> Requirement bisnis “interval 10–15 menit” **tidak match** AS-IS. Yang relevan ke operator: **order baru** siang ≈ tiap 5 menit; **refresh/update status order lama** ≈ tiap **1 jam** (siang & malam), bukan tiap 30 menit.
+
+#### 4.5.0 Lookback & pecah job update (per store)
+
+Saat `sales-order:sync-update` / `booking:sync-update` jalan, sistem **tidak** mengirim satu job besar untuk seluruh rentang tanggal. Per **satu store** yang eligible:
+
+1. **Rentang tanggal (lookback)**  
+   - Dari: `now − N hari` (awal hari)  
+   - Sampai: akhir hari ini  
+   - `N = min(config omni.get_so.default.max_backward, 14)`  
+   - Default config saat ini: **`max_backward` = 10** hari (bukan 2 hari / 48 jam). Cap keras di command: **maks 14** hari.
+
+2. **Pecah per hari** (`fix(SOSync): Split sync job by day`, Jul 2026)  
+   - Loop satu hari kalender per job window (`00:00:00` → `23:59:59` hari itu).  
+   - Contoh: lookback 10 hari → sekitar **11 hari kalender** (hari −10 s/d hari ini) → **satu job per hari** sebagai unit dasar.  
+   - **Order Sync Start Date** (`OmniSetting.min_order_date`): hari sebelum Start Date di-skip; jika Start Date jatuh di tengah hari, `from` digeser ke Start Date.
+
+3. **Pecah half-day untuk hari lampau** (`fix(SyncSO): Split to half day`, 31 Agu 2026)  
+   - **Hari yang bukan hari ini:** tiap hari dipecah lagi jadi **2 job** — pagi (`from` → sebelum siang) dan siang (`12:00` → akhir hari).  
+   - **Hari ini:** **1 job** saja (tidak di-half-day).  
+   - Implikasi kasar (default `max_backward=10`): ±10 hari lampau × 2 + 1 hari ini ≈ **~21 job update per store** per run scheduler (bukan 1 job, dan bukan “14 job = 14 hari” polos setelah half-day).
+
+4. **Filter store** (create & update sama arah): `authorization_status=1`, `status=1`, `auto_download=1`, `initial_sync_product_completed=1`, platform `has_api` + `can_call_api`.
 
 #### 4.5.1 Apakah store Unauthorized ikut scheduler?
 
@@ -652,7 +679,7 @@ Lihat v1.3 §7.1 — tetap valid. Tambahan regression v2.0:
 | G-01 | Toggle Auto Sync locked OFF saat Unauthorized | ❌ **Belum** | DB default ON; FE tidak lock by auth status |
 | G-02 | Auto ON toggle saat Unauthorized → Authorized | ⚠️ **Partial** | Default DB ON; tidak ada explicit flip on authorize |
 | G-03 | Auto OFF toggle saat Authorized → Unauthorized | ❌ **Belum** | `deauthorize_store` tidak reset toggle |
-| G-04 | Interval auto sync 10–15 menit | ❌ **Berbeda** | Order create: 5 menit; update: 30 menit (siang)/hourly (malam); Product: 1 jam. Unauthorized **tidak** masuk order scheduler — lihat §4.5 |
+| G-04 | Interval auto sync 10–15 menit | ❌ **Berbeda** | Order **create** siang: 5 menit; order **update**: default tiap **1 jam** (`work_hours_interval=60`) siang + hourly malam; lookback default **10** hari + pecah per hari/half-day — §4.5. Unauthorized **tidak** masuk order scheduler |
 | G-05 | Tokopedia | 📋 **Legacy AS-IS** | Tidak dipakai store baru; hidden create; `OmniService` deprecated — lihat §4.6 |
 | G-06 | Building Return UI aktif | ❌ **Hidden** | UI `v-if="false"`, save di-comment; endpoint backend hidup — lihat §4.7 |
 | G-07 | Product Onboarding kolom DataList | ✅ **Implemented** | Default `visible: false` — aktifkan via column manager |

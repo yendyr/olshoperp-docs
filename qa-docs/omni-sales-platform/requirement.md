@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.5
-last_updated: 2026-08-12
+version: 1.6
+last_updated: 2026-08-31
 owner: QA - Yemima
 status: review
 aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot]
@@ -23,6 +23,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.6 | 2026-08-31 | QA - Yemima | AS-IS §5.4 jadwal sync: create vs update, lookback `max_backward` (default 10 hari), pecah job per hari / half-day; cross-ref Store §4.5 |
 | 1.5 | 2026-08-12 | QA - Yemima | TO-BE snapshot **Benchmark COGS** = effective Manual COGS (§6.6 / GAP-BM-14 consumer) |
 | 1.4 | 2026-08-11 | QA - Yemima | TO-BE Auto Add VAT dari **Store** (`GAP-ST-VAT-01`); abaikan customer GC untuk order platform |
 | 1.3 | 2026-08-11 | QA - Yemima | TO-BE Error Flag **Below Benchmark COGS** (`cogs-error`); cross-ref GAP-BM-13; V-A07 + icon table |
@@ -191,13 +192,18 @@ Slideover: Store · Action (`Sync Order` / `Update Store` / `Revalidate Order`) 
 
 ### 5.4 Sync ingestion
 
-| Trigger | Catatan |
-|---------|---------|
-| Auto schedule | 05:59–18:00 tiap 5 mnt; 18:01–06:00 tiap 1 jam; lookback **48 jam** (TZ [VERIFY]) |
-| Bulk Sync / Sync per order / Retry Failed | Manual |
+Timezone scheduler: **Asia/Jakarta**. Detail command & pecah job: [Store §4.5](../omni-store-binding/requirement.md#45-auto-sync-interval-as-is--verified-2026-08-31-kernelphp--configomniphp--synchronizeupdatecommand).
+
+| Trigger | Apa yang terjadi (bahasa operasional) |
+|---------|----------------------------------------|
+| **Auto — ambil order baru** (`sales-order:sync-create`) | Siang kerja **06:00–17:59**: jalan **tiap 5 menit**. Hanya window singkat “baru saja” (bukan lookback panjang). |
+| **Auto — refresh / lookback order** (`sales-order:sync-update`) | Siang **06:00–17:59**: jalan sesuai config interval kerja (default **tiap 1 jam**). Malam **18:00–05:59**: **tiap 1 jam**. Tiap run menarik order yang berubah dalam **N hari ke belakang** (`max_backward`, default **10** hari, maksimum **14**). |
+| **Pecah antrian lookback** | Per **satu toko**: rentang N hari **dipecah per hari kalender**. Hari lampau dipecah lagi jadi **pagi + siang** (half-day); **hari ini** 1 job. Di Log Data biasanya terlihat banyak baris `Job Auto Sync Order from {tanggal 00:00} to {tanggal 23:59}` (satu hari per log), bukan satu log untuk seluruh lookback. |
+| Bulk Sync / Sync per order / Retry Failed | Manual (UI) |
 | Webhook | Shopee & TikTok; Lazada **tanpa** webhook status |
 
-**Order Sync Start Date:** order sebelum tanggal tidak masuk (semua trigger). Window start = max(Start Date, now−48h) sesuai delta.  
+**Order Sync Start Date:** order sebelum tanggal ini **tidak** di-sync (semua trigger). Pada lookback otomatis, hari sebelum Start Date di-skip; jika Start Date jatuh di tengah rentang hari, window hari itu mulai dari Start Date (bukan “now − 48 jam”).
+
 **Platform Inactive / Auto Sync OFF:** zero sync store → Log Action `Update Store`.
 
 Outcome counters: Created / Updated / Skipped / Failed.
@@ -409,7 +415,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 | **GAP-ST-VAT-01** | Auto Add VAT order platform dari **Store** (bukan customer GC) — kanonik di [Store §4.9](../omni-store-binding/requirement.md#49-auto-add-vat-platform-orders--to-be-gap-st-vat-01) | Line platform sering tanpa VAT auto | Open (TO-BE) |
 | **GAP-BM-14** (consumer) | Snapshot Benchmark COGS = **effective** Manual COGS — [§6.6](#66-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14) | Capture masih rumus mentah | Open (TO-BE) |
 
-**[VERIFY: CODEBASE] terbuka:** TZ interval sync; Start Date global vs store; Bulk Sync residual; Instant Processing timing vs Complete; Total Price composition; Invoice∪FS caps; bind-error owner mismatch; Buyer Name censor scope; TikTok NULL discount; auto-delete soft/hard.
+**[VERIFY: CODEBASE] terbuka:** Start Date global vs store; Bulk Sync residual; Instant Processing timing vs Complete; Total Price composition; Invoice∪FS caps; bind-error owner mismatch; Buyer Name censor scope; TikTok NULL discount; auto-delete soft/hard.
 
 ---
 

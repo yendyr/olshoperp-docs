@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.3
-last_updated: 2026-08-11
+version: 2.4
+last_updated: 2026-08-31
 owner: QA - Yemima
 status: review
 audience: operator
@@ -40,7 +40,7 @@ Store adalah **prasyarat** sebelum Manage Platform Product, sync order platform,
 | Authorization Status | Authorized (hijau) atau Unauthorized (merah) |
 | Setup Incomplete | Konfigurasi belum lengkap (COA, cash/bank, WH, dll.) |
 | Store Outdated | Token OAuth expired — perlu re-authorize |
-| Auto Sync Order | `auto_download` — pull order otomatis tiap **5 menit** |
+| Auto Sync Order | `auto_download` — order **baru** di-pull otomatis tiap **±5 menit** (siang); status order lama di-refresh lewat job update (default **tiap 1 jam**, lookback beberapa hari — lihat requirement Store §4.5) |
 | Auto Sync Product | `sync_product` — pull produk otomatis tiap **1 jam** |
 | Building Process | Default warehouse proses order (Level 19) |
 | Building Stock | Warehouse acuan stok sync ke platform (Level 19, Show in Store aktif) |
