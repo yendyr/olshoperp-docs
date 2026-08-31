@@ -1271,17 +1271,18 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
-    legacy_sources: []
+        status: review
+    legacy_sources:
+      - docs/qa-docs/_meta/sot/accounting-purchase-report-source-of-truth.md
     code_globs:
       backend:
         - Modules/Accounting/Http/Controllers/PurchaseReportController.php
