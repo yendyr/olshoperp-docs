@@ -11,13 +11,14 @@ Route: `/businessdevelopment/sales-order-general`
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **SoT:** busdev SO General v1.0 + Fulfillment Mode TO-BE  
-**User-guide:** v1.3 · `source_version` 3.4  
-**Version (3 layer):** 3.4 · **Last updated:** 2026-08-12
+**User-guide:** v1.4 · `source_version` 3.5  
+**Version (3 layer):** 3.5 · **Last updated:** 2026-08-31
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.5 | 2026-08-31 13:40 | Status Dev - Sales Order: Rejected tetap bisa diedit; Closed dan Void dipisah (bukan satu kelompok “tidak bisa diubah”) |
 | 3.4 | 2026-08-12 | TO-BE Benchmark COGS snapshot = effective Manual COGS (GAP-BM-14 / GAP-SOG-15) |
 | 3.0 | 2026-07-22 | Rewrite SoT v1.0; 5 file + user-guide |
 | 3.1 | 2026-07-22 | Dual import **Import Processed** / **Import Non-Processed**; Fulfillment Mode; GAP-SOG-07…12 |

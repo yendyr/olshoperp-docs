@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.4
-last_updated: 2026-08-12
+version: 3.5
+last_updated: 2026-08-31
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -26,6 +26,7 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.5 | 2026-08-31 | QA - Yemima | Status: pisahkan Rejected (editable) vs Closed vs Void; koreksi tabel editable |
 | 3.4 | 2026-08-12 | QA - Yemima | TO-BE snapshot **Benchmark COGS** = effective Manual COGS (§8.2 / GAP-BM-14 consumer) |
 | 3.3 | 2026-08-11 | QA - Yemima | TO-BE Error Flag **Below Benchmark COGS** (§8.1); GAP-SOG-14 → GAP-BM-13 |
 | 2.4 | 2026-07-09 | QA - Yemima | Bundle proporsi + benchmark COGS |
@@ -98,13 +99,14 @@ stateDiagram-v2
 
 | Status | Kondisi | Editable? | Tombol |
 |---|---|---|---|
-| draft | Default create manual | Ya | Save, toggle Open, Delete |
+| draft | Default create manual; juga hasil buka ulang dokumen **rejected** di form | Ya | Save, toggle Open, Delete |
 | open | Toggle dari draft; default hasil import (`is_import = 1`) | Ya | Save, toggle Draft, Approve, Reject/Close, Delete |
-| approved | Approve dari open | Tidak | Void, Close |
-| rejected / closed | Reject/Close | Tidak | — |
-| void | Void dari approved (cek invoice/payment) | Tidak | Duplicate |
+| approved | Approve dari open | Tidak | Void Doc, Close Doc |
+| rejected | Reject dari open | Ya — form membuka sebagai Draft untuk perbaikan, lalu bisa set Open lagi | Save, toggle Draft/Open |
+| closed | Close Doc dari approved | Tidak | — |
+| void | Void Doc dari approved (bisa diblokir jika terkait outbound/invoice) | Tidak | Duplicate |
 
-**Aturan:** Draft tidak bisa diapprove. Approve saat import masih berjalan diblokir.
+**Aturan:** Draft tidak bisa diapprove. Approve saat import masih berjalan diblokir. **Closed ≠ Void** (aksi & status terpisah).
 
 ---
 
@@ -323,7 +325,12 @@ ATS = On Hand − Outstanding SO − Reserved Out (recalculate async).
 
 ### 7.5 Void / Close / Delete
 
-Delete hanya draft/open; Void bisa diblokir invoice/payment; Close/Reject dari open; Duplicate hanya dari void dengan tracking/PO ID unik.
+- **Delete** hanya untuk draft/open (dan alur pending sejenis).
+- **Reject** dari open → status **rejected** (dokumen **masih bisa diedit**; form membuka sebagai Draft).
+- **Close Doc** dari approved → status **closed** (terkunci; bukan Void).
+- **Void Doc** dari approved → status **void** (bisa diblokir jika sudah terkait outbound/invoice); dari void bisa **Duplicate** (tracking/PO ID unik).
+
+Jangan menyamakan Closed dengan Void di docs atau UI.
 
 ---
 

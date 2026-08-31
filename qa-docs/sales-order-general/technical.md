@@ -2,8 +2,8 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.4
-last_updated: 2026-08-12
+version: 3.5
+last_updated: 2026-08-31
 owner: QA - Yemima
 status: review
 aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulfillment Mode, Import Non-Processed, Other Cost/Disc Code, cogs-error, Manual COGS]
@@ -198,6 +198,8 @@ Jika **keduanya** ketemu → selalu `type = cost`; tidak ada error. Unique code 
 | INV-SOG-02 | Qty integer `> 0`; price `≥ 0` |
 | INV-SOG-03 | `platform_order_id` / tracking unique among non-void SO |
 | INV-SOG-04 | Import Processed SO: `transaction_status = open` and `is_import = 1` |
+| INV-SOG-05 | `isUpdatable`: true for draft/open/**rejected**; false for approved/processed/complete/closed/void |
+| INV-SOG-06 | FE: `rejected` → radio status dibuka sebagai `draft` untuk perbaikan |
 | INV-SOG-05 | `processed_to_out_quantity ≤ sales_order_quantity` per detail |
 | INV-SOG-06 | Store platform for general = `PL_OTHER` |
 | INV-SOG-07 | Draft never approved |

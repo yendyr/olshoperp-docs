@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.4
-last_updated: 2026-08-12
+version: 3.5
+last_updated: 2026-08-31
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost Disc, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -72,8 +72,12 @@ flowchart TD
 |--------|---------|--------------|
 | Draft | Baru disusun | Ya |
 | Open | Siap review & approve (hasil Import Processed) | Ya |
-| Approved | Disetujui / final (termasuk Non-Processed sukses) | Tidak |
-| Rejected / Closed / Void | Ditolak / ditutup / dibatalkan | Tidak |
+| Rejected | Ditolak dari Open | Ya — buka dokumen, perbaiki, lalu set ke Draft/Open lagi |
+| Approved | Disetujui / final (termasuk Non-Processed sukses) | Tidak (bisa Void atau Close) |
+| Closed | Ditutup lewat **Close Doc** (setelah Approved) | Tidak |
+| Void | Dibatalkan lewat **Void Doc** (setelah Approved; bisa ditolak jika sudah terkait outbound/invoice) | Tidak (bisa Duplicate) |
+
+> **Jangan samakan Closed dengan Void.** Close = menutup dokumen yang sudah disetujui; Void = membatalkan dokumen yang sudah disetujui (aturan & tombolnya beda).
 
 ---
 

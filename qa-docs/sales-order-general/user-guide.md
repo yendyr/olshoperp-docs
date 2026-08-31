@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 1.3
-last_updated: 2026-08-11
+version: 1.4
+last_updated: 2026-08-31
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.3
+source_version: 3.5
 owner: QA - Yemima
 status: review
 ---
@@ -63,8 +63,12 @@ stateDiagram-v2
 |--------|---------|--------------|
 | **Draft** | Baru disusun | Ya |
 | **Open** | Siap approve (hasil Import Processed) | Ya |
-| **Approved** | Final (termasuk Non-Processed sukses) | Tidak |
-| **Rejected / Closed / Void** | Ditolak / ditutup / batal | Tidak |
+| **Rejected** | Ditolak dari Open | Ya — perbaiki lalu set Draft/Open lagi |
+| **Approved** | Final (termasuk Non-Processed sukses) | Tidak (bisa Void atau Close) |
+| **Closed** | Ditutup lewat **Close Doc** (setelah Approved) | Tidak |
+| **Void** | Dibatalkan lewat **Void Doc** (setelah Approved) | Tidak (bisa Duplicate) |
+
+> Closed dan Void **bukan** status yang sama — tombol dan artinya berbeda.
 
 ---
 
