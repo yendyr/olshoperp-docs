@@ -87,6 +87,7 @@ Topic khusus create bug: `3958` di Olshoperp internal IT (`/bug` hanya diproses 
 | Meeting & report | [Notulensi Meeting](/docs/n8n-automation/notulensi-meeting) | Draft/final notulen → Jira + Lark |
 | Meeting & report | [Weekly Report](/docs/n8n-automation/weekly-report) | Rekap Jira Senin–sekarang ke Notion |
 | Meeting & report | [Sub - Reporting Center](/docs/n8n-automation/sub-reporting-center) | `/progress`, `/qareview`, `/testcase update` |
+| Ops | [User Activity Hub](/docs/n8n-automation/user-activity-hub) | Webhook ingest/export last_opened + last_write (Tyas/Merdian) — status draft sampai di-import |
 
 ## Command yang hidup
 
@@ -125,6 +126,7 @@ Tombol (bukan ketik): create/add/close Jira card, auto-approve AI, release fitur
 | Jira TC status | webhook `jira-update-status` | Jira Backend - TC Docs |
 | Notion Draft / Final | `notulen-draft` / `notulen-final` | Notulensi Meeting |
 | Jam 08:00 | Schedule | Reminder Request Pending |
+| FE Tyas/Merdian | webhook `user-activity` / `user-activity-export` | User Activity Hub |
 
 ## Relasi alur utama
 

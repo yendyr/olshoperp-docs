@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="id">
+<title>OlshopERP — User Activity</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #eef0f2; --surface: #ffffff; --surface-2: #f6f7f9;
+    --ink: #161a21; --ink-soft: #5a6270; --ink-faint: #8890a0;
+    --border: #dde1e7; --border-strong: #c7cdd6;
+    --accent: #3c4a8c; --accent-soft: #eceefa; --accent-ink: #2c3868;
+    --good: #1c8a5c; --good-soft: #e5f5ee;
+    --warn: #a9750a; --warn-soft: #fbf1de;
+    --bad: #c23d3d; --bad-soft: #fbe9e8;
+    --shadow: 0 1px 2px rgba(20, 24, 33, 0.04), 0 8px 24px -12px rgba(20, 24, 33, 0.12);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0e1116; --surface: #161a22; --surface-2: #1c212b;
+      --ink: #e8eaef; --ink-soft: #a0a7b5; --ink-faint: #6c7484;
+      --border: #262c38; --border-strong: #333a48;
+      --accent: #8b96d9; --accent-soft: #232a48; --accent-ink: #c2c9ee;
+      --good: #3fbf88; --good-soft: #14261f;
+      --warn: #dba13f; --warn-soft: #2b2415;
+      --bad: #e2726c; --bad-soft: #2c1a1a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Public Sans", system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  header { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; }
+  header h1 { margin: 0 0 0.25rem; font-size: 1.55rem; font-weight: 800; letter-spacing: -0.02em; }
+  header p { margin: 0; color: var(--ink-soft); font-size: 0.9rem; max-width: 56ch; }
+  .meta { text-align: right; font-size: 0.8rem; color: var(--ink-faint); }
+  .meta strong { display: block; color: var(--ink-soft); font-weight: 600; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 1rem; }
+  .switch { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; padding: 3px; }
+  .switch button { font: inherit; font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); background: transparent; border: none; border-radius: 7px; padding: 0.4rem 0.85rem; cursor: pointer; }
+  .switch button.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+  input[type="search"], input[type="text"] {
+    font: inherit; font-size: 0.88rem; padding: 0.45rem 0.75rem; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--ink); min-width: 180px;
+  }
+  .btn {
+    font: inherit; font-size: 0.82rem; font-weight: 600; padding: 0.45rem 0.9rem; border-radius: 8px;
+    border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent-ink); }
+  .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .banner { padding: 0.85rem 1rem; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); margin-bottom: 1rem; font-size: 0.88rem; color: var(--ink-soft); }
+  .banner.err { border-color: var(--bad); background: var(--bad-soft); color: var(--ink); }
+  .banner.warn { border-color: var(--warn); background: var(--warn-soft); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th, td { padding: 0.7rem 0.85rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-faint); background: var(--surface-2); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
+  .pill { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.15rem 0.45rem; border-radius: 999px; background: var(--surface-2); color: var(--ink-soft); }
+  .pill.tyas { background: var(--accent-soft); color: var(--accent-ink); }
+  .pill.merdian { background: var(--good-soft); color: var(--good); }
+  .pill.staging { background: var(--warn-soft); color: var(--warn); }
+  .newer { outline: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); background: color-mix(in srgb, var(--accent-soft) 70%, transparent); border-radius: 6px; padding: 0.15rem 0.35rem; }
+  .muted { color: var(--ink-faint); }
+  .cfg { display: none; margin-bottom: 1rem; padding: 1rem; border-radius: 10px; border: 1px dashed var(--border-strong); background: var(--surface-2); }
+  .cfg.open { display: block; }
+  .cfg label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--ink-faint); margin: 0.5rem 0 0.25rem; }
+  .cfg input { width: 100%; max-width: 720px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.65rem 0.9rem; min-width: 110px; }
+  .stat b { display: block; font-size: 1.25rem; font-weight: 800; }
+  .stat span { font-size: 0.75rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; }
+  a.nav { color: var(--accent); font-size: 0.85rem; text-decoration: none; font-weight: 600; }
+  a.nav:hover { text-decoration: underline; }
+</style>
+<body>
+  <div class="wrap">
+    <p style="margin:0 0 0.75rem"><a class="nav" href="./index.html">← Test Dashboard</a></p>
+    <header>
+      <div>
+        <h1>User Activity</h1>
+        <p>Last opened menu + last write per user di Tyas &amp; Merdian. Data live dari n8n (bukan file git).</p>
+      </div>
+      <div class="meta">
+        <strong id="genAt">—</strong>
+        <span id="fetchAt">Belum fetch</span>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <div class="switch" id="envSwitch" role="tablist">
+        <button type="button" data-env="all" class="active">All</button>
+        <button type="button" data-env="tyas">Tyas</button>
+        <button type="button" data-env="merdian">Merdian</button>
+      </div>
+      <input type="search" id="q" placeholder="Cari username…" autocomplete="off" />
+      <button type="button" class="btn" id="btnRefresh">Refresh</button>
+      <button type="button" class="btn" id="btnCfg">Config URL</button>
+      <button type="button" class="btn primary" id="btnSample">Load sample</button>
+    </div>
+
+    <div class="cfg" id="cfgPanel">
+      <label for="exportUrl">n8n export URL (GET)</label>
+      <input type="text" id="exportUrl" placeholder="https://n8n.olshoperp.com/webhook/user-activity-export" />
+      <label for="exportToken">token query (opsional, USER_ACTIVITY_EXPORT_SECRET)</label>
+      <input type="text" id="exportToken" placeholder="shared secret" autocomplete="off" />
+      <p class="muted" style="margin:0.6rem 0 0;font-size:0.8rem">Disimpan di <span class="mono">localStorage</span> browser ini saja. Auto-refresh 60s.</p>
+      <div style="margin-top:0.75rem">
+        <button type="button" class="btn primary" id="btnSaveCfg">Save &amp; fetch</button>
+      </div>
+    </div>
+
+    <div class="banner" id="statusBanner">Set export URL n8n, atau load sample untuk preview UI.</div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Env</th>
+            <th>User</th>
+            <th>Company</th>
+            <th>Last opened</th>
+            <th>Opened at</th>
+            <th>Last write</th>
+            <th>Write at</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="7" class="muted">Tidak ada data.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+(function () {
+  const LS_URL = 'olshoperp.userActivity.exportUrl'
+  const LS_TOKEN = 'olshoperp.userActivity.exportToken'
+
+  const SAMPLE = {
+    generated_at: new Date().toISOString(),
+    count: 2,
+    users: [
+      {
+        key: 'tyas:101',
+        env: 'tyas',
+        user_id: 101,
+        username: 'ops.tyas',
+        company_id: 3,
+        company_code: 'TANRISE',
+        last_opened_menu: 'supplychain-new-purchase-inbound',
+        last_opened_path: '/supplychain/new-purchase-inbound',
+        last_opened_at: '2026-08-28T14:55:00.000Z',
+        last_write_menu: 'supplychain-new-purchase-inbound',
+        last_write_path: '/supplychain/new-purchase-inbound',
+        last_write_at: '2026-08-28T14:58:10.000Z',
+        last_write_method: 'POST',
+        updated_at: '2026-08-28T14:58:10.000Z',
+      },
+      {
+        key: 'merdian:202',
+        env: 'merdian',
+        user_id: 202,
+        username: 'finance.merdian',
+        company_id: 16,
+        company_code: 'SOMURAH',
+        last_opened_menu: 'accounting-supplier-invoice',
+        last_opened_path: '/accounting/supplier-invoice',
+        last_opened_at: '2026-08-28T15:01:00.000Z',
+        last_write_menu: 'accounting-supplier-payment',
+        last_write_path: '/accounting/supplier-payment',
+        last_write_at: '2026-08-28T14:40:00.000Z',
+        last_write_method: 'PUT',
+        updated_at: '2026-08-28T15:01:00.000Z',
+      },
+    ],
+  }
+
+  let users = []
+  let envFilter = 'all'
+  let autoTimer = null
+
+  const $ = (id) => document.getElementById(id)
+  const banner = $('statusBanner')
+  const tbody = $('tbody')
+
+  function loadCfg() {
+    $('exportUrl').value = localStorage.getItem(LS_URL) || ''
+    $('exportToken').value = localStorage.getItem(LS_TOKEN) || ''
+  }
+
+  function saveCfg() {
+    localStorage.setItem(LS_URL, $('exportUrl').value.trim())
+    localStorage.setItem(LS_TOKEN, $('exportToken').value.trim())
+  }
+
+  function buildUrl() {
+    const base = ($('exportUrl').value || localStorage.getItem(LS_URL) || '').trim()
+    if (!base) return ''
+    const token = ($('exportToken').value || localStorage.getItem(LS_TOKEN) || '').trim()
+    try {
+      const u = new URL(base)
+      if (token) u.searchParams.set('token', token)
+      return u.toString()
+    } catch {
+      return token ? `${base}${base.includes('?') ? '&' : '?'}token=${encodeURIComponent(token)}` : base
+    }
+  }
+
+  function fmtWhen(iso) {
+    if (!iso) return '—'
+    const d = new Date(iso)
+    if (Number.isNaN(d.getTime())) return String(iso)
+    return d.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
+  }
+
+  function newerKind(row) {
+    const o = row.last_opened_at ? Date.parse(row.last_opened_at) : 0
+    const w = row.last_write_at ? Date.parse(row.last_write_at) : 0
+    if (!o && !w) return null
+    if (o >= w) return 'open'
+    return 'write'
+  }
+
+  function filtered() {
+    const q = ($('q').value || '').trim().toLowerCase()
+    return users.filter((u) => {
+      if (envFilter !== 'all' && String(u.env || '').toLowerCase() !== envFilter) return false
+      if (!q) return true
+      const hay = `${u.username || ''} ${u.company_code || ''} ${u.last_opened_menu || ''} ${u.last_write_menu || ''}`.toLowerCase()
+      return hay.includes(q)
+    })
+  }
+
+  function renderStats(list) {
+    const byEnv = {}
+    for (const u of list) {
+      const e = String(u.env || 'unknown').toLowerCase()
+      byEnv[e] = (byEnv[e] || 0) + 1
+    }
+    $('stats').innerHTML = [
+      `<div class="stat"><b>${list.length}</b><span>Users shown</span></div>`,
+      ...Object.entries(byEnv).map(([e, n]) => `<div class="stat"><b>${n}</b><span>${e}</span></div>`),
+    ].join('')
+  }
+
+  function render() {
+    const list = filtered()
+    renderStats(list)
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="muted">Tidak ada data untuk filter ini.</td></tr>'
+      return
+    }
+    tbody.innerHTML = list.map((u) => {
+      const env = String(u.env || 'unknown').toLowerCase()
+      const nk = newerKind(u)
+      const openCell = nk === 'open'
+        ? `<span class="newer mono">${esc(u.last_opened_menu || '—')}</span>`
+        : `<span class="mono">${esc(u.last_opened_menu || '—')}</span>`
+      const writeCell = nk === 'write'
+        ? `<span class="newer mono">${esc(u.last_write_menu || '—')}</span>`
+        : `<span class="mono">${esc(u.last_write_menu || '—')}</span>`
+      const writeAt = u.last_write_at
+        ? `${fmtWhen(u.last_write_at)}${u.last_write_method ? ` <span class="muted mono">(${esc(u.last_write_method)})</span>` : ''}`
+        : '—'
+      return `<tr>
+        <td><span class="pill ${esc(env)}">${esc(env)}</span></td>
+        <td><strong>${esc(u.username || '—')}</strong><div class="muted mono">#${esc(u.user_id)}</div></td>
+        <td class="mono">${esc(u.company_code || u.company_id || '—')}</td>
+        <td>${openCell}<div class="muted" style="font-size:0.75rem">${esc(u.last_opened_path || '')}</div></td>
+        <td class="mono">${fmtWhen(u.last_opened_at)}</td>
+        <td>${writeCell}<div class="muted" style="font-size:0.75rem">${esc(u.last_write_path || '')}</div></td>
+        <td class="mono">${writeAt}</td>
+      </tr>`
+    }).join('')
+  }
+
+  function esc(s) {
+    return String(s ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+  }
+
+  function applyPayload(data, sourceLabel) {
+    users = Array.isArray(data?.users) ? data.users : []
+    $('genAt').textContent = data?.generated_at ? `Data: ${fmtWhen(data.generated_at)}` : '—'
+    $('fetchAt').textContent = `Fetched ${fmtWhen(new Date().toISOString())} · ${sourceLabel}`
+    banner.className = 'banner'
+    banner.textContent = `${users.length} user record(s) dari ${sourceLabel}. Highlight = sinyal lebih baru (open vs write).`
+    render()
+  }
+
+  async function fetchLive() {
+    const url = buildUrl()
+    if (!url) {
+      banner.className = 'banner warn'
+      banner.textContent = 'Export URL belum di-set. Buka Config URL atau Load sample.'
+      return
+    }
+    banner.className = 'banner'
+    banner.textContent = 'Fetching…'
+    try {
+      const res = await fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store' })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json()
+      if (data?.error === 'unauthorized') {
+        banner.className = 'banner err'
+        banner.textContent = 'Unauthorized — cek token export.'
+        return
+      }
+      applyPayload(data, 'n8n export')
+    } catch (err) {
+      banner.className = 'banner err'
+      banner.textContent = `Fetch gagal: ${err?.message || err}. Cek CORS/URL/token, atau Load sample.`
+    }
+  }
+
+  function startAuto() {
+    if (autoTimer) clearInterval(autoTimer)
+    autoTimer = setInterval(() => {
+      if (buildUrl()) fetchLive()
+    }, 60_000)
+  }
+
+  $('envSwitch').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-env]')
+    if (!btn) return
+    envFilter = btn.dataset.env
+    $('envSwitch').querySelectorAll('button').forEach((b) => b.classList.toggle('active', b === btn))
+    render()
+  })
+  $('q').addEventListener('input', render)
+  $('btnRefresh').addEventListener('click', fetchLive)
+  $('btnCfg').addEventListener('click', () => $('cfgPanel').classList.toggle('open'))
+  $('btnSaveCfg').addEventListener('click', () => {
+    saveCfg()
+    $('cfgPanel').classList.remove('open')
+    fetchLive()
+    startAuto()
+  })
+  $('btnSample').addEventListener('click', () => applyPayload(SAMPLE, 'sample'))
+
+  // Query params: ?url=...&token=...
+  const params = new URLSearchParams(location.search)
+  if (params.get('url')) localStorage.setItem(LS_URL, params.get('url'))
+  if (params.get('token')) localStorage.setItem(LS_TOKEN, params.get('token'))
+
+  loadCfg()
+  if (buildUrl()) {
+    fetchLive()
+    startAuto()
+  } else {
+    applyPayload(SAMPLE, 'sample (set Config URL untuk live)')
+  }
+})()
+</script>
+</body>
+</html>

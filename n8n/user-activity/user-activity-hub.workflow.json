@@ -1,0 +1,188 @@
+{
+  "name": "User Activity Hub (Tyas + Merdian)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "user-activity",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "wh-ingest",
+      "name": "Webhook Ingest",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "user-activity-ingest"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? $input.first().json;\nconst env = String(body.env || 'unknown').toLowerCase().trim();\nconst userId = body.user_id;\nif (userId === undefined || userId === null || userId === '') {\n  return [{ json: { skip: true, reason: 'missing user_id' } }];\n}\nconst event = body.event === 'write' ? 'write' : 'open';\nconst key = `${env}:${userId}`;\nconst at = body.at || new Date().toISOString();\nconst base = {\n  key,\n  env,\n  user_id: userId,\n  username: body.username || '',\n  company_id: body.company_id ?? null,\n  company_code: body.company_code ?? null,\n  updated_at: at,\n};\nif (event === 'open') {\n  return [{ json: {\n    ...base,\n    patch: {\n      last_opened_menu: body.menu_slug || body.menu_path || '',\n      last_opened_path: body.menu_path || '',\n      last_opened_at: at,\n      username: base.username,\n      company_id: base.company_id,\n      company_code: base.company_code,\n    }\n  }}];\n}\nreturn [{ json: {\n  ...base,\n  patch: {\n    last_write_menu: body.menu_slug || body.menu_path || '',\n    last_write_path: body.menu_path || '',\n    last_write_at: at,\n    last_write_method: body.method || '',\n    username: base.username,\n    company_id: base.company_id,\n    company_code: base.company_code,\n  }\n}}];"
+      },
+      "id": "code-normalize",
+      "name": "Normalize Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !$json.skip }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-valid",
+      "name": "Valid Payload?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [500, 0]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataStore": {
+          "__rl": true,
+          "mode": "list",
+          "value": "REPLACE_WITH_DATA_STORE_ID"
+        },
+        "key": "={{ $json.key }}"
+      },
+      "id": "ds-get",
+      "name": "Data Store Get",
+      "type": "n8n-nodes-base.dataStore",
+      "typeVersion": 1,
+      "position": [740, -80],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const incoming = $('Normalize Payload').first().json;\nconst existing = $input.first().json || {};\nconst prev = existing.json ?? existing;\nconst merged = {\n  key: incoming.key,\n  env: incoming.env,\n  user_id: incoming.user_id,\n  username: incoming.patch.username || prev.username || '',\n  company_id: incoming.patch.company_id ?? prev.company_id ?? null,\n  company_code: incoming.patch.company_code ?? prev.company_code ?? null,\n  last_opened_menu: prev.last_opened_menu || null,\n  last_opened_path: prev.last_opened_path || null,\n  last_opened_at: prev.last_opened_at || null,\n  last_write_menu: prev.last_write_menu || null,\n  last_write_path: prev.last_write_path || null,\n  last_write_at: prev.last_write_at || null,\n  last_write_method: prev.last_write_method || null,\n  updated_at: incoming.updated_at,\n  ...incoming.patch,\n};\nreturn [{ json: merged }];"
+      },
+      "id": "code-merge",
+      "name": "Merge Upsert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, -80]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "dataStore": {
+          "__rl": true,
+          "mode": "list",
+          "value": "REPLACE_WITH_DATA_STORE_ID"
+        },
+        "key": "={{ $json.key }}",
+        "value": "={{ $json }}"
+      },
+      "id": "ds-set",
+      "name": "Data Store Set",
+      "type": "n8n-nodes-base.dataStore",
+      "typeVersion": 1,
+      "position": [1220, -80]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "user-activity-export",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "wh-export",
+      "name": "Webhook Export",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 320],
+      "webhookId": "user-activity-export"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "dataStore": {
+          "__rl": true,
+          "mode": "list",
+          "value": "REPLACE_WITH_DATA_STORE_ID"
+        },
+        "returnAll": true
+      },
+      "id": "ds-getall",
+      "name": "Data Store Get All",
+      "type": "n8n-nodes-base.dataStore",
+      "typeVersion": 1,
+      "position": [260, 320]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map((i) => i.json).filter((r) => r && (r.env || r.user_id));\nrows.sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')));\nconst secret = $env.USER_ACTIVITY_EXPORT_SECRET || '';\nconst q = $('Webhook Export').first().json.query || {};\nif (secret && q.token !== secret) {\n  return [{ json: { error: 'unauthorized', users: [] } }];\n}\nreturn [{ json: {\n  generated_at: new Date().toISOString(),\n  count: rows.length,\n  users: rows,\n}}];"
+      },
+      "id": "code-export",
+      "name": "Format Export",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 320]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-export",
+      "name": "Respond Export",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [740, 320]
+    }
+  ],
+  "connections": {
+    "Webhook Ingest": {
+      "main": [[{ "node": "Normalize Payload", "type": "main", "index": 0 }]]
+    },
+    "Normalize Payload": {
+      "main": [[{ "node": "Valid Payload?", "type": "main", "index": 0 }]]
+    },
+    "Valid Payload?": {
+      "main": [
+        [{ "node": "Data Store Get", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Data Store Get": {
+      "main": [[{ "node": "Merge Upsert", "type": "main", "index": 0 }]]
+    },
+    "Merge Upsert": {
+      "main": [[{ "node": "Data Store Set", "type": "main", "index": 0 }]]
+    },
+    "Webhook Export": {
+      "main": [[{ "node": "Data Store Get All", "type": "main", "index": 0 }]]
+    },
+    "Data Store Get All": {
+      "main": [[{ "node": "Format Export", "type": "main", "index": 0 }]]
+    },
+    "Format Export": {
+      "main": [[{ "node": "Respond Export", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "olshoperp-user-activity-hub"
+  },
+  "pinData": {}
+}

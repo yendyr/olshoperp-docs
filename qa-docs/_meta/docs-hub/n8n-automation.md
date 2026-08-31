@@ -20,3 +20,7 @@ Create or clone test cases, gate FAILED/PASSED results, audit bugs against Notio
 ### Meeting & Weekly Report
 
 Draft or finalize meeting notes into Jira/Lark, then build the weekly Jira recap (optionally with notulen). Start at [Notulensi Meeting](/docs/n8n-automation/notulensi-meeting).
+
+### Ops — User Activity
+
+Last menu open/write from Tyas & Merdian FE → n8n Data Store → docs dashboard viewer. Start at [User Activity Hub](/docs/n8n-automation/user-activity-hub).
