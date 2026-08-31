@@ -13,3 +13,6 @@ tests/.auth/
 _local/
 
 .local-node/
+
+# macOS
+.DS_Store
