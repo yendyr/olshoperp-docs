@@ -1,43 +1,39 @@
 # Purchase Report — Dokumentasi QA
 
-Menu **Purchase Report** (Accounting → Report) — laporan pembelian per SKU per supplier, POV **Purchase Order** atau **Purchase Invoice**.
+Menu **Purchase Report** (Accounting → Report) — laporan pembelian per SKU per supplier, dua POV (**Purchase Order** / **Purchase Invoice**) dalam satu menu.
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
-| User Guide | [user-guide.md](./user-guide.md) | End-user | pending (placeholder) |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish / onboarding | review |
 
-**3 layer:** v1.0 · **Route (proposed):** `/accounting/purchase-report`  
-**Source:** Template Report Pembelian SKU per Supplier (user) · **Last updated:** 2026-08-12  
-**Maintenance owner:** QA — Yemima
+**UI route:** `/accounting/purchase-report`  
+**SoT:** [`_meta/sot/accounting-purchase-report-source-of-truth.md`](../_meta/sot/accounting-purchase-report-source-of-truth.md) v1.0  
+**Jira SoT:** [ETM-15673](https://erpintegration.atlassian.net/browse/ETM-15673) · [ETM-15674](https://erpintegration.atlassian.net/browse/ETM-15674)  
+**3 layer + UG:** v2.0 / UG v1.0 · **Last updated:** 2026-08-31 17:00
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0 | 2026-08-12 | Initial TO-BE docs + Jira/brief; Accounting Report; Excel Total Tagihan group |
+| 1.0 | 2026-08-12 | Initial TO-BE (belum implementasi) |
+| 2.0 | 2026-08-31 17:00 | AS-IS dari ETM-15673/15674 + dual-tab shell; SOT + 5-file review |
 
-## Key notes
+## Key notes (AS-IS)
 
-- Blank sampai **Type Transaction** dipilih; Date default **30 hari**
-- PO & PI **tidak** dicampur; **tidak** relasi AP; **tidak** link PO↔PI di report
-- Semua status; PO With + Without PR; currency as-is
-- Total Price tanpa Other Cost/Disc
+- Dual **tab** PO / PI (bukan radio blank)  
+- Default tanggal FE: **bulan berjalan** (GAP vs card 30 hari)  
+- Group supplier + total di header; Total Tagihan kolom = line  
+- Semua status; PO With+Without PR; currency as-is; no Other Cost/Disc; no AP / PO↔PI join  
 
 ## Related menus
 
 | Menu | Peran |
 |------|--------|
-| [Purchase Order](../supplychain-purchase-order/) | Sumber POV PO |
-| [Purchase Invoice](../accounting-supplier-invoice/) | Sumber POV PI |
+| [Purchase Order](../supplychain-purchase-order/) | Sumber tab PO |
+| [Purchase Invoice](../accounting-supplier-invoice/) | Sumber tab PI |
 | Account Payable Report | **Tidak** terkait |
 
-## Deliverables (Downloads)
-
-- Brief: `~/Downloads/improvement-accounting-purchase-report.md`
-- Jira PO POV: `~/Downloads/jira-accounting-purchase-report-purchase-order.md`
-- Jira PI POV: `~/Downloads/jira-accounting-purchase-report-purchase-invoice.md`
-
-Implementasi dataset dipecah 2 card (PO / PI); shell UI menu tetap satu.
+**Maintenance owner:** QA — Yemima

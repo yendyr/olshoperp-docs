@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: accounting-purchase-report
 menu_name: "Purchase Report"
-version: 1.0
-last_updated: 2026-08-12
+version: 2.0
+last_updated: 2026-08-31
 owner: QA - Yemima
-status: draft
-aliases: [Purchase Report, laporan pembelian SKU, PO PI report supplier]
+status: review
+aliases: [Purchase Report, laporan pembelian SKU, PO PI report supplier, ETM-15673, ETM-15674]
 ---
 
 # Purchase Report — Requirement Documentation
@@ -14,9 +14,9 @@ aliases: [Purchase Report, laporan pembelian SKU, PO PI report supplier]
 **Modul:** Accounting → Report  
 **Menu UI:** **Purchase Report** (`/accounting/purchase-report`)  
 **Audience:** PM, QA, Procurement, Finance, Developer  
-**Status:** TO-BE v1.0 — belum implementasi
-
-**Sumber user:** `Template Report Pembelian SKU per Supplier (1).xlsx` (UI & INFO + Format Export)
+**Status:** **AS-IS** v2.0  
+**SoT:** [`_meta/sot/accounting-purchase-report-source-of-truth.md`](../_meta/sot/accounting-purchase-report-source-of-truth.md) v1.0  
+**Jira SoT:** [ETM-15673](https://erpintegration.atlassian.net/browse/ETM-15673) (POV PO) · [ETM-15674](https://erpintegration.atlassian.net/browse/ETM-15674) (POV PI)
 
 ---
 
@@ -24,99 +24,89 @@ aliases: [Purchase Report, laporan pembelian SKU, PO PI report supplier]
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2026-08-12 | QA - Yemima | Initial TO-BE dari template user + keputusan UI/UX (Accounting Report, all status, Excel Total Tagihan) |
+| 1.0 | 2026-08-12 | QA - Yemima | TO-BE awal (belum implementasi) |
+| 2.0 | 2026-08-31 | QA - Yemima | AS-IS dari ETM-15673/15674 + verifikasi kode; shell = dual tab |
 
 ---
 
 ## 1. Ringkasan Eksekutif
 
-**Purchase Report** adalah report **read-only** yang menampilkan pembelian **per SKU**, digroup per **Supplier**, dengan dua POV yang dipilih user:
+**Purchase Report** adalah report **read-only** yang menampilkan pembelian **per SKU**, digroup per **Supplier**, dengan **dua POV** dalam satu menu:
 
-| Type Transaction | Sumber baris |
-|------------------|--------------|
+| Tab (POV) | Sumber baris |
+|-----------|--------------|
 | **Purchase Order** | Detail PO (With PR + Without PR) |
-| **Purchase Invoice** | Detail PI |
+| **Purchase Invoice** | Detail Purchase Invoice / Supplier Invoice |
 
-Satu grid — **tidak** menampilkan PO dan PI bersamaan. **Tidak** terkait Account Payable Report. POV PO **tidak** mereferensikan PI (dan sebaliknya).
+Satu load API = satu POV — **tidak** menampilkan PO dan PI bersamaan. **Tidak** terkait Account Payable Report. POV PO **tidak** mereferensikan PI (dan sebaliknya).
+
+```mermaid
+flowchart LR
+  PO[Purchase Order] --> TabPO[Tab PO]
+  PI[Purchase Invoice] --> TabPI[Tab PI]
+  TabPO --> R[Purchase Report]
+  TabPI --> R
+```
 
 ---
 
-## 2. UI / UX
+## 2. UI / UX (AS-IS)
 
-### 2.1 Layout
+### 2.1 Shell Type — dual tab (implementasi sekarang)
 
-```mermaid
-flowchart TD
-  A[Buka Purchase Report] --> B{Type Transaction dipilih?}
-  B -->|Tidak| C[Grid blank]
-  B -->|Ya| D[Load data by Type + Date range]
-  D --> E[Group by Supplier]
-  E --> F[Running Total Tagihan per group]
-```
-
-| Control | Rule |
-|---------|------|
-| **Type Transaction** | Radio/segment: Purchase Order \| Purchase Invoice — **wajib**; gate blank |
-| **Trx. Date** | Range **wajib**; **default last 30 days** (editable) — proteksi query |
-| Global Search | Trx. Code, SKU, Supplier (contains) |
-| Advanced Filter | Trx. Date, Type, Trx. Code, SKU, Supplier, Status |
+| Control | Rule AS-IS |
+|---------|------------|
+| **Tab Purchase Order / Purchase Invoice** | Satu menu; ganti tab = ganti dataset (`select_menu`) |
+| Default tab | **Purchase Order** (tab pertama) — data load langsung |
+| Trx. Date filter | Advanced Filter default: **awal–akhir bulan berjalan** (boleh diubah) |
+| Global Search | Ya |
+| Advanced Filter | Ya (SearchBuilder) |
 | Columns Show/Hide | Ya |
-| Export | Export All (filter) · This Page Only · hormati visible columns |
+| Export | Export All (async) · This Page · file list **per** tab |
+
+> Draft card menyebut “blank sampai Type” + default **30 hari**. AS-IS shell = tab (bukan blank). Default tanggal: lihat **GAP-PURREP-01**.
 
 ### 2.2 Grouping & Total Tagihan
 
-- Group header = **nama Supplier**
-- **Total Tagihan** = running sum `Total Price` dalam group (sama Excel):
+- Group header = **nama Supplier** + nominal total supplier (kanan header).
+- Total supplier = sum line amounts terfilter untuk supplier itu.
+- Kolom **Total Tagihan** per baris = amount line (bukan running Excel per row) — **GAP-PURREP-02**.
 
-| Row | Total Tagihan |
-|-----|---------------|
-| 1 | = Total Price₁ |
-| 2 | = Total Tagihan₁ + Total Price₂ |
-| n | = Total Tagihanₙ₋₁ + Total Priceₙ |
-
-- Akumulasi ditampilkan di **header grouping** supplier (design Excel: nominal di area Total Tagihan group).
-- Order default: **Trx. Date desc** (dalam batasan group).
+**Contoh konsep (card PI):** baris TROLIK100 → TROLIK80 → … Total Price bertambah; di UI, penjumlahan supplier tampil di **header group**.
 
 ### 2.3 Kolom
 
-| Kolom | Visible default | Keterangan |
-|-------|-----------------|------------|
-| ID. Trx | true | ID detail PO/PI per SKU |
-| Trx. Date | true | Transaction date header |
-| Type Transaction | true | Purchase Order / Purchase Invoice |
-| Trx. Code | true | Hyperlink ke dokumen |
-| SKU | true | System Product SKU |
-| Description | true | Description line |
-| Qty | true | PO Qty / PI Qty |
-| Unit | true | |
-| DPP | true | |
-| VAT | true | |
-| Currency | true | **As-is** per trx |
-| Unit Price | true | Sebelum disc / after VAT sesuai kolom sumber UI |
-| Total Price | true | Line only — **tanpa** Other Cost/Disc |
-| Total Tagihan | true | Running per supplier |
-| Trx. Status | true | Semua status dokumen |
-| Data Owner | true | |
-| Created At / By | true | |
-
-Supplier = group key (di export menjadi kolom flat).
+| Kolom | Keterangan |
+|-------|------------|
+| ID. Trx | Id detail |
+| Trx. Date | Tanggal transaksi header |
+| Type Transaction | Purchase Order / Purchase Invoice |
+| Trx. Code | Hyperlink ke dokumen sumber |
+| SKU / Name | System Product |
+| Description | PO: header; PI: line |
+| Qty / Unit | PO order qty / PI invoice qty |
+| DPP / VAT / Currency | Currency **as-is** |
+| Unit Price | Line before disc before VAT |
+| Total Price | Line product — **tanpa** Other Cost/Disc |
+| Total Tagihan | Line amount (+ total di header group) |
+| Trx. Status | Semua status dokumen sumber |
 
 ---
 
 ## 3. Business rules
 
-| ID | Rule |
-|----|------|
-| R-01 | Blank sampai Type dipilih |
-| R-02 | Date range wajib (default 30 hari) |
-| R-03 | Type PO → hanya data PO; Type PI → hanya data PI |
-| R-04 | PO: With PR + Without PR |
-| R-05 | Semua status dokumen masuk |
-| R-06 | Currency as-is (tidak convert paksa ke IDR) |
-| R-07 | Tidak ada join/relasi PO↔PI di report |
-| R-08 | Tidak ada relasi ke Account Payable Report |
-| R-09 | Total Price exclude Other Cost & Other Disc |
-| R-10 | Data Owner / company scope seperti report Accounting lain |
+| ID | Rule | Sumber |
+|----|------|--------|
+| R-01 | Tab PO → hanya data PO; tab PI → hanya data PI | ETM-15673/15674 |
+| R-02 | PO: With PR + Without PR | ETM-15673 |
+| R-03 | Semua status dokumen masuk | ETM-15673/15674 |
+| R-04 | Currency as-is | ETM-15673/15674 |
+| R-05 | Tidak join/relasi PO↔PI di report | ETM-15673/15674 |
+| R-06 | Tidak relasi Account Payable Report | ETM-15673/15674 |
+| R-07 | Total Price exclude Other Cost & Other Disc | ETM-15673/15674 |
+| R-08 | Hyperlink Trx. Code ke edit PO / PI | ETM-15673/15674 |
+| R-09 | Company scope `owned_by` | Kode |
+| R-10 | Soft-deleted tidak tampil | Kode |
 
 ---
 
@@ -124,13 +114,13 @@ Supplier = group key (di export menjadi kolom flat).
 
 | Kolom | Purchase Order | Purchase Invoice |
 |-------|----------------|------------------|
-| Trx. Date | PO Transaction Date | PI Transaction Date |
-| Trx. Code | PO code | PI code |
-| SKU / Description / Qty / Unit | PO Detail | PI Detail |
-| DPP / VAT / Unit Price | PO Detail | PI Detail |
-| Total Price | PO Detail Total Price | PI line Invoice Total |
-| Status / Owner / Created | PO header | PI header |
-| Supplier | PO Supplier | PI Supplier |
+| Trx. Date | PO transaction date | PI transaction date |
+| Trx. Code | PO code → edit PO | PI code → edit supplier-invoice |
+| SKU / Qty / Unit / DPP / VAT / Unit Price | PO Detail | PI Detail |
+| Description | PO header | PI detail line |
+| Total Price | Line PO (product) | Line invoice total (product) |
+| Status | PO header | PI header |
+| Supplier | PO supplier | PI supplier |
 
 ---
 
@@ -138,10 +128,9 @@ Supplier = group key (di export menjadi kolom flat).
 
 | Mode | Behavior |
 |------|----------|
-| Export All | Sesuai filter aktif |
+| Export All | Async batch; filter aktif; terpisah per `select_menu` |
 | This Page Only | Halaman aktif |
-| Format | Flat rows + kolom Supplier; Total Tagihan running dipertahankan |
-| Columns | Ikuti Show/Hide user |
+| Progress / file list | Per tab (PO vs PI) |
 
 ---
 
@@ -151,25 +140,37 @@ Supplier = group key (di export menjadi kolom flat).
 - Campur PO+PI satu load  
 - AP aging / settlement  
 - Kolom linkage PO→PI atau PI→PO  
+- Bug summary Total Tagihan kanan atas vs global search (bukan bagian SOT ini)
 
 ---
 
-## 7. Acceptance Criteria
+## 7. Acceptance Criteria (AS-IS)
 
-- [ ] Menu Accounting → Report → Purchase Report + privilege
-- [ ] Blank sampai Type; Date default 30 hari
-- [ ] Switch PO/PI dataset benar; group Supplier + Total Tagihan Excel-accurate
-- [ ] All status; PO With+Without PR; currency as-is
-- [ ] Hyperlink; Search/Filter/Columns/Export
-- [ ] Tidak ada relasi AP atau PO↔PI
+- [x] Menu Accounting → Report → Purchase Report + privilege  
+- [x] Dual tab PO / PI; dataset terisolasi  
+- [x] Group Supplier + total di header group  
+- [x] All status; PO With+Without PR; currency as-is  
+- [x] Hyperlink; Search/Filter/Columns/Export per tab  
+- [x] Tidak ada relasi AP atau PO↔PI  
 
 ---
 
-## 8. Related Documents
+## 8. Gap Registry
+
+| ID | Ringkas | Status |
+|----|---------|--------|
+| GAP-PURREP-01 | Card: default 30 hari · FE: bulan berjalan | Open — docs ikuti FE |
+| GAP-PURREP-02 | Card: running Excel per row · FE/BE: line + sum header | Open — docs ikuti kode |
+
+---
+
+## 9. Related Documents
 
 | Doc | Path |
 |-----|------|
+| SoT | [../_meta/sot/accounting-purchase-report-source-of-truth.md](../_meta/sot/accounting-purchase-report-source-of-truth.md) |
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | Purchase Order | [../supplychain-purchase-order/](../supplychain-purchase-order/) |
 | Purchase Invoice | [../accounting-supplier-invoice/](../accounting-supplier-invoice/) |

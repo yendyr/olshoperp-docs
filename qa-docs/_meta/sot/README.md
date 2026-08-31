@@ -53,6 +53,7 @@ Disalin dari `~/Downloads` (file chat lama yang belum masuk repo). Fiscal Period
 | `supplychain-colli-type-source-of-truth.md` | supplychain-colli-type | 4/4 review |
 | `accounting-customer-invoice-source-of-truth.md` | accounting-customer-invoice | 5/5 review (split 2026-08-24) |
 | `accounting-opening-stock-source-of-truth.md` | accounting-opening-stock | 5/5 review (split 2026-08-31) |
+| `accounting-purchase-report-source-of-truth.md` | accounting-purchase-report | 5/5 review (split 2026-08-31) — ETM-15673/15674 AS-IS |
 | `supplychain-purchase-inbound-colli-v2-source-of-truth.md` | supplychain-new-purchase-inbound (+ mutation-inbound parity) | split 2026-08-14 — Colli v2 di BETA v2.4 |
 
 **Belum ada SOT di folder ini** untuk menu lain di manifest (mis. Trial Balance, dll.).

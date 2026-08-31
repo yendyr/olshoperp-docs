@@ -2,10 +2,10 @@
 doc_type: knowledge-base
 menu: accounting-purchase-report
 menu_name: "Purchase Report"
-version: 1.0
-last_updated: 2026-08-12
+version: 2.0
+last_updated: 2026-08-31
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 ---
 
@@ -13,12 +13,15 @@ audience: operator
 
 ## 1. Apa itu Purchase Report?
 
-Laporan pembelian **per SKU per supplier**. Satu menu, dua sudut pandang — pilih dulu **Purchase Order** atau **Purchase Invoice**. Data digroup per nama supplier, lengkap dengan akumulasi tagihan.
+Laporan pembelian **per SKU per supplier**. Satu menu, **dua tab**:
+
+- **Purchase Order** — isi dari dokumen PO  
+- **Purchase Invoice** — isi dari dokumen PI (faktur beli)
+
+Data digroup per nama supplier. Ini **bukan** laporan utang (Account Payable Report), dan **tidak** menghubungkan PO ke PI di dalam grid.
 
 **Path:** Accounting → Report → **Purchase Report**  
-**Route (rencana):** `/accounting/purchase-report`
-
-Ini **bukan** Account Payable Report (utang supplier). Juga tidak menghubungkan PO ke PI di dalam laporan.
+**Route:** `/accounting/purchase-report`
 
 ---
 
@@ -26,18 +29,21 @@ Ini **bukan** Account Payable Report (utang supplier). Juga tidak menghubungkan 
 
 ```mermaid
 flowchart TD
-  A[Buka Purchase Report] --> B[Pilih Type: PO atau PI]
-  B --> C[Cek / ubah rentang tanggal]
+  A[Buka Purchase Report] --> B[Tab PO aktif default]
+  B --> C[Cek / ubah filter tanggal]
   C --> D[Lihat grid per supplier]
-  D --> E[Filter / search / export bila perlu]
+  D --> E{Butuh data PI?}
+  E -->|Ya| F[Pindah tab Purchase Invoice]
+  E -->|Tidak| G[Filter / search / export]
+  F --> G
 ```
 
-**Keterangan langkah:**
+1. Buka menu — tab **Purchase Order** langsung menampilkan data (default filter tanggal = **bulan ini**).  
+2. Lihat group per supplier; total supplier ada di header group (kanan).  
+3. Butuh faktur beli → klik tab **Purchase Invoice** (data terpisah).  
+4. Filter, search, atau export sesuai kebutuhan.
 
-1. Saat pertama buka, tabel **kosong** sampai Type dipilih.
-2. Tanggal default **30 hari terakhir** — boleh diubah.
-3. Ganti Type = ganti seluruh data (PO tidak dicampur dengan PI).
-4. Nama supplier jadi header group; angka Total Tagihan mengikuti akumulasi di group.
+**Contoh:** Cari semua baris PO supplier LUKAS di bulan berjalan → tetap di tab Purchase Order, filter/search supplier atau kode `PO-…`. Untuk PI supplier yang sama → pindah tab Purchase Invoice.
 
 ---
 
@@ -47,50 +53,57 @@ flowchart TD
 |-------|----------------|
 | Trx. Code | Nomor PO/PI — klik untuk buka dokumen |
 | SKU / Qty / Unit | Baris barang |
-| Unit Price / Total Price | Harga baris (tanpa Other Cost/Disc) |
-| Total Tagihan | Akumulasi Total Price dalam supplier yang sama |
-| Currency | Sesuai transaksi (tidak dipaksa IDR) |
+| Unit Price / Total Price | Harga baris (tanpa Other Cost/Disc dokumen) |
+| Total Tagihan | Nilai line; jumlah supplier di **header group** |
+| Currency | Sesuai transaksi |
 | Trx. Status | Semua status ikut tampil |
 
 ---
 
 ## 4. Filter & export
 
-- **Search:** kode transaksi, SKU, supplier  
-- **Advanced Filter:** tanggal, type, kode, SKU, supplier, status  
-- **Export All** / **This Page Only** — kolom yang di-hide ikut tidak diexport  
+- **Search / Advanced Filter** — tanggal, kode, SKU, supplier, status, dll.  
+- **Export All** / **This Page** — terpisah per tab (PO vs PI punya daftar file export sendiri).  
+- Kolom yang di-hide mengikuti preferensi Columns.
 
 ---
 
-## 5. Troubleshooting
+## 5. Bisa / Tidak bisa
+
+| Bisa | Tidak bisa |
+|------|------------|
+| Lihat semua status PO/PI | Campur PO+PI dalam satu tabel |
+| PO With PR dan Without PR | Pakai report ini sebagai aging AP |
+| Hyperlink ke dokumen sumber | Mengedit transaksi dari report |
+| Export per tab | Menghubungkan kolom PI ke nomor PO di report ini |
+
+---
+
+## 6. Troubleshooting
 
 | Gejala | Solusi |
 |--------|--------|
-| Tabel kosong | Pilih **Type Transaction** dulu |
-| Data terlalu banyak / lambat | Persempit **Trx. Date** |
-| Cari PI di mode PO | Ganti Type ke Purchase Invoice |
-| Total Price beda dengan total dokumen | Other Cost/Disc sengaja tidak dihitung di report ini |
+| Tidak ketemu PI | Pastikan tab **Purchase Invoice** |
+| Data sepi | Longgarkan filter **Trx. Date** (default bulan berjalan) |
+| Total Price ≠ grand total dokumen | Other Cost/Disc sengaja tidak dihitung |
+| Export file tab salah | Cek export dari tab yang sama (PO/PI) |
 
 ---
 
-## 6. FAQ
+## 7. FAQ
 
 **Q: Kenapa tidak bisa lihat PO dan PI sekaligus?**  
-A: Sengaja satu POV per load agar jelas dan ringan.
+A: Sengaja — satu tab satu sumber supaya jelas dan tidak tercampur.
 
-**Q: Apakah termasuk PO With PR dan Without PR?**  
-A: Ya, keduanya.
+**Q: Default tanggal 30 hari?**  
+A: Di sistem sekarang defaultnya **bulan kalender berjalan**. Ubah lewat Advanced Filter bila perlu.
 
-**Q: Apakah ini laporan utang (AP)?**  
-A: Tidak.
+**Q: Draft PO ikut?**  
+A: Ya — semua status ikut, selama tidak soft-deleted.
 
 ---
 
-## Related Documents
+## 8. Referensi
 
-| Doc | Path |
-|-----|------|
-| Requirement | [requirement.md](./requirement.md) |
-| Technical | [technical.md](./technical.md) |
-| Purchase Order | [../supplychain-purchase-order/knowledge-base.md](../supplychain-purchase-order/knowledge-base.md) |
-| Purchase Invoice | [../accounting-supplier-invoice/knowledge-base.md](../accounting-supplier-invoice/knowledge-base.md) |
+- [requirement.md](./requirement.md) — aturan bisnis & gap  
+- [user-guide.md](./user-guide.md) — panduan singkat end-user  
