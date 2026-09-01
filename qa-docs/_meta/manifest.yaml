@@ -1810,10 +1810,10 @@ menus:
         status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
         status: pending
@@ -1823,7 +1823,10 @@ menus:
       backend:
         - Modules/Accounting/Http/Controllers/GeneralLedgerController.php
         - app/Helpers/Accounting/JournalReport.php
+        - app/Helpers/Accounting/JournalProcess.php
         - Modules/Accounting/Jobs/GeneralLedgerExportJob.php
+        - Modules/Accounting/Exports/GeneralLedgerExport.php
+        - Modules/Accounting/Entities/JournalStorePivot.php
         - Modules/Accounting/Routes/api.php
         - olshoperp-frontend/src/pages/Accounting/Report/GeneralLedger/**/*
       frontend: []

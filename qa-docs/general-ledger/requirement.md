@@ -2,16 +2,16 @@
 doc_type: requirement
 menu: general-ledger
 menu_name: "General Ledger Report"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-09-01
 owner: QA - Yemima
-status: draft
+status: review
 ---
 # General Ledger Report — Requirement Detail (AS-IS & TO-BE)
 
 **Modul:** Accounting  
-**Versi Dokumen:** 1.0  
-**Tanggal:** 19 Juni 2026  
+**Versi Dokumen:** 1.1  
+**Tanggal:** 1 September 2026  
 **Audience:** PM, QA, Support, Developer (Backend & Frontend)  
 **Scope:** UI General Ledger, Export Excel, helper `JournalReport`, relasi journal & COA
 
@@ -27,6 +27,7 @@ status: draft
 6. [Perbandingan AS-IS vs TO-BE](#6-perbandingan-as-is-vs-to-be)
 7. [Acceptance Criteria TO-BE](#7-acceptance-criteria-to-be)
 8. [Referensi File Codebase](#8-referensi-file-codebase)
+9. [Kolom Store — Aturan Bisnis & Gap Implementasi](#9-kolom-store--aturan-bisnis--gap-implementasi)
 
 ---
 
@@ -58,6 +59,7 @@ status: draft
 | **Policy** | `GeneralLedgerPolicy` — menu link `accounting/general-ledger` |
 | **Filter periode** | Advanced Filter (SearchBuilder) kolom `trx_date_formatted`, kondisi default: **bulan berjalan** (`startOfMonth` s/d `endOfMonth`) |
 | **Filter COA** | Opsional via SearchBuilder (`coa_formatted`, `coa_name_formatted`) — **tidak wajib** pilih COA sebelum load |
+| **Filter Store** | Kolom `store_formatted` — **Global Search** + **Advanced Filter** (SearchBuilder title **Store**); match `store_name` pada relasi `journal.stores` |
 | **Company scope** | `journal.owned_by = getCompany(true)` |
 | **Status transaksi** | Hanya `transaction_status = Approved` (`MainModel::TS_APPROVED`) |
 
@@ -92,6 +94,7 @@ Jika company punya COA "Current Profit/Loss", query utama di-**UNION** dengan ba
 |----------|-----------|-------------|---------|
 | **TRX. DATE** | `trx_date_formatted` | `accounting_journals.transaction_date` | Format `d-m-Y H:i:s` |
 | **TRX. CODE** | `code_formatted` | `accounting_journals.code` | Link ke `/journal/edit/{journal_id}` |
+| **STORE** | `store_formatted` | `journal.stores` → `store_name` via pivot `accounting_journal_store_pivots` | Jika pivot kosong: tampil `-`. Multi-store: teks dipotong 30 char + tooltip stacked |
 | **JOURNAL TYPE** | `type_formatted` (hidden) | `journals.transaction_reference_text` | Default: "Manual Entry Formatted" jika kosong |
 | **TRX. REF.** | `reference_formatted` | Polymorphic `transaction_reference` → `code` | Supplier Invoice, Payment, Customer Invoice, Stock Mutation, dll. |
 | **DESCRIPTION** | `description` | `accounting_journal_details.description` | |
@@ -163,16 +166,17 @@ Jika primary:
 | A | COA Code | `coa.code` |
 | B | COA Name | `coa.name` |
 | C | GL Trx. Code | `journal.code` |
-| D | Trx. Date | `journal.transaction_date` |
-| E | Journal Type | `transaction_reference_text` atau "Manual Journal Entry" |
-| F | Trx. Ref | `transaction_reference.code` |
-| G | Description | `journal_detail.description` |
-| H | Currency | `journal.currency.code` |
-| I | Foreign | `debit_foreign` atau `credit_foreign` |
-| J | Debit | `journal_detail.debit` |
-| K | Credit | `journal_detail.credit` |
-| L | Opening Balance | `JournalReport::getBeginningBalance(coa_id, start)` |
-| M | Ending Balance | `JournalReport::getEndingBalance(coa_id, start, end)` — jika COA class position = `Passiva`, dikali **-1** |
+| D | **Store** | Nama store dari `journal.stores`, join koma jika multi-store; `-` jika pivot kosong |
+| E | Trx. Date | `journal.transaction_date` |
+| F | Journal Type | `transaction_reference_text` atau "Manual Journal Entry" |
+| G | Trx. Ref | `transaction_reference.code` |
+| H | Description | `journal_detail.description` |
+| I | Currency | `journal.currency.code` |
+| J | Foreign | `debit_foreign` atau `credit_foreign` |
+| K | Debit | `journal_detail.debit` |
+| L | Credit | `journal_detail.credit` |
+| M | Opening Balance | `JournalReport::getBeginningBalance(coa_id, start)` |
+| N | Ending Balance | `JournalReport::getEndingBalance(coa_id, start, end)` — jika COA class position = `Passiva`, dikali **-1** |
 
 **Catatan export AS-IS:**
 
@@ -180,6 +184,35 @@ Jika primary:
 - Opening Balance & Ending Balance **sama** untuk semua baris dalam COA yang sama.
 - Ending Balance export menerapkan adjustment Passiva; Opening Balance **tidak**.
 - File legacy `GeneralLedgerExportAll.php` (grouped layout) ada di codebase tapi **bukan** path export aktif saat ini.
+- Kolom **Store** (D) ditambahkan per card **ETM-15666** — TC terkait: `TC-GL-001` s/d `TC-GL-004`.
+
+### 2.7 Kolom Store — Ringkasan AS-IS (ETM-15666)
+
+| Aspek | Perilaku AS-IS |
+|-------|----------------|
+| **Sumber data GL** | Bukan dari transaksi referensi langsung — dari **header journal** relasi `stores` (`accounting_journal_store_pivots`) |
+| **Satu journal, banyak store** | **Diperbolehkan** — pivot many-to-many; GL menampilkan nama digabung koma; tooltip berisi daftar per baris |
+| **Journal tanpa store** | Kolom Store = `-` — **normal** untuk transaksi yang memang tidak punya konteks store |
+| **Aturan bisnis (target)** | Jika transaksi referensi yang menerbitkan journal **memuat store**, store **harus** masuk header journal (pivot) agar muncul di GL |
+| **SO General vs Platform** | **Sama** untuk tampilan store di GL — keduanya mengisi pivot dari `sales_order.store_id` pada auto-journal SI/OB; perbedaan hanya sumber COA receivable (Company vs Store), bukan kolom GL |
+
+**Cross-reference menu (alur store → GL):**
+
+| Menu | Slug | Peran terhadap kolom Store GL |
+|------|------|-------------------------------|
+| Journal | `journal` | Input manual multiselect Store → pivot header |
+| Instant Settlement Upload | `accounting-settlement-upload` | Batch wajib store → SI/OB journal (pivot ✅); AR journal hanya saat **Approve** |
+| Customer Invoice | `accounting-customer-invoice` | Auto-journal SI dari SO → pivot dari `store_id` SO |
+| Customer Payment / Receive | `accounting-customer-payment` | Auto-journal AR — lihat **Gap §9** |
+| Credit Note | `accounting-credit-note` | Actor Store + pivot payment — lihat **Gap §9** |
+| Debit Note | `accounting-debit-note` | Actor bisa Store — lihat **Gap §9** |
+| Sales Return | `accounting-sales-return` | Auto-journal dari `platform_return.store_id` → pivot ✅ |
+
+**Settlement — Reject vs journal AR (klarifikasi):**
+
+- **Approve** batch settlement → generate Customer Payment (AR) → `customerPaymentAutoJournal` → journal AR terbit.
+- **Reject** → **tidak** generate AR → **tidak ada** journal AR (setara leg AR tidak jalan).
+- Journal SI/OB dari tahap upload **tetap ada** sebelum keputusan Approve/Reject; kolom Store pada baris SI/OB mengikuti pivot SO (bukan path AR).
 
 ---
 
@@ -285,6 +318,7 @@ erDiagram
 | `accounting_chart_of_account_classes` | Class name, **position** (Activa/Passiva) |
 | `accounting_current_profit_loss_histories` | Remap journal detail ke COA Current Profit/Loss |
 | `accounting_general_ledger_export_files` | Tracking async export |
+| `accounting_journal_store_pivots` | Pivot header journal ↔ store (sumber kolom Store GL) |
 | `gs_currencies` | Currency code journal & referensi |
 
 ### 4.3 Relasi yang Harus Diperhatikan
@@ -298,6 +332,7 @@ erDiagram
 | **CurrentProfitLossHistory** | Baris laba rugi berjalan tampil di COA Current Profit/Loss, bukan COA asli |
 | **Company scope (`owned_by`)** | Data terisolasi per company token |
 | **Soft delete** | Journal soft-deleted di-exclude via `whereNull(deleted_at)` |
+| **Journal → stores (pivot)** | Kolom/filter/export Store GL hanya sekuat data di `accounting_journal_store_pivots` |
 
 ### 4.4 Function & Helper yang Terlibat
 
@@ -477,6 +512,14 @@ UNTUK setiap journal_detail dalam COA (urut transaction_date ASC):
 - [ ] Foreign currency display tidak berubah
 - [ ] Primary currency debit/credit tidak double-convert
 
+### 7.4 Kolom Store (ETM-15666 — shipped AS-IS)
+
+- [ ] Kolom **STORE** tampil di datalist setelah TRX. CODE
+- [ ] Journal dengan pivot store menampilkan nama store; tanpa pivot menampilkan `-`
+- [ ] Multi-store per header: tampilan truncated + tooltip daftar lengkap
+- [ ] Global search dan Advanced Filter Store (`store_formatted`) memfilter via `journal.stores.store_name`
+- [ ] Export Excel kolom **Store** (D) sesuai pivot header journal
+
 ---
 
 ## 8. Referensi File Codebase
@@ -489,7 +532,9 @@ UNTUK setiap journal_detail dalam COA (urut transaction_date ASC):
 | `app/Helpers/Accounting/JournalReport.php` | Semua perhitungan saldo |
 | `Modules/Accounting/Jobs/GeneralLedgerExportJob.php` | Export async job |
 | `Modules/Accounting/Exports/GeneralLedgerExport.php` | Excel column mapping |
-| `Modules/Accounting/Entities/Journal.php` | Model journal header |
+| `Modules/Accounting/Entities/Journal.php` | Model journal header + relasi `stores` |
+| `Modules/Accounting/Entities/JournalStorePivot.php` | Pivot journal ↔ store |
+| `app/Helpers/Accounting/JournalProcess.php` | Auto-journal — penulisan pivot store per tipe transaksi |
 | `Modules/Accounting/Entities/JournalDetail.php` | Model journal detail |
 | `Modules/Accounting/Entities/ChartOfAccount.php` | Model COA |
 | `Modules/Accounting/Entities/ChartOfAccountClass.php` | Model COA class (position) |
@@ -514,7 +559,55 @@ UNTUK setiap journal_detail dalam COA (urut transaction_date ASC):
 | Trial Balance | Agregasi beginning/in-period/ending debit & credit per COA |
 | Balance Sheet | Position-aware balance via `chart_of_account_class` |
 | Cash Bank Reconciliation GL | Reuse `GeneralLedgerController` dengan flag reconciliation |
+| Journal | Sumber pivot store di header — lihat `journal/technical.md` |
+| Instant Settlement Upload | Alur SI/OB/AR batch — lihat `accounting-settlement-upload/requirement.md` |
 
 ---
 
-*Dokumen ini dibuat berdasarkan analisis codebase per 19 Juni 2026. Update dokumen ini setelah implementasi TO-BE selesai.*
+## 9. Kolom Store — Aturan Bisnis & Gap Implementasi
+
+### 9.1 Aturan bisnis (disepakati QA/PM)
+
+| Kondisi | Ekspektasi |
+|---------|------------|
+| Transaksi referensi **tidak** memuat store | Journal header boleh tanpa pivot → GL Store = `-` |
+| Transaksi referensi **memuat** store | Store **wajib** tercatat di header journal (`accounting_journal_store_pivots`) → muncul di kolom/filter/export GL |
+| Satu journal, banyak store | **Acceptable** — header journal mendukung multiselect store (manual) atau agregasi unik `store_id` (auto-journal SI/OB) |
+
+### 9.2 Auto-journal — penulisan pivot store (verifikasi codebase)
+
+| Sumber journal | Method (`JournalProcess`) | Store → `journal_store_pivots` |
+|----------------|---------------------------|--------------------------------|
+| Customer Invoice (dari SO) | `customerInvoiceAutoJournal` | ✅ Unik `sales_order.store_id` per baris |
+| Outbound / Stock mutation (dari SO) | Outbound auto-journal block | ✅ Unik `store_id` dari SO / platform return / failed ship |
+| Sales Return (platform) | `stockSalesReturnAutoJournal` | ✅ `platform_return.store_id` |
+| Manual Journal | `JournalController@store` / `@update` | ✅ Multiselect `store_id[]` |
+| Journal Import | Via `JournalController@store` | ✅ Jika kolom Store diisi |
+| Customer Payment / AR Receive | `customerPaymentAutoJournal` | ⚠️ **Gap** — store dipakai untuk COA/deskripsi, pivot **tidak** di-insert |
+| Credit Note (actor Store) | `creditNoteAutoJournal` | ⚠️ **Gap** — `payment_store_pivots` ada di payment, pivot journal **tidak** di-copy |
+| Debit Note (actor Store) | `debitNoteAutoJournal` | ⚠️ **Gap** — sama seperti CN |
+| Supplier Invoice / Payment, Opening Stock, dll. | Path umum | Tidak ada input store transaksional — GL Store = `-` (sesuai aturan) |
+
+**Catatan SO General vs Platform:** untuk SI/OB, keduanya mengambil `store_id` dari sales order — tidak ada branch khusus di penulisan pivot; perbedaan hanya pemilihan COA receivable saat AR/payment.
+
+### 9.3 Dampak gap ke GL
+
+| Gejala di GL | Penyebab |
+|--------------|----------|
+| Baris journal AR settlement (Approve) menampilkan Store `-` padahal batch punya store | `customerPaymentAutoJournal` belum insert pivot |
+| Baris journal Credit/Debit Note (actor Store) Store `-` | `creditNoteAutoJournal` / `debitNoteAutoJournal` belum insert pivot |
+| Baris SI/OB settlement Store terisi | Pivot sudah ditulis dari SO — **bukan** bug |
+
+### 9.4 Rekomendasi perbaikan (dev backlog)
+
+Setelah `Journal::create` pada path gap, insert pivot mengikuti pola SI/OB:
+
+- **AR Receive:** dari `payment_store_pivots` atau `actor_reference` Store / `store_id` payment.
+- **Credit Note:** dari `payment_store_pivots` atau actor Store.
+- **Debit Note:** dari actor Store (jika `actor_reference_class = Store`).
+
+Regression GL: setelah fix, baris journal terkait harus lolos `TC-GL-001` / `TC-GL-004` tanpa workaround filter.
+
+---
+
+*Dokumen v1.0 berdasarkan analisis codebase per 19 Juni 2026. v1.1 menambah kolom/filter/export Store (ETM-15666), cross-ref menu, dan gap pivot store per 1 September 2026.*
