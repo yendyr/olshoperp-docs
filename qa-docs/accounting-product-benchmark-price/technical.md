@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.3
-last_updated: 2026-08-11
+version: 1.4
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 related_docs:
@@ -17,6 +17,7 @@ related_docs:
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.4 | 2026-09-01 | QA - Yemima | TO-BE Product Bundle: job phases Bundle Sum / Highest Bundle Variant; gate ≠ BOM; GAP-BM-15 · ETM-15688 |
 | 1.3 | 2026-08-11 | QA - Yemima | TO-BE Manual COGS: schema, effective COGS, import/inline, job respects override (§3.4, §4.4, §5); GAP-BM-14 |
 | 1.2 | 2026-08-11 | QA - Yemima | AS-IS auto-approve uses without-VAT accessors; TO-BE Error Flag Below Benchmark COGS + FX primary (§6.5–§6.6); GAP-BM-13 |
 | 1.1 | 2026-07-09 | QA - Yemima | v1.1 source allowlist TO-BE; AS-IS code gap §4.3; pending items cross-ref §13 requirement |
@@ -43,6 +44,7 @@ flowchart TB
         MAN["Manual Calculate per row"]
         MANUAL["Manual COGS inline / import\n(TO-BE v1.3)"]
         JOB["ProductBenchmarkPriceJob"]
+        BND["Bundle Sum / Highest Bundle Variant\n(TO-BE v1.4)"]
         TBL["accounting_product_benchmark_prices\n(+ manual_cogs, manual_cogs_expiry)"]
         AUD["owen-it/auditing Audit"]
     end
@@ -59,8 +61,10 @@ flowchart TB
     OS --> JOB
     CMD --> JOB
     MAN --> JOB
+    JOB --> BND
     MANUAL --> TBL
     JOB --> TBL
+    BND --> TBL
     JOB --> AUD
     MANUAL --> AUD
     TBL --> SO
@@ -170,7 +174,7 @@ Also on `omni_sales_order_detail_randoms` and export temp `sales_order_data_temp
 
 **Schedule:** `app/Console/Kernel.php` — `daily()->at('00:00')->timezone('Asia/Jakarta')`
 
-### 4.2 `processProduct($product_id, ...)`
+### 4.2 `processProduct($product_id, ...)` — AS-IS
 
 ```
 if has variant children:
@@ -181,6 +185,28 @@ if has variant children:
 else:
     single: getBenchmarkPrice → updateOrCreate
 ```
+
+**AS-IS gap:** tidak ada cabang Product Bundle → header bundle jatuh ke `getBenchmarkPrice` (biasanya 0). Lihat **GAP-BM-15**.
+
+### 4.2b Job phases (TO-BE v1.4) — dependency order
+
+```
+1. Calculate non-bundle Single/Variant via getBenchmarkPrice (respect Manual)
+2. Resolve non-bundle random = MAX sibling effective (respect Manual)
+3. For each Product Bundle header (non-random):
+     if Manual active → skip
+     else SUM(effective_cogs(component) * qty) → description "Bundle Sum"
+4. For each Product Bundle random header:
+     if Manual active → skip
+     else MAX(sibling non-random header effective) → "Highest Bundle Variant"
+5. Parent ProductTree row = MAX(children exclude random) as today
+```
+
+**Gate:** hanya SKU **Product Bundle** (non-stockable header). **BOM / `is_bom` assembly** harus tetap path §4.2/`getBenchmarkPrice` — jangan pakai SUM bundle meski tabel struktur shared (`scm_bill_of_materials` / billOfMaterial relation).
+
+**Qty:** baca qty baris detail bundle; wajib `× qty` (bukan asumsi 1).
+
+**Komponen:** pakai **effective** B.COGS komponen (Manual/rumus/random inherit sudah final). Nested bundle sebagai detail: tidak didukung (selaras master).
 
 ### 4.3 `getBenchmarkPrice($product_id, $start30DaysAgo, $endToday)`
 
@@ -212,8 +238,20 @@ Filter PO **di-comment** di `ProductBenchmarkPriceJob.php` — semua inbound app
 Saat override aktif (`manual_cogs` set + not expired):
 
 - Jangan overwrite nilai **efektif** yang ditampilkan / di-snapshot konsumen dengan rumus
+- Berlaku juga untuk header Bundle (skip Bundle Sum / Highest Bundle Variant)
 - Boleh refresh calculated di kolom terpisah jika diimplementasi
 - Prefer jangan bump `updated_at` / COGS Last Updated user-facing hanya karena midnight job
+
+### 4.5 Description strings (TO-BE v1.4)
+
+| Condition | `description` |
+|-----------|---------------|
+| Tier 1 inbound | `Highest Price` |
+| Tier 2 inbound | `Last Inbound` |
+| No history | `No Inbound` |
+| Manual override | `Manual Input` |
+| Bundle SUM | `Bundle Sum` |
+| Bundle random header MAX | `Highest Bundle Variant` |
 
 ---
 
@@ -332,6 +370,7 @@ User input `each_price_before_vat` setelah approve masuk rantai yang sama.
 3. SO snapshot unchanged after master edit
 4. Auto-approve + GAP-BM-13 Error Flag
 5. **GAP-BM-14:** permanent / expiry EOD WIB / clear / import partial / Parent reject / job respects override / SO snapshot effective
+6. **GAP-BM-15:** Bundle Sum qty×cogs · Highest Bundle Variant · job phase order · Manual skip · BOM not gated as bundle · description labels
 
 ---
 
@@ -342,6 +381,7 @@ User input `each_price_before_vat` setelah approve masuk rantai yang sama.
 | Business rules & AC | [requirement.md](./requirement.md) |
 | Operator guide | [knowledge-base.md](./knowledge-base.md) |
 | Manual COGS | [requirement.md §3.5](./requirement.md#35-manual-cogs-override-to-be-v13) |
+| Product Bundle COGS | [requirement.md §3.6](./requirement.md#36-product-bundle-header-to-be-v14) |
 | SO auto-approve | [../sales-order-general/requirement.md §11](../sales-order-general/requirement.md#11-benchmark-cogs--price-before-vat-detail-order) |
 | Pending items | [requirement.md §13](./requirement.md#13-hal-yang-perlu-diperhatikan--pending-items) |
 

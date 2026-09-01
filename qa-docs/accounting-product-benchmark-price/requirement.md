@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.3
-last_updated: 2026-08-11
+version: 1.4
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
-aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product benchmark price, daily COGS, Manual COGS, Manual COGS Expiry]
+aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product benchmark price, daily COGS, Manual COGS, Manual COGS Expiry, Bundle Sum, Highest Bundle Variant, Product Bundle COGS]
 ---
 
 # Benchmark COGS — Requirement Documentation
@@ -15,9 +15,9 @@ aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product ben
 **UI route:** `/accounting/product-benchmark-price`  
 **API base:** `{VITE_API_URL}accounting/product-benchmark-price`  
 **Audience:** PM, Operations, QA, Support, Developer  
-**Status:** TO-BE v1.3 (**Manual COGS**) · Error Flag v1.2 · sumber data v1.1 · kode AS-IS divergen — lihat §12–§13  
-**PM source:** Notion Benchmark COGS v1.0 (27 Jan 2026) · Jira [ETM-7029](https://erpintegration.atlassian.net/browse/ETM-7029)  
-**Spreadsheet logic:** [Google Sheet](https://docs.google.com/spreadsheets/d/1c_eDle4g4E_IIp6d0wNpER6LIzugh1MBBYE1gxv28iU/edit?gid=2129708031#gid=2129708031)
+**Status:** TO-BE v1.4 (**Product Bundle COGS**) · Manual COGS v1.3 · Error Flag v1.2 · sumber data v1.1 · kode AS-IS divergen — lihat §12–§13  
+**PM source:** Notion Benchmark COGS v1.0 (27 Jan 2026) · Jira [ETM-7029](https://erpintegration.atlassian.net/browse/ETM-7029) · Improvement Bundle [ETM-15688](https://erpintegration.atlassian.net/browse/ETM-15688)  
+**Spreadsheet logic:** [Google Sheet](https://docs.google.com/spreadsheets/d/1c_eDle4g4E_IIp6d0wNpER6LIzugh1MBBYE1gxv28iU/edit?gid=2129708031#gid=2129708031) · ilustrasi Bundle: `Benchmark COGS Bundle.xlsx`
 
 ---
 
@@ -25,6 +25,7 @@ aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product ben
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.4 | 2026-09-01 | QA - Yemima | TO-BE **Product Bundle**: Bundle Sum / Highest Bundle Variant; qty × B.COGS; Manual override; Bundle ≠ BOM/rakitan; job order; GAP-BM-15; AC BM-22…; ETM-15688 |
 | 1.3 | 2026-08-11 | QA - Yemima | TO-BE **Manual COGS** + **Manual COGS Expiry** + import + audit (§2.3, §3.5, §4.2–§4.4, AC/TC, GAP-BM-14) |
 | 1.2 | 2026-08-11 | QA - Yemima | TO-BE Error Flag **Below Benchmark COGS** (`cogs-error`): icon, tooltip, filter, FX→primary, capture; §6.4–§6.5; GAP-BM-05 clarify + GAP-BM-13 |
 | 1.1 | 2026-07-09 | QA - Yemima | Perluasan sumber data (PO + Stock Addition + Opname IN + Opening Stock); before/after §2.2; pending items §13; relasi Stock Remapping |
@@ -36,7 +37,7 @@ aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product ben
 
 1. [Ringkasan Eksekutif](#1-ringkasan-eksekutif)
 2. [Before vs After (Requirement Comparison)](#2-before-vs-after-requirement-comparison)
-3. [Logika Perhitungan COGS Master](#3-logika-perhitungan-cogs-master) (+ [§3.5 Manual COGS](#35-manual-cogs-override-to-be-v13))
+3. [Logika Perhitungan COGS Master](#3-logika-perhitungan-cogs-master) (+ [§3.5 Manual](#35-manual-cogs-override-to-be-v13) · [§3.6 Bundle](#36-product-bundle-header-to-be-v14))
 4. [UI/UX — Menu Benchmark COGS](#4-uiux--menu-benchmark-cogs)
 5. [Audit Log (Calculate Log)](#5-audit-log-calculate-log)
 6. [Integrasi Sales Order (General & Platform)](#6-integrasi-sales-order-general--platform)
@@ -60,7 +61,7 @@ Nilai ini **bukan** moving average accounting inventory — melainkan **acuan op
 |----------|-----------|
 | **Stock Opname** | Default harga surplus (penambahan stok) jika user tidak input harga |
 | **Sales Order** | Kolom `benchmark_cogs` (snapshot) + validasi **Auto-Approval** vs harga jual |
-| **Operator / Finance** | Monitoring COGS per SKU + audit perubahan · **Manual COGS** override (TO-BE v1.3) |
+| **Operator / Finance** | Monitoring COGS per SKU + audit · **Manual COGS** (v1.3) · **Product Bundle** header COGS (v1.4) |
 
 ---
 
@@ -106,6 +107,21 @@ Nilai ini **bukan** moving average accounting inventory — melainkan **acuan op
 | Scope edit | — | **Single** + **Variant** only (Parent ditolak) |
 | Expiry kosong | — | Override **permanen** sampai Manual COGS di-clear |
 | Clear Manual COGS | — | Langsung kembali rumus + audit |
+
+### 2.4 Product Bundle header COGS (v1.3 → v1.4 TO-BE) — ETM-15688
+
+Header **Product Bundle** tidak stockable dan tidak punya jejak inbound SCM → path Highest/Last Inbound biasanya **0**. v1.4 menambah rumus khusus **hanya** untuk Product Bundle (bukan BOM/rakitan).
+
+| Aspek | Before (AS-IS / v1.3) | After (v1.4 TO-BE) |
+|-------|----------------------|-------------------|
+| Header bundle non-random | Diperlakukan seperti Single → sering `No Inbound` / 0 | **Σ (B.COGS komponen × qty)** — Description **`Bundle Sum`** |
+| Header bundle **random** | Tidak ada cabang khusus | **MAX** B.COGS sibling header non-random — **`Highest Bundle Variant`** |
+| Qty komponen | N/A | **Wajib** dikalikan |
+| Manual COGS di header bundle | (v1.3 Single/Variant) | Tetap boleh — **abaikan** SUM/sibling; Description **Manual Input** |
+| BOM / SKU rakitan (assembly) | Highest / Last Inbound per SKU | **Tidak berubah** — dilarang pakai Bundle Sum |
+| Job order | Parent/variant/random saja | Komponen final dulu → Bundle Sum → Highest Bundle Variant |
+
+Detail: [§3.6](#36-product-bundle-header-to-be-v14).
 
 ---
 
@@ -170,11 +186,16 @@ scm_stock_mutations (approved)
 | **Single** | Tidak ada history | **0** | `No Inbound` |
 | **Variant (child)** | Per variant | Sama seperti Single — **row sendiri** | Highest / Last Inbound / No Inbound |
 | **Parent** | Punya variant | **MAX** benchmark seluruh variant (**exclude** variant `-random`) | `Highest Price` atau `No Inbound` |
-| **Random variant** | Child dengan opsi random | **Inherit** nilai MAX parent (bukan hitung dari inbound random SKU) | Sama parent |
+| **Random variant** (non-bundle) | Child dengan opsi random | **Inherit** nilai MAX sibling/parent (bukan hitung dari inbound random SKU) | Sama parent |
+| **Product Bundle header** (non-random) | Flag Product Bundle · punya detail komponen stockable | **Σ (B.COGS efektif komponen × qty)** — **bukan** dari inbound header | **`Bundle Sum`** (TO-BE v1.4) |
+| **Product Bundle header** (random) | Variant random dari parent bundle | **MAX** B.COGS sibling header non-random — **tanpa** detail BOM | **`Highest Bundle Variant`** (TO-BE v1.4) |
+| **BOM / rakitan header & detail** | Assembly stockable | Sama Single/Variant (inbound / Manual) — **jangan** pakai rumus Bundle | Highest / Last Inbound / No Inbound / Manual Input |
 
-**Scheduled job:** `product-benchmark-price:calculate` setiap **00:00 WIB** → dispatch `ProductBenchmarkPriceJob` untuk semua parent/single.
+**Parent ProductTree** (termasuk parent yang punya child bundle): tetap **MAX** variant exclude random — nilai child yang sudah Bundle Sum ikut masuk MAX. Bukan rumus Bundle Sum tersendiri di baris Parent.
 
-**Manual Calculate:** icon sync per baris → hitung parent + variant terkait (partial scope).
+**Scheduled job:** `product-benchmark-price:calculate` setiap **00:00 WIB** → dispatch `ProductBenchmarkPriceJob` (urutan v1.4: lihat §3.6).
+
+**Manual Calculate:** icon sync per baris → hitung parent + variant terkait (partial scope); untuk bundle pastikan komponen sudah ter-hitung.
 
 ### 3.4 Penyimpanan master
 
@@ -214,7 +235,8 @@ effective_cogs =
 
 description =
   if using manual override then "Manual Input"
-  else ("Highest Price" | "Last Inbound" | "No Inbound")
+  else ("Highest Price" | "Last Inbound" | "No Inbound"
+        | "Bundle Sum" | "Highest Bundle Variant")
 ```
 
 | Rule | Detail |
@@ -223,7 +245,8 @@ description =
 | Expiry diisi (DD-MM-YYYY) | Berlaku sampai **23:59:59 Asia/Jakarta** tanggal itu; setelah itu kembali rumus |
 | Clear Manual COGS (null) | Langsung kembali rumus (tanpa tunggu expiry); recommended clear expiry bersama |
 | Nilai | Numeric; **boleh 0**; **tidak boleh negatif** |
-| Scope | **Single** + **Variant** only — Parent tidak editable / import row fail |
+| Scope | **Single** + **Variant** only (termasuk **header Product Bundle** yang bertipe itu) — Parent ProductTree tidak editable / import row fail |
+| Manual di header bundle | **Abaikan** Bundle Sum / Highest Bundle Variant; clear Manual → kembali rumus §3.6 |
 | Daily job | Jangan timpa COGS efektif saat override masih aktif (boleh update calculated di belakang layar jika disimpan terpisah) |
 | Snapshot SO | Capture **effective** COGS saat create/bind (recommended follow-up; pastikan setelah ship) |
 
@@ -238,7 +261,7 @@ description =
 
 #### Tooltips (approved copy)
 
-**Manual COGS:** Set a manual COGS to override the calculated value. While Manual COGS is filled and not expired, the **COGS** column shows this value and Description becomes **Manual Input**. Clear this field to return to the system formula (Highest Price / Last Inbound / No Inbound). Use **0** if you intentionally want COGS = 0. Negative values are not allowed.
+**Manual COGS:** Set a manual COGS to override the calculated value. While Manual COGS is filled and not expired, the **COGS** column shows this value and Description becomes **Manual Input**. Clear this field to return to the system formula (Highest Price / Last Inbound / No Inbound / Bundle Sum / Highest Bundle Variant). Use **0** if you intentionally want COGS = 0. Negative values are not allowed.
 
 **Manual COGS Expiry:** Optional. Format **DD-MM-YYYY** (valid until **23:59:59 Asia/Jakarta** that day). • **Filled:** Manual COGS applies until that date/time, then COGS returns to the system formula. • **Empty:** Manual COGS stays active **indefinitely** until you clear Manual COGS. Use this only when you want a time-limited override.
 
@@ -253,9 +276,63 @@ description =
 | Partial | Row valid commit; fail hanya di import log |
 | UX | Samakan standar import OlshopERP terbaru (progress, history, notifikasi) |
 
-**Out of scope v1:** Manual override pada Parent; ubah rumus 3-tier.
+**Out of scope v1.3:** Manual override pada Parent ProductTree; ubah rumus 3-tier non-bundle.
 
 Lihat **GAP-BM-14**.
+
+### 3.6 Product Bundle header (TO-BE v1.4) — ETM-15688
+
+#### Scope — Bundle vs BOM/rakitan (WAJIB)
+
+| | **Product Bundle** (in scope) | **BOM / rakitan / assembly** (out of scope rumus bundle) |
+|--|-------------------------------|----------------------------------------------------------|
+| Stockable header | **Tidak** | **Ya** |
+| SCM inbound / opname / addition | Header **tidak** ditransaksikan | Header & detail punya jejak harga |
+| Order (SO) | Boleh | Sesuai master |
+| Detail / komponen | Hanya SKU **stockable**; **nested bundle tidak didukung** | Boleh nested BOM (sub-assembly) per menu BOM |
+| Gate implementasi | Flag / tipe **Product Bundle** | Rumus Single/Variant biasa — **dilarang** Bundle Sum |
+
+Struktur tabel header–detail boleh shared dengan BOM di DB; **fungsi kalkulasi Bundle hanya jika Product Bundle**.
+
+#### Urutan job (dependency) — wajib
+
+1. Single / Variant **non-bundle** dari sumber transaksi (Highest → Last Inbound → 0).  
+2. Random **non-bundle** = MAX sibling (kecuali Manual aktif).  
+3. Header Bundle **non-random** = Bundle Sum (komponen sudah final).  
+4. Header Bundle **random** = Highest Bundle Variant.  
+5. Di tiap langkah: Manual COGS aktif → skip rumus SKU itu.
+
+#### Rumus
+
+```
+Bundle Sum (header non-random):
+  B.COGS(header) = Σ ( B.COGS_efektif(komponen_i) × qty_i )
+
+Highest Bundle Variant (header random):
+  B.COGS = MAX(B.COGS sibling header non-random dalam parent yang sama)
+  — tidak memakai baris detail komponen
+```
+
+| Label Description | Kapan |
+|-------------------|--------|
+| **Bundle Sum** | Hasil SUM di atas |
+| **Highest Bundle Variant** | Hasil MAX sibling header |
+| **Manual Input** | Manual COGS aktif di header |
+
+#### Contoh (dari Excel `Benchmark COGS Bundle.xlsx`)
+
+| Case | Hasil | Description |
+|------|-------|-------------|
+| Blue = 650k+50k+130k | **830.000** | Bundle Sum |
+| White sibling | **835.000** | Bundle Sum |
+| Random header | **MAX = 835.000** | Highest Bundle Variant |
+| Qty komponen = 2 @ 100k | kontribusi **200.000** | Bundle Sum |
+| Manual 900k di header Blue | **900.000** (abaikan SUM) | Manual Input |
+| Detail berisi keyboard-random 765k + … | SUM memakai B.COGS final random | Bundle Sum |
+
+Komponen **random** non-bundle di detail memakai B.COGS final setelah inherit sibling (§3.3), baru dikalikan qty.
+
+Lihat **GAP-BM-15**.
 
 ---
 
@@ -286,7 +363,7 @@ Lihat **GAP-BM-14**.
 | **COGS** | `benchmark_price_formatted` (efektif) | Nilai efektif — rumus **atau** Manual COGS jika override aktif |
 | **Manual COGS** | `manual_cogs` (TO-BE) | Inline edit; Single + Variant only |
 | **Manual COGS Expiry** | `manual_cogs_expiry` (TO-BE) | Opsional; DD-MM-YYYY; kosong = permanen |
-| **Description** | `description_formatted` | `Highest Price` / `Last Inbound` / `No Inbound` / **Manual Input** (TO-BE) |
+| **Description** | `description_formatted` | `Highest Price` / `Last Inbound` / `No Inbound` / **Manual Input** / **Bundle Sum** / **Highest Bundle Variant** (TO-BE v1.4) |
 | **COGS Last Updated** | `last_updated_formatted` | Timestamp update row benchmark (termasuk edit/import Manual) |
 | Action | sync | Manual calculate |
 
@@ -491,6 +568,13 @@ Detail: [accounting-opening-stock](../accounting-opening-stock/knowledge-base.md
 | BM-19 | Parent Manual COGS | Tidak editable; import row fail; partial OK |
 | BM-20 | Import 3 kolom | Blank Manual = clear; blank Expiry = permanent; log/notifikasi standar |
 | BM-21 | Job vs override | Daily calculate tidak menimpa COGS efektif saat override aktif |
+| BM-22 | Bundle Sum | Header Product Bundle non-random = Σ (B.COGS komponen × qty); Description **Bundle Sum** |
+| BM-23 | Qty BOM > 1 | Kontribusi = B.COGS × qty |
+| BM-24 | Komponen random di detail | Pakai B.COGS final komponen (setelah inherit) |
+| BM-25 | Highest Bundle Variant | Header bundle random = MAX sibling header; tanpa detail; Description **Highest Bundle Variant** |
+| BM-26 | Job order Bundle | Komponen (+ random non-bundle) selesai sebelum Bundle Sum / Highest Bundle Variant |
+| BM-27 | Manual di header bundle | Override aktif → Manual Input; clear → kembali Bundle Sum / Highest Bundle Variant |
+| BM-28 | BOM/rakitan | Header/detail assembly **tidak** memakai Bundle Sum / Highest Bundle Variant |
 
 ---
 
@@ -515,14 +599,15 @@ Detail: [accounting-opening-stock](../accounting-opening-stock/knowledge-base.md
 
 | Menu | Relasi |
 |------|--------|
-| [System Product](../system-product/requirement.md) | Sumber SKU; parent/variant/random structure |
-| [Sales Order General / Platform](../sales-order-general/requirement.md) | Kolom detail + auto-approve §11 |
-| [Random SKU](../random-sku/requirement.md) | Random variant inherit parent COGS di master; validasi SO khusus |
+| [System Product](../system-product/requirement.md) | Sumber SKU; parent/variant/random; **Product Bundle** flag & detail komponen |
+| [Bill of Material](../bill-of-material/requirement.md) | Rakitan/assembly — B.COGS per SKU sendiri; **bukan** Bundle Sum |
+| [Sales Order General / Platform](../sales-order-general/requirement.md) | Kolom detail + auto-approve; snapshot header bundle memakai nilai master (setelah v1.4 = Bundle Sum / …) |
+| [Random SKU](../random-sku/requirement.md) | Random non-bundle inherit sibling; bedakan dari **Highest Bundle Variant** (MAX header sibling) |
 | [Stock Opname](../supplychain-stock-opname/requirement.md) | Default price surplus · **sumber** opname IN (v1.1) |
 | [Stock Addition](../supplychain-adjustment-addition/requirement.md) | Manual addition · **sumber** benchmark (v1.1) |
 | [Opening Stock](../accounting-opening-stock/knowledge-base.md) | **Sumber** benchmark (v1.1) |
 | [Stock Remapping](../accounting-stock-remapping/requirement.md) | Addition auto dari Stock Remapping **bisa** masuk sumber benchmark v1.1 (unit price dari stock ID origin) — [P-SRM-16](../accounting-stock-remapping/requirement.md#153-relasi--loophole-operasional) |
-| [Product Bundle proporsi](../sales-order-general/requirement.md#10-product-bundle--proporsi-harga-price-before-vat) | HPP validation bundle vs parent benchmark |
+| [Product Bundle proporsi](../sales-order-general/requirement.md#10-product-bundle--proporsi-harga-price-before-vat) | HPP validation vs benchmark header/parent — nilai header master berubah setelah v1.4 |
 
 ---
 
@@ -554,6 +639,12 @@ Detail: [accounting-opening-stock](../accounting-opening-stock/knowledge-base.md
 | T-22 | Parent inline / import Manual | Not editable / row fail; partial success |
 | T-23 | Import blank Manual COGS | Clear override |
 | T-24 | Job midnight saat override aktif | COGS efektif tetap Manual |
+| T-25 | Bundle variant Blue/White/Random (Excel case 1) | 830k / 835k / 835k; Bundle Sum / Highest Bundle Variant |
+| T-26 | Bundle single + komponen random (case 2) | SUM memakai B.COGS final mouse-random |
+| T-27 | Detail bundle berisi random komponen (case 3) | SUM benar; random header = MAX sibling |
+| T-28 | Qty komponen = 2 | Kontribusi × 2 |
+| T-29 | Manual COGS di header bundle | Manual Input; clear → Bundle Sum |
+| T-30 | Header BOM/rakitan | Tetap Highest/Last Inbound — **bukan** Bundle Sum |
 
 ---
 
@@ -575,6 +666,7 @@ Detail: [accounting-opening-stock](../accounting-opening-stock/knowledge-base.md
 | **GAP-BM-12** | Allowlist 4 sumber (v1.1) | PO + Addition + Opname IN + Opening Stock | Filter PO di-comment; **belum** allowlist eksplisit; return/transfer ikut terhitung | **Pending implementasi** |
 | **GAP-BM-13** | Error Flag `cogs-error` UX + filter | Icon `money-bill-trend-down`, label/filter **Below Benchmark COGS**, tooltip 2 baris, header+detail SKU di 3 menu, capture/reinsert, samakan formula §6.4–§6.5 | AS-IS: `dollar-sign` + message lama; filter by label baru belum | **Open (TO-BE)** |
 | **GAP-BM-14** | Manual COGS override | §3.5 — kolom Manual COGS + Expiry, effective COGS, Description Manual Input, inline+import, audit, job respects override | AS-IS: read-only COGS rumus saja | **Open (TO-BE)** |
+| **GAP-BM-15** | Product Bundle header COGS | §3.6 — Bundle Sum / Highest Bundle Variant; qty × B.COGS; job order; Manual override; gate ≠ BOM/rakitan | AS-IS: tidak ada cabang `isBundle` → header sering 0 / No Inbound | **Open (TO-BE)** — ETM-15688 |
 
 ---
 
@@ -593,17 +685,19 @@ Item di bawah ini adalah **potensi loophole**, risiko operasional, atau pekerjaa
 | **P-05** | Parent description | Parent row selalu `Highest Price` meski nilai MAX berasal dari child `Last Inbound` | **Minor** — cosmetic |
 | **P-06** | Manual Calculate UX | Job async + `sleep(1)` — reload datalist tidak menjamin nilai terbaru | **UX gap** — operator perlu refresh manual |
 | **P-15** | Manual COGS (v1.3) | Override + expiry + import belum di kode | **Pending dev** — GAP-BM-14 |
+| **P-16** | Product Bundle COGS (v1.4) | Bundle Sum / Highest Bundle Variant + job order belum di kode | **Pending dev** — GAP-BM-15 · ETM-15688 |
 
 ### 13.2 Relasi ke menu lain
 
 | ID | Menu terkait | Deskripsi | Status / Tindakan |
 |----|--------------|-----------|---------------------|
 | **P-07** | Sales Order — auto-approve + Error Flag | TO-BE §6.4–§6.5 (Before VAT primary + Below Benchmark COGS); AS-IS belum penuh (GAP-BM-05 / GAP-BM-13) | **Open** — improve `cogs-error` |
-| **P-08** | Sales Order — bundle child | Validasi PM: komponen vs parent benchmark; kode: each line own `product_id` (GAP-BM-06) | **Gap** — lihat [sales-order-general §10.6](../sales-order-general/requirement.md#106-validasi-auto-approval-hpp--benchmark-cogs) |
+| **P-08** | Sales Order — bundle child | Validasi PM: komponen vs parent benchmark; kode: each line own `product_id` (GAP-BM-06) | **Gap** — lihat [sales-order-general §10.6](../sales-order-general/requirement.md#106-validasi-auto-approval-hpp--benchmark-cogs); setelah v1.4 nilai **header** master naik dari Bundle Sum — regresi SO |
 | **P-09** | Sales Order — random SKU | Line random sering `benchmark_cogs = 0` pre-bind; validasi under-benchmark tidak trigger | **Known** — [random-sku](../random-sku/requirement.md) |
 | **P-10** | Stock Opname | Dua arah: konsumen fallback harga **dan** sumber kalkulasi (v1.1) — operator perlu paham dampak input harga | **Catatan operasional** |
-| **P-11** | Opening Stock | Doc menu masih **pending** — relasi ke benchmark baru didokumentasikan di sini | **Pending doc** opening-stock requirement/technical |
+| **P-11** | Opening Stock | Relasi sumber benchmark v1.1 | Docs menu sudah `review` — verifikasi konsistensi saja |
 | **P-12** | SO export | `resolveBenchmarkCogs()` fallback ke live master jika snapshot 0 — bisa beda dari nilai saat order dibuat | **Edge case** export |
+| **P-17** | Bill of Material / Assembly | Pastikan gate job tidak menerapkan Bundle Sum ke Header BOM | **Catatan implementasi** — §3.6 |
 
 ### 13.3 Dead code & legacy
 
@@ -620,4 +714,6 @@ Item di bawah ini adalah **potensi loophole**, risiko operasional, atau pekerjaa
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
 | Sales Order integration | [../sales-order-general/requirement.md §11](../sales-order-general/requirement.md#11-benchmark-cogs--price-before-vat-detail-order) |
+| Card Improvement Bundle | [ETM-15688](https://erpintegration.atlassian.net/browse/ETM-15688) |

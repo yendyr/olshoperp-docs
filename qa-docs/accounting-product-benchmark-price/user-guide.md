@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.0
-last_updated: 2026-08-11
+version: 1.1
+last_updated: 2026-09-01
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.3
+source_version: 1.4
 owner: QA - Yemima
 status: review
 ---
@@ -28,6 +28,8 @@ Benchmark COGS menampilkan **harga pokok acuan** tiap System Product yang dihitu
 
 Ini **bukan** HPP di jurnal accounting. Ini acuan operasional supaya harga jual dan opname punya patokan yang sama.
 
+Untuk **paket Product Bundle** (tidak punya stok sendiri), acuan COGS digabung dari komponen resep paket *(fitur Bundle Sum — TO-BE)*.
+
 ---
 
 ## 2. Overview Flow & Proses Bisnis
@@ -35,7 +37,9 @@ Ini **bukan** HPP di jurnal accounting. Ini acuan operasional supaya harga jual 
 ```mermaid
 flowchart LR
     SRC[Transaksi masuk stok approved] --> JOB[Hitung harian 00:00 WIB]
+    COMP[COGS komponen] --> BND[Bundle Sum paket]
     JOB --> MENU[Menu Benchmark COGS]
+    BND --> MENU
     MANUAL[Manual COGS / Import] -.-> MENU
     MENU --> OP[Default harga Opname]
     MENU --> SO[Snapshot di Sales Order]
@@ -44,7 +48,7 @@ flowchart LR
 **Versi teks:**
 
 1. Barang masuk lewat PO inbound, Stock Addition, Opname surplus, atau Opening Stock (yang sudah disetujui).  
-2. Setiap hari jam **00:00 WIB** sistem menghitung ulang acuan COGS.  
+2. Setiap hari jam **00:00 WIB** sistem menghitung ulang acuan COGS (SKU biasa dulu, lalu paket Bundle dari komponen).  
 3. Kamu bisa trigger **Calculate** per baris, atau (setelah fitur live) set **Manual COGS** / import Excel.  
 4. Nilai di menu dipakai Opname (default surplus) dan tersimpan sebagai snapshot di detail Sales Order saat order dibuat.
 
@@ -58,8 +62,12 @@ flowchart LR
 | Tidak ada di 30 hari, tapi ada history lebih lama | Harga transaksi **terakhir** | **Last Inbound** |
 | Belum ada history valid | **0** | **No Inbound** |
 | **Manual COGS** terisi dan belum lewat expiry *(TO-BE)* | Nilai Manual | **Manual Input** |
+| Header **Product Bundle** (bukan random) *(TO-BE)* | Jumlah COGS komponen × qty | **Bundle Sum** |
+| Header Bundle **random** *(TO-BE)* | Tertinggi dari sibling header paket | **Highest Bundle Variant** |
 
-**Sumber transaksi rumus:** Purchase Inbound (PO), Stock Addition, Stock Opname IN, Opening Stock.
+**Sumber transaksi rumus (SKU stockable):** Purchase Inbound (PO), Stock Addition, Stock Opname IN, Opening Stock.
+
+**Bukan Bundle:** barang **rakitan / BOM** yang bisa distok tetap pakai Highest / Last Inbound — bukan Bundle Sum.
 
 ### Siklus update (bukan status draft/approve)
 
@@ -68,11 +76,13 @@ stateDiagram-v2
     [*] --> Formula: Job harian / Calculate
     Formula --> Manual: Isi Manual COGS
     Manual --> Formula: Clear Manual / expiry lewat
+    Formula --> BundleSum: Header paket dihitung dari komponen
 ```
 
 | Kondisi | Artinya | Bisa diubah manual? |
 |---------|---------|---------------------|
 | Hasil rumus | Sistem hitung dari transaksi masuk stok | Calculate ulang · Manual COGS *(TO-BE)* |
+| Bundle Sum / Highest Bundle Variant *(TO-BE)* | Sistem hitung dari komponen / sibling paket | Manual COGS di header paket *(TO-BE)* |
 | Manual Input *(TO-BE)* | Override aktif | Edit / clear Manual · Import |
 
 ---
@@ -80,7 +90,7 @@ stateDiagram-v2
 ## 3. Sebelum Mulai (Flow Sebelum)
 
 - [ ] Kamu punya akses menu **Benchmark COGS**.  
-- [ ] Produk sudah ada di System Product (Single / Parent / Variant).  
+- [ ] Produk sudah ada di System Product (Single / Parent / Variant / Bundle bila relevan).  
 - [ ] Kalau mau cek COGS per varian: siapkan toggle **Show Detail**.  
 - [ ] Untuk override manual *(setelah fitur live)*: siapkan nilai COGS dan (opsional) tanggal expiry **DD-MM-YYYY**.  
 - [ ] Untuk import massal *(TO-BE)*: siapkan Excel 3 kolom — **SKU Code**, **Manual COGS**, **Manual COGS Expiry**.
@@ -95,7 +105,8 @@ Setelah nilai COGS di menu ter-update:
 
 1. **Sales Order baru** menyimpan snapshot COGS saat baris dibuat — mengubah master **tidak** mengubah order lama.  
 2. **Stock Opname** surplus tanpa harga manual memakai nilai dari menu ini.  
-3. Order yang harga jualnya di bawah snapshot Benchmark bisa tampil flag **Below Benchmark COGS** dan tidak ikut auto-approve *(perbaikan flag sedang TO-BE)*.
+3. Order yang harga jualnya di bawah snapshot Benchmark bisa tampil flag **Below Benchmark COGS** dan tidak ikut auto-approve *(perbaikan flag sedang TO-BE)*.  
+4. Setelah Bundle Sum live, header paket di order baru akan membawa acuan dari jumlah komponen (bukan 0).
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -110,10 +121,12 @@ Kalau kamu … maka …
 - **Mengosongkan Manual COGS** → langsung kembali ke rumus, tanpa tunggu expiry.  
 - **Mengisi Manual COGS = 0** → diterima — artinya kamu sengaja set acuan 0.  
 - **Mengisi Manual COGS negatif** → sistem menolak.  
-- **Mengedit Manual di Parent** → tidak bisa; hanya **Single** dan **Variant**. Import baris Parent gagal; baris lain yang valid tetap masuk.  
+- **Mengedit Manual di Parent** → tidak bisa; hanya **Single** dan **Variant** (termasuk header paket). Import baris Parent gagal; baris lain yang valid tetap masuk.  
 - **Menunggu job harian saat Manual masih aktif** → kolom COGS efektif **tetap Manual** (sistem tidak menimpa override).  
 - **Mengubah COGS di menu setelah Sales Order dibuat** → angka Benchmark di order **tidak berubah** (sudah di-snapshot).  
-- **Opname surplus tanpa isi harga** → harga default = COGS menu ini; transaksi itu bisa ikut mempengaruhi hitungan berikutnya.
+- **Opname surplus tanpa isi harga** → harga default = COGS menu ini; transaksi itu bisa ikut mempengaruhi hitungan berikutnya.  
+- **Melihat header paket = 0 sebelum Bundle Sum live** → expected sementara; setelah rilis, cek komponen dulu.  
+- **Menyamakan paket Bundle dengan barang rakitan** → jangan; rakitan punya COGS sendiri dari stok masuk.
 
 ---
 
@@ -143,6 +156,13 @@ Kalau kamu … maka …
 5. Untuk kembali ke rumus: kosongkan Manual COGS.  
 6. Import massal: unduh template → isi 3 kolom → upload; baris gagal hanya di log import (partial success).
 
+### D. Membaca COGS paket Bundle *(TO-BE)*
+
+1. Cari header paket di datalist (Show Detail On jika paket punya variant).  
+2. Pastikan Description **Bundle Sum** atau **Highest Bundle Variant**.  
+3. Bandingkan dengan COGS komponen di resep paket jika angka terasa aneh.  
+4. Contoh: Blue 650rb + 50rb + 130rb = **830rb**; sibling White **835rb** → Random header paket **835rb**.
+
 🎬 [Interactive demo akan ditambahkan di sini]
 
 ---
@@ -150,7 +170,10 @@ Kalau kamu … maka …
 ## 7. Tips & Hal yang Sering Bikin Bingung
 
 **COGS = 0 dan Description No Inbound**  
-Belum ada transaksi masuk stok valid. Pastikan PO / Addition / Opname IN / Opening Stock sudah disetujui.
+Belum ada transaksi masuk stok valid (SKU biasa). Pastikan PO / Addition / Opname IN / Opening Stock sudah disetujui.
+
+**Header paket = 0**  
+Sebelum Bundle Sum live, ini umum. Setelah live: cek komponen sudah punya COGS, lalu Calculate / tunggu job harian.
 
 **COGS = 0 tapi Description Manual Input**  
 Kamu (atau import) set Manual = 0 dengan sengaja. Kosongkan Manual jika ingin rumus.
@@ -170,7 +193,7 @@ By design. Edit di Variant, atau biarkan Parent mengikuti MAX variant.
 |---------|--------|--------|----------------|
 | Override tetap | 15000 | (kosong) | 15000 · Manual Input |
 | Sampai akhir tahun | 0 | 31-12-2026 | 0 · Manual Input |
-| Kembali ke rumus | (dikosongkan) | — | Highest Price / Last Inbound / No Inbound |
+| Kembali ke rumus | (dikosongkan) | — | Highest Price / Last Inbound / No Inbound / Bundle Sum / … |
 
 **Order kena Below Benchmark COGS**  
 Harga jual sebelum pajak (setara mata uang utama) di bawah snapshot Benchmark di baris order. Naikkan harga atau approve manual.
@@ -188,4 +211,5 @@ Tidak. Ini acuan operasional saja.
 | SOP operator / troubleshooting | [knowledge-base.md](./knowledge-base.md) |
 | API, job, schema (developer) | [technical.md](./technical.md) |
 | Manual COGS detail | [requirement §3.5](./requirement.md#35-manual-cogs-override-to-be-v13) |
+| Product Bundle COGS | [requirement §3.6](./requirement.md#36-product-bundle-header-to-be-v14) |
 | Index menu | [README.md](./README.md) |
