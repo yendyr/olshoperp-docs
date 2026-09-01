@@ -2,8 +2,8 @@
 doc_type: technical
 menu: journal
 menu_name: "Journal"
-version: 1.1
-last_updated: 2026-07-15
+version: 1.2
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 aliases: [journal API, journal code, JournalProcess, GL journal]
@@ -253,10 +253,25 @@ Value 0 on source (e.g. PO unit price 0) flows to journal detail since SoT 1.1; 
 | ID | Issue |
 |----|-------|
 | GAP-JRN-01 | Historical header-only (pre 10 Jul 2026) backfill undecided — Open |
+| GAP-JRN-02 | AR/CN/DN auto-journal tidak insert `JournalStorePivot` — GL Store `-` — Open; lihat [requirement §8.1](./requirement.md#81-store-di-header-journal--general-ledger) & [GL §9](../general-ledger/requirement.md#9-kolom-store--aturan-bisnis--gap-implementasi) |
 | VERIFY | Skip-zero code vs SoT “always emit zero details” for all auto types |
 | VERIFY | Manual Rejected immutability vs any FE path that reopens |
 
 Full registry: [requirement §9](./requirement.md#9-gap-registry).
+
+---
+
+## 13. Store pivot & General Ledger
+
+| Layer | Detail |
+|-------|--------|
+| Pivot table | `accounting_journal_store_pivots` (`JournalStorePivot`) |
+| Manual | `JournalController@store` / `@update` — `store_id[]` multiselect → sync pivot |
+| Auto — OK | `customerInvoiceAutoJournal`, outbound block, `stockSalesReturnAutoJournal` → `JournalStorePivot::insert` |
+| Auto — gap | `customerPaymentAutoJournal`, `creditNoteAutoJournal`, `debitNoteAutoJournal` — store dipakai COA/deskripsi, **tanpa** pivot insert |
+| GL consumer | `GeneralLedgerController` — `journal.stores` → `store_formatted` / export kolom D |
+
+Business rule & matrix: [requirement §8.1](./requirement.md#81-store-di-header-journal--general-ledger) · [general-ledger/requirement §9](../general-ledger/requirement.md#9-kolom-store--aturan-bisnis--gap-implementasi).
 
 ---
 
@@ -266,4 +281,5 @@ Full registry: [requirement §9](./requirement.md#9-gap-registry).
 |-----|------|
 | Requirement | [requirement.md](./requirement.md) |
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
+| General Ledger | [../general-ledger/requirement.md](../general-ledger/requirement.md) |
 | API routes (suplemen) | `docs/api/accounting/routes.md` |

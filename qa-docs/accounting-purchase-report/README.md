@@ -5,9 +5,11 @@ Menu **Purchase Report** (Accounting → Report) — laporan pembelian per SKU p
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Feature Map | [feature-map.md](./feature-map.md) | PM, QA, Support | review |
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish / onboarding | review |
+| Capability cards | [capabilities/](./capabilities/) | Lingo / MenuDoc | review |
 
 **UI route:** `/accounting/purchase-report`  
 **SoT:** [`_meta/sot/accounting-purchase-report-source-of-truth.md`](../_meta/sot/accounting-purchase-report-source-of-truth.md) v1.0  
@@ -18,8 +20,9 @@ Menu **Purchase Report** (Accounting → Report) — laporan pembelian per SKU p
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0 | 2026-08-12 | Initial TO-BE (belum implementasi) |
+| 2.1 | 2026-09-01 12:55 | Feature Map v1.0 + 3 capability Lingo (dual tab, supplier group, export per tab); Help Center ditunda sesi terpisah |
 | 2.0 | 2026-08-31 17:00 | AS-IS dari ETM-15673/15674 + dual-tab shell; SOT + 5-file review |
+| 1.0 | 2026-08-12 | Initial TO-BE (belum implementasi) |
 
 ## Key notes (AS-IS)
 

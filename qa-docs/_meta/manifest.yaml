@@ -1816,7 +1816,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       - _legacy/old_general-ledger-requirement.md
     code_globs:

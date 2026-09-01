@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: journal
 menu_name: "Journal"
-version: 1.1
-last_updated: 2026-07-15
+version: 1.2
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 aliases: [journal, accounting journal, jurnal, GL journal, jurnal akuntansi]
@@ -26,6 +26,7 @@ Hanya journal **Approved** yang masuk laporan keuangan (GL, Trial Balance, Balan
 |---------|------|--------|---------|
 | 1.0 | 2026-05 | QA - Yemima | Initial — 13 tipe journal, import multi-currency, export advanced, auto-generate |
 | 1.1 | 2026-07-15 | QA - Yemima | SoT v1.1: auto-generate value 0 tetap terbit detail COA (bukan header-only); GAP-JRN-01 backfill historical |
+| 1.2 | 2026-09-01 | QA - Yemima | Store di header journal ↔ GL kolom Store; aturan pivot + gap AR/CN/DN (cross-ref [general-ledger §9](../general-ledger/requirement.md#9-kolom-store--aturan-bisnis--gap-implementasi)); GAP-JRN-02 |
 
 ---
 
@@ -106,7 +107,7 @@ Auto-generate by system: **langsung Approved**, skip Draft dan Open.
 |-------|--------|---------|--------|----------|
 | Transaction Code | Ya | Auto | — | Bisa diubah; unique |
 | Transaction Date | Ya | Now | — | Harus Fiscal Period aktif |
-| Store | Tidak | NULL | Store Platform & Others, Active | — |
+| Store | Tidak | NULL | Store Platform & Others, Active | **Multiselect** — disimpan ke `accounting_journal_store_pivots`; satu journal boleh multi-store; tampil di [General Ledger](../general-ledger/requirement.md) kolom Store |
 | Transaction Reference | Tidak | NULL | Freetext | — |
 | Currency | Ya | Primary | Master Currency Active | — |
 | Exchange Rate | Ya | 1 (disabled jika primary) | — | Editable jika foreign |
@@ -263,6 +264,28 @@ flowchart TB
 | Master COA / Currency / Fiscal Period / Store | Prasyarat & atribut journal |
 | SI, PI, Outbound, Stock Adj, AR, AP, Return, CN, DN, Assembly, PO Inbound | Penerbit auto-generate |
 | GL / TB / BS / P&L | Konsumen journal Approved |
+| [General Ledger](../general-ledger/) | Kolom **Store** = pivot header journal (`journal.stores`) — bukan field store transaksi referensi langsung |
+
+### 8.1 Store di header journal & General Ledger
+
+**Aturan bisnis (selaras GL):**
+
+| Kondisi | Ekspektasi |
+|---------|------------|
+| Transaksi referensi **tidak** memuat store | Header journal boleh tanpa pivot → GL Store = `-` |
+| Transaksi referensi **memuat** store | Store **wajib** masuk `accounting_journal_store_pivots` → muncul di GL |
+
+**Penulisan pivot — auto-generate (`JournalProcess`):**
+
+| Sumber journal | Pivot store |
+|----------------|-------------|
+| Sales Invoice, Outbound, Sales Return (platform) | ✅ |
+| Manual Journal, Import (kolom Store) | ✅ |
+| Account Receive (AR), Credit Note, Debit Note (actor Store) | ⚠️ **Gap** — lihat GAP-JRN-02 & [GL §9](../general-ledger/requirement.md#9-kolom-store--aturan-bisnis--gap-implementasi) |
+
+**Multi-store:** manual journal multiselect; auto-journal SI/OB dapat mengumpulkan beberapa `store_id` unik dari sales order → satu header, banyak baris pivot.
+
+**Settlement:** journal SI/OB dari upload biasanya sudah punya pivot dari SO; journal AR hanya saat **Approve** batch — Reject tidak menerbitkan journal AR.
 
 ---
 
@@ -271,6 +294,7 @@ flowchart TB
 | ID | Deskripsi | Dampak | Status |
 |----|-----------|--------|--------|
 | GAP-JRN-01 | Belum konfirmasi: journal auto-generate lama (header-only, sebelum 10 Jul 2026) di-backfill detail atau dibiarkan historical | Inkonsistensi data lama vs baru untuk laporan komparatif | **Open** |
+| GAP-JRN-02 | Auto-journal AR Receive, Credit Note, Debit Note (actor Store) belum insert `JournalStorePivot` meski transaksi punya store | Kolom Store GL = `-` padahal aturan bisnis mengharuskan pivot | **Open** — detail matrix [GL requirement §9](../general-ledger/requirement.md#92-auto-journal--penulisan-pivot-store-verifikasi-codebase) |
 
 ---
 
@@ -290,6 +314,9 @@ A: Total Debit harus sama Total Credit di keseluruhan journal.
 
 **Q: Import ditolak semua padahal 1 baris salah?**  
 A: All-or-Nothing — 1 error menolak seluruh file.
+
+**Q: Store di journal vs kolom Store di General Ledger?**  
+A: GL membaca store dari **header journal** (pivot). Isi Store saat create/edit manual journal, atau pastikan auto-journal menulis pivot — lihat §8.1.
 
 ---
 

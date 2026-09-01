@@ -172,5 +172,6 @@ flowchart LR
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
 | User Guide | [user-guide.md](./user-guide.md) |
+| Feature Map | [feature-map.md](./feature-map.md) |
 | Purchase Order | [../supplychain-purchase-order/](../supplychain-purchase-order/) |
 | Purchase Invoice | [../accounting-supplier-invoice/](../accounting-supplier-invoice/) |
