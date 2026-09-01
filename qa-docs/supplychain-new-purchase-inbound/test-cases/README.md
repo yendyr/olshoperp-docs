@@ -16,7 +16,14 @@
 | TC-PI-010 | Single Use — Max Inbound Qty = 0 | draft | ❌ | 2026-08-24 |
 | TC-PI-011 | Select Product — qty 0 → Save All | draft | ❌ | 2026-08-24 |
 | TC-PI-012 | Import Inbound — Validasi Campuran Baris Excel (Edge/Negative cases) | draft | ❌ | 2026-08-24 |
+<<<<<<< HEAD
 | `TC-PI-015.md` / TC-PI-015 | Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - BETA New Purchase Inbound | draft | ✅ | 2026-08-27 |
+=======
+| `TC-PI-DRAFT-20260827083404.md` / PENDING-20260827083404 | Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - BETA New Purchase Inbound | draft | ✅ | 2026-08-27 |
+| `TC-PI-DRAFT-20260828145501.md` / PENDING-20260828145501 | Retest ETM-15611: Validasi Impor Colli Campuran, Notifikasi UI, dan Keakuratan Log Error | draft | ❌ | 2026-08-28 |
+| `TC-PI-DRAFT-20260828145502.md` / PENDING-20260828145502 | Retest ETM-15611: Validasi Kelancaran Operasi Downstream (Bulk Delete & Approve) Pasca Impor | draft | ❌ | 2026-08-28 |
+| `TC-PI-DRAFT-20260830214701.md` / PENDING-20260830214701 | Hapus Transaksi Inbound dengan New Colli (Multisku Colli Datalist) | draft | ❌ | 2026-08-30 |
+>>>>>>> 0af2646 (update test case fitur colli multi-sku)
 
 **Card Colli V2:** [ETM-15528](https://erpintegration.atlassian.net/browse/ETM-15528) & [ETM-15610](https://erpintegration.atlassian.net/browse/ETM-15610) & [ETM-15611](https://erpintegration.atlassian.net/browse/ETM-15611) — DRAFT `TC-PI-002` s/d `…1831` dan `TC-PI-009` s/d `…03`, serta `TC-PI-012` (belum renumber).
 
