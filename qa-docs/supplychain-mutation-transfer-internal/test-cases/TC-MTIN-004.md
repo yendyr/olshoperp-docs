@@ -4,12 +4,12 @@ tc_code: TC-MTIN-004
 menu: supplychain-mutation-transfer-internal
 menu_name: "Transfer Internal"
 test_type: happy
-title: "Pembuatan Transfer Internal dengan Opsi Colli (Null, New, Existing)"
-summary: "Membuat detail Transfer Internal dengan opsi colli kosong, colli baru, dan colli existing dari lokasi origin."
+title: "BulkColliAction — Existing, New Colli, dan loose (null colli)"
+summary: "Flow 1/2a BETA: assign colli via toolbar bulk — dari colli origin, loose ke colli dest, dan loose tanpa colli; plus reset colli saat ganti lokasi."
 status: draft
-owner: QA - Cursor
-last_updated: 2026-08-24
-requirement_ref: "qa-docs/supplychain-mutation-transfer-internal/requirement.md"
+owner: QA - Yemima
+last_updated: 2026-09-01
+requirement_ref: "qa-docs/supplychain-mutation-transfer-internal/requirement.md §7.1, §7.2, V-TFI-10"
 automated: false
 automated_spec: null
 execution_company:
@@ -20,37 +20,38 @@ related_menus:
 preconditions:
   - "User login: playwright@gmail.com / 12345678."
   - "Company aktif: DEV-STG (id: 13)."
-  - "Dokumen Transfer Internal Colli V2 Draft/Open dengan Origin 'RAK-S-1-A-1' dan Destination 'Seruni DropOff'."
-  - "Stok telah disiapkan di lokasi asal RAK-S-1-A-1 via PO PO-6A8BF899 dan Inbound IN-5U843NDK."
+  - "Stok di RAK-S-1-A-1 via PO PO-6A8BF899 + Inbound IN-5U843NDK (Approved) — sama fixture TC-MTIN-003."
+  - "Dokumen BETA Draft/Open: Origin RAK-S-1-A-1, Destination header Seruni DropOff."
+  - "Minimal satu Colli Type Active (Default ON) untuk opsi New Colli."
 test_data:
   - field: "Item Transfer Setup"
     value: |
-      * Location Origin: RAK-S-1-A-1
-      * Location Destination: Seruni DropOff
-
-      | Item | SKU | Qty Transfer | Colli Origin | Colli Destination | Deskripsi Uji |
+      | Kasus | SKU | Qty | Colli Origin | Colli Destination | Flow requirement |
       | --- | --- | --- | --- | --- | --- |
-      | Item 1 | SKU-TFI01 | 15 | COL-6A8BFA70 | COL-6A8C0379 | Dari colli origin ke colli destination |
-      | Item 2 | SKU-TFI02 | 20 | - (Loose) | COL-6A8C0379 | Dari loose origin ke colli destination yang sama (multi-SKU) |
-      | Item 3 | SKU-TFI01 | 10 | - (Loose) | - (Loose) | Dari loose origin ke loose destination (null colli) |
+      | A | SKU-TFI01 | 15 | COL-6A8BFA70 | COL-6A8C0379 (Existing) | §7.2a assign ke colli existing |
+      | B | SKU-TFI02 | 20 | loose | COL-6A8C0379 (same dest) | §7.2a multi-SKU satu colli dest |
+      | C | SKU-TFI01 | 10 | loose | null (loose) | §7.1a tanpa colli |
 steps:
-  - "Buka edit dokumen Transfer Internal Colli V2."
-  - "Kasus A (Colli Existing ke Destination Colli): Pilih SKU-TFI01 (colli 'COL-6A8BFA70'), masukkan qty 15, set Colli Destination = 'COL-6A8C0379'."
-  - "Kasus B (Loose ke Destination Colli yang sama): Pilih SKU-TFI02 (loose), masukkan qty 20, set Colli Destination = 'COL-6A8C0379'."
-  - "Kasus C (Loose ke Loose/Null): Pilih SKU-TFI01 (loose), masukkan qty 10, biarkan Colli Destination kosong."
-  - "Klik tombol Save / Save All."
+  - "Buka edit dokumen BETA (new-mutation-transfer-internal)."
+  - "Kasus A — colli origin → Existing colli dest: Available Product → Use baris SKU-TFI01 COL-6A8BFA70; set qty 15; Save detail."
+  - "Centang baris Kasus A → toolbar BulkColliAction → Existing Colli → pilih COL-6A8C0379 (harus muncul di filter struktur WH origin; tidak boleh colli yang lokasinya persis sama dengan lokasi origin stock baris — requirement §7.1)."
+  - "Kasus B — loose → colli dest sama: Select Product SKU-TFI02 qty 20 (loose path); centang baris A+B → BulkColliAction → Existing Colli COL-6A8C0379 → Save."
+  - "Kasus C — loose → loose: Select Product SKU-TFI01 qty 10 dari stok loose; jangan assign colli destination."
+  - "Save All — verifikasi Group View: Colli Origin/Destination per kasus."
+  - "Sub-case V-TFI-10 (GAP-TFI-01): pada baris yang sudah punya Colli Destination, ubah Location Destination baris ke WH lain (beda lokasi colli) → Colli Destination harus NULL; assign ulang jika lokasi cocok."
 expected_result: |
-  - Item 1 tersimpan dengan Colli Origin = 'COL-6A8BFA70' dan Colli Destination = 'COL-6A8C0379'.
-  - Item 2 tersimpan dengan Colli Origin = null dan Colli Destination = 'COL-6A8C0379'.
-  - Item 3 tersimpan dengan Colli Origin = null dan Colli Destination = null.
-  - Detail item 1 dan item 2 berhasil digabungkan dalam satu kode colli tujuan (COL-6A8C0379) di sistem.
+  - Kasus A: Colli Origin COL-6A8BFA70, Colli Destination COL-6A8C0379, qty 15.
+  - Kasus B: Colli Origin null, Colli Destination COL-6A8C0379, qty 20 — multi-SKU dalam colli dest yang sama dengan A.
+  - Kasus C: Colli Origin dan Destination null, qty 10.
+  - BulkColliAction Existing tidak menampilkan colli code = origin baris terpilih (anti self — §7.1).
+  - Setelah ubah Location Destination sehingga ≠ lokasi colli dest: Colli Destination = NULL (requirement §7.1 / V-TFI-10). Jika sistem belum NULL → catat FAIL vs GAP-TFI-01.
 test_result:
   status: passed
   started_at: "2026-08-24T15:15:00+07:00"
   finished_at: "2026-08-24T16:13:45+07:00"
   executed_by: "QA Manual"
   environment: staging
-  log_summary: "PASS — Single use ditambahkan 1 per 1 untuk TFI-5U848VM3: Item 1 tanpa colli, Item 2 dimasukkan ke colli baru (generate COL-6A8C0379), Item 3 otomatis masuk ke COL-6A8C0379."
+  log_summary: "PASS (2026-08-24) TFI-5U848VM3 — sebelum revise steps pakai assign manual. Re-test wajib setelah align BulkColliAction + V-TFI-10."
   report_url: null
 test_data_used:
   - "TFI-5U848VM3"
@@ -58,21 +59,25 @@ run_history:
   - at: "2026-08-24"
     status: passed
     environment: staging
-    note: "PASS — TFI-5U848VM3 colli options saved correctly."
+    note: "PASS TFI-5U848VM3 — colli options (run lama, steps manual)."
+  - at: "2026-09-01"
+    status: revised
+    environment: staging
+    note: "Align requirement v2.0 §7 BulkColliAction + V-TFI-10 / GAP-TFI-01. Re-test required."
 origin_jira: ETM-15553
 first_execution:
   at: "2026-08-24"
   via: "legacy:test_result"
-  jira: "ETM-15553"
+  jira: ETM-15553
 last_execution:
-  at: "2026-08-24"
-  jira: "ETM-15553"
-  status: passed
-  via: "legacy:test_result"
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
-# TC-MTIN-DRAFT-20260824150650
+# TC-MTIN-004
 
 ## Catatan QA
 
-Verifikasi kelancaran penambahan item dengan ketiga opsi penentuan colli code.
+Downstream: TC-MTIN-006 recall fixture dari TC ini. Requirement §7.1 Flow New/loose, §7.2a Existing multi-SKU. Colli Type: sama PI (Active, Default ON).
