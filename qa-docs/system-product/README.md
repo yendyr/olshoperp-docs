@@ -12,7 +12,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 | Capability cards | [capabilities/](./capabilities/) | Semua | draft |
 
 **Help Center:** [`_meta/docs-hub/menus/system-product/`](../_meta/docs-hub/menus/system-product/)  
-**3 layer:** v2.3 · **User Guide:** v1.1 (`source_version` 2.2) · **Feature Map:** v1.0  
+**3 layer:** v2.4 · **User Guide:** v1.2 (`source_version` 2.4) · **Feature Map:** v1.0  
 **Maintenance owner:** QA — Yemima
 
 ---
@@ -21,6 +21,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-09-01 11:17 | 2.4 | Dokumentasi AS-IS **Product Image Sync** (API pull path by SKU, `is_synced`, setting Application Form, tombol datalist) — requirement §13.2, KB, technical §17, user-guide |
 | 2026-08-12 | 2.3b | Cross-ref MV: create+Default ON skips `random` inject (MV v1.2) |
 | 2026-08-12 | 2.3 | Default Variant create/import (`GAP-SP-17`) + expand soft-delete/leftover (`GAP-SP-18`); parent `-(PARENT)` |
 | 2026-08-12 | 2.2b | Cross-ref Master Variant Default (GAP-VAR-01) · placeholder konsumen create/import GAP-SP-17 |
@@ -53,6 +54,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 - **Bundle pricing (v2.1):** proporsi **Price Before VAT** — lihat requirement §11 + [sales-order-general §10](../sales-order-general/requirement.md#10-product-bundle--proporsi-harga-price-before-vat)
 - Import Excel **hanya** menu System Product full (max **5000** rows; **Import Product Images** max **1000**)
 - **Import Product Images (TO-BE):** GDrive public → replace **primary** only · GAP-SP-16
+- **Product Image Sync (AS-IS):** tombol datalist + API pull path · setting General Setting → Application · lihat requirement §13.2
 - **Default Variant (TO-BE):** Master Default ON → create/import `SKU-(PARENT)` + child; expand = soft-delete vs leftover · GAP-SP-17/18 · prasyarat MV: create Default ON **tanpa** inject `random` · [Master Variant](../supplychain-variant/)
 
 ---

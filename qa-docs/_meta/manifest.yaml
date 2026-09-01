@@ -3876,6 +3876,10 @@ menus:
     code_globs:
       backend:
         - Modules/SupplyChain/Http/Controllers/ProductController.php
+        - Modules/SupplyChain/Http/Controllers/ExternalProductController.php
+        - Modules/SupplyChain/Http/Controllers/ScmSettingController.php
+        - Modules/SupplyChain/Jobs/SyncProductImageJob.php
+        - Modules/SupplyChain/Entities/ScmSetting.php
         - Modules/SupplyChain/Http/Controllers/ProductGeneralConfigurationController.php
         - Modules/SupplyChain/Http/Controllers/ProductInventoryConfigurationController.php
         - Modules/SupplyChain/Http/Controllers/ProductSpecificationController.php
@@ -3887,6 +3891,8 @@ menus:
         - Modules/SupplyChain/Routes/api.php
       frontend:
         - olshoperp-frontend/src/pages/SCM/master/Product/**/*
+        - olshoperp-frontend/src/pages/SCM/Setting/components/ProductImageSyncSetting.vue
+        - olshoperp-frontend/src/pages/master/Application/Form.vue
         - olshoperp-frontend/src/utils/imports.ts
 
   gate-user:

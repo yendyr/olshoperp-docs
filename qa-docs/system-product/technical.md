@@ -2,8 +2,8 @@
 doc_type: technical
 menu: system-product
 menu_name: "System Product"
-version: 2.3
-last_updated: 2026-08-12
+version: 2.4
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # System Product — Technical Documentation
 
-> **2.3 (2026-08-12):** TO-BE Default Variant create/import (`GAP-SP-17`) + expand soft-delete/leftover (`GAP-SP-18`) — [requirement §6.3.1–§6.3.2](./requirement.md#631-to-be--default-variant-on-create--import-gap-sp-17); prasyarat [Master Variant technical](../supplychain-variant/technical.md).
+> **2.4 (2026-09-01):** AS-IS **Product Image Sync** — `SyncProductImageJob`, `ExternalProductController@sync`, `scm_settings`, `is_synced` — [requirement §13.2](./requirement.md#132-product-image-sync-as-is--api-pull).
 
 ## 1. Architecture Overview
 
@@ -36,7 +36,8 @@ Photos/video/detail merge via `ProductDetailController` / `ProductGeneralDetailC
 | File | Role |
 |------|------|
 | `olshoperp-frontend/src/pages/SCM/master/Product/DataList.vue` | List wrapper |
-| `olshoperp-frontend/src/pages/SCM/master/Product/components/DatalistProductComponent.vue` | Columns, import/export, bulk actions |
+| `olshoperp-frontend/src/pages/SCM/master/Product/components/DatalistProductComponent.vue` | Columns, import/export, bulk actions, **Sync Product Images** + status poll |
+| `olshoperp-frontend/src/pages/SCM/Setting/components/ProductImageSyncSetting.vue` | Config `product_sync_url` / `product_sync_api_key` (also embedded in Application Form) |
 | `olshoperp-frontend/src/pages/SCM/master/Product/Form.vue` | Create/edit shell |
 | `olshoperp-frontend/src/pages/SCM/master/Product/components/FormProductComponent.vue` | Main form (~5.5k lines): basic, unit, D&W modal, variant, bundle, shipping, tax |
 | `olshoperp-frontend/src/pages/SCM/master/Product/BundleProductForm.vue` | Bundle detail per variant accordion |
@@ -55,7 +56,11 @@ Photos/video/detail merge via `ProductDetailController` / `ProductGeneralDetailC
 
 | File | Role |
 |------|------|
-| `Modules/SupplyChain/Http/Controllers/ProductController.php` | CRUD, index datalist, select2, import, status, `checkTransaction()` |
+| `Modules/SupplyChain/Http/Controllers/ProductController.php` | CRUD, index datalist, select2, import, status, **`syncImages` / `syncImagesStatus`**, `checkTransaction()` |
+| `Modules/SupplyChain/Http/Controllers/ExternalProductController.php` | M2M **`sync`** / `index` / `show` — provider path gambar by SKU |
+| `Modules/SupplyChain/Http/Controllers/ScmSettingController.php` | PATCH `product_sync_url`, `product_sync_api_key` |
+| `Modules/SupplyChain/Jobs/SyncProductImageJob.php` | Pull path gambar chunk 100 SKU → `scm_product_*_images` |
+| `Modules/SupplyChain/Entities/ScmSetting.php` | Per-company SCM settings row |
 | `Modules/SupplyChain/Http/Controllers/ProductGeneralConfigurationController.php` | General mode wrapper |
 | `Modules/SupplyChain/Http/Controllers/ProductInventoryConfigurationController.php` | Inventory mode wrapper |
 | `Modules/SupplyChain/Http/Controllers/ProductSpecificationController.php` | Spec, variant columns, sales fields, barcode |
@@ -88,6 +93,10 @@ Prefix varies by mode; examples for **full** menu:
 | POST | `/api/supplychain/product/import-excel` | Import dispatch |
 | GET | `/api/supplychain/product/download-template` | New product template |
 | GET | `/api/supplychain/product/progress` | Import progress |
+| POST | `/api/supplychain/product/sync-images` | Queue `SyncProductImageJob` |
+| GET | `/api/supplychain/product/sync-images/status` | Cache status `product_image_sync_{companyId}` |
+| PATCH | `/api/supplychain/settings` | Field `product_sync_url` / `product_sync_api_key` |
+| POST | `/api/supplychain/external-products/sync` | M2M provider (ability `external-product:read`) — body `{ product_ids: string[] }` |
 
 Full route list: `docs/api/supply_chain/routes.md`
 
@@ -298,6 +307,7 @@ Fields affected:
 7. **Import:** 5001 rows rejected (standard imports)  
 8. **Import Product Images:** 1001 rows rejected; unpublic GDrive English error; duplicate SKU rows skipped; primary-only replace  
 9. **Inactive:** blockquote > 0 blocked  
+10. **Product Image Sync:** configure URL+key → job completes; `is_synced` rows match provider; manual images preserved; variant child merges `variant_images` by SKU
 
 ---
 
@@ -326,3 +336,78 @@ Distribusi harga bundle di **Sales Order** (bukan di System Product form):
 | Canonical BE | `SalesOrderDetailController::pickBundleChildren()` (OmniChannel) |
 
 Parent bundle: **no tax config** in SP UI when bundle toggle ON — tax resolved per BoM child at SO time.
+
+---
+
+## 17. Product Image Sync (API pull — AS-IS)
+
+Documented from codebase per 2026-09-01. Requirement: [§13.2](./requirement.md#132-product-image-sync-as-is--api-pull).
+
+### 17.1 Flow
+
+```
+[FE] Sync Product Images
+  → POST product/sync-images (auth:sanctum + company)
+  → SyncProductImageJob::dispatch(company_id) on queue platform_product
+  → chunk active Product owned_by company (100)
+  → HTTP POST product_sync_url + Bearer product_sync_api_key
+       body: { product_ids: [sku, ...] }
+  → merge response data.products[] into scm_product_images / scm_product_variant_images
+  → Cache status completed|failed
+[FE] poll GET product/sync-images/status every 2s
+```
+
+### 17.2 Provider contract (`ExternalProductController@sync`)
+
+- Route: `POST /api/supplychain/external-products/sync`
+- Middleware: `token.ability:external-product:read` (no `auth_verified`)
+- Lookup: `Product::withoutGlobalScopes()->whereIn('sku', product_ids)`
+- Response shape:
+
+```json
+{
+  "data": {
+    "products": [
+      {
+        "sku": "SKU-001",
+        "images": [{ "image_path": "production/uploads/product/img/..." }],
+        "variant_images": [{ "image_path": "...", "variant_sku": "SKU-001-RED" }]
+      }
+    ]
+  }
+}
+```
+
+- `resolveVariantOwner()` maps variant image rows to correct **variant SKU** within product family tree (avoids wrong child when option reused across products).
+
+Token bootstrap: `php artisan token:external-product` → machine user + permanent Sanctum token.
+
+### 17.3 Consumer merge (`SyncProductImageJob::syncProduct`)
+
+| Case | Model | Query scope |
+|------|-------|-------------|
+| Non-variant | `ProductImage` | `product_id = $product->id` |
+| Variant child | `ProductVariantImage` | parent id + variant_id + option_id |
+
+Only rows with **`is_synced = true`** participate in update/create/delete. Manual uploads remain `is_synced = false` (default on manual create) and are untouched.
+
+Display: `ProductImage::getImageBlobAttribute()` → `route('render-file', $path)` — consumer must resolve path on its storage.
+
+### 17.4 Settings schema
+
+Migration `2026_07_29_101247_create_scm_settings_table.php`:
+
+- `scm_settings.product_sync_url` (text, nullable)
+- `scm_settings.product_sync_api_key` (text, nullable)
+
+FE: `ProductImageSyncSetting.vue` → `GET/PATCH supplychain/settings`.
+
+### 17.5 Edge cases (QA)
+
+| Case | Behavior |
+|------|----------|
+| SKU missing in API response | Skip product (no error) |
+| Duplicate SKU globally on provider `sync()` | `keyBy('sku')` in job — last wins (ambiguous) |
+| One HTTP chunk fails | Entire job `failed` |
+| Horizon worker down | Stuck `queued` / no completion |
+| Shared storage absent | Paths copied but thumbnails 404 |

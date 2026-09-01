@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: system-product
 menu_name: "System Product"
-version: 1.1
-last_updated: 2026-08-11
+version: 1.2
+last_updated: 2026-09-01
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.2
+source_version: 2.4
 owner: QA - Yemima
 status: review
 ---
@@ -117,6 +117,16 @@ Setelah SKU tersimpan:
 2. Cek Accounting & Tax (hidden bila bundle).
 3. Simpan; verifikasi di datalist.
 
+### Langkah 5 — Sync Product Images (opsional, AS-IS)
+
+Gunakan bila company sudah dikonfigurasi **Product Image Sync** di General Setting → Application.
+
+1. Pastikan **Product Sync API URL** dan **API Key** sudah diisi admin.
+2. Di datalist System Product, klik **Sync Product Images** (butuh hak **create**).
+3. Tunggu sampai toast sukses (mis. *Synced N product(s)*). Jika gagal, cek pesan error (URL/key, atau worker queue).
+
+Gambar hasil sync ditandai di backend sebagai sync otomatis; foto yang pernah di-upload manual di form produk **tidak dihapus**.
+
 🎬 [Interactive demo akan ditambahkan di sini]
 
 ---
@@ -129,6 +139,7 @@ Setelah SKU tersimpan:
 - **Stok bundle:** ikut komponen paling sedikit.
 - **Import massal:** hanya di menu full — kebanyakan tipe max 5000 baris; **Import Product Images** max **1000**.
 - **Import Product Images:** isi **SKU Code** + link **Google Drive publik**; hanya mengganti foto **default**; SKU duplikat di file akan gagal (SKU unik tetap masuk).
+- **Sync Product Images:** tombol di datalist — tarik path foto dari API sumber by SKU; setting di General Setting → Application; butuh privilege create.
 - **Inactive:** hanya saat stok 0 semua gudang.
 
 ---

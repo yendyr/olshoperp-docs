@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.3
-last_updated: 2026-08-12
+version: 2.4
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
-aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant]
+aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant]
 ---
 
 # System Product — Requirement Documentation
@@ -34,6 +34,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 | 2.2b | 2026-08-12 | QA - Yemima | Cross-ref **Master Variant** Default (`GAP-VAR-01`); konsumen create/import SP masih pending (GAP-SP-17 placeholder) |
 | 2.3 | 2026-08-12 | QA - Yemima | §6.3.1–§6.3.2 Default create/import + expand soft-delete/leftover (`GAP-SP-17`/`GAP-SP-18`); parent `-(PARENT)`; no auto-rename |
 | 2.3b | 2026-08-12 | QA - Yemima | Cross-ref MV major: create+Default ON skips `random` inject (MV v1.2 / GAP-VAR-01) |
+| 2.4 | 2026-09-01 | QA - Yemima | §2.3 tombol **Sync Product Images** · §13.2 **Product Image Sync** (pull path via API eksternal, `is_synced`) · AC #14 |
 
 ---
 
@@ -119,6 +120,7 @@ Import history & bulk import **hanya** di menu full (`has_import_history = false
 | **Delete** | Blok jika: relasi BoM, interchange, PR/PO, inbound/outbound, platform binding; parent dengan variant; baris variant child |
 | **Bulk delete / unbind** | Privilege + selection |
 | **Import / Export** | Menu full only |
+| **Sync Product Images** | Privilege **create** (sama visibility dengan tombol Create) · tarik path gambar dari API eksternal — lihat §13.2 |
 | **Show deleted / archived** | Filter toggle |
 | **Platform binding** | Popover (menu terpisah) |
 
@@ -563,6 +565,78 @@ Logs: `import-log`, `import-history`.
 
 **Out of scope v1:** non-GDrive URL · multi-image per SKU · video · clear seluruh gallery · enforce dimensi.
 
+### 13.2 Product Image Sync (AS-IS — API pull)
+
+Fitur terpisah dari **Import Product Images** (§13.1). Menarik **path storage** gambar produk dari **API eksternal** (biasanya instance OlshopERP lain) ke company aktif. **Bukan** unduh/upload file binary; **bukan** sync marketplace (Omni `omni_product_sync_*`).
+
+**Konfigurasi (wajib sebelum sync):** General Setting → Application → **Product Image Sync Setting** (per company, tabel `scm_settings`):
+
+| Field | Rule |
+|-------|------|
+| **Product Sync API URL** | URL valid (`product_sync_url`) — target POST yang menerima body `{ product_ids: [sku, ...] }` |
+| **Product Sync API Key** | Bearer token (`product_sync_api_key`) — disimpan per company; UI password kosong setelah save |
+
+**Trigger UI:** datalist System Product full → tombol **Sync Product Images** (`DatalistProductComponent.vue`). Label loading: **Syncing...**
+
+**API (company context login):**
+
+| Method | Path | Handler |
+|--------|------|---------|
+| POST | `/api/supplychain/product/sync-images` | Queue job; error jika URL/key kosong: *Product sync URL and API key must be configured first.* |
+| GET | `/api/supplychain/product/sync-images/status` | Status dari cache: `queued` → `running` → `completed` \| `failed` + `message` |
+
+FE poll status setiap **2 detik** sampai `completed` atau `failed`; toast menampilkan `message`.
+
+**Eksekusi background:** `SyncProductImageJob` · queue **`platform_product`** · Horizon wajib jalan.
+
+| Step | Rule |
+|------|------|
+| Scope produk | Semua produk **active** (`status=true`) milik **company login** |
+| Chunk | **100 SKU** per request HTTP ke API eksternal |
+| Request body | `{ "product_ids": ["SKU-A", "SKU-B", ...] }` — identitas **SKU**, bukan numeric id |
+| Auth ke API eksternal | Header `Authorization: Bearer {product_sync_api_key}` |
+| Response expected | JSON `data.products[]` per SKU: `images[]` (`image_path`), opsional `variant_images[]` (`image_path`, `variant_sku`) |
+| SKU tidak ada di response | Produk **dilewati** (silent skip) |
+| HTTP error | Job **failed** seluruhnya (401/403 → pesan API key; 404/405 → URL invalid) |
+
+**Kontrak provider OlshopERP (referensi implementasi):** `POST /api/supplychain/external-products/sync` · Sanctum ability **`external-product:read`** · token global (`php artisan token:external-product`). Endpoint ini **read-only** — mengembalikan path gambar dari DB sumber by SKU.
+
+**Persist ke DB (consumer company):**
+
+| Tipe produk | Tabel | Scope row |
+|-------------|-------|-----------|
+| Single / parent / bundle header | `scm_product_images` | `product_id` = produk ini |
+| Variant child | `scm_product_variant_images` | `product_id` = **parent**, `variant_id` + `option_id` dari variant child |
+
+| Rule | Detail |
+|------|--------|
+| Flag **`is_synced=true`** | Hanya baris sync yang di-create/update/soft-delete oleh job |
+| Gambar upload manual | Baris **`is_synced=false`** **tidak** ikut query sync → **tidak ditimpa / tidak dihapus** |
+| Placeholder | Path mengandung `no-image`, `defaultimagessystemproduct`, `placeholder`, `img-not-found` → **diabaikan** |
+| Merge | URL baru → reuse row synced stale (update `image`) atau create baru; synced lama tidak ada di sumber → soft-delete |
+| Primary | Create sync set **`is_primary=false`** — tidak ada logic set primary otomatis dari sync |
+| Variant | Selain `images` parent, job merge `variant_images` where `variant_sku` = SKU variant child |
+
+**Prasyarat operasional (implikasi teknis):** path relatif (mis. `production/uploads/product/img/...`) ditampilkan lewat `render-file` di **environment consumer**. File fisik harus **terbaca** di storage consumer (typical: **shared bucket** antar env/company). Sync path saja **tanpa** shared storage → thumbnail bisa broken.
+
+**Bisa / tidak bisa:**
+
+| Bisa | Tidak bisa (AS-IS) |
+|------|---------------------|
+| Pull path multi-gambar per SKU dari API | Push gambar ke API eksternal |
+| Overwrite/hapus hanya baris `is_synced=true` | Menimpa gambar manual operator |
+| Sync parent + variant (via `variant_images`) | Sync produk **inactive** |
+| Konfigurasi berbeda per company | Sync terjadwal otomatis (hanya manual via tombol) |
+| Full scan semua produk aktif per klik | Resume per-chunk jika satu chunk HTTP gagal (seluruh job failed) |
+
+**Bedakan fitur gambar lain:**
+
+| Fitur | Metode |
+|-------|--------|
+| Upload manual (Product Details → Photos) | File binary → storage |
+| Import Product Images (§13.1 TO-BE) | Excel + GDrive → replace primary |
+| **Product Image Sync (§13.2 AS-IS)** | API pull path by SKU |
+
 ---
 
 ## 14. Validasi & Immutability
@@ -605,7 +679,8 @@ Logs: `import-log`, `import-history`.
 10. D&W Platform Default global — pilih di unit A uncheck unit B  
 11. Import new product max 5000 rows dengan progress bar  
 12. Foto max 10, video max 5 (format BE mp4/mov)  
-13. **Import Product Images:** GDrive public → replace primary only; duplicate SKU rows rejected; max 1000; partial success
+13. **Import Product Images:** GDrive public → replace primary only; duplicate SKU rows rejected; max 1000; partial success  
+14. **Product Image Sync:** URL+key terisi → tombol queue job → status `completed`; baris `is_synced=true` mengikuti response API; gambar manual (`is_synced=false`) tetap
 
 ---
 

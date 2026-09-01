@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.3
-last_updated: 2026-08-12
+version: 2.4
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 audience: operator
@@ -203,6 +203,40 @@ Kebanyakan tipe import: max **5000** baris. **Import Product Images**: max **100
 
 **Contoh:** SKU parent sudah 3 foto → setelah import sukses, foto utama berubah dari Drive; 2 foto lain masih ada.
 
+### Product Image Sync — tarik gambar dari API (AS-IS)
+
+Fitur **terpisah** dari Import Product Images dan upload manual. Dipakai saat company ingin **menyalin path foto** dari sistem/API sumber (mis. company produksi → company staging) tanpa upload satu per satu.
+
+**Persiapan (admin, sekali per company):**
+
+1. Buka **General Setting → Application → Product Image Sync Setting**.
+2. Isi **Product Sync API URL** (endpoint POST yang menerima daftar SKU).
+3. Isi **Product Sync API Key** (Bearer token) → **Save**. Field key akan kosong lagi setelah save (normal).
+
+**Jalankan sync (operator):**
+
+1. Buka datalist **System Product** (`/supplychain/product`).
+2. Klik **Sync Product Images** (tombol biru/hijau di samping Create — butuh privilege **create**).
+3. Tunggu label **Syncing...** selesai; toast menampilkan jumlah produk tersinkron atau pesan error.
+
+**Yang terjadi di belakang layar:**
+
+- Hanya produk **Active** di company login yang diproses.
+- Matching by **SKU** — SKU harus sama di sumber dan tujuan.
+- Yang disalin = **path file** di database, bukan unduh ulang dari Drive.
+- Foto yang pernah di-upload manual di form produk **tidak ikut dihapus** (hanya baris sync yang di-update).
+- Foto placeholder/default system **diabaikan**.
+
+**Bisa / tidak bisa:**
+
+| Bisa | Tidak bisa |
+|------|------------|
+| Tarik banyak gambar sekaligus (background job) | Jalan tanpa setting URL + API key |
+| Sync variant child (via `variant_sku` dari API) | Sync produk inactive |
+| Konfigurasi berbeda tiap company | Jadwal otomatis harian — hanya manual klik tombol |
+
+**Catatan QA:** thumbnail tampil benar hanya jika file gambar **ada di storage** yang dipakai company tujuan (biasanya bucket storage shared antar environment). Kalau path ada tapi file tidak ada → gambar broken.
+
 ---
 
 ## 9. Troubleshooting
@@ -220,6 +254,10 @@ Kebanyakan tipe import: max **5000** baris. **Import Product Images**: max **100
 | Import Product Images gagal — Drive | File Drive belum publik | Share → **Anyone with the link** (Viewer), lalu re-import |
 | Import Product Images — SKU skipped | SKU muncul berkali-kali di file | Sisakan **satu baris per SKU** |
 | Import Product Images — size | File gambar terlalu besar | Kompres di bawah **20 MB** |
+| Sync Product Images — error config | URL atau API key kosong | Isi di General Setting → Application → Product Image Sync Setting |
+| Sync Product Images — API key rejected | Token salah / expired | Minta token baru ke tim infra (ability `external-product:read`) |
+| Sync Product Images — thumbnail broken | Path tersalin tapi file tidak ada di storage company ini | Pastikan shared storage / file ada di path yang sama |
+| Sync Product Images — SKU tidak berubah | SKU tidak ada di response API sumber | Cek SKU active + cocok di sistem sumber |
 
 ---
 
@@ -238,7 +276,13 @@ A: Tidak. Inbound komponen satu per satu.
 A: Tidak. Hanya mengganti foto **default**. Foto lain di gallery tetap.
 
 **Q: Boleh pakai link Dropbox / S3?**  
-A: Tidak untuk v1 — hanya **Google Drive publik**.
+A: Tidak untuk Import Product Images v1 — hanya **Google Drive publik**. (Product Image Sync pakai API internal, bukan link Drive.)
+
+**Q: Beda Import Product Images vs Sync Product Images?**  
+A: **Import** = Excel + link GDrive → ganti foto default (TO-BE). **Sync** = tombol datalist → tarik path dari API eksternal by SKU (AS-IS, sudah ada di production codebase).
+
+**Q: Sync Product Images menghapus foto upload manual?**  
+A: **Tidak.** Hanya baris bertanda sync (`is_synced`) yang di-update/hapus oleh job.
 
 **Q: Beda Bundle vs BOM?**  
 A: Bundle = paket jual di SO (`is_bom=0`). BOM = resep produksi Assembly (`is_bom=1`, menu Bill of Material).
