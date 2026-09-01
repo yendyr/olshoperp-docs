@@ -2937,7 +2937,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       - docs/qa-docs/_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md
     code_globs:
