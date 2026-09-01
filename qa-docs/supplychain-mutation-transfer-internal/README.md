@@ -5,7 +5,7 @@
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | review |
 | Requirement | [requirement.md](./requirement.md) | review |
 | Technical | [technical.md](./technical.md) | review |
-| User Guide | [user-guide.md](./user-guide.md) | pending |
+| User Guide | [user-guide.md](./user-guide.md) | review |
 
 **Menu:** Transfer Internal · **Module:** SupplyChain
 
@@ -22,4 +22,5 @@
 
 | Date | Changes |
 |------|---------|
-| 2026-09-01 11:00 | Split dari SOT v1.0: legacy AS-IS + BETA Colli v2 (Flow New/Existing, FIFO fulfill-after, gap GAP-TFI-01..07); layer promoted ke review |
+| 2026-09-01 11:00 | Split dari SOT v1.0: legacy AS-IS + BETA Colli v2; layer promoted ke review |
+| 2026-09-01 11:15 | User guide v1.0 (legacy + BETA Colli) |
