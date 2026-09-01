@@ -2,176 +2,169 @@
 doc_type: technical
 menu: supplychain-mutation-transfer-internal
 menu_name: "Transfer Internal"
-version: 1.1
-last_updated: 2026-06-26
+version: 2.0
+last_updated: 2026-09-01
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
+  - ../_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md
 ---
 
 # Transfer Internal — Technical Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
-
-
 ## 1. Architecture Overview
 
-Semua menu stock mutation berbagi tabel header **`scm_stock_mutations`** (model `StockMutation`) dengan global scope `ignore_opname` (`is_opname != 1`). Menu ini memakai subclass **`StockMutationTransfer`** dengan filter query spesifik di controller index.
+Header **`scm_stock_mutations`** via `StockMutationTransfer` (`type = tf internal`, prefix `TFI`). Middle/detail internal: `TransferMutationMiddleDetail` + `multisku_colli_id` untuk Colli v2.
 
 ```mermaid
 flowchart TB
-    subgraph Frontend
-        FE["Vue pages"]
+    subgraph FE
+        LEG["Transfer/DataList.vue"]
+        BETA["TransferInternal/*"]
     end
     subgraph API
         CTL["StockMutationTransferController"]
-        API["supplychain/mutation-transfer"]
+        INT["TransferMutationMiddleDetailInternalController"]
     end
     subgraph Domain
-        ENT["StockMutationTransfer"]
+        MCS["MultiskuColliService"]
+        WH["WarehouseHelper getFulfillAfterFifo"]
         ISM["ItemStockMutation"]
     end
-    subgraph Data
-        DB[("scm_stock_mutations")]
-        STK[("scm_item_stocks")]
-    end
-    FE --> API --> CTL --> ENT
-    CTL --> ISM --> STK
-    ENT --> DB
+    FE --> CTL
+    FE --> INT
+    INT --> MCS
+    INT --> WH
+    CTL --> ISM
 ```
 
-**Approve flow:** POST `mutation-transfer/{id}/approve` → validasi semua detail punya `warehouse_destination_id` → `ItemStockMutation` transfer internal — kurangi origin, tambah destination.
+**Approve:** POST `mutation-transfer/{id}/approve` → validasi detail → `ItemStockMutation` transfer internal.
 
 ## 2. Frontend File Map
 
-**Root:** `olshoperp-frontend/src/pages/SCM/StockMutation/Transfer/`
+| Path | Route UI | Role |
+|------|----------|------|
+| `olshoperp-frontend/src/pages/SCM/StockMutation/Transfer/DataList.vue` | `mutation-transfer-internal` | Legacy datalist |
+| `Transfer/Form.vue`, `DatalistDetail.vue` | legacy edit | Header + detail |
+| `TransferInternal/DataList.vue` | `new-mutation-transfer-internal` | BETA datalist (`from_menu=new-transfer-internal`) |
+| `TransferInternal/Form.vue`, `DatalistDetail.vue` | BETA edit | + colli columns |
+| `TransferInternal/components/BulkColliAction.vue` | BETA | Existing/New colli toolbar |
+| `TransferInternal/components/AvailableWarehouse.vue` | BETA | Available Product + colli column |
 
-| File | Role | Key API |
-|------|------|---------|
-| `DataList.vue` | Index datalist | `GET supplychain/mutation-transfer` |
-| `Form.vue` | Create/edit header + tabs detail | `POST/PUT supplychain/mutation-transfer` |
-| `DatalistDetail.vue` | Grid detail PrimeVue | nested detail resource |
-| `DatalistLogApproval.vue` | Approval history | `GET .../log/approve` |
-| `ApprovalEligibility.vue` | Pre-approve checks | `GET .../approval-eligibility` |
-
-**Router:** `olshoperp-frontend/src/router/index.ts` — path `mutation-transfer-internal` under `/supplychain`.
+Router: `olshoperp-frontend/src/router/index.ts` — paths under `/supplychain/`.
 
 ## 3. Backend File Map
 
 | File | Role |
 |------|------|
-| `Modules/SupplyChain/Http/Controllers/StockMutationTransferController.php` | Header CRUD, approve, export |
-| `Modules/SupplyChain/Entities/StockMutationTransfer.php` | Eloquent subclass `StockMutation` |
-| `Modules/SupplyChain/Entities/StockMutation.php` | Base model, type constants |
-| `Modules/SupplyChain/Entities/StockMutationApproval.php` | Approval log rows |
-| `app/Helpers/SupplyChain/ItemStockMutation.php` | Core approve inbound/outbound/transfer |
-| `Modules/SupplyChain/Policies/StockMutationTransferPolicy.php` | Gate authorization |
-| `Modules/SupplyChain/Routes/api.php` | Route group `mutation-transfer` |
+| `StockMutationTransferController.php` | Header CRUD, approve, export, index filter |
+| `StockMutationTransferInternalController.php` | Internal-specific header ops |
+| `TransferMutationMiddleDetailInternalController.php` | Detail CRUD, Available Product Use, bulk colli, qty adjust |
+| `TransferMutationDetailController.php` | Shared detail patterns |
+| `MultiskuColliService.php` | assign, `fullTransferByColli`, `isFullTransfer`, promote/demote |
+| `TransferInternalImport.php` | Excel import (**v1 colli cols AS-IS**) |
+| `TransferInternalDetailImportJob.php` | Async import |
+| `StockMutationTransferInternalExportDetailJob.php` | Export with detail |
+| `WarehouseHelper.php` | `getFulfillAfterFifo`, `getFifoProduct` |
+| `ItemStockMutation.php` | Approve stock move |
+| `MultiskuColli.php`, `TransferMutationMiddleDetail.php` | Entities + `multisku_colli_id` |
 
-Controllers terkait: StockMutationTransferController, StockMutationTransferDetailController, StockMutationTransferInternalController.
+Policy: `StockMutationTransferPolicy.php`.
 
 ## 4. API Routes (utama)
 
-| Method | Path | Controller@method |
-|--------|------|-------------------|
-| GET | `supplychain/mutation-transfer` | index |
-| POST | `supplychain/mutation-transfer` | store |
-| GET | `supplychain/mutation-transfer/{id}` | show |
-| PUT | `supplychain/mutation-transfer/{id}` | update |
-| DELETE | `supplychain/mutation-transfer/{id}` | destroy |
-| POST | `supplychain/mutation-transfer/{id}/approve` | approve |
-| GET | `supplychain/mutation-transfer/{id}/audit` | audit |
-| GET | `supplychain/mutation-transfer/{id}/log/approve` | approval log |
-| GET | `supplychain/mutation-transfer/approval-eligibility/{id}` | eligibility |
-| GET | `supplychain/mutation-transfer/export-excel` | export all |
+| Method | Path | Notes |
+|--------|------|-------|
+| GET | `supplychain/mutation-transfer` | Index; `show_virtual`, `from_menu` |
+| POST/PUT/DELETE | `supplychain/mutation-transfer` | Header CRUD |
+| POST | `supplychain/mutation-transfer/{id}/approve` | Approve |
+| Nested | `.../transfer-internal-middle-detail` | Internal middle detail + colli endpoints |
+| POST | import upload routes | Max 500 rows |
+| GET | `export-excel`, `export-progress` | Export jobs |
 
-Detail nested: `supplychain/mutation-transfer/{id}/...-detail` — lihat `Modules/SupplyChain/Routes/api.php` untuk route lengkap.
+Detail nested routes: `Modules/SupplyChain/Routes/api.php`.
 
 ## 5. Database Schema
 
-### Header: `scm_stock_mutations`
+### Header `scm_stock_mutations`
 
-| Column | Relevansi menu ini |
-|--------|-------------------|
-| `code` | Prefix `TFI` via `generateCode()` |
-| `transaction_date` | Tanggal transaksi |
-| `warehouse_origin` / `warehouse_destination` | Sesuai tipe in/out/transfer |
-| `type` | `in` / `out` / `tf internal` / `tf external` |
-| `type_so` | Outbound: sales order type |
-| `transit_status` | External: `in transit` / `delivered` |
-| `transaction_status` | `open`, `approved`, `rejected`, ... |
-| `is_inventory_adjustment` | 0 mutation / 1 adjustment |
-| `process_type` | scrap, from void, picking, dll. |
-| `supplier_id` | Inbound PO only |
-| `transaction_reference_*` | Polymorphic link |
+| Column | TF Internal |
+|--------|-------------|
+| `code` | Prefix `TFI` |
+| `type` | `tf internal` |
+| `warehouse_origin` / `warehouse_destination` | Header WH |
+| `transaction_status` | draft, open, approved, rejected |
+| `process_type` | null manual; picking, failed ship, dll. auto |
+| `transaction_reference_*` | Polymorphic SO, WorkOrder, … |
 
-### Detail
+### Detail `scm_transfer_mutation_middle_details`
 
-`scm_transfer_mutation_details` (`TransferMutationDetail`)
+| Column | Notes |
+|--------|-------|
+| `item_stock_id` | Bound for Available Product path |
+| `warehouse_origin_id` / `warehouse_destination_id` | Per line |
+| `multisku_colli_id` | Colli v2 destination assignment |
+| `transfer_quantity` | Qty + unit FK |
 
-### Approval
+### Item Stock `scm_item_stocks`
 
-`scm_stock_mutation_approvals` — `scm_stock_mutations_id`, `approval_status`, `description`, `created_by`.
+`multisku_colli_id` — colli-bound stock excluded from loose FIFO.
 
-## 6. Jobs / Observers / Events
+## 6. Colli v2 — Implementation Notes
 
-| Job / Service | Dipakai untuk |
-|---------------|---------------|
-| Export jobs (`StockMutation*ExportJob`) | Async export list/detail |
-| Import jobs (`InboundDetailImportJob`, dll.) | Excel import detail |
-| `ItemStockMutation` | Sync stock update on approve |
-| `TransferExternalApproveMutationJob` | External transfer approve (jika transit) |
+| Behavior | Location |
+|----------|----------|
+| NULL colli on WH dest change | `TransferMutationMiddleDetailInternalController` ~updateAdjustQuantity, bulk colli store ~1068 |
+| Full colli transfer flag | `MultiskuColliService::fullTransferByColli`, promote/demote |
+| Select2 multisku colli | API filter — verify GAP-TFI-03 |
+| BETA vs legacy URL in audit | `MultiskuColliService::transactionUrl` — GAP-TFI-06 |
 
-## 7. Index query filter (AS-IS)
+**Invariants (code intent):** loose FIFO skips `multisku_colli_id NOT NULL`; Available Product binds explicit `item_stock_id`; 1 colli = 1 location post-approve.
+
+## 7. Index Query Filter (AS-IS)
 
 ```
-`type = tf internal` · `is_inventory_adjustment = 0` · `process_type` null (bukan scrap/void/failed ship)
+type = tf internal
+is_inventory_adjustment = 0
+process_type null (manual default) OR show_virtual / failed ship rules
 ```
 
 ## 8. Relasi Failed Ship & rantai fulfillment
 
-Transfer Internal adalah **ledger pusat** semua perpindahan stok antar gudang, termasuk rantai order fulfillment (virtual WH) dan dokumen **Failed Ship**.
+Index default **menyembunyikan** virtual WH dan `process_type` fulfillment — toggle **Show Virtual** (`show_virtual=true`).
 
-### 8.1 Kenapa fulfillment tidak tampil di datalist default
+| Urutan | process_type | Prefix | Origin → Dest |
+|--------|--------------|--------|---------------|
+| 0 | in wave | TFI virtual | Rack → Rack-Waves |
+| 1 | picking | PL | Rack → Outrack |
+| 2 | checking | CL | Outrack → virtual Checking |
+| 3 | packing | PK | virtual Checking → virtual Packing |
+| 4 | shipping | SL | virtual Packing → virtual Collected |
+| 5 | shipping do | TFI | virtual Collected → WH 3PL |
+| 6 | failed ship | FS | WH 3PL → restock/lost/scrap |
 
-Index `StockMutationTransferController@index` (dipakai menu ini) secara default:
+**Doc FS:** [supplychain-failed-ship/technical.md §11](../supplychain-failed-ship/technical.md#11-cross-menu--pergerakan-stok--dokumen-terkait)
 
-- `whereNull('process_type')` — hanya TF manual umum (prefix TFI tanpa proses Omni)
-- Exclude virtual WH kecuali `show_virtual=true`
-- Exclude `process_type = failed ship` (kecuali baris FS dengan restock qty > 0)
+## 9. Jobs / Export / Import
 
-**Operator / QA:** aktifkan toggle **Show Virtual** di `Transfer/DataList.vue` (`show_virtual_data` → query param `show_virtual`) untuk melihat pergerakan transaksional order.
+| Component | Purpose |
+|-----------|---------|
+| `StockMutationTransferInternalExportDetailJob` | Async export with detail |
+| `TransferInternalDetailImportJob` | Async import |
+| `TransferInternalImport` | Row validation — **v1 colli×qty AS-IS** |
 
-### 8.2 Rantai `process_type` satu order (menu terkait)
+FE export options: `EXPORT_OPTIONS_WITH_AND_WITHOUT_DETAILS`.
 
-| Urutan | `process_type` | Prefix | Menu approve | Origin → Destination |
-|--------|----------------|--------|--------------|----------------------|
-| 0 | `in wave` | TFI (virtual) | — (tidak di-approve) | Rack → Rack-Waves |
-| 1 | `picking` | PL | [Picking Process](../omni-picking-process/requirement.md) | Rack → Outrack |
-| 2 | `checking` | CL | [Checking Process](../omni-checking-process/requirement.md) | Outrack → virtual Checking |
-| 3 | `packing` | PK | [Packing Process](../omni-packing-process/requirement.md) | virtual Checking → virtual Packing |
-| 4 | `shipping` | SL | Collecting (pra-DO) | virtual Packing → virtual Collected |
-| 5 | `shipping do` | TFI | [Delivery Order](../supplychain-delivery-order/technical.md) approve | virtual Collected → **WH 3PL** |
-| 6 | `failed ship` | FS | [Failed Ship](../supplychain-failed-ship/requirement.md) approve | WH 3PL → Location / lost / scrap |
+## 10. Known Technical Gaps
 
-Semua baris TF order memakai `transaction_reference_id` = SO atau `SalesOrderDetail` (tergantung tahap).
-
-### 8.3 Failed Ship di TF Internal
-
-| Aspek | Detail |
-|-------|--------|
-| Header FS | `process_type = failed ship`, `transaction_reference` = Sales Order |
-| Approve FS | `ItemStockMutation::approveTransfer` — restock dari 3PL; child `lost` / `scrap` |
-| Filter index | FS tidak muncul di datalist manual default — buka dari menu Failed Ship atau filter virtual + process type |
-
-**Doc utama FS:** [supplychain-failed-ship/technical.md §11](../supplychain-failed-ship/technical.md#11-cross-menu--pergerakan-stok--dokumen-terkait)
+Sync dengan requirement §9 GAP-TFI-01..07 — prioritas Major: location→colli NULL universal; import colli v2 single column.
 
 ## Related Documents
 
 | Doc | Path |
 |-----|------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Requirement | [requirement.md](./requirement.md) |
-| Mermaid style | [../_meta/MERMAID_STYLE_GUIDE.md](../_meta/MERMAID_STYLE_GUIDE.md) |
+| SOT | [../_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md](../_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md) |
+| PI Colli v2 SOT | [../_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md](../_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md) |

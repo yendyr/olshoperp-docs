@@ -2923,31 +2923,38 @@ menus:
     module: SupplyChain
     menu_links:
       - supplychain/mutation-transfer-internal
+      - supplychain/new-mutation-transfer-internal
     owner: QA - Yemima
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
         status: pending
     legacy_sources:
-      []
+      - docs/qa-docs/_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md
     code_globs:
       backend:
         - Modules/SupplyChain/Http/Controllers/StockMutationTransferController.php
         - Modules/SupplyChain/Http/Controllers/StockMutationTransferDetailController.php
         - Modules/SupplyChain/Http/Controllers/StockMutationTransferInternalController.php
+        - Modules/SupplyChain/Http/Controllers/TransferMutationMiddleDetailInternalController.php
+        - Modules/SupplyChain/Services/MultiskuColliService.php
+        - Modules/SupplyChain/Import/TransferInternalImport.php
         - Modules/SupplyChain/Entities/StockMutationTransfer.php
+        - Modules/SupplyChain/Entities/MultiskuColli.php
         - Modules/SupplyChain/Routes/api.php
+        - app/Helpers/SupplyChain/WarehouseHelper.php
+      frontend:
         - olshoperp-frontend/src/pages/SCM/StockMutation/Transfer/**/*
-      frontend: []
+        - olshoperp-frontend/src/pages/SCM/StockMutation/TransferInternal/**/*
 
   supplychain-mutation-transfer-scrap:
     menu_name: "Transfer Broken"

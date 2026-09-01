@@ -2,20 +2,28 @@
 doc_type: requirement
 menu: supplychain-mutation-transfer-internal
 menu_name: "Transfer Internal"
-version: 1.2
-last_updated: 2026-07-05
+version: 2.0
+last_updated: 2026-09-01
 owner: QA - Yemima
-status: draft
+status: review
+aliases: [TFI, transfer internal, colli v2 TF, mutation-transfer-internal]
 ---
 
 # Transfer Internal — Requirement Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
-
-
 **Modul:** SupplyChain  
 **Audience:** PM, Operations, QA, Support, Developer  
-**Status:** Sesuai perilaku sistem saat ini (AS-IS)
+**Prefix:** `TFI` · API `mutation-transfer` · `type = tf internal`
+
+| UI | Route | Colli v2 |
+|----|-------|----------|
+| **Legacy** | `/supplychain/mutation-transfer-internal` | Tidak |
+| **BETA** | `/supplychain/new-mutation-transfer-internal` | Ya — Multisku Colli |
+
+**SOT:** [supplychain-mutation-transfer-internal-source-of-truth.md](../_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md) v1.0  
+**Colli master:** [PI Colli v2 SOT](../_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md) · [Colli Type](../supplychain-colli-type/requirement.md)
+
+**Colli ID v1** (Colli × Colli Qty) **takedown** — canonical Colli v2 only.
 
 ---
 
@@ -23,161 +31,268 @@ status: draft
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
-| 1.1 | 2026-07-04 | QA - Yemima | Cross-reference Relasi Assembly + Master Unit |
-| 1.2 | 2026-07-05 | QA - Yemima | Relasi Manual Picking List (TF_INTERNAL auto-approve) |
+| 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase |
+| 1.1 | 2026-07-04 | QA - Yemima | Cross-ref Assembly + Master Unit |
+| 1.2 | 2026-07-05 | QA - Yemima | Relasi Manual Picking List |
+| 2.0 | 2026-09-01 | QA - Yemima | SOT split: legacy AS-IS lengkap + BETA Colli v2 Flow 1/2; FIFO fulfill-after; import TO-BE; GAP-TFI-01..07 |
 
 ## 1. Ringkasan Eksekutif
 
-Perpindahan stok antar lokasi/gudang dalam satu company. UI route `mutation-transfer-internal`, API resource `mutation-transfer`. `type = tf internal`, kode prefix `TFI`. Kode transaksi prefix **`TFI`**. Filter datalist: `type = tf internal` · `is_inventory_adjustment = 0` · `process_type` null (bukan scrap/void/failed ship).
+Transfer Internal memindahkan stok antar lokasi **dalam satu gedung** (struktur WH origin = destination header). Selain input manual, TFI auto-generate dari Assembly, SO fulfillment, Failed Ship, dll. — kolom **Trx. Ref**; virtual WH via **Show Virtual WH**.
 
-## 2. Acceptance Criteria (AS-IS)
+**Invariant Colli v2 (BETA):** **1 colli code = 1 lokasi** — tidak boleh split lokasi untuk code yang sama.
 
-| ID | Kriteria | Validasi | Fitur |
-|----|----------|----------|-------|
-| A-01 | User dengan permission `viewAny` melihat datalist | Policy `StockMutationTransfer` | List |
-| A-02 | User dengan permission `create` membuat header | store validation | Create |
-| A-03 | Kode unik per company | unique rule `scm_stock_mutations.code` | Create |
-| A-04 | Tanggal transaksi tidak di masa depan | Custom validation | Create/Update |
-| A-05 | Fiscal period valid | `validate_fiscal_period()` | Create/Approve |
-| A-06 | Detail wajib sebelum approve | count details > 0 | Approve |
-| A-07 | Setelah approve, `can_update = false` | Model accessor | Post-approve |
-| A-08 | Approval tercatat | `StockMutationApproval` | Approve |
-| A-09 | Item stock berubah setelah approve | `ItemStockMutation` | Approve |
+## 2. Prasyarat
 
-## 3. Validasi & Rules
+| Prasyarat | Sumber | Catatan |
+|-----------|--------|---------|
+| WH origin level ≤ 20; detail dest leaf same building tree | Master Warehouse | Exclude Outrack/WIP dari FIFO origin |
+| Availability > 0 | Item Stock | Per stock ID / colli |
+| Fiscal period terbuka | Fiscal Period | Trx date ≤ today |
+| Gate privilege | Role menu | viewAny / create / update / approval |
+| Colli Type Active (New Colli BETA) | Colli Type | Default ON preselect — sama PI |
+| Stok/colli dari inbound approved | New PI / legacy PI | List [Multisku Colli](https://staging.olshoperp.com/supplychain/multisku-colli) |
 
-| ID | Rule | Trigger | Pesan error (contoh) |
-|----|------|---------|----------------------|
-| V-01 | `transaction_date` required, not future | store/update | Transaction date cannot be greater than today |
-| V-02 | `description` max 150 | store/update | validation max |
-| V-03 | `transaction_status` in open,draft | store | Rule::in validation |
-| V-04 | File attachment extension | store/update | validationExtensionFile |
-| V-05 | Import in progress blocks approve | approve | Updating process is in progress |
-| V-06 | No detail blocks approve | approve | doesn't have any detail data |
-| V-07 | Reject sets `transaction_status = rejected` | approve rejection | The data successfully rejected |
-| V-08 | Approve cache lock 60s | approve | Approval process is in progress |
+## 3. Siklus Status
 
-### Catatan approve spesifik menu
+**Tidak ada Void** untuk TFI manual.
 
-Origin dan destination tidak boleh sama per detail. Warehouse tree harus valid (parent-child). Import transfer harus selesai.
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> Open
+    Open --> Approved
+    Open --> Rejected
+    Rejected --> Open
+    Draft --> [*]: Delete
+    Open --> [*]: Delete
+```
 
-**Alur approve:** POST `mutation-transfer/{id}/approve` → validasi semua detail punya `warehouse_destination_id` → `ItemStockMutation` transfer internal — kurangi origin, tambah destination.
+| Status | Edit | Approve | Reserved |
+|--------|------|---------|----------|
+| Draft / Open | Ya (`can_update`) | Ya jika ada detail | Qty detail → reserved ↓ availability |
+| Approved | Tidak | — | Mutasi final |
+| Rejected | Ya | — | Reserved tetap |
 
-## 4. Fitur & Behavior
+**Delete header:** reserved → kolom **Transfer** di Stock Monitoring.
 
-| ID | Fitur | Trigger | Expected result |
-|----|-------|---------|-----------------|
-| F-01 | Datalist + filter SearchBuilder | GET `mutation-transfer` | JSON paginated rows |
-| F-02 | Create header | POST `mutation-transfer` | Row `scm_stock_mutations`, code `TFI` |
-| F-03 | Update header | PUT `mutation-transfer/{id}` | Header updated if `can_update` |
-| F-04 | Soft delete | DELETE `mutation-transfer/{id}` | `deleted_at` set if allowed |
-| F-05 | Detail CRUD | nested resource | Rows di tabel detail |
-| F-06 | Import Excel detail | POST upload routes | Async job + import log |
-| F-07 | Export Excel | export-excel routes | Download / async export file |
-| F-08 | Audit trail | GET `.../audit` | Audit log JSON |
-| F-09 | Approval log | GET `.../log/approve` | Last approvals |
-| F-10 | Approval eligibility | GET `.../approval-eligibility` | `can_approve` flags |
-| F-11 | Print | GET `.../print` | PDF/print view |
-| F-12 | Approve | POST `.../approve` | Stock mutation + item stock |
+## 4. Acceptance Criteria — Datalist
 
-## 5. Permission & Dependencies
+| ID | Kriteria | Expected |
+|----|----------|----------|
+| A-TFI-01 | Global Search + Advanced Filter + Reset | SearchBuilder standar |
+| A-TFI-02 | Create | Form TFI baru |
+| A-TFI-03 | Show Virtual WH | Query `show_virtual` — TFI proses order |
+| A-TFI-04 | Show Deleted | Soft-deleted rows |
+| A-TFI-05 | Column Show/Hide | Column manager |
+| A-TFI-06 | Export | With Details / Without Details / Active Page Only |
+| A-TFI-07 | Bulk Delete & Approve | Multi-row checkbox |
+| A-TFI-08 | Kolom datalist | Trx Code\|Date, Building Origin, Location Destination, Qty, Description, Trx Ref, Status, audit, Action |
 
-| Permission (Gate) | Aksi |
-|-------------------|------|
-| `viewAny` | Lihat datalist |
-| `view` | Lihat detail form |
-| `create` | Buat header |
-| `update` | Edit header/detail |
-| `delete` | Hapus (jika belum approved) |
-| `approval` | Approve / reject |
+## 5. Acceptance Criteria — Header & Detail (legacy core)
 
-**Dependencies:** Master Warehouse, Product, Unit; Fiscal Period; untuk inbound: Supplier/PO; untuk outbound: Sales Order (opsional); untuk adjustment: Accounting approval menus.
+| ID | Kriteria | Expected |
+|----|----------|----------|
+| A-TFI-10 | Origin WH level ≤ 20 | Validasi tree |
+| A-TFI-11 | Location Destination same building as origin | Parent hierarchy match |
+| A-TFI-12 | Select Product | SKU avail > 0; qty default 1; dest = header default |
+| A-TFI-13 | Group View default; Detail View if multi stock ID | Toggle views |
+| A-TFI-14 | Fulfill-after-FIFO on Select Product & Import | Single-rack try then classic FIFO — §6.1 |
+| A-TFI-15 | Available Product Use | Bind specific `item_stock_id`; max = its availability |
+| A-TFI-16 | Import max 500 rows | Async job + import log |
+| A-TFI-17 | Approve | ItemStockMutation transfer; `can_update=false` after |
+| A-TFI-18 | Permission | Policy `StockMutationTransfer` |
 
-## 6. Relasi Menu
+## 6. Alokasi Stok & Sumber Insert
 
-Menu terkait: **supplychain-warehouse-structure, omni-picking-process, supplychain-manual-picking-list, [Assembly](../supplychain-assembly/), [Master Unit](../supplychain-unit/)**.
+### 6.1 Fulfill-after-FIFO (AS-IS)
+
+Helper `getFulfillAfterFifo`:
+
+1. Satu Item Stock oldest dengan `available_quantity >= qty` (bukan Outrack/WIP).
+2. Else fallback `getFifoProduct` multi-batch.
+3. Else **Insufficient product stock.**
+
+**Loose path:** hanya stock dengan `multisku_colli_id` NULL — colli-bound stock excluded.
+
+**Contoh:**
+
+| Inbound date | Rack | Qty |
+|--------------|------|-----|
+| 1 Jan | A | 50 |
+| 2 Jan | B | 100 |
+| 3 Jan | C | 150 |
+| 4 Jan | D | 200 |
+
+| Out | Allocation |
+|-----|------------|
+| 50 | A |
+| 75 | B |
+| 150 | C |
+| 200 | D |
+| 250 | A50+B100+C100 |
+
+### 6.2 Tiga sumber insert
+
+| Sumber | Alokasi | Edit qty |
+|--------|---------|----------|
+| Select Product | Fulfill-after-FIFO (loose) atau colli path §7 | Re-run rules |
+| Import Excel | Sama Select Product | Sama |
+| Available Product Use | **Specific stock ID** — no FIFO | Max stock ID avail; error: *Quantity entered cannot exceed available stock for this specific product stock ID…* |
+
+### 6.3 Import detail — Colli v2 (TO-BE)
+
+Satu kolom **Colli code**:
+
+| Nilai | Interpretasi |
+|-------|--------------|
+| NULL | Tanpa colli |
+| Code not exist | New Colli |
+| Code exist, lokasi = WH dest baris | Existing Colli |
+| Code exist, lokasi beda | **Row fail** — pesan jelas; partial import OK |
+
+**AS-IS codebase:** masih Colli × Colli Qty v1 — **GAP-TFI-02 Major**.
+
+## 7. BETA — Colli v2
+
+Toolbar **BulkColliAction**: Existing / New + Colli Type (sama PI). Kolom: Colli Origin, Colli Destination, Full COLLI Transfer (hidden).
+
+### 7.1 Flow 1 — New Colli
+
+| Case | Rule |
+|------|------|
+| **1a Loose** | FIFO loose only; Existing filter: struktur WH origin; **exclude** colli same loc as origin stock |
+| **1b Colli-bound origin** | Max qty = colli availability; no free FIFO |
+
+**Location change → Colli Destination NULL** jika lokasi ≠ lokasi colli (**wajib — GAP-TFI-01 Major** jika codebase belum universal).
+
+Bulk Existing: exclude colli code = origin baris terpilih (anti self).
+
+### 7.2 Flow 2 — Existing Colli
+
+**2a — Assign ke colli existing:** multi-SKU boleh satu colli dest; filter & exclude same as §7.1.
+
+**2b — Relocate whole colli:** entry = **Available Product + bulk Use** (all SKUs in colli); Colli Origin = Colli Destination = same code; new single location.
+
+**Invariant:** whole relocate valid only if **all** remaining colli qty moves — no reserved elsewhere.
+
+**Contoh reject approve:**
+
+- COLLI001 @ RACK001: SKUPENSIL 100 + SKUBUKU 50.
+- Elsewhere: SKUBUKU **2 reserved** on COLLI001 @ RACK001.
+- TF move SKUPENSIL 100 + SKUBUKU **48** → **cannot** approve as whole COLLI001 relocate (**GAP-TFI-04** verify message).
+
+### 7.3 TF vs PI Colli
+
+| Aspek | PI | TF BETA |
+|-------|-----|---------|
+| Filter Existing | Exact WH dest header | WH origin structure; exclude same loc as origin stock |
+| New Colli location | Header dest | **Detail row** dest |
+| Permanent in Multisku Colli | After inbound Approve | After TF Approve |
+
+## 8. Validasi
+
+| ID | Trigger | Pesan / behavior |
+|----|---------|------------------|
+| V-TFI-01 | Date > today | Transaction date cannot be greater than today |
+| V-TFI-02 | Approve no detail | doesn't have any detail data |
+| V-TFI-03 | Import running | Updating process is in progress |
+| V-TFI-04 | Insufficient FIFO | Insufficient product stock. |
+| V-TFI-05 | Available Product over stock ID | Quantity entered cannot exceed available stock for this specific product stock ID… |
+| V-TFI-06 | Origin = dest detail | Origin dan destination tidak boleh sama |
+| V-TFI-07 | Colli qty > colli avail | Tolak |
+| V-TFI-08 | Import colli wrong loc | Row error (TO-BE) |
+| V-TFI-09 | Whole colli + reserved elsewhere | Approve fail |
+| V-TFI-10 | Location change vs colli dest | Colli dest NULL |
+| V-TFI-11 | Existing = self colli | Hidden / rejected |
+
+Legacy V-01..V-08 dari v1.2 tetap berlaku (description max 150, approve lock 60s, reject, fiscal period, dll.).
+
+## 9. Gap Registry
+
+| ID | Deskripsi | Status |
+|----|-----------|--------|
+| GAP-TFI-01 | Colli dest NULL saat ganti location (wajib user) — partial di codebase | **Open Major** |
+| GAP-TFI-02 | Import 1 kolom colli code vs v1 Colli×Qty di code | **Open Major** |
+| GAP-TFI-03 | Filter Existing exclude same loc as origin — verify API | Open |
+| GAP-TFI-04 | Whole colli + reserved elsewhere — verify approve message | Open |
+| GAP-TFI-05 | Colli ID v1 takedown | Note |
+| GAP-TFI-06 | BETA URL vs MultiskuColli transactionUrl legacy | Open |
+| GAP-TFI-07 | Loose vs colli FIFO priority edge case | Open — QA watch |
+
+## 10. Permission & Dependencies
+
+| Permission | Aksi |
+|------------|------|
+| viewAny | Datalist |
+| view | Form detail |
+| create / update / delete | CRUD header-detail |
+| approval | Approve / reject |
+
+Dependencies: Master Warehouse, Product, Unit, Fiscal Period; upstream inbound/PO for stock.
+
+## 11. Relasi Menu
+
+Lihat juga § Relasi Assembly, Master Unit, Manual Picking List di bawah.
+
+| Menu | Relasi |
+|------|--------|
+| New Purchase Inbound | Birth colli on Item Stock |
+| Colli Type / Multisku Colli | Master colli |
+| Assembly | Auto TFI Open → Approve job |
+| Failed Ship / Omni fulfillment | Auto TFI + Show Virtual |
+| Stock Monitoring | Reserved / Transfer |
+| Manual Picking List | Pola Available Product; PL ≠ TFI manual |
 
 ---
 
 ## Relasi Assembly
 
-**Dampak ke menu ini:** Saat Assembly status **Open**, sistem auto-create **Transfer Internal** (`TFI`) per detail line:
+Saat Assembly **Open**, auto-create **TFI** per detail line:
 
 | Aspek | Nilai |
 |-------|-------|
-| Origin | Building Origin (user-selected) |
-| Destination | WIP warehouse dari Warehouse Setting |
-| Status awal | **open** (approved saat Assembly Approve job) |
-| Referensi | `transaction_reference_class = WorkOrder` |
-| Detail qty | `bom_snapshot_qty × assembly_qty` per komponen |
-| FIFO | `item_stock_id = null` → auto-pick dari building tree |
+| Origin | Building Origin |
+| Destination | WIP (Warehouse Setting) |
+| Status awal | open (approved saat Assembly Approve job) |
+| Ref | `WorkOrder` |
+| FIFO | `item_stock_id = null` → auto-pick building tree |
 
-**Prasyarat dari menu ini agar Assembly lolos:** Origin ≠ WIP; stok komponen cukup di building tree (exclude In Transit, virtual, WIP). Saat Assembly **delete** (Draft/Open), TFI linked ikut di-destroy.
-
-**Independensi:** TFI manual di menu ini **independen** dari Assembly — tidak auto-link ke Work Order kecuali dibuat programmatically.
-
-**Detail alur:** [Assembly requirement §5](../supplychain-assembly/requirement.md) — stock movement chain step 1 (Open).
+Detail: [Assembly requirement §5](../supplychain-assembly/requirement.md).
 
 ---
 
 ## Relasi Master Unit
 
-**Dampak ke menu ini:** Setiap detail TFI punya `transfer_quantity_unit_id`. Saat approve, `MainModelObserver` konversi qty ke base unit (`*_in_base_unit`).
-
-**Prasyarat:** Unit harus **Active** (`status=1`) di Master Unit agar muncul di select2 detail.
-
-**Detail:** [Master Unit requirement](../supplychain-unit/requirement.md) — §2 Conversion Rate, §6 Transaction flow.
+Detail `transfer_quantity_unit_id`; approve → base unit via observer. Unit harus Active. Detail: [Master Unit](../supplychain-unit/requirement.md).
 
 ---
 
 ## Relasi Manual Picking List
 
-**Dampak ke menu ini:** Manual Picking List **bukan** TFI manual terpisah — header PL **adalah** dokumen `TF_INTERNAL` dengan `process_type = 'manual picking'` dan kode prefix **`PL-`** (bukan `TFI-`).
-
-| Aspek | Nilai |
-|-------|-------|
-| Origin per detail | Rack hasil FIFO alloc (`warehouse_origin_id` / `item_stock_id`) |
-| Destination | WH Outrack dari Warehouse Setting (`PICKING_TYPE`) |
-| Approve trigger | Complete Picking → `StockMutationTransferController@approve(..., is_from_pl: true)` |
-| Qty yang di-transfer | Hanya **picked** qty per line (line di-shrink sebelum approve) |
-| Reservation | Insert detail → `reserved_quantity ↑`; approve/unpick/delete → release |
-| Lost qty | **Bukan** TFI — lewat Stock Deduction `AO-*` (`process_type = lost`) |
-| New PL qty | Generate MPL baru — bukan TFI |
-
-**Perbedaan dari TFI menu standar:**
+PL header = `TF_INTERNAL`, `process_type = manual picking`, prefix **`PL-`** — bukan TFI manual.
 
 | Aspek | TFI menu (`TFI-*`) | Manual PL (`PL-*`) |
 |-------|-------------------|-------------------|
-| Create | User manual di menu Transfer Internal | User di Manual Picking List |
-| Approve | User klik Approve | Auto saat Complete Picking |
-| Picking UI | Tidak ada | Shared Omni picking process |
-| `process_type` | null | `'manual picking'` |
+| Create | User di Transfer Internal | Manual Picking List |
+| Approve | User Approve | Auto Complete Picking |
+| Picking UI | Tidak | Omni picking |
 
-**Stock movement saat approve PL:** Sama dengan TFI approve — kurangi stok di rack origin, tambah di Outrack destination via `ItemStockMutation`.
-
-**Detail alur:** [Manual Picking List requirement §12](../supplychain-manual-picking-list/requirement.md)
+Detail: [Manual Picking List §12](../supplychain-manual-picking-list/requirement.md).
 
 ---
 
-## 7. QA Test Notes
+## 12. QA Test Notes
 
-- [ ] Create header — validasi tanggal, gudang wajib, kode auto `TFI`
-- [ ] Tambah detail — qty, unit, product select2
-- [ ] Edit header sebelum approve — attachment, description
-- [ ] Blok edit setelah approve
-- [ ] Approve happy path — cek item stock before/after
-- [ ] Reject — status `rejected`, tidak ubah stock
-- [ ] Import Excel — progress, error log, approve setelah selesai
-- [ ] Export list dan detail
-- [ ] Permission denied untuk role tanpa akses
-- [ ] Cross-company scoping (`owned_by` dari token)
-
-## 8. Known Gaps / Open Questions
-
-- SCM Stock Deduction: route approve tidak terdaftar di SupplyChain Routes — approve hanya via Accounting.
-- SCM Stock Addition: tombol approve disembunyikan di `menu=scm`; verifikasi E2E dengan Accounting.
-- Middle detail (inbound/outbound/transfer): behavior async approve perlu test terpisah.
+- [ ] Legacy create/approve happy path + reserved
+- [ ] Fulfill-after-FIFO contoh §6.1
+- [ ] Available Product stock ID cap + error message
+- [ ] BETA New Colli loose + colli-bound max qty
+- [ ] BETA Existing + exclude self + location NULL on dest change (GAP-TFI-01)
+- [ ] Whole colli via Available Product + reserved block (GAP-TFI-04)
+- [ ] Import colli TO-BE vs AS-IS (GAP-TFI-02)
+- [ ] TC-MTIN-001..007 regression
+- [ ] Show Virtual + Failed Ship chain — [technical §8](./technical.md#8-relasi-failed-ship--rantai-fulfillment)
 
 ## Related Documents
 
@@ -185,6 +300,5 @@ Menu terkait: **supplychain-warehouse-structure, omni-picking-process, supplycha
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
-| Assembly | [../supplychain-assembly/requirement.md](../supplychain-assembly/requirement.md) |
-| Master Unit | [../supplychain-unit/requirement.md](../supplychain-unit/requirement.md) |
-| Manifest | [../_meta/manifest.yaml](../_meta/manifest.yaml) |
+| SOT | [../_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md](../_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md) |
+| PI Colli v2 | [../supplychain-new-purchase-inbound/requirement.md](../supplychain-new-purchase-inbound/requirement.md) |
