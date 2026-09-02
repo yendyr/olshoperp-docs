@@ -148,7 +148,7 @@ Trx Date, Platform Date, Order Type, Trx Code/Platform, Store, Customer, Skip Wa
 
 ## 8. Acceptance Criteria (TO-BE)
 
-Lihat checklist lengkap SoT §10 dan [`docs/download/ETM-15713-order-processing-trace-dev-qa-brief.md`](../../download/ETM-15713-order-processing-trace-dev-qa-brief.md) §8.
+Lihat checklist lengkap di SoT [§10](../_meta/sot/order-processing-trace-source-of-truth.md) dan card Jira [ETM-15713](https://erpintegration.atlassian.net/browse/ETM-15713).
 
 ---
 
@@ -169,6 +169,6 @@ Lihat checklist lengkap SoT §10 dan [`docs/download/ETM-15713-order-processing-
 | Doc | Path |
 |-----|------|
 | SoT | [../_meta/sot/order-processing-trace-source-of-truth.md](../_meta/sot/order-processing-trace-source-of-truth.md) |
-| Dev/QA brief | [../../download/ETM-15713-order-processing-trace-dev-qa-brief.md](../../download/ETM-15713-order-processing-trace-dev-qa-brief.md) |
+| Jira (spec card) | [ETM-15713](https://erpintegration.atlassian.net/browse/ETM-15713) |
 | Failed Ship 1 SO = 1 FS | [../supplychain-failed-ship/requirement.md](../supplychain-failed-ship/requirement.md) §5.5.2 |
 | Purchase Report (pola report) | [../accounting-purchase-report/](../accounting-purchase-report/) |
