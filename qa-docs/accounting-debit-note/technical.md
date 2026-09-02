@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.0
-last_updated: 2026-08-12
+version: 1.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,8 @@ related_docs:
 
 # Debit Note — Technical Documentation
 
-> **Review** — AS-IS 2026-08-12. Behavior: [requirement v1.0](./requirement.md).
+> **Review** — AS-IS 2026-08-12 + supplier display 2026-09-02. Behavior: [requirement v1.1](./requirement.md).  
+> **Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15727](https://erpintegration.atlassian.net/browse/ETM-15727)
 
 ---
 
@@ -22,6 +23,7 @@ related_docs:
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-08-12 | QA - Yemima | DebitNoteController, export jobs, AP import, journal |
+| 1.1 | 2026-09-02 | QA - Yemima | Supplier display code-only via ETM-15721 helpers |
 
 ---
 
@@ -75,6 +77,18 @@ Post-approve: eligible sebagai deposit di `SupplierPayment` (same supplier/curre
 | With Details | `DebitNoteWhithDetailExportAll` | Iterates `payment_detail_funds` only |
 
 → GAP-DN-02: PR DN without funds may export 0 detail rows.
+
+### Supplier display mode (ETM-15721 / ETM-15727)
+
+| Item | Rule |
+|------|------|
+| Flag | `SUPPLIER_DISPLAY_MODE=code_only` (rollback: `code_and_name`) |
+| Helpers | Shared FE/BE helpers dari foundation ETM-15721 — jangan hardcode |
+| Select2 | Search name+code; label = code; no hover name |
+| ColVis / datalist / modal | Code only; no Supplier Name option |
+| Export | Omit name |
+| Print | Keep name |
+| Basic Info | Do **not** add read-only Supplier Name |
 
 ---
 

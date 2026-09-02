@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.2
-last_updated: 2026-07-17
+version: 2.3
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [Account Payment docs, AP payment, pembayaran hutang, PY]
@@ -31,6 +31,7 @@ aliases: [Account Payment docs, AP payment, pembayaran hutang, PY]
 | 2.0 | 2026-07-05 | QA - Yemima | Initial v2.0 — PI allocation, journal, gaps |
 | 2.1 | 2026-07-06 | QA - Yemima | Full PM merge: multi-source (Cash/Bank + DN), sections A–E, balancing, formulas, import AP, relasi DN/Cash-Bank/PI/PR, gaps §19–§21 |
 | 2.2 | 2026-07-17 | QA - Yemima | Compliance qa-docs-standard: stateDiagram, Validasi, FAQ; trim path/class; user-guide |
+| 2.3 | 2026-09-02 | QA - Yemima | Supplier display **code-only** (ETM-15725 / parent ETM-15721): UI+export tanpa name; print boleh name |
 
 ---
 
@@ -118,9 +119,22 @@ stateDiagram-v2
 
 ## 4. Datalist
 
-Kolom standar: Trx Code, Date, Supplier, Currency, Exchange Rate, Grand Total, Status, actions.
+Kolom standar: Trx Code, Date, Supplier (**code only**), Currency, Exchange Rate, Grand Total, Status, actions.
 
 **Toolbar:** bulk delete/approve, export, **Import Log** (header import AP), show deleted, advanced filter.
+
+### 4.1 Supplier Display (code-only) — ETM-15725
+
+Parent: [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721). Identitas operasional = **Supplier Code**. Berlaku semua role.
+
+| Surface | Rule |
+|---------|------|
+| Datalist / detail / modal | Tampil **code** saja |
+| Column Show/Hide (ColVis) | **Tanpa** opsi Supplier Name |
+| Select2 / Search / Advanced Filter | Match **code + name**; tampilan = **code**; **tanpa** hover nama |
+| Basic Information » Supplier | Code only; **jangan** tambah field read-only Supplier Name |
+| Export | **Tanpa** name |
+| Print | Name **boleh** |
 
 ---
 
@@ -130,7 +144,7 @@ Kolom standar: Trx Code, Date, Supplier, Currency, Exchange Rate, Grand Total, S
 |-------|-----|-------|
 | **Transaction Code** | Auto prefix PY; bisa manual unique | Auto generate PY |
 | **Transaction Date** | Default now; no future; backdate max **6 bulan**; fiscal period | FE `min = now-6mo`, `max-now`; BE fiscal validate |
-| **Supplier** | Wajib; filter supplier punya PI approved | Select2 suppliers with outstanding PI |
+| **Supplier** | Wajib; filter supplier punya PI approved; **display = code** (§4.1) | Select2 suppliers with outstanding PI |
 | **Transaction Currency** | Default IDR (primary) | `currency_id` required |
 | **Exchange Rate** | Wajib; default 1 untuk IDR | Required |
 | **Description** | Optional max 250 | Textarea — `[VERIFY: CODEBASE]` max length |

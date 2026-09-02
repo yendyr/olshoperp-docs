@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: accounting-purchase-report
 menu_name: "Purchase Report"
-version: 2.0
-last_updated: 2026-08-31
+version: 2.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
-aliases: [Purchase Report, laporan pembelian SKU, PO PI report supplier, ETM-15673, ETM-15674]
+aliases: [Purchase Report, laporan pembelian SKU, PO PI report supplier, ETM-15673, ETM-15674, ETM-15729]
 ---
 
 # Purchase Report — Requirement Documentation
@@ -26,6 +26,7 @@ aliases: [Purchase Report, laporan pembelian SKU, PO PI report supplier, ETM-156
 |---------|------|--------|---------|
 | 1.0 | 2026-08-12 | QA - Yemima | TO-BE awal (belum implementasi) |
 | 2.0 | 2026-08-31 | QA - Yemima | AS-IS dari ETM-15673/15674 + verifikasi kode; shell = dual tab |
+| 2.1 | 2026-09-02 | QA - Yemima | Supplier display **code-only** (ETM-15729): group header = **Supplier Code** + total; ColVis/export tanpa name |
 
 ---
 
@@ -68,11 +69,27 @@ flowchart LR
 
 ### 2.2 Grouping & Total Tagihan
 
-- Group header = **nama Supplier** + nominal total supplier (kanan header).
+- Group header = **Supplier Code** + nominal total supplier (kanan header) — **bukan** nama supplier (ETM-15729 / parent ETM-15721).
 - Total supplier = sum line amounts terfilter untuk supplier itu.
 - Kolom **Total Tagihan** per baris = amount line (bukan running Excel per row) — **GAP-PURREP-02**.
+- Group/sort key konsisten ke `supplier_code` saat mode code-only.
 
-**Contoh konsep (card PI):** baris TROLIK100 → TROLIK80 → … Total Price bertambah; di UI, penjumlahan supplier tampil di **header group**.
+**Contoh konsep (card PI):** baris TROLIK100 → TROLIK80 → … Total Price bertambah; di UI, penjumlahan supplier tampil di **header group** berlabel **kode** supplier.
+
+### 2.2b Supplier Display (code-only) — ETM-15729
+
+Berlaku **semua role**. Exception nama: **Print** saja (jika ada).
+
+| Surface | Rule |
+|---------|------|
+| Data List (tab PO & PI) | Kolom Supplier = **code only** |
+| **Group header supplier** | **Supplier Code** + total (bukan name) |
+| Column Show/Hide (ColVis) | **Tanpa** opsi Supplier Name |
+| Advanced Filter / Search | Match **code + name**; tampilan grid/header = **code**; **tanpa** hover nama |
+| Export per tab | **Tanpa** name |
+| Print (jika ada) | Name **boleh** |
+
+Jangan menambah field/surface Supplier Name di UI report.
 
 ### 2.3 Kolom
 
@@ -107,6 +124,7 @@ flowchart LR
 | R-08 | Hyperlink Trx. Code ke edit PO / PI | ETM-15673/15674 |
 | R-09 | Company scope `owned_by` | Kode |
 | R-10 | Soft-deleted tidak tampil | Kode |
+| R-11 | Supplier UI/export = code only; group header = code + total | ETM-15729 / ETM-15721 |
 
 ---
 
@@ -120,7 +138,7 @@ flowchart LR
 | Description | PO header | PI detail line |
 | Total Price | Line PO (product) | Line invoice total (product) |
 | Status | PO header | PI header |
-| Supplier | PO supplier | PI supplier |
+| Supplier | PO supplier (**code** display) | PI supplier (**code** display) |
 
 ---
 
@@ -148,10 +166,11 @@ flowchart LR
 
 - [x] Menu Accounting → Report → Purchase Report + privilege  
 - [x] Dual tab PO / PI; dataset terisolasi  
-- [x] Group Supplier + total di header group  
+- [x] Group Supplier (**code**) + total di header group  
 - [x] All status; PO With+Without PR; currency as-is  
 - [x] Hyperlink; Search/Filter/Columns/Export per tab  
 - [x] Tidak ada relasi AP atau PO↔PI  
+- [ ] Supplier ColVis tanpa Name; export tanpa name; group header code-only (ETM-15729)
 
 ---
 

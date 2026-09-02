@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 1.5
-last_updated: 2026-07-27
+version: 1.6
+last_updated: 2026-09-02
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.7
+source_version: 3.8
 owner: QA - Yemima
 status: review
 ---
@@ -115,6 +115,7 @@ Yang belum tersedia:
 
 ## 5. Yang Perlu Diperhatikan
 
+- **Supplier di layar = kode saja** (daftar, form, modal, export). Kamu tetap bisa **cari** by nama atau kode. Nama supplier boleh muncul di **Print**. Tidak ada field nama tambahan di Basic Information.
 Ditulis dari sudut pandang yang kamu alami di layar:
 
 - **Kalau kamu ubah data header** (supplier, mata uang, dll.) **setelah barang sudah ditambahkan**, sistem menolak — header terkunci. Hapus detail dulu kalau memang harus ganti.
@@ -229,6 +230,7 @@ Pastikan angka masuk akal sebelum approve:
 - **PPN dicatat saat Approve PI**, bukan saat barang masuk (inbound).
 - **Due date belum otomatis** dari termin supplier — isi manual.
 - **Supplier's Reference** = nomor faktur/dokumen dari supplier (opsional); muncul di daftar sebagai referensi.
+- **Hanya lihat kode supplier?** Itu kebijakan tampilan — cari tetap boleh by nama; nama lengkap di **Print**.
 - **Supplier dipilih tapi modal barang kosong?** Inbound-nya kemungkinan masih draft — approve inbound dulu.
 - **Outstanding kosong / qty 0?** Barang itu sudah full ditagih atau diretur di transaksi lain.
 - **Cost dari PO “hilang” di PI berikutnya?** Sering karena semua SKU sudah habis ditagih/diretur sebelum cost dipilih. Tagih cost penting lebih awal.

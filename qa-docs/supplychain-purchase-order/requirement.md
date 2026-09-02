@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.9
-last_updated: 2026-08-12
+version: 3.0
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [PO requirement, purchase order docs, pembelian, PO validation, Select Multiple Products, Select Outstanding PR Products]
@@ -14,7 +14,7 @@ aliases: [PO requirement, purchase order docs, pembelian, PO validation, Select 
 **Modul:** Supply Chain Management (SCM) / Procurement  
 **Prefix transaksi:** `PO-`  
 **Audience:** PM, Operations, QA  
-**Status:** AS-IS + Rounding SoT **final** + **Import VAT columns TO-BE locked** (5 Agu 2026)
+**Status:** AS-IS + Rounding SoT **final** + **Import VAT columns TO-BE locked** (5 Agu 2026) + **Supplier display code-only** (CR ETM-15721 / ETM-15722)
 
 **UI route:** `/supplychain/purchase-order`  
 **PM source:** `purchase_order_requirement.md` v1.0 (2026-07-05); Import VAT brief locked 5 Agu 2026  
@@ -37,6 +37,7 @@ aliases: [PO requirement, purchase order docs, pembelian, PO validation, Select 
 | 2.7 | 2026-07-27 | QA - Yemima | Contoh Case 4/5 siap Lingo/UG (SF-PRICE-01); pointer di §9.2 |
 | 2.8 | 2026-08-05 | QA - Yemima | Import Detail: kolom VAT / VAT Code / VAT Type (TO-BE locked); partial success per-row; align tax Allocate Full / bulk Use; GAP-PO-11 |
 | 2.9 | 2026-08-12 | QA - Yemima | §5.6 / §6.1 **Select Multiple Products** (Without PR) + **Select Outstanding PR Products** (With PR checkbox bulk); keep Available Products Single Use · GAP-PO-12 |
+| 3.0 | 2026-09-02 | QA - Yemima | Supplier display **code-only** (UI/export; print name exception); § Supplier display; ColVis/Select2/export AC — CR ETM-15721 / wiring ETM-15722 |
 
 ---
 
@@ -164,7 +165,7 @@ Tombol **Closed** muncul saat PO status **`processed`** — artinya **sudah ada*
 | TRX. DATE | false | Sortable date |
 | TRX. CODE / TRX. DATE | true | Link edit |
 | PRODUCT | false | Search SKU dalam detail PO (Advanced Filter) |
-| SUPPLIER | true | Nama supplier |
+| SUPPLIER | true | **Kode** supplier saja (code-only; bukan nama) |
 | YOUR REF. | true | `supplier_reference_document` |
 | TRX. REF. | true | Nomor PR (comma-separated jika multiple) |
 | Qty | true | Sum qty detail **tanpa konversi unit** |
@@ -214,7 +215,7 @@ Tombol **Closed** muncul saat PO status **`processed`** — artinya **sudah ada*
 | Transaction Date | **Required** | Now | ≤ today; fiscal period | **Terkunci** jika sudah ada detail (currency/supplier/payment/date) |
 | Valid Until Date | Opsional | null | Date | |
 | Estimated Arrival | Opsional | null | Date | |
-| Supplier | **Required** | — | General Company `is_supplier=1`, active, **accounting setting 100%** | Select2 max 25 |
+| Supplier | **Required** | — | General Company `is_supplier=1`, active, **accounting setting 100%** | Select2 max 25; tampilan **code only** (cari boleh by code+name) — § Supplier display |
 | Payment Type | Opsional | Dari supplier master (`payment_and_currency`) | Integer FK | Default FE fallback id **8** |
 | Currency | **Required** | Dari supplier / id **1** | Active currency | |
 | Exchange Rate | **Required** | User input; min **1** | = **1** wajib jika currency primer | **Tidak auto-fetch** rate saat ganti currency |
@@ -597,6 +598,28 @@ Progress, import log, history — [technical §2 & §9](./technical.md).
 
 ---
 
+
+## Supplier display (code-only)
+
+**Policy (CR parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721), Request ID `recvtQRSDX5SOI`; menu wiring [ETM-15722](https://erpintegration.atlassian.net/browse/ETM-15722)).** Berlaku **semua role** — tidak ada privilege untuk melihat **nama** supplier di layar atau export.
+
+| Surface | Behavior (TO-BE / production dengan CR) |
+|---------|----------------------------------------|
+| Datalist, create/edit (semua section), modals (Outstanding PR, Available Products, dll.) | Tampil **Supplier Code only** |
+| Column Show/Hide | **Tidak** menawarkan kolom Supplier Name |
+| Select2 / search | Match by **code + name**; option & selected label = **code only**; **tanpa** hover/tooltip nama |
+| Export (semua role) | **Omit** supplier name (kolom Supplier = code bila ada) |
+| Print PDF | **Pengecualian:** supplier **name masih boleh** |
+| Basic Information | **Jangan** menambah field read-only Supplier Name (item request asli superseded) |
+
+**Acceptance**
+
+- [ ] UI tidak menampilkan supplier name di datalist / form / modal / ColVis
+- [ ] Cari supplier by name tetap menemukan; label opsi & terpilih = code only; tanpa tooltip nama
+- [ ] Export tanpa nama supplier (semua role)
+- [ ] Print boleh tetap menampilkan nama
+- [ ] Tidak ada field baru read-only Supplier Name di Basic Information
+
 ## 13. Export
 
 ### 13.1 Export detail (single PO)
@@ -609,8 +632,8 @@ Kolom: System Product SKU, Stok WH, Req Qty, Po Qty, Unit, Unit Price, Discount,
 
 | Mode | Kolom utama |
 |------|-------------|
-| **With Details** | Trx Date, Code, Supplier, Currency, SKU, Unit Price, Qty, Unit, Disc %, Disc IDR, VAT, Total Price, Status, Created/Updated/Approved metadata |
-| **Without Details** | Header only (~11 kolom) |
+| **With Details** | Trx Date, Code, Supplier (**code only** — tanpa nama), Currency, SKU, Unit Price, Qty, Unit, Disc %, Disc IDR, VAT, Total Price, Status, Created/Updated/Approved metadata |
+| **Without Details** | Header only (~11 kolom); Supplier = **code only** |
 | **This Page Only** | Filter halaman aktif |
 
 Async job → tab Export File.
@@ -621,7 +644,7 @@ Async job → tab Export File.
 
 **Output:** PDF
 
-**Header:** Supplier, currency, your ref, PO number, dates, company logo/NPWP, QR = PO code.
+**Header:** Supplier (**name masih boleh** — satu-satunya exception code-only policy), currency, your ref, PO number, dates, company logo/NPWP, QR = PO code.
 
 **Detail columns:** No, Product Name, SKU, Qty, Unit (**dari PR detail unit** — Without PR bisa kosong), Cond., Delivery, Price, Extended Price.
 

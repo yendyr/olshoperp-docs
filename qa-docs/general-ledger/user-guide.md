@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: general-ledger
 menu_name: "General Ledger Report"
-version: 1.0
-last_updated: 2026-09-01
+version: 1.1
+last_updated: 2026-09-02
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.1
+source_version: 1.2
 owner: QA - Yemima
 status: review
 ---
@@ -75,6 +75,7 @@ flowchart LR
 | Filter Store tidak menemukan baris | GL hanya baca store di header journal, bukan field store di menu lain |
 | Settlement — baris AR Store `-` | Journal AR dari settlement saat ini sering belum menulis store ke header (gap sistem — lihat FAQ) |
 | Reject settlement | Tidak ada journal AR; baris SI/OB yang sudah jurnal **tetap ada** di GL |
+| Masih melihat nama supplier di **Description** | Normal Fase 1 — code-only hanya untuk kolom Supplier terstruktur di UI; narasi journal tidak diubah |
 
 ---
 
@@ -92,6 +93,9 @@ Di export Excel, saldo awal/akhir per baris masih **level akun (COA)**, bukan sa
 **Settlement Approve vs Reject**  
 - **Approve** → journal penerimaan (AR) terbit (store di GL AR bisa `-` sampai gap dev diperbaiki).  
 - **Reject** → tidak ada journal AR; journal SI/OB dari upload **tetap** di GL.
+
+**Supplier code-only vs Description**  
+Jika ada kolom Supplier terpisah di layar, yang tampil **kode** saja. Teks **Description** dari journal otomatis **tidak** diganti — boleh masih memuat nama di narasi.
 
 ---
 

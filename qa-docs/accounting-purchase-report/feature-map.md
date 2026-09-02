@@ -2,8 +2,8 @@
 doc_type: feature-map
 menu: accounting-purchase-report
 menu_name: "Purchase Report"
-version: 1.0
-last_updated: 2026-09-01
+version: 1.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [Purchase Report feature map, PURREP, PO PI tab report]
@@ -19,7 +19,7 @@ Indeks sub-feature / capability menu **Purchase Report** (dual tab PO / PI).
 | **shared** | Pola platform — `_meta/shared-capabilities/` |
 | **menu** | Khusus Purchase Report — card di `capabilities/` |
 
-**Route:** `/accounting/purchase-report` · **Jira:** [ETM-15673](https://erpintegration.atlassian.net/browse/ETM-15673) · [ETM-15674](https://erpintegration.atlassian.net/browse/ETM-15674)
+**Route:** `/accounting/purchase-report` · **Jira:** [ETM-15673](https://erpintegration.atlassian.net/browse/ETM-15673) · [ETM-15674](https://erpintegration.atlassian.net/browse/ETM-15674) · [ETM-15729](https://erpintegration.atlassian.net/browse/ETM-15729)
 
 | ID | Label UI | Jenis | Status | Depth | Card | KB | UG |
 |----|----------|-------|--------|-------|------|----|-----|
@@ -28,7 +28,7 @@ Indeks sub-feature / capability menu **Purchase Report** (dual tab PO / PI).
 | SF-DL-04 | [Column Show/Hide](#sf-lingo:SF-DL-04) | shared | AS-IS | stub | shared · column-show-hide | — | slice |
 | SF-DL-05 | [Export All / This Page](#sf-lingo:SF-DL-05) | shared | AS-IS | stub | shared · export-with-without-detail | Ya | §3 |
 | SF-PURREP-01 | [Tab Purchase Order / Purchase Invoice](#sf-lingo:SF-PURREP-01) | menu | AS-IS | detailed | capabilities · sf-purrep-01 | Ya | §1 |
-| SF-PURREP-02 | [Group Supplier + total header](#sf-lingo:SF-PURREP-02) | menu | AS-IS | detailed | capabilities · sf-purrep-02 | Ya | §3 |
+| SF-PURREP-02 | [Group Supplier Code + total header](#sf-lingo:SF-PURREP-02) | menu | AS-IS | detailed | capabilities · sf-purrep-02 | Ya | §3 |
 | SF-PURREP-03 | [Export per tab (PO vs PI)](#sf-lingo:SF-PURREP-03) | menu | AS-IS | detailed | capabilities · sf-purrep-03 | Ya | §3 |
 | SF-PURREP-04 | [Hyperlink Trx. Code](#sf-lingo:SF-PURREP-04) | menu | AS-IS | stub | requirement R-08 | Ya | §3 |
 | SF-PURREP-05 | Semua status dokumen | menu | AS-IS | stub | requirement R-03 | Ya | tips |
@@ -36,4 +36,4 @@ Indeks sub-feature / capability menu **Purchase Report** (dual tab PO / PI).
 
 **Siap Lingo:** SF-PURREP-01..03 + shared datalist/export.  
 **Gap terdokumentasi:** GAP-PURREP-01 (default tanggal), GAP-PURREP-02 (Total Tagihan vs card) — [requirement §8](./requirement.md#8-gap-registry).  
-**Backlog docs:** Help Center overview (sesi terpisah).
+**Supplier display:** group header = **Supplier Code** + total (ETM-15729).

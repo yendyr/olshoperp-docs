@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 2.4
-last_updated: 2026-08-14
+version: 2.5
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI, colli v2]
@@ -14,7 +14,7 @@ aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI, colli v2
 **Modul:** Supply Chain Management (SCM) / Inventory / Inbound  
 **Prefix transaksi:** `IN-`  
 **Audience:** PM, Operations (Gudang), QA  
-**Status:** AS-IS verified (rounding cross-ref 23 Jul 2026)
+**Status:** AS-IS verified (rounding cross-ref 23 Jul 2026) + **Supplier display code-only** (CR ETM-15721 / ETM-15715)
 
 **UI route (BETA):** `/supplychain/new-purchase-inbound`  
 **UI route (legacy):** `/supplychain/mutation-inbound` — same API, UI lama  
@@ -35,6 +35,7 @@ aliases: [GRN requirement, purchase inbound docs, goods receipt, COLLI, colli v2
 | 2.2 | 2026-07-17 | QA - Yemima | Compliance qa-docs-standard: Prasyarat/FAQ; Mermaid rantai; trim path/class; user-guide |
 | 2.3 | 2026-07-23 | QA - Yemima | Cross-ref Rounding SoT PO: basis harga GRN = `each_price_before_vat`; VAT hanya di PI |
 | 2.4 | 2026-08-14 | QA - Yemima | Colli v2 (wadah multi-SKU) parity BETA + legacy; takedown Colli ID v1 UX; Gap GAP-CIV2-01..09 |
+| 2.5 | 2026-09-02 | QA - Yemima | Supplier display **code-only** (UI/export; print name exception) — CR ETM-15721 / wiring ETM-15715 |
 
 ---
 
@@ -114,7 +115,7 @@ stateDiagram-v2
 |-------|------------|
 | **Trx Code / Date** | Link edit; prefix `IN` |
 | **Location Destination** | Gudang penerima (tanpa sub-gudang) |
-| **Supplier** | Supplier header |
+| **Supplier** | **Kode** supplier header (code-only; bukan nama) |
 | **Trx Ref** | PO codes dari detail lines |
 | **Qty** | Total qty received |
 | **Trx Status** | draft / open / approved / rejected |
@@ -141,7 +142,7 @@ stateDiagram-v2
 |-------|-------------|
 | **Transaction Code** | Auto `IN` prefix on create |
 | **Transaction Date** | Required; **≤ today**; fiscal period active; PM: backdate max **6 bulan** (FE tooltip) |
-| **Supplier** | Required; select2 hanya supplier dengan PO **approved/processed** |
+| **Supplier** | Required; select2 hanya supplier dengan PO **approved/processed**; tampilan **code only** (cari boleh by code+name) — § Supplier display |
 | **Location (Warehouse)** | Required; gudang fisik tanpa sub-gudang |
 | **Description** | Optional, max 150 |
 | **Transaction Status** | `open` (default) or `draft` |
@@ -450,14 +451,36 @@ If config `inbound-with-unbilled-goods` = **false** → Credit **Account Payable
 
 ---
 
+
+## Supplier display (code-only)
+
+**Policy (CR parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721), Request ID `recvtQRSDX5SOI`; menu wiring [ETM-15715](https://erpintegration.atlassian.net/browse/ETM-15715)).** Berlaku **semua role** — tidak ada privilege untuk melihat **nama** supplier di layar atau export.
+
+| Surface | Behavior (TO-BE / production dengan CR) |
+|---------|----------------------------------------|
+| Datalist, create/edit (semua section), modals (Outstanding PO, Select Product, Colli, dll.) | Tampil **Supplier Code only** |
+| Column Show/Hide | **Tidak** menawarkan kolom Supplier Name |
+| Select2 / search | Match by **code + name**; option & selected label = **code only**; **tanpa** hover/tooltip nama |
+| Export (semua role) | **Omit** supplier name (kolom Supplier = code bila ada) |
+| Print / Print RIR PDF | **Pengecualian:** supplier **name masih boleh** |
+| Basic Information | **Jangan** menambah field read-only Supplier Name (item request asli superseded) |
+
+**Acceptance**
+
+- [ ] UI tidak menampilkan supplier name di datalist / form / modal / ColVis
+- [ ] Cari supplier by name tetap menemukan; label opsi & terpilih = code only; tanpa tooltip nama
+- [ ] Export tanpa nama supplier (semua role)
+- [ ] Print / Print RIR boleh tetap menampilkan nama
+- [ ] Tidak ada field baru read-only Supplier Name di Basic Information
+
 ## 13. Print & Export
 
-| Endpoint | Document |
-|----------|----------|
-| `GET …/print` | Purchase Inbound PDF |
-| `GET …/print-rir` | Receiving Inspection Report |
-| `GET …/export-excel` | Header export with/without details |
-| Detail export | Per inbound detail / middle export |
+| Endpoint | Document | Supplier display |
+|----------|----------|------------------|
+| `GET …/print` | Purchase Inbound PDF | **Name allowed** (print exception) |
+| `GET …/print-rir` | Receiving Inspection Report | **Name allowed** (print exception) |
+| `GET …/export-excel` | Header export with/without details | **Code only** — omit name (all roles) |
+| Detail export | Per inbound detail / middle export | **Omit** supplier name |
 
 ---
 

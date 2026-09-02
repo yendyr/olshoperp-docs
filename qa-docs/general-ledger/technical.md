@@ -2,8 +2,8 @@
 doc_type: technical
 menu: general-ledger
 menu_name: "General Ledger Report"
-version: 1.1
-last_updated: 2026-09-01
+version: 1.2
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 related_docs:
@@ -141,6 +141,22 @@ Detail gap & aturan bisnis: [requirement.md §9](./requirement.md#9-kolom-store-
 - `docs/db-schema/accounting/accounting_journal_details.md`
 - `docs/db-schema/accounting/accounting_chart_of_accounts.md`
 - Pivot: `accounting_journal_store_pivots` (journal_id, store_id)
+
+## 9. Supplier Display — UI mask vs auto-journal AS-IS
+
+**Foundation:** ETM-15721 — `SUPPLIER_DISPLAY_MODE=code_only`.  
+**Wiring:** ETM-15731 (selaras Journal ETM-15730 / [journal technical §14](../journal/technical.md#14-supplier-display--ui-mask-vs-auto-journal-as-is-etm-15730)).
+
+| Layer | Action when `code_only` |
+|-------|-------------------------|
+| FE `DataList.vue` / ColVis | Structured Supplier column (if any) → **code only** via shared helper; omit Supplier Name; no hover name |
+| `description` column | Pass-through from `journal_details.description` — **do not** rewrite / mask stored text |
+| `GeneralLedgerExport` / export job | Omit structured supplier-name columns if present; prefer AS-IS description cells (Fase 1) |
+| `JournalProcess` / posting | **Out of scope** — no generator or balance changes |
+| Filter supplier (if added) | Match code+name; display code |
+| Rollback | `code_and_name` restores UI labels without mutating journal rows |
+
+Business AC: [requirement §10](./requirement.md#10-supplier-display--ui-mask-vs-auto-journal-as-is-etm-15731).
 
 ## Related Documents
 

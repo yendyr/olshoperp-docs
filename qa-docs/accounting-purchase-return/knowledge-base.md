@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-purchase-return
 menu_name: "Purchase Return"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: pending
 audience: operator
@@ -11,11 +11,15 @@ audience: operator
 
 # Purchase Return — Knowledge Base
 
-> Dokumentasi menu ini sedang disusun. Konten akan diperbarui oleh tim QA.
+> Dokumentasi menu ini sebagian besar masih disusun. Section **Supplier tampilan** di bawah sudah mengunci kebijakan code-only.
 
 ## Ringkasan
 
-Menu **Purchase Return** adalah bagian dari modul **Accounting** di OlshopERP.
+Menu **Purchase Return** adalah bagian dari modul **Accounting** di OlshopERP (retur pembelian; retur billed dapat menghasilkan Debit Note).
+
+## Supplier tampilan (code-only)
+
+Di daftar, detail, modal, dan export, supplier tampil sebagai **kode** saja (semua role). Kamu tetap bisa **cari** by nama atau kode. Nama supplier boleh muncul di **Print**. Tidak ada field nama tambahan di Basic Information.
 
 ## Relasi Account Payment
 
@@ -27,6 +31,6 @@ Detail: [Account Payment requirement §14](../accounting-supplier-payment/requir
 
 ## Status dokumentasi
 
-- Knowledge Base: **pending** (relasi AP di atas)
-- Requirement: **pending**
-- Technical: **pending**
+- Knowledge Base: **pending** (plus aturan supplier code-only)
+- Requirement: **draft** — lihat [requirement.md](./requirement.md) § Supplier Display
+- Technical: **draft** — lihat [technical.md](./technical.md) (`SUPPLIER_DISPLAY_MODE`)

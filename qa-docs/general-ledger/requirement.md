@@ -2,16 +2,16 @@
 doc_type: requirement
 menu: general-ledger
 menu_name: "General Ledger Report"
-version: 1.1
-last_updated: 2026-09-01
+version: 1.2
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 ---
 # General Ledger Report — Requirement Detail (AS-IS & TO-BE)
 
 **Modul:** Accounting  
-**Versi Dokumen:** 1.1  
-**Tanggal:** 1 September 2026  
+**Versi Dokumen:** 1.2  
+**Tanggal:** 2 September 2026  
 **Audience:** PM, QA, Support, Developer (Backend & Frontend)  
 **Scope:** UI General Ledger, Export Excel, helper `JournalReport`, relasi journal & COA
 
@@ -28,6 +28,7 @@ status: review
 7. [Acceptance Criteria TO-BE](#7-acceptance-criteria-to-be)
 8. [Referensi File Codebase](#8-referensi-file-codebase)
 9. [Kolom Store — Aturan Bisnis & Gap Implementasi](#9-kolom-store--aturan-bisnis--gap-implementasi)
+10. [Supplier Display — UI mask vs auto-journal AS-IS (ETM-15731)](#10-supplier-display--ui-mask-vs-auto-journal-as-is-etm-15731)
 
 ---
 
@@ -610,4 +611,42 @@ Regression GL: setelah fix, baris journal terkait harus lolos `TC-GL-001` / `TC-
 
 ---
 
-*Dokumen v1.0 berdasarkan analisis codebase per 19 Juni 2026. v1.1 menambah kolom/filter/export Store (ETM-15666), cross-ref menu, dan gap pivot store per 1 September 2026.*
+## 10. Supplier Display — UI mask vs auto-journal AS-IS (ETM-15731)
+
+**Parent / foundation:** [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) — flag `SUPPLIER_DISPLAY_MODE=code_only` (rollback: `code_and_name`).  
+**Wiring menu:** [ETM-15731](https://erpintegration.atlassian.net/browse/ETM-15731).  
+**Selaras:** [Journal §11](../journal/requirement.md#11-supplier-display--ui-mask-vs-auto-journal-as-is-etm-15730).
+
+### 10.1 Keputusan produk (scope sempit)
+
+General Ledger adalah laporan **read-only** dari journal detail Approved. Fase 1 = **UI mask** saja — **jangan** ubah posting logic, generator auto-journal, atau teks description yang sudah tersimpan.
+
+| Area | Perilaku `code_only` |
+|------|----------------------|
+| **Datalist / view / drill journal** | Jika ada **kolom Supplier terstruktur** → **code only**; name **tidak** di ColVis; no hover/tooltip nama |
+| **DESCRIPTION** (kolom narasi baris) | **AS-IS** — teks dari `journal_detail.description` **jangan diubah** / di-mask di DB |
+| **Backfill historis** | **Tidak** |
+| **Export** | Omit kolom supplier **name** terstruktur (jika ada); Description export disarankan **AS-IS** Fase 1 |
+| **Print** | Nama boleh sesuai policy print |
+| **Filter / Search** | Jika ada filter supplier: match **code + name**; hasil grid tetap tampil **code** |
+| **Field name baru di UI GL** | **Tidak** ditambahkan |
+
+**AS-IS mapping kolom (§2.3):** grid default **tidak** punya kolom Supplier terstruktur (ada TRX REF, DESCRIPTION, STORE, dll.). Aturan berlaku **jika/saat** kolom Supplier terstruktur ada — jangan mengarang kolom yang belum ada di UI.
+
+### 10.2 Acceptance Criteria
+
+- [ ] GL datalist/view: code only untuk field supplier terstruktur; no hover name.
+- [ ] Tidak mengubah description auto-created documents / baris journal.
+- [ ] Export tanpa kolom supplier name (jika ada).
+- [ ] Rollback flag mengembalikan label UI tanpa merusak data journal/GL.
+- [ ] Wiring lewat helper foundation ETM-15721.
+
+### 10.3 Out of scope (Fase 1)
+
+- Rewrite / mask free-text DESCRIPTION yang mungkin mengandung nama supplier.
+- Ubah `JournalProcess` / posting / balance logic.
+- Omit name dari API JSON (Fase 2 opsional di foundation).
+
+---
+
+*Dokumen v1.0 (19 Jun 2026). v1.1 Store ETM-15666 (1 Sep 2026). v1.2 Supplier Display UI mask vs auto-journal AS-IS ETM-15731 / ETM-15721 (2 Sep 2026).*

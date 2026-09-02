@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.7
-last_updated: 2026-07-27
+version: 3.8
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [PI, purchase invoice, supplier invoice, faktur beli, tagihan supplier, hutang supplier]
@@ -58,7 +58,7 @@ flowchart TD
 
 **Keterangan langkah:**
 
-- **Create / header:** isi Supplier, Tanggal, Mata Uang, Kurs. Opsional: **Supplier's Reference** (nomor faktur/dokumen supplier), **Due Date** (isi manual — belum otomatis dari termin supplier). **TO-BE:** **Supplier's Invoice Amount** = total nominal di invoice fisik supplier (opsional) — jika diisi, selisih vs Net sistem masuk Cash Diff saat approve. Saat Create, sistem bisa auto-simpan draft; Supplier sering terisi dari PI terakhir Anda. Jika belum pernah punya PI, isi field wajib (termasuk Supplier) manual dulu.
+- **Create / header:** isi Supplier (**tampil kode saja** — bisa cari by nama atau kode), Tanggal, Mata Uang, Kurs. Opsional: **Supplier's Reference** (nomor faktur/dokumen supplier), **Due Date** (isi manual — belum otomatis dari termin supplier). **TO-BE:** **Supplier's Invoice Amount** = total nominal di invoice fisik supplier (opsional) — jika diisi, selisih vs Net sistem masuk Cash Diff saat approve. Saat Create, sistem bisa auto-simpan draft; Supplier sering terisi dari PI terakhir Anda. Jika belum pernah punya PI, isi field wajib (termasuk Supplier) manual dulu. Nama supplier **tidak** muncul di daftar/detail/export; hanya di **Print**.
 - **Status Open:** wajib sebelum Approve (bukan Draft).
 - **Inbound Transaction:** pakai **Bulk Use** (banyak baris sekaligus) atau **Single Use** (isi qty per baris lewat modal). Hanya barang dari inbound **Approved** yang muncul.
 - **Additional Cost / Discount:** otomatis ikut dari PO saat SKU ditambah — hapus baris yang ingin ditunda ke PI berikutnya.
@@ -166,6 +166,7 @@ Setelah **approve PI**, sistem menjurnal: clear **Unbilled Goods** (dari Inbound
 |--------|----------|--------|
 | Supplier tidak di dropdown | Belum ada referensi inbound sama sekali | Buat/approve inbound dulu |
 | Supplier dipilih, modal kosong | Inbound masih draft | Approve inbound dulu (bukan bug) |
+| Hanya lihat kode supplier, bukan nama | Kebijakan tampilan code-only (semua role) | Cari tetap boleh by nama; nama hanya di **Print** |
 | Outstanding kosong / qty 0 | Sudah full tagih atau retur | Cek PI/return lain untuk SKU yang sama |
 | Approve gagal | COA Unbilled Goods / Tax / AP kosong, atau tidak ada detail | Lengkapi Product COA Group; pastikan ada baris |
 | Cost dari PO tidak muncul lagi | SKU PO sudah full invoice/return | Koordinasi sebelum closing; lihat FAQ cost stuck |
@@ -192,7 +193,10 @@ A: Saat **Approve PI**, bukan saat inbound.
 **Q: Due date otomatis dari termin supplier?**  
 A: Belum — isi manual. Fitur otomatis belum tersedia.
 
-**Q: Supplier's Reference untuk apa?**  
+**Q: Kenapa supplier hanya kode, bukan nama?**  
+A: Nama supplier bersifat sensitif. Di daftar, form, modal, dan export yang tampil hanya **kode**. Pencarian tetap bisa pakai nama atau kode. Nama boleh muncul di **Print**. Tidak ada kolom/nama tambahan di Basic Information.
+
+**Q: Supplier's Reference untuk apa?**
 A: Nomor faktur pajak / dokumen dari supplier (opsional); tampil di daftar sebagai Supplier's Ref.
 
 **Q: Supplier's Invoice Amount untuk apa? (TO-BE)**  

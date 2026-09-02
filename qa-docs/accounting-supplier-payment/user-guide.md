@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 1.1
-last_updated: 2026-07-29
+version: 1.2
+last_updated: 2026-09-02
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.2
+source_version: 2.4
 owner: QA - Yemima
 status: review
 ---
@@ -102,6 +102,7 @@ Setelah payment **di-approve**:
 
 ## 5. Yang Perlu Diperhatikan
 
+- **Supplier di layar = kode saja** (daftar, form, modal, export). Cari tetap by nama/kode; nama boleh di **Print**. Tidak ada field nama tambahan di Basic Information.
 - **Kalau total sumber dana tidak sama dengan total alokasi PI**, Approve gagal — samakan Source dan Detail ([Strict balancing](#sf-lingo:SF-PAY-01)).
 - **Kalau amount kas melebihi saldo rekening**, sistem menolak.
 - **Kalau amount DN melebihi sisa DN**, sistem menolak.
@@ -126,7 +127,7 @@ Setelah payment **di-approve**:
 ### Langkah 1 — Buat payment
 
 1. Buka **Accounting → Account Payment → Create**.
-2. Isi Supplier, Tanggal, Mata Uang, Kurs.
+2. Isi Supplier (**kode**; cari by nama OK), Tanggal, Mata Uang, Kurs.
 3. Set status **Open**.
 
 ### Langkah 2 — Tambah sumber dana
@@ -164,6 +165,7 @@ Tambah baris [**Adjustment**](#sf-lingo:SF-ADJ-01) bila perlu (biaya admin, roun
 ## 7. Tips & Hal yang Sering Bikin Bingung
 
 - **Partial payment boleh** — sisa PI di payment berikutnya.
+- **Supplier hanya kode?** Kebijakan tampilan — cari by nama tetap jalan; nama di Print.
 - **Gabung kas + DN boleh** — beberapa baris di Payment Source.
 - **Balancing error?** Samakan angka Source dan Detail (termasuk adjustment).
 - **PI tidak muncul?** Cek sudah lunas, supplier beda, atau tanggal filter.

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.2
-last_updated: 2026-07-17
+version: 2.3
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 ---
@@ -12,8 +12,8 @@ status: review
 
 **API prefix:** `accounting/supplier-payment`  
 **Type:** `Payment to Supplier` · **Code prefix:** `PY`  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.2
-
+**Behavior SoT:** [requirement.md](./requirement.md) v2.3  
+**Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15725](https://erpintegration.atlassian.net/browse/ETM-15725)
 ---
 
 ## 1. File Map
@@ -194,6 +194,19 @@ Cash available: period journal balance − reserved payment funds on same COA.
 | Void button on approved | Present but API broken |
 | Bulk DN clear | Wrong customer-payment URL |
 | Import Log | Datalist entry |
+| Supplier display code-only | Shared helpers via ETM-15721 — jangan hardcode hide |
+
+### Supplier display mode (ETM-15721 / ETM-15725)
+
+| Item | Rule |
+|------|------|
+| Flag | `SUPPLIER_DISPLAY_MODE=code_only` (rollback: `code_and_name`) |
+| Helpers | Shared FE/BE export helpers dari foundation ETM-15721 |
+| Select2 | Search name+code; label = code; no hover name |
+| ColVis / datalist / modal | Code only; no Supplier Name option |
+| Export | Omit name |
+| Print | Keep name |
+| Basic Info | Do **not** add read-only Supplier Name |
 
 ---
 

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 1.3
-last_updated: 2026-08-14
+version: 1.4
+last_updated: 2026-09-02
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.4
+source_version: 2.5
 owner: QA - Yemima
 status: review
 ---
@@ -24,6 +24,8 @@ status: review
 ## 1. Apa Itu & Kenapa Penting
 
 Purchase Inbound (sering disebut GRN) adalah dokumen untuk **mencatat barang masuk ke gudang** dari supplier berdasarkan Purchase Order yang sudah disetujui.
+
+Di layar dan export, supplier ditampilkan sebagai **kode** saja (bukan nama). Kamu tetap bisa **mencari by nama**; hasil yang tampil tetap kode. Cetak (**Print** / **Print RIR**) **boleh** masih menampilkan nama supplier.
 
 Lewat menu ini stok masuk (kecuali jasa), jurnal utang sementara terbit, dan qty penerimaan tercatat di PO. Pajak/PPN **tidak** dicatat di sini — itu di Purchase Invoice.
 

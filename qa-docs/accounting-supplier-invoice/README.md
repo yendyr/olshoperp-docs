@@ -15,14 +15,15 @@ Menu **Purchase Invoice** (Accounting / Account Payable).
 **Feature Map:** [feature-map.md](./feature-map.md) (tab MenuDoc)  
 **Shared capabilities:** [../_meta/shared-capabilities/](../_meta/shared-capabilities/)  
 **Proposal:** [../_meta/proposals/feature-map-and-capability-lingo.md](../_meta/proposals/feature-map-and-capability-lingo.md)  
-**User-guide:** v1.5 · `source_version` 3.7  
+**User-guide:** v1.6 · `source_version` 3.8  
 **Help Center overview:** [ID](../_meta/docs-hub/menus/accounting-supplier-invoice/overview.id.md) · [EN](../_meta/docs-hub/menus/accounting-supplier-invoice/overview.en.md) (`authored`, review)  
-**Version (requirement):** 3.6 · **KB:** 3.7 · **Technical:** 3.5 · **Feature Map:** 1.1 · **Last updated:** 2026-08-12
+**Version (requirement):** 3.7 · **KB:** 3.8 · **Technical:** 3.6 · **Feature Map:** 1.1 · **Last updated:** 2026-09-02
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.7–3.8 | 2026-09-02 ~16:30 | Supplier tampil **kode saja** di daftar/form/export (cari tetap by nama+kode; nama boleh di Print). Parent ETM-15721 / ETM-15724 |
 | status | 2026-08-12 14:58 | Promote 5-file + Feature Map/Lingo + Help Center overview ke **review** (paket sudah lengkap; update berikutnya hanya bila ada improvement / change requirement) |
 | 3.3 | 2026-07-23 | TO-BE Supplier's Invoice Amount + Invoice Diff |
 | 3.4 | 2026-07-24 | Pilot Feature Map + SF Entry (shared + capabilities/) |

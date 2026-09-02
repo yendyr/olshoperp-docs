@@ -14,15 +14,16 @@ Menu **Debit Note** (Accounting / Account Payable) — klaim/deposit ke supplier
 **PM source:** Debit Note Source of Truth **v1.0** (12 Agustus 2026)  
 **SoT:** [`_meta/sot/accounting-debit-note-source-of-truth.md`](../_meta/sot/accounting-debit-note-source-of-truth.md)  
 **UI route:** `/accounting/debit-note`  
-**3 layer version:** 1.0 · **User-guide:** 1.1 · **Feature Map:** 1.0 · **Last updated:** 2026-08-12  
+**3 layer version:** 1.1 · **User-guide:** 1.2 · **Feature Map:** 1.0 · **Last updated:** 2026-09-02  
 **Maintenance owner:** QA — Yemima
 
-**Help Center overview:** [ID](../_meta/docs-hub/menus/accounting-debit-note/overview.id.md) · [EN](../_meta/docs-hub/menus/accounting-debit-note/overview.en.md) (authored v1.0)
+**Help Center overview:** [ID](../_meta/docs-hub/menus/accounting-debit-note/overview.id.md) · [EN](../_meta/docs-hub/menus/accounting-debit-note/overview.en.md) (`authored` — not updated)
 
 ## Changelog
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-09-02 ~16:30 | 1.1 | Supplier tampil **kode saja** di daftar/form/export (cari by nama+kode; nama boleh di Print). Parent ETM-15721 / ETM-15727 |
 | 2026-08-12 19:40 | HC 1.0 | Help Center overview ID + EN dari file authored user (Debit Note) |
 | 2026-08-12 17:10 | 1.0b | Feature Map + 5 Lingo cards (SF-DN-01..04, SF-DET-01); UG v1.1 SF tags |
 | 2026-08-12 | 1.0 | Full 5-file dari SoT v1.0; Gap GAP-DN-01..05; relasi AP/PR/PI/CN |

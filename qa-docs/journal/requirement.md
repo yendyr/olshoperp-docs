@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: journal
 menu_name: "Journal"
-version: 1.2
-last_updated: 2026-09-01
+version: 1.3
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [journal, accounting journal, jurnal, GL journal, jurnal akuntansi]
@@ -27,6 +27,7 @@ Hanya journal **Approved** yang masuk laporan keuangan (GL, Trial Balance, Balan
 | 1.0 | 2026-05 | QA - Yemima | Initial — 13 tipe journal, import multi-currency, export advanced, auto-generate |
 | 1.1 | 2026-07-15 | QA - Yemima | SoT v1.1: auto-generate value 0 tetap terbit detail COA (bukan header-only); GAP-JRN-01 backfill historical |
 | 1.2 | 2026-09-01 | QA - Yemima | Store di header journal ↔ GL kolom Store; aturan pivot + gap AR/CN/DN (cross-ref [general-ledger §9](../general-ledger/requirement.md#9-kolom-store--aturan-bisnis--gap-implementasi)); GAP-JRN-02 |
+| 1.3 | 2026-09-02 | QA - Yemima | Supplier display **code-only** — UI mask vs auto-journal description AS-IS (ETM-15730 / foundation ETM-15721); §11 |
 
 ---
 
@@ -317,6 +318,47 @@ A: All-or-Nothing — 1 error menolak seluruh file.
 
 **Q: Store di journal vs kolom Store di General Ledger?**  
 A: GL membaca store dari **header journal** (pivot). Isi Store saat create/edit manual journal, atau pastikan auto-journal menulis pivot — lihat §8.1.
+
+**Q: Nama supplier di description journal auto-create diubah jadi code?**  
+A: Tidak di Fase 1 — teks description / generator tetap AS-IS. Yang di-mask hanya kolom Supplier terstruktur di UI (jika ada). Lihat §11.
+
+---
+
+## 11. Supplier Display — UI mask vs auto-journal AS-IS (ETM-15730)
+
+**Parent / foundation:** [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) — flag `SUPPLIER_DISPLAY_MODE=code_only` (rollback: `code_and_name`).  
+**Wiring menu:** [ETM-15730](https://erpintegration.atlassian.net/browse/ETM-15730).  
+**Selaras:** [General Ledger §10](../general-ledger/requirement.md#10-supplier-display--ui-mask-vs-auto-journal-as-is-etm-15731).
+
+### 11.1 Keputusan produk (scope sempit)
+
+Journal **bukan** full supplier-field rewrite seperti PO/PI. Fase 1 = **UI mask** pada permukaan tampilan saja.
+
+| Area | Perilaku `code_only` |
+|------|----------------------|
+| **Datalist / view** | Jika ada **kolom Supplier terstruktur** → tampil **code only**; tidak ada kolom / ColVis **Supplier Name**; no hover/tooltip nama |
+| **Description auto-create** (header & baris) | **AS-IS** — **jangan** ubah generator / job / teks tersimpan di DB |
+| **Backfill historis** | **Tidak** — journal lama tidak di-rewrite description-nya |
+| **Export** | Omit kolom supplier **name** terstruktur (jika ada); teks description disarankan **AS-IS** Fase 1 (audit trail utuh) |
+| **Print** | Nama supplier **boleh** tetap sesuai policy print (exception global) |
+| **Field name baru di form** | **Tidak** ditambahkan (klarifikasi request poin 2) |
+
+**AS-IS datalist Journal (§4):** kolom default saat ini **tidak** punya Supplier terstruktur (Type, Description, Trx Ref, dll.). Aturan di atas berlaku **jika/saat** kolom Supplier terstruktur ada atau ditambahkan — jangan mengarang kolom yang belum ada.
+
+### 11.2 Acceptance Criteria
+
+- [ ] Tidak ada perubahan generator / job auto-journal (`JournalProcess` dll.) untuk teks description.
+- [ ] Datalist/view: tidak expose kolom Supplier Name terpisah; code only jika kolom supplier terstruktur ada.
+- [ ] Export tidak menambah exposure name lewat kolom supplier terstruktur; description text Fase 1 lebih baik AS-IS.
+- [ ] Tidak ada backfill description historis.
+- [ ] Rollback flag `code_and_name` mengembalikan label UI tanpa merusak data journal.
+- [ ] Helper tampilan memakai foundation ETM-15721 — jangan hardcode hide per-menu.
+
+### 11.3 Out of scope (Fase 1)
+
+- Rewrite / mask isi `description` free-text yang mungkin mengandung nama supplier.
+- Omit `supplier_name` dari API JSON (Fase 2 opsional di foundation).
+- Ubah mapping tipe journal / Trx Ref / posting COA.
 
 ---
 

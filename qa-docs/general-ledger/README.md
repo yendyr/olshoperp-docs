@@ -46,6 +46,7 @@ Menu **General Ledger Report** (Accounting) — laporan buku besar per COA.
 
 | Date | Changes |
 |------|---------|
+| 2026-09-02 16:30 | Supplier di layar GL: kode saja bila ada kolom terstruktur; deskripsi journal otomatis tetap apa adanya — tidak diubah (ETM-15731) |
 | 2026-09-01 14:40 | Help Center General Ledger ID (authored) + EN translation — grouping COA, kolom Store, opening/ending, export async |
 | 2026-09-01 12:55 | User guide v1.0; Feature Map + 3 capability Lingo (Store column/filter/export); Help Center ditunda sesi terpisah |
 | 2026-09-01 11:55 | Docs v1.1: kolom/filter/export Store (ETM-15666), aturan pivot header journal, cross-ref settlement/journal, gap AR/CN/DN |

@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: accounting-supplier-payment
 menu_name: Account Payment
 lang: en
-version: 1.0
-last_updated: 2026-07-29
+version: 1.1
+last_updated: 2026-09-02
 status: draft
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/technical/user-guide).
+notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/technical/user-guide). Updated for supplier code-only (ETM-15725).
 ---
 
 ## Module/Feature: Account Payment
@@ -41,7 +41,7 @@ notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/
 
 | Requirement | Source | Rule |
 | :---- | :---- | :---- |
-| Supplier | Master | Required on header |
+| Supplier | Master | Required on header — UI shows **supplier code** only (search still matches name+code; name on Print only; no read-only Name on Basic Info) |
 | Approved PI with outstanding | Purchase Invoice | Appears in Outstanding PI modal |
 | AP / Exchange Diff / Cash Diff COA | Company settings | Required for approve journal |
 | Cash/Bank account (if used) | Company bank/cash | Active; amount ≤ available balance |
@@ -68,7 +68,7 @@ flowchart LR
 
 ### Order of execution
 
-1. **Create header** — Supplier, date, currency, rate; set **Open**.  
+1. **Create header** — Supplier (**code** on screen), date, currency, rate; set **Open**.  
 2. **Add Payment Source** — Cash/Bank and/or Debit Note.  
 3. **Allocate Outstanding PI** — Use / Bulk Use / Allocate Full (partial allowed).  
 4. **Optional Adjustment** — manual Debit/Credit COA lines.  

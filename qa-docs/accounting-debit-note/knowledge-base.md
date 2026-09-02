@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.0
-last_updated: 2026-08-12
+version: 1.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 audience: operator
@@ -74,7 +74,7 @@ flowchart TD
 ## 4. Cara pakai (manual)
 
 1. Buka **Debit Note** → **Create**.  
-2. Pilih **Supplier** (General Company supplier — bukan toko marketplace).  
+2. Pilih **Supplier** (**tampil kode**; cari by nama/kode OK — bukan toko marketplace). Nama tidak di daftar/export; hanya di **Print**.  
 3. Isi tanggal, currency, rate.  
 4. Tambah **Payment Source** — pilih rekening kas/bank (currency harus sama).  
 5. Set status **Open** → **Save** → **Approve**.
@@ -118,6 +118,9 @@ A: Save edit tanpa ubah status → kembali **Draft**; pilih **Open** → siap ap
 
 **Q: Mirror Credit Note?**  
 A: Credit Note = sisi customer (AR). Debit Note = sisi supplier (AP).
+
+**Q: Kenapa supplier hanya kode?**  
+A: Kebijakan tampilan code-only. Cari by nama/kode OK; nama hanya di **Print**; export tanpa nama.
 
 ---
 

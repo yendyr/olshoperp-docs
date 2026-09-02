@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 1.7
-last_updated: 2026-08-12
+version: 1.8
+last_updated: 2026-09-02
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.9
+source_version: 3.0
 owner: QA - Yemima
 status: review
 ---
@@ -22,6 +22,8 @@ status: review
 ## 1. Apa Itu & Kenapa Penting
 
 Purchase Order adalah **pesanan pembelian resmi** ke supplier. Lewat menu ini kamu mencatat apa yang dibeli, berapa harganya, dan dari supplier mana — sebagai dasar penerimaan barang dan tagihan berikutnya.
+
+Di layar dan export, supplier ditampilkan sebagai **kode** saja (bukan nama). Kamu tetap bisa **mencari by nama**; hasil yang tampil tetap kode. Cetak PDF **boleh** masih menampilkan nama supplier.
 
 Tanpa PO yang disetujui, proses terima barang (Purchase Inbound) dan tagihan (Purchase Invoice) tidak punya acuan yang jelas.
 

@@ -2,8 +2,8 @@
 doc_type: user-guide
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.1
-last_updated: 2026-08-12
+version: 1.2
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 source_docs:
@@ -11,7 +11,7 @@ source_docs:
   - ./knowledge-base.md
   - ./technical.md
   - ./feature-map.md
-source_version: 1.0
+source_version: 1.1
 ---
 
 # Panduan Pengguna — Debit Note
@@ -76,6 +76,7 @@ flowchart LR
 
 ## 5. Yang Perlu Diperhatikan
 
+- **Supplier di layar = kode saja** (daftar, form, export). Cari by nama/kode OK; nama boleh di **Print**. Tidak ada field nama tambahan di Basic Information.  
 - Supplier DN **bukan** toko marketplace — pilih **General Company supplier**.  
 - Kalau kamu klik **Create** dan langsung masuk edit, itu **auto-save** dari DN terakhir — kalau gagal, cek pesan di tanggal/fiscal period.  
 - Kalau kamu tambah [**Payment Source**](#sf-lingo:SF-DET-01) melebihi saldo kas/bank, sistem menolak.  
@@ -88,7 +89,7 @@ flowchart LR
 ## 6. Langkah-Langkah (manual)
 
 1. Buka **Debit Note** → **Create** ([jalur manual](#sf-lingo:SF-DN-01)).  
-2. Pilih supplier, tanggal, currency.  
+2. Pilih supplier (**kode** di layar; cari by nama OK), tanggal, currency.  
 3. Tambah [**Payment Source**](#sf-lingo:SF-DET-01) (rekening kas/bank + amount).  
 4. Set **Open** → **Save** → **Approve**.  
 5. Buka **[Account Payment](#sf-lingo:SF-DN-03)** → tambah sumber **Debit Note** → alokasi ke PI.

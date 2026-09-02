@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.9
-last_updated: 2026-08-12
+version: 3.0
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [PO, purchase order, pembelian, pesanan pembelian, outstanding PR, Select Multiple Products]
@@ -169,12 +169,18 @@ Lingo: [Import Detail](#sf-lingo:SF-IMP-01).
 
 | Field | Tips |
 |-------|------|
-| Supplier | Hanya muncul jika accounting setting **100% lengkap** |
+| Supplier | Hanya muncul jika accounting setting **100% lengkap**. Di layar tampil **kode** saja (bukan nama). Boleh **cari by nama** — hasil tetap menampilkan kode. Tidak ada tooltip nama. |
 | Currency / Payment | Auto dari supplier saat dipilih |
 | Exchange Rate | Default **1** — ubah manual untuk mata uang asing |
 | Your Ref | Max 50 karakter |
 
 Setelah ada detail, **tanggal, supplier, currency, payment** terkunci.
+
+### Supplier di layar vs cetak / export
+
+- **Layar** (datalist, form, modal, Column Show/Hide): hanya **kode** supplier — semua role.
+- **Export:** tanpa nama supplier.
+- **Print PDF:** nama supplier **masih boleh** tampil (pengecualian).
 
 ---
 

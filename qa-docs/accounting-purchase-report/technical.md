@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-purchase-report
 menu_name: "Purchase Report"
-version: 2.0
-last_updated: 2026-08-31
+version: 2.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,9 +13,10 @@ related_docs:
 
 # Purchase Report — Technical Documentation
 
-**Behavior SoT:** [requirement.md](./requirement.md) v2.0 (AS-IS) · [_meta/sot/…](../_meta/sot/accounting-purchase-report-source-of-truth.md)  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.1 (AS-IS + supplier code-only) · [_meta/sot/…](../_meta/sot/accounting-purchase-report-source-of-truth.md)  
 **UI route:** `/accounting/purchase-report`  
-**API prefix:** `accounting/purchase-report`
+**API prefix:** `accounting/purchase-report`  
+**Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15729](https://erpintegration.atlassian.net/browse/ETM-15729)
 
 ---
 
@@ -85,8 +86,21 @@ Date range untuk total supplier grouping: `resolveStartEndDate($request)` + Sear
 
 ### Group total (`supplier_formatted_grouping`)
 
-- Per supplier_id: sum filtered lines (`price_after_disc_vat` else `price_before_disc_vat`) within date window.  
-- Rendered in group header HTML.
+- Per supplier: sum filtered lines (`price_after_disc_vat` else `price_before_disc_vat`) within date window.  
+- Rendered in group header HTML.  
+- **ETM-15729:** header label = **Supplier Code** (+ total) saat `SUPPLIER_DISPLAY_MODE=code_only`; group/sort key konsisten ke `supplier_code`. Rollback `code_and_name` mengembalikan label legacy (name).
+
+### Supplier display mode (ETM-15721 / ETM-15729)
+
+| Item | Rule |
+|------|------|
+| Flag | `SUPPLIER_DISPLAY_MODE=code_only` (rollback: `code_and_name`) |
+| Helpers | Shared FE helpers dari foundation — jangan hardcode hide name |
+| ColVis / datalist (both tabs) | Code only; no Supplier Name option |
+| Group header | **Code** + total |
+| Export | Omit name |
+| Search/filter | Match name+code; display code |
+| Print | Keep name (jika ada) |
 
 ### Hyperlink (`code_formatted`)
 
@@ -112,6 +126,7 @@ Date range untuk total supplier grouping: `resolveStartEndDate($request)` + Sear
 | INV-03 | Currency not auto-converted |
 | INV-04 | Soft-deleted excluded |
 | INV-05 | Export progress/files scoped by `select_menu` label |
+| INV-06 | Group header / supplier column respect `SUPPLIER_DISPLAY_MODE` (code_only → code label) |
 
 ---
 
@@ -121,11 +136,12 @@ Date range untuk total supplier grouping: `resolveStartEndDate($request)` + Sear
 - PO With + Without PR both appear.  
 - Draft/Approved/etc. status appear when in date range.  
 - Export All from PO tab does not list under PI export-file query.  
-- Regression: group header total vs sum of visible line amounts for one supplier.
+- Regression: group header total vs sum of visible line amounts for one supplier.  
+- ETM-15729: group header shows **code** (not name); ColVis has no Supplier Name; export omits name.
 
 ---
 
 ## 8. Related
 
 - [requirement.md](./requirement.md) · [knowledge-base.md](./knowledge-base.md)  
-- Jira: ETM-15673 · ETM-15674  
+- Jira: ETM-15673 · ETM-15674 · ETM-15729 · ETM-15721  

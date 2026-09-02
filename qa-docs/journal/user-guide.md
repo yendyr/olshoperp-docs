@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: journal
 menu_name: "Journal"
-version: 1.0
-last_updated: 2026-08-12
+version: 1.1
+last_updated: 2026-09-02
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.1
+source_version: 1.3
 owner: QA - Yemima
 status: review
 ---
@@ -111,6 +111,7 @@ Kalau kamu baru import: status biasanya masih **Open** — cek balance, lalu App
 - Kalau **kode transaksi** sudah dipakai journal lain, simpan ditolak — ganti kode unik.
 - Kalau **import** punya satu baris salah saja, **seluruh file** ditolak (All-or-Nothing) — perbaiki semua error yang muncul, lalu upload ulang.
 - Kalau currency asing, pastikan **kurs** diisi angka yang benar; di layar kamu lihat nilai asing + setara IDR.
+- **Supplier di layar:** jika ada kolom Supplier terpisah, yang tampil **kode** saja (bukan nama). Teks **Description** journal otomatis **tidak** diganti — boleh masih memuat nama di narasi; itu sengaja Fase 1.
 
 ---
 
@@ -157,6 +158,7 @@ Kalau kamu baru import: status biasanya masih **Open** — cek balance, lalu App
 - **Trx Ref aneh.** Selalu nomor penerbit langsung. Stock Opname yang mengurangi stok menerbitkan Stock Deduction dulu; Trx Ref journal = nomor Stock Deduction, bukan Stock Opname.
 - **Tidak bisa edit journal dari invoice/outbound.** Benar — auto-generate langsung Approved dan terkunci.
 - **Tidak bisa pilih akun.** Biasanya akun itu induk — pilih yang lebih spesifik.
+- **Description masih menyebut nama supplier.** Normal di Fase 1: yang disembunyikan hanya kolom Supplier terstruktur di UI; narasi auto-create tidak di-rewrite.
 
 ---
 

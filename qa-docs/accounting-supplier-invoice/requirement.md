@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.6
-last_updated: 2026-07-27
+version: 3.7
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [PI, purchase invoice, purchase invoice docs, supplier invoice, faktur beli, tagihan supplier]
@@ -35,6 +35,7 @@ Downstream: [Account Payment](../accounting-supplier-payment/requirement.md)
 | 3.4 | 2026-07-24 | QA - Yemima | Pilot **Feature Map** + SF Entry (shared + `capabilities/`); index sub-feature untuk Lingo-style cards |
 | 3.5 | 2026-07-27 | QA - Yemima | Feature Map dipindah ke layer/tab `feature-map.md`; label UI = Lingo click; auto-highlight lintas layer |
 | 3.6 | 2026-07-27 | QA - Yemima | Rounding SoT **final**: GAP-PI-05 Accepted (UI-only); Invoice Total/jurnal exact; export 4dp TO-BE (GAP-PI-07) |
+| 3.7 | 2026-09-02 | QA - Yemima | Supplier display **code-only** (ETM-15724 / parent ETM-15721): UI+export tanpa name; print boleh name; tanpa field Name di Basic Info |
 
 ---
 
@@ -106,7 +107,7 @@ stateDiagram-v2
 |-------|-----------------|--------|------------|
 | Trx Code \| Trx Date | Ya | Header | Prefix `PI-` |
 | Due Date | Ya | Header | Manual |
-| Supplier | Ya | Header | — |
+| Supplier | Ya | Header | Tampil **Supplier Code** saja (§4.1) |
 | Supplier's Ref | Ya | Header | Referensi faktur/dokumen supplier |
 | Desc | Ya | Header | — |
 | Trx Ref | Ya | Detail agregat | Nomor inbound; multi dipisah koma; clickable ke show inbound |
@@ -119,6 +120,19 @@ stateDiagram-v2
 **Action rules (SF-DL-06):** Edit selama unapproved; Show saja jika Approved. Approve/Reject hanya Open. Delete hanya unapproved.
 
 **Create UX / auto-save (SF-HDR-01):** Transaction Date = now; Currency = primary; Exchange Rate = 1 (disabled jika primary). Supplier auto-fill dari PI terakhir user — jika user belum pernah punya PI, autosave gagal dan wajib isi field wajib manual dulu.
+
+### 4.1 Supplier Display (code-only) — ETM-15724
+
+Parent: [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721). Identitas operasional supplier = **code**; nama sensitif — tidak ditampilkan di UI/export. Berlaku **semua role**.
+
+| Surface | Rule |
+|---------|------|
+| Datalist / detail / modal | Tampil **Supplier Code** saja |
+| Column Show/Hide (ColVis) | **Tanpa** opsi Supplier Name |
+| Select2 / Global Search / Advanced Filter | Match **code + name**; label hasil & selection = **code**; **tanpa** hover/tooltip nama |
+| Basic Information » Supplier | Code only; **jangan** tambah field read-only Supplier Name |
+| Export | **Tanpa** name |
+| Print | Name **boleh** (exception) |
 
 ---
 
@@ -133,7 +147,7 @@ stateDiagram-v2
 | Due Date | Tidak | Null | — | Manual — belum auto dari TOP supplier (§9.1) |
 | Currency | Ya | Primary | Master Currency | — |
 | Exchange Rate | Ya | 1 | — | Disabled jika primary; editable jika foreign |
-| Supplier | Ya | — | Supplier dengan referensi inbound (status apapun) | Quirk GAP-PI-03 |
+| Supplier | Ya | — | Supplier dengan referensi inbound (status apapun); **display = code** (§4.1) | Quirk GAP-PI-03 |
 | Supplier's Reference | Tidak | Null | — | Label UI = Supplier's Reference |
 | **Supplier's Invoice Amount** | Tidak | Null | Input user | **TO-BE** — lihat §5.1b |
 | Description | Tidak | Null | — | — |

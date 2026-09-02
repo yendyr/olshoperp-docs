@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-product-transaction-history
 menu_name: "Product Transaction History"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -45,6 +45,7 @@ Dashboard analitik **siklus pembelian dan penjualan** per produk dalam rentang t
 
 - Edit dokumen PR/PO dari menu ini
 - Lihat data tanpa memilih produk
+- Melihat **nama** supplier di layar atau export (hanya **kode**; cari by nama tetap OK jika ada search supplier; print boleh nama bila ada cetak)
 
 ## 4. Cara Pakai
 
@@ -52,6 +53,12 @@ Dashboard analitik **siklus pembelian dan penjualan** per produk dalam rentang t
 2. Dashboard KPI dan chart ter-refresh otomatis.
 3. Buka tab detail untuk melihat daftar transaksi.
 4. Export Excel jika perlu.
+
+### Supplier di layar vs cetak / export
+
+- **Layar** (grid/tab/Column Show/Hide): hanya **kode** supplier — semua role.
+- **Export:** tanpa nama supplier.
+- **Print:** nama supplier **masih boleh** (jika menu punya print).
 
 ## 5. Troubleshooting
 

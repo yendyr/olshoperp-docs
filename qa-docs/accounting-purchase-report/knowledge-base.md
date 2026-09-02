@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-purchase-report
 menu_name: "Purchase Report"
-version: 2.0
-last_updated: 2026-08-31
+version: 2.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 audience: operator
@@ -18,7 +18,7 @@ Laporan pembelian **per SKU per supplier**. Satu menu, **dua tab**:
 - **Purchase Order** — isi dari dokumen PO  
 - **Purchase Invoice** — isi dari dokumen PI (faktur beli)
 
-Data digroup per nama supplier. Ini **bukan** laporan utang (Account Payable Report), dan **tidak** menghubungkan PO ke PI di dalam grid.
+Data digroup per **kode supplier** (bukan nama). Ini **bukan** laporan utang (Account Payable Report), dan **tidak** menghubungkan PO ke PI di dalam grid.
 
 **Path:** Accounting → Report → **Purchase Report**  
 **Route:** `/accounting/purchase-report`
@@ -31,7 +31,7 @@ Data digroup per nama supplier. Ini **bukan** laporan utang (Account Payable Rep
 flowchart TD
   A[Buka Purchase Report] --> B[Tab PO aktif default]
   B --> C[Cek / ubah filter tanggal]
-  C --> D[Lihat grid per supplier]
+  C --> D[Lihat grid per kode supplier]
   D --> E{Butuh data PI?}
   E -->|Ya| F[Pindah tab Purchase Invoice]
   E -->|Tidak| G[Filter / search / export]
@@ -39,11 +39,13 @@ flowchart TD
 ```
 
 1. Buka menu — tab **Purchase Order** langsung menampilkan data (default filter tanggal = **bulan ini**).  
-2. Lihat group per supplier; total supplier ada di header group (kanan).  
+2. Lihat group per **kode** supplier; total supplier ada di header group (kanan).  
 3. Butuh faktur beli → klik tab **Purchase Invoice** (data terpisah).  
 4. Filter, search, atau export sesuai kebutuhan.
 
-**Contoh:** Cari semua baris PO supplier LUKAS di bulan berjalan → tetap di tab Purchase Order, filter/search supplier atau kode `PO-…`. Untuk PI supplier yang sama → pindah tab Purchase Invoice.
+**Contoh:** Cari semua baris PO supplier dengan kode/nama LUKAS di bulan berjalan → tetap di tab Purchase Order, filter/search — hasil grid menampilkan **kode**. Untuk PI supplier yang sama → pindah tab Purchase Invoice.
+
+**Supplier tampilan:** kode saja di grid, header group, dan export. Cari tetap boleh by nama atau kode. Nama hanya di Print (jika ada).
 
 ---
 
@@ -54,7 +56,7 @@ flowchart TD
 | Trx. Code | Nomor PO/PI — klik untuk buka dokumen |
 | SKU / Qty / Unit | Baris barang |
 | Unit Price / Total Price | Harga baris (tanpa Other Cost/Disc dokumen) |
-| Total Tagihan | Nilai line; jumlah supplier di **header group** |
+| Total Tagihan | Nilai line; jumlah supplier di **header group** (label = **kode** supplier) |
 | Currency | Sesuai transaksi |
 | Trx. Status | Semua status ikut tampil |
 
@@ -100,6 +102,9 @@ A: Di sistem sekarang defaultnya **bulan kalender berjalan**. Ubah lewat Advance
 
 **Q: Draft PO ikut?**  
 A: Ya — semua status ikut, selama tidak soft-deleted.
+
+**Q: Kenapa header group hanya kode supplier?**  
+A: Kebijakan tampilan code-only. Cari tetap by nama; nama tidak di grid/export; Print boleh menampilkan nama.
 
 ---
 

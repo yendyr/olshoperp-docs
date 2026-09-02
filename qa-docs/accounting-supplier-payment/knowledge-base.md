@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.3
-last_updated: 2026-07-29
+version: 2.4
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [Account Payment, AP payment, pembayaran hutang, PY, pelunasan supplier]
@@ -49,7 +49,7 @@ flowchart TD
 
 **Keterangan langkah:**
 
-- **Create:** Supplier, tanggal, mata uang, kurs; set **Open**.
+- **Create:** Supplier (**tampil kode**; cari by nama/kode OK), tanggal, mata uang, kurs; set **Open**. Nama supplier tidak di daftar/export — hanya di **Print**.
 - **Payment Source:** kas/bank (cek Balance) dan/atau Debit Note; amount ≤ sisa.
 - **Outstanding PI:** Use (boleh sebagian), Allocate Full, atau Bulk Use.
 - **Balance:** Total Source harus sama Total Detail sebelum Approve.
@@ -116,6 +116,9 @@ A: Tidak — status **Open**; review lalu Approve.
 
 **Q: Mata uang sumber beda dari header?**  
 A: Ditolak — samakan currency.
+
+**Q: Kenapa supplier hanya kode?**  
+A: Kebijakan tampilan code-only (semua role). Cari tetap by nama/kode; nama hanya di **Print**; export tanpa nama.
 
 ---
 

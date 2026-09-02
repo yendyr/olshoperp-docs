@@ -3,18 +3,18 @@ doc_type: docs-hub-menu-overview
 menu_slug: accounting-purchase-report
 menu_name: Purchase Report
 lang: en
-version: 1.0
-last_updated: 2026-09-01
+version: 1.1
+last_updated: 2026-09-02
 status: review
 audience: help-center
 source_type: derived
 source_ref: "docs/qa-docs/_meta/docs-hub/menus/accounting-purchase-report/overview.id.md"
-notes: English translation of user-authored ID overview. Help Center landing (Docs Page).
+notes: English translation of user-authored ID overview. Updated group header = Supplier Code (ETM-15729). Help Center landing (Docs Page).
 ---
 
 ### 📦 Module/Feature: Purchase Report
 
-**Business Definition:** **Purchase Report** is a *read-only* reporting module that presents a line-by-line SKU recap grouped centrally by **Supplier**. The module isolates data into two main tabs or points of view: **Purchase Order** (covering both *With PR* and *Without PR* orders) and **Purchase Invoice**. This report is **not** an *Account Payable Report* and is intentionally designed not to merge or link PO and PI data in a single table grid.
+**Business Definition:** **Purchase Report** is a *read-only* reporting module that presents a line-by-line SKU recap grouped centrally by **Supplier Code**. The module isolates data into two main tabs or points of view: **Purchase Order** (covering both *With PR* and *Without PR* orders) and **Purchase Invoice**. This report is **not** an *Account Payable Report* and is intentionally designed not to merge or link PO and PI data in a single table grid.
 
 ---
 
@@ -27,7 +27,7 @@ notes: English translation of user-authored ID overview. Help Center landing (Do
 | **SKU / Name** | Link | *System Product* identifier. | Link to product master plus SKU *copy* action. |
 | **Total Price** | Currency | Pure line product amount. | Strictly calculated **without** upstream *Other Cost* or *Other Discount*. |
 | **Total Tagihan (Baris)** | Currency | Total billing amount per SKU row. | Line-specific value, not a cumulative running total. |
-| **Total Tagihan (Header)** | Currency | Sum of row *Total Price* for one vendor. | Shown on the right of the Supplier *group header* for the active filter range. |
+| **Total Tagihan (Header)** | Currency | Sum of row *Total Price* for one vendor. | Shown on the right of the **Supplier Code** *group header* for the active filter range. |
 | **Trx. Status** | Enum | Source document lifecycle indicator. | All upstream statuses inclusive (including *Draft*). |
 
 ---
@@ -50,7 +50,7 @@ flowchart LR
     B --> C{Select Tab Dataset}
     C -->|PO Tab| D[Load PO Detail Rows]
     C -->|PI Tab| E[Load PI Detail Rows]
-    D --> F[Group Rows<br/>by Supplier]
+    D --> F[Group Rows<br/>by Supplier Code]
     E --> F
     F --> G[Async Export per Tab]
     class B,G action
@@ -59,7 +59,7 @@ flowchart LR
 **Steps:**
 
 1. On open, data loads for the current calendar month with **Purchase Order** tab active by default.
-2. The grid groups rows by **Supplier** with Total Tagihan summary on the right of each group header.
+2. The grid groups rows by **Supplier Code** with Total Tagihan summary on the right of each group header. Search still matches name+code; export omits supplier name.
 3. For invoice detail, switch to **Purchase Invoice** — the old grid is cleared and the PI dataset loads fully.
 4. *Export All* and *This Page* run asynchronously; download files are separated per active tab.
 

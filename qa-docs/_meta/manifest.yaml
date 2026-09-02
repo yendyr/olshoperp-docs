@@ -490,10 +490,10 @@ menus:
         status: pending
       requirement:
         file: requirement.md
-        status: pending
+        status: draft
       technical:
         file: technical.md
-        status: pending
+        status: draft
       user-guide:
         file: user-guide.md
         status: pending
@@ -1383,10 +1383,10 @@ menus:
         status: pending
       requirement:
         file: requirement.md
-        status: pending
+        status: draft
       technical:
         file: technical.md
-        status: pending
+        status: draft
       user-guide:
         file: user-guide.md
         status: pending
@@ -2924,32 +2924,35 @@ menus:
     module: SupplyChain
     menu_links:
       - supplychain/mutation-transfer-external
+      - supplychain/new-mutation-transfer-external
     owner: QA - Yemima
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
-      []
+      - docs/qa-docs/_meta/sot/supplychain-mutation-transfer-external-source-of-truth.md
     code_globs:
       backend:
         - Modules/SupplyChain/Http/Controllers/StockMutationTransferExternalController.php
         - Modules/SupplyChain/Http/Controllers/StockMutationTransferExternalDetailController.php
-        - Modules/SupplyChain/Http/Controllers/StockMutationTransferController.php
+        - Modules/SupplyChain/Http/Controllers/TransferMutationMiddleDetailExternalController.php
         - Modules/SupplyChain/Entities/StockMutationTransferExternal.php
         - Modules/SupplyChain/Services/TransferExternalApproveService.php
+        - Modules/SupplyChain/Import/TransferExternalImport.php
         - Modules/SupplyChain/Routes/api.php
+      frontend:
         - olshoperp-frontend/src/pages/SCM/StockMutation/TransferExternal/**/*
-      frontend: []
+        - olshoperp-frontend/src/pages/SCM/StockMutation/NewTransferExternal/**/*
 
   supplychain-mutation-transfer-internal:
     menu_name: "Transfer Internal"
@@ -3694,24 +3697,24 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
-      []
+      - docs/qa-docs/_meta/sot/supplychain-transfer-inbound-source-of-truth.md
     code_globs:
       backend:
         - Modules/SupplyChain/Http/Controllers/StockMutationTransferExternalController.php
         - Modules/SupplyChain/Http/Controllers/StockMutationTransferExternalDetailController.php
         - Modules/SupplyChain/Http/Controllers/TransferMutationMiddleDetailExternalController.php
-        - Modules/SupplyChain/Http/Controllers/StockMutationTransferController.php
+        - Modules/SupplyChain/Services/TransferExternalApproveService.php
         - Modules/SupplyChain/Entities/StockMutationTransferExternal.php
         - Modules/SupplyChain/Entities/TransferInbound.php
       frontend:

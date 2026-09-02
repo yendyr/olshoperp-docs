@@ -2,8 +2,8 @@
 doc_type: technical
 menu: journal
 menu_name: "Journal"
-version: 1.2
-last_updated: 2026-09-01
+version: 1.3
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [journal API, journal code, JournalProcess, GL journal]
@@ -13,7 +13,7 @@ aliases: [journal API, journal code, JournalProcess, GL journal]
 
 **API prefix:** `accounting/journal`  
 **Module:** `Modules/Accounting`  
-**Behavior:** [requirement.md](./requirement.md) v1.1
+**Behavior:** [requirement.md](./requirement.md) v1.3
 
 ---
 
@@ -272,6 +272,24 @@ Full registry: [requirement §9](./requirement.md#9-gap-registry).
 | GL consumer | `GeneralLedgerController` — `journal.stores` → `store_formatted` / export kolom D |
 
 Business rule & matrix: [requirement §8.1](./requirement.md#81-store-di-header-journal--general-ledger) · [general-ledger/requirement §9](../general-ledger/requirement.md#9-kolom-store--aturan-bisnis--gap-implementasi).
+
+---
+
+## 14. Supplier Display — UI mask vs auto-journal AS-IS (ETM-15730)
+
+**Foundation:** ETM-15721 — `SUPPLIER_DISPLAY_MODE=code_only` (+ FE helper `formatSupplierLabel` / datalist column / export omit).  
+**Do not** change `JournalProcess` description generators or stored `accounting_journals.description` / `accounting_journal_details.description` in Fase 1.
+
+| Layer | Action when `code_only` |
+|-------|-------------------------|
+| FE datalist / view | If a structured Supplier column exists → render **code only** via helper; omit Supplier Name from ColVis; no hover name |
+| Auto-journal generators | **No-op** — leave narration text AS-IS |
+| Historical rows | **No backfill** of description text |
+| Export jobs | Omit structured supplier-name columns if present; prefer leaving description cells AS-IS (Fase 1) |
+| Print | May keep supplier name (global print exception) |
+| Rollback | `SUPPLIER_DISPLAY_MODE=code_and_name` restores UI labels without mutating journal rows |
+
+Cross-ref: [requirement §11](./requirement.md#11-supplier-display--ui-mask-vs-auto-journal-as-is-etm-15730) · [general-ledger technical §9](../general-ledger/technical.md#9-supplier-display--ui-mask-vs-auto-journal-as-is).
 
 ---
 

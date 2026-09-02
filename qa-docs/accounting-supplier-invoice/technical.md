@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.5
-last_updated: 2026-07-27
+version: 3.6
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [PI technical, supplier invoice API, purchase invoice code]
@@ -13,8 +13,9 @@ aliases: [PI technical, supplier invoice API, purchase invoice code]
 
 **API prefix:** `accounting/supplier-invoice`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v3.6 · [Feature Map](./feature-map.md) · [capabilities/](./capabilities/)  
-**Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)
+**Behavior SoT:** [requirement.md](./requirement.md) v3.7 · [Feature Map](./feature-map.md) · [capabilities/](./capabilities/)  
+**Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)  
+**Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15724](https://erpintegration.atlassian.net/browse/ETM-15724)
 
 ---
 
@@ -289,6 +290,19 @@ Supplier select2: inbound reference **any** status — intentional quirk (GAP-PI
 | Auto OC/OD on first SKU from PO | Detail store → firstOrCreate / bulk from PO |
 | Outstanding overlay | `DatalistOutstanding*.vue` |
 | Print call | Hits print API |
+| Supplier display code-only | Shared helpers via ETM-15721 — **jangan** hardcode hide name di menu ini |
+
+### Supplier display mode (ETM-15721 / ETM-15724)
+
+| Item | Rule |
+|------|------|
+| Flag | `SUPPLIER_DISPLAY_MODE=code_only` (rollback: `code_and_name`) — config/env exposed ke FE |
+| Helpers | Shared FE (`formatSupplierLabel`, Select2 templates, datalist column, `omitSupplierNameFromExport`) — wire PI surfaces lewat helper |
+| Select2 | Search tetap **name + code**; option/selection label = **code**; no hover name |
+| ColVis / datalist / modal | Code only; no Supplier Name column option |
+| Export | Omit name |
+| Print | Keep name |
+| Basic Info | **Do not** add read-only Supplier Name field |
 
 ### COA select2
 

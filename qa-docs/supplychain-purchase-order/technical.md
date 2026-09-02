@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-purchase-order
 menu_name: "Purchase Order"
-version: 2.9
-last_updated: 2026-08-12
+version: 3.0
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 ---
@@ -11,10 +11,11 @@ status: review
 # Purchase Order — Technical Documentation
 
 **API prefix:** `supplychain/purchase-order`  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.9  
+**Behavior SoT:** [requirement.md](./requirement.md) v3.0  
 **Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)  
 **Import VAT TO-BE:** locked 5 Agu 2026 — GAP-PO-11 / brief `Brief-Dev-PO-Import-VAT-Columns.md`  
-**Multi-select products TO-BE:** GAP-PO-12 — Without PR **Select Multiple Products**; With PR **Select Outstanding PR Products** (+ keep Available Products)
+**Multi-select products TO-BE:** GAP-PO-12 — Without PR **Select Multiple Products**; With PR **Select Outstanding PR Products** (+ keep Available Products)  
+**Supplier display:** `SUPPLIER_DISPLAY_MODE=code_only` (rollback `code_and_name`) — parent ETM-15721, wiring ETM-15722
 
 ---
 
@@ -326,10 +327,27 @@ Print loads supplier, details, approvals; totals **without** other cost/disc.
 |----------|------|
 | Create default Open | Backend create status open |
 | Header lock after details | Date, supplier, currency, payment |
+| Supplier display code-only | Label/ColVis/export = **code**; Select2 search code+name; no name tooltip; print may show name — [requirement § Supplier display](./requirement.md) |
 | With/Without PR radio | Disabled in UI if details exist; API/import can still change `with_pr` (GAP-PO-07) |
 | Void vs Delete | Void = approved; Delete = draft/open/rejected |
 | Closed | Only processed |
 | Import template links | Static `/files/…` — may 404 |
+
+### 12.1 Supplier display (code-only) — implementation notes
+
+Prefer **global flag** `SUPPLIER_DISPLAY_MODE=code_only` (rollback `code_and_name`) + **shared FE helpers** (parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721); this menu [ETM-15722](https://erpintegration.atlassian.net/browse/ETM-15722)).
+
+**Surfaces to audit on PO:**
+
+| Surface | Check |
+|---------|-------|
+| Datalist + ColVis | Column Supplier = code; **no** Supplier Name toggle |
+| Select2 templates | Result/selection = code only; match code+name; **no** hover/tooltip name |
+| Form / HeaderBasicInformation / modals | Outstanding PR, Available Products, dll. — code only |
+| Export Advanced / detail | Omit supplier name for all roles |
+| Print PDF | **Exception** — name still allowed |
+
+Do **not** add a read-only Supplier Name field on Basic Information.
 
 ---
 

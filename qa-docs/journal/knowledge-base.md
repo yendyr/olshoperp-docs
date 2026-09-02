@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: journal
 menu_name: "Journal"
-version: 1.1
-last_updated: 2026-08-12
+version: 1.2
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [journal, accounting journal, jurnal, GL journal, jurnal akuntansi, manual journal]
@@ -148,8 +148,25 @@ Journal lama (sebelum update) yang detailnya kosong biasanya **bukan bug** — c
 
 - **Export Basic:** halaman aktif, header saja.
 - **Export Advanced:** ikut filter (kosong = semua). Opsi With Details / Without Details / This Page Only.
+- Kalau ada kolom Supplier terpisah di export: yang tampil **kode** saja (bukan nama). Teks **Description** di export biasanya tetap seperti yang tersimpan (boleh masih memuat nama di narasi lama).
 
 Datalist juga punya **Show Deleted Data** dan Column Show/Hide.
+
+---
+
+## 8A. Tampilan supplier di Journal (code only vs deskripsi otomatis)
+
+Nama supplier bersifat sensitif — di layar operasional yang ditampilkan cukup **kode**, bukan nama. Di menu Journal aturannya **lebih sempit** dari menu PO/invoice:
+
+| Yang dilihat | Perilaku |
+|--------------|----------|
+| Kolom **Supplier** terpisah di daftar/detail (jika ada) | Tampil **kode** saja; tidak ada kolom nama; tidak ada hover nama |
+| Teks **Description** journal yang dibuat otomatis dari invoice/payment/dll. | **Tidak diubah** — tetap seperti yang digenerate sistem (boleh masih berisi nama di narasi) |
+| Journal lama | Description historis **tidak** di-rewrite |
+| Print (jika mencetak data supplier) | Nama **boleh** tetap muncul |
+| Export | Kolom nama supplier terpisah dihilangkan (jika ada); isi Description lebih baik dibiarkan apa adanya |
+
+**Intinya:** mask tampilan kolom Supplier di UI ≠ mengubah isi deskripsi auto-journal.
 
 ---
 
@@ -190,6 +207,9 @@ A: Yang dicek adalah **total** Debit = **total** Credit di seluruh journal, buka
 
 **Q: Import ditolak semua padahal hanya 1 baris salah?**  
 A: Import journal All-or-Nothing — satu error menolak seluruh file.
+
+**Q: Kenapa di Description journal masih ada nama supplier, padahal policy code-only?**  
+A: Sengaja Fase 1. Policy code-only di Journal hanya menyembunyikan **kolom Supplier** terstruktur di layar. Narasi Description auto-create **tidak** diubah agar jejak audit tetap utuh.
 
 ---
 

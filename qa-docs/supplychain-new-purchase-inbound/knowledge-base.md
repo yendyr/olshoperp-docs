@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 2.4
-last_updated: 2026-08-14
+version: 2.5
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [GRN, goods receipt, purchase inbound, barang masuk, COLLI, colli v2, receiving]
@@ -123,6 +123,7 @@ Aturan: PO approved, SKU ada di PO, qty ≤ sisa, supplier cocok. Template lama 
 | Rule | Detail |
 |------|--------|
 | Header lock | Tidak bisa ganti supplier/gudang/tanggal jika sudah ada detail |
+| Supplier tampilan | Di layar & export: **kode** saja. Cari by nama tetap OK. Print/Print RIR: nama **masih boleh**. |
 | Qty cap | Tidak melebihi sisa PO per baris |
 | Expired / Batch | Wajib jika flag produk ON |
 | Serial | 1 baris per 1 pcs; max 50 sekaligus |

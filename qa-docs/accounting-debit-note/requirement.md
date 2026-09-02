@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.0
-last_updated: 2026-08-12
+version: 1.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 aliases: [DN, debit note, nota debit, supplier deposit, klaim supplier]
@@ -28,6 +28,7 @@ Downstream: [Account Payment](../accounting-supplier-payment/requirement.md) · 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-08-12 | QA - Yemima | Full 5-file dari SoT v1.0; Gap `GAP-DN-01..05`; relasi AP/PR/PI/CN |
+| 1.1 | 2026-09-02 | QA - Yemima | Supplier display **code-only** (ETM-15727 / parent ETM-15721) |
 
 ---
 
@@ -109,7 +110,7 @@ Field kritikal (Supplier, Currency, Rate, Date) terkunci jika sudah ada baris fu
 | Kolom | Default visible | Catatan |
 |-------|-----------------|---------|
 | Trx Code \| Trx Date | Ya | Link edit; PR ref bisa tampil tanggal dari dokumen ref |
-| Supplier | Ya | General Company supplier; defensive Store name jika legacy |
+| Supplier | Ya | Tampil **Supplier Code**; General Company supplier; defensive Store name jika legacy (display tetap code) |
 | Description | Ya | Excerpt + tooltip |
 | Trx Ref | Ya | PR / AP / `-` — klikable |
 | Curr / Rate | Ya | |
@@ -124,6 +125,19 @@ Field kritikal (Supplier, Currency, Rate, Date) terkunci jika sudah ada baris fu
 ### 4.2 Toolbar
 
 Global search, Advanced filter, Create, Show deleted, Column show/hide, Export (Without/With Details, Active Page), Bulk delete, Bulk approve, Multi-select.
+
+### 4.2b Supplier Display (code-only) — ETM-15727
+
+Parent: [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721). Identitas operasional = **Supplier Code**. Berlaku semua role.
+
+| Surface | Rule |
+|---------|------|
+| Datalist / detail / modal | Tampil **code** saja |
+| Column Show/Hide (ColVis) | **Tanpa** opsi Supplier Name |
+| Select2 / Search / Advanced Filter | Match **code + name**; tampilan = **code**; **tanpa** hover nama |
+| Basic Information » Supplier | Code only; **jangan** tambah field read-only Supplier Name |
+| Export | **Tanpa** name |
+| Print | Name **boleh** |
 
 ### 4.3 Action per baris
 
@@ -155,7 +169,7 @@ Global search, Advanced filter, Create, Show deleted, Column show/hide, Export (
 |-------|-------|---------|
 | Transaction Code | Unique; auto `DN…` | Disabled setelah create |
 | Transaction Date | Ya | Default now; min ≈ 6 bulan; max now; fiscal period |
-| Supplier | Ya | General Company supplier + COA tag lengkap |
+| Supplier | Ya | General Company supplier + COA tag lengkap; **display = code** (§4.2b) |
 | Reference Doc | Tidak | Free text max 150 — hanya source Default |
 | Transaction Reference | — | Disabled jika PR; hyperlink ke PR/AP |
 | Transaction Currency | Ya | Harus ada Cash/Bank match |

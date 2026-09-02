@@ -15,16 +15,17 @@ Menu **Account Payment** (Accounting / Account Payable).
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-supplier-payment/`](../_meta/docs-hub/menus/accounting-supplier-payment/)  
 **PM source:** `account-payment-requirement.md` (29 Okt 2025) + Import AP (Apr 2026)  
 **Upstream:** [Purchase Invoice](../accounting-supplier-invoice/)  
-**3 layer version:** KB 2.3 · requirement/technical 2.2 · **User-guide:** v1.1 · `source_version` 2.2 · **Feature Map:** 1.0 · **Last updated:** 2026-07-29
+**3 layer version:** KB 2.4 · requirement/technical 2.3 · **User-guide:** v1.2 · `source_version` 2.4 · **Feature Map:** 1.0 · **Last updated:** 2026-09-02
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 2.0 | 2026-07-05 | Requirement v2 — PI allocation, journal, gaps |
-| 2.1 | 2026-07-06 | Full PM merge: multi-source, balancing, import AP |
-| 2.2 | 2026-07-17 | Compliance qa-docs-standard; user-guide v1.0 |
+| 2.3–2.4 | 2026-09-02 ~16:30 | Supplier tampil **kode saja** di daftar/form/export (cari by nama+kode; nama boleh di Print). Parent ETM-15721 / ETM-15725 |
 | 2.3 | 2026-07-29 | Feature Map + 6 capability cards; KB rewrite operator; UG v1.1 (SF tags, review); Help Center overview en/id |
+| 2.2 | 2026-07-17 | Compliance qa-docs-standard; user-guide v1.0 |
+| 2.1 | 2026-07-06 | Full PM merge: multi-source, balancing, import AP |
+| 2.0 | 2026-07-05 | Requirement v2 — PI allocation, journal, gaps |
 
 ## Related menus
 

@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: general-ledger
 menu_name: General Ledger Report
 lang: en
-version: 1.0
-last_updated: 2026-09-01
+version: 1.1
+last_updated: 2026-09-02
 status: review
 audience: help-center
 source_type: derived
 source_ref: "docs/qa-docs/_meta/docs-hub/menus/general-ledger/overview.id.md"
-notes: English translation of user-authored ID overview. Help Center landing (Docs Page).
+notes: English translation of user-authored ID overview. Help Center landing (Docs Page). v1.1 adds supplier display code-only (UI mask vs auto-journal description AS-IS).
 ---
 
 ### 🚀 Report: General Ledger
@@ -31,6 +31,7 @@ notes: English translation of user-authored ID overview. Help Center landing (Do
 | **Foreign** | Journal foreign-currency amount, if a *foreign currency* is used. |
 | **Current Profit/Loss** | Special COA that shows current P&L mutations via a *UNION query*. |
 | **Pivot store** | Relation from journal *header* to *store* (`journal store pivot`); source of the Store column. |
+| **Supplier code-only** | If a structured Supplier column exists, the UI shows **supplier code** only (hide name). Auto-created journal **DESCRIPTION** text stays **as stored** (Phase 1 — not rewritten). |
 | **Row group** | Row grouping per COA in the report table. |
 
 ---
@@ -120,6 +121,15 @@ The **Store** column shows *store* from the **journal header** (via *journal sto
 * If one *header* links to several stores (*multi-store*), names are comma-separated with a full-list *tooltip* on hover.
 
 > 🖼️ **[IMAGE PLACEHOLDER 3]** — STORE column + *multi-store tooltip*.
+
+---
+
+### 🏷️ Supplier display (code-only)
+
+* If a **structured Supplier** column exists on the grid, it shows **supplier code** only (name hidden; no name hover).
+* The **DESCRIPTION** column stays as stored on the journal line — Phase 1 does **not** rewrite auto-created narration (it may still mention a supplier name in free text).
+* Export omits a separate supplier-name column if one exists; description cells preferably stay as-is.
+* Print may still show supplier name per the global print policy.
 
 ---
 
@@ -269,6 +279,9 @@ A: All store names are listed, comma-separated, truncated with a hover *tooltip*
 
 **Q: How does General Ledger handle P&L entries?**
 A: A special *Current Profit/Loss* account shows mutations via a *backend UNION query*.
+
+**Q: Why can DESCRIPTION still show a supplier name under code-only?**
+A: Phase 1 only masks a structured Supplier UI column (if present). Auto-created journal description text is left unchanged for audit trail.
 
 ---
 

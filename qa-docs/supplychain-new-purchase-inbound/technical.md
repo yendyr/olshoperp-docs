@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-new-purchase-inbound
 menu_name: "BETA - New Purchase Inbound"
-version: 2.4
-last_updated: 2026-08-14
+version: 2.5
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 ---
@@ -12,9 +12,10 @@ status: review
 
 **UI route (BETA):** `/supplychain/new-purchase-inbound`  
 **API base:** `supplychain/mutation-inbound`  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.4  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.5  
 **Colli v2 SOT:** [../_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md](../_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md)  
-**Legacy UI:** [../supplychain-mutation-inbound/technical.md](../supplychain-mutation-inbound/technical.md)
+**Legacy UI:** [../supplychain-mutation-inbound/technical.md](../supplychain-mutation-inbound/technical.md)  
+**Supplier display:** `SUPPLIER_DISPLAY_MODE=code_only` (rollback `code_and_name`) — parent ETM-15721, wiring ETM-15715
 
 ---
 
@@ -234,11 +235,28 @@ Config `inbound-with-unbilled-goods=false` → Credit AP on supplier. Tax lines 
 |----------|------|
 | Create open/draft | Status radio |
 | Header lock after details | Supplier, WH, date |
+| Supplier display code-only | Label/ColVis/export = **code**; Select2 search code+name; no name tooltip; print/RIR may show name — [requirement § Supplier display](./requirement.md) |
 | Group view | AS-IS v1 COLLI column; TO-BE Colli code + Existing/New |
 | Item Stock Status % | Async COLLI v1 progress |
 | Colli v2 toolbar / modal / inline | GAP-CIV2-03 — parity InventoryIn + PurchaseInbound |
 | Void dialog | Present but BE rejects (GAP-PI-01); void × colli deferred GAP-CIV2-08 |
 | BETA datalist | `from_menu=newInobound` (typo preserved) |
+
+### 12.1 Supplier display (code-only) — implementation notes
+
+Prefer **global flag** `SUPPLIER_DISPLAY_MODE=code_only` (rollback `code_and_name`) + **shared FE helpers** (parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721); this menu [ETM-15715](https://erpintegration.atlassian.net/browse/ETM-15715)).
+
+**Surfaces to audit on Purchase Inbound (BETA + shared API / legacy UI if same components):**
+
+| Surface | Check |
+|---------|-------|
+| Datalist + ColVis | Column Supplier = code; **no** Supplier Name toggle |
+| Select2 templates | Result/selection = code only; match code+name; **no** hover/tooltip name |
+| Form / Outstanding PO / Select Product / Colli modals | Code only |
+| Export excel (header + detail) | Omit supplier name for all roles |
+| Print + Print RIR | **Exception** — name still allowed |
+
+Do **not** add a read-only Supplier Name field on Basic Information.
 
 ---
 

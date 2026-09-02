@@ -14,12 +14,13 @@ Menu **Purchase Inbound (GRN)** — UI BETA. **Canonical Colli v2** (wadah multi
 **UI route (BETA):** `/supplychain/new-purchase-inbound`  
 **Help Center overview:** [`_meta/docs-hub/menus/supplychain-new-purchase-inbound/`](../_meta/docs-hub/menus/supplychain-new-purchase-inbound/) (`source_type: authored` — tidak di-overwrite)  
 **SoT Colli v2:** [`_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md`](../_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md)  
-**3 layer version:** 2.4 · **User-guide:** v1.3 · `source_version` 2.4 · **Feature Map:** 1.1 · **Last updated:** 2026-08-14 11:45
+**3 layer version:** 2.5 · **User-guide:** v1.4 · `source_version` 2.5 · **Feature Map:** 1.1 · **Last updated:** 2026-09-02 16:30
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.5 | 2026-09-02 16:30 | Supplier on screen and export shows **code only** (search still finds by name; Print / Print RIR may still show name). Why: privacy / display policy for all roles — no supplier name on UI or Excel. |
 | 1.0 | 2026-06-19 | Initial draft AS-IS |
 | 2.0 | 2026-07-05 | Full PM merge: standard GRN + COLLI, journal, import, gaps |
 | 2.1 | 2026-07-05 | Service (no stock) + Fix Asset (Assets debit) by Product COA Group type |

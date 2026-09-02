@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: accounting-supplier-payment
 menu_name: Account Payment
 lang: id
-version: 1.0
-last_updated: 2026-07-29
+version: 1.1
+last_updated: 2026-09-02
 status: draft
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/technical/user-guide).
+notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/technical/user-guide). Update supplier code-only (ETM-15725).
 ---
 
 ## Modul/Fitur: Account Payment
@@ -41,7 +41,7 @@ notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/t
 
 | Persyaratan | Sumber | Aturan |
 | :---- | :---- | :---- |
-| Supplier | Master | Wajib di header |
+| Supplier | Master | Wajib di header — UI tampil **kode supplier** saja (cari tetap nama+kode; nama hanya di Print; tanpa field Name di Basic Info) |
 | PI approved + outstanding | Purchase Invoice | Muncul di modal Outstanding PI |
 | AP / Exchange Diff / Cash Diff COA | Setting company | Wajib untuk jurnal approve |
 | Rekening Cash/Bank (jika dipakai) | Master kas/bank | Aktif; amount ≤ saldo tersedia |
@@ -68,7 +68,7 @@ flowchart LR
 
 ### Urutan eksekusi
 
-1. **Buat header** — Supplier, tanggal, mata uang, kurs; set **Open**.  
+1. **Buat header** — Supplier (**kode** di layar), tanggal, mata uang, kurs; set **Open**.  
 2. **Tambah Payment Source** — Cash/Bank dan/atau Debit Note.  
 3. **Alokasi Outstanding PI** — Use / Bulk Use / Allocate Full (partial boleh).  
 4. **Adjustment opsional** — baris Debit/Credit COA manual.  

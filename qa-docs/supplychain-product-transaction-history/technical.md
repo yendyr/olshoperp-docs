@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-product-transaction-history
 menu_name: "Product Transaction History"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -16,7 +16,8 @@ related_docs:
 > **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
 
 **UI route:** `/supplychain/product-transaction-history`  
-**API prefix:** `supplychain/item-transaction-history` (catatan: path API ≠ path UI)
+**API prefix:** `supplychain/item-transaction-history` (catatan: path API ≠ path UI)  
+**Supplier display:** `SUPPLIER_DISPLAY_MODE=code_only` (rollback `code_and_name`) — parent ETM-15721, wiring ETM-15723
 
 ---
 
@@ -114,7 +115,26 @@ flowchart TB
 
 ---
 
-## 7. Related docs
+## 7. Supplier display (code-only) — implementation notes
+
+Prefer **global flag** `SUPPLIER_DISPLAY_MODE=code_only` (rollback `code_and_name`) + **shared FE helpers** (parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721); this menu [ETM-15723](https://erpintegration.atlassian.net/browse/ETM-15723)).
+
+**Surfaces to audit on Product Transaction History:**
+
+| Surface | Check |
+|---------|-------|
+| Tab grids (PR / PO / Mutation / price / outbound) + ColVis | Supplier = code; **no** Supplier Name toggle |
+| Select2 templates (supplier, jika dipakai) | Result/selection = code only; match code+name; **no** hover/tooltip name |
+| Export Excel (`ReportProductTransactionHistory` / job) | Omit supplier name for all roles |
+| Print | **Exception** — name still allowed if print exists |
+
+Do **not** add a read-only Supplier Name field on filters / header.
+
+Behavior SoT: [requirement.md § Supplier display](./requirement.md).
+
+---
+
+## 8. Related docs
 
 - [supplychain-purchase-order/technical.md](../supplychain-purchase-order/technical.md)
 - [supplychain-product-mutation/technical.md](../supplychain-product-mutation/technical.md)

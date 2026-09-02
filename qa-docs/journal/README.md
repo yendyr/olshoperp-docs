@@ -11,14 +11,15 @@ Menu **Journal** (Accounting / FA) — jurnal manual & auto-generate; hanya **Ap
 
 **PM source:** Journal Source of Truth **v1.1** (`_meta/sot/journal-source-of-truth.md`)  
 **UI route:** `/accounting/journal`  
-**3 layer version:** 1.2 · **User-guide:** 1.0 (`source_version` 1.1)  
-**Last updated:** 2026-09-01  
+**3 layer version:** 1.3 · **User-guide:** 1.1 (`source_version` 1.3)  
+**Last updated:** 2026-09-02  
 **Maintenance owner:** QA — Yemima
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3 | 2026-09-02 16:30 | Supplier di layar: kode saja (kolom terstruktur); deskripsi journal otomatis tetap apa adanya — tidak diubah / tidak di-backfill (ETM-15730) |
 | 1.2 | 2026-09-01 12:55 | Store pivot ↔ GL kolom Store (§8.1); GAP-JRN-02 AR/CN/DN; multiselect store di form |
 | 1.1 | 2026-08-12 15:20 | Promote Tier 1 ke **review**: KB lengkap dari SoT, user-guide v1.0, requirement & technical status draft→review |
 

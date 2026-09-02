@@ -2,13 +2,13 @@
 doc_type: knowledge-base
 menu: general-ledger
 menu_name: "General Ledger Report"
-version: 1.1
-last_updated: 2026-09-01
+version: 1.2
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 audience: operator
 sections:
-  core: [what-is, filters, columns, store, faq]
+  core: [what-is, filters, columns, store, supplier-display, faq]
 ---
 
 # General Ledger Report — Knowledge Base
@@ -60,6 +60,20 @@ Laporan **buku besar** — menampilkan semua transaksi jurnal per **Chart of Acc
 - Tombol export di datalist
 - Proses async — cek tab Export File untuk download
 - Kolom export lebih lengkap (termasuk **Store** kolom D, Opening/Ending Balance numerik)
+- Kalau ada kolom **Supplier Name** terpisah di export: di mode code-only kolom itu **tidak** ikut; teks **Description** biasanya tetap seperti di sistem (boleh masih memuat nama di narasi)
+
+## 5A. Tampilan supplier di GL (code only vs deskripsi journal)
+
+GL membaca baris dari journal yang sudah Approved. Aturan tampilan supplier di sini **sama sempitnya** dengan menu Journal:
+
+| Yang dilihat | Perilaku |
+|--------------|----------|
+| Kolom **Supplier** terpisah di grid (jika ada) | Tampil **kode** saja; tidak ada opsi tampilkan nama; tidak ada hover nama |
+| Kolom **DESCRIPTION** | **Tidak diubah** — ikut teks journal (boleh masih berisi nama di narasi otomatis) |
+| Export | Tanpa kolom nama supplier terpisah (jika ada); Description lebih baik dibiarkan apa adanya |
+| Print | Nama **boleh** tetap muncul sesuai policy print |
+
+**Intinya:** menyembunyikan nama di kolom Supplier di layar ≠ mengubah isi deskripsi journal.
 
 ## 6. Yang perlu diwaspadai (AS-IS)
 
@@ -91,3 +105,6 @@ A: Keduanya dari journal approved; Trial Balance agregasi per COA, GL menampilka
 
 **Q: Apa hubungan dengan Instant Settlement?**  
 A: Upload settlement menghasilkan journal SI/OB (store biasanya terisi). Journal AR hanya saat **Approve** batch; **Reject** tidak membuat journal AR.
+
+**Q: Kenapa Description di GL masih bisa memuat nama supplier?**  
+A: Sengaja Fase 1. Code-only di GL hanya untuk **kolom Supplier** terstruktur di UI. Narasi Description dari journal auto-create **tidak** diubah.
