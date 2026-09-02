@@ -726,3 +726,97 @@ ETM-15666:
   jira_status: QA Review
   jira_type: Improvement
   summary: "[General Ledger] Tambahkan filter pencarian by 'store name' pada advanced filter & global search"
+
+ETM-15677:
+  menu: accounting-journal
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Journal] - Kode COA yang Di-insert ke Detail Journal Tidak Muncul di Tabel Detail Transaksi Meskipun Notifikasi Success"
+
+ETM-15678:
+  menu: general-ledger
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[General Ledger] - Description Header Transaksi Journal Tidak Muncul di Report General Ledger (Muncul '-') Khusus Tipe Manual Journal Entry"
+
+ETM-15679:
+  menu: general-ledger
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[General Ledger] - SQL Error 500 Column Not Found 'accounting_journals.transaction_reference_text' saat Advance Filter Journal Type"
+
+ETM-15680:
+  menu: supplychain-manual-picking-list
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Manual Picking List] - Counter Success Rows Tidak Valid (Terhitung 1 Success) saat Import Detail Gagal Akibat Insufficient Stock"
+
+ETM-15681:
+  menu: accounting-purchase-report
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Purchase Report] - State Advance Filter Bocor / Saling Terhubung Antara Datalist POV Purchase Order dan POV Purchase Invoice"
+
+ETM-15711:
+  menu: accounting-debit-note
+  intent: new
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Debit Note] - Tambahkan Inputan Store pada Section Basic Information dan Auto-fill Store Name ke Generated Journal"
+
+ETM-15712:
+  menu: accounting-journal
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Journal] - Store Name Tidak Muncul pada Journal Credit Note yang Tergenerate dari Sales Return Tipe BILLED"
+
+ETM-15688:
+  menu: accounting-product-benchmark-price
+  intent: extend
+  status: in_overview
+  reuse: []
+  drafts:
+    - PENDING-JENNI-2026090201
+    - PENDING-JENNI-2026090202
+    - PENDING-JENNI-2026090203
+    - PENDING-JENNI-2026090204
+    - PENDING-JENNI-2026090205
+    - PENDING-JENNI-2026090206
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Benchmark COGS] Calculation benchmark COGS untuk SKU Bundle"
