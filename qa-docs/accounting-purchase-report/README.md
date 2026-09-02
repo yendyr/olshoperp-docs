@@ -11,6 +11,8 @@ Menu **Purchase Report** (Accounting → Report) — laporan pembelian per SKU p
 | User Guide | [user-guide.md](./user-guide.md) | Publish / onboarding | review |
 | Capability cards | [capabilities/](./capabilities/) | Lingo / MenuDoc | review |
 
+**Help Center overview:** [ID](../_meta/docs-hub/menus/accounting-purchase-report/overview.id.md) · [EN](../_meta/docs-hub/menus/accounting-purchase-report/overview.en.md) (`authored` ID + derived EN, review)
+
 **UI route:** `/accounting/purchase-report`  
 **SoT:** [`_meta/sot/accounting-purchase-report-source-of-truth.md`](../_meta/sot/accounting-purchase-report-source-of-truth.md) v1.0  
 **Jira SoT:** [ETM-15673](https://erpintegration.atlassian.net/browse/ETM-15673) · [ETM-15674](https://erpintegration.atlassian.net/browse/ETM-15674)  
@@ -20,6 +22,7 @@ Menu **Purchase Report** (Accounting → Report) — laporan pembelian per SKU p
 
 | Version | Date | Changes |
 |---------|------|---------|
+| HC 1.0 | 2026-09-01 13:07 | Help Center Purchase Report ID (authored) + EN translation — dual tab PO/PI, supplier grouping, export per tab |
 | 2.1 | 2026-09-01 12:55 | Feature Map v1.0 + 3 capability Lingo (dual tab, supplier group, export per tab); Help Center ditunda sesi terpisah |
 | 2.0 | 2026-08-31 17:00 | AS-IS dari ETM-15673/15674 + dual-tab shell; SOT + 5-file review |
 | 1.0 | 2026-08-12 | Initial TO-BE (belum implementasi) |

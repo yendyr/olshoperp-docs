@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.0
-last_updated: 2026-08-12
+version: 1.1
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 1.6
+source_version: 1.7
 ---
 
 # Panduan Pengguna — Instant Settlement
@@ -129,6 +129,8 @@ Ditulis dari yang kamu alami di layar:
 - **Kalau ada draft invoice/outbound** yang belum selesai, selesaikan dulu (approve atau hapus draft).  
 - **Kalau re-settlement tanpa biaya/diskon tambahan**, sistem menolak — settle susulan butuh minimal satu Other Cost atau Other Discount.  
 - **Kalau Cash/Bank Receiving belum di-set**, Approve gagal (*Receiving Destination COA is not set*).  
+- **Kalau tanggal transaksi Sales Invoice di batch campur beda hari**, Approve ditolak. Jam boleh beda di hari yang sama. Contoh: SI jam 09:00 dan 18:30 tanggal 1 → OK; tanggal 1 dan tanggal 2 → ditolak.  
+- **Tanggal AR** setelah Approve = tanggal SI (yang sudah sama); **jam AR** = jam paling akhir di antara SI batch itu.  
 - **Kalau semua invoice batch sudah punya AR**, tombol Approve disabled — itu normal.  
 - **Kalau sebagian invoice sudah dilunasi manual**, Approve tetap boleh: sistem hanya memasukkan invoice yang **belum** punya AR (**Smart AR**).  
 - **Kalau ada AR manual** pada invoice hasil settlement, Delete disabled. Reverse AR itu dulu, atau biarkan terkunci.  

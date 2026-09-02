@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.0
-last_updated: 2026-08-31
+version: 2.1
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 audience: operator
@@ -90,11 +90,12 @@ Dalam satu baris, isi **salah satu** saja — Debit atau Credit, tidak boleh dua
 |----------------------|-------------------|
 | Kapan AR otomatis muncul | Setelah upload settlement selesai dan Anda klik **Approve** di Instant Settlement |
 | Berapa dokumen AR | Biasanya satu dokumen per batch upload (per store), berisi banyak referensi tagihan |
+| Tanggal & jam AR dari settlement | Tanggal = tanggal SI (semua SI batch harus hari yang sama); jam = jam SI paling akhir di batch |
 | AR manual sebelumnya | Tagihan yang sudah punya AR manual tidak dibuatkan lagi |
 | Reject settlement | Tidak membuat AR — tagihan dan dokumen lain tetap ada |
 | Delete settlement | Diblokir kalau ada tagihan dengan AR manual |
 
-**Prasyarat:** Cash/Bank Receiving di pengaturan store harus terisi sebelum Approve settlement.
+**Prasyarat:** Cash/Bank Receiving di pengaturan store harus terisi sebelum Approve settlement. Approve Instant Settlement juga ditolak jika tanggal SI di batch campur beda hari.
 
 ## FAQ
 

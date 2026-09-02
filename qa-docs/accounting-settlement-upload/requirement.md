@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.6
-last_updated: 2026-07-15
+version: 1.7
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -22,6 +22,7 @@ legacy_sources: []
 | 1.4 | 2026-06-23 | QA - Yemima | Matriks Fase 3 — shipper, system product, check/pack chain |
 | 1.5 | 2026-06-23 | QA - Yemima | §4.6 Template General — kolom `OC:`/`OD:` + filter Applied Store (master Other Cost/Discount) |
 | 1.6 | 2026-07-15 | QA - Yemima | Booking unmatched (`platform_order_id` null) tidak match IS — cross-ref SP GAP-BOOK-01 |
+| 1.7 | 2026-09-01 | QA - Yemima | Approve: semua SI dalam batch wajib same calendar date (V-23); AR date/time dari SI (ETM-15701) |
 
 **Nama lain menu:** Upload Settlement, Settlement Order, Order Settled, Platform Settlement, Settlement Platform, Platform Settled.
 
@@ -82,7 +83,7 @@ flowchart LR
 | A-03 | Jika semua baris valid, auto-generate SI + Outbound per order | V-04 | F-03, F-04 |
 | A-04 | SI & Outbound auto-approved; jurnal SI & Outbound auto-generated & approved | — | F-05–F-08 |
 | A-05 | Progress bar upload (5 tahap) & approve (4 tahap) real-time | — | F-09 |
-| A-06 | User approve settlement → generate 1 AR + jurnal AR (smart skip SI yang sudah punya AR) | V-15, V-16 | F-10–F-13 |
+| A-06 | User approve settlement → generate 1 AR + jurnal AR (smart skip SI yang sudah punya AR); **semua SI batch wajib same calendar date**; tanggal AR = tanggal SI; jam AR = jam SI paling akhir di batch | V-15, V-16, V-23 | F-10–F-13 |
 | A-07 | Re-settlement order yang sama: skip Outbound, SI baru hanya adjustment | V-17 | F-03 |
 | A-08 | Delete settlement (hard delete rantai generate) dengan aturan blokir AR manual | V-18 | F-14 |
 | A-09 | Retry job saat proses stuck/gagal | — | F-15 |
@@ -270,6 +271,7 @@ Upload operasional **hanya CSV** (bukan Excel) karena risiko korupsi **Platform 
 | V-14 | **Fiscal period** harus exist & **open** pada tanggal settle | Per baris | Settlement menimbulkan jurnal — tidak boleh di periode closed / belum ada |
 | V-15 | **Receiving Destination COA** terisi | Approve | *"Receiving Destination COA is not set"* |
 | V-16 | Smart AR: skip SI yang sudah punya `payment_details` | Approve generate AR | Hanya SI tanpa AR; jika semua sudah AR → tombol disabled |
+| V-23 | **Transaction date Sales Invoice dalam 1 batch harus same calendar date** (abaikan jam) | Approve | Tolak approve jika ada ≥2 tanggal kalender berbeda di SI batch. Bandingkan **tanggal saja** — jam boleh beda. Pesan: jelas ke operator (string final saat ETM-15701). Contoh arah: *Unable to approve settlement. Sales Invoice transaction dates in this batch must be the same date.* |
 | V-17 | Outbound maks 1x per order | Re-upload | `without_outbound` / `outbound_exists` |
 | V-18 | Delete diblokir jika SI punya AR manual | Delete | Tombol delete disabled; `settlements_with_ar >= generated_invoice_count` |
 | V-19 | Failed Ship status **Open** | Per baris | *"...in failed shipment status"* |
@@ -354,11 +356,22 @@ Tombol **Approve** membuka `ApprovalDialog` dengan dua opsi:
 
 ### 6.3 Detail proses Approve (approved)
 
+**Pre-check V-23 (wajib lolos dulu):** kumpulkan `transaction_date` semua **Sales Invoice** yang terikat batch Instant Settlement ini. Ambil bagian **tanggal kalender** saja. Jika ada lebih dari satu nilai tanggal → **tolak Approve** (tidak generate AR). Jam/waktu diabaikan untuk validasi kesamaan.
+
 | # | Aksi | Status |
 |---|------|--------|
 | 1 | Generate Receive (AR) — 1 dokumen, detail per SI belum punya AR | Open → Auto-approved |
 | 2 | Generate Journal AR | Auto-approved |
-| AR Date | Max settlement date batch (+30 detik) | |
+| **AR Date/Time** | **Tanggal** = tanggal kalender SI (semua SI sudah sama per V-23). **Jam** = **waktu paling akhir** di antara seluruh SI dalam batch (max datetime SI). | |
+
+**Contoh (user / ETM-15701):**
+
+| SI di batch | Transaction date SI | Approve? | AR transaction date |
+|-------------|---------------------|----------|---------------------|
+| SI-A, SI-B | 01-09-2026 09:00 & 01-09-2026 18:30 | Ya | **01-09-2026 18:30** (tanggal sama; jam = paling akhir) |
+| SI-A, SI-B | 01-09-2026 09:00 & 02-09-2026 10:00 | **Tidak** — V-23 | Tidak generate AR |
+
+> **AS-IS sebelum ETM-15701:** AR date memakai max `settlements.transaction_date` batch (+ offset). **TO-BE:** sumber tanggal/jam AR = **Sales Invoice** di batch, dengan guard same calendar date. Implementasi: [ETM-15701](https://erpintegration.atlassian.net/browse/ETM-15701).
 
 **COA Piutang SI:** Platform → Store Setting AR COA; General → Customer (General Company).  
 **COA Kas AR:** Store `cash_bank_account_id` (Cash/Bank Receiving).
@@ -638,6 +651,7 @@ Export DataList async, Audit log (`Log Data`), bulk approve guard — pola stand
 - Uji **All-or-Nothing**: campur 1 SO invalid dalam file → pastikan `order_errors` > 0, tidak ada SI terbentuk.  
 - Uji **re-settlement**: upload ulang SO yang sama dengan baris adjustment only.  
 - Uji **Smart AR**: buat AR manual untuk sebagian SI → approve → hanya sisanya masuk AR baru.  
+- Uji **V-23 / ETM-15701**: batch SI beda tanggal kalender → Approve ditolak; same date beda jam → Approve OK dan AR jam = max jam SI.  
 - Uji **delete** dengan dan tanpa AR manual.  
 - Uji tiap platform: header sheet/name sesuai §4.1.  
 - Uji approve tanpa `cash_bank_account_id` → error V-15.  

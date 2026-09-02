@@ -1,0 +1,70 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-PI-018
+menu: supplychain-new-purchase-inbound
+menu_name: "BETA - New Purchase Inbound"
+test_type: happy
+title: "Hapus Transaksi Inbound dengan New Colli (Multisku Colli Datalist)"
+summary: "Memverifikasi bahwa saat dokumen transaksi inbound atau detail item colli dihapus, colli code yang baru dibuat otomatis hilang dari datalist menu multisku colli."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-08-30
+requirement_ref: "qa-docs/supplychain-new-purchase-inbound/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 13
+  code: DEV-STG
+related_menus:
+  - supplychain-colli-type
+preconditions:
+  - "User login ke OlshopERP."
+  - "Memiliki barang baru tanpa stock: SKU-COLLI01, SKU-COLLI02, SKU-COLLI03, SKU-COLLI04, SKU-COLLI05."
+test_data:
+  - field: "Inbound Document"
+    value: "IN-5U9JTO22"
+  - field: "New Colli Code"
+    value: "COL-6A9127FC"
+steps:
+  - "Buka dokumen inbound IN-5U9JTO22."
+  - "Buat New Colli dengan kode COL-6A9127FC pada detail inbound."
+  - "Hapus baris item yang menggunakan colli tersebut dari detail (transaksi belum dihapus dari datalist)."
+  - "Buka menu datalist 'Multi SKU Colli', periksa keberadaan COL-6A9127FC."
+  - "Kembali ke datalist Purchase Inbound, lalu hapus dokumen IN-5U9JTO22 seutuhnya."
+  - "Kembali ke menu datalist 'Multi SKU Colli', periksa kembali keberadaan COL-6A9127FC."
+expected_result: |
+  Colli code COL-6A9127FC harus otomatis terhapus dan hilang dari datalist menu Multi SKU Colli setelah item detail atau dokumen transaksi inbound yang membuatnya dihapus (tidak tersisa sebagai data yatim).
+test_result:
+  status: failed
+  started_at: "2026-08-30T10:00:00+07:00"
+  finished_at: "2026-08-30T11:00:00+07:00"
+  executed_by: "QA Manual"
+  environment: staging
+  log_summary: "FAIL — Ketika item dihapus dari detail, colli code COL-6A9127FC masih tersimpan di datalist menu Multi SKU Colli. Begitu pula saat dokumen transaksi IN-5U9JTO22 dihapus seutuhnya dari datalist, colli code COL-6A9127FC tetap ada dan tidak ikut terhapus."
+  report_url: null
+test_data_used:
+  - "IN-5U9JTO22"
+  - "COL-6A9127FC"
+run_history:
+  - at: "2026-08-30"
+    status: failed
+    environment: staging
+    note: "FAIL — Colli code COL-6A9127FC tidak terhapus pasca transaksi dihapus."
+origin_jira: ETM-15553
+last_execution:
+  at: "2026-08-30"
+  jira: "ETM-15553"
+  status: failed
+  via: "manual:p"
+  notes: "Verifikasi pengujian manual: status tersimpan, respon validasi dan datalist sesuai expected."
+first_execution:
+  at: "2026-08-30"
+  via: "manual:p"
+  jira: "ETM-15553"
+---
+
+# TC-PI-018
+
+## Catatan QA
+- **Latar Belakang:** Pengujian dilakukan untuk memverifikasi lifecycle Colli Code ketika dokumen inbound dihapus.
+- **Relasi JIRA:** Terkait dengan card `ETM-15553`.

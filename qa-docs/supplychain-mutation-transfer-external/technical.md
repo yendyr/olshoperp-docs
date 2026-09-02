@@ -1,139 +1,173 @@
 ---
 doc_type: technical
 menu: supplychain-mutation-transfer-external
-menu_name: "External Transfer"
-version: 1.0
-last_updated: 2026-06-19
+menu_name: "Transfer External"
+version: 2.0
+last_updated: 2026-09-01
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
+  - ../supplychain-transfer-inbound/technical.md
+  - ../_meta/sot/supplychain-mutation-transfer-external-source-of-truth.md
 ---
 
-# External Transfer — Technical Documentation
-
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
-
+# Transfer External — Technical Documentation
 
 ## 1. Architecture Overview
 
-Semua menu stock mutation berbagi tabel header **`scm_stock_mutations`** (model `StockMutation`) dengan global scope `ignore_opname` (`is_opname != 1`). Menu ini memakai subclass **`StockMutationTransferExternal`** dengan filter query spesifik di controller index.
+Header stock mutation `type = tf external`, prefix **TF**. Dual-approve: ke-1 di menu ini (generate hidden In Transit), ke-2 di Transfer Inbound (same FE flag + API filter).
 
 ```mermaid
 flowchart TB
-    subgraph Frontend
-        FE["Vue pages"]
+    subgraph FE
+        PROD["TransferExternal/*"]
+        BETA["NewTransferExternal/*"]
+        INB["TransferExternal + transferInbound"]
     end
     subgraph API
         CTL["StockMutationTransferExternalController"]
-        API["supplychain/mutation-transfer-external"]
+        DET["StockMutationTransferExternalDetailController"]
+        MID["TransferMutationMiddleDetailExternalController"]
     end
     subgraph Domain
-        ENT["StockMutationTransferExternal"]
-        ISM["ItemStockMutation"]
+        APR["TransferExternalApproveService"]
+        JOB["TransferExternal*Job"]
+        IMP["TransferExternalImport"]
+        WH["WarehouseHelper getFulfillAfterFifo"]
     end
-    subgraph Data
-        DB[("scm_stock_mutations")]
-        STK[("scm_item_stocks")]
-    end
-    FE --> API --> CTL --> ENT
-    CTL --> ISM --> STK
-    ENT --> DB
+    PROD --> CTL
+    BETA --> CTL
+    INB --> CTL
+    CTL --> APR
+    CTL --> JOB
+    DET --> WH
+    MID --> IMP
 ```
-
-**Approve flow:** POST `mutation-transfer-external/{id}/approve` — approve pengiriman (in transit) lalu approve penerimaan (`transit` param). Broken qty → scrap warehouse.
 
 ## 2. Frontend File Map
 
-**Root:** `olshoperp-frontend/src/pages/SCM/StockMutation/TransferExternal/`
+| Path | Route UI | Role |
+|------|----------|------|
+| `olshoperp-frontend/src/pages/SCM/StockMutation/TransferExternal/DataList.vue` | `mutation-transfer-external` | Produksi datalist (`is_show_virtual=false`) |
+| `TransferExternal/Form.vue`, `DatalistDetail.vue` | produksi edit | Header + detail |
+| `NewTransferExternal/**` | `new-mutation-transfer-external` | BETA Colli experimental |
+| Same `TransferExternal/*` + `meta.transferInbound` | `transfer-inbound` | Surface inbound (no Create) |
 
-| File | Role | Key API |
-|------|------|---------|
-| `DataList.vue` | Index datalist | `GET supplychain/mutation-transfer-external` |
-| `Form.vue` | Create/edit header + tabs detail | `POST/PUT supplychain/mutation-transfer-external` |
-| `DatalistDetail.vue` | Grid detail PrimeVue | nested detail resource |
-| `DatalistLogApproval.vue` | Approval history | `GET .../log/approve` |
-| `ApprovalEligibility.vue` | Pre-approve checks | `GET .../approval-eligibility` |
-
-**Router:** `olshoperp-frontend/src/router/index.ts` — path `mutation-transfer-external` under `/supplychain`.
+Router: `olshoperp-frontend/src/router/index.ts` — paths under `/supplychain/`.
 
 ## 3. Backend File Map
 
 | File | Role |
 |------|------|
-| `Modules/SupplyChain/Http/Controllers/StockMutationTransferExternalController.php` | Header CRUD, approve, export |
-| `Modules/SupplyChain/Entities/StockMutationTransferExternal.php` | Eloquent subclass `StockMutation` |
-| `Modules/SupplyChain/Entities/StockMutation.php` | Base model, type constants |
-| `Modules/SupplyChain/Entities/StockMutationApproval.php` | Approval log rows |
-| `app/Helpers/SupplyChain/ItemStockMutation.php` | Core approve inbound/outbound/transfer |
-| `Modules/SupplyChain/Policies/StockMutationTransferExternalPolicy.php` | Gate authorization |
-| `Modules/SupplyChain/Routes/api.php` | Route group `mutation-transfer-external` |
+| `StockMutationTransferExternalController.php` | Header CRUD, index, approve, export; **tidak** handle `show_virtual` |
+| `StockMutationTransferExternalDetailController.php` | Detail CRUD |
+| `TransferMutationMiddleDetailExternalController.php` | Middle detail, Available Product, import hooks |
+| `TransferExternalApproveService.php` | Approve ke-1/ke-2 helpers; `checkQuantityReceived` / lost / broken |
+| `TransferExternalTransactionalJob.php` | Approve orchestration |
+| `TransferExternalHiddenInTransitJob.php` (nama setara) | Generate hidden origin→In Transit |
+| `TransferExternalProcessApproveJob.php` | Process approve steps |
+| `TransferExternalImport.php` | Excel import 4 kolom |
+| `MultiskuColliService.php` | Dipakai BETA Colli saja |
+| Entity `StockMutationTransferExternal` / shared stock mutation | `type=tf external` |
 
-Controllers terkait: StockMutationTransferExternalController, StockMutationTransferExternalDetailController.
+Policy: share privilege TF External (inbound memakai policy yang sama).
 
 ## 4. API Routes (utama)
 
-| Method | Path | Controller@method |
-|--------|------|-------------------|
-| GET | `supplychain/mutation-transfer-external` | index |
-| POST | `supplychain/mutation-transfer-external` | store |
-| GET | `supplychain/mutation-transfer-external/{id}` | show |
-| PUT | `supplychain/mutation-transfer-external/{id}` | update |
-| DELETE | `supplychain/mutation-transfer-external/{id}` | destroy |
-| POST | `supplychain/mutation-transfer-external/{id}/approve` | approve |
-| GET | `supplychain/mutation-transfer-external/{id}/audit` | audit |
-| GET | `supplychain/mutation-transfer-external/{id}/log/approve` | approval log |
-| GET | `supplychain/mutation-transfer-external/approval-eligibility/{id}` | eligibility |
-| GET | `supplychain/mutation-transfer-external/export-excel` | export all |
+| Method | Path | Notes |
+|--------|------|-------|
+| GET | `supplychain/mutation-transfer-external` | Index; + `transfer_inbound` filter In Transit \| Delivered |
+| POST | `supplychain/mutation-transfer-external` | Create |
+| PUT/PATCH | `supplychain/mutation-transfer-external/{id}` | Update header |
+| DELETE | `supplychain/mutation-transfer-external/{id}` | Delete unapproved only |
+| POST | `…/approve` | Dual path: sequence 0 (ke-1) vs inbound (ke-2) |
+| Detail / middle / import / export | under same prefix | Import queue key `TRANSFER EXTERNAL DETAIL IMPORT-{id}` |
 
-Detail nested: `supplychain/mutation-transfer-external/{id}/...-detail` — lihat `Modules/SupplyChain/Routes/api.php` untuk route lengkap.
+## 5. Database Key Tables
 
-## 5. Database Schema
+| Table / concept | Notes |
+|-----------------|-------|
+| Stock mutation header | `type=tf external`, prefix TF, `transit_status` in transit \| delivered, `is_visible` |
+| Detail / middle | `transfer_quantity`, received/lost/broken fields (packed/picked/checked mapping inbound) |
+| Virtual WH In Transit | Child virtual destination, process_group in-transit sequence 1 |
+| Soft delete | Restore policy seperti mutation lain |
 
-### Header: `scm_stock_mutations`
+## 6. Flow utama
 
-| Column | Relevansi menu ini |
-|--------|-------------------|
-| `code` | Prefix `TFE` via `generateCode()` |
-| `transaction_date` | Tanggal transaksi |
-| `warehouse_origin` / `warehouse_destination` | Sesuai tipe in/out/transfer |
-| `type` | `in` / `out` / `tf internal` / `tf external` |
-| `type_so` | Outbound: sales order type |
-| `transit_status` | External: `in transit` / `delivered` |
-| `transaction_status` | `open`, `approved`, `rejected`, ... |
-| `is_inventory_adjustment` | 0 mutation / 1 adjustment |
-| `process_type` | scrap, from void, picking, dll. |
-| `supplier_id` | Inbound PO only |
-| `transaction_reference_*` | Polymorphic link |
+```mermaid
+sequenceDiagram
+    participant U as User pengirim
+    participant API as TF Ext API
+    participant Job as Approve jobs
+    participant SM as ItemStockMutation
+    participant R as User penerima Inbound
 
-### Detail
-
-`scm_transfer_mutation_details` — field `checked_in_base_unit` untuk qty rusak/hilang
-
-### Approval
-
-`scm_stock_mutation_approvals` — `scm_stock_mutations_id`, `approval_status`, `description`, `created_by`.
-
-## 6. Jobs / Observers / Events
-
-| Job / Service | Dipakai untuk |
-|---------------|---------------|
-| Export jobs (`StockMutation*ExportJob`) | Async export list/detail |
-| Import jobs (`InboundDetailImportJob`, dll.) | Excel import detail |
-| `ItemStockMutation` | Sync stock update on approve |
-| `TransferExternalApproveMutationJob` | External transfer approve (jika transit) |
-
-## 7. Index query filter (AS-IS)
-
-```
-`type = tf external` · `warehouse_origin` and `warehouse_destination` not null · `is_inventory_adjustment = 0`
+    U->>API: Create + detail (FIFO / AP / import)
+    Note over SM: reserved ↑ availability ↓
+    U->>API: Approve ke-1
+    API->>Job: TransferExternalTransactionalJob
+    Job->>SM: origin → In Transit (hidden TF, is_visible=0)
+    Note over API: transit_status=in transit, header Approved
+    R->>API: transfer_inbound=1 edit received/lost/broken
+    R->>API: Approve ke-2
+    Job->>SM: In Transit → dest (hidden); Lost Open; Broken scrap Open
+    Note over API: transit_status=delivered
 ```
 
-## Related Documents
+## 7. Invariants
 
-| Doc | Path |
-|-----|------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
-| Requirement | [requirement.md](./requirement.md) |
-| Mermaid style | [../_meta/MERMAID_STYLE_GUIDE.md](../_meta/MERMAID_STYLE_GUIDE.md) |
+- Dual document hidden `is_visible=0`, `type=tf external`.
+- In Transit WH = child virtual destination (in-transit sequence).
+- After approve-1: `transit_status=in transit`; after approve-2: `delivered`.
+- Delete unapproved: reserved↓ availability↑ — **bukan** pindah ke kolom Transfer.
+- Produksi FE: `is_show_virtual=false`; index controller tidak memproses `show_virtual`.
+- FE save `with_picking_list=0` selalu.
+- Lost: deduction Open, `process_type=lost`, Trx Ref text/URL = **main TF code**.
+- Broken: TF Internal scrap Open, origin In Transit → scrap WH destination settings — **bukan** auto-approve.
+
+## 8. Validation Highlights
+
+Lihat [requirement §7](./requirement.md) V-TFE-01..28. FIFO: `WarehouseHelper::getFulfillAfterFifo` (Single Rack lalu klasik); exclude `warehouse_wip_id` + `warehouse_out_rack_id`.
+
+Approve-time origin level: *Warehouse Origin level must be greater than or equal to 20.*
+
+## 9. Frontend Behaviors
+
+- Produksi tanpa Colli columns.
+- BETA: Colli UI; Existing Colli scoped ke **destination** WH; risk Detail view POST bulk-colli ke route **Internal** (GAP-TFEXT-02).
+- Inbound: hide Create; link edit ke `transfer-inbound/edit/{id}`.
+- Job lock: hourglass + pesan refresh / in progress.
+
+## 10. Failure Modes & Transaction Boundary
+
+| Mode | Boundary |
+|------|----------|
+| Job lock 429 / in progress | Jangan double approve |
+| Import queue aktif | Blok approve |
+| Fiscal period invalid | Tolak save/approve |
+| Dest tanpa scrap | Broken path gagal di inbound |
+| Insufficient stock | Tolak insert/edit Select/Import |
+| Delete auto-gen In Transit | Pesan auto generated from transfer external |
+
+## 11. Data Lifecycle
+
+| Dokumen | Visible | Origin → Dest |
+|---------|---------|---------------|
+| TF utama (user) | Ya | Origin rack → destination leaf |
+| Hidden setelah ke-1 | Tidak | Origin → In Transit dest |
+| Hidden setelah ke-2 | Tidak | In Transit → destination |
+| Lost | Deduction Open | Trx Ref = kode TF utama |
+| Broken | TF Internal scrap Open | In Transit → scrap WH |
+
+## 12. Tests & QA Notes
+
+- Pair TC dengan Transfer Inbound (dual approve + Lost/Broken Open).
+- Verifikasi delete unapproved = reserved restore (bukan Transfer column).
+- Import template exact 4 columns.
+- BETA Colli: jangan lock expected produksi.
+
+## 13. Known Issues
+
+Refer [requirement §9](./requirement.md): GAP-TFEXT-01..06.

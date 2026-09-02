@@ -2,97 +2,93 @@
 doc_type: knowledge-base
 menu: supplychain-transfer-inbound
 menu_name: "Transfer Inbound"
-version: 1.0
-last_updated: 2026-06-19
+version: 2.0
+last_updated: 2026-09-01
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 ---
 
 # Transfer Inbound — Knowledge Base
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+## 1. Apa itu Transfer Inbound?
 
-## Ringkasan
-
-**Transfer Inbound** adalah sisi **penerimaan** dari **Transfer External** antar warehouse. Operator menerima barang yang sudah **in transit** atau **delivered** dari gudang origin ke gudang destination.
+Menu **penerimaan** untuk Transfer External yang sudah di-approve pengirim. Kamu mengisi Qty Received / Lost / Broken lalu **Approve** (approval ke-2). Setelah itu Delivery Status jadi **Delivered**.
 
 | Item | Nilai |
 |------|-------|
 | Menu | Supply Chain → Transfer Inbound |
-| Route UI | `/supplychain/transfer-inbound` (edit only) |
-| API shared | `supplychain/mutation-transfer-external` |
-| Entity | `StockMutationTransferExternal` (`type = tf external`) |
-| Tabel detail | `scm_transfer_mutation_details` |
+| Route | `/supplychain/transfer-inbound` |
+| Pasangan | [Transfer External](../supplychain-mutation-transfer-external/knowledge-base.md) |
 
-## Kapan dipakai
+**Tidak ada Create** di sini — dokumen dibuat di Transfer External.
 
-- Transfer external sudah di-ship dari gudang asal.
-- Barang dalam perjalanan (`in transit`) atau sudah sampai (`delivered`).
-- Perlu konfirmasi qty received, broken, dan missing di destination.
-
-## Langkah operasional
-
-### 1. Lihat daftar transfer masuk
-
-1. Buka **Transfer Inbound**.
-2. Datalist menampilkan transfer dengan `transit_status` = **`in transit`** atau **`delivered`**.
-3. Klik kode transfer → form edit (mode inbound).
-
-### 2. Konfirmasi penerimaan per baris
-
-1. Di detail transfer, isi:
-   - **Quantity received** — qty diterima baik
-   - **Broken quantity** — qty rusak (→ scrap warehouse)
-   - **Missing quantity** — qty hilang
-2. Total received + broken + missing harus = qty transfer.
-3. Endpoint: `POST mutation-transfer-detail-ext/update-received` atau `transfer-external-middle-detail/update-received`.
-
-### 3. Approve (inbound side)
-
-1. Approval transfer inbound memakai `StockMutationTransferExternalController@approve` dengan flag **`transit`**.
-2. Jika ada broken qty → sistem resolve scrap warehouse parent.
-3. Setelah approved → stok masuk destination warehouse.
-
-## Perbedaan dengan Transfer External
-
-| Aspek | Transfer External | Transfer Inbound |
-|-------|-------------------|------------------|
-| Route UI | `/supplychain/mutation-transfer-external` | `/supplychain/transfer-inbound` |
-| Fokus | Pick, pack, ship dari origin | Receive di destination |
-| Create | Bisa create transfer baru | **Tidak ada create** — hanya edit existing |
-| Filter datalist | Semua transfer external | Hanya in transit / delivered |
-| Router meta | — | `transferInbound: true` |
-
-## Status & transit
-
-| Field | Nilai | Arti |
-|-------|-------|------|
-| `transaction_status` | open → approved | Status dokumen |
-| `transit_status` | `in transit` | Barang dalam perjalanan |
-| `transit_status` | `delivered` | Barang sudah sampai, menunggu konfirmasi |
-
-## Troubleshooting
-
-| Gejala | Penyebab | Tindakan |
-|--------|----------|----------|
-| Transfer tidak muncul | Belum in transit/delivered | Selesaikan proses ship di Transfer External |
-| Qty received ditolak | Total ≠ transfer qty | Sesuaikan received + broken + missing |
-| Tidak bisa edit | Status sudah approved | Cek approval log |
-| Broken qty error | Scrap warehouse belum setup | Konfigurasi warehouse scrap di setting |
-
-## Relasi menu
-
-| Menu | Route | Hubungan |
-|------|-------|----------|
-| Transfer External | `supplychain/mutation-transfer-external` | Sisi outbound/pengiriman |
-| Real Time Stock | `supplychain/real-stock` | Stok origin turun, destination naik |
-| Warehouse Setting | `supplychain/setting` | Scrap/void warehouse config |
-
-## Istilah
+## 2. Glosarium
 
 | Istilah | Arti |
 |---------|------|
-| Transfer External | Mutasi stok antar warehouse (external) |
-| Transit status | Tahap pengiriman barang antar gudang |
-| `packed_in_base_unit` | Field qty received (base unit) di detail transfer |
+| Qty Transfered | Jumlah yang dikirim pengirim (tidak diubah penerima) |
+| Qty Received | Jumlah yang diterima baik |
+| Lost Items | Hilang di jalan → jadi Stock Deduction **Open** (masih perlu approve) |
+| Broken Items | Rusak → pindah ke gudang scrap (**Open**, perlu approve TF scrap) |
+| Delivered | Penerimaan selesai |
+| In Transit | Menunggu penerimaan di menu ini |
+
+## 3. Yang Bisa / Tidak Bisa
+
+### Bisa
+- Lihat dokumen TF Ext dengan Delivery **In Transit** atau **Delivered**
+- Edit Qty Received / Lost / Broken selama masih In Transit
+- Approve ke-2 (satu dokumen atau bulk jika eligible)
+- Export with/without details
+
+### Tidak Bisa
+- Create dokumen baru
+- Tambah SKU baru / Import / Select Product
+- Void atau reject penerimaan — koreksi angka **sebelum** Approve ke-2
+- Edit qty setelah Delivered
+- Hapus dokumen yang sudah Approved di pengirim
+
+## 4. Cara Pakai
+
+1. Buka **Transfer Inbound** — cari nomor TF yang In Transit.
+2. Buka edit. Qty Received default = semua yang dikirim; Lost/Broken default 0/kosong.
+3. Sesuaikan angka: **Received + Lost + Broken harus sama** dengan Qty Transfered.
+4. **Approve**.
+
+### Contoh penerimaan
+
+TF Ext kirim SKUPENSIL 1.000:
+
+| Received | Lost | Broken | Hasil |
+|----------|------|--------|-------|
+| 1.000 | 0 | 0 | Semua masuk destination; Delivered |
+| 900 | 100 | 0 | 900 di tujuan; Deduction Open 100 (ref kode TF utama) |
+| 850 | 50 | 100 | 850 di tujuan; Deduction 50 Open; TF scrap 100 Open |
+| 1.001 | — | — | Ditolak — received tidak boleh lebih dari transferred |
+
+Lost/Broken **0 atau kosong sah** jika received = transferred (meski UI ada tanda required).
+
+## 5. Troubleshooting
+
+| Gejala | Penyebab | Solusi |
+|--------|----------|--------|
+| Dokumen tidak muncul | Belum approve ke-1 / masih Draft | Selesaikan di Transfer External dulu |
+| Broken ditolak | Scrap WH destination belum di-set | Warehouse Setting struktur **tujuan** |
+| Deduction tidak ketemu | Cari salah kode | Cari **kode TF Ext utama**, bukan kode TF hidden |
+| Incoming masih ada setelah approve | Job belum selesai | Refresh; cek Delivery Status Delivered |
+| Pesan jumlah beda saat set vs approve | Dua endpoint validasi | Samakan Received+Lost+Broken = Transfered, approve lagi |
+
+## 6. FAQ
+
+**Q: Boleh approve tanpa ubah qty?**  
+A: Ya — default received = transferred, lost/broken 0.
+
+**Q: Lost sudah ada deduction, kenapa stok belum potong final?**  
+A: Deduction masih Open — approve manual di Adjustment Deduction.
+
+**Q: Broken ke gudang mana?**  
+A: Gudang scrap di Warehouse Setting untuk **destination** (bukan origin pengirim).
+
+**Q: Bisa reject penerimaan?**  
+A: Tidak. Koreksi angka sebelum Approve.

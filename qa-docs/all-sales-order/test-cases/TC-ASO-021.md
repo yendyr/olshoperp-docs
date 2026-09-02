@@ -1,0 +1,68 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-ASO-021
+menu: all-sales-order
+menu_name: "All Sales Order"
+test_type: happy
+title: "Penyuntingan Detail dan Penambahan SKU Pasca Ekstraksi Bundle"
+summary: "Memastikan detail Sales Order tetap dapat diedit (qty komponen) dan ditambahkan SKU baru setelah tombol Extract this bundle dijalankan pada status Draft/Open."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-08-27
+requirement_ref: "qa-docs/all-sales-order/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 112
+  code: FAT
+related_menus:
+  - sales-order-general
+preconditions:
+  - "User login ke OlshopERP pada company FAT (112)."
+  - "Navigasi ke menu All Sales Order."
+  - "Tersedia Sales Order Draft/Open yang memiliki item SKU Bundle dengan komponen Single SKU (cth: BUNDLE-01)."
+test_data:
+  - field: "Sales Order Code"
+    value: "SO-FIXTURE-ETM15637"
+  - field: "Bundle SKU"
+    value: "BUNDLE-01 (Komponen: SKU-A qty 2, SKU-B qty 1)"
+steps:
+  - "Buka detail dokumen Sales Order Draft/Open target (SO-FIXTURE-ETM15637)."
+  - "Cari baris item BUNDLE-01 pada grid detail, lalu klik tombol 'Extract this bundle'."
+  - "Verifikasi bahwa baris BUNDLE-01 terurai secara real-time menjadi 2 baris komponen: SKU-A dan SKU-B."
+  - "Ubah kuantitas (Qty) dari SKU-A yang tadinya 2 menjadi 5."
+  - "Klik tombol 'Add Product / Select Product', pilih produk single baru (misal: SKU-C), masukkan qty = 1, dan tambahkan ke detail SO."
+  - "Klik tombol 'Save' untuk menyimpan seluruh transaksi."
+  - "Refresh halaman detail Sales Order tersebut."
+expected_result: |
+  1. Kuantitas baris komponen hasil ekstraksi (SKU-A) berhasil diubah secara manual (tidak terkunci / read-only).
+  2. Tombol 'Add Product' tetap aktif dan produk baru (SKU-C) berhasil ditambahkan ke grid detail transaksi.
+  3. Dokumen berhasil disimpan tanpa memicu error pop-up sistem.
+  4. Setelah refresh, data kuantitas SKU-A tetap bernilai 5 dan SKU-C tetap terdaftar di tabel detail SO.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: ETM-15637
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+first_execution:
+  at: null
+  via: null
+  jira: null
+---
+
+# TC-ASO-021
+
+## Catatan QA
+- **Latar Belakang:** Pengujian dilakukan untuk memverifikasi perbaikan regresi edit & add detail pasca ekstraksi bundle.
+- **Relasi JIRA:** Terkait dengan card reopen `ETM-15637` (origin ticket `ETM-15605`).

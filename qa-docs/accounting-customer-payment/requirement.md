@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.0
-last_updated: 2026-08-31
+version: 2.1
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 ---
@@ -18,7 +18,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 2.0 | 2026-08-31 | QA - Yemima | Split dari SoT v1.0 — Import AR multi-sheet, validasi terverifikasi codebase, Gap Registry |
+| 2.1 | 2026-09-01 | QA - Yemima | Relasi Instant Settlement: AR date/time dari SI + guard same calendar date (ETM-15701) || 2.0 | 2026-08-31 | QA - Yemima | Split dari SoT v1.0 — Import AR multi-sheet, validasi terverifikasi codebase, Gap Registry |
 | 1.1 | 2026-06-26 | QA - Yemima | Test cases AR detail insert (single/bulk use, bulk select) — lihat test-cases/ |
 | 1.0 | 2026-06-23 | QA - Yemima | Cross-reference Relasi Instant Settlement (Fase 1) |
 
@@ -164,6 +164,8 @@ Hanya boleh ada satu proses import AR berjalan. Upload kedua ditolak dengan pemb
 ### 5.8 Relasi Instant Settlement
 
 Saat user Approve batch Instant Settlement, sistem membentuk satu dokumen AR per settlement upload yang mengalokasikan pembayaran ke invoice hasil generate. Invoice yang sudah punya AR manual dilewati supaya tidak dobel (Smart AR). Store wajib punya Cash/Bank Receiving sebelum Approve settlement, dan fiscal period harus terbuka pada tanggal settlement.
+
+**Tanggal & jam AR (ETM-15701):** semua Sales Invoice dalam batch wajib **same calendar date** (jam boleh beda). Jika campur tanggal → Approve Instant Settlement ditolak (tidak generate AR). Jika lolos: **tanggal AR** = tanggal SI; **jam AR** = waktu SI paling akhir di batch. Detail: [Instant Settlement §6.3 / V-23](../accounting-settlement-upload/requirement.md).
 
 AR manual tidak ikut terhapus saat settlement di-Reject, dan justru memblokir Delete settlement bila terhubung ke invoice hasil upload. Detail alur bulk ada di [Instant Settlement](../accounting-settlement-upload/requirement.md).
 

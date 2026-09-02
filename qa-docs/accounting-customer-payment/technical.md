@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.0
-last_updated: 2026-08-31
+version: 2.1
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 ---

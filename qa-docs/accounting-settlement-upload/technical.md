@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.5
-last_updated: 2026-06-23
+version: 1.6
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 related_docs:
@@ -202,7 +202,9 @@ Key counters on upload: `order_count`, `order_errors`, `generated_invoice_count`
 - Creates one `CustomerPayment` per upload if absent
 - Chunks settlements; skips `invoice.payment_details_exists`
 - `bulkSelectStore` for payment details
-
+- **TO-BE (ETM-15701 / V-23):** sebelum generate AR, validasi semua SI batch punya **same calendar date** (`transaction_date` date-only). Jika mixed dates → reject approve (controller/job guard).
+- **TO-BE AR `transaction_date`:** date = SI calendar date (unique setelah V-23); time = **max** SI `transaction_date` datetime in batch.  
+  **AS-IS (pre-ETM-15701):** approve path memakai `settlements()->max('transaction_date')` (juga untuk cek Cash/Bank Reconcile overlap).
 ### Delete (`DeleteSettlementJob`)
 
 - Deletes receive, invoice (+ journals), outbound (+ journals), settlement rows

@@ -28,6 +28,7 @@ Menu **Account Receive** (Accounting).
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1 | 2026-09-01 17:05 | Cross-ref Instant Settlement ETM-15701: AR date/time dari SI + guard same calendar date |
 | 2.0 | 2026-08-31 | Split dari SoT v1.0 — Import AR multi-sheet, validasi terverifikasi codebase, Gap Registry GAP-AR-01..09; technical.md & user-guide.md dibuat; 3 layer naik ke review |
 | 1.1 | 2026-06-26 | Test cases AR detail insert (single/bulk use, bulk select) |
 | 1.0 | 2026-06-23 | Cross-reference Relasi Instant Settlement (Fase 1) |

@@ -10,7 +10,7 @@ source_docs:
   - requirement.md
   - knowledge-base.md
   - technical.md
-source_version: 2.0
+source_version: 2.1
 ---
 
 # Account Receive — User Guide
@@ -110,7 +110,7 @@ Dalam satu baris isi salah satu saja — Debit atau Credit, tidak boleh dua-duan
 
 **"Kenapa muncul keluhan input dikenali sebagai dua hal sekaligus?"** Ada kode akun bank dan nomor deposit yang kebetulan persis sama. Ubah salah satu penamaannya.
 
-**"Dokumen AR muncul sendiri, dari mana?"** Kalau Anda menyetujui batch di menu Instant Settlement, sistem otomatis membuat dokumen pelunasan untuk tagihan hasil batch itu. Tagihan yang sudah Anda lunasi manual tidak akan dibuatkan lagi.
+**"Dokumen AR muncul sendiri, dari mana?"** Kalau Anda menyetujui batch di menu Instant Settlement, sistem otomatis membuat dokumen pelunasan untuk tagihan hasil batch itu. Tagihan yang sudah Anda lunasi manual tidak akan dibuatkan lagi. Tanggal AR mengikuti tanggal Sales Invoice (semua SI di batch harus hari yang sama); jam AR mengambil jam SI paling akhir di batch.
 
 ## 8. Referensi
 

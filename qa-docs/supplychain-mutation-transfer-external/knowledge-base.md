@@ -1,98 +1,114 @@
 ---
 doc_type: knowledge-base
 menu: supplychain-mutation-transfer-external
-menu_name: "External Transfer"
-version: 1.0
-last_updated: 2026-06-19
+menu_name: "Transfer External"
+version: 2.0
+last_updated: 2026-09-01
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 ---
 
-# External Transfer — Knowledge Base
+# Transfer External — Knowledge Base
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+## 1. Apa itu Transfer External?
 
-
-## 1. Apa itu External Transfer?
-
-Transfer antar building/company dengan fase transit. Subclass `StockMutationTransferExternal`, `type = tf external`, kode `TFE`. Mendukung `transit_status`: `in transit` → `delivered`.
+Memindahkan stok **antar gedung / struktur warehouse berbeda** (contoh: GD Surabaya ke GD Sidoarjo). Butuh **dua kali approve**: pengirim di menu ini, penerima di **Transfer Inbound**. Kode transaksi diawali **TF**.
 
 | Item | Nilai |
 |------|-------|
-| Menu | Supply Chain → External Transfer |
-| Route UI | `/supplychain/mutation-transfer-external` |
-| Kode dokumen | `TFE` |
-| Tabel header | `scm_stock_mutations` |
-| Tabel detail | `scm_transfer_mutation_details` — field `checked_in_base_unit` untuk qty rusak/hilang |
+| Menu | Supply Chain → Transfer External |
+| Route produksi | `/supplychain/mutation-transfer-external` |
+| Route BETA Colli | `/supplychain/new-mutation-transfer-external` — **experimental, bukan produksi** |
+| Pasangan | [Transfer Inbound](../supplychain-transfer-inbound/knowledge-base.md) |
 
-**Tujuan:** Memindahkan stok antar gudang/building berbeda dengan pelacakan in-transit dan penerimaan (received/broken qty).
+Setelah pengirim approve, barang masuk status **In Transit**. Stok di gudang tujuan baru bisa dipakai penuh setelah penerima approve di Transfer Inbound (**Delivered**).
 
 ## 2. Glosarium
 
 | Istilah | Arti |
 |---------|------|
-| Stock Mutation | Transaksi pergerakan stok di `scm_stock_mutations` |
-| Item Stock | Batch/lot stok fisik per produk di gudang (`scm_item_stocks`) |
-| Transaction status | `open`, `draft`, `approved`, `rejected`, `void`, dll. |
-| Approval log | Riwayat approve di `scm_stock_mutation_approvals` |
-| Fiscal period | Periode akuntansi — transaksi harus dalam periode terbuka |
+| Single Rack FIFO | Ambil satu rak/batch lama yang qty-nya cukup |
+| FIFO klasik | Ambil bertahap dari stok paling lama |
+| Stock ID | Satu batch inbound; Available Products = pilih satu stock ID |
+| In Transit | Barang sudah keluar origin, belum resmi di destination |
+| Delivered | Penerima sudah approve ke-2 |
+| Reserved | Stok dikunci di dokumen belum approve |
+| Hidden TF | Dokumen sistem ke/dari In Transit; tidak muncul di daftar biasa |
 
-## 3. Yang Bisa / Tidak Bisa Dilakukan
+## 3. Yang Bisa / Tidak Bisa
 
 ### Bisa
-- Buat header transaksi (status `open` / `draft`)
-- Tambah/edit/hapus detail selama belum approved (`can_update`)
-- Import Excel detail (jika menu mendukung)
-- Approve dengan permission `approval` (lihat catatan approve per menu)
-- Export list dan detail, print label (jika tersedia)
-- Lihat audit log dan approval eligibility
+- Buat / edit / hapus dokumen Draft, Open, atau Rejected (belum approve)
+- Tambah SKU lewat **Select Product**, **Import**, atau **Available Products**
+- Bulk Delete & Approve dari datalist
+- Export with / without details
+- Setelah approve ke-1: lanjut proses di Transfer Inbound sampai Delivered
 
 ### Tidak Bisa
-- Ubah header/detail setelah approved (`can_update = false`)
-- Tanggal transaksi lebih besar dari hari ini
-- Approve tanpa detail
-- Approve saat import detail sedang berjalan (cache lock)
-- Transaksi di luar fiscal period terbuka
-- Hapus dokumen auto-generated (opname, in-transit) — baca error message spesifik
+- Void setelah approve ke-1 — harus lanjut sampai Delivered
+- Reject setelah approve ke-1 (hanya sebelum approve)
+- Ubah origin atau tanggal transaksi setelah ada baris detail
+- Colli di route produksi (hanya BETA experimental)
+- Hapus dokumen yang sudah Approved
+- Pakai **Show Virtual WH** di produksi — toggle tidak dipakai; dokumen In Transit memang disembunyikan
 
-## 4. Cara Pakai (How-To)
+## 4. Cara Pakai
 
-### Skenario umum
-1. Buka menu **External Transfer** → **Create**.
-2. Isi header: tanggal transaksi, gudang (origin/destination sesuai tipe), deskripsi, lampiran opsional.
-3. Simpan → tambah detail produk (manual, bulk, atau import).
-4. Review **Approval Eligibility** di panel form.
-5. **Approve** — ikuti alur di bagian approve (SCM langsung atau via Accounting).
-6. Verifikasi stok di **Real Time Stock** / **Stock History**.
+### 4.1 Buat Transfer External (produksi)
 
-```mermaid
-flowchart TB
-    A["Create TFE"] --> B["Ship approve
-in transit"]
-    B --> C["Receive approve
-delivered"]
-    C --> D["Stock at destination"]
-```
+1. **Create** → isi **Origin** (level 20 ke atas / drop-off ke rack) dan **Location Destination** (level 20, tanpa sub-lokasi, beda struktur dari origin, **wajib** sudah punya gudang scrap di Warehouse Setting).
+2. Isi tanggal (periode fiskal valid).
+3. Tambah SKU: **Select Product** (qty default 1), **Import**, atau **Available Products**.
+4. Simpan Open → **Approve** (approve ke-1).
+5. Serahkan ke penerima: proses lanjut di **Transfer Inbound**.
+
+**First time** (belum pernah ada TF Ext): origin & destination diisi manual. Berikutnya, autosave bisa mengisi dari transaksi terakhir.
+
+### 4.2 Contoh alokasi FIFO (Select Product / Import)
+
+Stok SKUPENSIL: 1 Jan rack A 50, 2 Jan B 100, 3 Jan C 150, 4 Jan D 200.
+
+| Pindah | Dari rack |
+|--------|-----------|
+| 50 | A saja |
+| 75 | B saja |
+| 150 | C saja |
+| 200 | D saja |
+| 250 | A + B + C (FIFO klasik) |
+
+**Available Products:** terikat **satu stock ID**. Contoh total SKU 80 = stock 10:00 (50) + 11:00 (30). Use stock 11:00 lalu edit qty 40 → ditolak; pakai Select Product / Import untuk gabung batch.
+
+### 4.3 Contoh dokumen (user)
+
+Kirim SKUPENSIL 1.000 dari `GD.SBY → Rack-001` ke `GD-SDA → Drop OFF`:
+
+1. **TF001** (terlihat): origin SBY Rack-001 → Drop OFF SDA.
+2. Setelah approve pengirim: stok origin masuk kolom **Transfer**; destination masih incoming.
+3. Setelah approve penerima di Inbound: **Delivered**; availability di SDA = yang diterima.
 
 ## 5. Troubleshooting
 
 | Gejala | Penyebab | Solusi |
 |--------|----------|--------|
-| Approve gagal "doesn't have any detail" | Belum ada baris detail | Tambah minimal 1 detail |
-| "Updating process is in progress" | Import Excel masih jalan | Tunggu selesai, cek import log |
-| "Transaction date cannot be greater than today" | Tanggal lebih besar dari hari ini | Koreksi tanggal transaksi |
-| Fiscal period error | Periode tutup | Buka periode di Accounting atau ubah tanggal |
-| Tidak bisa ubah gudang | Sudah ada detail terikat gudang | Hapus detail dulu atau buat dokumen baru |
-| Tombol Approve tidak muncul | Permission / menu SCM adjustment | Cek role; untuk Addition/Deduction approve di Accounting |
+| Destination tidak muncul / ditolak | Bukan leaf, sama struktur origin, atau scrap belum di-set | Cek Master Warehouse + Warehouse Setting scrap |
+| Insufficient stock | Stok origin tidak cukup (FIFO skip WIP & Outrack) | Cek Stock Monitoring; pastikan stok bukan di WIP/Outrack saja |
+| Qty Available Products ditolak | Melebihi availability **stock ID** terpilih | Kurangi qty atau pakai Select Product / Import |
+| Approve stuck hourglass | Job approve masih jalan | Refresh; tunggu selesai |
+| Import gagal | Template / isi baris salah | Template 4 kolom: Product ID \| System Product SKU \| Qty \| Unit |
+| Tidak bisa hapus setelah approve | Tidak ada Void | Lanjut Transfer Inbound sampai Delivered |
+| Stok SDA belum bisa dipakai | Masih In Transit | Tunggu approve di Transfer Inbound |
 
 ## 6. FAQ
 
-**Q: Apa beda menu ini dengan Stock Adjustment?**  
-A: Menu mutation (`mutation-inbound/outbound/transfer`) untuk alur operasional normal. Menu `adjustment-addition/deduction` khusus `is_inventory_adjustment = 1` dengan approval finance terpisah.
+**Q: Bedanya dengan Transfer Internal?**  
+A: TF Ext = beda gedung, dua approve, ada In Transit & Delivery Status. TF Internal = satu struktur, satu approve.
 
-**Q: Dokumen terkait menu lain?**  
-A: Lihat: supplychain-transfer-inbound, supplychain-mutation-transfer-scrap.
+**Q: Kenapa tidak bisa hapus setelah approve?**  
+A: Tidak ada Void. Lanjut sampai Delivered di Transfer Inbound.
 
-**Q: Bagaimana cara approve?**  
-A: POST `mutation-transfer-external/{id}/approve` — approve pengiriman (in transit) lalu approve penerimaan (`transit` param). Broken qty → scrap warehouse.
+**Q: Show Virtual?**  
+A: Tidak dipakai di produksi TF Ext. Dokumen In Transit disembunyikan otomatis.
+
+**Q: Colli?**  
+A: Belum untuk produksi. Route BETA Colli hanya experimental.

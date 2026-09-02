@@ -25,7 +25,7 @@ Prefix folder: `ASO`.
 | TC-ASO-013 | Extract SKU Bundle tipe VARIANT pada Detail Sales Order | draft | ❌ | 2026-08-21 |
 | TC-ASO-014 | Extract SKU Bundle tipe VARIANT RANDOM pada Detail Sales Order | draft | ❌ | 2026-08-21 |
 | TC-ASO-015 | Extract SKU Bundle pada Sales Order dengan > 100 baris detail SKU | draft | ❌ | 2026-08-21 |
-| `TC-ASO-DRAFT-20260827153501.md` / PENDING-20260827153501 | Penyuntingan Detail dan Penambahan SKU Pasca Ekstraksi Bundle | draft | ❌ | 2026-08-27 |
+| `TC-ASO-021.md` / TC-ASO-021 | Penyuntingan Detail dan Penambahan SKU Pasca Ekstraksi Bundle | draft | ❌ | 2026-08-27 |
 
 `TC-ASO-004` s/d `TC-ASO-010` — Dibuat untuk pengujian fitur Pill Filter `Net Sales < COGS` pada card origin [ETM-15446](https://erpintegration.atlassian.net/browse/ETM-15446).
 `TC-ASO-011` s/d `05` — Dibuat oleh Jenni untuk pengujian fitur Extract This Bundle pada card origin [ETM-15605](https://erpintegration.atlassian.net/browse/ETM-15605).

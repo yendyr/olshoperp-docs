@@ -19,12 +19,16 @@
 **SOT:** [_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md](../_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md) v1.0  
 **Feature Map:** [feature-map.md](./feature-map.md) (tab MenuDoc) · **Shared:** [_meta/shared-capabilities/](../_meta/shared-capabilities/)
 
+**Help Center overview:** [ID](../_meta/docs-hub/menus/supplychain-mutation-transfer-internal/overview.id.md) · [EN](../_meta/docs-hub/menus/supplychain-mutation-transfer-internal/overview.en.md) (`authored` ID + derived EN, review)
+
 **Relasi:** [Failed Ship](../supplychain-failed-ship/README.md) · [Assembly](../supplychain-assembly/README.md) · [New Purchase Inbound Colli v2](../supplychain-new-purchase-inbound/README.md)
 
 ## Changelog
 
 | Date | Changes |
 |------|---------|
+| 2026-09-01 12:28 | Help Center Transfer Internal EN translation ditambahkan (derived dari overview ID) |
+| 2026-09-01 11:58 | Help Center Transfer Internal versi Indonesia dari konten user — Legacy vs BETA Colli, FIFO, Virtual WH, troubleshooting |
 | 2026-09-01 11:00 | Split SOT v1.0 → KB/requirement/technical review |
 | 2026-09-01 11:15 | User guide v1.0 |
 | 2026-09-01 11:30 | Feature Map v1.0 + 7 capability Lingo cards (TFI Colli BETA, FIFO, import) |

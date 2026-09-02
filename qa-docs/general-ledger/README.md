@@ -11,6 +11,8 @@ Menu **General Ledger Report** (Accounting) — laporan buku besar per COA.
 | User Guide | [user-guide.md](./user-guide.md) | End-user (Notion/Lark) | review |
 | Capability cards | [capabilities/](./capabilities/) | Lingo / MenuDoc | review |
 
+**Help Center overview:** [ID](../_meta/docs-hub/menus/general-ledger/overview.id.md) · [EN](../_meta/docs-hub/menus/general-ledger/overview.en.md) (`authored` ID + derived EN, review)
+
 **Maintenance owner:** QA — Yemima
 
 ## Test Cases
@@ -44,6 +46,7 @@ Menu **General Ledger Report** (Accounting) — laporan buku besar per COA.
 
 | Date | Changes |
 |------|---------|
+| 2026-09-01 14:40 | Help Center General Ledger ID (authored) + EN translation — grouping COA, kolom Store, opening/ending, export async |
 | 2026-09-01 12:55 | User guide v1.0; Feature Map + 3 capability Lingo (Store column/filter/export); Help Center ditunda sesi terpisah |
 | 2026-09-01 11:55 | Docs v1.1: kolom/filter/export Store (ETM-15666), aturan pivot header journal, cross-ref settlement/journal, gap AR/CN/DN |
 | 2026-06-19 | Docs v1.0: AS-IS GL report, opening/ending balance, TO-BE group header & running export |

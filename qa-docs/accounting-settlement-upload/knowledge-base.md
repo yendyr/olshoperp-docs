@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.6
-last_updated: 2026-07-15
+version: 1.7
+last_updated: 2026-09-01
 owner: QA - Yemima
 status: review
 audience: operator
@@ -77,6 +77,7 @@ flowchart LR
 - Hapus settlement jika ada Sales Invoice yang sudah dipakai AR manual
 - Approve AR jika **Receiving Destination COA** belum di-set di Store Setting
 - Approve jika **semua** Sales Invoice batch sudah punya AR
+- Approve jika **tanggal transaksi Sales Invoice** di batch **campur beda hari** (jam boleh beda; tanggal harus sama)
 
 ---
 
@@ -280,6 +281,7 @@ Detail integrasi lengkap: [requirement.md §10](./requirement.md#10-relasi-menu-
 | Import macet, ikon ⚠️ | Queue/job lambat atau error background | Klik ⚠️ atau tunggu; hubungi admin jika >1 jam |
 | Tombol Approve disabled | Semua SI sudah punya AR | Normal jika piutang sudah lunas manual |
 | Error saat Approve: Receiving Destination COA | Cash/Bank Receiving belum di Store Setting | Isi di menu Store Setting |
+| Approve ditolak karena tanggal SI beda | Dalam 1 batch ada SI tanggal kalender berbeda | Pisahkan file/batch per tanggal settle; jam boleh beda, **hari** harus sama |
 | SI/Outbound ada, jurnal gagal | COA produk/mapping belum lengkap | Lengkapi Product COA Group / Settlement Mapping → retry jurnal |
 | Tidak bisa delete | Ada AR manual pada salah satu SI | Hapus/reverse AR manual dulu, atau biarkan settlement terkunci |
 | Selisih Settlement Total vs SI | Rounding platform / mapping biaya | Normal jika kecil — cek **Difference Settlement-SI** di panel SI |
@@ -303,6 +305,12 @@ A: **Tidak.** Hanya stok yang di-revert. Order tetap Shipped — bisa settle ula
 
 **Q: Saya sudah buat AR manual sebagian invoice, apa yang terjadi saat Approve?**  
 A: Sistem hanya generate AR untuk invoice yang **belum** punya AR (Smart AR).
+
+**Q: Kenapa Approve ditolak padahal semua order sudah valid?**  
+A: Cek **tanggal transaksi Sales Invoice** di batch. Semua harus **hari yang sama**. Jam boleh beda (contoh 09:00 dan 18:30 di tanggal yang sama). Kalau ada SI tanggal lain, pecah batch / file per tanggal.
+
+**Q: Tanggal AR setelah Approve diambil dari mana?**  
+A: **Tanggal** = tanggal SI (semua sudah sama). **Jam** = jam SI paling akhir di batch itu.
 
 **Q: Apa beda Reject vs Delete?**  
 A: **Reject** = tidak jadi generate AR (dokumen upload tetap). **Delete** = hapus rantai dokumen hasil settlement (jika allowed).

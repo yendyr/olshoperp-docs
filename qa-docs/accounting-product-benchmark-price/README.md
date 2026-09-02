@@ -9,6 +9,8 @@ Menu **Benchmark COGS** (Finance Accounting → Report) — nilai acuan HPP per 
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | End-user (Notion/Lark) | review |
 
+**Help Center overview:** [ID](../_meta/docs-hub/menus/accounting-product-benchmark-price/overview.id.md) · [EN](../_meta/docs-hub/menus/accounting-product-benchmark-price/overview.en.md) (`authored` ID + derived EN, review)
+
 **Maintenance owner:** QA — Yemima  
 **PM / card:** Notion Benchmark COGS · [ETM-7029](https://erpintegration.atlassian.net/browse/ETM-7029) · Bundle [ETM-15688](https://erpintegration.atlassian.net/browse/ETM-15688)
 
@@ -18,6 +20,8 @@ Menu **Benchmark COGS** (Finance Accounting → Report) — nilai acuan HPP per 
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-09-01 12:28 | HC-EN 1.0 | Help Center Benchmark COGS English translation ditambahkan (derived dari overview ID) |
+| 2026-09-01 11:49 | HC-ID 1.0 | Help Center Benchmark COGS versi Indonesia dari konten user — rumus 3-tier, integrasi SO/Opname, Bundle Sum, troubleshooting |
 | 2026-09-01 09:16 | 1.4 | TO-BE **Product Bundle** COGS: Bundle Sum / Highest Bundle Variant; qty × komponen; Manual override; Bundle ≠ BOM; job order — ETM-15688 |
 | 2026-09-01 09:16 | UG 1.1 | Sync user-guide ke source 1.4 (Bundle Sum + contoh paket) |
 | 2026-08-11 | 1.3 | TO-BE **Manual COGS** + Expiry + import + audit; GAP-BM-14; contoh kasus §3.5; **user-guide v1.0** |

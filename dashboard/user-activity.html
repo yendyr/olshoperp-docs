@@ -86,7 +86,7 @@
     <header>
       <div>
         <h1>User Activity</h1>
-        <p>Last opened menu + last write per user di Tyas &amp; Merdian. Data live dari n8n (bukan file git).</p>
+        <p>Dashboard QA — lihat user aktif di <strong>Tyas</strong> &amp; <strong>Merdian</strong> (menu terakhir dibuka + aksi simpan terakhir). File HTML saja, tanpa deploy ke staging.</p>
       </div>
       <div class="meta">
         <strong id="genAt">—</strong>
@@ -117,7 +117,12 @@
       </div>
     </div>
 
-    <div class="banner" id="statusBanner">Set export URL n8n, atau load sample untuk preview UI.</div>
+    <div class="banner" id="statusBanner">
+      <strong>Cara pakai (3 langkah):</strong>
+      (1) Import workflow n8n di <span class="mono">n8n/user-activity/</span> kalau belum.
+      (2) Klik <strong>Config URL</strong> → paste Export URL dari n8n → Save.
+      (3) Klik <strong>Refresh</strong>. Atau <strong>Load sample</strong> untuk preview tanpa n8n.
+    </div>
 
     <div class="stats" id="stats"></div>
 
@@ -297,7 +302,7 @@
     $('genAt').textContent = data?.generated_at ? `Data: ${fmtWhen(data.generated_at)}` : '—'
     $('fetchAt').textContent = `Fetched ${fmtWhen(new Date().toISOString())} · ${sourceLabel}`
     banner.className = 'banner'
-    banner.textContent = `${users.length} user record(s) dari ${sourceLabel}. Highlight = sinyal lebih baru (open vs write).`
+    banner.innerHTML = `<strong>${users.length} user</strong> dari ${sourceLabel}. Baris highlight = sinyal lebih baru (buka menu vs simpan data).`
     render()
   }
 
