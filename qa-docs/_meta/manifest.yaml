@@ -2244,6 +2244,38 @@ menus:
         - Modules/SupplyChain/Services/WaveTransferService.php
       frontend:
         - olshoperp-frontend/src/pages/Omni/WavesManagement/**/*
+  order-processing-trace:
+    menu_name: "Order Processing Trace"
+    short_description: "Trace fulfillment transaction references per sales order (general and platform)."
+    path: order-processing-trace
+    module: SupplyChain
+    menu_links:
+      - supplychain/order-processing-trace
+      - omni/order-processing-trace
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
+    legacy_sources:
+      - docs/qa-docs/_meta/sot/order-processing-trace-source-of-truth.md
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/OrderProcessingTraceController.php
+        - Modules/OmniChannel/Exports/OrderProcessingTrace*
+        - Modules/OmniChannel/Jobs/OrderProcessingTrace*
+      frontend:
+        - olshoperp-frontend/src/pages/Omni/Report/OrderProcessingTrace/**/*
+        - olshoperp-frontend/src/pages/SupplyChain/Report/OrderProcessingTrace/**/*
   random-sku:
     menu_name: "Random SKU"
     short_description: "Generate or manage random SKU values for product setup."
