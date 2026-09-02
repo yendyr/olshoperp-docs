@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.6
-last_updated: 2026-08-12
+version: 1.7
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
-aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS]
+aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS, Extract bundle]
 ---
 
 # All Sales Order — Knowledge Base
@@ -72,6 +72,7 @@ Tombol ada di halaman ini (bukan di list Dev Sales Platform). Memeriksa ulang fl
 | Ingin filter order harga di bawah HPP | TO-BE: advanced filter Error Flag **Below Benchmark COGS** (paritas Platform / Dev Sales Order) — [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md) |
 | Cek PPN otomatis order marketplace | TO-BE: baris **platform** ikut **Auto Add VAT (Platform Orders)** di Store — [Store KB](../omni-store-binding/knowledge-base.md); baris general tetap setting customer GC |
 | Nilai Benchmark COGS di line | TO-BE: snapshot **COGS efektif** (Manual COGS jika aktif) — paritas SP/SOG |
+| Klik **Extract** pada bundle gagal / pesan price must be greater than zero | Price baris bundle masih **0** (sering pada **booking**). Tunggu harga terisi / order ID riil, lalu Extract lagi. Lihat [requirement §5.5](./requirement.md) |
 
 ---
 

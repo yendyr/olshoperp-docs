@@ -2,12 +2,12 @@
 doc_type: user-guide
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.0
-last_updated: 2026-08-12
+version: 1.1
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 source_docs: [./requirement.md, ./knowledge-base.md, ./technical.md]
-source_version: 1.4
+source_version: 1.7
 ---
 
 # Panduan Pengguna — Dev - Sales Platform
@@ -113,6 +113,7 @@ Setelah order **Approved**:
 - **Kalau order adalah Booking Shopee** (Platform Order ID tampil `-`), auto-approve **tidak** mengambilnya. Approve & proses gudang **manual** boleh. **Get Resi / cetak label** gagal tanpa tracking. **Instant Settlement** belum bisa selama nomor order masih kosong.
 - **Kalau kamu approve booking bernilai 0**, itu **tidak** langsung membuat invoice/jurnal penjualan. Jurnal baru lewat settlement setelah Platform Order ID terisi.
 - **Kalau kamu unggah settlement untuk booking yang belum match**, sistem tidak menemukan order — tunggu Order ID terisi dulu.
+- **Kalau kamu Extract SKU bundle** padahal **Price** masih **0**, sistem menolak sampai harga lebih dari 0 (sering setelah booking jadi order ID / harga masuk).
 - **Kalau harga line Shopee jadi 0 atau terasa terlalu kecil**, sync ulang dan cek data escrow di **API Data Log**. Harga seller = harga diskon **plus** potongan yang ditanggung Shopee — bukan angka “setelah voucher” di layar order marketplace.
 - **Kalau ada biaya/diskon tambahan** dari label akun platform, itu hanya info di SO — **tidak** ikut ke Sales Invoice. Wajar kalau Net Sales beda dengan nilai invoice.
 - **Kalau kamu atur “menit delay” auto-approve di Omni Setting**, jadwal harian sekitar **19:00** saat ini **tidak** mengikuti pengaturan itu. Auto-approve malam hari tetap jalan sesuai filter sistem.

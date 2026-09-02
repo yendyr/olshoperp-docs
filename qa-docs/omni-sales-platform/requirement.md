@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.6
-last_updated: 2026-08-31
+version: 1.7
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
-aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot]
+aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details]
 ---
 
 # Dev - Sales Platform — Requirement Documentation
@@ -23,6 +23,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.7 | 2026-09-02 | QA - Yemima | **Extract** SKU bundle: Price (`each_price`) harus **> 0** (ETM-15733; booking price 0 ditolak); §6.7 |
 | 1.6 | 2026-08-31 | QA - Yemima | AS-IS §5.4 jadwal sync: create vs update, lookback `max_backward` (default 10 hari), pecah job per hari / half-day; cross-ref Store §4.5 |
 | 1.5 | 2026-08-12 | QA - Yemima | TO-BE snapshot **Benchmark COGS** = effective Manual COGS (§6.6 / GAP-BM-14 consumer) |
 | 1.4 | 2026-08-11 | QA - Yemima | TO-BE Auto Add VAT dari **Store** (`GAP-ST-VAT-01`); abaikan customer GC untuk order platform |
@@ -136,6 +137,7 @@ Editable hanya **DRAFT/OPEN**: System SKU + SO Qty (inline). Setelah Approved: r
 | Detail | Price / Disc / DPP / VAT / Total | — | Mapping sync | Lihat §6.3 · **TO-BE VAT auto-add:** §6.5 |
 | Detail | Price Before VAT, Benchmark COGS | — | Hidden default | Prevent auto-approve |
 | Detail | Invoice Status / Failed Ship Status | — | Downstream docs | prepared / processed |
+| Detail | Flag bundle / aksi **Extract** | — | BOM / tree detail | Tooltip *Extract Bundle Details* — **§6.7** (price > 0) |
 | Other | Buyer Name | — | Platform | Selalu disensor |
 | Other | Additional Cost/Disc | — | Platform Account Label | Mapping only; **tidak** ke SI |
 
@@ -338,6 +340,37 @@ AS-IS: `handleBenchmarkCogsOnCreating` / bind path copy `ProductBenchmarkPrice.b
 | Konsumen | Kolom **Benchmark COGS** + Error Flag / auto-approve under-COGS |
 | Kanonik | [Benchmark COGS §3.5](../accounting-product-benchmark-price/requirement.md#35-manual-cogs-override-to-be-v13) · sibling SOG / ASO |
 
+### 6.7 Extract SKU bundle — price > 0 (AS-IS · ETM-15733)
+
+Pada detail SO platform (status Pending / editable), baris **SKU bundle** menampilkan aksi **Extract** (tooltip *Extract Bundle Details*). Extract memecah header bundle menjadi baris komponen.
+
+**Konteks booking:** order booking sering punya **Price = 0** sampai platform mengirim harga / convert ke order ID. Extract saat price 0 menghasilkan pecahan harga tidak valid — solusi sementara: **tolak Extract** jika price ≤ 0.
+
+| Aturan | Perilaku |
+|--------|----------|
+| Field dicek | Header bundle `each_price` (kolom Price) |
+| `each_price` **> 0** | Extract boleh (syarat status / bundle / convert booking tetap berlaku) |
+| `each_price` **≤ 0** | Extract **ditolak**; bundle tidak pecah |
+| Pesan | `Unable to extract this bundle, the price must be greater than zero.` |
+| API | `POST omnichannel/sales-order/{id}/sales-order-detail/{detailId}/extract-bundle` |
+| Implementasi | `bccomp($bundle_header->each_price, '0.0000', 4)` harus **> 0** |
+| FE | `BundleRandomFlag.vue` di `Omni/SalesOrder/DatalistDetail.vue` |
+
+**Contoh kasus**
+
+| Case | Price | Hasil **Extract** |
+|------|-------|-------------------|
+| Booking / harga belum ada | `0` | Ditolak |
+| Order sudah reprice / harga seller terisi | `> 0` | Berhasil (syarat lain OK) |
+| Shopee booking belum `is_converted_to_real_order` | apa pun | Bisa ditolak dulu: *Unable to extract bundle detail for unconverted booking order* (existing, sebelum/bersamaan pintu price) |
+
+Kartu pasangan ASO: [ETM-15732](https://erpintegration.atlassian.net/browse/ETM-15732) · [ASO §5.5](../all-sales-order/requirement.md).
+
+| ID | Rule | Efek |
+|----|------|------|
+| V-EXT-01 | Extract: `each_price` > 0 + syarat lama OK | Sukses |
+| V-EXT-02 | Extract: `each_price` ≤ 0 | Tolak + pesan price > 0 |
+
 ---
 
 ## 7. Relasi Menu Lain
@@ -429,6 +462,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 - [ ] Auto-approve 19:00 filters + validate tanpa stock
 - [ ] prevent_auto_approve + Error Flag Below Benchmark COGS saat PbV (primary) &lt; Benchmark; filter by label; detail SKU (GAP-BM-13)
 - [ ] Shopee unit price = escrow `discounted_price + shopee_discount` (bukan order-detail `model_discounted_price`); kasus voucher Shopee-borne tidak understate penjualan
+- [ ] **Extract** bundle ditolak jika Price header ≤ 0; boleh jika > 0; pesan price must be greater than zero (ETM-15733 / §6.7)
 - [ ] Additional cost/disc tidak ke SI
 - [ ] Return bucket = SR dan/atau FS
 

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.6
-last_updated: 2026-08-12
+version: 1.7
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 related_docs:
@@ -17,8 +17,9 @@ related_docs:
 **UI:** `/businessdevelopment/all-sales-order`  
 **API list:** `businessdevelopment/all-sales-order`  
 **Shared Omni:** `omnichannel/sales-order/*` (`type=all` / general endpoints)  
-**Behavior:** [requirement.md](./requirement.md) v1.6 · import general → [SOG technical](../sales-order-general/technical.md)
+**Behavior:** [requirement.md](./requirement.md) v1.7 · import general → [SOG technical](../sales-order-general/technical.md)
 
+> **1.7 (2026-09-02):** Extract bundle price > 0 — [requirement §5.5](./requirement.md); ETM-15732.  
 > **1.6 (2026-08-12):** Verify Auto Add VAT (platform rows) + Benchmark COGS effective snapshot — [requirement §5.2a](./requirement.md#52a-consumer-improvements-to-be); GAP-ASO-04/05.  
 > **1.5 (2026-08-11):** Error Flag Below Benchmark COGS must match Platform renderer + filter label — [Benchmark technical §6.6](../accounting-product-benchmark-price/technical.md#66-error-flag-cogs-error-to-be-ux--gap-bm-13); GAP-ASO-03 / GAP-BM-13.
 
@@ -28,6 +29,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.7 | 2026-09-02 | Extract bundle: reject when `each_price` ≤ 0; shared `extract-bundle` + `BundleRandomFlag.vue` (ETM-15732) |
 | 1.6 | 2026-08-12 | Verify Auto Add VAT (platform) + Benchmark effective snapshot; GAP-ASO-04/05 |
 | 1.5 | 2026-08-11 | TO-BE Below Benchmark COGS Error Flag parity; GAP-ASO-03 / GAP-BM-13 |
 | 1.2 | 2026-07-22 | TO-BE dual import Processed/Non-Processed parity with SOG |
@@ -40,8 +42,12 @@ related_docs:
 | `.../Omni/SalesOrder/components/ActionButtons.vue` | Slot create + optional Recheck |
 | `.../Omni/SalesOrder/components/RevalidateFlagButton.vue` | Tombol Recheck + lock poll/echo |
 | `.../Omni/SalesOrder/components/ErrorFlag.vue` | Tooltip + optional `Last Checked` dari `lastUpdated` |
-| `.../AllSalesOrder/Form.vue` | Wrapper form `from-all-sales-order` |
+| `.../AllSalesOrder/Form.vue` | Wrapper form `from-all-sales-order` — pilih General vs Platform form by tipe |
+| `.../Omni/SalesOrder/components/BundleRandomFlag.vue` | Flag bundle + **Extract** → `POST …/extract-bundle` |
+| `.../BusinessDevelopment/SalesOrderGeneral/DatalistDetail.vue` | Detail general (dipakai ASO form general) |
+| `.../Omni/SalesOrder/DatalistDetail.vue` | Detail platform (dipakai ASO form platform) |
 | Shared BE | `SalesOrderController::revalidateFlag` / `checkRevalidateFlag` · `CheckOrderFlagsJob` |
+| Shared BE extract | `SalesOrderDetailController::extractBundleDetails` — `bccomp($bundle_header->each_price, '0.0000', 4)` must be > 0 |
 
 FE pills: `PillButtons.vue` dengan `type="all"`.
 
@@ -60,6 +66,7 @@ FE pills: `PillButtons.vue` dengan `type="all"`.
 | POST | `omnichannel/sales-order/upload?type=general` | Import general — TO-BE dual channel Processed / Non-Processed (same as SOG) |
 | GET | `omnichannel/sales-order/revalidate-flags` | Progress/lock status Recheck |
 | POST | `omnichannel/sales-order/revalidate-flags` | Dispatch batch Recheck |
+| POST | `omnichannel/sales-order/{id}/sales-order-detail/{detailId}/extract-bundle` | Extract SKU bundle; **reject** if header `each_price` ≤ 0 (ETM-15732) |
 
 ### 2.1 Recheck pipeline (AS-IS)
 

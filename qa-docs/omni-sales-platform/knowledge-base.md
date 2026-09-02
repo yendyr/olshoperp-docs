@@ -2,12 +2,12 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.5
-last_updated: 2026-08-12
+version: 1.6
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 audience: operator
-aliases: [sales platform, order marketplace, sync shopee, failed process, booking shopee, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot]
+aliases: [sales platform, order marketplace, sync shopee, failed process, booking shopee, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle]
 ---
 
 # Dev - Sales Platform — Knowledge Base
@@ -140,6 +140,7 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 | Tidak auto-approve | Error flag, harga &lt; benchmark, booking | Perbaiki lalu approve manual atau tunggu retry error-approve |
 | Booking: Get Resi gagal | Tracking number belum ada | Sync/ambil resi dulu; cek status booking di Shopee |
 | Settlement: *Unable to find order* pada booking | Platform Order ID masih kosong | Tunggu match order → pastikan Order ID terisi, baru upload settlement |
+| **Extract** bundle gagal / *price must be greater than zero* | Price baris bundle masih **0** (booking belum punya harga) | Tunggu convert / harga terisi (> 0), lalu Extract lagi — [requirement §6.7](./requirement.md) |
 | Create membuka form lain | By design | Gunakan Sales Order internal untuk order manual |
 
 ---
@@ -149,7 +150,8 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 **Apakah bisa edit harga setelah Approved?** Tidak — form terkunci.  
 **Apa beda Log Data dan API Data Log?** Log Data = batch sync toko; API Data Log = payload/detail di form order (mis. escrow Shopee).  
 **Kenapa Net Sales beda dengan invoice?** Biaya/diskon tambahan di SP tidak masuk Sales Invoice.  
-**Approve booking amount 0 apakah langsung jurnal 0?** Tidak. Settlement baru jalan setelah ada Platform Order ID; biasanya amount sudah dari order yang sudah match.
+**Approve booking amount 0 apakah langsung jurnal 0?** Tidak. Settlement baru jalan setelah ada Platform Order ID; biasanya amount sudah dari order yang sudah match.  
+**Boleh Extract bundle booking yang Price masih 0?** Tidak. Sistem menolak sampai Price > 0 (sering setelah order ID / harga platform masuk).
 
 ---
 

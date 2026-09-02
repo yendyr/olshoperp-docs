@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.6
-last_updated: 2026-08-12
+version: 1.7
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
-aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot]
+aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details]
 ---
 
 # All Sales Order — Requirement Documentation
@@ -23,6 +23,7 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.7 | 2026-09-02 | QA - Yemima | **Extract** SKU bundle: wajib Price (`each_price`) **> 0** (ETM-15732; booking price 0 ditolak); shared API dengan SP |
 | 1.6 | 2026-08-12 | QA - Yemima | TO-BE: verify platform **Auto Add VAT** from Store + Benchmark COGS effective snapshot (GAP-ST-VAT-01 / GAP-BM-14); GAP-ASO-04/05 |
 | 1.5 | 2026-08-11 | QA - Yemima | TO-BE Error Flag **Below Benchmark COGS** paritas SP/SOG; GAP-ASO-03 → GAP-BM-13 |
 | 1.4 | 2026-08-05 | QA - Yemima | Cross-ref: Shopee unit price escrow di SP req v1.2 (ASO tidak redefine formula) |
@@ -97,6 +98,7 @@ Filter carousel process status memakai `filter-process-status?type=all`.
 | Error flag column | Muncul saat pill Failed Process | [SP §5.2](../omni-sales-platform/requirement.md) + [SOG §8](../sales-order-general/requirement.md) |
 | Edit form | `from-all-sales-order=true`; field bergantung tipe | General form vs platform read-mostly |
 | Booking Other Info | Edit booking fields untuk unmatched booking | [SP booking](../omni-sales-platform/requirement.md) — manual edit di ASO, bukan form SP |
+| Detail — flag bundle | Ikon bundle + aksi **Extract** (tooltip *Extract Bundle Details*) | Shared `BundleRandomFlag.vue` · API `extract-bundle` — **§5.5** |
 | Import Excel | **Import Processed** + **Import Non-Processed** (TO-BE paritas SOG) | [SOG §6.3](../sales-order-general/requirement.md) |
 | Export | Export file ASO + opsi with/without details | Shared export engine |
 
@@ -157,6 +159,31 @@ ASO **tidak** menduplikasi logic capture — reuse pipeline SO detail. Kartu Jir
 
 **Bug note:** `checkRevalidateFlag()` masih hardcode `in_progress => false` — verifikasi disable button mengandalkan echo lock.
 
+### 5.5 Extract SKU bundle — price > 0 (AS-IS · ETM-15732)
+
+Saat edit SO dari ASO (form General **atau** Platform), baris **SKU bundle** menampilkan aksi **Extract** (tooltip *Extract Bundle Details*). Extract memecah header bundle menjadi baris komponen.
+
+**Alasan bisnis:** order **booking** sering punya **Price = 0** sampai platform mengirim harga / convert ke order ID. Extract pada price 0 menghasilkan pecahan harga tidak valid.
+
+| Aturan | Perilaku |
+|--------|----------|
+| Field yang dicek | Harga header bundle = `each_price` (kolom Price di detail) |
+| `each_price` **> 0** | Extract boleh (syarat status/bundle/booking convert lain tetap berlaku) |
+| `each_price` **≤ 0** (termasuk `0.0000`) | Extract **ditolak**; bundle tidak pecah |
+| Pesan error | `Unable to extract this bundle, the price must be greater than zero.` |
+| Backend | Wajib di `POST …/sales-order-detail/{id}/extract-bundle` (`bccomp(each_price, '0.0000', 4)`) |
+| FE | Shared `BundleRandomFlag.vue` — boleh preventif; **jangan** andalkan FE saja |
+
+**Contoh kasus**
+
+| Case | Price header bundle | Hasil klik **Extract** |
+|------|---------------------|-------------------------|
+| Booking / harga belum dari platform | `0` | Ditolak + pesan price > 0 |
+| Order biasa / booking sudah reprice | `15000` | Berhasil (jika Pending + syarat lain OK) |
+| Shopee booking belum convert | (apa pun) | Bisa ditolak dulu oleh guard unconverted booking (existing) |
+
+Kartu pasangan menu SP: [ETM-15733](https://erpintegration.atlassian.net/browse/ETM-15733) · kanonik SP: [omni-sales-platform requirement §6.7](../omni-sales-platform/requirement.md).
+
 ---
 
 ## 6. Validasi
@@ -169,6 +196,11 @@ ASO **tidak** menduplikasi matrix validasi penuh. Saat approve/edit:
 | `general` | [SOG §3](../sales-order-general/requirement.md) |
 
 Validasi UI ASO-specific: permission `AllSalesOrder` / viewAny gabungan; fiscal/company scope mengikuti backend `businessdevelopment/all-sales-order`.
+
+| ID | Rule (detail dari ASO) | Efek |
+|----|------------------------|------|
+| V-EXT-01 | Extract bundle: `each_price` header **> 0** | Lanjut extract |
+| V-EXT-02 | Extract bundle: `each_price` **≤ 0** | Tolak + pesan price must be greater than zero |
 
 ---
 
@@ -219,6 +251,7 @@ flowchart TB
 - [ ] Tombol **Recheck failed process** hanya di ASO; lock saat batch jalan
 - [ ] Baris platform: Auto Add VAT dari Store (GAP-ASO-04); Benchmark COGS effective snapshot (GAP-ASO-05)
 - [ ] Doc folder terpisah dari SOG & SP
+- [ ] **Extract** bundle dari detail ASO ditolak jika Price header bundle ≤ 0; boleh jika > 0 (ETM-15732); pesan error price must be greater than zero
 
 ---
 
@@ -229,3 +262,6 @@ A: SP khusus marketplace + sync ops. ASO = gabungan monitoring + tools lintas ti
 
 **Q: Di mana tombol Recheck failed process?**  
 A: Hanya di **All Sales Order** (bukan Dev Sales Platform list). Scope: order Approved yang belum / sedang antre Unassign Wave.
+
+**Q: Kenapa Extract bundle gagal padahal tombol muncul?**  
+A: Cek **Price** baris bundle. Jika masih **0** (umum pada booking), sistem menolak Extract sampai harga > 0. Lihat §5.5.

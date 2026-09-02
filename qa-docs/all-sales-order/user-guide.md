@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.2
-last_updated: 2026-08-11
+version: 1.3
+last_updated: 2026-09-02
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.5
+source_version: 1.7
 owner: QA - Yemima
 status: review
 ---
@@ -77,7 +77,8 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 - Create dari ASO = alur Sales Order General.  
 - **Import Processed** vs **Import Non-Processed** harus cocok dengan Fulfillment Mode store.  
 - Recheck hanya di All Sales Order, bukan list Dev - Sales Platform.  
-- Template Excel import **tidak berubah**.
+- Template Excel import **tidak berubah**.  
+- Di detail, tombol **Extract** pada SKU **bundle** hanya berhasil jika **Price** baris bundle **lebih dari 0**. Kalau masih 0 (sering di order booking), Extract ditolak sampai harga terisi.
 
 ---
 

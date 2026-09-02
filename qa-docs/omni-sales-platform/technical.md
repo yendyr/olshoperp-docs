@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.6
-last_updated: 2026-08-31
+version: 1.7
+last_updated: 2026-09-02
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog 1.7 (2026-09-02): Extract bundle price > 0 — `extractBundleDetails` + `BundleRandomFlag.vue` (ETM-15733) — [requirement §6.7](./requirement.md).  
 > Changelog 1.6 (2026-08-31): AS-IS sync schedule & job split — canonical di [Store technical §9.3](../omni-store-binding/technical.md#93-order-sync) + [requirement SP §5.4](./requirement.md#54-sync-ingestion).  
 > Changelog 1.5 (2026-08-12): TO-BE Benchmark COGS line snapshot = **effective** Manual COGS (`GAP-BM-14`) — [requirement §6.6](./requirement.md#66-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14); [Benchmark technical §4.4](../accounting-product-benchmark-price/technical.md#44-job-vs-manual-cogs-to-be--gap-bm-14).  
 > Changelog 1.4 (2026-08-11): TO-BE Auto Add VAT dari Store (`GAP-ST-VAT-01`) — lihat [Store technical §11.1](../omni-store-binding/technical.md#111-auto-add-vat-platform-orders--to-be-gap-st-vat-01).  
@@ -30,7 +31,7 @@ related_docs:
 |------|------|
 | `Modules/OmniChannel/Http/Controllers/SalesOrderController.php` | Datalist, pills, sync, print, duplicate |
 | `Modules/OmniChannel/Http/Controllers/SalesOrderApprovalController.php` | approve / void / unapprove |
-| `Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php` | Detail + `updateAutoApproveFlagForSalesOrder` |
+| `Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php` | Detail + `updateAutoApproveFlagForSalesOrder` + **`extractBundleDetails`** (price > 0) |
 | `Modules/OmniChannel/Http/Controllers/FailedSalesOrderController.php` | Failed Synchronize list + retry |
 | `Modules/OmniChannel/Http/Controllers/SalesOrderSyncLogController.php` | Log Data |
 | `Modules/OmniChannel/Http/Controllers/OmniChannelController.php` | OrderSynchronizeStatistic (OSS), banner settings |
@@ -55,6 +56,8 @@ related_docs:
 | `.../DatalistFailedSO.vue` | Failed Synchronize |
 | `.../SyncLog.vue` | Log Data slideover |
 | `.../Form.vue` / detail components | Order detail |
+| `.../DatalistDetail.vue` | Detail grid + slot bundle flag |
+| `.../components/BundleRandomFlag.vue` | Bundle UI + **Extract** → `extract-bundle` |
 | `.../components/ErrorFlag.vue` | Error flag icons |
 | `.../components/PillButtons.vue` | Pills + OSS panel |
 | `.../master/GlobalSetting/OrderSettings.vue` | Delay + Start Date |
@@ -73,6 +76,7 @@ related_docs:
 | GET | `sales-order/sync-logs` | Log Data |
 | GET | `sales-order-oss/primevue` | Today Sync Status |
 | POST | `sales-order/{id}/approve` | Approve |
+| POST | `sales-order/{id}/sales-order-detail/{detailId}/extract-bundle` | Extract SKU bundle; **reject** if header `each_price` ≤ 0 (ETM-15733) |
 | POST | resource sync endpoints | Bulk / single sync |
 | GET/PUT | `order-automation-setting` | delay_time |
 | PATCH | `settings` | min_order_date dll. |

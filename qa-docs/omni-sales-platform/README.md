@@ -10,12 +10,13 @@ Menu **Dev - Sales Platform** (SO marketplace hasil sync). Route: `/omni/sales-o
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **SoT (6 file, v1.0, 2026-07-15):** datalist · order-detail · sync-ingestion · sync-price-mapping · booking · approval-automation  
-**Version:** 1.6 · **Last updated:** 2026-08-31
+**Version:** 1.7 · **User-guide:** v1.1 · `source_version` 1.7 · **Last updated:** 2026-09-02 16:45
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.7 | 2026-09-02 16:45 | Extract SKU bundle hanya jika Price > 0 (tolak booking/harga 0) — ETM-15733 |
 | 1.6 | 2026-08-31 17:00 | AS-IS sync ingestion: create vs update, lookback default 10 hari, pecah job per hari/half-day (bahasa operasional §5.4) |
 | 1.5 | 2026-08-12 | TO-BE Benchmark COGS snapshot = effective Manual COGS (`GAP-BM-14`); Auto Add VAT tetap 1.4 |
 | 1.4 | 2026-08-11 | TO-BE Auto Add VAT dari Store (`GAP-ST-VAT-01`); cross-ref Store §4.9 |
