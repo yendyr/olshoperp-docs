@@ -6,12 +6,12 @@ menu_name: "Instant Settlement"
 test_type: edge
 title: "Validasi penolakan Approve pada boundary jam pergantian hari (23:59 vs 00:01)"
 summary: "Memastikan proses Approve pada Instant Settlement menolak batch dengan SI yang berbeda tanggal kalender meskipun selisih jam sangat tipis di batas pergantian hari."
-status: draft
+status: review
 owner: QA - Yemima
-last_updated: 2026-09-01
+last_updated: 2026-09-03
 requirement_ref: "qa-docs/accounting-settlement-upload/requirement.md"
-automated: false
-automated_spec: null
+automated: true
+automated_spec: tests/specs/accounting/etm-15746-settlement-approval-diff-date.spec.ts
 execution_company:
   id: 112
   code: FAT
@@ -32,25 +32,30 @@ steps:
 expected_result: |
   Meskipun selisih waktu hanya 2 menit, karena tanggal kalendernya berbeda (01 vs 02), sistem wajib menolak proses Approve dan memunculkan notifikasi error yang menyatakan bahwa tanggal transaksi Sales Invoice tidak sama. Tidak ada AR yang terbentuk.
 test_result:
-  status: not_run
-  started_at: null
-  finished_at: null
-  executed_by: null
+  status: passed
+  started_at: "2026-09-03T06:56:40Z"
+  finished_at: "2026-09-03T06:56:55Z"
+  executed_by: "QA - Yemima"
   environment: staging
-  log_summary: null
+  log_summary: "Eksekusi approve settlement dengan SI multi-date (01-09 vs 02-09) ditolak HTTP 422 dengan pesan 'Unable to approve settlement, the transaction date of all invoices must be within a single day.'"
   report_url: null
-test_data_used: []
-run_history: []
+test_data_used:
+  - "Batch Settlement ST-5UBPORWI (Upload ID: 730, Company FAT)"
+run_history:
+  - run_at: "2026-09-03T13:56:55+07:00"
+    status: passed
+    jira: ETM-15706
+    via: tests/specs/accounting/etm-15746-settlement-approval-diff-date.spec.ts
 origin_jira: ETM-15701
 last_execution:
-  at: null
-  jira: null
-  status: not_run
-  via: null
+  at: "2026-09-03"
+  jira: ETM-15706
+  status: passed
+  via: tests/specs/accounting/etm-15746-settlement-approval-diff-date.spec.ts
 first_execution:
-  at: null
-  via: null
-  jira: null
+  at: "2026-09-03"
+  via: tests/specs/accounting/etm-15746-settlement-approval-diff-date.spec.ts
+  jira: ETM-15706
 ---
 
 # Catatan QA & Referensi Data Testing (Evidence)

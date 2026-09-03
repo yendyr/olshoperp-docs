@@ -12,7 +12,7 @@ Prefix folder: `SETU`.
 | TC-SETU-002 | [Approve ditolak jika Sales Invoice dalam 1 batch memiliki tanggal kalender berbeda](./TC-SETU-002.md) | draft | [ETM-15703](https://erpintegration.atlassian.net/browse/ETM-15703) | ❌ | 2026-09-01 |
 | TC-SETU-003 | [Approve berhasil jika Sales Invoice memiliki tanggal kalender sama walau jam berbeda](./TC-SETU-003.md) | draft | [ETM-15704](https://erpintegration.atlassian.net/browse/ETM-15704) | ❌ | 2026-09-01 |
 | TC-SETU-004 | [Approve batch dengan 1 Sales Invoice (Single Invoice)](./TC-SETU-004.md) | draft | [ETM-15705](https://erpintegration.atlassian.net/browse/ETM-15705) | ❌ | 2026-09-01 |
-| TC-SETU-005 | [Validasi penolakan Approve pada boundary jam pergantian hari (23:59 vs 00:01)](./TC-SETU-005.md) | draft | [ETM-15706](https://erpintegration.atlassian.net/browse/ETM-15706) | ❌ | 2026-09-01 |
+| TC-SETU-005 | [Validasi penolakan Approve pada boundary jam pergantian hari (23:59 vs 00:01)](./TC-SETU-005.md) | **passed** | [ETM-15706](https://erpintegration.atlassian.net/browse/ETM-15706) | ✅ | 2026-09-03 |
 | TC-SETU-006 | [Bulk Approve kombinasi batch settlement valid dan invalid tanggal SI](./TC-SETU-006.md) | draft | [ETM-15707](https://erpintegration.atlassian.net/browse/ETM-15707) | ❌ | 2026-09-01 |
 | TC-SETU-007 | [Urutan guard validasi Approval terhadap Fiscal Period Closed dan Cash/Bank Reconcile Lock](./TC-SETU-007.md) | draft | [ETM-15708](https://erpintegration.atlassian.net/browse/ETM-15708) | ❌ | 2026-09-01 |
 
