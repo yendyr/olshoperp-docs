@@ -1,0 +1,67 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-ADJADD-004
+menu: supplychain-adjustment-addition
+menu_name: "Stock Addition"
+test_type: happy
+title: "New Colli: Multi-SKU (≥2 SKU) via Bulk Assign"
+summary: "Memastikan pembuatan New Colli dengan memilih minimal 2 SKU berbeda pada detail Stock Addition berhasil menghasilkan 1 kode Colli baru (format COL-XXXXXX) bertipe Colli sesuai pilihan."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-09-03
+requirement_ref: "qa-docs/supplychain-adjustment-addition/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 112
+  code: FAT
+related_menus:
+  - accounting-adjustment-inbound
+  - supplychain-stock-monitoring
+  - supplychain-colli-type
+preconditions:
+  - "User login ke OlshopERP Staging dengan hak akses menu Stock Addition"
+  - "Terdapat dokumen Stock Addition Draft/Open dengan Location Destination terpilih"
+  - "Terdapat minimal 2 SKU stockable aktif"
+test_data:
+  - field: "SKU"
+    value: "SKU-A, SKU-B"
+  - field: "Colli Type"
+    value: "Box"
+steps:
+  - "1. Buka menu Supply Chain -> Stock Addition (/supplychain/stock-addition)"
+  - "2. Buka form edit/create dokumen Stock Addition"
+  - "3. Tambahkan 2 SKU berbeda via Select Product pada detail item"
+  - "4. Berikan centang (checklist) pada kedua baris SKU tersebut"
+  - "5. Klik tombol aksi Assign Colli -> Pilih opsi Create New Colli"
+  - "6. Pilih Colli Type aktif (misal Box) -> Klik Konfirmasi / Simpan"
+expected_result: |
+  Sistem men-generate 1 kode colli baru bertipe Box (format COL-XXXXXX). Kedua baris SKU menampilkan kode Colli yang sama pada kolom Colli ID dan tersimpan sukses ke database.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: ETM-15633
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+first_execution:
+  at: null
+  via: null
+  jira: null
+---
+
+# Catatan QA & Referensi Data Testing (Evidence)
+Mengacu pada card **ETM-15633** ([Stock Addition] Implementasi Colli v2 — Multi-SKU per Colli by Location).
+- Jira Test Case: [ETM-15762](https://erpintegration.atlassian.net/browse/ETM-15762).
+- Assignee: **Jeiniffer**.
+- Target Testing Company: **FAT (ID: 112)**.
+- Request ID: `recvtVn0R0JkFk`.

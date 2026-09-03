@@ -1,0 +1,60 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-ADJADD-014
+menu: supplychain-adjustment-addition
+menu_name: "Stock Addition"
+test_type: negative
+title: "Validasi Qty ≤ 0 pada Baris Ber-Colli"
+summary: "Memastikan validasi nilai Quantity bernilai 0 atau angka negatif (Qty ≤ 0) pada baris item ber-colli ditolak oleh validasi sistem."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-09-03
+requirement_ref: "qa-docs/supplychain-adjustment-addition/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 112
+  code: FAT
+related_menus:
+  - accounting-adjustment-inbound
+  - supplychain-stock-monitoring
+  - supplychain-colli-type
+preconditions:
+  - "Form edit Stock Addition terbuka dengan baris item ber-colli"
+test_data:
+  - field: "Invalid Qty"
+    value: "0 atau -5"
+steps:
+  - "1. Buka form edit Stock Addition"
+  - "2. Ubah nilai Qty pada baris ber-colli menjadi 0 atau angka minus (-5)"
+  - "3. Klik tombol Save / Save All"
+expected_result: |
+  Sistem menolak penyimpanan dengan menampilkan pesan notifikasi validasi error The quantity must be greater than 0 dan form tidak tersimpan.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: ETM-15633
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+first_execution:
+  at: null
+  via: null
+  jira: null
+---
+
+# Catatan QA & Referensi Data Testing (Evidence)
+Mengacu pada card **ETM-15633** ([Stock Addition] Implementasi Colli v2 — Multi-SKU per Colli by Location).
+- Jira Test Case: [ETM-15772](https://erpintegration.atlassian.net/browse/ETM-15772).
+- Assignee: **Jeiniffer**.
+- Target Testing Company: **FAT (ID: 112)**.
+- Request ID: `recvtVn0R0JkFk`.

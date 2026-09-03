@@ -1,0 +1,61 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-ADJADD-006
+menu: supplychain-adjustment-addition
+menu_name: "Stock Addition"
+test_type: happy
+title: "Assign ke Existing Colli (Same WH Destination)"
+summary: "Memastikan penugasan baris SKU ke kode Colli existing pada Warehouse Destination yang sama berhasil terhubung."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-09-03
+requirement_ref: "qa-docs/supplychain-adjustment-addition/requirement.md"
+automated: false
+automated_spec: null
+execution_company:
+  id: 112
+  code: FAT
+related_menus:
+  - accounting-adjustment-inbound
+  - supplychain-stock-monitoring
+  - supplychain-colli-type
+preconditions:
+  - "Terdapat kode Colli existing yang terdaftar pada Warehouse Destination yang sama dengan dokumen Stock Addition saat ini"
+test_data:
+  - field: "Existing Colli"
+    value: "COL-AAA (WH Destination sama)"
+steps:
+  - "1. Buka form edit Stock Addition"
+  - "2. Pilih 1 atau lebih baris SKU baru"
+  - "3. Klik aksi Assign Colli -> Pilih opsi Existing Colli"
+  - "4. Pilih kode Colli existing dari daftar dropdown -> Klik Simpan"
+expected_result: |
+  Baris SKU berhasil dihubungkan ke kode Colli existing tersebut dan berbagi wadah colli yang sama dengan SKU sebelumnya.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: ETM-15633
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+first_execution:
+  at: null
+  via: null
+  jira: null
+---
+
+# Catatan QA & Referensi Data Testing (Evidence)
+Mengacu pada card **ETM-15633** ([Stock Addition] Implementasi Colli v2 — Multi-SKU per Colli by Location).
+- Jira Test Case: [ETM-15764](https://erpintegration.atlassian.net/browse/ETM-15764).
+- Assignee: **Jeiniffer**.
+- Target Testing Company: **FAT (ID: 112)**.
+- Request ID: `recvtVn0R0JkFk`.
