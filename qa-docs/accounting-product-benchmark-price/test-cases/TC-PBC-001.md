@@ -11,6 +11,7 @@ last_execution:
   jira: "ETM-15688"
   status: passed
   via: "manual:p"
+  notes: \"Verifikasi perhitungan Benchmark COGS bundle dan update status pada datalist berhasil sesuai expected result.\"
 ---
 
 # TC-PBC-001: Header Product Bundle Non-Random — Perhitungan Bundle Sum (Σ B.COGS Komponen × Qty BOM)

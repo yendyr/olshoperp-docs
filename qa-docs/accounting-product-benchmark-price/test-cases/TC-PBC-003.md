@@ -11,6 +11,7 @@ last_execution:
   jira: "ETM-15688"
   status: passed
   via: "manual:p"
+  notes: \"Verifikasi perhitungan Benchmark COGS bundle dan update status pada datalist berhasil sesuai expected result.\"
 ---
 
 # TC-PBC-003: Manual COGS Override pada Header Product Bundle — Abaikan Rumus Bundle
