@@ -3,14 +3,14 @@ tc_code: TC-PBC-006
 title: Regresi Auto-Approve & Snapshot Benchmark COGS pada Sales Order untuk Product Bundle
 origin_jira: ETM-15688
 first_execution:
-  at: null
-  via: null
-  jira: null
+  at: "2026-09-03"
+  via: "manual:p"
+  jira: "ETM-15688"
 last_execution:
-  at: null
-  jira: null
-  status: not_run
-  via: null
+  at: "2026-09-03"
+  jira: "ETM-15688"
+  status: passed
+  via: "manual:p"
 ---
 
 # TC-PBC-006: Regresi Auto-Approve & Snapshot Benchmark COGS pada Sales Order untuk Product Bundle
