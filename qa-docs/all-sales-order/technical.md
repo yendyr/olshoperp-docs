@@ -2,8 +2,8 @@
 doc_type: technical
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.7
-last_updated: 2026-09-02
+version: 1.8
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: review
 related_docs:
@@ -17,8 +17,9 @@ related_docs:
 **UI:** `/businessdevelopment/all-sales-order`  
 **API list:** `businessdevelopment/all-sales-order`  
 **Shared Omni:** `omnichannel/sales-order/*` (`type=all` / general endpoints)  
-**Behavior:** [requirement.md](./requirement.md) v1.7 · import general → [SOG technical](../sales-order-general/technical.md)
+**Behavior:** [requirement.md](./requirement.md) v1.8 · import general → [SOG technical](../sales-order-general/technical.md)
 
+> **1.8 (2026-09-03):** Edit detail platform sebelum approve — paritas [SP §6.8](../omni-sales-platform/requirement.md) / [requirement §5.6](./requirement.md); ETM-15748 / ETM-15749.  
 > **1.7 (2026-09-02):** Extract bundle price > 0 — [requirement §5.5](./requirement.md); ETM-15732.  
 > **1.6 (2026-08-12):** Verify Auto Add VAT (platform rows) + Benchmark COGS effective snapshot — [requirement §5.2a](./requirement.md#52a-consumer-improvements-to-be); GAP-ASO-04/05.  
 > **1.5 (2026-08-11):** Error Flag Below Benchmark COGS must match Platform renderer + filter label — [Benchmark technical §6.6](../accounting-product-benchmark-price/technical.md#66-error-flag-cogs-error-to-be-ux--gap-bm-13); GAP-ASO-03 / GAP-BM-13.
@@ -29,6 +30,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.8 | 2026-09-03 | Paritas edit detail platform sebelum approve (ETM-15748); kanonik SP §6.8 |
 | 1.7 | 2026-09-02 | Extract bundle: reject when `each_price` ≤ 0; shared `extract-bundle` + `BundleRandomFlag.vue` (ETM-15732) |
 | 1.6 | 2026-08-12 | Verify Auto Add VAT (platform) + Benchmark effective snapshot; GAP-ASO-04/05 |
 | 1.5 | 2026-08-11 | TO-BE Below Benchmark COGS Error Flag parity; GAP-ASO-03 / GAP-BM-13 |

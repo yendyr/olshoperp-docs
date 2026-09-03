@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.7
-last_updated: 2026-09-02
+version: 1.8
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: review
-aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details]
+aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail]
 ---
 
 # All Sales Order — Requirement Documentation
@@ -17,12 +17,15 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 > **Bukan** menu create master. All Sales Order = **window gabungan** atas [Dev - Sales Platform](../omni-sales-platform/requirement.md) dan [Dev - Sales Order](../sales-order-general/requirement.md) **v3.4**. Perilaku per tipe SO **harus selaras** dengan doc sumber. Dual import general: **Import Processed** / **Import Non-Processed** (gate [Store Fulfillment Mode](../omni-store-binding/requirement.md)).
 
+**Jira (edit detail platform TO-BE):** [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748) · pasangan SP [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749)
+
 ---
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.8 | 2026-09-03 | QA - Yemima | TO-BE §5.6: paritas edit detail SO platform sebelum approve (ETM-15748) — kanonik [SP §6.8](../omni-sales-platform/requirement.md) |
 | 1.7 | 2026-09-02 | QA - Yemima | **Extract** SKU bundle: wajib Price (`each_price`) **> 0** (ETM-15732; booking price 0 ditolak); shared API dengan SP |
 | 1.6 | 2026-08-12 | QA - Yemima | TO-BE: verify platform **Auto Add VAT** from Store + Benchmark COGS effective snapshot (GAP-ST-VAT-01 / GAP-BM-14); GAP-ASO-04/05 |
 | 1.5 | 2026-08-11 | QA - Yemima | TO-BE Error Flag **Below Benchmark COGS** paritas SP/SOG; GAP-ASO-03 → GAP-BM-13 |
@@ -96,7 +99,7 @@ Filter carousel process status memakai `filter-process-status?type=all`.
 |------|--------------|------------------|
 | Datalist columns | Gabungan kolom general+platform (code, store/customer, amounts, processing status, dll.) | FE `AllSalesOrder/DataList.vue` |
 | Error flag column | Muncul saat pill Failed Process | [SP §5.2](../omni-sales-platform/requirement.md) + [SOG §8](../sales-order-general/requirement.md) |
-| Edit form | `from-all-sales-order=true`; field bergantung tipe | General form vs platform read-mostly |
+| Edit form | `from-all-sales-order=true`; field bergantung tipe | General form vs platform — **TO-BE** edit detail platform §5.6 / [SP §6.8](../omni-sales-platform/requirement.md) |
 | Booking Other Info | Edit booking fields untuk unmatched booking | [SP booking](../omni-sales-platform/requirement.md) — manual edit di ASO, bukan form SP |
 | Detail — flag bundle | Ikon bundle + aksi **Extract** (tooltip *Extract Bundle Details*) | Shared `BundleRandomFlag.vue` · API `extract-bundle` — **§5.5** |
 | Import Excel | **Import Processed** + **Import Non-Processed** (TO-BE paritas SOG) | [SOG §6.3](../sales-order-general/requirement.md) |
@@ -184,6 +187,22 @@ Saat edit SO dari ASO (form General **atau** Platform), baris **SKU bundle** men
 
 Kartu pasangan menu SP: [ETM-15733](https://erpintegration.atlassian.net/browse/ETM-15733) · kanonik SP: [omni-sales-platform requirement §6.7](../omni-sales-platform/requirement.md).
 
+### 5.6 Edit detail SO platform sebelum Approve (TO-BE · ETM-15748)
+
+Saat buka **order tipe platform** dari ASO (DRAFT/OPEN), perilaku edit detail **wajib sama** dengan [Dev - Sales Platform §6.8](../omni-sales-platform/requirement.md#68-edit-detail-sebelum-approve--addreplace-sku-price-disc-vat-no-delete-sync-lock-to-be--etm-15749) (kanonik).
+
+Ringkas:
+
+| Boleh | Tidak boleh |
+|-------|-------------|
+| Add product (Select Product = SO General) | Edit setelah **Approved** |
+| Ganti product / edit qty / unit price / disc / VAT | Icon **delete** row (kecuali lewat **Extract Bundle**) |
+| Recalc DPP/Total | Sync menimpa field yang sudah di-save user |
+
+Sync lock, booking price `0` vs `> 0`, baris tanpa platform product id, audit, `prevent_auto_approve` → **hanya** di SP §6.8 (jangan duplikasi rule di sini).
+
+**Kartu:** [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748) · pasangan [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) · Request ID `recvu2RzIu55hh`.
+
 ---
 
 ## 6. Validasi
@@ -237,6 +256,7 @@ flowchart TB
 | **GAP-ASO-03** | Error Flag **Below Benchmark COGS** di ASO (header + detail + filter label) — paritas SP/SOG; kanonik [GAP-BM-13](../accounting-product-benchmark-price/requirement.md) | Open (TO-BE) |
 | **GAP-ASO-04** | Verify Auto Add VAT from Store pada baris platform (bukan customer GC); general unchanged | Open (TO-BE) |
 | **GAP-ASO-05** | Verify Benchmark COGS column = effective Manual COGS snapshot (paritas SP/SOG) | Open (TO-BE) |
+| **GAP-ASO-06** | Paritas UI/API edit detail platform sebelum approve (ETM-15748) vs [SP §6.8](../omni-sales-platform/requirement.md) / ETM-15749 | Open (TO-BE) |
 | **GAP-APR-01** | Auto-approve cron mengabaikan toggle/delay — berdampak baris platform di ASO | Open — [SP gaps](../omni-sales-platform/requirement.md) |
 
 ---
@@ -250,6 +270,7 @@ flowchart TB
 - [ ] Tidak mendefinisikan ulang formula harga — merujuk SOG/SP (**Shopee:** escrow `discounted_price + shopee_discount`, SP req §5.5)
 - [ ] Tombol **Recheck failed process** hanya di ASO; lock saat batch jalan
 - [ ] Baris platform: Auto Add VAT dari Store (GAP-ASO-04); Benchmark COGS effective snapshot (GAP-ASO-05)
+- [ ] **Edit detail platform TO-BE (ETM-15748 / §5.6):** paritas penuh dengan SP §6.8 (add/replace, price/disc/VAT, no delete, sync lock)
 - [ ] Doc folder terpisah dari SOG & SP
 - [ ] **Extract** bundle dari detail ASO ditolak jika Price header bundle ≤ 0; boleh jika > 0 (ETM-15732); pesan error price must be greater than zero
 

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.7
-last_updated: 2026-09-02
+version: 1.8
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: review
 aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS, Extract bundle]
@@ -24,6 +24,7 @@ Pakai All Sales Order bila Anda perlu:
 - Menjalankan **Recheck failed process**  
 - Export gabungan  
 - Import order internal dengan **Import Processed** atau **Import Non-Processed** (sama seperti Dev - Sales Order)
+- **(TO-BE)** Edit detail order **platform** sebelum Approve (tambah/ganti SKU, harga, VAT) — perilaku sama Sales Platform
 
 | Untuk keperluan | Buka menu |
 |-----------------|-----------|

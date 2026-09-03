@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.7
-last_updated: 2026-09-02
+version: 1.8
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog 1.8 (2026-09-03): TO-BE edit detail sebelum approve + sync lock — [requirement §6.8](./requirement.md) · ETM-15749 / ETM-15748. Touchpoints: `SalesOrderDetailController` create/update, `OmniShopeeService`/`OmniLazadaService`/`OmniTikTokService` update detail (price path), FE `Omni/SalesOrder/DatalistDetail.vue` (+ ASO shared form).  
 > Changelog 1.7 (2026-09-02): Extract bundle price > 0 — `extractBundleDetails` + `BundleRandomFlag.vue` (ETM-15733) — [requirement §6.7](./requirement.md).  
 > Changelog 1.6 (2026-08-31): AS-IS sync schedule & job split — canonical di [Store technical §9.3](../omni-store-binding/technical.md#93-order-sync) + [requirement SP §5.4](./requirement.md#54-sync-ingestion).  
 > Changelog 1.5 (2026-08-12): TO-BE Benchmark COGS line snapshot = **effective** Manual COGS (`GAP-BM-14`) — [requirement §6.6](./requirement.md#66-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14); [Benchmark technical §4.4](../accounting-product-benchmark-price/technical.md#44-job-vs-manual-cogs-to-be--gap-bm-14).  

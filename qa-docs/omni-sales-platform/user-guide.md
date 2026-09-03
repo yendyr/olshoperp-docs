@@ -2,12 +2,12 @@
 doc_type: user-guide
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.1
-last_updated: 2026-09-02
+version: 1.2
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: review
 source_docs: [./requirement.md, ./knowledge-base.md, ./technical.md]
-source_version: 1.7
+source_version: 1.8
 ---
 
 # Panduan Pengguna — Dev - Sales Platform
@@ -106,6 +106,7 @@ Setelah order **Approved**:
 
 - **Kalau kamu klik Create di sini**, form yang terbuka adalah Sales Order internal — bukan order marketplace.
 - **Kalau order sudah Approved**, kamu tidak bisa edit harga/SKU/qty. Perbaiki di status Draft/Open sebelum approve.
+- **(TO-BE)** Di Draft/Open kamu bisa **tambah/ganti SKU**, ubah **qty, harga, disc, VAT**. Tidak ada tombol hapus baris (kecuali lewat **Extract Bundle**). Setelah kamu simpan, sync **tidak** mengubah lagi nilai yang sudah kamu edit — dan order harus **Approve manual**.
 - **Kalau kamu ganti produk di Draft**, sistem menandai order supaya **tidak** ikut auto-approve.
 - **Kalau produk belum diikat, akun belum lengkap, stok kurang, kurir belum bind, atau gudang proses kosong**, order masuk **Failed Process**. Hover ikon error untuk pesan.
 - **Kalau harga jual sebelum pajak (nilai utama) di bawah Benchmark COGS**, order **tidak** ikut auto-approve. Setelah fitur live, kolom Error Flag menampilkan label **Below Benchmark COGS** (ikon merah; bisa difilter). **Approve manual tetap boleh.**

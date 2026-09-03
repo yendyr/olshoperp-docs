@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.6
-last_updated: 2026-09-02
+version: 1.7
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: review
 audience: operator
@@ -24,6 +24,7 @@ Pakai Sales Platform untuk:
 - Melihat kenapa order gagal sync atau gagal proses (binding, stok, kurir, gudang)
 - Melanjutkan approve → waves → packing → kirim
 - Mengelola **Booking Shopee** (order cadangan tanpa nomor order buyer dulu)
+- **(TO-BE)** Koreksi detail order **sebelum Approve**: tambah/ganti SKU, ubah qty/harga/disc/VAT — lihat §2b
 
 ---
 
@@ -47,6 +48,18 @@ flowchart TD
 - **Failed Process** — order sudah masuk tapi ada error (produk belum diikat, COA, stok, kurir, gudang).
 - **Approve** — buka kunci proses gudang; bisa manual atau otomatis malam hari.
 - **Return** — gabungan Sales Return dan/atau Failed Ship.
+
+### 2b. Edit detail sebelum Approve (TO-BE)
+
+Hanya status **Draft / Open**. Setelah **Approved**, detail terkunci.
+
+| Boleh | Tidak boleh |
+|-------|-------------|
+| Tambah SKU (Select Product) / ganti product di baris | Hapus baris (tidak ada icon delete) |
+| Ubah qty, unit price, disc, VAT | Edit setelah Approved |
+| Extract Bundle (tetap boleh; bisa mengubah child) | Mengandalkan sync untuk mengembalikan nilai yang sudah Anda simpan |
+
+Setelah perubahan **tersimpan**, sync marketplace **tidak** menimpa field itu lagi. Order yang sudah diedit harus **Approve manual**. Aturan lengkap: [requirement §6.8](./requirement.md).
 
 ---
 

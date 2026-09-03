@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.7
-last_updated: 2026-09-02
+version: 1.8
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: review
-aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details]
+aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock]
 ---
 
 # Dev - Sales Platform — Requirement Documentation
@@ -15,7 +15,8 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 **UI route:** `/omni/sales-order` · **type:** `platform`  
 **Audience:** PM, Ops, QA  
 **SoT:** 6 file `omni-sales-platform-*-source-of-truth.md` v1.0 (2026-07-15)  
-**Status:** AS-IS verified + PM SoT merge · lihat §Gaps
+**Status:** AS-IS verified + PM SoT merge · lihat §Gaps  
+**Jira (edit detail TO-BE):** [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) · pasangan ASO [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748)
 
 ---
 
@@ -23,6 +24,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.8 | 2026-09-03 | QA - Yemima | TO-BE §6.8: edit detail sebelum approve (add/replace SKU, price, disc, VAT; no delete; sync lock) — ETM-15749 / ETM-15748 |
 | 1.7 | 2026-09-02 | QA - Yemima | **Extract** SKU bundle: Price (`each_price`) harus **> 0** (ETM-15733; booking price 0 ditolak); §6.7 |
 | 1.6 | 2026-08-31 | QA - Yemima | AS-IS §5.4 jadwal sync: create vs update, lookback `max_backward` (default 10 hari), pecah job per hari / half-day; cross-ref Store §4.5 |
 | 1.5 | 2026-08-12 | QA - Yemima | TO-BE snapshot **Benchmark COGS** = effective Manual COGS (§6.6 / GAP-BM-14 consumer) |
@@ -124,7 +126,11 @@ stateDiagram-v2
 
 ## 4. Form & Field (Order Detail)
 
-Editable hanya **DRAFT/OPEN**: System SKU + SO Qty (inline). Setelah Approved: read-only.
+Editable hanya **DRAFT/OPEN**. Setelah **Approved**: read-only.
+
+**AS-IS (sebelum ETM-15749):** terutama System SKU + SO Qty (inline); Price/Disc/VAT dari sync / system product.
+
+**TO-BE (ETM-15749 / §6.8):** add product (Select Product), ganti product, edit qty / unit price / disc / VAT; **tanpa** icon delete (kecuali Extract Bundle). Sync lock per field setelah user save.
 
 | Area | Field penting | Wajib? | Sumber | Validasi |
 |------|---------------|--------|--------|----------|
@@ -132,12 +138,12 @@ Editable hanya **DRAFT/OPEN**: System SKU + SO Qty (inline). Setelah Approved: r
 | Header | Booking Number | — | Shopee booking | Temporary id sebelum match |
 | Header | Warehouse Process | — | Store / Omni Setting | Kosong → warehouse-error |
 | Header | Shipper Service | — | Binding shipping / platform name | Shipping-error jika belum bind |
-| Detail | System \| Platform SKU | — | Binding | bind-error jika unbound |
-| Detail | SO Qty / Platform Qty | — | Sync; SO Qty editable DRAFT/OPEN | Unit primary |
-| Detail | Price / Disc / DPP / VAT / Total | — | Mapping sync | Lihat §6.3 · **TO-BE VAT auto-add:** §6.5 |
+| Detail | System \| Platform SKU | — | Binding + **TO-BE** Select Product / ganti product | bind-error jika unbound; ganti system product → Platform SKU **tetap** tampil SKU platform lama — **§6.8** |
+| Detail | SO Qty / Platform Qty | — | Sync; SO Qty editable DRAFT/OPEN | Qty **> 0** (`gt:0`); Platform Qty info sync |
+| Detail | Price / Disc / DPP / VAT / Total | — | Sync + system product; **TO-BE** editable user | §6.3 · VAT **bukan** dari payload platform · **§6.5** Auto Add · **§6.8** edit + sync lock |
 | Detail | Price Before VAT, Benchmark COGS | — | Hidden default | Prevent auto-approve |
 | Detail | Invoice Status / Failed Ship Status | — | Downstream docs | prepared / processed |
-| Detail | Flag bundle / aksi **Extract** | — | BOM / tree detail | Tooltip *Extract Bundle Details* — **§6.7** (price > 0) |
+| Detail | Flag bundle / aksi **Extract** | — | BOM / tree detail | Tooltip *Extract Bundle Details* — **§6.7** (price > 0); Extract = exception no-delete |
 | Other | Buyer Name | — | Platform | Selalu disensor |
 | Other | Additional Cost/Disc | — | Platform Account Label | Mapping only; **tidak** ke SI |
 
@@ -371,6 +377,52 @@ Kartu pasangan ASO: [ETM-15732](https://erpintegration.atlassian.net/browse/ETM-
 | V-EXT-01 | Extract: `each_price` > 0 + syarat lama OK | Sukses |
 | V-EXT-02 | Extract: `each_price` ≤ 0 | Tolak + pesan price > 0 |
 
+### 6.8 Edit detail sebelum Approve — add/replace SKU, price, disc, VAT; no delete; sync lock (TO-BE · ETM-15749)
+
+**Kartu:** [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) (kanonik SP) · pasangan ASO [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748) · Request ID `recvu2RzIu55hh`.
+
+**Status editable:** **DRAFT + OPEN** saja. **Approved = read-only** (wajib).
+
+| Aksi | TO-BE |
+|------|--------|
+| **Add product** | Select Product di section detail — validasi **sama** [Sales Order General](../sales-order-general/requirement.md) (aktif, bundle, random, max **100** detail) |
+| **Ganti product** existing row | Boleh; kolom **Platform SKU** tetap menampilkan SKU platform lama; system product = last input user |
+| **Edit qty** | Ya — `sales_order_quantity` **> 0** (`gt:0`; **bukan** auto-override ke 1) |
+| **Edit unit price** | Ya |
+| **Edit disc** per item | Ya — kalkulasi mengikuti SO General / Purchase Order |
+| **Edit VAT** per SKU | Ya — sumber default: system product + Store Auto Add VAT (§6.5), **bukan** payload marketplace; setelah user save VAT → tidak di-override lagi (pola SOG/PO) |
+| **Delete row** | **Tidak ada** icon delete. **Pengecualian:** **Extract Bundle** (§6.7) boleh rebuild/hapus child |
+| **Recalc** | Ubah price/disc/VAT → DPP/Total otomatis (konsisten PO / SO General) |
+| **Baris baru tanpa `product_omni_id`** | Murni system product; sync **tidak** boleh menambah / menghapus / menimpa baris itu |
+| WH / COA / unit | **Tidak diubah** card ini — ikut AS-IS (approve V-A05 dll.) |
+
+**Sync lock** — trigger: user mengubah field dan **save sukses** (bukan toggle terpisah).
+
+| Kondisi | Perilaku sync |
+|---------|----------------|
+| Field (SKU / qty / price / disc / VAT) **belum** di-save user | Sync **boleh** update field itu |
+| Field **sudah** di-save user | Sync **tidak** boleh override — last input user |
+| **Booking**, unit price masih **0** | Sync/convert **boleh** isi price |
+| **Booking**, unit price sudah **> 0** | Sync **tidak** update price (meski terisi dari convert sebelumnya) |
+| Non-booking, price > 0 dari sync, user belum edit | Sync **masih boleh** refresh price sampai user save |
+
+Edit detail apa pun → `prevent_auto_approve = 1` (keluar auto-approve; approve manual).
+
+**Audit log (minimum):** SKU code + nama variable yang diubah + old value + new value (pola audit existing).
+
+**Accepted risk (end user):** inkonsistensi price/SKU vs marketplace diterima selama last input user menang dan sync lock + audit terpenuhi.
+
+| ID | Rule | Efek |
+|----|------|------|
+| V-ED-01 | DRAFT/OPEN: add/replace/edit fields §6.8 | Sukses save |
+| V-ED-02 | Approved: field detail read-only | Block |
+| V-ED-03 | Qty ≤ 0 | Tolak (`gt:0`) |
+| V-ED-04 | Sync setelah user save field | Tidak override field locked |
+| V-ED-05 | Booking price 0 vs > 0 | Matriks sync lock di atas |
+| V-ED-06 | Baris tanpa platform product id | Sync tidak sentuh |
+| V-ED-07 | Tidak ada icon delete; Extract boleh | UI + extract path |
+| V-ED-08 | Edit → `prevent_auto_approve` | Auto-approve skip |
+
 ---
 
 ## 7. Relasi Menu Lain
@@ -447,6 +499,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 | **GAP-BM-13** | Error Flag `cogs-error` → **Below Benchmark COGS** (icon/tooltip/filter/detail SKU/FX primary) — kanonik di [Benchmark COGS](../accounting-product-benchmark-price/requirement.md#65-error-flag-below-benchmark-cogs-to-be--improve-cogs-error) | Ops sulit filter & bedakan under-COGS di list | Open (TO-BE) |
 | **GAP-ST-VAT-01** | Auto Add VAT order platform dari **Store** (bukan customer GC) — kanonik di [Store §4.9](../omni-store-binding/requirement.md#49-auto-add-vat-platform-orders--to-be-gap-st-vat-01) | Line platform sering tanpa VAT auto | Open (TO-BE) |
 | **GAP-BM-14** (consumer) | Snapshot Benchmark COGS = **effective** Manual COGS — [§6.6](#66-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14) | Capture masih rumus mentah | Open (TO-BE) |
+| **GAP-ED-01** | Edit detail sebelum approve + sync lock (add/replace SKU, price, disc, VAT; no delete) — [§6.8](#68-edit-detail-sebelum-approve--addreplace-sku-price-disc-vat-no-delete-sync-lock-to-be--etm-15749) · ETM-15749 | Form platform masih read-mostly; sync bisa timpa price | Open (TO-BE) |
 
 **[VERIFY: CODEBASE] terbuka:** Start Date global vs store; Bulk Sync residual; Instant Processing timing vs Complete; Total Price composition; Invoice∪FS caps; bind-error owner mismatch; Buyer Name censor scope; TikTok NULL discount; auto-delete soft/hard.
 
@@ -463,6 +516,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 - [ ] prevent_auto_approve + Error Flag Below Benchmark COGS saat PbV (primary) &lt; Benchmark; filter by label; detail SKU (GAP-BM-13)
 - [ ] Shopee unit price = escrow `discounted_price + shopee_discount` (bukan order-detail `model_discounted_price`); kasus voucher Shopee-borne tidak understate penjualan
 - [ ] **Extract** bundle ditolak jika Price header ≤ 0; boleh jika > 0; pesan price must be greater than zero (ETM-15733 / §6.7)
+- [ ] **Edit detail TO-BE (ETM-15749 / §6.8):** DRAFT/OPEN add+Select Product; edit qty/price/disc/VAT; no delete (Extract OK); qty `gt:0`; sync lock + booking price 0/>0; baris manual aman; audit SKU+old/new; `prevent_auto_approve`
 - [ ] Additional cost/disc tidak ke SI
 - [ ] Return bucket = SR dan/atau FS
 

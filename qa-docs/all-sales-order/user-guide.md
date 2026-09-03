@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.3
-last_updated: 2026-09-02
+version: 1.4
+last_updated: 2026-09-03
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.7
+source_version: 1.8
 owner: QA - Yemima
 status: review
 ---
@@ -23,6 +23,8 @@ Detail import internal & Fulfillment Mode → [Dev - Sales Order](../sales-order
 ## 1. Apa Itu & Kenapa Penting
 
 All Sales Order menampilkan pesanan **general** dan **platform** bersama-sama untuk monitoring, Failed Process, Recheck, export, dan import internal (**Import Processed** / **Import Non-Processed**).
+
+**(TO-BE)** Edit detail order **platform** (Draft/Open) dari ASO — tambah/ganti SKU, harga, disc, VAT — sama seperti Dev - Sales Platform. Setelah Approved, terkunci.
 
 ASO tidak membuat aturan status baru — tiap baris mengikuti tipe SO-nya.
 
