@@ -2,18 +2,20 @@
 doc_type: technical
 menu: supplychain-adjustment-addition
 menu_name: "Stock Addition"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-09-03
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
+  - ../supplychain-new-purchase-inbound/requirement.md
+  - ../supplychain-colli-type/requirement.md
 ---
 
 # Stock Addition — Technical Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+> Status **review**. **Colli v2** (§8) = TO-BE — reuse pola PI; lihat requirement §11 · ETM-15633.
 
 
 ## 1. Architecture Overview
@@ -130,10 +132,27 @@ Detail nested: `supplychain/adjustment-addition/{id}/...-detail` — lihat `Modu
 `is_inventory_adjustment = 1` · `warehouse_origin` null · `supplier_id` null · `is_return_process = 0`
 ```
 
+## 8. Colli v2 (TO-BE — ETM-15633)
+
+**Requirement bisnis:** [requirement §11](./requirement.md#11-fitur-colli-v2-to-be--etm-15633).  
+**Kanonik implementasi UI/API:** reuse pola New Purchase Inbound Colli v2 — lihat [PI technical](../supplychain-new-purchase-inbound/technical.md) (section Colli / Multisku) + SoT `_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md`.
+
+| Area | Catatan Stock Addition |
+|------|------------------------|
+| Detail entity | `scm_inbound_mutation_details` — link colli (sama family inbound detail seperti PI) |
+| WH binding | `warehouse_destination` header = Location Destination (exact match Existing Colli) |
+| Insert SKU | Tanpa Available PO Use — hanya select product / import |
+| Approve side-effect | Permanence colli on Accounting approve (`InboundValueAdjustmentController` / ItemStockMutation) |
+| Import | Satu kolom Colli; ganti template v1 `colli` × `colli_qty` jika masih ada |
+| Master | Colli Type Active + Default ON |
+
+**Dev note:** jangan port validasi outstanding PO ke Stock Addition. Shared Multisku Colli / Colli Type services boleh dipakai ulang.
+
 ## Related Documents
 
 | Doc | Path |
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Requirement | [requirement.md](./requirement.md) |
+| PI Colli v2 | [../supplychain-new-purchase-inbound/](../supplychain-new-purchase-inbound/) |
 | Mermaid style | [../_meta/MERMAID_STYLE_GUIDE.md](../_meta/MERMAID_STYLE_GUIDE.md) |

@@ -2,20 +2,20 @@
 doc_type: requirement
 menu: supplychain-adjustment-addition
 menu_name: "Stock Addition"
-version: 1.1
-last_updated: 2026-07-09
+version: 1.2
+last_updated: 2026-09-03
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Stock Addition — Requirement Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+> Status **review**. AS-IS mutasi stok + **§11 Colli v2 TO-BE** (parity New Purchase Inbound §8) — card [ETM-15633](https://erpintegration.atlassian.net/browse/ETM-15633).
 
 
 **Modul:** SupplyChain  
 **Audience:** PM, Operations, QA, Support, Developer  
-**Status:** Sesuai perilaku sistem saat ini (AS-IS)
+**Status:** AS-IS + TO-BE Colli v2 di §11
 
 ---
 
@@ -25,6 +25,7 @@ status: draft
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
 | 1.1 | 2026-07-09 | QA - Yemima | §9 Benchmark COGS v1.1 · §10 relasi Stock Remapping |
+| 1.2 | 2026-09-03 | QA - Yemima | §11 Colli v2 TO-BE (parity PI §8) · ETM-15633 · Relates ETM-15610 |
 
 ## 1. Ringkasan Eksekutif
 
@@ -95,7 +96,7 @@ Tombol Approve di UI SCM disembunyikan (`menu === scm`). Finance approve di menu
 
 ## 6. Relasi Menu
 
-Menu terkait: **accounting-adjustment-inbound, supplychain-stock-opname**.
+Menu terkait: **accounting-adjustment-inbound**, **supplychain-stock-opname**, **supplychain-colli-type**, **supplychain-new-purchase-inbound** (kanonik Colli v2), Stock Monitoring.
 
 ## 7. QA Test Notes
 
@@ -109,6 +110,7 @@ Menu terkait: **accounting-adjustment-inbound, supplychain-stock-opname**.
 - [ ] Export list dan detail
 - [ ] Permission denied untuk role tanpa akses
 - [ ] Cross-company scoping (`owned_by` dari token)
+- [ ] Colli v2 — Existing/New, WH exact, bulk multi-SKU, import 1 kolom, lifecycle (§11)
 
 ## 8. Known Gaps / Open Questions
 
@@ -134,10 +136,98 @@ Detail: [Benchmark COGS requirement §7](../accounting-product-benchmark-price/r
 
 Detail: [accounting-stock-remapping requirement §8](../accounting-stock-remapping/requirement.md#8-approval--dokumen-auto-generated)
 
+## 11. Fitur Colli v2 (TO-BE — ETM-15633)
+
+> **Parity** dengan [New Purchase Inbound §8](../supplychain-new-purchase-inbound/requirement.md#8-fitur-colli-v2-to-be--14-agu-2026) / SoT `_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md`.  
+> Card: [ETM-15633](https://erpintegration.atlassian.net/browse/ETM-15633) · Relates PI: [ETM-15610](https://erpintegration.atlassian.net/browse/ETM-15610).  
+> **Takedown Colli ID v1** (jumlah koli × isi → N Stock ID) diganti UX v2. Qty / harga baris addition **tidak diubah** oleh assign colli.
+
+### 11.1 Konsep
+
+Satu **Colli code** (prefix `COL`) menampung banyak baris SKU di **satu Location Destination** (WH terkecil / exact). Availability qty di dalam colli baru bermakna setelah dokumen **Approved** lewat Stock Addition Approval (Item Stock). Assign colli **opsional** (NULL OK). Maks **1** colli per baris detail.
+
+Master jenis wadah: [Colli Type](../supplychain-colli-type/requirement.md) (Active + Default ON preselect New Colli).
+
+### 11.2 Existing vs New
+
+| Mode | Aturan |
+|------|--------|
+| **Existing Colli** | Select colli code; filter **exact** WH = Location Destination header. WH mismatch → tolak |
+| **New Colli** | Generate code baru; lokasi = WH header; **Choose Colli Type** (Active only; Default ON preselect) |
+| Toolbar / bulk | Checkbox multi-baris → Assign Existing/New + Type + **Save** → banyak SKU **satu** colli |
+
+### 11.3 Jalur insert SKU (adaptasi vs PI)
+
+| Jalur Stock Addition | Qty | Assign colli |
+|----------------------|-----|--------------|
+| Select product / manual detail | Sesuai input user (AS-IS) | Setelah baris ada: checkbox / inline |
+| Import Excel | Sesuai kolom qty import | Kolom **Colli** (lihat §11.5) |
+
+**Tidak ada** jalur Available Use / outstanding PO (beda dari PI §8.3).
+
+### 11.4 Lifecycle Colli code
+
+| Event dokumen | Colli **baru** (belum pernah Approve di trx mana pun) | Colli existing / pernah Approve |
+|---------------|------------------------------------------------------|----------------------------------|
+| Assign, belum Approve | Boleh muncul di list Multisku Colli; **bisa hilang** jika semua draft yang mereferensikan dihapus | Tetap |
+| **Approve** (Accounting Stock Addition Approval) | **Permanen** | — |
+| Reject lalu Delete / Delete draft | Hilang jika tidak direferensikan trx lain yang masih hidup | Tidak hapus |
+
+### 11.5 Import Colli v2
+
+Satu kolom **Colli**:
+
+| Isi sel | Arti |
+|---------|------|
+| Numbering sama di banyak baris | Satu **New Colli** bersama → satu code baru |
+| Code colli yang sudah ada | **Existing** — WH colli **exact** = header |
+| Kosong | Tanpa Colli v2 (NULL) — **boleh** |
+
+Template Colli ID v1 (`colli` × `colli_qty`) diganti.
+
+### 11.6 Contoh kasus
+
+| # | Situasi | Expected |
+|---|---------|----------|
+| 1 | Select 3 SKU, bulk New Colli type Box | 1 COL baru; 3 baris linked |
+| 2 | 2 SKU + Existing COL WH sama | Kedua baris ke COL itu |
+| 3 | Existing COL beda WH | Tolak — exact WH |
+| 4 | Baris tanpa colli | NULL OK |
+| 5 | 1 baris 2 colli | Tidak boleh |
+| 6 | Hapus draft; COL baru tidak dipakai lain, belum Approve | COL hilang dari list |
+| 7 | Reject lalu delete (belum Approve) | Sama — COL baru hilang |
+| 8 | Import numbering `1` + code `COL-ABC` | Group 1 → 1 new COL; existing jika WH match |
+| 9 | New Colli tanpa Type, ada default master | Type = Default ON |
+
+### 11.7 Adaptasi vs Purchase Inbound (wajib)
+
+| Aspek | Purchase Inbound | Stock Addition |
+|-------|------------------|----------------|
+| Sumber qty | Outstanding PO / Available Use | Select Product / import — **tanpa** Available Use PO |
+| Approve UI | Flow inbound SCM | **Stock Addition Approval** (Accounting); SCM create/edit |
+| Supplier / PO | Ada | Tidak (inventory adjustment) |
+| Qty rule Colli | Qty GRN tidak diubah assign colli | Qty / harga addition tidak diubah assign colli |
+
+Sisanya (Existing/New, WH exact, Colli Type, import 1 kolom, lifecycle, 1 colli/baris, optional NULL) **ikut PI §8**.
+
+### 11.8 Acceptance Criteria (TO-BE)
+
+- [ ] Existing Colli: WH **exact** = Location Destination; mismatch ditolak
+- [ ] New Colli: generate `COL…` + Colli Type (Default ON preselect)
+- [ ] Bulk assign ≥2 SKU → satu colli code
+- [ ] Maks 1 colli per baris; NULL OK
+- [ ] Setelah Approve Accounting: link permanen; colli tampil di Stock Monitoring
+- [ ] Hapus draft / reject+delete: colli baru belum Approve & tidak direferensikan → hilang
+- [ ] Import 1 kolom Colli (numbering / existing / kosong); colli tidak wajib
+- [ ] Colli Type Inactive tidak muncul di New Colli
+- [ ] Tidak ada regresi qty/harga detail karena assign colli saja
+
 ## Related Documents
 
 | Doc | Path |
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| PI Colli v2 (kanonik) | [../supplychain-new-purchase-inbound/requirement.md](../supplychain-new-purchase-inbound/requirement.md) §8 |
+| Colli Type | [../supplychain-colli-type/requirement.md](../supplychain-colli-type/requirement.md) |
 | Manifest | [../_meta/manifest.yaml](../_meta/manifest.yaml) |
