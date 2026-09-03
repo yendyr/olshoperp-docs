@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: order-processing-trace
 menu_name: "Order Processing Trace"
-version: 1.0
-last_updated: 2026-09-02
+version: 1.1
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -15,16 +15,16 @@ audience: operator
 
 Laporan **read-only** untuk melihat **nomor transaksi proses** atas satu Sales Order — dari Skip Wave (jika ada), Picking, Checking, Packing, Delivery Order, Failed Ship, sampai Outbound — **tanpa** buka menu satu per satu.
 
-**Path:** SupplyChain → Report **atau** OmniChannel → Report → **Order Processing Trace**  
-**Routes:** `/supplychain/order-processing-trace` · `/omni/order-processing-trace` (halaman sama)
+**Path:** SupplyChain → Report → **Order Processing Trace**  
+**Route:** `/supplychain/order-processing-trace`
 
-POV grid: **1 baris = 1 order** (general + platform).
+POV grid: **1 baris = 1 order** (general + platform). Menu hanya di modul **SCM** — bukan di OmniChannel.
 
 ---
 
 ## 2. Alur kerja standar
 
-1. Buka menu dari sidebar SCM atau Omni.  
+1. Buka **SupplyChain → Report → Order Processing Trace**.  
 2. Grid default filter **Trx Date = bulan ini**.  
 3. Cari order (Global Search / Advanced Filter).  
 4. Baca kolom ref — klik hyperlink untuk buka dokumen sumber.  
@@ -50,10 +50,10 @@ POV grid: **1 baris = 1 order** (general + platform).
 
 | Bisa | Tidak bisa |
 |------|------------|
+| Buka dari SupplyChain → Report | Entry / route OmniChannel |
 | Lihat general + platform sekali layar | Edit/approve transaksi dari report |
 | Trace ref proses per order | Campur dengan Sales Order Report (revenue) |
 | Export per order atau per SKU | Buat Failed Ship / Outbound kedua untuk SO yang sama (AS-IS) |
-| Dual entry SCM & Omni | Dua dataset berbeda per modul |
 
 ---
 

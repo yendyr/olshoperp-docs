@@ -2,8 +2,8 @@
 doc_type: technical
 menu: order-processing-trace
 menu_name: "Order Processing Trace"
-version: 1.0
-last_updated: 2026-09-02
+version: 1.1
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -13,8 +13,8 @@ related_docs:
 
 # Order Processing Trace — Technical Documentation
 
-**Behavior SoT:** [requirement.md](./requirement.md) v1.0 (TO-BE) · [_meta/sot/…](../_meta/sot/order-processing-trace-source-of-truth.md) v1.3  
-**Status implementasi:** **Belum ada** per 2026-09-02  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.1 (TO-BE) · [_meta/sot/…](../_meta/sot/order-processing-trace-source-of-truth.md) v1.4  
+**Status implementasi:** **Belum ada** per 2026-09-03  
 **Jira:** [ETM-15713](https://erpintegration.atlassian.net/browse/ETM-15713)
 
 ---
@@ -32,7 +32,7 @@ flowchart LR
 
 - Read-only; on-demand query (no snapshot table).  
 - Company scope: `owned_by` = token company.  
-- Dual FE route → **satu** controller/API.
+- **Satu** FE route SCM + **satu** API (tanpa alias Omni).
 
 ---
 
@@ -40,12 +40,12 @@ flowchart LR
 
 | Layer | Path (usulan) |
 |-------|----------------|
-| FE | `olshoperp-frontend/src/pages/…/OrderProcessingTrace/` — mount SCM + Omni route |
-| BE controller | `Modules/…/Http/Controllers/OrderProcessingTraceController.php` |
+| FE | `olshoperp-frontend/src/pages/SupplyChain/Report/OrderProcessingTrace/` |
+| BE controller | `Modules/SupplyChain/Http/Controllers/OrderProcessingTraceController.php` (atau modul yang memegang report SCM) |
 | Export header | `…/Exports/OrderProcessingTraceHeaderExport.php` |
 | Export detail | `…/Exports/OrderProcessingTraceDetailExport.php` + job async |
 | Policy | `…/Policies/OrderProcessingTracePolicy.php` |
-| Routes | Group `supplychain/order-processing-trace` + alias `omni/order-processing-trace` |
+| Routes | Group `supplychain/order-processing-trace` **saja** |
 
 Pola referensi AS-IS: [Purchase Report](../accounting-purchase-report/technical.md).
 
@@ -56,10 +56,11 @@ Pola referensi AS-IS: [Purchase Report](../accounting-purchase-report/technical.
 | Method | Path | Notes |
 |--------|------|-------|
 | GET | `/supplychain/order-processing-trace` | Datalist grid |
-| GET | `/omni/order-processing-trace` | Alias — response sama |
 | GET | `…/export-excel` | Query param mode: `header` \| `detail` |
 | GET | `…/export-progress` | Async progress |
 | GET | `…/export-file` | File list |
+
+**Out of scope route:** `/omni/order-processing-trace` — **tidak** diimplementasi (keputusan 2026-09-03: SCM only).
 
 ---
 

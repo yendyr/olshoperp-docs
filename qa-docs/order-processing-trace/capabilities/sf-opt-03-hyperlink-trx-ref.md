@@ -37,7 +37,7 @@ Menu ini tetap **read-only** — hyperlink hanya navigasi, bukan aksi approve da
 1. Temukan baris order di grid.
 2. Klik kode di kolom yang ingin dicek (mis. **Picking Ref**).
 3. Tab/route terbuka ke halaman edit menu sumber.
-4. Selesai review — kembali ke trace via sidebar SCM atau Omni.
+4. Selesai review — kembali ke trace via **SupplyChain → Report → Order Processing Trace**.
 
 ## Catatan
 

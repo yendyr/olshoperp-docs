@@ -11,15 +11,16 @@ Menu **Order Processing Trace** — laporan read-only referensi proses fulfillme
 | Capability (Lingo) | [capabilities/](./capabilities/) | Operator (modal `?`) | draft |
 | User Guide | user-guide.md | Publish eksternal | pending |
 
-**SoT:** [`_meta/sot/order-processing-trace-source-of-truth.md`](../_meta/sot/order-processing-trace-source-of-truth.md) v1.3  
+**SoT:** [`_meta/sot/order-processing-trace-source-of-truth.md`](../_meta/sot/order-processing-trace-source-of-truth.md) v1.4  
 **Jira:** [ETM-15713](https://erpintegration.atlassian.net/browse/ETM-15713)  
-**Routes:** `/supplychain/order-processing-trace` · `/omni/order-processing-trace` (halaman sama)  
-**3 layer:** v1.0 draft · **Last updated:** 2026-09-02
+**Route:** `/supplychain/order-processing-trace` (modul **SupplyChain → Report** saja)  
+**3 layer:** v1.1 draft · **Last updated:** 2026-09-03 09:23
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-09-03 09:23 | Entry sidebar **SCM Report saja** (hapus dual Omni); SoT v1.4 |
 | 1.1.1 | 2026-09-02 13:11 | Hapus referensi dev/QA brief lokal; AC → SoT §10 + Jira ETM-15713 |
 | 1.1 | 2026-09-02 10:10 | Feature Map + 6 capability Lingo cards (SF-OPT-01..06) untuk modal Help & Docs Page |
 | 1.0 | 2026-09-02 10:00 | Split SOT v1.3 → 5-file canonical; manifest entry; TO-BE spec ETM-15713 |

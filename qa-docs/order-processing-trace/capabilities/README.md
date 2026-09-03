@@ -1,8 +1,8 @@
 ---
 doc_type: menu-capability-index
 menu: order-processing-trace
-version: 1.0
-last_updated: 2026-09-02
+version: 1.1
+last_updated: 2026-09-03
 status: draft
 ---
 
@@ -12,7 +12,7 @@ Card Lingo **khusus menu Order Processing Trace**. Shared UI → [`_meta/shared-
 
 | ID | File |
 |----|------|
-| SF-OPT-01 | [sf-opt-01-dual-entry-scm-omni.md](./sf-opt-01-dual-entry-scm-omni.md) |
+| SF-OPT-01 | [sf-opt-01-scm-report-entry.md](./sf-opt-01-scm-report-entry.md) |
 | SF-OPT-02 | [sf-opt-02-grid-one-so-row.md](./sf-opt-02-grid-one-so-row.md) |
 | SF-OPT-03 | [sf-opt-03-hyperlink-trx-ref.md](./sf-opt-03-hyperlink-trx-ref.md) |
 | SF-OPT-04 | [sf-opt-04-trx-platform-date.md](./sf-opt-04-trx-platform-date.md) |

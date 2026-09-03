@@ -2,12 +2,13 @@
 doc_type: source-of-truth
 menu: order-processing-trace
 menu_name: "Order Processing Trace"
-version: 1.3
-last_updated: 2026-09-02
+version: 1.4
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: draft
 sources:
   - "User requirement — reporting referensi proses fulfillment dari POV Sales Order (platform + general), 2026-09-02"
+  - "Keputusan 2026-09-03 — entry sidebar SupplyChain → Report saja (bukan dual Omni)"
   - "Referensi pola report: accounting-purchase-report (Advanced Filter, export async)"
   - "Referensi POV order: all-sales-order, omni-sales-platform, sales-order-general"
   - "Referensi rantai proses: omni-unassign-wave, omni-skip-wave-process, omni-picking-process, omni-checking-process, omni-packing-process, supplychain-delivery-order, supplychain-failed-ship, supplychain-outbound"
@@ -15,22 +16,21 @@ sources:
 
 # Order Processing Trace — Source of Truth (TO-BE)
 
-**Status dokumen:** TO-BE — menu **belum ada** di codebase per 2026-09-02. Spesifikasi ini menjadi acuan dev implementasi dan QA acceptance testing sebelum split ke folder canonical `docs/qa-docs/order-processing-trace/`.
+**Status dokumen:** TO-BE — menu **belum ada** di codebase per 2026-09-03. Spesifikasi ini menjadi acuan dev implementasi dan QA acceptance testing; split canonical di `docs/qa-docs/order-processing-trace/`.
 
 **Keputusan nama (2026-09-02):** sidebar **Order Processing Trace** — POV tetap Sales Order (general + platform); nama dipendekkan dari opsi "Sales Order Processing Trace".
 
 **Tujuan bisnis:** Satu layar read-only untuk menjawab pertanyaan operator/QA/support — *"Order ini sudah diproses lewat dokumen apa saja?"* — dari **Sales Order** (general dan platform), tanpa membuka satu per satu menu Picking, Checking, Packing, DO, Failed Ship, atau Outbound.
 
-**Route (satu halaman, dua entry sidebar):**
+**Route (SCM only):**
 
 | Entry sidebar | Route FE usulan |
 |---------------|-----------------|
 | **SupplyChain → Report** | `/supplychain/order-processing-trace` |
-| **OmniChannel → Report** | `/omni/order-processing-trace` |
 
-Kedua route menampilkan **komponen & API yang sama** (satu menu, dua pintu modul). Bukan duplikasi data atau dua implementasi terpisah.
+**Tidak** ada entry OmniChannel / route `/omni/order-processing-trace` (keputusan 2026-09-03). Satu komponen Vue + satu API di modul SCM.
 
-**Modul sidebar (final):** masuk **SCM dan Omni** — bukan Business Development Report.
+**Modul sidebar (final):** **SupplyChain → Report** saja. Data tetap general + platform (satu grid).
 
 ---
 
@@ -42,7 +42,7 @@ Kedua route menampilkan **komponen & API yang sama** (satu menu, dua pintu modul
 | **Slug** | `order-processing-trace` |
 | **POV data** | Sales Order — general + platform (satu baris = satu SO) |
 
-**Catatan naming:** "Order" di konteks menu ini = **Sales Order**, bukan Purchase Order. POV data tetap general + platform (sama seperti [All Sales Order](../../all-sales-order/README.md)), meski entry sidebar ada di SCM dan Omni.
+**Catatan naming:** "Order" di konteks menu ini = **Sales Order**, bukan Purchase Order. POV data tetap general + platform (sama seperti [All Sales Order](../../all-sales-order/README.md)), meski entry sidebar **hanya** di SCM.
 
 ### Opsi lain (tidak dipakai)
 
@@ -296,7 +296,7 @@ Dua mode export **wajib**, keduanya respect filter Advanced Filter aktif. Pola a
 
 ## 7. How It Works — Alur operator
 
-1. Buka **Order Processing Trace** dari sidebar **SupplyChain → Report** *atau* **OmniChannel → Report** (halaman sama).
+1. Buka **Order Processing Trace** dari sidebar **SupplyChain → Report**.
 2. Grid load order company aktif; default filter Trx Date = bulan berjalan.
 3. Cari order via Global Search atau Advanced Filter (Trx Code / Platform / ref picking dll.).
 4. Baca kolom ref untuk tahu stage proses order.
@@ -402,7 +402,7 @@ Checklist ini **wajib lulus** sebelum menu dianggap selesai (UAT / Test Case ori
 
 ### 10.1 Grid & filter
 
-- [ ] Menu tampil di **SupplyChain → Report** dan **OmniChannel → Report** (halaman sama); privilege `viewAny` terdaftar.
+- [ ] Menu tampil di **SupplyChain → Report** saja; privilege `viewAny` terdaftar. **Tidak** ada entry OmniChannel.
 - [ ] Grid menampilkan **general dan platform** dalam satu datalist.
 - [ ] Kolom §4.2 ada, urutan benar, tooltip §4.3 tampil dan teks sesuai spec.
 - [ ] Order general: Trx Platform = `-`, Platform Date = `-`, Trx Date = transaction_date SO general.
@@ -444,7 +444,7 @@ Checklist ini **wajib lulus** sebelum menu dianggap selesai (UAT / Test Case ori
 
 - [ ] Data ref Picking = sama dengan drill SO / transfer reference (spot check: full flow, skip wave, partial FS+outbound).
 - [ ] Spot check Case D — export detail: satu baris dual ref FS + Outbound.
-- [ ] Route `/supplychain/...` dan `/omni/...` menampilkan dataset identik.
+- [ ] Route hanya `/supplychain/order-processing-trace` (tidak ada alias `/omni/...`).
 
 ---
 
@@ -454,7 +454,7 @@ Checklist ini **wajib lulus** sebelum menu dianggap selesai (UAT / Test Case ori
 |----|-----------|------|--------|--------|
 | GAP-SOPT-01 | Multi-ref header: fallback koma **hanya** Picking–DO edge case; **FS & Outbound = single ref** (1 SO = 1 doc) | Contradiction | Tampilan header | **Resolved** — deep check `useSo` + import + requirement §5.5.2 |
 | GAP-SOPT-02 | Export detail: grain **1 baris = 1 SO detail line**; partial qty = FS **dan** Outbound **kolom terpisah same row**; **1 SO = 1 outbound** | Missing Behavior | Excel detail | **Resolved** — lihat §6.2 Case D |
-| GAP-SOPT-03 | Sidebar dual **SCM + Omni** (satu halaman) | Missing Behavior | Navigasi | **Resolved** — § route dual entry |
+| GAP-SOPT-03 | Entry sidebar **SCM Report saja** (Omni dual dibatalkan) | Contradiction | Navigasi | **Resolved** — keputusan 2026-09-03; § route SCM only |
 | GAP-SOPT-04 | Join teknis ref SO ke tiap stage (transfer reference, outbound detail, FS detail) — detail implementasi dev | Unverified | Risiko ref salah | Open — dev saat build |
 | GAP-SOPT-05 | Kolom opsional Order Type / Store / Customer di v1 | Missing Behavior | UX filter | Open |
 | GAP-SOPT-06 | Filter boolean "Has Outbound" dll. | Missing Behavior | UX power user | Open |
@@ -482,8 +482,8 @@ A: AS-IS **1 SO = 1 dokumen Failed Ship**. Partial artinya **beberapa SKU/qty** 
 **Q: Export With Detail untuk apa?**  
 A: Audit per SKU — partial Failed Ship vs Outbound per line, bundle, dan **Case D** (satu line qty 10: ref FS dan Outbound bisa **sama baris**).
 
-**Q: Kenapa entry menu ada di SCM dan Omni?**  
-A: Satu laporan trace dipakai tim fulfillment (SCM) dan tim order platform (Omni) — **data & halaman sama**, hanya pintu sidebar berbeda.
+**Q: Kenapa menu hanya di SCM, bukan Omni juga?**  
+A: Keputusan produk 2026-09-03 — satu pintu **SupplyChain → Report**. Data tetap mencakup order **platform** di grid yang sama; tidak perlu entry Omni terpisah.
 
 ---
 
@@ -491,6 +491,7 @@ A: Satu laporan trace dipakai tim fulfillment (SCM) dan tim order platform (Omni
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-09-03 | Entry **SCM Report saja** — hapus dual Omni; GAP-SOPT-03 direvisi; AC & technical hints sync |
 | 1.3 | 2026-09-02 | Koreksi: **1 SO = 1 Failed Ship** (bukan multi FS/koma); partial = multi SKU dalam satu doc FS |
 | 1.2 | 2026-09-02 | Resolve GAP-SOPT-01/02/03; kardinalitas AS-IS (1 SO = 1 outbound); export detail Case D; dual sidebar SCM+Omni |
 | 1.1 | 2026-09-02 | Nama menu final: **Order Processing Trace** (`order-processing-trace`); rename file SOT |
@@ -520,8 +521,8 @@ A: Satu laporan trace dipakai tim fulfillment (SCM) dan tim order platform (Omni
 | Bundle | Explode lines: child lines carry `bundle_header_sku` or relation BOM |
 | Export | Dua query/export class: `HeaderExport`, `DetailExport`; detail query grain = SO detail lines |
 | FE | Satu page DataTablesV3 + SearchBuilder; tooltip header kolom; export modal pilih mode |
-| Route FE | `OrderProcessingTrace/` — mount di **dua** path: `/supplychain/order-processing-trace` & `/omni/order-processing-trace` |
-| API usulan | `GET supplychain/order-processing-trace` **atau** alias `omni/order-processing-trace` (satu controller; duplikasi route group boleh) |
+| Route FE | `SupplyChain/Report/OrderProcessingTrace/` — mount **hanya** `/supplychain/order-processing-trace` |
+| API usulan | `GET supplychain/order-processing-trace` (satu controller; **tanpa** alias Omni) |
 | Outbound guard | `StockMutationOutboundDetailController` — 1 SO tidak boleh di 2 outbound |
 | Failed Ship guard | `FailedShipController@useSo` + `FailedShipImportJob` — 1 SO = 1 FS; requirement [§5.5.2](../../supplychain-failed-ship/requirement.md) |
 | Outbound detail grain | `OutboundMutationDetail.transaction_reference_id` → `SalesOrderDetail.id` |

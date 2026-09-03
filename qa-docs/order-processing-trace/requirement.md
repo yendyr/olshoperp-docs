@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: order-processing-trace
 menu_name: "Order Processing Trace"
-version: 1.0
-last_updated: 2026-09-02
+version: 1.1
+last_updated: 2026-09-03
 owner: QA - Yemima
 status: draft
 aliases: [Order Processing Trace, sales order processing trace, ETM-15713]
@@ -11,11 +11,11 @@ aliases: [Order Processing Trace, sales order processing trace, ETM-15713]
 
 # Order Processing Trace — Requirement Documentation
 
-**Modul:** SupplyChain → Report **dan** OmniChannel → Report (satu halaman)  
+**Modul:** SupplyChain → Report  
 **Menu UI:** **Order Processing Trace**  
 **Audience:** PM, QA, Fulfillment, Support, Developer  
-**Status:** **TO-BE** v1.0 (belum implementasi)  
-**SoT:** [`_meta/sot/order-processing-trace-source-of-truth.md`](../_meta/sot/order-processing-trace-source-of-truth.md) v1.3  
+**Status:** **TO-BE** v1.1 (belum implementasi)  
+**SoT:** [`_meta/sot/order-processing-trace-source-of-truth.md`](../_meta/sot/order-processing-trace-source-of-truth.md) v1.4  
 **Jira:** [ETM-15713](https://erpintegration.atlassian.net/browse/ETM-15713)
 
 ---
@@ -24,6 +24,7 @@ aliases: [Order Processing Trace, sales order processing trace, ETM-15713]
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-09-03 | QA - Yemima | Entry **SCM Report saja** — hapus dual Omni; route tunggal `/supplychain/order-processing-trace` |
 | 1.0 | 2026-09-02 | QA - Yemima | Split dari SOT v1.3 — TO-BE spec implementasi |
 
 ---
@@ -47,14 +48,13 @@ flowchart LR
 
 ## 2. UI / UX (TO-BE)
 
-### 2.1 Navigasi dual entry
+### 2.1 Navigasi (SCM only)
 
 | Entry sidebar | Route |
 |---------------|-------|
 | SupplyChain → Report | `/supplychain/order-processing-trace` |
-| OmniChannel → Report | `/omni/order-processing-trace` |
 
-Satu komponen + satu API — dataset identik.
+**Tidak** ada entry di OmniChannel. Data tetap mencakup SO **general + platform** (satu grid).
 
 ### 2.2 Grid
 
@@ -158,7 +158,7 @@ Lihat checklist lengkap di SoT [§10](../_meta/sot/order-processing-trace-source
 |----|--------|---------|
 | GAP-SOPT-01 | Resolved | Single ref FS/OB; koma hanya Picking–DO edge |
 | GAP-SOPT-02 | Resolved | Export detail grain + Case D |
-| GAP-SOPT-03 | Resolved | Dual SCM + Omni sidebar |
+| GAP-SOPT-03 | Resolved | Entry **SCM Report saja** (Omni dual entry dibatalkan 2026-09-03) |
 | GAP-SOPT-04 | Open | Join teknis — dev saat build |
 | GAP-SOPT-05–07 | Open | Kolom opsional, filter boolean, timezone |
 
