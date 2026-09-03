@@ -1,12 +1,19 @@
 ---
-code: PENDING-JENNI-2026090202
+tc_code: TC-PBC-002
 title: Header Product Bundle Variant Random — Perhitungan Highest Bundle Variant (MAX Sibling Non-Random)
 origin_jira: ETM-15688
-first_execution: null
-last_execution: null
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
-# TC-PBC-JENNI-DRAFT-2026090202: Header Product Bundle Variant Random — Perhitungan Highest Bundle Variant (MAX Sibling Non-Random)
+# TC-PBC-002: Header Product Bundle Variant Random — Perhitungan Highest Bundle Variant (MAX Sibling Non-Random)
 
 ## Objective
 Memastikan header Product Bundle dengan variant **Random** (`-random`) menghitung Benchmark COGS dari nilai MAX (tertinggi) seluruh sibling header variant non-random dan menampilkan label Description `Highest Bundle Variant`.

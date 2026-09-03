@@ -1,12 +1,19 @@
 ---
-code: PENDING-JENNI-2026090204
+tc_code: TC-PBC-004
 title: Komponen Variant Random di Dalam Detail Bundle — Pakai B.COGS Final Komponen
 origin_jira: ETM-15688
-first_execution: null
-last_execution: null
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
-# TC-PBC-JENNI-DRAFT-2026090204: Komponen Variant Random di Dalam Detail Bundle — Pakai B.COGS Final Komponen
+# TC-PBC-004: Komponen Variant Random di Dalam Detail Bundle — Pakai B.COGS Final Komponen
 
 ## Objective
 Memastikan kalkulasi `Bundle Sum` pada header bundle yang mengandung komponen variant random menggunakan B.COGS final komponen setelah meng-inherit MAX sibling non-bundle.

@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260902145501
+tc_code: TC-ASMBLY-012
 menu: supplychain-assembly
 menu_name: "Assembly"
 test_type: happy
@@ -16,7 +16,6 @@ execution_company:
   id: 13
   code: DEV-STG
 related_menus:
-  - supplychain-multisku-colli
   - supplychain-colli-type
 preconditions:
   - "User login ke OlshopERP Staging."
@@ -61,9 +60,10 @@ last_execution:
   jira: "ETM-15497"
   status: failed
   via: "manual:p"
+  notes: "FAILED: UI truncation, inkonsistensi konversi UoM, field produk kosong di modal edit"
 ---
 
-# PENDING-20260902145501
+# TC-ASMBLY-012
 
 ## Catatan QA
 - **Latar Belakang:** Pengujian fitur Colli V2 pada perakitan barang jadi (Assembly).

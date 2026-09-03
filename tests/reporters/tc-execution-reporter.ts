@@ -129,7 +129,6 @@ export default class TcExecutionReporter implements Reporter {
         fs.writeFileSync(file, next, 'utf-8');
         updated.push(`${code} (${status})`);
       }
-    }
 
     if (updated.length) {
       // eslint-disable-next-line no-console

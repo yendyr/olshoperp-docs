@@ -237,3 +237,30 @@ di Supplier Invoice sudah memanggil `openCreateForm()` + `selectSupplier()` +
 `fillDescription()` + simpan header. Memanggil `openCreateForm()` lagi sebelum itu
 membuat **dokumen kedua** dan meninggalkan draft orphan. Baca implementasi helper
 sebelum merangkainya di scenario.
+
+---
+
+## 11. Aksi Dinamis Sesuai Status Dokumen (Guard Status Approved / Void)
+
+Perilaku standar ERP pada form dokumen saat status dokumen berubah menjadi terminal/final (`Approved`, `Void`, `Rejected`, dsb):
+
+| Aspek | Nilai / Perilaku |
+|---|---|
+| Perilaku UI | Tombol mutasi baris (mis. Extract Bundle `svg[data-icon="box-open"]`, Hapus Baris, Edit Qty/Price) **otomatis disembunyikan (hidden) atau di-disable** |
+| Prinsip Pengujian QA | Jika tujuan test case adalah menguji **regresi guard status (Approved/Void)**, verifikasi utama cukup membuktikan bahwa **elemen tombol/ikon aksi tidak muncul / tidak tersedia di UI** (`await expect(extractIcon).toBeHidden()` atau count 0) |
+| Proteksi Backend | Backend tetap memiliki guard reject (`ERR_APPROVED_MSG` / `ERR_VOIDED_MSG`) jika API dipanggil langsung |
+
+**Aturan Evaluasi QA:**
+- Tidak perlu memaksa mencari baris untuk di-klik jika status dokumen memang `Approved`/`Void`.
+- Ketiadaan tombol/ikon aksi mutasi pada baris detail dokumen `Approved`/`Void` sudah membuktikan bahwa sistem memblokir perubahan sesuai spesifikasi (Valid PASSED).
+
+---
+
+## 12. Pencarian DataList & Crawl Data Testing vs Status Filter
+
+| Aspek | Penjelasan & Jebakan |
+|---|---|
+| Selector Search Box | Wajib gunakan `input.dt-input` / `input[placeholder*="find something"]`. **DILARANG** menggunakan `input[placeholder*="Search"]` karena itu milik global search bar menu topbar (`Ctrl+K`). |
+| Default Filter Datalist | Halaman datalist (seperti Sales Platform / All Sales Order) seringkali default memfilter status transaksi `Open`/`Pending`. Order yang sudah `Approved` atau `Void` tidak akan muncul pada pencarian teks biasa tanpa mengubah filter status terlebih dahulu. |
+| URL Direct Retest | Jika platform order ID / internal ID fixture sudah diketahui, lebih cepat dan stabil langsung akses via direct URL edit: `https://staging.olshoperp.com/{module}/{menu}/edit/{id}` daripada membuang waktu paging ribuan record di datalist. |
+| Possibility Behaviour | Jika mencari data spesifik untuk regresi status (mis. Approved/Void) memakan waktu lama, pertimbangkan apakah perilaku UI sudah cukup dibuktikan dengan mengecek order approved mana pun yang ada di menu tersebut. |

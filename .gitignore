@@ -13,6 +13,7 @@ tests/.auth/
 _local/
 
 .local-node/
+tests/scratch/
 
 # macOS
 .DS_Store

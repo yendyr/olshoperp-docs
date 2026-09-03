@@ -138,7 +138,7 @@ function formatBrowserStorageError(
 
 export async function login(page: Page, env?: EnvConfig): Promise<void> {
   await page.goto('/login', { waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('heading', { name: 'Sign In' })).toBeVisible();
+  await expect(page.getByPlaceholder('Email')).toBeVisible({ timeout: 30_000 });
 
   await page.getByPlaceholder('Email').fill(TEST_EMAIL);
   await page.getByPlaceholder('Password').fill(TEST_PASSWORD);

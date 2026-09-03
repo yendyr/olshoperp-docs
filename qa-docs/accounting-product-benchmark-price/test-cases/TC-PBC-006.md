@@ -1,12 +1,19 @@
 ---
-code: PENDING-JENNI-2026090206
+tc_code: TC-PBC-006
 title: Regresi Auto-Approve & Snapshot Benchmark COGS pada Sales Order untuk Product Bundle
 origin_jira: ETM-15688
-first_execution: null
-last_execution: null
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
-# TC-PBC-JENNI-DRAFT-2026090206: Regresi Auto-Approve & Snapshot Benchmark COGS pada Sales Order untuk Product Bundle
+# TC-PBC-006: Regresi Auto-Approve & Snapshot Benchmark COGS pada Sales Order untuk Product Bundle
 
 ## Objective
 Memastikan transaksi Sales Order yang memuat Product Bundle menyimpan snapshot Benchmark COGS hasil rumus baru dan melakukan validasi `Below Benchmark COGS` secara akurat.

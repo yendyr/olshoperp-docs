@@ -1,12 +1,19 @@
 ---
-code: PENDING-JENNI-2026090205
+tc_code: TC-PBC-005
 title: SKU Rakitan / BOM Assembly (Stockable) — Tidak Menggunakan Rumus Bundle Sum
 origin_jira: ETM-15688
-first_execution: null
-last_execution: null
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
-# TC-PBC-JENNI-DRAFT-2026090205: SKU Rakitan / BOM Assembly (Stockable) — Tidak Menggunakan Rumus Bundle Sum
+# TC-PBC-005: SKU Rakitan / BOM Assembly (Stockable) — Tidak Menggunakan Rumus Bundle Sum
 
 ## Objective
 Memastikan produk rakitan / BOM Assembly (stockable) **TIDAK** menggunakan rumus `Bundle Sum` / `Highest Bundle Variant`, melainkan tetap menggunakan B.COGS transaksi/manual dirinya sendiri.
