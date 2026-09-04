@@ -275,7 +275,7 @@ Detail integrasi lengkap: [requirement.md §10](./requirement.md#10-relasi-menu-
 
 | Gejala | Penyebab umum | Solusi |
 |--------|---------------|--------|
-| *Unable to find order* / SO Failed | Order ID di file tidak ada di sistem | Cek typo No. Pesanan; untuk **booking Shopee** tunggu Platform Order ID terisi dulu (lihat Sales Platform KB § Booking) |
+| *Unable to find order* / SO Failed | Order ID di file tidak ada di sistem | Cek typo No. Pesanan; untuk **booking Shopee** tunggu **MATCHED** (Platform Order ID terisi di baris booking) — lihat Sales Platform KB § Booking |
 | Seluruh batch gagal, SO Failed > 0 | Ada order belum Shipped / tidak ditemukan / stok | Klik SO Failed → perbaiki order → upload ulang file **baru** |
 | *File does not match selected store* | File platform salah atau header tidak dikenali | Pastikan file dari platform yang sama dengan store; cek kolom wajib §5 |
 | Import macet, ikon ⚠️ | Queue/job lambat atau error background | Klik ⚠️ atau tunggu; hubungi admin jika >1 jam |
@@ -291,8 +291,8 @@ Detail integrasi lengkap: [requirement.md §10](./requirement.md#10-relasi-menu-
 
 ## 12. FAQ
 
-**Q: Booking Shopee (Order ID masih `-`) bisa di-settle?**  
-A: **Belum.** Settlement toko marketplace mencocokkan **Platform Order ID**. Tunggu match buyer → ID terisi → baru upload. Approve booking amount 0 juga **tidak** langsung buat invoice.
+**Q: Booking Shopee (Order ID masih `-`) bisa di-settle?**
+A: **Belum.** Settlement toko marketplace mencocokkan **Platform Order ID**. Tunggu booking status **MATCHED** → ID terisi di baris Sales Platform → baru upload. Approve booking amount 0 juga **tidak** langsung buat invoice. Pola: booking masuk dulu by Booking Number; Order ID sering nempel belakangan (lihat Sales Platform KB § Booking).
 
 **Q: Kenapa AR cuma 1 padahal invoice ratusan?**  
 A: Satu settlement = satu store = satu dokumen AR berisi banyak referensi invoice.

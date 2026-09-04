@@ -28,7 +28,7 @@ Pakai All Sales Order bila Anda perlu:
 
 | Untuk keperluan | Buka menu |
 |-----------------|-----------|
-| Sync toko / booking marketplace | **Dev - Sales Platform** |
+| Sync toko / booking marketplace | **Dev - Sales Platform** (booking: masuk by Booking Number dulu; Order ID nempel saat **MATCHED** — lihat SP KB §4) |
 | Atur Fulfillment Mode store | **Store** |
 | Detail aturan import internal | **Dev - Sales Order** |
 | Monitoring gabungan + Recheck + import dual | **All Sales Order** |

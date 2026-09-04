@@ -160,7 +160,7 @@ flowchart TB
 | Platform Active-Inactive Config | Gate apakah sync jalan |
 | Webhook Shopee / TikTok | Update realtime (Lazada ikut schedule 06:00) |
 | Sync Engine Price & Mapping | Melengkapi harga, pre-sale time, additional cost/disc |
-| Booking Shopee | Sync/webhook booking dengan dedup |
+| Booking Shopee | Sync/webhook booking dengan dedup; Order ID orphan (advance package tanpa booking_sn) skip create sampai **MATCHED** — lihat SOT booking v1.1 |
 
 ## 9. Gap Registry
 

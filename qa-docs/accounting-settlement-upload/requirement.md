@@ -638,7 +638,7 @@ Dua kolom progress (5 + 4 tahap) + badge `In Progress X% - About N minutes remai
 #### Platform Others — key order
 SO General: match by **`code`** (internal order number). `platform_order_id` opsional/kosong. SO Platform: match by **`platform_order_id`** sebagai universal key ke marketplace.
 
-**Booking Shopee unmatched:** SO Platform dengan `platform_order_id` **NULL** (tampil `-` di Sales Platform) **tidak** bisa di-match dari file settlement → *"Unable to find order"*. Tunggu match `order_sn` / Platform Order ID terisi. Approve booking amount 0 **tidak** auto-generate SI — lihat [Sales Platform §3b / GAP-BOOK-01](../omni-sales-platform/requirement.md).
+**Booking Shopee unmatched:** SO Platform dengan `platform_order_id` **NULL** (tampil `-` di Sales Platform) **tidak** bisa di-match dari file settlement → *"Unable to find order"*. Tunggu booking **MATCHED** / Platform Order ID terisi (Order ID sering datang lewat jalur terpisah tanpa Booking Number dulu — jangan expect settle di fase itu). Approve booking amount 0 **tidak** auto-generate SI — lihat [Sales Platform §3b / GAP-BOOK-01 · GAP-BOOK-02](../omni-sales-platform/requirement.md).
 
 #### Fitur standar (confirmed)
 Export DataList async, Audit log (`Log Data`), bulk approve guard — pola standar PrimeDataTables OlshopERP.

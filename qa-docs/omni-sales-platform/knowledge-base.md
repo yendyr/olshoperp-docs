@@ -2,12 +2,12 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.7
-last_updated: 2026-09-03
+version: 1.8
+last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
 audience: operator
-aliases: [sales platform, order marketplace, sync shopee, failed process, booking shopee, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle]
+aliases: [sales platform, order marketplace, sync shopee, failed process, booking shopee, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, MATCHED, advance package]
 ---
 
 # Dev - Sales Platform — Knowledge Base
@@ -84,22 +84,41 @@ Abu = menunggu · Oranye = antre wave · Kuning = sedang dikerjakan · Hijau = s
 
 ## 4. Booking Shopee
 
-Order booking muncul dengan **Platform Order ID `-`** (kosong di sistem) dan **nilai sering 0**.
+Order booking muncul dengan **Platform Order ID `-`** (kosong di sistem) dan **nilai sering 0**. Itu **bukan** berarti order belum masuk — biasanya sudah ada **Booking Number**; nomor order buyer baru terisi setelah status booking **MATCHED**.
 
 | Boleh / tidak | Penjelasan |
 |---------------|------------|
-| Approve & proses gudang **manual** | Boleh (ETM-13108) |
+| Approve & proses gudang **manual** | Boleh (ETM-13108) — jangan tunggu Order ID dulu |
 | Auto-approve malam hari | **Tidak** — booking dikecualikan |
 | Get Resi / cetak label tanpa tracking | **Gagal** — sistem butuh tracking number untuk ship booking |
 | Instant Settlement / unggah settlement | **Belum bisa** selama nomor order platform masih kosong — file settlement mencocokkan **No. Pesanan = Platform Order ID** |
 | Approve booking = langsung buat invoice/jurnal revenue | **Tidak** — invoice marketplace datang lewat settlement setelah order match |
+| Buat order kedua saat Order ID muncul sendiri (tanpa booking) | **Tidak boleh** — itu masih 1 pesanan; digabung saat **MATCHED** |
 
 **Urutan yang benar:**
 
-1. Booking masuk (Order ID `-`, amount 0) → boleh approve & siapkan gudang.
+1. Booking masuk (Order ID `-`, amount 0, ada Booking Number) → boleh approve & siapkan gudang.
 2. Pastikan **tracking / resi** tersedia agar ship booking tidak macet.
-3. Tunggu **match buyer** → Platform Order ID terisi, biasanya amount ikut order reguler.
+3. Tunggu status booking **MATCHED** → Platform Order ID terisi di **baris yang sama**, biasanya amount ikut order reguler.
 4. Selesaikan shipped (WH 3PL) → baru **Instant Settlement**.
+
+```mermaid
+flowchart TD
+    A[Shopee kirim Booking Number saja] --> B[1 SO di Sales Platform]
+    B --> C[Ops proses gudang]
+    B --> D[Order ID datang tanpa Booking Number]
+    D --> E[Sistem tahan - jangan SO kedua]
+    E --> F[Shopee MATCHED]
+    F --> G[Order ID terisi di SO booking yang sama]
+```
+
+**Contoh nyata (mudah diingat):**
+
+- **31 Agu malam** — masuk booking `260831AASC74GOWV7FM` (READY_TO_SHIP), belum ada Order ID → **1 baris** di sistem, ops bisa kerja.
+- **2 Sep malam** — datang Order ID `2609031XP6RKDK` lewat jalur advance package **tanpa** nomor booking → sistem **tidak** bikin baris kedua.
+- **3 Sep ~18:11** — booking status **MATCHED** → Order ID `2609031XP6RKDK` otomatis nempel ke baris booking itu; harga baru lengkap.
+
+Kalau tidak ditahan sampai MATCHED, bisa muncul **2 order** dengan nomor yang sama (satu ada booking, satu tidak) — padahal hanya **1** pesanan dan hanya boleh diproses **1×** (masalah fatal yang sama pernah di UPFOS).
 
 Edit field booking (Other Information) dilakukan dari **All Sales Order**, bukan dari form list Sales Platform.
 
@@ -152,7 +171,8 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 | Harga Shopee terlalu kecil vs seller | Voucher/discount ditanggung Shopee tidak dijumlahkan (order lama / escrow miss) | Sync ulang order; cek escrow di API Data Log; eskalasi jika tetap understated |
 | Tidak auto-approve | Error flag, harga &lt; benchmark, booking | Perbaiki lalu approve manual atau tunggu retry error-approve |
 | Booking: Get Resi gagal | Tracking number belum ada | Sync/ambil resi dulu; cek status booking di Shopee |
-| Settlement: *Unable to find order* pada booking | Platform Order ID masih kosong | Tunggu match order → pastikan Order ID terisi, baru upload settlement |
+| Settlement: *Unable to find order* pada booking | Platform Order ID masih kosong (belum **MATCHED**) | Tunggu MATCHED → pastikan Order ID terisi di baris booking, baru upload settlement |
+| Dua baris order dengan Order ID sama (satu ada booking) | Order ID sempat di-create terpisah sebelum MATCHED | Eskalasi ke tech/QA — seharusnya tidak terjadi; lihat §4 contoh `260831AASC74GOWV7FM` |
 | **Extract** bundle gagal / *price must be greater than zero* | Price baris bundle masih **0** (booking belum punya harga) | Tunggu convert / harga terisi (> 0), lalu Extract lagi — [requirement §6.7](./requirement.md) |
 | Create membuka form lain | By design | Gunakan Sales Order internal untuk order manual |
 
@@ -163,8 +183,9 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 **Apakah bisa edit harga setelah Approved?** Tidak — form terkunci.  
 **Apa beda Log Data dan API Data Log?** Log Data = batch sync toko; API Data Log = payload/detail di form order (mis. escrow Shopee).  
 **Kenapa Net Sales beda dengan invoice?** Biaya/diskon tambahan di SP tidak masuk Sales Invoice.  
-**Approve booking amount 0 apakah langsung jurnal 0?** Tidak. Settlement baru jalan setelah ada Platform Order ID; biasanya amount sudah dari order yang sudah match.  
-**Boleh Extract bundle booking yang Price masih 0?** Tidak. Sistem menolak sampai Price > 0 (sering setelah order ID / harga platform masuk).
+**Approve booking amount 0 apakah langsung jurnal 0?** Tidak. Settlement baru jalan setelah ada Platform Order ID (setelah **MATCHED**); biasanya amount sudah dari order yang sudah match.  
+**Boleh Extract bundle booking yang Price masih 0?** Tidak. Sistem menolak sampai Price > 0 (sering setelah MATCHED / harga platform masuk).  
+**Kenapa Order ID sudah ada di Shopee tapi di OlshopERP masih `-` / belum nempel?** Sering Order ID datang dulu tanpa Booking Number. Sistem menahan create baris baru sampai webhook **MATCHED** menggabungkan keduanya — supaya tidak dobel. Contoh: booking `260831AASC74GOWV7FM` digabung ke `2609031XP6RKDK` baru saat MATCHED.
 
 ---
 

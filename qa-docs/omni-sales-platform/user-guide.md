@@ -2,12 +2,12 @@
 doc_type: user-guide
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.2
-last_updated: 2026-09-03
+version: 1.3
+last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
 source_docs: [./requirement.md, ./knowledge-base.md, ./technical.md]
-source_version: 1.8
+source_version: 1.9
 ---
 
 # Panduan Pengguna — Dev - Sales Platform
@@ -111,10 +111,11 @@ Setelah order **Approved**:
 - **Kalau produk belum diikat, akun belum lengkap, stok kurang, kurir belum bind, atau gudang proses kosong**, order masuk **Failed Process**. Hover ikon error untuk pesan.
 - **Kalau harga jual sebelum pajak (nilai utama) di bawah Benchmark COGS**, order **tidak** ikut auto-approve. Setelah fitur live, kolom Error Flag menampilkan label **Below Benchmark COGS** (ikon merah; bisa difilter). **Approve manual tetap boleh.**
 - **Kalau stok kurang**, auto-approve **tetap jalan**; cek stok menyusul dan bisa muncul sebagai Failed Process.
-- **Kalau order adalah Booking Shopee** (Platform Order ID tampil `-`), auto-approve **tidak** mengambilnya. Approve & proses gudang **manual** boleh. **Get Resi / cetak label** gagal tanpa tracking. **Instant Settlement** belum bisa selama nomor order masih kosong.
-- **Kalau kamu approve booking bernilai 0**, itu **tidak** langsung membuat invoice/jurnal penjualan. Jurnal baru lewat settlement setelah Platform Order ID terisi.
-- **Kalau kamu unggah settlement untuk booking yang belum match**, sistem tidak menemukan order — tunggu Order ID terisi dulu.
-- **Kalau kamu Extract SKU bundle** padahal **Price** masih **0**, sistem menolak sampai harga lebih dari 0 (sering setelah booking jadi order ID / harga masuk).
+- **Kalau order adalah Booking Shopee** (Platform Order ID tampil `-`), auto-approve **tidak** mengambilnya. Approve & proses gudang **manual** boleh — itu artinya order **sudah masuk** lewat Booking Number. **Get Resi / cetak label** gagal tanpa tracking. **Instant Settlement** belum bisa selama nomor order masih kosong.
+- **Kalau Order ID sudah kelihatan di Shopee tapi di OlshopERP masih `-`**, jangan panik buat order manual / jangan anggap “belum sync”. Sering Order ID datang dulu **tanpa** Booking Number; sistem menahan baris kedua sampai status booking **MATCHED**, supaya tidak dobel.
+- **Kalau kamu approve booking bernilai 0**, itu **tidak** langsung membuat invoice/jurnal penjualan. Jurnal baru lewat settlement setelah Platform Order ID terisi (setelah MATCHED).
+- **Kalau kamu unggah settlement untuk booking yang belum match**, sistem tidak menemukan order — tunggu Order ID terisi di baris booking dulu.
+- **Kalau kamu Extract SKU bundle** padahal **Price** masih **0**, sistem menolak sampai harga lebih dari 0 (sering setelah MATCHED / harga masuk).
 - **Kalau harga line Shopee jadi 0 atau terasa terlalu kecil**, sync ulang dan cek data escrow di **API Data Log**. Harga seller = harga diskon **plus** potongan yang ditanggung Shopee — bukan angka “setelah voucher” di layar order marketplace.
 - **Kalau ada biaya/diskon tambahan** dari label akun platform, itu hanya info di SO — **tidak** ikut ke Sales Invoice. Wajar kalau Net Sales beda dengan nilai invoice.
 - **Kalau kamu atur “menit delay” auto-approve di Omni Setting**, jadwal harian sekitar **19:00** saat ini **tidak** mengikuti pengaturan itu. Auto-approve malam hari tetap jalan sesuai filter sistem.
@@ -143,12 +144,19 @@ Setelah order **Approved**:
 
 ### Booking Shopee
 
-Contoh yang sering muncul: baris booking dengan **Platform Order ID `-`** dan **nilai sering 0**.
+Contoh yang sering muncul: baris booking dengan **Platform Order ID `-`** dan **nilai sering 0** — tapi **Booking Number** sudah ada.
 
-1. Booking masuk → boleh **approve manual** dan siapkan gudang.
+1. Booking masuk → boleh **approve manual** dan siapkan gudang (jangan tunggu Order ID).
 2. Pastikan **tracking / resi** ada sebelum Get Resi / ship.
-3. Tunggu match buyer → Platform Order ID terisi, nilai biasanya ikut order biasa.
+3. Tunggu status **MATCHED** → Platform Order ID terisi di **baris yang sama**, nilai biasanya ikut order biasa.
 4. Setelah shipped (gudang 3PL) → baru unggah **Instant Settlement**.
+
+**Contoh nyata (ingat pola ini):**  
+31 Agu malam booking `260831AASC74GOWV7FM` masuk tanpa Order ID → ops boleh kerja.  
+2 Sep malam Order ID `2609031XP6RKDK` datang sendiri (tanpa nomor booking) → sistem **tidak** bikin baris kedua.  
+3 Sep ~18:11 booking **MATCHED** → Order ID nempel ke baris booking itu.  
+
+Kalau tidak ditahan sampai MATCHED, bisa jadi **2 order** untuk **1** pesanan (fatal di UPFOS dulu).
 
 Edit field booking (Other Information) dari **All Sales Order**, bukan dari list Sales Platform.
 
@@ -177,7 +185,9 @@ Edit field booking (Other Information) dari **All Sales Order**, bukan dari list
 
 **Contoh Auto Add VAT:** setelah live, toko A “Yes” → pajak produk terisi otomatis saat baris + harga sudah ada. Toko B “No” → tidak. Atur per toko di Store, bukan di customer.
 
-**Contoh settlement booking:** unggah file saat Order ID masih `-` → *Unable to find order*. Tunggu match, pastikan Platform Order ID terisi, baru upload.
+**Contoh settlement booking:** unggah file saat Order ID masih `-` → *Unable to find order*. Tunggu **MATCHED**, pastikan Platform Order ID terisi di baris booking, baru upload.
+
+**Contoh booking dual-path:** Booking Number `260831AASC74GOWV7FM` masuk dulu (31 Agu). Order ID `2609031XP6RKDK` datang belakangan tanpa nomor booking (2 Sep malam). Baru digabung saat **MATCHED** (3 Sep ~18:11). Satu pesanan = satu baris di Sales Platform.
 
 ---
 

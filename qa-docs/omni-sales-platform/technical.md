@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.8
-last_updated: 2026-09-03
+version: 1.9
+last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog 1.9 (2026-09-04): Booking dual-path anti-dupe — `ManagesShopeeBooking` + `OmniShopeeService::storeSalesOrder` skip `advance_package` sebelum link/MATCHED; invariant 1 SO per pesanan — [requirement §3b / §5.6](./requirement.md).  
 > Changelog 1.8 (2026-09-03): TO-BE edit detail sebelum approve + sync lock — [requirement §6.8](./requirement.md) · ETM-15749 / ETM-15748. Touchpoints: `SalesOrderDetailController` create/update, `OmniShopeeService`/`OmniLazadaService`/`OmniTikTokService` update detail (price path), FE `Omni/SalesOrder/DatalistDetail.vue` (+ ASO shared form).  
 > Changelog 1.7 (2026-09-02): Extract bundle price > 0 — `extractBundleDetails` + `BundleRandomFlag.vue` (ETM-15733) — [requirement §6.7](./requirement.md).  
 > Changelog 1.6 (2026-08-31): AS-IS sync schedule & job split — canonical di [Store technical §9.3](../omni-store-binding/technical.md#93-order-sync) + [requirement SP §5.4](./requirement.md#54-sync-ingestion).  
@@ -194,6 +195,9 @@ sequenceDiagram
 11. Σ Invoice status qty ≤ SO qty; Σ Failed Ship qty ≤ SO qty (per SKU, primary unit).
 12. Failed Synchronize uniqueness key: `(platform_id, store_id, platform_order_id, owned_by)`.
 13. Log Data Success display = `order_created + order_updated`.
+14. **Booking anti-dupe:** satu pesanan Shopee = satu `omni_sales_orders` row. Dedup by `booking_number` **atau** `platform_order_id` / `order_sn` → UPDATE, bukan INSERT kedua.
+15. **Advance package without booking link:** `OmniShopeeService::storeSalesOrder` — jika `advance_package` dan order status masih sebelum gate yang disepakati / belum ter-link ke booking (**MATCHED**), return success skip (**bukan** Failed Sync) agar tidak materialisasi SO kedua saat webhook order_id tanpa `booking_sn`.
+16. **MATCHED:** `update_so_booking_fields` / convert path mengisi `platform_order_id` pada SO booking existing + escrow reprice (`converting_booking`).
 
 ---
 
@@ -228,6 +232,7 @@ sequenceDiagram
 | Failure | Boundary | Recovery |
 |---------|----------|----------|
 | Sync per-order exception | Order rollback / save FailedSalesOrder | Retry Failed Synchronize |
+| Advance package / order_id tanpa booking_sn (pre-MATCHED) | Skip create (success Accepted) — **tidak** FailedSalesOrder | Tunggu webhook MATCHED → update SO booking |
 | Approve validation fail | `commitError`, SO tetap OPEN | Failed Process + manual fix + re-approve / error-approve |
 | Auto-approve exception | Job catch + clear lock | Next cron / error-approve |
 | Bulk Sync overlap | Cache lock | Message processing in progress |
@@ -249,6 +254,7 @@ sequenceDiagram
 
 ## 12. Tests & QA Notes
 
+- [ ] Booking dual-path: booking_sn-only create; order_id tanpa booking_sn tidak INSERT kedua; MATCHED mengisi `platform_order_id` + escrow (case `260831AASC74GOWV7FM` / `2609031XP6RKDK`)
 - [ ] Cron filter set vs booking exclusion
 - [ ] Shopee price = escrow `discounted_price + shopee_discount` (match `line_item_id`); not order-detail `model_discounted_price`
 - [ ] Booking convert reprice via escrow; regular status update does not zero prices
@@ -269,6 +275,7 @@ sequenceDiagram
 | GAP-SPL-01 | Rejected omitted from carousel buckets |
 | GAP-SPD-01 | Duplicate internal vs void-platform clone share naming |
 | GAP-BOOK-01 | **Accepted residual:** jalur IS mitigated — null `platform_order_id` → no settlement match; approve SP no SI. Residual = manual SI amount 0 only. See requirement §3b |
+| GAP-BOOK-02 | **Design guard:** dual-path booking vs advance package tanpa `booking_sn` — skip create sampai MATCHED; pelanggaran = 2 SO 1 order_id (fatal UPFOS). See requirement §3b / invariants 14–16 |
 | GAP-SYN-01 | No Shopee skip-sync optimization |
 | GAP-BM-05 / GAP-BM-13 | Auto-approve + Error Flag Below Benchmark COGS — formula FX primary + UX icon/filter/detail; kanonik di Benchmark COGS docs |
 | GAP-SPR-01 | Escrow miss → price 0; historical SO understated until backfill/re-sync; legacy seeders `FixShopee*` still use `model_discounted_price` |

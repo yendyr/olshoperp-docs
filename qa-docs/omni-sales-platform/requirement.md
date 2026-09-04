@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.8
-last_updated: 2026-09-03
+version: 1.9
+last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
-aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock]
+aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package]
 ---
 
 # Dev - Sales Platform — Requirement Documentation
@@ -14,7 +14,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 **Modul:** OmniChannel  
 **UI route:** `/omni/sales-order` · **type:** `platform`  
 **Audience:** PM, Ops, QA  
-**SoT:** 6 file `omni-sales-platform-*-source-of-truth.md` v1.0 (2026-07-15)  
+**SoT:** 6 file `omni-sales-platform-*-source-of-truth.md` (booking v1.1)  
 **Status:** AS-IS verified + PM SoT merge · lihat §Gaps  
 **Jira (edit detail TO-BE):** [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) · pasangan ASO [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748)
 
@@ -24,6 +24,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.9 | 2026-09-04 | QA - Yemima | Booking Shopee dual-path: masuk by booking_sn dulu; tahan create order_id tanpa booking; merge di **MATCHED** + contoh kasus nyata (§3b, §5.6, FAQ) |
 | 1.8 | 2026-09-03 | QA - Yemima | TO-BE §6.8: edit detail sebelum approve (add/replace SKU, price, disc, VAT; no delete; sync lock) — ETM-15749 / ETM-15748 |
 | 1.7 | 2026-09-02 | QA - Yemima | **Extract** SKU bundle: Price (`each_price`) harus **> 0** (ETM-15733; booking price 0 ditolak); §6.7 |
 | 1.6 | 2026-08-31 | QA - Yemima | AS-IS §5.4 jadwal sync: create vs update, lookback `max_backward` (default 10 hari), pecah job per hari / half-day; cross-ref Store §4.5 |
@@ -44,7 +45,7 @@ Sales Platform adalah datalist **read-only** untuk order marketplace hasil sync.
 |-----------|-----------|
 | Monitoring sync & gagal proses | Pill Failed Sync / Failed Process / Log Data / Sync Status |
 | Lanjut fulfillment | Approve → waves → 6 icon processing → Outbound/DO |
-| Booking Shopee tanpa Order ID | SO OPEN amount 0; proses manual diizinkan (ETM-13108); settle/journal IS menunggu match Order ID |
+| Booking Shopee tanpa Order ID | SO OPEN amount 0; proses manual diizinkan (ETM-13108); **satu SO** sampai status booking **MATCHED**; settle/journal IS menunggu Platform Order ID |
 | Margin guard | `prevent_auto_approve` jika Price Before VAT &lt; Benchmark COGS |
 
 ### 1.1 Rantai proses
@@ -100,15 +101,40 @@ stateDiagram-v2
 
 ### 3b. Booking Shopee (sumbu terpisah)
 
+Shopee mengirim **dua identitas sementara** yang baru digabung saat booking status **MATCHED**:
+
+| Fase | Identitas dari Shopee | Yang boleh di OlshopERP |
+|------|----------------------|-------------------------|
+| Awal | Hanya **Booking Number** (`booking_sn`), belum ada Order ID | **1 SO** by booking — ops boleh proses (ETM-13108) |
+| Tengah (zona bahaya) | Webhook **Order ID** lewat jalur advance package / order, sering **tanpa** `booking_sn` | **Jangan** create SO kedua |
+| Akhir | Booking status **MATCHED** + link booking ↔ Order ID | Isi `platform_order_id` di SO booking yang sama; harga/buyer dilengkapi |
+
 ```mermaid
 stateDiagram-v2
-    [*] --> BookingOpen: get_booking_list no order_sn
-    BookingOpen --> Matched: order_sn muncul
-    Matched --> RegularOrder: platform_order_id + get_order_detail
+    [*] --> BookingOpen: webhook/sync booking_sn only
+    BookingOpen --> BookingOpen: update booking status/tracking
+    BookingOpen --> DangerZone: order_id tanpa booking_sn
+    DangerZone --> BookingOpen: skip create SO kedua
+    BookingOpen --> Matched: booking_status MATCHED
+    Matched --> RegularOrder: platform_order_id + reprice/escrow
     BookingOpen --> Processed: Manual approve + waves
 ```
 
+**Invariant anti-duplikat (major):** satu pesanan Shopee = **satu** SO OlshopERP. Dilarang dua baris dengan Platform Order ID sama (satu with booking, satu without). Kegagalan ini pernah fatal di sistem legacy **UPFOS** yang masih dipakai sebagian end user.
+
 **ETM-13108:** approve/waves **boleh** saat `platform_order_id` NULL. Booking **dikecualikan** dari auto-approve.
+
+#### Contoh kasus nyata (produksi — ingat pola ini)
+
+| Waktu | Event Shopee | Efek di OlshopERP |
+|-------|--------------|-------------------|
+| **31 Agu 2026 21:03** | Webhook booking: `booking_sn` = `260831AASC74GOWV7FM`, status `READY_TO_SHIP`, **tanpa** order id | Sistem **simpan 1 SO** dengan Booking Number itu (Platform Order ID `-`) agar ops bisa proses |
+| **1–2 Sep 2026** | Update status/pengiriman booking (masih tanpa order id sampai ~2 Sep 23:00) | Update SO booking yang sama |
+| **2 Sep 2026 ~23:55** | Webhook Order ID `2609031XP6RKDK` lewat jalur advance package (**tanpa** nomor booking di payload) | **Tidak** create SO baru — belum ada bukti resmi = booking di atas |
+| **3 Sep 2026** | Update status order `2609031XP6RKDK` | Masih zona bahaya jika sempat create terpisah |
+| **3 Sep 2026 18:11** | Webhook booking `MATCHED`: `260831AASC74GOWV7FM` ↔ `2609031XP6RKDK` | ~18:11:27 Platform Order ID di row booking **otomatis terisi**; harga produk dll. baru lengkap setelah match |
+
+**Kalau tidak di-hold sampai MATCHED:** muncul 2 SO dengan Platform Order ID sama — satu with booking sn, satu without — padahal hanya **1** order dan hanya boleh diproses **1×**.
 
 **Accounting / Instant Settlement (mitigasi GAP-BOOK-01):**
 
@@ -118,7 +144,7 @@ stateDiagram-v2
 | Get Resi / ship booking (Shopee) | Gagal jika **tracking number** tidak didapat | Bottleneck utama sebelum label/ship platform |
 | Fulfillment gudang (wave → … → Shipped WH 3PL) | Tidak hard-require `platform_order_id` di validasi approve | Booking unmatched **bisa** sampai shipped stok |
 | Instant Settlement (store platform) | Match file by **`platform_order_id` only** | Booking unmatched (`NULL`) → *"Unable to find order"* → **tidak** generate SI/outbound/journal dari IS |
-| Setelah match `order_sn` | `platform_order_id` + amount dari order reguler | Settle & journal memakai nilai order riil |
+| Setelah **MATCHED** / `order_sn` ter-link | `platform_order_id` + amount dari order reguler | Settle & journal memakai nilai order riil |
 
 **Residual:** SI/journal amount 0 masih mungkin hanya jika dibuat/approve **manual** di luar Instant Settlement (bukan jalur utama Ops).
 
@@ -246,12 +272,20 @@ Pre-sale time: Shopee `ship_by_date` · TikTok `shipping_due_time` · Tokopedia 
 
 ### 5.6 Booking (Shopee)
 
-- INSERT jika belum ada booking_number; UPDATE match saat ada `order_sn`.
+**Dua jalur ingest (satu pesanan):**
+
+| Jalur | Kapan | Perilaku wajib |
+|-------|-------|----------------|
+| **Booking** (`get_booking_list` / webhook code booking, `booking_sn`) | Awal — sering tanpa `order_sn` | INSERT SO jika belum ada `booking_number`; UPDATE jika sudah ada. Ops boleh proses. |
+| **Order / advance package** (`storeSalesOrder`, flag `advance_package`) | Order ID muncul, payload sering **tanpa** `booking_sn` | **Jangan** INSERT SO baru sebelum ada link ke booking (status **MATCHED** / `order_sn` terikat). Skip create = accepted (bukan Failed Sync). |
+| **MATCHED** | Webhook/sync membawa pairing booking ↔ order | UPDATE SO booking: isi `platform_order_id`, reprice (escrow), lengkapi buyer/harga |
+
 - Manual Sync tanpa `platform_order_id` → `get_booking_detail` (bukan order detail).
-- Datalist: Platform Order ID `-`; status dari `booking_status`.
+- Datalist: Platform Order ID `-` sampai MATCHED; status dari `booking_status` selama unmatched.
 - Manual edit field booking → **All Sales Order** Other Information (bukan form SP).
 - **Resi/ship booking:** `shipSalesOrderBooking` / Get Resi gagal jika tracking number kosong.
-- **Instant Settlement:** tidak menjaring booking unmatched; tunggu Platform Order ID terisi — lihat §3b + [Instant Settlement](../accounting-settlement-upload/requirement.md) (match `platform_order_id`).
+- **Instant Settlement:** tidak menjaring booking unmatched; tunggu Platform Order ID terisi setelah MATCHED — lihat §3b + [Instant Settlement](../accounting-settlement-upload/requirement.md).
+- **Contoh angka & timeline:** §3b (booking `260831AASC74GOWV7FM` → order `2609031XP6RKDK`).
 
 ### 5.7 Approval automation
 
@@ -494,6 +528,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 | **GAP-SPL-01** | Rejected tidak masuk summary bucket | Blind spot monitoring | Open (temp by design) |
 | **GAP-SPD-01** | Dua mekanisme Duplicate (internal vs void-platform) belum diklarifikasi | Bingung usage | Open |
 | **GAP-BOOK-01** | Approve booking amount 0 — risiko jurnal 0 via **Instant Settlement** hampir tertutup (null `platform_order_id` tidak match; approve SP tidak buat SI). Residual: SI manual amount 0 | Accounting | **Accepted residual** (verified 2026-07-15) |
+| **GAP-BOOK-02** | Dual-path: Order ID (advance package) sering tanpa `booking_sn` sebelum **MATCHED** — wajib skip create SO kedua; merge di MATCHED. Contoh: `260831AASC74GOWV7FM` ↔ `2609031XP6RKDK`. Pelanggaran = 2 SO 1 order (fatal UPFOS) | Ops/fulfillment | **Design guard** (documented 2026-09-04) |
 | **GAP-SYN-01** | Optimasi skip-sync Shopee (cancel/complete, dll.) belum diimplementasi | API waste | Open |
 | **GAP-SPR-01** | Escrow gagal / `line_item_id` tidak match → unit price 0; order historis yang sync sebelum rule escrow tetap understated hingga re-sync/backfill | Nilai jual & benchmark/auto-approve salah | Open |
 | **GAP-BM-13** | Error Flag `cogs-error` → **Below Benchmark COGS** (icon/tooltip/filter/detail SKU/FX primary) — kanonik di [Benchmark COGS](../accounting-product-benchmark-price/requirement.md#65-error-flag-below-benchmark-cogs-to-be--improve-cogs-error) | Ops sulit filter & bedakan under-COGS di list | Open (TO-BE) |
@@ -512,6 +547,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 - [ ] Failed Process icons + Failed Sync retry
 - [ ] Log Data batch vs API Data Log terpisah
 - [ ] Booking NULL id processable; excluded auto-approve; IS tidak match hingga Order ID ada
+- [ ] Booking dual-path: booking_sn-only create; order_id tanpa booking_sn tidak INSERT kedua; MATCHED merge (§3b contoh nyata)
 - [ ] Auto-approve 19:00 filters + validate tanpa stock
 - [ ] prevent_auto_approve + Error Flag Below Benchmark COGS saat PbV (primary) &lt; Benchmark; filter by label; detail SKU (GAP-BM-13)
 - [ ] Shopee unit price = escrow `discounted_price + shopee_discount` (bukan order-detail `model_discounted_price`); kasus voucher Shopee-borne tidak understate penjualan
@@ -531,7 +567,10 @@ A: SP hanya menampilkan hasil sync; create manual = Sales Order General.
 A: AS-IS cron harian 19:00 — GAP-APR-01.
 
 **Q: Booking tanpa Order ID bisa di-proses?**  
-A: Ya (manual approve + gudang). Auto-approve tidak mengambil booking. Tracking kosong memblok Get Resi/ship booking. Instant Settlement **belum** bisa men-settle sampai Platform Order ID terisi (setelah match buyer/`order_sn`).
+A: Ya (manual approve + gudang). Auto-approve tidak mengambil booking. Tracking kosong memblok Get Resi/ship booking. Instant Settlement **belum** bisa men-settle sampai Platform Order ID terisi (setelah booking **MATCHED** / `order_sn` ter-link).
+
+**Q: Kenapa harus tunggu MATCHED — kenapa Order ID yang datang lebih dulu tidak langsung bikin SO baru?**  
+A: Shopee sering kirim Order ID dulu **tanpa** Booking Number (jalur advance package). Kalau sistem create SO baru di situ, nanti setelah MATCHED ada **2 SO** dengan Platform Order ID sama (satu with booking, satu without) — hanya boleh diproses **1×**. Contoh nyata: booking `260831AASC74GOWV7FM` (31 Agu) vs order `2609031XP6RKDK` (2 Sep malam) digabung baru di MATCHED 3 Sep ~18:11 — lihat §3b. Fatal yang sama pernah di UPFOS.
 
 **Q: Approve booking amount 0 apakah langsung jurnal revenue 0?**  
-A: Tidak lewat jalur normal. Approve platform tidak auto-SI; Instant Settlement butuh `platform_order_id`. Setelah match, amount biasanya sudah dari order reguler.
+A: Tidak lewat jalur normal. Approve platform tidak auto-SI; Instant Settlement butuh `platform_order_id`. Setelah MATCHED, amount biasanya sudah dari order reguler.

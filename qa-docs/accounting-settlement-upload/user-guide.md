@@ -121,7 +121,7 @@ Ditulis dari yang kamu alami di layar:
 - **Kalau kamu upload file toko lain** (atau header tidak dikenali), sistem menolak: file harus cocok dengan toko yang dipilih. **Satu file = satu toko.**  
 - **Kalau kamu upload Excel**, jangan. Order ID marketplace (terutama TikTok) bisa berubah jadi `1.23E+17` — order tidak ketemu, seluruh batch gagal. Simpan sebagai CSV.  
 - **Kalau order belum Shipped**, baris itu gagal dan menarik seluruh file.  
-- **Kalau Order ID di file tidak ada di sistem**, pesan *Unable to find order*. Cek typo. Untuk **booking Shopee** yang ID-nya masih `-`, tunggu match buyer dulu — belum bisa settle. Approve booking amount 0 juga **tidak** langsung buat invoice.  
+- **Kalau Order ID di file tidak ada di sistem**, pesan *Unable to find order*. Cek typo. Untuk **booking Shopee** yang ID-nya masih `-`, tunggu **MATCHED** dulu — belum bisa settle. Approve booking amount 0 juga **tidak** langsung buat invoice.  
 - **Kalau tanggal settle lebih awal dari tanggal kirim**, atau stok habis pada tanggal itu, baris gagal.  
 - **Kalau format tanggal salah** (beda per platform), baris gagal — ikuti format di template/export.  
 - **Kalau Fiscal Period belum ada atau sudah Closed** pada tanggal settle, baris gagal.  
