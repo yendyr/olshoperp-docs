@@ -2,7 +2,7 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.9
+version: 1.10
 last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog 1.10 (2026-09-04): Log Data tab **Pending Orders** + pill **Unmatched Bookings** — [requirement §5.3.1](./requirement.md) · [ASO §5.7](../all-sales-order/requirement.md) · ETM-15798.  
 > Changelog 1.9 (2026-09-04): Booking dual-path anti-dupe — `ManagesShopeeBooking` + `OmniShopeeService::storeSalesOrder` skip `advance_package` sebelum link/MATCHED; invariant 1 SO per pesanan — [requirement §3b / §5.6](./requirement.md).  
 > Changelog 1.8 (2026-09-03): TO-BE edit detail sebelum approve + sync lock — [requirement §6.8](./requirement.md) · ETM-15749 / ETM-15748. Touchpoints: `SalesOrderDetailController` create/update, `OmniShopeeService`/`OmniLazadaService`/`OmniTikTokService` update detail (price path), FE `Omni/SalesOrder/DatalistDetail.vue` (+ ASO shared form).  
 > Changelog 1.7 (2026-09-02): Extract bundle price > 0 — `extractBundleDetails` + `BundleRandomFlag.vue` (ETM-15733) — [requirement §6.7](./requirement.md).  
@@ -56,7 +57,7 @@ related_docs:
 |------|------|
 | `olshoperp-frontend/src/pages/Omni/SalesOrder/DataList.vue` | Datalist + pills wire-up |
 | `.../DatalistFailedSO.vue` | Failed Synchronize |
-| `.../SyncLog.vue` | Log Data slideover |
+| `.../SyncLog.vue` | Log Data slideover — **TO-BE:** tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798) |
 | `.../Form.vue` / detail components | Order detail |
 | `.../DatalistDetail.vue` | Detail grid + slot bundle flag |
 | `.../components/BundleRandomFlag.vue` | Bundle UI + **Extract** → `extract-bundle` |

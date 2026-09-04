@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.8
-last_updated: 2026-09-03
+version: 1.9
+last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
-aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS, Extract bundle]
+aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS, Extract bundle, Pending Orders, Unmatched Bookings]
 ---
 
 # All Sales Order — Knowledge Base
@@ -25,13 +25,15 @@ Pakai All Sales Order bila Anda perlu:
 - Export gabungan  
 - Import order internal dengan **Import Processed** atau **Import Non-Processed** (sama seperti Dev - Sales Order)
 - **(TO-BE)** Edit detail order **platform** sebelum Approve (tambah/ganti SKU, harga, VAT) — perilaku sama Sales Platform
+- **(TO-BE)** Cek Order ID booking yang di-hold / booking tanpa Order ID lewat **Log Data** → tab **Pending Orders** (+ pill **Unmatched Bookings**)
 
 | Untuk keperluan | Buka menu |
 |-----------------|-----------|
-| Sync toko / booking marketplace | **Dev - Sales Platform** (booking: masuk by Booking Number dulu; Order ID nempel saat **MATCHED** — lihat SP KB §4) |
+| Sync toko / booking marketplace | **Dev - Sales Platform** |
 | Atur Fulfillment Mode store | **Store** |
 | Detail aturan import internal | **Dev - Sales Order** |
 | Monitoring gabungan + Recheck + import dual | **All Sales Order** |
+| Order ID Shopee “pending match” booking | **Log Data** → **Pending Orders** (TO-BE ETM-15798) |
 
 ---
 
@@ -59,6 +61,14 @@ flowchart TD
 
 Tombol ada di halaman ini (bukan di list Dev Sales Platform). Memeriksa ulang flag error order Approved yang belum/sedang antre Unassign Wave.
 
+### Log Data — Pending Orders (TO-BE)
+
+Buka **Log Data** → tab **Pending Orders**: daftar Platform Order ID yang sengaja ditahan (belum jadi SO baru) karena menunggu Shopee **MATCHED** ke Booking Number yang sudah ada. Setelah match, baris hilang.
+
+Pill **Unmatched Bookings**: tampilkan order yang sudah punya Booking Number tapi Platform Order ID masih kosong (ops bisa proses booking lebih dulu).
+
+Detail: [requirement §5.7](./requirement.md) · [SP booking §3b](../omni-sales-platform/requirement.md).
+
 ---
 
 ## 3. Troubleshooting
@@ -74,6 +84,7 @@ Tombol ada di halaman ini (bukan di list Dev Sales Platform). Memeriksa ulang fl
 | Cek PPN otomatis order marketplace | TO-BE: baris **platform** ikut **Auto Add VAT (Platform Orders)** di Store — [Store KB](../omni-store-binding/knowledge-base.md); baris general tetap setting customer GC |
 | Nilai Benchmark COGS di line | TO-BE: snapshot **COGS efektif** (Manual COGS jika aktif) — paritas SP/SOG |
 | Klik **Extract** pada bundle gagal / pesan price must be greater than zero | Price baris bundle masih **0** (sering pada **booking**). Tunggu harga terisi / order ID riil, lalu Extract lagi. Lihat [requirement §5.5](./requirement.md) |
+| Order ID Shopee sudah ada di Seller Center tapi tidak kelihatan di list SO | Sering Order ID advance package tanpa booking — di-hold sampai MATCHED. Cek **Log Data → Pending Orders** (TO-BE). Booking tanpa Order ID: pill **Unmatched Bookings**. |
 
 ---
 

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.4
-last_updated: 2026-09-03
+version: 1.5
+last_updated: 2026-09-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.8
+source_version: 1.9
 owner: QA - Yemima
 status: review
 ---
@@ -81,6 +81,7 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 - Recheck hanya di All Sales Order, bukan list Dev - Sales Platform.  
 - Template Excel import **tidak berubah**.  
 - Di detail, tombol **Extract** pada SKU **bundle** hanya berhasil jika **Price** baris bundle **lebih dari 0**. Kalau masih 0 (sering di order booking), Extract ditolak sampai harga terisi.
+- **(TO-BE)** Order ID Shopee yang menunggu match ke booking → cek **Log Data → Pending Orders**. Booking tanpa Order ID → pill **Unmatched Bookings**.
 
 ---
 
@@ -90,6 +91,13 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 
 1. Buka All Sales Order → filter / pill Failed Process bila perlu.  
 2. Buka detail sesuai tipe baris.
+
+### A2. Log Data — Pending Orders (TO-BE)
+
+1. Dari datalist, buka **Log Data**.  
+2. Tab **Pending Orders** — lihat Order ID yang di-hold menunggu Shopee MATCHED ke booking.  
+3. Pill **Unmatched Bookings** — list booking yang sudah masuk tapi Platform Order ID masih kosong.  
+4. Setelah MATCHED, Order ID hilang dari Pending Orders (nempel ke baris booking).
 
 ### B. Import internal
 

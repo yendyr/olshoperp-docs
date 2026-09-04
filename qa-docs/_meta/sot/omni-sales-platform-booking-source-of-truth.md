@@ -2,7 +2,7 @@
 doc_type: source-of-truth
 menu: omni-sales-platform-booking
 menu_name: "Dev - Sales Platform (Booking Order — Shopee)"
-version: 1.1
+version: 1.2
 last_updated: 2026-09-04
 owner: QA - Yemima
 status: draft
@@ -155,7 +155,7 @@ flowchart TB
 | Approval Automation | Booking exclude dari auto-approve; manual approve boleh |
 | Order Failed Synchronize | Penanda Order Booking (`is_booking`) — skip Accepted **bukan** failed |
 | Sales Order Invoicing | Tampil Booking Number saat belum matched |
-| All Sales Order | Input manual field booking (accordion Other Information) |
+| All Sales Order | Input manual field booking (accordion Other Information); **TO-BE** Log Data tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798) — paritas SP |
 | Instant Settlement | Match `platform_order_id` setelah MATCHED |
 
 ## 9. Gap Registry
@@ -164,6 +164,7 @@ flowchart TB
 |---|---|---|---|
 | GAP-BOOK-01 | Manual approve booking amount 0 — residual SI manual; IS mitigated | Risiko jurnal 0 hanya jalur manual | Accepted residual |
 | GAP-BOOK-02 | Dual-path order_id tanpa booking_sn harus skip sampai MATCHED | Duplikat 2 SO 1 order (fatal UPFOS) | **Design guard** (documented 2026-09-04) |
+| GAP-BOOK-03 | Visibility Order ID di-hold / booking unmatched di Log Data | Ops mengira order belum masuk | **TO-BE** ETM-15798 (Pending Orders + Unmatched Bookings) |
 
 ## 10. FAQ
 
@@ -189,6 +190,7 @@ Jika belum match, sistem cek data booking. Jika ternyata sudah MATCHED, sistem m
 
 | Tanggal | Versi | Perubahan |
 |---|---|---|
+| 2026-09-04 | 1.2 | GAP-BOOK-03 / ETM-15798: Log Data Pending Orders + Unmatched Bookings (visibility) |
 | 2026-09-04 | 1.1 | Dual-path + MATCHED anti-dupe + contoh kasus nyata; GAP-BOOK-02 |
 | 2026-07-15 | 1.0 | Draft awal — booking order Shopee |
 

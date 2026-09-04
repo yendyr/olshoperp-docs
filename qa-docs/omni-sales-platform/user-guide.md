@@ -2,12 +2,12 @@
 doc_type: user-guide
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.3
+version: 1.4
 last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
 source_docs: [./requirement.md, ./knowledge-base.md, ./technical.md]
-source_version: 1.9
+source_version: 1.10
 ---
 
 # Panduan Pengguna — Dev - Sales Platform
@@ -133,7 +133,7 @@ Setelah order **Approved**:
    - **Order Failed Synchronize** — order gagal ditarik; baca alasan → **Retry**.
    - **Ready to Process** — tanpa error flag.
    - **Order Synchronize Status** — hari ini: berapa order di platform vs sudah masuk sistem, per toko.
-   - **Log Data** — riwayat batch sync (sukses/gagal/dilewati per toko). Beda dengan **API Data Log** di form order (isi payload, misalnya escrow Shopee).
+   - **Log Data** — riwayat batch sync (sukses/gagal/dilewati per toko). **TO-BE:** tab **Pending Orders** (Order ID di-hold menunggu MATCHED) + pill **Unmatched Bookings**. Beda dengan **API Data Log** di form order (isi payload, misalnya escrow Shopee).
 3. Perbaiki master (binding, COA, gudang, kurir) → sync/retry → approve.
 
 ### Approve & proses gudang
@@ -150,6 +150,7 @@ Contoh yang sering muncul: baris booking dengan **Platform Order ID `-`** dan **
 2. Pastikan **tracking / resi** ada sebelum Get Resi / ship.
 3. Tunggu status **MATCHED** → Platform Order ID terisi di **baris yang sama**, nilai biasanya ikut order biasa.
 4. Setelah shipped (gudang 3PL) → baru unggah **Instant Settlement**.
+5. **(TO-BE)** Kalau Order ID sudah kelihatan di Shopee tapi belum nempel di list: buka **Log Data → Pending Orders**. Booking tanpa Order ID: pill **Unmatched Bookings**.
 
 **Contoh nyata (ingat pola ini):**  
 31 Agu malam booking `260831AASC74GOWV7FM` masuk tanpa Order ID → ops boleh kerja.  

@@ -10,12 +10,13 @@ Menu **Dev - Sales Platform** (SO marketplace hasil sync). Route: `/omni/sales-o
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **SoT (6 file):** datalist · order-detail · sync-ingestion · sync-price-mapping · **booking v1.1** · approval-automation  
-**Version:** 1.9 · **User-guide:** v1.3 · `source_version` 1.9 · **Last updated:** 2026-09-04 11:53
+**Version:** 1.10 · **User-guide:** v1.4 · `source_version` 1.10 · **Last updated:** 2026-09-04 14:20
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.10 | 2026-09-04 14:20 | Log Data tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798; kanonik ASO) |
 | 1.9 | 2026-09-04 11:50 | Booking Shopee dual-path: masuk by Booking Number dulu; tahan Order ID tanpa booking; merge di MATCHED + contoh nyata (anti-duplikat) |
 | 1.8 | 2026-09-03 12:05 | Edit detail sebelum approve: add/replace SKU, price, disc, VAT; no delete; sync lock — ETM-15749 / ETM-15748 |
 | 1.7 | 2026-09-02 16:45 | Extract SKU bundle hanya jika Price > 0 (tolak booking/harga 0) — ETM-15733 |

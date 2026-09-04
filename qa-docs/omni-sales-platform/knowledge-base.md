@@ -2,12 +2,12 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.8
+version: 1.9
 last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
 audience: operator
-aliases: [sales platform, order marketplace, sync shopee, failed process, booking shopee, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, MATCHED, advance package]
+aliases: [sales platform, order marketplace, sync shopee, failed process, booking shopee, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, MATCHED, advance package, Pending Orders, Unmatched Bookings]
 ---
 
 # Dev - Sales Platform — Knowledge Base
@@ -71,7 +71,7 @@ Setelah perubahan **tersimpan**, sync marketplace **tidak** menimpa field itu la
 | **Order Failed Synchronize** | Order gagal ditarik dari marketplace; ada alasan & tombol Retry |
 | **Ready to Process** | Order tanpa error flag |
 | **Order Synchronize Status** | Hari ini: berapa order di platform vs sudah masuk sistem per toko |
-| **Log Data** | Riwayat batch sync (sukses/gagal/dilewati per toko) |
+| **Log Data** | Riwayat batch sync (sukses/gagal/dilewati per toko). **TO-BE:** tab **Pending Orders** (Order ID di-hold menunggu MATCHED) + pill **Unmatched Bookings** (booking tanpa Order ID) — ETM-15798 / [ASO §5.7](../all-sales-order/requirement.md) |
 
 Ringkasan status di atas daftar (Sales Request → … → Complete / Return / Cancelled) saling eksklusif. Order **Rejected** saat ini tidak masuk ringkasan tersebut.
 
@@ -185,7 +185,9 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 **Kenapa Net Sales beda dengan invoice?** Biaya/diskon tambahan di SP tidak masuk Sales Invoice.  
 **Approve booking amount 0 apakah langsung jurnal 0?** Tidak. Settlement baru jalan setelah ada Platform Order ID (setelah **MATCHED**); biasanya amount sudah dari order yang sudah match.  
 **Boleh Extract bundle booking yang Price masih 0?** Tidak. Sistem menolak sampai Price > 0 (sering setelah MATCHED / harga platform masuk).  
-**Kenapa Order ID sudah ada di Shopee tapi di OlshopERP masih `-` / belum nempel?** Sering Order ID datang dulu tanpa Booking Number. Sistem menahan create baris baru sampai webhook **MATCHED** menggabungkan keduanya — supaya tidak dobel. Contoh: booking `260831AASC74GOWV7FM` digabung ke `2609031XP6RKDK` baru saat MATCHED.
+**Kenapa Order ID sudah ada di Shopee tapi di OlshopERP masih `-` / belum nempel?** Sering Order ID datang dulu tanpa Booking Number. Sistem menahan create baris baru sampai webhook **MATCHED** menggabungkan keduanya — supaya tidak dobel. Contoh: booking `260831AASC74GOWV7FM` digabung ke `2609031XP6RKDK` baru saat MATCHED. **TO-BE:** pantau Order ID yang di-hold di **Log Data → Pending Orders**; booking tanpa Order ID lewat pill **Unmatched Bookings** (ETM-15798).
+
+**Apa beda Log Data dan API Data Log?** Log Data = batch sync toko (+ TO-BE Pending Orders); API Data Log = payload/detail di form order (mis. escrow Shopee).
 
 ---
 

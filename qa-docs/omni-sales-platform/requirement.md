@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.9
+version: 1.10
 last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
-aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package]
+aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package, Pending Orders, Unmatched Bookings]
 ---
 
 # Dev - Sales Platform — Requirement Documentation
@@ -24,6 +24,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.10 | 2026-09-04 | QA - Yemima | TO-BE Log Data §5.3.1: tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798; kanonik ASO §5.7) |
 | 1.9 | 2026-09-04 | QA - Yemima | Booking Shopee dual-path: masuk by booking_sn dulu; tahan create order_id tanpa booking; merge di **MATCHED** + contoh kasus nyata (§3b, §5.6, FAQ) |
 | 1.8 | 2026-09-03 | QA - Yemima | TO-BE §6.8: edit detail sebelum approve (add/replace SKU, price, disc, VAT; no delete; sync lock) — ETM-15749 / ETM-15748 |
 | 1.7 | 2026-09-02 | QA - Yemima | **Extract** SKU bundle: Price (`each_price`) harus **> 0** (ETM-15733; booking price 0 ditolak); §6.7 |
@@ -223,6 +224,17 @@ Wave (`circle-check`) → Pick (`cart-flatbed`) → Check (`list-check`) → Pac
 ### 5.3 Log Data (batch sync)
 
 Slideover: Store · Action (`Sync Order` / `Update Store` / `Revalidate Order`) · Description · Date · Success(=Created+Updated) · Failed · Skipped · Started · Ended · Updated By. ≠ API Data Log di form detail.
+
+#### 5.3.1 Tab Pending Orders + pill Unmatched Bookings (TO-BE · ETM-15798)
+
+Paritas dengan [All Sales Order §5.7](../all-sales-order/requirement.md#57-log-data--tab-pending-orders--pill-unmatched-bookings-to-be--etm-15798) (card menu = ASO; **visibility wajib juga di SP**).
+
+| Elemen | Label | Perilaku |
+|--------|-------|----------|
+| Tab | **Pending Orders** | List Platform Order ID yang di-hold (advance package / dual-path, belum MATCHED) — kolom Store · Platform Order ID \| Trx Date · Message (*awaiting from Shopee* match ke booking yang sudah di sistem) |
+| Pill | **Unmatched Bookings** | SO dengan Booking Number ada + Platform Order ID kosong |
+| Setelah MATCHED | — | Baris Order ID hilang dari Pending Orders |
+| Guard | — | Tidak mengubah skip create SO kedua sebelum MATCHED (§3b) |
 
 ### 5.4 Sync ingestion
 
@@ -546,6 +558,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 - [ ] 9 bucket eksklusif; Rejected tidak di bucket
 - [ ] Failed Process icons + Failed Sync retry
 - [ ] Log Data batch vs API Data Log terpisah
+- [ ] Log Data **Pending Orders** + pill **Unmatched Bookings** (ETM-15798 / §5.3.1; paritas ASO §5.7)
 - [ ] Booking NULL id processable; excluded auto-approve; IS tidak match hingga Order ID ada
 - [ ] Booking dual-path: booking_sn-only create; order_id tanpa booking_sn tidak INSERT kedua; MATCHED merge (§3b contoh nyata)
 - [ ] Auto-approve 19:00 filters + validate tanpa stock

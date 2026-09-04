@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.8
-last_updated: 2026-09-03
+version: 1.9
+last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
-aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail]
+aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail, Pending Orders, Unmatched Bookings, Log Data]
 ---
 
 # All Sales Order — Requirement Documentation
@@ -17,7 +17,8 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 > **Bukan** menu create master. All Sales Order = **window gabungan** atas [Dev - Sales Platform](../omni-sales-platform/requirement.md) dan [Dev - Sales Order](../sales-order-general/requirement.md) **v3.4**. Perilaku per tipe SO **harus selaras** dengan doc sumber. Dual import general: **Import Processed** / **Import Non-Processed** (gate [Store Fulfillment Mode](../omni-store-binding/requirement.md)).
 
-**Jira (edit detail platform TO-BE):** [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748) · pasangan SP [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749)
+**Jira (edit detail platform TO-BE):** [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748) · pasangan SP [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749)  
+**Jira (Log Data Pending Orders TO-BE):** [ETM-15798](https://erpintegration.atlassian.net/browse/ETM-15798) — paritas visibility di [Dev - Sales Platform](../omni-sales-platform/requirement.md)
 
 ---
 
@@ -25,6 +26,7 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.9 | 2026-09-04 | QA - Yemima | TO-BE §5.7: Log Data tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798); paritas SP |
 | 1.8 | 2026-09-03 | QA - Yemima | TO-BE §5.6: paritas edit detail SO platform sebelum approve (ETM-15748) — kanonik [SP §6.8](../omni-sales-platform/requirement.md) |
 | 1.7 | 2026-09-02 | QA - Yemima | **Extract** SKU bundle: wajib Price (`each_price`) **> 0** (ETM-15732; booking price 0 ditolak); shared API dengan SP |
 | 1.6 | 2026-08-12 | QA - Yemima | TO-BE: verify platform **Auto Add VAT** from Store + Benchmark COGS effective snapshot (GAP-ST-VAT-01 / GAP-BM-14); GAP-ASO-04/05 |
@@ -145,6 +147,7 @@ ASO **tidak** menduplikasi logic capture — reuse pipeline SO detail. Kartu Jir
 | **Recheck failed process** | Button ASO only → `POST omnichannel/sales-order/revalidate-flags` |
 | Sync one SO | Endpoint Omni sync untuk baris platform |
 | Import / progress | Endpoint Omni `type=general` (sama SOG) |
+| **Log Data** | Slideover — AS-IS: riwayat Recheck / sync per store · **TO-BE §5.7** tab **Pending Orders** |
 
 ### 5.4 Re-check Failed Process — AS-IS vs TO-BE (SOG §9)
 
@@ -202,6 +205,37 @@ Ringkas:
 Sync lock, booking price `0` vs `> 0`, baris tanpa platform product id, audit, `prevent_auto_approve` → **hanya** di SP §6.8 (jangan duplikasi rule di sini).
 
 **Kartu:** [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748) · pasangan [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) · Request ID `recvu2RzIu55hh`.
+
+### 5.7 Log Data — tab Pending Orders + pill Unmatched Bookings (TO-BE · ETM-15798)
+
+**Konteks:** booking Shopee dual-path — Order ID lewat advance package sering **tanpa** `booking_sn` di-hold (skip create SO kedua) sampai booking **MATCHED**. Ops tidak melihat Order ID itu di datalist SO → risiko dianggap “belum masuk”. Detail kronologi: [SP §3b](../omni-sales-platform/requirement.md#3b-booking-shopee-sumbu-terpisah).
+
+**Entry:** datalist ASO → toolbar **Log Data** → tab baru **Pending Orders** (selain tab log batch / recheck existing).
+
+| Elemen | Label (approved) | Isi |
+|--------|------------------|-----|
+| Tab | **Pending Orders** | Datatable Order ID yang di-hold menunggu match ke booking yang sudah di sistem |
+| Pill (atas datatable) | **Unmatched Bookings** | Filter/list SO: **Booking Number exist** + **Platform Order ID = NULL** |
+
+**Kolom datatable Pending Orders**
+
+| Kolom | Isi |
+|-------|-----|
+| Store | Toko sumber |
+| Platform Order ID \| Trx Date | Order ID yang di-hold + tanggal transaksi |
+| Message | Order ID di-pending karena masih *awaiting from Shopee* untuk matching dengan Booking Number yang sudah tersimpan |
+
+**Rules**
+
+| Aturan | Perilaku |
+|--------|----------|
+| Sumber baris Pending Orders | Order ID skip/hold dual-path (belum MATCHED) — **bukan** Failed Sync |
+| Setelah MATCHED / `platform_order_id` terisi di SO booking | Baris **hilang** dari Pending Orders |
+| Pill **Unmatched Bookings** ON | Tampil booking yang sudah SO tapi belum punya Platform Order ID |
+| Anti-duplikat | **Tidak** mengubah guard: tetap jangan create SO kedua sebelum MATCHED |
+| Paritas menu | Surface setara wajib di **Dev - Sales Platform** Log Data — [SP §5.3](../omni-sales-platform/requirement.md#53-log-data-batch-sync) |
+
+**Kartu:** [ETM-15798](https://erpintegration.atlassian.net/browse/ETM-15798) (menu card = All Sales Order; scope SP ikut).
 
 ---
 
@@ -271,6 +305,7 @@ flowchart TB
 - [ ] Tombol **Recheck failed process** hanya di ASO; lock saat batch jalan
 - [ ] Baris platform: Auto Add VAT dari Store (GAP-ASO-04); Benchmark COGS effective snapshot (GAP-ASO-05)
 - [ ] **Edit detail platform TO-BE (ETM-15748 / §5.6):** paritas penuh dengan SP §6.8 (add/replace, price/disc/VAT, no delete, sync lock)
+- [ ] **Log Data Pending Orders (ETM-15798 / §5.7):** tab + kolom Store / Platform Order ID|Trx Date / Message; hilang setelah MATCHED; pill **Unmatched Bookings**; paritas SP
 - [ ] Doc folder terpisah dari SOG & SP
 - [ ] **Extract** bundle dari detail ASO ditolak jika Price header bundle ≤ 0; boleh jika > 0 (ETM-15732); pesan error price must be greater than zero
 

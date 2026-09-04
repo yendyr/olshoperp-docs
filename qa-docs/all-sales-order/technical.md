@@ -2,14 +2,15 @@
 doc_type: technical
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.8
-last_updated: 2026-09-03
+version: 1.9
+last_updated: 2026-09-04
 owner: QA - Yemima
 status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
   - ../sales-order-general/technical.md
+  - ../omni-sales-platform/technical.md
 ---
 
 # All Sales Order — Technical Documentation
@@ -17,8 +18,9 @@ related_docs:
 **UI:** `/businessdevelopment/all-sales-order`  
 **API list:** `businessdevelopment/all-sales-order`  
 **Shared Omni:** `omnichannel/sales-order/*` (`type=all` / general endpoints)  
-**Behavior:** [requirement.md](./requirement.md) v1.8 · import general → [SOG technical](../sales-order-general/technical.md)
+**Behavior:** [requirement.md](./requirement.md) v1.9 · import general → [SOG technical](../sales-order-general/technical.md)
 
+> **1.9 (2026-09-04):** Log Data tab **Pending Orders** + pill **Unmatched Bookings** — [requirement §5.7](./requirement.md); ETM-15798 (paritas SP).  
 > **1.8 (2026-09-03):** Edit detail platform sebelum approve — paritas [SP §6.8](../omni-sales-platform/requirement.md) / [requirement §5.6](./requirement.md); ETM-15748 / ETM-15749.  
 > **1.7 (2026-09-02):** Extract bundle price > 0 — [requirement §5.5](./requirement.md); ETM-15732.  
 > **1.6 (2026-08-12):** Verify Auto Add VAT (platform rows) + Benchmark COGS effective snapshot — [requirement §5.2a](./requirement.md#52a-consumer-improvements-to-be); GAP-ASO-04/05.  
@@ -30,6 +32,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.9 | 2026-09-04 | Log Data Pending Orders + Unmatched Bookings (ETM-15798); store hold orphans dual-path booking |
 | 1.8 | 2026-09-03 | Paritas edit detail platform sebelum approve (ETM-15748); kanonik SP §6.8 |
 | 1.7 | 2026-09-02 | Extract bundle: reject when `each_price` ≤ 0; shared `extract-bundle` + `BundleRandomFlag.vue` (ETM-15732) |
 | 1.6 | 2026-08-12 | Verify Auto Add VAT (platform) + Benchmark effective snapshot; GAP-ASO-04/05 |
@@ -40,10 +43,11 @@ related_docs:
 
 | Path | Role |
 |------|------|
-| `olshoperp-frontend/src/pages/BusinessDevelopment/Report/AllSalesOrder/DataList.vue` | Gabungan datalist + pills; `show-recheck-error` |
+| `olshoperp-frontend/src/pages/BusinessDevelopment/Report/AllSalesOrder/DataList.vue` | Gabungan datalist + pills; `show-recheck-error`; entry **Log Data** |
 | `.../Omni/SalesOrder/components/ActionButtons.vue` | Slot create + optional Recheck |
 | `.../Omni/SalesOrder/components/RevalidateFlagButton.vue` | Tombol Recheck + lock poll/echo |
 | `.../Omni/SalesOrder/components/ErrorFlag.vue` | Tooltip + optional `Last Checked` dari `lastUpdated` |
+| Log Data slideover (shared / ASO) | **TO-BE:** tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798) |
 | `.../AllSalesOrder/Form.vue` | Wrapper form `from-all-sales-order` — pilih General vs Platform form by tipe |
 | `.../Omni/SalesOrder/components/BundleRandomFlag.vue` | Flag bundle + **Extract** → `POST …/extract-bundle` |
 | `.../BusinessDevelopment/SalesOrderGeneral/DatalistDetail.vue` | Detail general (dipakai ASO form general) |
@@ -83,6 +87,16 @@ ASO button → POST revalidate-flags
 WebSocket channels: `BizdevWebSocketChannel::getAllSalesOrderChannel`.
 
 **Caveat:** `checkRevalidateFlag()` response field `in_progress` currently hardcoded `false` (verify with FE echo path).
+
+### 2.2 Pending Orders (TO-BE · ETM-15798)
+
+| Surface | Notes |
+|---------|--------|
+| FE | Log Data slideover: tab **Pending Orders** + pill **Unmatched Bookings** — ASO & SP |
+| Data Pending Orders | Persist Order ID yang di-skip dari `storeSalesOrder` saat `advance_package` / dual-path sebelum MATCHED (bukan Failed Sync) |
+| Clear row | Saat booking MATCHED mengisi `platform_order_id` |
+| Unmatched Bookings | Query SO platform: booking_number NOT NULL + `platform_order_id` NULL |
+| Spec | [requirement §5.7](./requirement.md) · [SP §5.3.1](../omni-sales-platform/requirement.md) · [SP booking SOT](../_meta/sot/omni-sales-platform-booking-source-of-truth.md) |
 
 ---
 ## 3. Database

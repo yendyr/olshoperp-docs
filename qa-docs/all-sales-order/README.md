@@ -10,8 +10,8 @@ Route: `/businessdevelopment/all-sales-order`
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
-**User-guide:** v1.3 · `source_version` 1.8  
-**Version (3 layer):** 1.8 · **Last updated:** 2026-09-03 12:05
+**User-guide:** v1.5 · `source_version` 1.9  
+**Version (3 layer):** 1.9 · **Last updated:** 2026-09-04 14:20
 
 ## Peran vs dua menu sumber
 
@@ -27,6 +27,7 @@ Route: `/businessdevelopment/all-sales-order`
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.9 | 2026-09-04 14:20 | Log Data tab **Pending Orders** + pill **Unmatched Bookings** (booking dual-path visibility) — ETM-15798; paritas Dev - Sales Platform |
 | 1.8 | 2026-09-03 12:05 | Paritas edit detail SO platform sebelum approve (add/replace SKU, price, VAT; sync lock) — ETM-15748 / ETM-15749 |
 | 1.7 | 2026-09-02 16:45 | Extract SKU bundle hanya jika Price > 0 (tolak booking/harga 0) — ETM-15732 |
 | 1.6 | 2026-08-12 | TO-BE verify Auto Add VAT (platform) + Benchmark COGS Manual effective snapshot; GAP-ASO-04/05 |
