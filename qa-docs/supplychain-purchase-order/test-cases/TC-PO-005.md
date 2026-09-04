@@ -58,10 +58,10 @@ first_execution:
   via: "legacy:test_result"
   jira: "ETM-15425"
 last_execution:
-  at: "2026-08-19 16:21:10"
-  jira: "ETM-15425"
+  at: "2026-09-03"
+  jira: "ETM-15598"
   status: passed
-  via: "legacy:test_result"
+  via: "manual:p"
 ---
 
 # Catatan QA & Referensi
