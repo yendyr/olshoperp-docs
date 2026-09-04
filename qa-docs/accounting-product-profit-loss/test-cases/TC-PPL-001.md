@@ -13,7 +13,7 @@ requirement_ref: "qa-docs/accounting-product-profit-loss/requirement.md"
 automated: true
 automated_spec: "tests/specs/product-profit-loss/ppl-gross-sales-before-vat-e2e.spec.ts"
 execution_company:
-  id: 110
+  id: 153
   code: lumicharmsid
 related_menus:
   - accounting-product-profit-loss
@@ -26,7 +26,7 @@ related_menus:
   - supplychain-mutation-outbound
 preconditions:
   - "User login ke staging dengan akun yang memiliki hak akses menu lengkap"
-  - "Company aktif: lumicharmsid (ID: 110)"
+  - "Company aktif: lumicharmsid (ID: 153)"
 test_data:
   - field: vat_type
     value: "Tax Included"
@@ -79,7 +79,7 @@ last_execution:
 # Catatan QA & Referensi Data Testing (Evidence)
 Mengacu pada card **ETM-15485** ([Product Profit Loss - Gross Sales based on Price Before VAT](https://erpintegration.atlassian.net/browse/ETM-15485)).
 - Jira Test Case: [ETM-15635](https://erpintegration.atlassian.net/browse/ETM-15635) (Done ✅).
-- Target Testing Company: **lumicharmsid** (ID: 110).
+- Target Testing Company: **lumicharmsid** (ID: 153).
 - Request ID: .
 
 ### Referensi Dokumen Transaksi End-to-End:
