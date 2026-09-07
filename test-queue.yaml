@@ -820,3 +820,53 @@ ETM-15688:
   jira_status: QA Review
   jira_type: Improvement
   summary: "[Benchmark COGS] Calculation benchmark COGS untuk SKU Bundle"
+
+ETM-15714:
+  menu: sales-platform
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Sales Platform] - Radio Button 'Draft' & 'Open' serta Tombol Approve Tidak Muncul Setelah Order Di-reject"
+
+ETM-15746:
+  menu: accounting-settlement-upload
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs:
+    - ETM-15706
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Instant Settlement] - Wording Notifikasi Error Penolakan Approval Beda Tanggal SI Belum Informatif dan Tidak Sesuai Spesifikasi"
+
+ETM-15748:
+  menu: businessdevelopment-sales-order-general
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[All Sales Order] Pada halaman detail sales order dapat dilakukan penambahan SKU"
+
+ETM-15717:
+  menu: omni-sales-platform
+  intent: extend
+  status: in_overview
+  reuse: []
+  drafts:
+    - PENDING-JENNI-2026090701
+    - PENDING-JENNI-2026090702
+    - PENDING-JENNI-2026090703
+    - PENDING-JENNI-2026090704
+    - PENDING-JENNI-2026090705
+  ready_tcs: []
+  jira_status: Done
+  jira_type: Error
+  summary: "[Sales Platform] Order hasil cloned dari proses void seharusnya tetap bertipe Sales Platform, bukan berubah menjadi Sales Order Internal/General"

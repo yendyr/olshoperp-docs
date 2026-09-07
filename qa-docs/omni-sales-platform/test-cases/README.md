@@ -30,3 +30,12 @@ Prefix folder: `SPLG`.
 
 `TC-SPLG-003` s/d `TC-SPLG-011` — Dibuat untuk pengujian fitur Pill Filter `Net Sales < COGS` pada card origin [ETM-15447](https://erpintegration.atlassian.net/browse/ETM-15447) di Company **FAT**.  
 `TC-SPLG-012` s/d `TC-SPLG-017` — Dibuat untuk validasi Price > 0 pada tombol Extract Bundle di menu Dev - Sales Platform pada card origin [ETM-15733](https://erpintegration.atlassian.net/browse/ETM-15733).
+### ETM-15717 — [Sales Platform] Order hasil cloned dari proses void seharusnya tetap bertipe Sales Platform, bukan berubah menjadi Sales Order Internal/General
+
+| Kode Draf | Judul Test Case | File | Status |
+|---|---|---|---|
+| `PENDING-JENNI-2026090701` | Void & Clone Order Sales Platform — Tipe Order Baru Tetap Sales Platform & Mempertahankan Platform Order ID | [`TC-SPO-JENNI-DRAFT-2026090701.md`](./TC-SPO-JENNI-DRAFT-2026090701.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026090702` | Verifikasi Halaman Datalist & Detail Sales Platform untuk Order Hasil Void & Clone | [`TC-SPO-JENNI-DRAFT-2026090702.md`](./TC-SPO-JENNI-DRAFT-2026090702.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026090703` | Fitur Re-sync Marketplace pada Order Sales Platform Hasil Void & Clone | [`TC-SPO-JENNI-DRAFT-2026090703.md`](./TC-SPO-JENNI-DRAFT-2026090703.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026090704` | Regresi Pemrosesan Void & Clone untuk Sales Order Internal / General (Non-Platform) | [`TC-SPO-JENNI-DRAFT-2026090704.md`](./TC-SPO-JENNI-DRAFT-2026090704.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026090705` | End-to-End Processing Order Sales Platform Hasil Void & Clone (Send to Default Waves hingga Shipped) | [`TC-SPO-JENNI-DRAFT-2026090705.md`](./TC-SPO-JENNI-DRAFT-2026090705.md) | DRAFT 🟡 |
