@@ -28,6 +28,7 @@ Klasifikasikan pertanyaan sebelum jawab; baca layer yang tepat (lihat `05-qa-eng
 | **Antrian TC per card Jira** | `#card-tc` atau `#card-tc ETM-xxxxx` | `16-card-tc-queue.mdc` | To Do + QA Review → `test-queue.yaml`; overview dulu, run hanya `ready` |
 | **Tes card Jira spesifik** | "test ETM-xxxxx", "testing card ETM-…", "test case ETM-…" | `16-card-tc-queue.mdc` § Testing specific Jira card | cek queue + `origin_jira`; reuse dulu; TC baru tetap `13` |
 | **Sync Jira Done → file TC** | `#sync-jira-done` / `#syncjiradone ETM-*` | `18-sync-jira-done.mdc` | fetch Jira Test Result + Actual Result; `tc:jira-sync --apply` |
+| **Cek / query data di DB** | "cek db staging", "query tyas", "audit trail merdian" | `tests/DATA-VERIFICATION.md` | rule docs `19-database-data-verification.mdc` + SoT `olshoperp` rule `19-database-debugger` |
 
 ## Workflow singkat
 

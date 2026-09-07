@@ -49,5 +49,5 @@ Auto-refresh setiap 60 detik setelah Config disimpan.
 ## Catatan
 
 - Data **tidak** di-commit ke git — sumber = n8n Data Store.
-- Audit log DB Tyas (tanpa telemetry FE) **tidak** tampil di dashboard ini; butuh workflow export terpisah atau query agent-db manual (`olshoperp/scripts/agent-db-query.mjs`).
+- Audit log DB Tyas (tanpa telemetry FE) **tidak** tampil di dashboard ini; butuh workflow export terpisah atau query agent-db manual — lihat `tests/DATA-VERIFICATION.md` + runner `olshoperp/scripts/agent-db-query.mjs`.
 - Jangan taruh API key n8n di file HTML — hanya URL export + token opsional.

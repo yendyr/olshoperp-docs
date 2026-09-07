@@ -1,0 +1,46 @@
+---
+description: Cek data level DB via webhook (Tyas/Staging shared, Merdian terpisah) untuk QA Antigravity — precondition, forensik FAIL, audit. Bukan pengganti assert UI / TC passed.
+alwaysApply: false
+---
+
+# Database Data Verification (QA — olshoperp-docs)
+
+Pakai rule ini saat user / tugas menyebut **cek db**, **query db**, **db staging**, **db tyas**, **db merdian**, **audit trail db**, **verifikasi data di database**, atau saat FAIL E2E perlu bukti baris DB.
+
+## Sumber kebenaran
+
+| Layer | Lokasi | Isi |
+|-------|--------|-----|
+| **Kontrol QA (workspace ini)** | `tests/DATA-VERIFICATION.md` | Level L1/L2/L3, kapan boleh, matriks env, gate company_id |
+| **SoT teknis runner** | `../olshoperp/.cursor/rules/19-database-debugger.mdc` | Read-only, forensik 4 langkah, larangan secret |
+| **Runner** | `../olshoperp/scripts/agent-db-query.mjs` | Eksekusi via webhook; kredensial dari `.env` |
+
+Jangan menduplikasi prosedur panjang di sini — baca `tests/DATA-VERIFICATION.md` dulu, lalu rule 19 di `olshoperp` jika forensik mendalam.
+
+## Routing env (ingat)
+
+- **Tyas** (`tyas_olshoperp`) + **Staging** (`staging_olshoperp`) → webhook **shared**
+- **Merdian** (`merdian_olshoperp`) → webhook **terpisah** (server beda)
+
+Contoh (path sibling dari root docs):
+
+```bash
+node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id FROM products WHERE company_id = 153 LIMIT 5"
+```
+
+## Larangan QA (mutlak)
+
+1. Hasil DB **bukan** bukti `last_execution.status: passed` untuk TC UI-crawling.
+2. Jangan expose `DB_DEBUG_API_KEY*` / URL override di chat, TC, atau commit.
+3. Selalu filter scope **company** yang sedang diuji; SoftDeletes awareness.
+4. Read-only saja — jangan usulkan mutasi SQL.
+5. Jangan buat folder `qa-docs/{menu}` khusus “cek DB” — tooling ops, bukan fitur menu.
+
+## Triage cepat
+
+| Permintaan | Aksi |
+|------------|------|
+| Assert TC / flow lulus | Playwright CLI (L1) — rule `14` |
+| “Ada gak data X di staging company 153?” | L3 + `--db=staging_olshoperp` |
+| “Cek di tyas / merdian” | L3 + flag `--db=` yang sesuai |
+| Bug forensik (siapa ubah / soft-delete) | L3 + tabel `audits` (protokol rule 19 olshoperp) |

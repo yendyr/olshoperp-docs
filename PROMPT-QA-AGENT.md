@@ -15,7 +15,7 @@ Kamu bekerja di repo olshoperp-docs (QA automation OlshopERP, Playwright + qa-do
 
 LANGKAH PERTAMA — baca file ini sekarang sebelum melakukan apa pun:
   tests/AGENT-RUNBOOK.md
-Itu decision tree + 8 aturan mutlak + peta dokumen. Jangan memuat semua file di
+Itu decision tree + aturan mutlak + peta dokumen. Jangan memuat semua file di
 .cursor/rules/ (±12k kata); runbook akan menyuruhmu membuka dokumen tertentu HANYA
 saat memang dibutuhkan.
 
@@ -39,6 +39,8 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
 8. Satu TC dipakai di banyak tempat. Card Jira = asal-usul (`origin_jira`), bukan
    kepemilikan. Card Done di Jira tanpa update file? → `#sync-jira-done ETM-xxxxx`
    (rule 18) — fetch Test Result + Actual Result, jangan isi manual tanpa Jira.
+9. Cek DB via webhook (Tyas/Staging shared, Merdian terpisah) = supporting saja —
+   BUKAN bukti TC `passed`. Baca `tests/DATA-VERIFICATION.md` jika diminta cek/query DB.
 
 PERINTAH GATE — jalankan sesuai konteks, jangan dilewati:
   npm run docs:drift                   # sinkron dua arah dgn developer (WAJIB sebelum & sesudah)
@@ -117,6 +119,16 @@ rujukan tiap kode PENDING, (3) renumber + UPDATE SEMUA RUJUKAN dari peta itu
 
 Ikuti rule `18-sync-jira-done.mdc`: fetch Jira (Done + Test Result + Actual Result) →
 `npm run tc:jira-sync -- --apply payload.json` → `npm run tc:lint`.
+
+**Cek / query data di DB (staging / tyas / merdian):**
+
+```
+Tugas: cek data di DB {staging|tyas|merdian} untuk {pertanyaan singkat}.
+Baca tests/DATA-VERIFICATION.md dulu. Pakai runner
+`node ../olshoperp/scripts/agent-db-query.mjs --db={staging_olshoperp|tyas_olshoperp|merdian_olshoperp}`.
+Read-only + filter company_id. Hasil DB = supporting evidence saja — JANGAN tandai TC passed.
+Jangan paparkan API key di chat.
+```
 
 ---
 

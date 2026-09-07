@@ -142,6 +142,24 @@ npm run tc:pending            # JANGAN hitung sendiri via grep/skrip
 (`draft`/`review`) ≠ **hasil eksekusi** (`last_execution`). `tc:pending` sudah benar.
 Detail cara membaca hasil + menindaklanjuti → § "Kalau TC-nya dijalankan manual" di bawah.
 
+### H. "Cek data di DB" (staging / tyas / merdian)
+
+Precondition, forensik FAIL, atau audit trail — **bukan** pengganti assert UI.
+
+```bash
+# Runner di sibling olshoperp; kredensial dari .env (jangan hardcode key)
+node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id FROM products WHERE company_id = 153 LIMIT 5"
+node ../olshoperp/scripts/agent-db-query.mjs --db=tyas_olshoperp --query="..."
+node ../olshoperp/scripts/agent-db-query.mjs --db=merdian_olshoperp --query="..."
+```
+
+- **Tyas + Staging** → webhook **shared** · **Merdian** → webhook **terpisah**
+- Hasil DB = **supporting evidence** saja — **dilarang** jadi `last_execution: passed`
+  untuk TC UI-crawling
+
+→ Baca: `tests/DATA-VERIFICATION.md` · rule docs `19-database-data-verification.mdc` ·
+SoT teknis `olshoperp/.cursor/rules/19-database-debugger.mdc`
+
 ---
 
 ## Kalau TC-nya dijalankan manual (bukan Playwright)
@@ -228,6 +246,7 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 | 6b | **Sync mirror ke `olshoperp`: salin FILE, jangan `cp -r` folder.** Sesudahnya wajib `git -C ../olshoperp status --short docs/qa-docs/` | `cp -r` bisa menimpa versi backend yang lebih baru; tanpa verifikasi kamu tidak tahu apa yang tersentuh (rule `15`) |
 | 7 | **Web UI crawling untuk act & assert.** API testing hanya jika user eksplisit minta | Rule `13`/`14` §8 |
 | 8 | **Satu TC dipakai di banyak tempat.** `origin_jira` = asal-usul (tidak ditimpa); `last_execution` cukup satu, diperbarui otomatis tiap run termasuk saat flow me-recall-nya. Card baru → **cek dulu**: belum ada TC = bikin baru · expected sama = reuse · expected berubah = **update TC existing** (jangan bikin kembarannya) | Rule `13` §5B pohon keputusan |
+| 9 | **Cek DB (webhook) ≠ TC passed.** L3 DB hanya supporting; Tyas/Staging shared webhook, Merdian terpisah; read-only + `company_id` | `tests/DATA-VERIFICATION.md` · rule docs `19` |
 
 ---
 
@@ -253,6 +272,7 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 | BUILD vs RUN, repo mana yang boleh dibuka | rule `15-playwright-multi-repo.mdc` |
 | Aturan flow cross-menu (recall, gate, fresh data) | rule `17-e2e-cross-menu-flow.mdc` |
 | Sync Jira Done → `last_execution` / `first_execution` | rule `18-sync-jira-done.mdc` |
+| Cek data DB (L1/L2/L3, env Tyas/Staging/Merdian) | `tests/DATA-VERIFICATION.md` · rule docs `19-database-data-verification.mdc` |
 | Apa yang boleh ditulis di `qa-docs/` | rule `03-qa-docs-immutable.mdc` |
 
 ## Perintah lengkap
