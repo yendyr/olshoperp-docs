@@ -45,6 +45,11 @@ Prefix folder: `ASO`.
 | TC-ASO-035 | [Proteksi Sync Lock Pasca Edit User terhadap pembaruan harga platform](./TC-ASO-035.md) | draft | [ETM-15757](https://erpintegration.atlassian.net/browse/ETM-15757) | OlshopERP | ❌ | 2026-09-03 |
 | TC-ASO-036 | [Pemicuan prevent_auto_approve dan kelengkapan Audit Trail pasca edit detail](./TC-ASO-036.md) | draft | [ETM-15758](https://erpintegration.atlassian.net/browse/ETM-15758) | Jeiniffer | ❌ | 2026-09-03 |
 | TC-ASO-037 | [Read-Only Guard pada Dokumen Berstatus Approved (UI dan Button Save Hilang)](./TC-ASO-037.md) | draft | [ETM-15759](https://erpintegration.atlassian.net/browse/ETM-15759) | OlshopERP | ❌ | 2026-09-03 |
+| PENDING-20260907110300 | [Advanced Filter All Sales Order — Kombinasi >2 Parameter Filter (Trx Date, Booking Number, Platform Status)](./TC-ASO-DRAFT-20260907110300.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
+| PENDING-20260907141801 | [Advanced Filter All Sales Order — Kombinasi Filter Pesanan Batal Bernomor Outbound (Risiko Rugi Kirim)](./TC-ASO-DRAFT-20260907141801.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
+| PENDING-20260907141802 | [Advanced Filter All Sales Order — Audit Pesanan COD Nominal Besar Berstatus Processed](./TC-ASO-DRAFT-20260907141802.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
+| PENDING-20260907141803 | [Advanced Filter All Sales Order — Filter Error Flag 'Below Benchmark COGS' Tanpa Invoice](./TC-ASO-DRAFT-20260907141803.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
+| PENDING-20260907141804 | [Advanced Filter All Sales Order — Filter Kepatuhan Pajak (Order General > 1 Juta Tanpa VAT)](./TC-ASO-DRAFT-20260907141804.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
 
 `TC-ASO-004` s/d `TC-ASO-010` — Dibuat untuk pengujian fitur Pill Filter `Net Sales < COGS` pada card origin [ETM-15446](https://erpintegration.atlassian.net/browse/ETM-15446).  
 `TC-ASO-011` s/d `TC-ASO-015` — Dibuat untuk pengujian fitur Extract This Bundle pada card origin [ETM-15605](https://erpintegration.atlassian.net/browse/ETM-15605).  

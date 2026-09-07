@@ -39,3 +39,6 @@ Prefix folder: `ADJADD`.
 | TC-ADJADD-019 | [Master Colli Type: Inactive Filter & Preselect Default](./TC-ADJADD-019.md) | draft | [ETM-15777](https://erpintegration.atlassian.net/browse/ETM-15777) | OlshopERP | ❌ | 2026-09-03 |
 | TC-ADJADD-020 | [Approval via Stock Addition Approval & Visibilitas Stock Monitoring](./TC-ADJADD-020.md) | draft | [ETM-15778](https://erpintegration.atlassian.net/browse/ETM-15778) | Jeiniffer | ❌ | 2026-09-03 |
 | TC-ADJADD-021 | [Pembersihan Orphan Colli saat Hapus Detail/Draft](./TC-ADJADD-021.md) | draft | [ETM-15779](https://erpintegration.atlassian.net/browse/ETM-15779) | OlshopERP | ❌ | 2026-09-03 |
+| PENDING-20260904105401 | [Validasi Penolakan Pengubahan Header Location Destination saat Detail Mengandung Colli Assigned](./TC-ADJADD-DRAFT-20260904105401.md) | draft | [ETM-15633](https://erpintegration.atlassian.net/browse/ETM-15633) | QA - Yemima | ❌ | 2026-09-04 |
+| PENDING-20260904105402 | [Validasi Immutaibility (Proteksi Read-Only) Data Colli pada Dokumen Stock Addition Approved](./TC-ADJADD-DRAFT-20260904105402.md) | draft | [ETM-15633](https://erpintegration.atlassian.net/browse/ETM-15633) | QA - Yemima | ❌ | 2026-09-04 |
+
