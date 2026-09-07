@@ -112,6 +112,21 @@ Berlaku jika user minta **tes / testing / test case / re-test** untuk **satu** c
 | Tidak ada di queue, tapi ada TC `origin_jira` / `card_ref` | **Retest** pakai TC itu (card Done/hapus dari queue tidak menghapus katalog). Update `last_execution.jira` saat run. |
 | Tidak ketemu sama sekali | Jangan mengarang skenario. Ikuti `13-test-case-format.mdc` §1: konfirmasi user dulu, lalu DRAFT + cek duplikasi + expected dari requirement. |
 
+### Larangan jalur eksekusi (card testing)
+
+Saat diminta **testing card ETM-xxxxx**, agent **DILARANG**:
+
+- Membuat / menjalankan file di `tests/scripts/` (IIFE, `test-etm-*.js`, probe lepas)
+- Mengklaim lulus dari console log script ad-hoc tanpa Playwright CLI + tag `@TC-` / `@ETM-`
+
+Jalur sah:
+
+1. TC existing + spec → `OLSHOP_RUN_JIRA=ETM-xxxxx npm run test:tc -- "@TC-…"`
+2. TC ada, spec belum → tulis di `tests/specs/` (mode BUILD), bukan `scripts/`
+3. Probe DOM sekali pakai → hanya `tests/scratch/` lalu hapus
+
+Detail: `tests/AGENT-RUNBOOK.md` decision tree **I**.
+
 ### Card Done → tandai TC selesai (verifikasi status REAL dulu)
 
 **Alternatif otomatis (disarankan):** trigger `#sync-jira-done ETM-xxxxx` / `#syncjiradone` —

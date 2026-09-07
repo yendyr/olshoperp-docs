@@ -95,18 +95,29 @@ Urutan lookup **sebelum** buka repo app (hemat token, hindari salah selector):
 Boleh pakai **Browser MCP**. Tapi hasilnya **bukan** status test — lihat aturan #2 di bawah.
 
 Kalau perlu menulis **script sekali pakai** (dump DOM, cek API, reproduksi bug):
-**jangan beri tag `@TC-`/`@FLOW-`/`@ETM-`** — `npm test` hanya menjalankan spec bertag, jadi
-script tanpa tag otomatis tidak ikut run. Beri juga prefix `check-`/`inspect-`/`probe-`/
-`debug-`/`diag-`/`find-`/`get-`/`read-`/`log-`/`verify-` sebagai penanda bagi manusia.
-Jalankan manual dengan menyebut path-nya (`npx playwright test path/ke/file.spec.ts`).
-Setelah selesai dipakai: pindahkan ke `tests/scratch/` atau hapus.
+- **Hanya** di `tests/scratch/` (gitignored) atau hapus setelah dipakai
+- Prefix diagnostic: `check-`/`inspect-`/`probe-`/`debug-`/`diag-`/`find-`/`get-`/`read-`/`log-`/`verify-`
+- **Jangan** beri tag `@TC-`/`@FLOW-`/`@ETM-` — jangan ikut `npm test`
+- **DILARANG** membuat / menambah file di `tests/scripts/` (folder terkunci + gitignored)
 
 > **Konsekuensinya:** spec resmi **wajib** bertag (`@TC-*`, `@FLOW-*`, atau `@ETM-*`
-> untuk regression per card). Spec tanpa tag = scratch, tidak akan pernah jalan di
-> suite — termasuk kalau kamu lupa memberi tag pada spec sungguhan.
+> untuk regression per card) di `tests/specs/`. Spec tanpa tag = scratch.
 >
 > Data seed (menyiapkan data, bukan menguji) diberi nama berprefix `seed-` dan memang
 > tidak bertag — dijalankan manual saat dibutuhkan.
+
+### I. "Tolong testing card ETM-xxxxx" (bukan bikin script baru)
+
+Jalur **wajib** — Antigravity **tidak** boleh menjawab dengan file `tests/scripts/*.js`
+atau IIFE Playwright ad-hoc:
+
+1. Cek `test-queue.yaml` + grep `origin_jira` / `card_ref` (rule `16`)
+2. Ada TC + `automated_spec` → `OLSHOP_RUN_JIRA=ETM-xxxxx npm run test:tc -- "@TC-…"`
+3. Ada TC belum ada spec → mode **BUILD**: tulis di `tests/specs/…` + helper/POM, tag `@TC-*` atau `@ETM-xxxxx`
+4. Belum ada TC → overview / konfirmasi dulu (rule `13`), **bukan** script probe
+5. Probe DOM sekali pakai (kalau terpaksa) → **hanya** `tests/scratch/`, lalu hapus
+
+Hasil resmi = Playwright CLI + reporter / `last_execution` — bukan console log dari script lepas.
 
 ### G. "Card Jira sudah Done tapi file TC belum ke-update"
 
@@ -247,6 +258,7 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 | 7 | **Web UI crawling untuk act & assert.** API testing hanya jika user eksplisit minta | Rule `13`/`14` §8 |
 | 8 | **Satu TC dipakai di banyak tempat.** `origin_jira` = asal-usul (tidak ditimpa); `last_execution` cukup satu, diperbarui otomatis tiap run termasuk saat flow me-recall-nya. Card baru → **cek dulu**: belum ada TC = bikin baru · expected sama = reuse · expected berubah = **update TC existing** (jangan bikin kembarannya) | Rule `13` §5B pohon keputusan |
 | 9 | **Cek DB (webhook) ≠ TC passed.** L3 DB hanya supporting; Tyas/Staging shared webhook, Merdian terpisah; read-only + `company_id` | `tests/DATA-VERIFICATION.md` · rule docs `19` |
+| 10 | **Dilarang `tests/scripts/` untuk uji card.** Testing ETM → TC + `tests/specs/` (+ tag) atau `tests/scratch/` sementara. Jangan IIFE/probe di `scripts/` | Decision tree **I** · rule `14` §6B |
 
 ---
 

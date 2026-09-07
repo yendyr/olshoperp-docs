@@ -41,6 +41,9 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
    (rule 18) — fetch Test Result + Actual Result, jangan isi manual tanpa Jira.
 9. Cek DB via webhook (Tyas/Staging shared, Merdian terpisah) = supporting saja —
    BUKAN bukti TC `passed`. Baca `tests/DATA-VERIFICATION.md` jika diminta cek/query DB.
+10. Testing card ETM-xxxxx: JANGAN buat file di `tests/scripts/`. Pakai TC +
+    `tests/specs/` (`@TC-`/`@ETM-`) atau probe sementara di `tests/scratch/` saja.
+    Lihat decision tree I di AGENT-RUNBOOK.
 
 PERINTAH GATE — jalankan sesuai konteks, jangan dilewati:
   npm run docs:drift                   # sinkron dua arah dgn developer (WAJIB sebelum & sesudah)
@@ -128,6 +131,15 @@ Baca tests/DATA-VERIFICATION.md dulu. Pakai runner
 `node ../olshoperp/scripts/agent-db-query.mjs --db={staging_olshoperp|tyas_olshoperp|merdian_olshoperp}`.
 Read-only + filter company_id. Hasil DB = supporting evidence saja — JANGAN tandai TC passed.
 Jangan paparkan API key di chat.
+```
+
+**Testing card Jira tertentu:**
+
+```
+Tugas: testing / re-test card ETM-xxxxx.
+Ikuti rule 16 § Testing specific Jira card + AGENT-RUNBOOK decision tree I.
+DILARANG membuat tests/scripts/*.js. Jalur: cek TC existing → npm run test:tc dengan
+OLSHOP_RUN_JIRA=ETM-xxxxx; kalau belum ada spec → tulis di tests/specs/ (BUILD).
 ```
 
 ---

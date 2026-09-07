@@ -15,5 +15,9 @@ _local/
 .local-node/
 tests/scratch/
 
+# Probe / IIFE sekali pakai Antigravity — DILARANG jadi jalur uji card.
+# Pakai tests/specs/ (@TC-/@FLOW-/@ETM-) atau tests/scratch/ (gitignored).
+tests/scripts/
+
 # macOS
 .DS_Store

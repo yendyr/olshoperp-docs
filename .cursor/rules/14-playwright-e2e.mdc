@@ -114,7 +114,13 @@ Dua alat sah dipakai di workspace ini, **dengan pembagian tugas yang mengikat**.
    - `@FLOW-*` — spec flow cross-menu
    - `@ETM-*` — regression per card Jira (mis. `@ETM-15214`), untuk kasus yang belum/tidak punya TC origin tersendiri
    Spec tanpa salah satu tag di atas dianggap scratch dan tidak ikut run — jalankan manual dengan menyebut path-nya.
-7. **Script sekali pakai: jangan diberi tag, dan beri prefix diagnostic** — `check-`, `inspect-`, `probe-`, `debug-`, `diag-`, `find-`, `get-`, `read-`, `log-`, `verify-`. Tanpa tag ia otomatis tidak ikut `npm test` (poin 6); prefix berfungsi sebagai penanda bagi manusia. Script semacam ini **tetap bisa dijalankan manual** dengan menyebut path-nya — jangan pakai `testIgnore` untuk menyembunyikannya, karena itu juga memblokir pemakaian manual. Script sekali pakai yang sudah selesai dipakai: pindahkan ke `tests/scratch/` (di luar `testMatch`) atau hapus.
+7. **Script sekali pakai: lokasi & larangan folder**
+   - Hanya di `tests/scratch/` (gitignored) atau hapus setelah dipakai.
+   - Prefix diagnostic: `check-`, `inspect-`, `probe-`, `debug-`, `diag-`, `find-`, `get-`, `read-`, `log-`, `verify-`.
+   - **Jangan** beri tag `@TC-`/`@FLOW-`/`@ETM-` (supaya tidak ikut `npm test`).
+   - **DILARANG** membuat / menambah file di `tests/scripts/` — folder terkunci + gitignored. Bukan jalur uji card, bukan tempat spec resmi.
+   - Uji card `ETM-xxxxx` → `tests/specs/` + tag + helper/POM (lihat runbook decision tree **I** / rule `16`).
+   - Jangan pakai `testIgnore` untuk menyembunyikan scratch — itu juga memblokir run manual by path.
 
 ---
 
