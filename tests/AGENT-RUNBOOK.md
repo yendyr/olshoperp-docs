@@ -119,6 +119,39 @@ atau IIFE Playwright ad-hoc:
 
 Hasil resmi = Playwright CLI + reporter / `last_execution` — bukan console log dari script lepas.
 
+#### Data uji: prompter vs fixture card (retest bug)
+
+**Expected / gejala bug** tetap dari card Jira (atau requirement).  
+**Data uji** (SKU, WH, company, supplier, dll.) **bukan otomatis** = contoh di description card.
+
+```
+Prompter sebut data uji eksplisit? (SKU / company / “pakai yang sudah ada di 153”)
+    │
+    YES → GATE DATA sebelum create transaksi
+    │       1. Verifikasi data ada di company target (UI / select2 / L3 DB read-only)
+    │       2. Ada → pakai; catat di rencana run
+    │       3. Tidak ada / prasyarat bug tak terpenuhi (mis. tanpa alt unit)
+    │          → STOP, tanya prompter — jangan fallback diam-diam ke SKU/fixture card
+    │
+    NO  → Tanya dulu (jangan asumsi):
+            A) Pakai fixture di card Jira?
+            B) Pakai data existing company X (sebut apa)?
+            C) Izinkan create master baru dulu?
+```
+
+Setelah data clear → create transaksi + **assert sesuai AC card** (bukan screenshot-only).
+
+Template tanya jika data tidak ketemu:
+
+```
+Data uji yang diminta belum ketemu di company {code}/{id}:
+- SKU / lokasi / …: …
+Opsi: (1) data lain yang sudah ada  (2) izinkan create master  (3) pakai fixture card Jira?
+Menunggu jawaban sebelum create transaksi.
+```
+
+Detail larangan fallback: rule `16` § Data uji prompter vs card.
+
 ### G. "Card Jira sudah Done tapi file TC belum ke-update"
 
 Tim Done di Jira tanpa kabari Antigravity → drift. **Jangan** isi manual tanpa baca Jira.
@@ -259,6 +292,7 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 | 8 | **Satu TC dipakai di banyak tempat.** `origin_jira` = asal-usul (tidak ditimpa); `last_execution` cukup satu, diperbarui otomatis tiap run termasuk saat flow me-recall-nya. Card baru → **cek dulu**: belum ada TC = bikin baru · expected sama = reuse · expected berubah = **update TC existing** (jangan bikin kembarannya) | Rule `13` §5B pohon keputusan |
 | 9 | **Cek DB (webhook) ≠ TC passed.** L3 DB hanya supporting; Tyas/Staging shared webhook, Merdian terpisah; read-only + `company_id` | `tests/DATA-VERIFICATION.md` · rule docs `19` |
 | 10 | **Dilarang `tests/scripts/` untuk uji card.** Testing ETM → TC + `tests/specs/` (+ tag) atau `tests/scratch/` sementara. Jangan IIFE/probe di `scripts/` | Decision tree **I** · rule `14` §6B |
+| 11 | **Data uji retest ≠ otomatis fixture card.** Prompter sebut data → GATE cek available dulu; tidak ada/ambigu → tanya. Jangan fallback diam-diam ke SKU di description Jira | Runbook **I** § Data uji · rule `16` |
 
 ---
 

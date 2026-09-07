@@ -44,6 +44,9 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
 10. Testing card ETM-xxxxx: JANGAN buat file di `tests/scripts/`. Pakai TC +
     `tests/specs/` (`@TC-`/`@ETM-`) atau probe sementara di `tests/scratch/` saja.
     Lihat decision tree I di AGENT-RUNBOOK.
+11. Retest bug: data uji dari prompter ≠ otomatis fixture di card. Verifikasi data
+    diminta ada di company target dulu; kalau tidak ada / ambigu → TANYA prompter.
+    Jangan fallback diam-diam ke SKU/contoh di description Jira.
 
 PERINTAH GATE — jalankan sesuai konteks, jangan dilewati:
   npm run docs:drift                   # sinkron dua arah dgn developer (WAJIB sebelum & sesudah)
@@ -137,9 +140,14 @@ Jangan paparkan API key di chat.
 
 ```
 Tugas: testing / re-test card ETM-xxxxx.
-Ikuti rule 16 § Testing specific Jira card + AGENT-RUNBOOK decision tree I.
-DILARANG membuat tests/scripts/*.js. Jalur: cek TC existing → npm run test:tc dengan
-OLSHOP_RUN_JIRA=ETM-xxxxx; kalau belum ada spec → tulis di tests/specs/ (BUILD).
+Ikuti rule 16 § Testing specific Jira card + AGENT-RUNBOOK decision tree I
+(termasuk § Data uji: prompter vs fixture card).
+DILARANG membuat tests/scripts/*.js.
+Jalur: cek TC existing → npm run test:tc dengan OLSHOP_RUN_JIRA=ETM-xxxxx;
+kalau belum ada spec → tulis di tests/specs/ (BUILD).
+Kalau saya sebut data uji sendiri (SKU/company/WH): GATE DATA dulu — pastikan ada di
+company target. Tidak ketemu / ambigu → tanya saya dulu, jangan pakai fixture card diam-diam.
+Assert wajib sesuai gejala AC card (bukan screenshot-only).
 ```
 
 ---

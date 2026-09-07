@@ -127,6 +127,30 @@ Jalur sah:
 
 Detail: `tests/AGENT-RUNBOOK.md` decision tree **I**.
 
+### Data uji: prompter vs fixture card (retest bug)
+
+Saat **re-test / testing** card Error/Improvement:
+
+| | Sumber |
+|---|--------|
+| **Expected / gejala** (apa yang di-assert) | Card Jira (+ requirement menu bila perlu) |
+| **Data uji** (SKU, WH, company, supplier, …) | Instruksi **prompter** jika ada; **bukan** otomatis contoh di description card |
+
+**Kalau prompter memberi data uji sendiri** (mis. “SKU-X sudah di company 153, tinggal create transaksi”):
+
+1. **GATE DATA** sebelum create: verifikasi data ada di company target (UI datalist/select, atau L3 DB read-only per `tests/DATA-VERIFICATION.md`).
+2. Ada + prasyarat bug terpenuhi (mis. punya alternative unit) → pakai data itu.
+3. Tidak ketemu / prasyarat gagal → **STOP dan tanya prompter**.  
+   **Dilarang** fallback diam-diam ke SKU/fixture/URL di description card, atau auto-create master tanpa izin.
+
+**Kalau prompter tidak menyebut data uji** → tanya dulu sebelum run:
+
+- A) Pakai fixture di card Jira?  
+- B) Pakai data existing di company tertentu (sebutkan)?  
+- C) Izinkan create master baru dulu?
+
+Assert wajib mengikuti gejala card (bukan dump DOM / screenshot saja tanpa `expect`).
+
 ### Card Done → tandai TC selesai (verifikasi status REAL dulu)
 
 **Alternatif otomatis (disarankan):** trigger `#sync-jira-done ETM-xxxxx` / `#syncjiradone` —
