@@ -263,8 +263,9 @@ flowchart TB
 | GAP-UW-01 | Kolom Error Flag di datatable bisa tampil kosong (dash) untuk order yang masuk Failed Process murni karena store belum punya konfigurasi warehouse stock, sementara counter pill tetap menghitung order tersebut | Operator bisa bingung kenapa order masuk Failed Process tapi tidak ada icon error yang bisa di-hover | Open |
 | GAP-UW-02 | Kriteria counter pill Failed Process dan kriteria list hasil filter Failed Process tidak identik — kemungkinan beda cakupan status transaksi yang dihitung | Angka di pill bisa berbeda dari jumlah baris yang tampil setelah filter diaktifkan | Open |
 | GAP-UW-03 | Belum ada requirement eksplisit soal disable condition tombol "Send to Default Waves" per row (misal saat order sedang in queue atau setting tertentu mematikan proses ke wave) | Perlu dipastikan aturan disable button di requirement final supaya QA test case lengkap | Open |
-| GAP-UW-04 | Icon flag error di kolom Error Flag (Section 6.1) belum ditentukan apakah pengecekannya membaca tanggal processing manual yang baru di-set (Section 6.7) atau tetap membaca kondisi real time (now) | Icon flag berpotensi tidak akurat memprediksi hasil proses sebenarnya kalau salah acuan tanggal | Open |
+| GAP-UW-04 | Icon flag error / Refresh Availability Stock: acuan tanggal cek stok vs Processing Order Date | Icon stock bisa “unavailable” meski stok physical sudah ada di tanggal lain | **Decided (2026-09-08):** cek stok memakai Processing Order Date; NULL → now (`SalesOrderValidationLogic::getStockDate`) |
 | GAP-UW-05 | Requirement terpisah soal trx date dokumen transfer di Skip Wave Process (mengacu ke tanggal order ditambah 10 menit) belum dikonfirmasi apakah masih berlaku atau digantikan oleh field Tanggal Processing manual yang baru ini | Berpotensi ada dua sumber acuan tanggal yang tidak sinkron antara requirement trx date lama dan field Tanggal Processing baru | Open |
+| GAP-UW-06 | Tooltip Last Checked Unavailable Stock = wall-clock `error_info.updated_at`, bukan tanggal evaluasi stok | Last Checked tampak tidak valid vs POD | Open — Expected = POD / now |
 
 ---
 
@@ -300,6 +301,7 @@ A: Kemungkinan tanggal yang dipilih jatuh di fiscal period yang sudah closed/loc
 
 | Tanggal | Versi | Perubahan |
 |---|---|---|
+| 2026-09-08 | 1.2 | GAP-UW-04 Decided (FIFO = POD / NULL→now); tambah GAP-UW-06 Last Checked Expected |
 | 2026-07-18 | 1.0 | Draft awal dari requirement mentah Yemima + referensi analisa codebase AS-IS |
 | 2026-07-28 | 1.1 | Tambah field Tanggal Processing manual (custom processing date), shared per company dengan Skip Wave Process; tambah validasi fiscal period closed; tambah GAP-UW-04 dan GAP-UW-05 |
 

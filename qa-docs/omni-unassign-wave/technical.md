@@ -2,18 +2,18 @@
 doc_type: technical
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.1
-last_updated: 2026-07-28
+version: 1.2
+last_updated: 2026-09-08
 owner: QA - Yemima
 status: review
-aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processing order date]
+aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processing order date, FIFO stock date, Last Checked]
 ---
 
 # Unassign Wave — Technical Documentation
 
 **API prefix:** `omnichannel/unassign-wave`  
 **Module:** `Modules/OmniChannel`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.1  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.2  
 **Default wave:** `Wave::getDefaultWave()` → wave `id = 1` (cache `default_wave_1`)
 
 ---
@@ -32,13 +32,17 @@ aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processi
 | Log entity | `Modules/OmniChannel/Entities/UnassignWaveLog.php` |
 | Log export entity | `Modules/OmniChannel/Entities/UnassignWaveLogExportFile.php` |
 | Core logic | `Modules/OmniChannel/Logics/UnassignWave/MoveToDefaultWaveLogic.php` |
+| Stock validation | `Modules/OmniChannel/Logics/SalesOrder/SalesOrderValidationLogic.php` (`getStockDate`) |
 | Service | `Modules/OmniChannel/Services/WaveService.php` (`addToDefaultWave`) |
 | Wave model | `Modules/OmniChannel/Entities/Wave.php` |
 | Job send | `Modules/OmniChannel/Jobs/SOApproveToWave.php` |
+| Job refresh stock | `Modules/OmniChannel/Jobs/RefreshAvailabilityStockJob.php` |
+| Job recheck flags | `Modules/OmniChannel/Jobs/CheckOrderFlagsJob.php` |
 | Job attach | `Modules/OmniChannel/Jobs/MoveSOToWaveMixJob.php` (`dispatchSync`) |
 | Export jobs | `UnassignWaveExportExcelJob`, `UnassignWaveLogExportJob` |
 | Setting gate | `Modules/GeneralSetting/Entities/OrderProcessSetting.php` (`process_to_wave`) |
-| **TO-BE setting** | `Modules/OmniChannel/Entities/OmniSetting.php` (+ migration kolom `processing_order_date`) — shared Skip Wave |
+| Processing date | `Modules/SupplyChain/Entities/ScmSetting.php` (`sales_order_processing_date`) |
+| **TO-BE setting (legacy note)** | Docs lama menyebut OmniSetting — **AS-IS verified:** `ScmSetting.sales_order_processing_date` (UI Processing Order Date) |
 | **TO-BE fiscal** | `validate_fiscal_period()` di `app/Helpers/MainHelper.php` |
 
 ### Frontend
@@ -199,8 +203,9 @@ sequenceDiagram
 | INV-UW-06 | Jika `process_to_wave = 0`, General SO tidak masuk list/bulk dan ditolak di single send |
 | INV-UW-07 | Satu baris `omni_unassign_wave_logs` per job attempt (per SO), bukan per UI bulk click |
 | INV-UW-08 | Sukses send force-delete `SalesOrderError` untuk SO tersebut |
-| INV-UW-09 | **TO-BE:** Send single/bulk memakai `processing_order_date` company (bukan `SO.transaction_date`) untuk FIFO + TF wave date |
+| INV-UW-09 | Send single/bulk + FIFO stock check memakai `scm_settings.sales_order_processing_date` (NULL → `now()`) — bukan `SO.transaction_date` |
 | INV-UW-10 | **TO-BE:** PUT processing date gagal jika `validate_fiscal_period` reject; nilai DB tidak berubah |
+| INV-UW-11 | Tooltip Last Checked Expected = tanggal evaluasi stok (`getStockDate()`); AS-IS FE = `error_info.updated_at` (GAP-UW-06) |
 
 ---
 
@@ -211,7 +216,8 @@ sequenceDiagram
 - Failed Process list: `error_info` OR `detail_error_flags` OR `store_id` in warehouse-error stores.
 - Count Failed Process: filter `transaction_status = approved` **saja** (beda dari index — GAP-UW-02).
 - **TO-BE:** PUT processing date → `validate_fiscal_period`.
-- **TO-BE / open GAP-UW-04:** `refreshStock` — apakah `request_date` = POD atau `now()`.
+- **GAP-UW-04 Decided:** `SalesOrderValidationLogic::getStockDate()` → `ScmSetting::sales_order_processing_date` jika terisi, else `now()`. Dipakai `getFulfillAfterFifo(..., $stock_date, ...)` pada validate (approve Recheck / RefreshAvailabilityStockJob / Send). Pesan stock: `{sku} stock has not been met (FIFO invalid).`
+- **GAP-UW-06:** `ErrorFlag.vue` Last Checked = prop `lastUpdated` ← `error_info.updated_at` (timestamp write). Expected: tampilkan tanggal evaluasi stok (= `getStockDate()`), bukan wall-clock job.
 
 ---
 
@@ -266,7 +272,8 @@ sequenceDiagram
 | GAP-UW-01 | Failed filter `orWhereIn(store_id, warehouseErrorStoreIds)` tanpa wajib `error_info` → UI Error Flag kosong |
 | GAP-UW-02 | `getCountFailedProcess` pakai `TS_APPROVED` only; `index` pakai `approved` + `processed` |
 | GAP-UW-03 | UI disable vs API reject — pastikan DataTablesV3 menonaktifkan action saat `in queue` |
-| GAP-UW-04 | `refreshStock` / error flag vs Processing Order Date — pending PM |
+| GAP-UW-04 | **Decided:** stock date = `sales_order_processing_date` / `now()` via `getStockDate()` |
+| GAP-UW-06 | Last Checked UI = `error_info.updated_at`; Expected = stock evaluation date |
 
 ---
 
@@ -274,5 +281,6 @@ sequenceDiagram
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-09-08 | GAP-UW-04 Decided (`getStockDate`); GAP-UW-06 Last Checked; file map ScmSetting / CheckOrderFlags / RefreshAvailabilityStock |
 | 1.1 | 2026-07-28 | Processing Order Date (OmniSetting + resolver + FE picker); INV-UW-09/10 |
 | 1.0 | 2026-07-20 | Initial dari SoT + codebase map |

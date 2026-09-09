@@ -10,17 +10,18 @@ Menu **Unassign Wave** (SupplyChain / OmniChannel).
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 
 **SoT:** `unassign-waves-source-of-truth.md` v1.0 (18 Jul 2026)  
-**User-guide:** v1.1 · `source_version` 1.1  
-**Version (3 layer):** 1.1 · **Last updated:** 2026-07-28  
-**Implementer brief:** `~/Downloads/processing-order-date-unassign-skip-wave-implementer-brief.md`
+**User-guide:** v1.2 · `source_version` 1.2  
+**Version (3 layer):** 1.2 · **Last updated:** 2026-09-08 11:00
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-09-08 11:00 | Cek stok FIFO / Unavailable Stock memakai Processing Order Date (NULL → now); Last Checked Expected = tanggal evaluasi (GAP-UW-04 Decided, GAP-UW-06) |
 | status | 2026-08-12 | Promote 5-file ke **review** (Tier 1 — isi sudah lengkap dari SoT) |
 | 1.1 | 2026-07-28 | TO-BE Processing Order Date manual per company (shared Skip Wave); fiscal; GAP-UW-04 |
 | 1.0 | 2026-07-20 | Initial 5-file dari SoT v1.0 + verifikasi codebase (eligibility, count, send, logs, Skip Wave reuse) |
+| ug-1.2 | 2026-09-08 | Sync user-guide ke sumber 1.2 |
 | ug-1.1 | 2026-07-28 | Sync user-guide ke sumber 1.1 |
 | ug-1.0 | 2026-07-20 | Tambah `user-guide.md` v1.0 |
 
@@ -30,5 +31,6 @@ Menu **Unassign Wave** (SupplyChain / OmniChannel).
 |------|------|
 | Skip Wave Process | [../omni-skip-wave-process/](../omni-skip-wave-process/) — shortcut batch; reuse job + Send Wave Logs; **shared Processing Order Date** |
 | Waves Management | [../omni-waves-management/](../omni-waves-management/) — hilir setelah sukses ke Default Wave |
+| All Sales Order | [../all-sales-order/](../all-sales-order/) — Error Flag / Recheck Failed Process (Last Checked) |
 
 **Maintenance owner:** QA — Yemima

@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.1
-last_updated: 2026-07-28
+version: 1.2
+last_updated: 2026-09-08
 owner: QA - Yemima
 status: review
-aliases: [unassign wave, unassign waves, send to default waves, default wave, send wave logs, processing order date]
+aliases: [unassign wave, unassign waves, send to default waves, default wave, send wave logs, processing order date, unavailable stock, last checked, FIFO invalid]
 ---
 
 # Unassign Wave — Requirement Documentation
@@ -23,6 +23,7 @@ aliases: [unassign wave, unassign waves, send to default waves, default wave, se
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-09-08 | QA - Yemima | GAP-UW-04 **Decided**: cek stok FIFO / Error Flag / Refresh memakai Processing Order Date (NULL → now); GAP-UW-06 Last Checked tooltip harus = tanggal evaluasi stok (bukan wall-clock job) |
 | 1.1 | 2026-07-28 | QA - Yemima | TO-BE: Processing Order Date manual per company (shared Skip Wave); fiscal reject; supersede sumber tanggal order+10m / now |
 | 1.0 | 2026-07-20 | QA - Yemima | Draft awal dari SoT v1.0 + verifikasi eligibility/count/send di codebase |
 
@@ -96,8 +97,8 @@ stateDiagram-v2
 | Pill **On Process to Default Waves {count}** | Filter `unassign_wave_status = in queue` + counter |
 | Global Search | Across kolom datatable |
 | Advanced Filter | Multi kondisi |
-| **Processing Order Date** | Date-time picker di **kiri** tombol Refresh Availability Stock. Nilai **per company**, shared dengan Skip Wave Process. Default awal = hari ini jam 23:59:59; setelah user simpan → nilai terakhir. Dipakai seluruh Send single/bulk (bukan tanggal order per baris). Tolak simpan jika tanggal di fiscal period closed/locked. Lihat §5.1 |
-| **Refresh Availability Stock** | Cek ulang availability stock di warehouse process; hapus flag stock error jika sudah cukup. **Open:** apakah cek memakai Processing Order Date atau `now` — lihat GAP-UW-04 |
+| **Processing Order Date** | Date-time picker di **kiri** tombol Refresh Availability Stock. Nilai **per company**, shared dengan Skip Wave Process. Default awal = hari ini jam 23:59:59; setelah user simpan → nilai terakhir. Dipakai seluruh Send single/bulk **dan** evaluasi stok FIFO untuk Error Flag / Refresh (bukan tanggal order per baris). Jika setting **NULL** → proses & cek stok memakai **now**. Tolak simpan jika tanggal di fiscal period closed/locked. Lihat §5.1 |
+| **Refresh Availability Stock** | Cek ulang availability stock di warehouse process dengan **tanggal evaluasi = Processing Order Date** (NULL → now); hapus flag stock error jika sudah cukup. Lihat §5.1a / GAP-UW-04 Decided |
 | Column show/hide | Standar datatable |
 | Export | Advanced export with/without detail |
 | **Log Data (Send Wave Logs)** | Slide right — histori send to default waves |
@@ -150,19 +151,43 @@ Bukan form create/edit transaksi order. Interaksi operator:
 | Datalist | Checkbox, pill filter, advanced filter, action buttons | — | — | — |
 | Send Wave Logs | Read-only | — | — | — |
 
-### 5.1 Processing Order Date (TO-BE)
+### 5.1 Processing Order Date (AS-IS / verified)
 
 | Aturan | Detail |
 |--------|--------|
 | Scope | **Per company** — user di company yang sama melihat & memakai nilai yang sama; company lain independen |
 | Sync menu | Ubah di Unassign Wave = nilai di Skip Wave Process ikut (dan sebaliknya) |
-| Default awal | Belum pernah di-set → tampil **hari ini** jam **23:59:59** |
-| Persist | Setelah user mengubah & berhasil disimpan → default berikutnya = nilai terakhir (tidak reset ke now) |
-| Pemakaian | Semua Send to Default Waves (**single & bulk**) memakai tanggal ini sebagai tanggal processing — **bukan** tanggal transaksi masing-masing order |
-| Validasi stok/tanggal | Logic AS-IS **tidak berubah**; hanya **sumber tanggal** yang diganti ke field ini |
+| Persistensi | Field `scm_settings.sales_order_processing_date` |
+| Default UI | Belum pernah di-set → UI menampilkan **hari ini** jam **23:59:59**; setelah user mengubah & berhasil disimpan → nilai terakhir |
+| NULL di setting | Jika nilai **NULL** → Send / cek stok FIFO memakai **now** (tanggal & jam saat job dijalankan) |
+| Ada isi | Order diproses & stok dievaluasi **pada tanggal yang dipilih** (bukan tanggal transaksi masing-masing SO) |
+| Pemakaian | Send to Default Waves (**single & bulk**), validasi Error Flag stock (approve / Recheck / Refresh), jalur Skip Wave Process |
 | Fiscal | Simpan ditolak jika tanggal jatuh pada fiscal period closed/locked (atau tidak ada period open yang cover) |
 
-**Contoh:** Order trx 27 Jul 2026, stok baru ready 28 Jul → set Processing Order Date = 28 Jul 2026 23:59:59 → Send bisa jalan.
+**Contoh:** Order trx 27 Jul 2026, stok baru ready 28 Jul → set Processing Order Date = 28 Jul 2026 23:59:59 → Send / cek stok memakai 28 Jul.
+
+### 5.1a Tanggal evaluasi stok FIFO & tooltip Last Checked
+
+| Aspek | Aturan |
+|-------|--------|
+| **Tanggal evaluasi stok (AS-IS)** | `request_date` FIFO = Processing Order Date company; jika setting **NULL** → `now()` — sama untuk Unassign Wave Error Flag, Recheck Failed Process (ASO), Refresh Availability Stock, dan validasi saat Send |
+| **Pesan stock error tipikal** | `{SKU} stock has not been met (FIFO invalid).` (+ konteks WH Process di tooltip) |
+| **Last Checked — Expected** | Timestamp di tooltip **Unavailable Stock** / stock error harus menampilkan **tanggal evaluasi stok** di atas (POD jika terisi; **now** jika POD NULL) — agar operator tidak mengira cek memakai “hari ini” padahal FIFO memakai POD lama |
+| **Last Checked — AS-IS residual** | FE menampilkan `error_info.updated_at` (waktu job menulis flag) — bisa **berbeda** dari POD. Lihat **GAP-UW-06** |
+
+**Contoh kasus (staging · company 153 · SO-5UDIYQLW / edit `2520977`)**
+
+| Data | Nilai |
+|------|-------|
+| SKU | `SKU-PPL-RET-001` |
+| Inbound stock | `01-09-2026 10:04:59` |
+| SO transaction date | `01-09-2026 10:05:37` |
+| Processing Order Date (Unassign Wave) saat approve | `21-04-2026 13:10:13` |
+| Hasil cek stok | Icon **Unavailable Stock** — FIFO invalid (stok Sep belum “ada” di acuan Apr) |
+| Last Checked di tooltip (AS-IS) | `08-09-2026 10:22:14` (waktu job) — **menyesatkan** vs tanggal evaluasi |
+| Expected Last Checked | `21-04-2026 13:10:13` (= POD). Jika POD NULL → Last Checked = waktu cek (= now) |
+
+URL edit: `https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2520977`
 
 ---
 
@@ -177,14 +202,14 @@ Order eligible yang gagal validasi send, atau store belum punya warehouse proces
 | Shipping error | Shipping belum bind / berat-dimensi melebihi batas | Binding shipping, DNW produk |
 | Bind error | Produk belum binding ke system product | Product Binding |
 | COA error | COA produk belum lengkap | Product COA |
-| Stock error | Stock FIFO warehouse process kurang | Stock In / Transfer |
+| Stock error | Stock FIFO warehouse process kurang **pada tanggal evaluasi = POD** (NULL → now) | Stock In / Transfer **atau** set ulang Processing Order Date ke tanggal stok ready |
 | Price error | Harga jual kosong | Edit order / sync platform |
 | Bundle error | Komponen bundle tidak lengkap | System Product Bundle |
 | Warehouse error | Warehouse process belum di-set | Store Omni / Default Warehouse |
 | Cancelled | Order dibatalkan di platform | SOP cancel |
 | Broken data | Data platform tidak lengkap | Perbaikan data order |
 
-Satu order bisa punya lebih dari satu flag. Store tanpa warehouse process bisa masuk Failed Process **tanpa** icon Error Flag (lihat GAP-UW-01).
+Satu order bisa punya lebih dari satu flag. Store tanpa warehouse process bisa masuk Failed Process **tanpa** icon Error Flag (lihat GAP-UW-01). Tooltip stock error menampilkan WH Process, pesan FIFO, dan **Last Checked** — makna Expected di §5.1a.
 
 ### 6.2 Pill On Process to Default Waves
 
@@ -193,17 +218,15 @@ Filter + counter order `in queue`. Eksklusif dengan Failed Process di UI.
 ### 6.3 Refresh Availability Stock
 
 1. Ambil order Unassign Wave yang punya error terkait stock.
-2. Cek ulang availability di warehouse process (termasuk warehouse anak non-virtual).
-3. Jika stock cukup → hapus flag stock error di order/detail.
+2. Cek ulang availability di warehouse process (termasuk warehouse anak non-virtual) dengan **tanggal evaluasi = Processing Order Date** (NULL → now) — sama dengan Send / Error Flag (GAP-UW-04 Decided).
+3. Jika stock cukup pada tanggal itu → hapus flag stock error di order/detail.
 4. Error non-stock (bind, shipping, COA, dll) **tidak** dihapus.
-
-**Open (GAP-UW-04):** apakah langkah 2 memakai **Processing Order Date** (prediksi hasil Send) atau tetap kondisi **realtime (now)**.
 
 ### 6.4 Send to Default Waves — single & bulk
 
 - **Single:** Action per row.
 - **Bulk:** Checkbox → toolbar **Send to Default Waves**.
-- **Tanggal processing (TO-BE):** seluruh order dalam aksi memakai **Processing Order Date** company (§5.1), bukan tanggal order individual.
+- **Tanggal processing:** seluruh order dalam aksi memakai **Processing Order Date** company (§5.1); jika NULL → now. Bukan tanggal order individual.
 
 Setelah klik: status → `in queue`, muncul di pill On Process. Sukses → `processed` (hilang dari list). Gagal → kembali `not in queue`; masuk Failed Process jika ada error tersimpan.
 
@@ -247,7 +270,8 @@ Skip Wave Process = shortcut batch yang menggabungkan send-to-default-wave + ski
 | V5 | Lock per warehouse process | Tunggu antrian; bisa timeout | Lock wait timeout acquiring warehouse process lock |
 | V6 | `process_to_wave` untuk General | Tolak jika setting off | Cannot process to wave because the setting is currently off. |
 | V7 | Processing Order Date (saat simpan field) | Fiscal period harus open untuk tanggal dipilih | Pesan fiscal period closed/locked (helper standar) |
-| V8 | Sumber tanggal processing saat Send | Pakai Processing Order Date company | Tidak baca tanggal order per SO untuk path ini |
+| V8 | Sumber tanggal processing saat Send | Pakai Processing Order Date company; NULL → now | Tidak baca tanggal order per SO untuk path ini |
+| V9 | Tanggal evaluasi stok FIFO (Error Flag / Refresh / Recheck) | Sama dengan V8 (`SalesOrderValidationLogic::getStockDate`) | Pesan: `{SKU} stock has not been met (FIFO invalid).` |
 
 ### 7.3 Validasi bulk action
 
@@ -291,7 +315,8 @@ flowchart TB
 | GAP-UW-01 | Order Failed Process karena store tanpa warehouse process bisa tampil tanpa icon Error Flag (counter pill tetap hitung) | Operator bingung kenapa masuk Failed Process tanpa icon | Open |
 | GAP-UW-02 | Counter Failed Process (`transaction_status = approved` saja) vs filter list (`approved` + `processed`) tidak identik | Angka pill bisa beda dari jumlah baris filter | Open |
 | GAP-UW-03 | Disable condition tombol Send belum sepenuhnya terdokumentasi di UI (AS-IS API: tolak jika bukan not in queue / setting off) | Test case QA perlu cover API + UI disable state | Open — sebagian terisi di §6.4 |
-| GAP-UW-04 | Error Flag / Refresh Availability Stock: belum diputus apakah cek stok memakai Processing Order Date atau `now` | Icon bisa tidak akurat memprediksi hasil Send | Open — pending PM |
+| GAP-UW-04 | Error Flag / Refresh Availability Stock: acuan tanggal cek stok | Icon stock bisa “unavailable” meski stok physical already ada di tanggal lain | **Decided (2026-09-08):** cek stok memakai **Processing Order Date**; NULL → **now**. Lihat §5.1a |
+| GAP-UW-06 | Tooltip **Last Checked** pada Unavailable Stock menampilkan `error_info.updated_at` (wall-clock job), bukan tanggal evaluasi stok (POD / now) | Operator mengira cek memakai “hari ini” padahal FIFO memakai POD lama — Last Checked tampak tidak valid | Open — Expected di §5.1a |
 
 ---
 
@@ -307,7 +332,10 @@ A: Sering karena store belum punya warehouse process — bukan error validasi bi
 A: Refresh hanya membersihkan stock error jika stok sudah cukup. Error lain harus diperbaiki dulu, lalu Send ulang.
 
 **Q: Order stok baru ready setelah tanggal order — kenapa dulu tidak bisa Send?**  
-A: Tanggal processing dulu mengikuti tanggal order / eksekusi. TO-BE: set **Processing Order Date** ke tanggal stok ready, lalu Send.
+A: Cek stok memakai **Processing Order Date** company (bukan “hari ini” otomatis jika POD sudah di-set ke tanggal lama). Set POD ke tanggal stok ready, lalu Refresh / Send.
+
+**Q: Last Checked di tooltip Unavailable Stock kenapa beda dari Processing Order Date?**  
+A: Expected: Last Checked = tanggal evaluasi stok (= POD, atau now jika POD NULL). AS-IS residual (GAP-UW-06): UI masih menampilkan waktu job menulis flag.
 
 **Q: Ubah tanggal di Unassign Wave, Skip Wave Process ikut?**  
 A: Ya — satu setting per company.
@@ -324,5 +352,6 @@ A: Skip Wave = shortcut batch sampai shipped; validasi wave dan log-nya sama den
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-09-08 | GAP-UW-04 Decided (FIFO = POD / NULL→now); §5.1a Last Checked Expected; GAP-UW-06; contoh SO-5UDIYQLW |
 | 1.1 | 2026-07-28 | Processing Order Date per company (TO-BE); GAP-UW-04 open |
 | 1.0 | 2026-07-20 | Initial dari SoT + codebase eligibility/count/send |

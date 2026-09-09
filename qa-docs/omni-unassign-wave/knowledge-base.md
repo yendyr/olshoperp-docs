@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.1
-last_updated: 2026-07-28
+version: 1.2
+last_updated: 2026-09-08
 owner: QA - Yemima
 status: review
-aliases: [unassign wave, send to default waves, default wave queue, send wave logs, failed process wave, processing order date]
+aliases: [unassign wave, send to default waves, default wave queue, send wave logs, failed process wave, processing order date, unavailable stock, last checked]
 audience: operator
 ---
 
@@ -69,13 +69,16 @@ Field date-time di **kiri** tombol **Refresh Availability Stock**.
 
 | Aturan | Artinya untuk operator |
 |--------|------------------------|
-| Satu tanggal untuk semua order yang kamu kirim | Tidak perlu set tanggal per order |
+| Satu tanggal untuk semua order yang kamu kirim **dan** cek stok | Tidak perlu set tanggal per order |
 | Shared dengan Skip Wave Process | Ubah di sini = ikut di menu itu (company yang sama) |
 | Default pertama | Hari ini, jam 23:59:59 |
 | Setelah kamu ubah | Sistem mengingat pilihan terakhir |
+| Setting kosong (NULL) | Sistem memakai **waktu sekarang** untuk proses & cek stok |
 | Tidak bisa simpan | Kalau tanggal jatuh di periode akuntansi yang sudah ditutup — pilih tanggal di periode terbuka |
 
-**Contoh:** Order masuk 27 Juli, stok baru ready 28 Juli → set tanggal processing ke **28 Juli** baru klik Send.
+**Contoh:** Order masuk 27 Juli, stok baru ready 28 Juli → set tanggal processing ke **28 Juli** baru klik Send / Refresh.
+
+**Penting:** Icon **Unavailable Stock** di Error Flag juga dievaluasi memakai tanggal ini. Kalau tanggal processing masih di masa lalu (mis. April) sementara stok baru masuk September, flag bisa tetap “stok kurang” meski stok fisik sudah ada.
 
 ---
 
@@ -88,14 +91,18 @@ Pill **Failed Process** memfilter order yang bermasalah dan perlu dicek sebelum 
 | Shipping | Layanan kirim belum terhubung / berat-dimensi bermasalah | Binding shipping, data produk |
 | Bind | Produk order belum terhubung ke produk sistem | Product Binding |
 | COA | Pengaturan akun produk belum lengkap | Product COA |
-| Stock | Stok di gudang proses kurang | Stock In / Transfer, lalu Refresh |
+| Stock / Unavailable Stock | Stok di gudang proses kurang **pada tanggal Processing Order Date** (atau “sekarang” jika tanggal kosong) | Stock In / Transfer, **atau** ubah Processing Order Date ke tanggal stok ready, lalu Refresh |
 | Price | Harga jual kosong | Edit order / sync platform |
 | Bundle | Isi bundle tidak lengkap | System Product Bundle |
 | Warehouse | Gudang proses store belum di-set | Setting store / default warehouse |
 | Cancelled | Order dibatalkan di platform | Ikuti SOP cancel |
 | Broken data | Data platform tidak lengkap | Perbaiki data order |
 
-Satu order bisa punya beberapa tanda sekaligus.
+Satu order bisa punya beberapa tanda sekaligus. Hover icon stock → tooltip berisi WH Process, pesan FIFO, dan **Last Checked**.
+
+**Last Checked (Expected):** harus sama dengan tanggal yang dipakai cek stok (= Processing Order Date, atau waktu cek jika tanggal kosong). Kalau tooltip menampilkan “hari ini” sementara Processing Order Date masih tanggal lama, itu residual tampilan — percaya hasil FIFO ke tanggal processing, bukan ke label Last Checked saja.
+
+**Contoh kasus:** SO `SKU-PPL-RET-001` inbound 01-09-2026, Processing Order Date = 21-04-2026 → Unavailable Stock (FIFO invalid). Last Checked yang benar = 21-04-2026 13:10:13, bukan waktu job di September.
 
 > Kadang order masuk Failed Process **tanpa** icon di kolom Error Flag — biasanya karena store belum punya gudang proses. Cek setting warehouse di store terkait. Perbaikan perilaku tampilan sudah terdaftar.
 
@@ -111,13 +118,13 @@ Menampilkan order yang **sedang diproses** kirim ke gudang, lengkap dengan jumla
 
 Tombol ini **hanya** untuk masalah stok:
 
-1. Sistem cek ulang stok terbaru di gudang proses.
-2. Kalau sudah cukup → tanda stock error hilang.
+1. Sistem cek ulang stok di gudang proses memakai **Processing Order Date** (atau sekarang jika tanggal kosong) — sama seperti saat Send / muncul Error Flag.
+2. Kalau sudah cukup **pada tanggal itu** → tanda stock error hilang.
 3. Tanda lain (bind, shipping, COA, dll) **tidak** hilang — harus diperbaiki manual dulu.
 
 Setelah refresh sukses, baru retry **Send to Default Waves**.
 
-> Catatan: apakah cek refresh memakai tanggal Processing Order Date atau kondisi “hari ini realtime” masih dalam diskusi — ikuti hasil implementasi yang diumumkan tim.
+> Stok fisik “hari ini” tidak otomatis membersihkan flag kalau Processing Order Date masih di tanggal sebelum stok masuk — ubah tanggal processing dulu.
 
 ---
 
@@ -139,7 +146,8 @@ Buka **Log Data** untuk melihat histori kirim ke Default Wave: sukses/gagal, pes
 | Failed Process tanpa icon error | Store belum punya gudang proses | Cek setting warehouse store |
 | Tombol kirim tidak bisa / abu-abu | Order sedang On Process, atau setting mematikan proses untuk tipe tertentu | Tunggu proses selesai / cek setting |
 | Sudah kirim tapi muncul lagi di list | Proses gagal di tengah | Buka Send Wave Logs, baca pesan error |
-| Stok sudah ditambah tapi masih stock error | Data stok belum di-refresh | Klik **Refresh Availability Stock** |
+| Stok sudah ditambah tapi masih stock error | Processing Order Date masih sebelum tanggal stok masuk, atau data belum di-refresh | Set **Processing Order Date** ke tanggal stok ready → **Refresh Availability Stock** |
+| Last Checked di tooltip beda dari Processing Order Date | Residual tampilan (waktu job vs tanggal evaluasi stok) | Percaya FIFO ke Processing Order Date; Expected Last Checked = tanggal itu |
 | Tidak bisa ubah Processing Order Date | Tanggal di periode akuntansi tertutup | Pilih tanggal di periode yang masih terbuka |
 | Order lama gagal padahal stok baru ada | Tanggal processing masih di tanggal order lama | Set **Processing Order Date** ke tanggal stok ready |
 | Angka pill Failed Process beda dengan jumlah baris filter | Perbedaan cakupan hitungan vs filter | Percaya isi tabel setelah filter; perbaikan konsistensi sudah terdaftar |
