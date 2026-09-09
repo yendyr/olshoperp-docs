@@ -39,3 +39,31 @@ Prefix folder: `SPLG`.
 | `PENDING-JENNI-2026090703` | Fitur Re-sync Marketplace pada Order Sales Platform Hasil Void & Clone | [`TC-SPO-JENNI-DRAFT-2026090703.md`](./TC-SPO-JENNI-DRAFT-2026090703.md) | DRAFT 🟡 |
 | `PENDING-JENNI-2026090704` | Regresi Pemrosesan Void & Clone untuk Sales Order Internal / General (Non-Platform) | [`TC-SPO-JENNI-DRAFT-2026090704.md`](./TC-SPO-JENNI-DRAFT-2026090704.md) | DRAFT 🟡 |
 | `PENDING-JENNI-2026090705` | End-to-End Processing Order Sales Platform Hasil Void & Clone (Send to Default Waves hingga Shipped) | [`TC-SPO-JENNI-DRAFT-2026090705.md`](./TC-SPO-JENNI-DRAFT-2026090705.md) | DRAFT 🟡 |
+
+### ETM-15749 — [Dev - Sales Platform] Edit detail sebelum approve (add/replace SKU, price, VAT; no delete)
+
+| Kode Draf | Judul Test Case | File | Status |
+|---|---|---|---|
+| `PENDING-20260909103201` | Edit Detail Sales Order Platform pada Status DRAFT | [`TC-SPO-DRAFT-20260909103201.md`](./TC-SPO-DRAFT-20260909103201.md) | DRAFT 🟡 |
+| `PENDING-20260909103202` | Edit Detail Sales Order Platform pada Status OPEN | [`TC-SPO-DRAFT-20260909103202.md`](./TC-SPO-DRAFT-20260909103202.md) | DRAFT 🟡 |
+| `PENDING-20260909103203` | Guard Read-Only Detail Sales Order Platform pada Status APPROVED | [`TC-SPO-DRAFT-20260909103203.md`](./TC-SPO-DRAFT-20260909103203.md) | DRAFT 🟡 |
+| `PENDING-20260909103204` | Add Product via Select Product Modal pada Sales Order Platform | [`TC-SPO-DRAFT-20260909103204.md`](./TC-SPO-DRAFT-20260909103204.md) | DRAFT 🟡 |
+| `PENDING-20260909103205` | Validasi Produk Non-Aktif pada Select Product Modal | [`TC-SPO-DRAFT-20260909103205.md`](./TC-SPO-DRAFT-20260909103205.md) | DRAFT 🟡 |
+| `PENDING-20260909103206` | Tambah Produk Bundle & Random SKU via Select Product Modal | [`TC-SPO-DRAFT-20260909103206.md`](./TC-SPO-DRAFT-20260909103206.md) | DRAFT 🟡 |
+| `PENDING-20260909103207` | Validasi Batas Maksimal 100 Line Detail pada Sales Order Platform | [`TC-SPO-DRAFT-20260909103207.md`](./TC-SPO-DRAFT-20260909103207.md) | DRAFT 🟡 |
+| `PENDING-20260909103208` | Replace SKU Produk pada Detail Sales Order Platform | [`TC-SPO-DRAFT-20260909103208.md`](./TC-SPO-DRAFT-20260909103208.md) | DRAFT 🟡 |
+| `PENDING-20260909103209` | Edit Valid Qty (>0) dan Recalculation Detail SO Platform | [`TC-SPO-DRAFT-20260909103209.md`](./TC-SPO-DRAFT-20260909103209.md) | DRAFT 🟡 |
+| `PENDING-20260909103210` | Validasi Penolakan Edit Qty <= 0 pada SO Platform | [`TC-SPO-DRAFT-20260909103210.md`](./TC-SPO-DRAFT-20260909103210.md) | DRAFT 🟡 |
+| `PENDING-20260909103211` | Edit Unit Price & Discount beserta Recalculation DPP dan Total | [`TC-SPO-DRAFT-20260909103211.md`](./TC-SPO-DRAFT-20260909103211.md) | DRAFT 🟡 |
+| `PENDING-20260909103212` | Edit VAT Rate berdasarkan System Product dan Store Auto Add VAT | [`TC-SPO-DRAFT-20260909103212.md`](./TC-SPO-DRAFT-20260909103212.md) | DRAFT 🟡 |
+| `PENDING-20260909103213` | No Row Delete Guard pada Detail Sales Order Platform | [`TC-SPO-DRAFT-20260909103213.md`](./TC-SPO-DRAFT-20260909103213.md) | DRAFT 🟡 |
+| `PENDING-20260909103214` | Exception Extract Bundle pada Detail Sales Order Platform | [`TC-SPO-DRAFT-20260909103214.md`](./TC-SPO-DRAFT-20260909103214.md) | DRAFT 🟡 |
+| `PENDING-20260909103215` | Sync Marketplace Refresh Field yang Belum Di-edit User | [`TC-SPO-DRAFT-20260909103215.md`](./TC-SPO-DRAFT-20260909103215.md) | DRAFT 🟡 |
+| `PENDING-20260909103216` | Sync Lock Matrix - Proteksi Field Detail yang Sudah Di-save User | [`TC-SPO-DRAFT-20260909103216.md`](./TC-SPO-DRAFT-20260909103216.md) | DRAFT 🟡 |
+| `PENDING-20260909103217` | Sync Lock Matrix - Booking Order dengan Price = 0 | [`TC-SPO-DRAFT-20260909103217.md`](./TC-SPO-DRAFT-20260909103217.md) | DRAFT 🟡 |
+| `PENDING-20260909103218` | Sync Lock Matrix - Booking Order dengan Price > 0 | [`TC-SPO-DRAFT-20260909103218.md`](./TC-SPO-DRAFT-20260909103218.md) | DRAFT 🟡 |
+| `PENDING-20260909103219` | Sync Lock Matrix - Perlindungan Baris Detail Manual Murni System | [`TC-SPO-DRAFT-20260909103219.md`](./TC-SPO-DRAFT-20260909103219.md) | DRAFT 🟡 |
+| `PENDING-20260909103220` | Set Flag prevent_auto_approve = 1 Saat Detail SO Di-edit | [`TC-SPO-DRAFT-20260909103220.md`](./TC-SPO-DRAFT-20260909103220.md) | DRAFT 🟡 |
+| `PENDING-20260909103221` | Pencatatan Audit Log Perubahan Detail Sales Order Platform | [`TC-SPO-DRAFT-20260909103221.md`](./TC-SPO-DRAFT-20260909103221.md) | DRAFT 🟡 |
+| `PENDING-20260909103222` | Paritas Perilaku Edit SO Platform via All Sales Order (ASO) | [`TC-SPO-DRAFT-20260909103222.md`](./TC-SPO-DRAFT-20260909103222.md) | DRAFT 🟡 |
+
