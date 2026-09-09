@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.6
-last_updated: 2026-07-23
+version: 2.7
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
 audience: operator
@@ -69,6 +69,7 @@ flowchart TD
 - **Location** harus Level 20 tanpa sub-gudang; pastikan sudah ada setup scrap di Warehouse Setting kalau ada qty Broken.
 - Scan menggantikan field "Select Order" di dokumen requirement bisnis — fungsinya sama.
 - Setelah approve: Restock ke Location, Lost jadi Stock Deduction, Broken ke gudang scrap.
+- Setelah **Approved** / **Closed**: buka **Completion Summary** di baris Order No — ringkasan qty 3 arah, dokumen otomatis (TFI/SD/TFS), timeline order, dan dampak Instant Settlement (qty sisa vs invoice-only).
 - Pantangan: jangan scan order yang sudah punya invoice/outbound; jangan settlement saat FS masih Open.
 
 ### 3.2 Via Form Manual (layout V1 — jika diaktifkan)
@@ -144,6 +145,17 @@ Jika form meminta lokasi CCTV:
 | **Close Doc** | Tutup dokumen |
 | **Pause** | Jeda proses + wajib isi alasan |
 | **Resume** | Lanjutkan proses setelah pause |
+
+### 4.6 Completion Summary (TO-BE — setelah Approved / Closed)
+
+| Elemen | Fungsi |
+|--------|--------|
+| **Completion Summary** | Tombol di baris Order No — hanya muncul saat status **Approved** atau **Closed** (tidak di draft/open/void) |
+| Panel slideover | Read-only: qty Restock / Lost / Broken, Remaining, Total FS, Total Order; timeline order; dokumen TFI/SD/TFS; breakdown SKU; dampak Instant Settlement |
+| **Print Summary** | Cetak ringkasan (tab baru) |
+| **Done** | Tutup panel |
+
+**Contoh baca angka:** Order 20 → Restock 10 + Lost 5 + Broken 3 = FS 18 → sisa **2** pcs masih bisa outbound+SI di Instant Settlement. Kalau sisa 0 → settlement hanya SI (Other Cost/Disc), tanpa outbound produk.
 
 ---
 

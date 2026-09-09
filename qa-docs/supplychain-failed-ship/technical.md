@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.6
-last_updated: 2026-07-23
+version: 2.7
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
 related_docs:
@@ -63,7 +63,9 @@ flowchart TB
 | File | Route | Role |
 |------|-------|------|
 | `DataList.vue` | `supplychain/failed-ship` | Index SO eligible + scan create |
-| `Form.vue` | `create`, `edit/:id` | Checking-style detail + approve |
+| `Form.vue` | `create`, `edit/:id` | Checking-style detail + approve; **TO-BE:** state + Slideover Completion Summary |
+| `HeaderInformation.vue` | Header form | **TO-BE:** tombol Completion Summary di Order No (`approved`/`closed`) |
+| `CompletionSummary.vue` | — | **TO-BE baru** — pola `Omni/Processing/PickingList/CompletionSummary.vue` |
 | `Location.vue` | `set-location/:id` | Set CCTV location |
 | `HeaderInformation.vue` | (component) | Header summary panel |
 
@@ -164,6 +166,8 @@ flowchart TB
 | GET | `failed-ship/select2-warehouse-destination` | `select2WarehouseDestination` | Level 20 |
 | GET | `failed-ship/select2-location` | `select2Location` | CCTV |
 | GET | `failed-ship/{id}/audit` | `audit` | Audit log |
+| GET | `failed-ship/{id}/completion-summary` | **TO-BE** | Payload panel Completion Summary (A-32 / requirement §5.4) |
+| GET | `failed-ship/{id}/print-completion-summary` | **TO-BE** | HTML print summary |
 | POST | `failed-ship/export-excel` | `exportAllExcel` | Start async export |
 | GET | `failed-ship/export-file` | `exportFile` | List export files |
 | GET | `failed-ship/export-progress` | `exportProgress` | Progress flag |
@@ -382,6 +386,22 @@ sequenceDiagram
 | **G-05b** | Index join per-detail vs `useSo` order-level — partial multi-SKU tampil di datalist |
 | Platform returns count vs list | `without_outbound`: count cek `prepared_to_out`, list tidak |
 | **G-07** | Import FS belum diimplementasi — lihat §12 |
+| **G-09** | Completion Summary belum ada — `GET …/completion-summary` + FE Slideover (requirement §5.4 / A-32) |
+
+---
+
+## 10a. Completion Summary — TO-BE (API & FE)
+
+| Layer | Detail |
+|-------|--------|
+| BE | `GET supplychain/failed-ship/{id}/completion-summary` — aggregate header FS, sum bucket qty, timeline dari `scm_stock_mutations` by SO ref + DO + FS events, dokumen turunan TFI/SD/TFS, rows SKU×outcome, `settlement.case` |
+| Print | `GET …/print-completion-summary` — HTML; FE buka tab + `window.print()` |
+| FE baru | `src/pages/SCM/FailedShip/CompletionSummary.vue` |
+| FE ubah | `HeaderInformation.vue` (tombol), `Form.vue` (Slideover + fetch) |
+| Gate tampil | `transaction_status ∈ {approved, closed}` |
+| Invariant | `restock + lost + broken = total_fs`; kartu bucket qty 0 tidak dikirim / tidak dirender |
+
+Payload contoh & mapping field: requirement §5.4 + brief implementer.
 
 ---
 

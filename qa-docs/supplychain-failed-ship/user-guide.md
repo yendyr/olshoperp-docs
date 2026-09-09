@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 1.1
-last_updated: 2026-07-23
+version: 1.2
+last_updated: 2026-09-09
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.6
+source_version: 2.7
 owner: QA - Yemima
 status: review
 ---
@@ -103,9 +103,12 @@ Setelah Failed Ship **di-approve**:
 3. **Scrap / Broken** — qty rusak pindah ke gudang scrap (dari setting warehouse parent Location).
 4. Di Sales Order, status Failed Ship tampil sebagai **Processed** (sudah selesai).
 5. **Instant Settlement** berikutnya memakai qty sisa setelah Failed Ship (produk yang full Failed Ship bisa tidak ikut invoice/outbound).
+6. Buka **Completion Summary** (tombol di Order No) untuk melihat ringkasan: Restock / Lost / Broken, sisa qty, dokumen otomatis (Transfer Internal, Stock Deduction, Transfer Scrap), perjalanan order, dan apakah settlement masih boleh outbound+invoice atau hanya invoice (Other Cost/Disc).
 
 Yang perlu diingat setelah approve:
 
+- Completion Summary **hanya** muncul setelah Approved (atau Closed). Saat masih Open, tombol tidak ada.
+- Contoh: order 20 pcs, Failed Ship 18 pcs → sisa 2 pcs masih bisa di-settle outbound. Kalau Failed Ship menghabiskan semua qty → settlement tanpa outbound produk.
 - Jangan upload settlement saat masih ada Failed Ship **Open** — upload akan ditolak.
 - Idealnya: **Approve Failed Ship dulu**, baru settlement.
 - Kalau order sudah settled setelah Failed Ship, retur pakai **Sales Return** — qty return maksimal = qty outbound (bukan qty order penuh).

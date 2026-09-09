@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.6
-last_updated: 2026-07-23
+version: 2.7
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
 legacy_sources:
@@ -31,6 +31,7 @@ legacy_sources:
 | 2.4 | 2026-07-15 | QA - Yemima | Relasi Sales Platform (Return bucket, Failed Ship Status, flow vs Sales Return) |
 | 2.5 | 2026-07-23 | QA - Yemima | Tambah user-guide v1.0; sync README 5-file + KB compliance |
 | 2.6 | 2026-07-23 | QA - Yemima | TO-BE Import Failed Ship (template, partial SO success, log, queue, G-05 approve) |
+| 2.7 | 2026-09-09 | QA - Yemima | **TO-BE Completion Summary** pasca-approve (§5.4, A-32) — slideover ringkas stok 3 arah + timeline + dampak Instant Settlement |
 
 ---
 
@@ -118,6 +119,12 @@ legacy_sources:
 | A-29 | Qty return ≤ qty outbound terakhir per SKU | ✅ `SalesReturnDetailController` + `createDetail` cap per `outbound_mutation_detail` | OK |
 | A-30 | Import: 1 SO = 1 FS; header fields konsisten; partial success per SO | TO-BE §5.5 | **TO-BE** |
 | A-31 | Import log (summary + detail) + file download max 24 jam | TO-BE §5.5.4 — pola Skip Wave Log Data | **TO-BE** |
+
+### 2.7 Completion Summary (pasca-approve)
+
+| ID | Kriteria (TO-BE) | AS-IS | Status |
+|----|------------------|-------|--------|
+| A-32 | Tombol **Completion Summary** di Order Details (edit) saat status `approved` / `closed`; slideover read-only: header, kartu Restock/Lost/Broken + Remaining/Total FS/Total Order, Order Movement timeline, Auto-Generated Documents, Breakdown by SKU, Impact + Instant Settlement (2 kondisi); Print Summary | ❌ Belum ada di `FailedShip/` (pola acuan: Manual Picking List `CompletionSummary.vue`) | **TO-BE** — §5.4 |
 
 ---
 
@@ -407,10 +414,60 @@ Kolom utama index: SO Code, FS Code/Date, Order Date, Store/Buyer, Shipper/Track
 | **Resume** | Lanjut durasi |
 | **Inline edit** | Restock/Lost/Broken via `failed-ship-middle-detail/{id}/inline-edit` |
 | **Approve** | POST `failed-ship/{id}/approve` |
+| **Completion Summary** (TO-BE) | Lihat §5.4 — hanya `approved` / `closed` |
+
+### 5.4 Completion Summary — TO-BE
+
+> **Mockup:** [Claude Artifact](https://claude.ai/code/artifact/3f60e9e8-b275-45b0-b568-227c627050f0) · **Acuan FE:** `Omni/Processing/PickingList/CompletionSummary.vue` · **AS-IS:** endpoint & UI belum ada.
+
+**Tujuan:** setelah satu kali approve FS memecah stok ke 3 arah (restock / lost / broken) + auto-generate dokumen turunan, operator punya **satu panel** yang menjawab: barang ke mana + sisa berapa; dokumen apa yang terbentuk; order lewat proses apa sebelum gagal kirim; apa yang masih bisa diproses Instant Settlement.
+
+#### Kemunculan tombol
+
+| Kondisi | Tombol Completion Summary |
+|---------|---------------------------|
+| `draft` / `open` / pause / `void` / setelah unapprove | ❌ Tidak dirender (bukan disabled) |
+| `approved` / `closed` | ✅ Di baris Order No (section Order Details) — pola sama Manual Picking List |
+
+Panel = `Slideover size="xl"` kanan, **read-only** (hanya **Print Summary** + **Done**). Permission read FS; link ke menu dokumen turunan hanya jika user punya permission menu terkait, else plain text. Empty state jika API gagal — jangan angka 0 palsu.
+
+#### Isi panel (ringkas)
+
+| Blok | Isi |
+|------|-----|
+| Header | Judul "Failed ship complete"; FS code; Approved At; Failed Ship By; SO + Platform Order; Origin WH 3PL; Restock Location |
+| Kartu proses | Restock / Lost / Broken — qty + kode TFI / SD / TFS (kartu qty 0 **disembunyikan**) |
+| Kartu ringkas | Remaining Qty; Total FS Qty; **Total Order Qty** (ujung, basis pembanding); SKU count |
+| Order Movement | Timeline fulfillment → shipping → FS → follow-up docs (tanggal-jam, kode, origin→dest, actor) |
+| Auto-Generated Documents | Sub-flow Restock (TFI), Lost (SD + jurnal Return Expense), Broken (TFS), Remaining (tanpa dokumen) |
+| Breakdown by SKU | Tab All / Restock / Lost / Broken / Remaining; 1 baris = SKU × outcome (qty 0 hide) |
+| Impact | TFI/TFS, SD (atau "tidak digenerate"), status Open→Approved, blok Instant Settlement |
+
+#### Contoh kasus (mockup)
+
+Order Qty **20** → Restock **10** + Lost **5** + Broken **3** = Total FS **18** → Remaining **2**. Settlement: Outbound + SI boleh, max qty = 2 (kondisi 1). Jika Remaining = 0 → Instant Settlement **invoice only** + Other Cost/Disc (kondisi 2).
+
+#### Instant Settlement di summary (2 kondisi)
+
+| Kondisi | Order Qty − Total FS Qty | Pesan / dampak |
+|---------|--------------------------|----------------|
+| 1 | \> 0 | Outbound ✓ + SI ✓; max qty = selisih; SKU net 0 di-skip |
+| 2 | = 0 | Outbound tidak bisa; settlement **SI only** tanpa baris produk; hanya Other Cost & Other Discount |
+
+Aturan lain tetap: FS `open` memblokir upload settlement; settlement date > FS date.
+
+#### Endpoint TO-BE
+
+| Method | Path | Fungsi |
+|--------|------|--------|
+| GET | `supplychain/failed-ship/{id}/completion-summary` | Payload panel (`settlement.case`: `invoice_and_outbound` \| `invoice_only`) |
+| GET | `supplychain/failed-ship/{id}/print-completion-summary` | HTML print (tab baru + `window.print()`) |
+
+Invariant angka: Restock + Lost + Broken = Total FS Qty; Total Order Qty konsisten dengan sum Order Qty per SKU di tabel.
 
 Fitur ini **tidak ada di requirement bisnis** — dokumentasi AS-IS tambahan (lihat §8).
 
-### 5.4 Export — Format & Opsi
+### 5.6 Export — Format & Opsi
 
 | Opsi export | Keterangan |
 |-------------|------------|
@@ -597,6 +654,7 @@ Detail operasional SP: [omni-sales-platform §7.1](../omni-sales-platform/requir
 | ~~G-06~~ | FS + Return ≤ order qty | **AS-IS:** enforced via `invoicableQuantityInBaseUnit` + cap return ke outbound qty (§7.1). |
 | G-07 | Import Failed Ship | **TO-BE §5.5** — kontrak lengkap; belum diimplementasi |
 | G-08 | Pesan error void | Insert: order void dapat pesan "not approved" bukan "voided" eksplisit. |
+| G-09 | Completion Summary | **TO-BE §5.4 / A-32** — slideover pasca-approve belum ada di UI aktif |
 
 ### 8.2 Fitur codebase tambahan (tidak di dokumen bisnis awal)
 
@@ -635,7 +693,7 @@ Detail operasional SP: [omni-sales-platform §7.1](../omni-sales-platform/requir
 - [ ] Upload settlement dengan FS processed → qty SI/OB berkurang
 - [ ] Full failed ship → settlement sukses tanpa produk
 - [ ] Delete FS draft → prepared qty reset
-- [ ] Export with/without details — kolom sesuai §5.4
+- [ ] Export with/without details — kolom sesuai §5.6
 - [ ] `getScrapWHParent` — error jika scrap belum di-setting
 - [ ] Order dengan SI/Outbound open (prepared) — tidak muncul / ditolak scan
 - [ ] Order dengan SI/Outbound approved — ditolak, arahkan Sales Return
@@ -648,6 +706,12 @@ Detail operasional SP: [omni-sales-platform §7.1](../omni-sales-platform/requir
 - [ ] Approve setelah settlement di antara — **TO-BE ditolak** (G-05)
 - [ ] Bundle: header OK; child SKU ditolak
 - [ ] `invoicable_quantity` = order − FS − return − invoiced
+- [ ] **Completion Summary (A-32):** draft/open/void → tombol tidak ada; approved/closed → tampil
+- [ ] CS: Restock+Lost+Broken = Total FS; Remaining = Order − Total FS; kartu qty 0 hidden
+- [ ] CS: Remaining > 0 → settlement kondisi 1; Remaining = 0 → invoice only + OC/OD
+- [ ] CS: lost = 0 → tidak ada kartu SD / kode SD; Impact catat "tidak digenerate"
+- [ ] CS: unapprove → tombol hilang; Print Summary angka identik panel
+- [ ] CS: timeline kronologis + prefix kode PL/CL/PK/SL/TFI/FS/SD/TFS
 
 ---
 
