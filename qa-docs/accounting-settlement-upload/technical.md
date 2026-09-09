@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.6
-last_updated: 2026-09-01
+version: 1.7
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
 related_docs:
@@ -113,7 +113,7 @@ Prefix: `accounting/settlement-upload` (middleware `auth:sanctum`, `auth_verifie
 |--------|------|------------|-------|
 | GET | `/` | index | DataList uploads |
 | POST | `/` | store | `store_id`, `file_attachment` (csv) |
-| DELETE | `{id}` | delete | Dispatch `DeleteSettlementJob` |
+| DELETE | `{id}` | delete | Eligibility V-18 lalu dispatch `DeleteSettlementJob` (ETM-15886) |
 | POST | `{id}/approve` | approve | Body: `approval_status`, `description` |
 | POST | `{id}/retry` | retry | Resume failed step |
 | POST | `{id}/retry/{settlement_id}` | retrySingle | Per-settlement |
@@ -205,10 +205,27 @@ Key counters on upload: `order_count`, `order_errors`, `generated_invoice_count`
 - **TO-BE (ETM-15701 / V-23):** sebelum generate AR, validasi semua SI batch punya **same calendar date** (`transaction_date` date-only). Jika mixed dates → reject approve (controller/job guard).
 - **TO-BE AR `transaction_date`:** date = SI calendar date (unique setelah V-23); time = **max** SI `transaction_date` datetime in batch.  
   **AS-IS (pre-ETM-15701):** approve path memakai `settlements()->max('transaction_date')` (juga untuk cek Cash/Bank Reconcile overlap).
-### Delete (`DeleteSettlementJob`)
+### Delete (`DeleteSettlementJob`) — ETM-15886 / V-18
 
-- Deletes receive, invoice (+ journals), outbound (+ journals), settlement rows
-- Soft-deletes upload on success; sets `failed` on partial error
+**TO-BE eligibility (satu sumber kebenaran BE → FE):**
+
+| Eligible Delete? | Kondisi |
+|------------------|---------|
+| Ya | Belum ada AR pada SI batch, **atau** semua payment pada SI = AR dari Approve Instant Settlement (`SettlementUpload.receive_id` / payment header = receive) |
+| Tidak | Ada ≥1 SI dengan `payment_details` dari Customer Payment **≠** `upload.receive_id` (AR luar) |
+
+- Row Delete UI: ikut flag eligibility BE (mis. `is_deletable` / `can_delete_settlement`) — **jangan** pakai `settlements_with_ar >= generated_invoice_count` untuk Delete.
+- `settlements_with_ar` (count SI `whereHas('payment_details')`) tetap boleh untuk **disable Approve** (V-16); pisahkan dari Delete.
+- Bulk Delete (`PrimeDataTables` / multi-select): tampil hanya jika **semua** selected eligible; ≥1 not eligible → hide tombol.
+- `delete()` / `destroy` / bulk-delete: **reject** not eligible sebelum `DeleteSettlementJob::dispatch` (prefer reject seluruh bulk jika ada not eligible).
+- Job (saat eligible): deletes receive (AR settlement), invoice (+ journals), outbound (+ journals), settlement rows; soft-deletes upload on success; sets `failed` on partial error.
+
+**AS-IS (pre-ETM-15886):**
+
+- Datalist: `withCount settlements_with_ar` = any `payment_details`
+- FE `UploadTable.vue`: hide/disable Delete jika `settlements_with_ar >= generated_invoice_count` → setelah Approve IS, Delete sering terkunci
+- `canDelete` accessor: Gate permission only
+- `delete()`: no external-AR guard; bulk uses Gate only via `bulkDeletable`
 
 ---
 
@@ -232,7 +249,7 @@ TOTAL_COLUMNS, ORDER_ID_COLUMNS, TYPES_COLUMNS
 | `viewAny` | List, panels, progress |
 | `create` | Upload, retry, reread |
 | `approval` | Approve settlement (`can_approve`) |
-| `delete` | Delete settlement (`can_delete`) |
+| `delete` | Delete settlement — Gate `can_delete` **dan** eligibility V-18 (ETM-15886) |
 
 ---
 
@@ -270,9 +287,13 @@ UI: `JournalPanel` pill **Warnings** → `WarningTable` → `GET {id}/warnings?t
 
 `SettlementUploadController::approve` → `SettlementUpload::approve` → `MainModel::approve`. If `approval_status != approved`, AR job **not** dispatched; `transaction_status = rejected`.
 
-## 13. Bulk approve guard
+## 13. Bulk approve & bulk delete guard
 
 `PrimeDataTables.bulkApprovable`: all selected rows must have `can_approve === true`. Backend `POST /api/bulk-approve` with `x_class = SettlementUploadController`.
+
+**TO-BE bulk Delete (ETM-15886):** all selected must be eligible V-18 (no external AR). If any selected is not eligible → hide bulk Delete. Backend bulk-delete must reject mixed/not-eligible sets (prefer reject-all).
+
+**AS-IS:** `bulkDeletable` typically checks Gate `can_delete` / `action.deleteable` only — does not apply AR-source eligibility.
 
 ## 14. Known implementation notes
 

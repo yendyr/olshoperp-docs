@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.7
-last_updated: 2026-09-01
+version: 1.8
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -23,6 +23,7 @@ legacy_sources: []
 | 1.5 | 2026-06-23 | QA - Yemima | §4.6 Template General — kolom `OC:`/`OD:` + filter Applied Store (master Other Cost/Discount) |
 | 1.6 | 2026-07-15 | QA - Yemima | Booking unmatched (`platform_order_id` null) tidak match IS — cross-ref SP GAP-BOOK-01 |
 | 1.7 | 2026-09-01 | QA - Yemima | Approve: semua SI dalam batch wajib same calendar date (V-23); AR date/time dari SI (ETM-15701) |
+| 1.8 | 2026-09-09 | QA - Yemima | Delete/Revert: bedakan AR dari Approve Instant Settlement vs AR luar; guard bulk (ETM-15886) |
 
 **Nama lain menu:** Upload Settlement, Settlement Order, Order Settled, Platform Settlement, Settlement Platform, Platform Settled.
 
@@ -85,7 +86,7 @@ flowchart LR
 | A-05 | Progress bar upload (5 tahap) & approve (4 tahap) real-time | — | F-09 |
 | A-06 | User approve settlement → generate 1 AR + jurnal AR (smart skip SI yang sudah punya AR); **semua SI batch wajib same calendar date**; tanggal AR = tanggal SI; jam AR = jam SI paling akhir di batch | V-15, V-16, V-23 | F-10–F-13 |
 | A-07 | Re-settlement order yang sama: skip Outbound, SI baru hanya adjustment | V-17 | F-03 |
-| A-08 | Delete settlement (hard delete rantai generate) dengan aturan blokir AR manual | V-18 | F-14 |
+| A-08 | Delete/Revert settlement (hard delete rantai generate): boleh jika OB+SI+AR murni dari Instant Settlement; diblokir jika ada AR luar; bulk Delete ikut eligibility yang sama | V-18 | F-14 |
 | A-09 | Retry job saat proses stuck/gagal | — | F-15 |
 | A-10 | Export DataList, audit log, download file upload asli | — | F-16, F-17 |
 | A-11 | Download template import per platform | V-01 | F-18 |
@@ -273,7 +274,7 @@ Upload operasional **hanya CSV** (bukan Excel) karena risiko korupsi **Platform 
 | V-16 | Smart AR: skip SI yang sudah punya `payment_details` | Approve generate AR | Hanya SI tanpa AR; jika semua sudah AR → tombol disabled |
 | V-23 | **Transaction date Sales Invoice dalam 1 batch harus same calendar date** (abaikan jam) | Approve | Tolak approve jika ada ≥2 tanggal kalender berbeda di SI batch. Bandingkan **tanggal saja** — jam boleh beda. Pesan: jelas ke operator (string final saat ETM-15701). Contoh arah: *Unable to approve settlement. Sales Invoice transaction dates in this batch must be the same date.* |
 | V-17 | Outbound maks 1x per order | Re-upload | `without_outbound` / `outbound_exists` |
-| V-18 | Delete diblokir jika SI punya AR manual | Delete | Tombol delete disabled; `settlements_with_ar >= generated_invoice_count` |
+| V-18 | Delete/Revert: bedakan sumber AR | Delete (row + bulk) | **Boleh** jika belum ada AR, atau semua AR pada SI batch = AR dari **Approve Instant Settlement** batch itu (`receive_id`). **Diblokir** jika ada ≥1 SI dengan Customer Payment / `payment_details` dari AR **luar** (bukan receive settlement). Row Delete & bulk Delete memakai eligibility yang sama; bulk: jika ≥1 selected not eligible → tombol bulk Delete **tidak muncul**. API delete wajib reject not eligible. Lihat §9. |
 | V-19 | Failed Ship status **Open** | Per baris | *"...in failed shipment status"* |
 | V-20 | Failed COD: settle date > failed ship date | Per baris | *"...marked as failed COD on..."* |
 | V-20b | **Qty net setelah Failed Ship** | extractOrderDetails | Qty invoice/outbound = `invoicable_quantity` (order qty − failed ship). Failed ship + qty settled harus konsisten dengan qty order — tidak boleh over/under settle vs sisa fisik |
@@ -427,7 +428,8 @@ Tombol **Approve** membuka `ApprovalDialog` dengan dua opsi:
 | **SI / Out / AR counters** | Kolom masing-masing | Slideover hasil / log error per tipe | Klik angka error → log + retry |
 | **Progress Status / Progress** | 2 kolom | 5-bar upload & 4-bar approve | Polling `GET .../progress`; warning = retry |
 | **Approve** (✓) | Action | Buka ApprovalDialog → approve/reject AR flow | `can_approve` & belum semua SI punya AR |
-| **Delete** (🗑) | Action | Hard delete settlement + dokumen generate | `can_delete` & tidak semua SI punya AR manual |
+| **Delete** (🗑) | Action | Hard delete settlement + dokumen generate (rantai IS) | Permission `delete` **dan** eligible V-18 / §9 (bukan sekadar “punya `payment_details`”) |
+| **Bulk Delete** | Toolbar (multi-select) | Hapus beberapa upload sekaligus | Semua selected harus eligible V-18; jika ada satu not eligible → tombol **tidak muncul** |
 | **ApprovalDialog** | Modal | **Approve** → lanjut AR; **Reject** → tolak pelunasan batch (tanpa AR) | Permission `approval`; progress upload harus `journals approved` |
 | **LogTable slideover** | Kanan layar | Daftar error per tipe | Dibuka dari angka merah di kolom SO/SI/Out/AR |
 | **Retry — batch** | (a) Ikon ⚠️ di progress bar; (b) Tombol di header LogTable slideover | `POST .../retry` — lanjutkan tahap job yang gagal/macet untuk **seluruh batch** | Muncul saat `stuck` atau error counter > 0 (kecuali SO Failed order) |
@@ -440,16 +442,44 @@ Tombol **Approve** membuka `ApprovalDialog` dengan dua opsi:
 
 ---
 
-## 9. Delete Settlement
+## 9. Delete Settlement / Revert
 
-| Kondisi | Boleh delete? |
-|---------|---------------|
-| Rantai murni hasil settlement, belum ada AR manual pada SI | ✅ Hard delete Outbound, Jurnal OB, SI, Jurnal SI, AR, Jurnal AR |
-| Upload sukses, AR belum ada, SI belum punya relasi AR | ✅ |
-| Ada SI dengan AR manual (independen) | ❌ Tombol delete disabled |
-| Setelah delete | Stok revert dari outbound; **status processing gudang TIDAK revert** (tetap Shipped/WH 3PL) |
+Aturan eligibility (**satu sumber kebenaran** FE + BE). Referensi: [ETM-15886](https://erpintegration.atlassian.net/browse/ETM-15886).
 
-Pesan sukses delete: jika ada dokumen manual (outbound/invoice) tidak ikut terhapus — user diminta reversal manual.
+### 9.1 Definisi sumber AR
+
+| Istilah | Arti |
+|---------|------|
+| **AR dari Instant Settlement** | Customer Payment yang terbit dari **Approve** Instant Settlement batch ini — terikat `settlement_uploads.receive_id` (dan/atau payment detail SI yang header payment-nya = receive tersebut) |
+| **AR luar** | SI dalam batch punya `payment_details` / Customer Payment yang **bukan** receive settlement batch ini (mis. dilunasi dari menu Account Receive / Customer Payment independen) |
+
+### 9.2 Matriks boleh / tidak
+
+| Kondisi | Boleh delete/revert? |
+|---------|----------------------|
+| Outbound + SI dari IS; **belum** ada AR | ✅ |
+| Outbound + SI + **AR dari Approve Instant Settlement** (rantai murni IS) | ✅ Hard delete OB (+ jurnal), SI (+ jurnal), AR settlement (+ jurnal); stok outbound revert |
+| Outbound + SI dari IS; ada ≥1 SI dengan **AR luar** | ❌ Row Delete tidak muncul (atau disabled + alasan); API reject |
+| Multi-select: **semua** selected eligible | ✅ Tombol bulk Delete muncul |
+| Multi-select: **≥1** selected not eligible | ❌ Tombol bulk Delete **tidak muncul** |
+| Setelah delete sukses | Stok revert dari outbound; **status processing gudang TIDAK revert** (tetap Shipped/WH 3PL) |
+
+### 9.3 Contoh kasus
+
+| Skenario | Expected |
+|----------|----------|
+| A — Approve IS selesai; AR = receive settlement | Delete **boleh** — revert seluruh rantai termasuk AR settlement |
+| B — Generate OB+SI saja; belum Approve | Delete **boleh** |
+| C — SI dilunasi lewat Customer Payment di luar IS | Delete **tidak boleh** — reverse AR luar dulu |
+| D — Centang 1 eligible + 1 not eligible | Bulk Delete **hilang** |
+| E — Unselect yang not eligible | Bulk Delete **muncul kembali** |
+
+### 9.4 Catatan implementasi & pesan
+
+- Rule **Approve disabled** (semua SI sudah punya `payment_details` — V-16) **terpisah** dari rule Delete (V-18). Jangan pakai formula `settlements_with_ar >= generated_invoice_count` untuk mengunci Delete.
+- API `delete` / bulk-delete wajib **reject** upload not eligible (jangan andalkan UI saja). Prefer: bulk berisi campuran → **reject seluruh request**.
+- Pesan sukses delete: jika ada dokumen manual (outbound/invoice) tidak ikut terhapus — user diminta reversal manual.
+- Tooltip disarankan saat blocked: *Tidak dapat dihapus karena ada Sales Invoice yang sudah memiliki Customer Payment di luar Instant Settlement.*
 
 ---
 
@@ -595,6 +625,10 @@ User menolak **langkah pelunasan AR** batch ini. Header `SettlementUpload` → `
 #### Bulk approve
 Checkbox + toolbar approve. FE: `bulkApprovable` = **AND** semua selected `can_approve`. Campur baris sudah approved / belum eligible → bulk gagal per baris (`MainModuleController::bulkApprove`).
 
+#### Delete / Revert eligibility (ETM-15886 / V-18)
+**TO-BE:** Delete boleh untuk rantai murni IS termasuk AR dari Approve; diblokir hanya jika ada **AR luar**; bulk Delete hide jika ada selected not eligible; API guard wajib.  
+**AS-IS (pre-ETM-15886):** FE mengunci Delete dengan `settlements_with_ar >= generated_invoice_count` (any `payment_details`) → setelah Approve IS, Delete sering terkunci (melanggar skenario A §9.3). Bulk Delete hanya cek Gate `can_delete`. BE `delete()` belum cek external AR. Lihat technical § Delete.
+
 #### Retry — lokasi UI
 
 ```mermaid
@@ -641,7 +675,7 @@ SO General: match by **`code`** (internal order number). `platform_order_id` ops
 **Booking Shopee unmatched:** SO Platform dengan `platform_order_id` **NULL** (tampil `-` di Sales Platform) **tidak** bisa di-match dari file settlement → *"Unable to find order"*. Tunggu booking **MATCHED** / Platform Order ID terisi (Order ID sering datang lewat jalur terpisah tanpa Booking Number dulu — jangan expect settle di fase itu). Approve booking amount 0 **tidak** auto-generate SI — lihat [Sales Platform §3b / GAP-BOOK-01 · GAP-BOOK-02](../omni-sales-platform/requirement.md).
 
 #### Fitur standar (confirmed)
-Export DataList async, Audit log (`Log Data`), bulk approve guard — pola standar PrimeDataTables OlshopERP.
+Export DataList async, Audit log (`Log Data`), bulk approve guard — pola standar PrimeDataTables OlshopERP. Bulk Delete harus mengikuti eligibility V-18 (ETM-15886), bukan hanya permission Gate.
 
 ---
 
@@ -652,7 +686,7 @@ Export DataList async, Audit log (`Log Data`), bulk approve guard — pola stand
 - Uji **re-settlement**: upload ulang SO yang sama dengan baris adjustment only.  
 - Uji **Smart AR**: buat AR manual untuk sebagian SI → approve → hanya sisanya masuk AR baru.  
 - Uji **V-23 / ETM-15701**: batch SI beda tanggal kalender → Approve ditolak; same date beda jam → Approve OK dan AR jam = max jam SI.  
-- Uji **delete** dengan dan tanpa AR manual.  
+- Uji **delete / ETM-15886**: (1) rantai murni IS + AR dari Approve → Delete boleh & sukses; (2) AR luar pada SI → Delete row tidak muncul + API reject; (3) belum AR → Delete boleh; (4) bulk: campur eligible+not eligible → bulk Delete hilang; (5) bulk semua eligible → OK. Jangan assert Delete dengan formula lama `settlements_with_ar >= generated_invoice_count`.  
 - Uji tiap platform: header sheet/name sesuai §4.1.  
 - Uji approve tanpa `cash_bank_account_id` → error V-15.  
 - **Template General (Others):** uji G-01–G-06 §4.6 — filter `OC:`/`OD:` per Applied Store & status Active.  

@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.1
-last_updated: 2026-09-01
+version: 1.2
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 1.7
+source_version: 1.8
 ---
 
 # Panduan Pengguna — Instant Settlement
@@ -106,7 +106,7 @@ Setelah upload **sukses**:
 2. Klik **Approve** (✓) → isi catatan → **Approve**. Satu batch = **satu AR** berisi banyak invoice.  
 3. Pantau kolom **Progress** (4 tahap) sampai AR dan jurnal AR selesai.  
 4. Kalau ada **dana susulan** untuk order yang sama → upload file baru (**re-settlement**): outbound tidak dibuat ulang, yang baru hanya invoice penyesuaian.  
-5. Kalau salah upload dan belum ada AR manual: **Delete** — stok kembali, status gudang **tetap Shipped** (bisa settle ulang tanpa proses fisik dari awal).
+5. Kalau salah upload: **Delete** boleh selama belum ada pelunasan **di luar** Instant Settlement — termasuk setelah kamu **Approve** (AR dari Instant Settlement ikut terhapus). Stok kembali, status gudang **tetap Shipped**. Kalau invoice sudah dilunasi lewat Customer Payment terpisah, Delete terkunci sampai AR luar di-reverse.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -132,8 +132,10 @@ Ditulis dari yang kamu alami di layar:
 - **Kalau tanggal transaksi Sales Invoice di batch campur beda hari**, Approve ditolak. Jam boleh beda di hari yang sama. Contoh: SI jam 09:00 dan 18:30 tanggal 1 → OK; tanggal 1 dan tanggal 2 → ditolak.  
 - **Tanggal AR** setelah Approve = tanggal SI (yang sudah sama); **jam AR** = jam paling akhir di antara SI batch itu.  
 - **Kalau semua invoice batch sudah punya AR**, tombol Approve disabled — itu normal.  
-- **Kalau sebagian invoice sudah dilunasi manual**, Approve tetap boleh: sistem hanya memasukkan invoice yang **belum** punya AR (**Smart AR**).  
-- **Kalau ada AR manual** pada invoice hasil settlement, Delete disabled. Reverse AR itu dulu, atau biarkan terkunci.  
+- **Kalau sebagian invoice sudah dilunasi manual**, Approve tetap boleh: sistem hanya memasukkan invoice yang **belum** punya AR (**Smart AR**). Batch itu **tidak bisa Delete** sampai AR luar di-reverse.  
+- **Kalau rantai murni Instant Settlement** (Outbound + SI + AR dari Approve di menu ini), Delete **boleh** — seluruh rantai dihapus bersama.  
+- **Kalau ada AR luar** pada invoice hasil settlement, Delete terkunci. Reverse AR itu dulu.  
+- **Kalau kamu centang beberapa baris** dan satu saja tidak boleh dihapus, tombol Delete massal di atas tabel **tidak muncul**.  
 - **Kalau kamu Reject** di dialog Approve: pelunasan tidak dibuat; invoice dan outbound **tetap ada**. Reject ≠ Delete.  
 - **Kalau jurnal outbound tampil warning** (nilai persediaan 0), cek tab **Warnings** di panel jurnal — ini peringatan, bukan gagal seluruh batch.
 
@@ -172,7 +174,7 @@ Ditulis dari yang kamu alami di layar:
 ### Langkah 5 — Re-settlement / hapus / retry
 
 1. **Dana susulan:** upload file baru berisi Order ID yang sama. Settle pertama: outbound + invoice SKU. Settle berikutnya: hanya invoice adjustment.  
-2. **Hapus:** Delete (🗑) → konfirmasi. Gudang tetap Shipped.  
+2. **Hapus:** Delete (🗑) → konfirmasi (eligible: belum AR luar, atau AR hanya dari Approve Instant Settlement). Gudang tetap Shipped. Multi-select: semua baris harus eligible atau Delete massal tidak muncul.  
 3. Error generate (bukan SO Failed): buka log angka merah → **Retry** batch atau **Continue** per baris.
 
 🎬 [Interactive demo akan ditambahkan di sini]
@@ -200,7 +202,7 @@ Sengaja: satu settlement = satu toko = satu dokumen pelunasan.
 Template Excel boleh diunduh sebagai contoh kolom, tapi upload di layar ini **hanya CSV**. Excel sering merusak Order ID panjang.
 
 **Reject vs Delete.**  
-Reject = tidak jadi generate AR. Delete = hapus rantai dokumen hasil settlement (jika belum terkunci AR manual). Delete **tidak** mengembalikan Wave/Pick/Pack.
+Reject = tidak jadi generate AR. Delete = hapus rantai dokumen hasil settlement. **Boleh** setelah Approve jika AR dari Instant Settlement; **tidak boleh** jika ada AR dari Customer Payment di luar. Delete **tidak** mengembalikan Wave/Pick/Pack.
 
 **Kolom OC/OD beda per toko.**  
 Other Cost hanya untuk Toko A → download template Toko A: kolom `OC:` ada. Download Toko B: kolom itu tidak ada. Master Inactive tidak masuk template.
