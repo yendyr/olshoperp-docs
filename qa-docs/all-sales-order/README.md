@@ -10,8 +10,8 @@ Route: `/businessdevelopment/all-sales-order`
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
-**User-guide:** v1.5 · `source_version` 1.9  
-**Version (3 layer):** 1.9 · **Last updated:** 2026-09-04 14:20
+**User-guide:** v1.7 · `source_version` 1.11  
+**Version (3 layer):** 1.11 · **Last updated:** 2026-09-09 10:45
 
 ## Peran vs dua menu sumber
 
@@ -21,12 +21,15 @@ Route: `/businessdevelopment/all-sales-order`
 | [Dev - Sales Order](../sales-order-general/) | SO internal + dual import | Tipe **general** (v3.4) |
 | [Store](../omni-store-binding/) | Fulfillment Mode · Auto Add VAT Platform | Gate import · VAT platform |
 | [Benchmark COGS](../accounting-product-benchmark-price/) | Error Flag + Manual COGS | Shared `cogs-error` · effective snapshot |
+| [Unassign Wave](../omni-unassign-wave/) | Processing Order Date | Acuan FIFO Unavailable Stock / Last Checked |
 | **All Sales Order** | Window | Monitor, Recheck, import dual (paritas SOG) |
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.11 | 2026-09-09 10:45 | Void vs Void & Recreate vs Recreate + anti auto-create sync (ETM-15859); paritas Dev - Sales Platform |
+| 1.10 | 2026-09-08 11:00 | Unavailable Stock FIFO memakai Processing Order Date; Last Checked Expected = tanggal evaluasi (GAP-ASO-07 / UW GAP-UW-06) |
 | 1.9 | 2026-09-04 14:20 | Log Data tab **Pending Orders** + pill **Unmatched Bookings** (booking dual-path visibility) — ETM-15798; paritas Dev - Sales Platform |
 | 1.8 | 2026-09-03 12:05 | Paritas edit detail SO platform sebelum approve (add/replace SKU, price, VAT; sync lock) — ETM-15748 / ETM-15749 |
 | 1.7 | 2026-09-02 16:45 | Extract SKU bundle hanya jika Price > 0 (tolak booking/harga 0) — ETM-15732 |

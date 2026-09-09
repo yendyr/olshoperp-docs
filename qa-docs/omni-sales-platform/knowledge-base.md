@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.9
-last_updated: 2026-09-04
+version: 1.11
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
 audience: operator
@@ -136,6 +136,16 @@ Edit field booking (Other Information) dilakukan dari **All Sales Order**, bukan
 - **PPN / Auto Add VAT (TO-BE):** setelah fitur live, apakah pajak produk otomatis terisi diikuti setting **Auto Add VAT (Platform Orders)** di **Store** toko itu (bukan setting customer di General Company). Atur di Store → Accounting & Tax. Detail: [Store KB](../omni-store-binding/knowledge-base.md).
 
 ---
+
+### Void & recreate (TO-BE · ETM-15859)
+
+| Aksi | Artinya |
+|------|---------|
+| **Void** | Batalkan. ID marketplace **tetap**. Sync **tidak** otomatis bikin SO baru. |
+| **Void & Recreate** | Void + buat SO platform baru dari marketplace (ex **Void & Clone**). |
+| **Recreate** | Di halaman **show** order yang sudah void — buat SO baru dari marketplace. |
+
+Detail: [requirement §5.8](./requirement.md) · paritas [ASO §5.8](../all-sales-order/requirement.md).
 
 ## 6. Auto-approve
 

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.10
-last_updated: 2026-09-04
+version: 1.11
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog **1.11 (2026-09-09):** Void / Void & Recreate / Recreate + sync gate — [requirement §5.8 / §6.9](./requirement.md); ETM-15859; GAP-SPD-01 Decided. Touchpoints: `SalesOrderApprovalController` void, rename Void & Clone → Void & Recreate, show Recreate, platform sync services (Shopee/TikTok/Lazada/…) skip create on void+exact ID, order lock.  
 > Changelog 1.10 (2026-09-04): Log Data tab **Pending Orders** + pill **Unmatched Bookings** — [requirement §5.3.1](./requirement.md) · [ASO §5.7](../all-sales-order/requirement.md) · ETM-15798.  
 > Changelog 1.9 (2026-09-04): Booking dual-path anti-dupe — `ManagesShopeeBooking` + `OmniShopeeService::storeSalesOrder` skip `advance_package` sebelum link/MATCHED; invariant 1 SO per pesanan — [requirement §3b / §5.6](./requirement.md).  
 > Changelog 1.8 (2026-09-03): TO-BE edit detail sebelum approve + sync lock — [requirement §6.8](./requirement.md) · ETM-15749 / ETM-15748. Touchpoints: `SalesOrderDetailController` create/update, `OmniShopeeService`/`OmniLazadaService`/`OmniTikTokService` update detail (price path), FE `Omni/SalesOrder/DatalistDetail.vue` (+ ASO shared form).  
@@ -274,7 +275,7 @@ sequenceDiagram
 |-----|----------------|
 | GAP-APR-01 | `SalesOrderAutoApprove` ignores `OrderProcessSetting.auto_approve`; FE documents delay as ignored |
 | GAP-SPL-01 | Rejected omitted from carousel buckets |
-| GAP-SPD-01 | Duplicate internal vs void-platform clone share naming |
+| GAP-SPD-01 | Void vs Recreate + sync anti auto-create (ETM-15859) — Decided TO-BE |
 | GAP-BOOK-01 | **Accepted residual:** jalur IS mitigated — null `platform_order_id` → no settlement match; approve SP no SI. Residual = manual SI amount 0 only. See requirement §3b |
 | GAP-BOOK-02 | **Design guard:** dual-path booking vs advance package tanpa `booking_sn` — skip create sampai MATCHED; pelanggaran = 2 SO 1 order_id (fatal UPFOS). See requirement §3b / invariants 14–16 |
 | GAP-SYN-01 | No Shopee skip-sync optimization |

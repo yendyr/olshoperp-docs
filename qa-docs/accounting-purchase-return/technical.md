@@ -2,15 +2,15 @@
 doc_type: technical
 menu: accounting-purchase-return
 menu_name: "Purchase Return"
-version: 1.0
-last_updated: 2026-09-02
+version: 1.1
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: draft
 ---
 
 # Purchase Return — Technical Documentation
 
-**Behavior (partial):** [requirement.md](./requirement.md) v1.0  
+**Behavior (partial):** [requirement.md](./requirement.md) v1.1  
 **Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15726](https://erpintegration.atlassian.net/browse/ETM-15726)
 
 > File map / API / invariants penuh: **pending**. Section di bawah mengunci wiring display.
@@ -21,6 +21,7 @@ status: draft
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-09-09 | QA - Yemima | TO-BE Unit Price Before VAT + Total Price Return surfaces (ETM-15858)
 | 1.0 | 2026-09-02 | QA - Yemima | Stub + `SUPPLIER_DISPLAY_MODE` wiring note |
 
 ---

@@ -2,12 +2,12 @@
 doc_type: user-guide
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.4
-last_updated: 2026-09-04
+version: 1.5
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
 source_docs: [./requirement.md, ./knowledge-base.md, ./technical.md]
-source_version: 1.10
+source_version: 1.11
 ---
 
 # Panduan Pengguna — Dev - Sales Platform
@@ -68,7 +68,7 @@ stateDiagram-v2
 | Approved | Kunci proses gudang | Tidak — form terkunci |
 | Rejected | Ditolak | — |
 | Processed | Sudah masuk wave / proses gudang | Tidak |
-| Void | Dibatalkan setelah approve | Tidak |
+| Void | Dibatalkan setelah approve | Tidak — **TO-BE:** sync tidak auto-create; recreate manual (**Recreate** / **Void & Recreate**) |
 
 Ringkasan di atas daftar (Sales Request → Complete / Return / Cancelled) **saling eksklusif**. Order **Rejected** saat ini **tidak** masuk ringkasan itu.
 
@@ -162,6 +162,12 @@ Kalau tidak ditahan sampai MATCHED, bisa jadi **2 order** untuk **1** pesanan (f
 Edit field booking (Other Information) dari **All Sales Order**, bukan dari list Sales Platform.
 
 🎬 [Interactive demo akan ditambahkan di sini]
+
+### Void / Recreate (TO-BE)
+
+1. **Void** → batalkan; ID marketplace tetap; sync tidak bikin SO baru sendiri.
+2. Butuh order hidup lagi → **Recreate** di halaman show (hanya void), atau **Void & Recreate**.
+3. SO baru = tipe platform (bukan Sales Order General).
 
 ### Return
 

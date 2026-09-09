@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.10
-last_updated: 2026-09-04
+version: 1.11
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
-aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package, Pending Orders, Unmatched Bookings]
+aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package, Pending Orders, Unmatched Bookings, Void, Void & Recreate, Recreate]
 ---
 
 # Dev - Sales Platform — Requirement Documentation
@@ -24,6 +24,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.11 | 2026-09-09 | QA - Yemima | TO-BE §5.8 / §6.9: **Void** vs **Void & Recreate** vs **Recreate**; sync anti auto-create; prefix `void-`/`void2-` — ETM-15859 (GAP-SPD-01 Decided) |
 | 1.10 | 2026-09-04 | QA - Yemima | TO-BE Log Data §5.3.1: tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798; kanonik ASO §5.7) |
 | 1.9 | 2026-09-04 | QA - Yemima | Booking Shopee dual-path: masuk by booking_sn dulu; tahan create order_id tanpa booking; merge di **MATCHED** + contoh kasus nyata (§3b, §5.6, FAQ) |
 | 1.8 | 2026-09-03 | QA - Yemima | TO-BE §6.8: edit detail sebelum approve (add/replace SKU, price, disc, VAT; no delete; sync lock) — ETM-15749 / ETM-15748 |
@@ -98,7 +99,7 @@ stateDiagram-v2
 | **OPEN** | Ya | Booking tetap OPEN amount 0 |
 | **Approved** | Tidak | Read-only |
 | **Rejected** | — | **Tidak masuk** summary bucket (GAP-SPL-01) |
-| **Void** | Tidak | Bisa generate SO duplikat platform (lihat GAP-SPD-01) |
+| **Void** | Tidak | **TO-BE (ETM-15859):** ID tetap; sync tidak auto-create — lihat §5.8 / §6.9. AS-IS residual: bisa duplikat (GAP-SPD-01) |
 
 ### 3b. Booking Shopee (sumbu terpisah)
 
@@ -320,12 +321,20 @@ flowchart TD
 
 **Instant Processing** (Order Process Setting): Approved + default waves → auto Pick→…→Ship/DO jika ON.
 
-### 5.8 Duplicate (dua perilaku)
+### 5.8 Duplicate, Void & Recreate (TO-BE · ETM-15859)
 
 | Trigger | Hasil | Catatan |
 |---------|-------|---------|
-| Icon Duplicate di detail | Clone ke SO **internal** (default store/shipping/company) | |
-| Void via processing | SO **platform** baru, `platform_order_id` sama, nomor internal baru | GAP-SPD-01 — klarifikasi produk |
+| Icon **Duplicate** di detail | Clone ke SO **internal** (default store/shipping/company) | Tetap — bukan recreate marketplace |
+| **Void** saja | Status void; `platform_order_id` **tetap asli** | Sync **tidak** auto-create jika ada void + ID exact |
+| **Void & Recreate** (ex **Void & Clone**) | Void + prefix ID + create SO **platform** baru dengan ID asli | Rename UI; bukan Sales Order General |
+| **Recreate** di **show** | Hanya order **void**, tidak editable | Prefix + fetch platform + create; race → order lock |
+
+**Prefix:** `void-{id}` → bentrok `void2-{id}`, `void3-…`. Prefix **hanya** pada Recreate / Void & Recreate.
+
+**Gate sync (semua platform):** void + `platform_order_id` exact = order dari platform → **skip create**. Setelah ber-prefix, ID asli lepas → create boleh.
+
+Paritas wajib di [All Sales Order §5.8](../all-sales-order/requirement.md#58-void--void--recreate--recreate-platform-order-to-be--etm-15859). Related: [ETM-15823](https://erpintegration.atlassian.net/browse/ETM-15823) (bukan reopen).
 
 ---
 
@@ -469,6 +478,19 @@ Edit detail apa pun → `prevent_auto_approve = 1` (keluar auto-approve; approve
 | V-ED-07 | Tidak ada icon delete; Extract boleh | UI + extract path |
 | V-ED-08 | Edit → `prevent_auto_approve` | Auto-approve skip |
 
+### 6.9 Void / Void & Recreate / Recreate & sync gate (TO-BE · ETM-15859)
+
+| ID | Rule | Efek |
+|----|------|------|
+| V-VR-01 | **Void** saja → jangan prefix `platform_order_id` | ID asli tetap di row void |
+| V-VR-02 | Sync create: ada SO **void** dengan ID **exact** → **skip create** | Anti auto re-create |
+| V-VR-03 | **Void & Recreate** / **Recreate** → prefix `void-` / `void2-`… lalu create SO platform | ID asli dipakai SO baru |
+| V-VR-04 | Recreate vs sync concurrent → order lock + re-check non-void | Max 1 SO non-void per ID |
+| V-VR-05 | **Recreate** hanya show + void + not editable | Tombol tidak muncul di Draft/Open editable |
+| V-VR-06 | Guard void existing (outbound/invoice) tetap | Void & Recreate tidak bypass |
+
+Kartu: [ETM-15859](https://erpintegration.atlassian.net/browse/ETM-15859) · Request ID `recvuGCojORk9E`.
+
 ---
 
 ## 7. Relasi Menu Lain
@@ -538,7 +560,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 |----|-----------|--------|--------|
 | **GAP-APR-01** | Delay + Auto Approve toggle diklaim kendali; cron 19:00 mengabaikan keduanya | Docs/ops salah asumsi | Open |
 | **GAP-SPL-01** | Rejected tidak masuk summary bucket | Blind spot monitoring | Open (temp by design) |
-| **GAP-SPD-01** | Dua mekanisme Duplicate (internal vs void-platform) belum diklarifikasi | Bingung usage | Open |
+| **GAP-SPD-01** | Void vs Void & Recreate vs Recreate + sync anti auto-create — [§5.8](#58-duplicate-void--recreate-to-be--etm-15859) / [§6.9](#69-void--void--recreate--recreate--sync-gate-to-be--etm-15859) · ETM-15859 · ASO GAP-ASO-08 | Duplikat SO setelah void | **Decided** (TO-BE; Open until impl) |
 | **GAP-BOOK-01** | Approve booking amount 0 — risiko jurnal 0 via **Instant Settlement** hampir tertutup (null `platform_order_id` tidak match; approve SP tidak buat SI). Residual: SI manual amount 0 | Accounting | **Accepted residual** (verified 2026-07-15) |
 | **GAP-BOOK-02** | Dual-path: Order ID (advance package) sering tanpa `booking_sn` sebelum **MATCHED** — wajib skip create SO kedua; merge di MATCHED. Contoh: `260831AASC74GOWV7FM` ↔ `2609031XP6RKDK`. Pelanggaran = 2 SO 1 order (fatal UPFOS) | Ops/fulfillment | **Design guard** (documented 2026-09-04) |
 | **GAP-SYN-01** | Optimasi skip-sync Shopee (cancel/complete, dll.) belum diimplementasi | API waste | Open |
@@ -566,6 +588,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 - [ ] Shopee unit price = escrow `discounted_price + shopee_discount` (bukan order-detail `model_discounted_price`); kasus voucher Shopee-borne tidak understate penjualan
 - [ ] **Extract** bundle ditolak jika Price header ≤ 0; boleh jika > 0; pesan price must be greater than zero (ETM-15733 / §6.7)
 - [ ] **Edit detail TO-BE (ETM-15749 / §6.8):** DRAFT/OPEN add+Select Product; edit qty/price/disc/VAT; no delete (Extract OK); qty `gt:0`; sync lock + booking price 0/>0; baris manual aman; audit SKU+old/new; `prevent_auto_approve`
+- [ ] **Void / Recreate TO-BE (ETM-15859 / §5.8 / §6.9):** Void tanpa prefix + sync skip create; Void & Recreate / Recreate prefix + SO platform; lock race; paritas ASO
 - [ ] Additional cost/disc tidak ke SI
 - [ ] Return bucket = SR dan/atau FS
 
@@ -573,6 +596,8 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 
 ## 10. FAQ
 
+**Q: Setelah Void, kenapa sync kadang bikin order baru?**  
+A (AS-IS): ID sering di-prefix / void di-exclude → slot ID “kosong”. **TO-BE (ETM-15859):** Void **tanpa** prefix; sync skip create jika void+exact ID. Recreate hanya manual.
 **Q: Kenapa Create membuka form lain?**  
 A: SP hanya menampilkan hasil sync; create manual = Sales Order General.
 

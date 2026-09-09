@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.9
-last_updated: 2026-09-04
+version: 1.11
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
-aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail, Pending Orders, Unmatched Bookings, Log Data]
+aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail, Pending Orders, Unmatched Bookings, Log Data, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, platform_order_id]
 ---
 
 # All Sales Order — Requirement Documentation
@@ -26,6 +26,8 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.11 | 2026-09-09 | QA - Yemima | TO-BE §5.8: **Void** vs **Void & Recreate** vs **Recreate**; anti auto-create sync; prefix `void-` / `void2-` — ETM-15859 (paritas SP) |
+| 1.10 | 2026-09-08 | QA - Yemima | §5.4a: stok FIFO / Unavailable Stock memakai Processing Order Date (Unassign Wave); Last Checked Expected = tanggal evaluasi (cross-ref UW GAP-UW-04/06) |
 | 1.9 | 2026-09-04 | QA - Yemima | TO-BE §5.7: Log Data tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798); paritas SP |
 | 1.8 | 2026-09-03 | QA - Yemima | TO-BE §5.6: paritas edit detail SO platform sebelum approve (ETM-15748) — kanonik [SP §6.8](../omni-sales-platform/requirement.md) |
 | 1.7 | 2026-09-02 | QA - Yemima | **Extract** SKU bundle: wajib Price (`each_price`) **> 0** (ETM-15732; booking price 0 ditolak); shared API dengan SP |
@@ -157,13 +159,38 @@ ASO **tidak** menduplikasi logic capture — reuse pipeline SO detail. Kartu Jir
 | Scope | Approved + unassign wave NOT_IN_QUEUE/IN_QUEUE | Lebih sempit dari “semua order” |
 | Dispatch | Horizon batch `CheckOrderFlagsJob` (~50/batch) | Arah selaras |
 | Lock / disable | Cache + echo `revalidate-flag`; tippy RC-07 | ✅ |
-| Last Checked | `error_info.updated_at` (order-level) di tooltip | Belum per-icon (RC-01…03) |
+| Last Checked | AS-IS: `error_info.updated_at` (wall-clock job) di tooltip · **Expected §5.4a:** = tanggal evaluasi stok (POD / now) | Residual RC-01…03 + GAP-UW-06 |
 | Log | `SalesOrderSynchronizeLog` type revalidate per store | Modal/log dedicated — **O-01** |
 | Cooldown setelah selesai | Hanya selama batch | **O-02** |
 | Retention log | Sync log existing | **O-03** |
 | Dev Sales Platform list | Tidak ada tombol | By design |
 
 **Bug note:** `checkRevalidateFlag()` masih hardcode `in_progress => false` — verifikasi disable button mengandalkan echo lock.
+
+### 5.4a Unavailable Stock / FIFO date vs Last Checked (cross-menu Unassign Wave)
+
+Cek stok untuk Error Flag **Unavailable Stock** (approve, Recheck, Refresh) memakai **Processing Order Date** company di menu [Unassign Wave](../omni-unassign-wave/requirement.md) (`scm_settings.sales_order_processing_date`):
+
+| Setting POD | Tanggal evaluasi FIFO | Last Checked — Expected |
+|-------------|----------------------|-------------------------|
+| Terisi | = Processing Order Date | = Processing Order Date |
+| NULL | = `now()` (saat job cek) | = waktu cek (= now) |
+
+**AS-IS residual:** tooltip Last Checked masih dari `error_info.updated_at` → bisa menampilkan “hari ini” padahal FIFO memakai POD lama → info Last Checked **tidak valid** sebagai acuan tanggal cek. Kanonik: [UW §5.1a](../omni-unassign-wave/requirement.md) · GAP-UW-06.
+
+**Contoh kasus (staging · company 153 · SO edit `2520977` / SO-5UDIYQLW)**
+
+| Data | Nilai |
+|------|-------|
+| SKU | `SKU-PPL-RET-001` |
+| Inbound | `01-09-2026 10:04:59` |
+| SO trx date | `01-09-2026 10:05:37` |
+| Processing Order Date | `21-04-2026 13:10:13` |
+| Hasil | Unavailable Stock — `{SKU} stock has not been met (FIFO invalid).` |
+| Last Checked AS-IS | `08-09-2026 10:22:14` (job) |
+| Last Checked Expected | `21-04-2026 13:10:13` |
+
+URL: `https://staging.olshoperp.com/businessdevelopment/sales-order-general/edit/2520977`
 
 ### 5.5 Extract SKU bundle — price > 0 (AS-IS · ETM-15732)
 
@@ -237,6 +264,26 @@ Sync lock, booking price `0` vs `> 0`, baris tanpa platform product id, audit, `
 
 **Kartu:** [ETM-15798](https://erpintegration.atlassian.net/browse/ETM-15798) (menu card = All Sales Order; scope SP ikut).
 
+### 5.8 Void / Void & Recreate / Recreate platform order (TO-BE · ETM-15859)
+
+> **Kanonik bersama** [Dev - Sales Platform §5.8 / §6.9](../omni-sales-platform/requirement.md). ASO **wajib paritas** UI + behavior untuk baris tipe **platform**. Related (bukan reopen): [ETM-15823](https://erpintegration.atlassian.net/browse/ETM-15823).
+
+**Masalah:** setelah Void, schedule sync bisa **create SO baru** dengan `platform_order_id` yang sama → duplikat fulfillment/omzet.
+
+| Aksi UI (final) | `platform_order_id` pada row void | Efek sync / SO baru |
+|-----------------|-----------------------------------|---------------------|
+| **Void** saja | **Tetap ID asli** (jangan prefix) | Schedule sync **tidak** auto-create jika ada SO **void** dengan ID **exact** |
+| **Void & Recreate** (ex **Void & Clone**) | Prefix saat recreate (`void-{id}`, bentrok → `void2-{id}`, …) | Create SO **platform** baru dengan ID asli (bukan Sales Order General) |
+| **Recreate** (halaman **show** saja) | Sama family prefix + create | Hanya jika status **void**, punya platform order ID, order **tidak** editable |
+
+**Prefix:** release pertama `void-{platformOrderId}`; bentrok → `void2-…`, `void3-…`. Prefix **hanya** saat Recreate / Void & Recreate — **bukan** pada Void saja.
+
+**Race:** pakai order lock sync existing + re-check non-void existence sebelum create (idempotent).
+
+**Contoh:** Void `260909J2MS4W14` → ID tetap; sync tidak create. User klik Recreate di show → row jadi `void-260909J2MS4W14` + SO baru dengan `260909J2MS4W14`.
+
+**GAP-ASO-08** · SP **GAP-SPD-01** → Decided (lihat gap registry).
+
 ---
 
 ## 6. Validasi
@@ -286,11 +333,13 @@ flowchart TB
 | ID | Deskripsi | Status |
 |----|-----------|--------|
 | **GAP-ASO-01** | Re-check: tombol + batch AS-IS ada; residual = Last Checked per-icon, log UI (O-01), cooldown (O-02), retention (O-03), scope lebih sempit vs “all OPEN” | Partial — §5.4 |
+| **GAP-ASO-07** | Last Checked tooltip Unavailable Stock harus = tanggal evaluasi stok (Processing Order Date / now) — bukan hanya `error_info.updated_at` | Open — §5.4a · [GAP-UW-06](../omni-unassign-wave/requirement.md) |
 | **GAP-ASO-02** | Dual import **Import Processed** / **Import Non-Processed** harus paritas UI+API dengan Dev - Sales Order (SOG GAP-SOG-07…) | Open (TO-BE) |
 | **GAP-ASO-03** | Error Flag **Below Benchmark COGS** di ASO (header + detail + filter label) — paritas SP/SOG; kanonik [GAP-BM-13](../accounting-product-benchmark-price/requirement.md) | Open (TO-BE) |
 | **GAP-ASO-04** | Verify Auto Add VAT from Store pada baris platform (bukan customer GC); general unchanged | Open (TO-BE) |
 | **GAP-ASO-05** | Verify Benchmark COGS column = effective Manual COGS snapshot (paritas SP/SOG) | Open (TO-BE) |
 | **GAP-ASO-06** | Paritas UI/API edit detail platform sebelum approve (ETM-15748) vs [SP §6.8](../omni-sales-platform/requirement.md) / ETM-15749 | Open (TO-BE) |
+| **GAP-ASO-08** | Void vs Void & Recreate vs Recreate + gate sync anti auto-create — [§5.8](#58-void--void--recreate--recreate-platform-order-to-be--etm-15859) · ETM-15859 · kanonik [SP GAP-SPD-01](../omni-sales-platform/requirement.md) | Open (TO-BE) |
 | **GAP-APR-01** | Auto-approve cron mengabaikan toggle/delay — berdampak baris platform di ASO | Open — [SP gaps](../omni-sales-platform/requirement.md) |
 
 ---
@@ -306,6 +355,7 @@ flowchart TB
 - [ ] Baris platform: Auto Add VAT dari Store (GAP-ASO-04); Benchmark COGS effective snapshot (GAP-ASO-05)
 - [ ] **Edit detail platform TO-BE (ETM-15748 / §5.6):** paritas penuh dengan SP §6.8 (add/replace, price/disc/VAT, no delete, sync lock)
 - [ ] **Log Data Pending Orders (ETM-15798 / §5.7):** tab + kolom Store / Platform Order ID|Trx Date / Message; hilang setelah MATCHED; pill **Unmatched Bookings**; paritas SP
+- [ ] **Void / Recreate TO-BE (ETM-15859 / §5.8):** Void tanpa prefix + sync tidak auto-create; Void & Recreate / Recreate prefix + SO platform baru; paritas ASO ↔ SP
 - [ ] Doc folder terpisah dari SOG & SP
 - [ ] **Extract** bundle dari detail ASO ditolak jika Price header bundle ≤ 0; boleh jika > 0 (ETM-15732); pesan error price must be greater than zero
 
@@ -315,6 +365,9 @@ flowchart TB
 
 **Q: Apa beda ASO vs Sales Platform?**  
 A: SP khusus marketplace + sync ops. ASO = gabungan monitoring + tools lintas tipe.
+
+**Q: Void order platform — kenapa nanti sync tidak bikin order baru?**  
+A (TO-BE ETM-15859): **Void** saja menjaga `platform_order_id` asli; sync **skip create** jika ada row void dengan ID exact. Buat ulang hanya lewat **Recreate** / **Void & Recreate** (manual).
 
 **Q: Di mana tombol Recheck failed process?**  
 A: Hanya di **All Sales Order** (bukan Dev Sales Platform list). Scope: order Approved yang belum / sedang antre Unassign Wave.

@@ -2,10 +2,10 @@
 doc_type: knowledge-base
 menu: accounting-purchase-return
 menu_name: "Purchase Return"
-version: 1.1
-last_updated: 2026-09-02
+version: 1.2
+last_updated: 2026-09-09
 owner: QA - Yemima
-status: pending
+status: draft
 audience: operator
 ---
 
@@ -21,6 +21,17 @@ Menu **Purchase Return** adalah bagian dari modul **Accounting** di OlshopERP (r
 
 Di daftar, detail, modal, dan export, supplier tampil sebagai **kode** saja (semua role). Kamu tetap bisa **cari** by nama atau kode. Nama supplier boleh muncul di **Print**. Tidak ada field nama tambahan di Basic Information.
 
+## Unit Price & Total Price Return (TO-BE)
+
+Di **edit** dan **show**, section detail menampilkan:
+
+- **Unit Price (Before VAT)** — harga satuan after discount, before VAT (ikut unit transaksi return).
+- **Total Price Return** — Qty Return × Unit Price.
+
+Saat **add SKU** (modal Available Product) dan **edit detail SKU**, Unit Price (Before VAT) juga terlihat (read-only). Total Price Return khusus di tabel detail.
+
+Detail: [requirement §2](./requirement.md).
+
 ## Relasi Account Payment
 
 Purchase Return dapat menghasilkan **Debit Note** yang dipakai sebagai sumber dana di [Account Payment](../accounting-supplier-payment/knowledge-base.md).
@@ -31,6 +42,6 @@ Detail: [Account Payment requirement §14](../accounting-supplier-payment/requir
 
 ## Status dokumentasi
 
-- Knowledge Base: **pending** (plus aturan supplier code-only)
-- Requirement: **draft** — lihat [requirement.md](./requirement.md) § Supplier Display
-- Technical: **draft** — lihat [technical.md](./technical.md) (`SUPPLIER_DISPLAY_MODE`)
+- Knowledge Base: **draft** (supplier code-only + Unit Price TO-BE)
+- Requirement: **draft** — [requirement.md](./requirement.md)
+- Technical: **draft** — [technical.md](./technical.md)

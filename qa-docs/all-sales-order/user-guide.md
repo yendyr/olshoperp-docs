@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.5
-last_updated: 2026-09-04
+version: 1.7
+last_updated: 2026-09-09
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.9
+source_version: 1.11
 owner: QA - Yemima
 status: review
 ---
@@ -51,6 +51,8 @@ flowchart LR
 ### Siklus status
 
 Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menambah status.
+
+**(TO-BE · ETM-15859)** Untuk order **platform**: **Void** membatalkan tanpa membuat order baru dari sync. Kalau perlu order marketplace hidup lagi, pakai **Recreate** (show, setelah void) atau **Void & Recreate**. Jangan mengandalkan sync terjadwal untuk “menghidupkan” order void.
 
 ---
 
@@ -112,6 +114,14 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 ### D. Recheck
 
 1. Jalankan **Recheck Failed Process** → cek ulang icon/error.
+2. Icon **Unavailable Stock** dievaluasi memakai **Processing Order Date** di Unassign Wave (atau waktu sekarang jika tanggal kosong). **Last Checked** di tooltip seharusnya menampilkan tanggal evaluasi itu.
+
+### E. Void / Recreate platform (TO-BE)
+
+1. **Void** order platform → ID marketplace tetap; sync tidak auto-create.
+2. Buka **show** order void → **Recreate** bila perlu SO baru dari marketplace.
+3. Atau **Void & Recreate** (ex Void & Clone) untuk void + recreate sekaligus.
+4. SO baru = tipe **platform**, bukan Sales Order General.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -123,6 +133,7 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 - Tombol import di ASO **identik** dengan Dev - Sales Order.  
 - Platform Order ID di baris general ≠ nomor order marketplace.  
 - Error Flag **Below Benchmark COGS** (harga sebelum pajak di bawah HPP acuan) berlaku di ASO sama seperti di Sales Platform / Dev Sales Order — filter lewat label Error Flag; auto-approve bisa ditahan, approve manual tetap boleh.
+- **(TO-BE)** Setelah Void, sync **tidak** boleh bikin SO baru sendiri — pakai **Recreate** / **Void & Recreate** (ETM-15859).
 
 ---
 

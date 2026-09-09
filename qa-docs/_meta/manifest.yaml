@@ -1380,7 +1380,7 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: draft
       requirement:
         file: requirement.md
         status: draft
@@ -2273,7 +2273,6 @@ menus:
         - Modules/SupplyChain/Exports/OrderProcessingTrace*
         - Modules/SupplyChain/Jobs/OrderProcessingTrace*
       frontend:
-        - olshoperp-frontend/src/pages/SupplyChain/Report/OrderProcessingTrace/**/*
         - olshoperp-frontend/src/pages/SupplyChain/Report/OrderProcessingTrace/**/*
   random-sku:
     menu_name: "Random SKU"

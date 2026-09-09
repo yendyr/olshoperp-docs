@@ -2,8 +2,8 @@
 doc_type: technical
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.9
-last_updated: 2026-09-04
+version: 1.11
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: review
 related_docs:
@@ -11,6 +11,7 @@ related_docs:
   - ./requirement.md
   - ../sales-order-general/technical.md
   - ../omni-sales-platform/technical.md
+  - ../omni-unassign-wave/technical.md
 ---
 
 # All Sales Order — Technical Documentation
@@ -18,8 +19,10 @@ related_docs:
 **UI:** `/businessdevelopment/all-sales-order`  
 **API list:** `businessdevelopment/all-sales-order`  
 **Shared Omni:** `omnichannel/sales-order/*` (`type=all` / general endpoints)  
-**Behavior:** [requirement.md](./requirement.md) v1.9 · import general → [SOG technical](../sales-order-general/technical.md)
+**Behavior:** [requirement.md](./requirement.md) v1.11 · import general → [SOG technical](../sales-order-general/technical.md)
 
+> **1.11 (2026-09-09):** Void / Void & Recreate / Recreate + sync gate — [requirement §5.8](./requirement.md); ETM-15859; kanonik SP.  
+> **1.10 (2026-09-08):** Unavailable Stock FIFO date = Processing Order Date; Last Checked Expected — [requirement §5.4a](./requirement.md); GAP-ASO-07 / GAP-UW-06.  
 > **1.9 (2026-09-04):** Log Data tab **Pending Orders** + pill **Unmatched Bookings** — [requirement §5.7](./requirement.md); ETM-15798 (paritas SP).  
 > **1.8 (2026-09-03):** Edit detail platform sebelum approve — paritas [SP §6.8](../omni-sales-platform/requirement.md) / [requirement §5.6](./requirement.md); ETM-15748 / ETM-15749.  
 > **1.7 (2026-09-02):** Extract bundle price > 0 — [requirement §5.5](./requirement.md); ETM-15732.  
@@ -32,6 +35,8 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.11 | 2026-09-09 | Void / Recreate TO-BE (ETM-15859); defer prefix on Void; sync skip create on void+exact ID; order lock on recreate |
+| 1.10 | 2026-09-08 | §5.4a FIFO = POD via `getStockDate()`; Last Checked Expected vs `error_info.updated_at` (GAP-ASO-07) |
 | 1.9 | 2026-09-04 | Log Data Pending Orders + Unmatched Bookings (ETM-15798); store hold orphans dual-path booking |
 | 1.8 | 2026-09-03 | Paritas edit detail platform sebelum approve (ETM-15748); kanonik SP §6.8 |
 | 1.7 | 2026-09-02 | Extract bundle: reject when `each_price` ≤ 0; shared `extract-bundle` + `BundleRandomFlag.vue` (ETM-15732) |
@@ -46,7 +51,8 @@ related_docs:
 | `olshoperp-frontend/src/pages/BusinessDevelopment/Report/AllSalesOrder/DataList.vue` | Gabungan datalist + pills; `show-recheck-error`; entry **Log Data** |
 | `.../Omni/SalesOrder/components/ActionButtons.vue` | Slot create + optional Recheck |
 | `.../Omni/SalesOrder/components/RevalidateFlagButton.vue` | Tombol Recheck + lock poll/echo |
-| `.../Omni/SalesOrder/components/ErrorFlag.vue` | Tooltip + optional `Last Checked` dari `lastUpdated` |
+| `.../Omni/SalesOrder/components/ErrorFlag.vue` | Tooltip + optional `Last Checked` dari `lastUpdated` (= AS-IS `error_info.updated_at`; Expected = stock eval date — §5.4a / GAP-ASO-07) |
+| Shared BE stock date | `SalesOrderValidationLogic::getStockDate()` → `ScmSetting.sales_order_processing_date` \|\| `now()` |
 | Log Data slideover (shared / ASO) | **TO-BE:** tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798) |
 | `.../AllSalesOrder/Form.vue` | Wrapper form `from-all-sales-order` — pilih General vs Platform form by tipe |
 | `.../Omni/SalesOrder/components/BundleRandomFlag.vue` | Flag bundle + **Extract** → `POST …/extract-bundle` |
@@ -155,6 +161,8 @@ sequenceDiagram
 ## 8. Known Issues
 
 - GAP-ASO-01 Partial — tombol ada; residual Last Checked per-icon + O-01…O-03 + `in_progress` hardcode
+- GAP-ASO-07 — Last Checked Expected = `getStockDate()` (POD / now); AS-IS = `error_info.updated_at`
+- GAP-ASO-08 / GAP-SPD-01 — Void vs Recreate + sync anti auto-create (ETM-15859); touchpoints: approval/void path, platform sync services, FE show Recreate + rename Void & Clone
 - GAP-ASO-03 / GAP-BM-13 — Below Benchmark COGS Error Flag UX + filter
 - GAP-APR-01 (dampak baris platform)
 - Related: [omni-sales-platform technical §13](../omni-sales-platform/technical.md) · [sales-order-general](../sales-order-general/technical.md) · [Benchmark COGS technical §6.6](../accounting-product-benchmark-price/technical.md)

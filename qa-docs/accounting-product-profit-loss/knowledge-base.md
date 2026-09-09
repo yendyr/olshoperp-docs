@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-product-profit-loss
 menu_name: "Product Profit Loss"
-version: 1.4
-last_updated: 2026-08-11
+version: 1.5
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -14,7 +14,7 @@ sections:
 
 # Product Profit Loss — Knowledge Base
 
-> **DRAFT** — Dokumentasi operator AS-IS + TO-BE Gross Sales Before VAT (11 Agustus 2026). Belum final review QA/PM.
+> **DRAFT** — AS-IS + TO-BE Gross Before VAT + TO-BE Gross/Qty **setelah outbound** (ETM-15857). Belum final review QA/PM.
 
 ## 1. Apa itu Product Profit Loss?
 
@@ -30,9 +30,9 @@ Menu ini **hanya untuk melihat laporan** — tidak bisa menambah atau mengubah t
 
 | Istilah | Arti |
 |---------|------|
-| Qty Sold | Jumlah terjual dikonversi ke **Primary Unit** produk |
+| Qty Sold | **TO-BE:** qty outbound (primary unit). AS-IS: qty order approved. |
 | Primary Unit | Satuan utama SKU di Master Product (bukan unit di order) |
-| Gross Sales | Total harga jual per SKU **sebelum PPN** (Price Before VAT setelah diskon item) — **TO-BE**; AS-IS masih termasuk PPN. **Tanpa** diskon tambahan level summary order |
+| Gross Sales | **TO-BE:** Price Before VAT × **qty yang sudah outbound** (bukan full order saat baru approve). AS-IS lama: qty order (dan/atau still incl VAT sebelum G-13). |
 | Total COGS | Nilai stok keluar (HPP) dari Outbound yang sudah Approved (**tanpa PPN**) |
 | Net Profit | Gross Sales − Total COGS |
 | Profit Margin (%) | Net Profit ÷ Gross Sales × 100% |
@@ -166,7 +166,7 @@ Product Profit Loss **membaca** data dari 3 menu utama berikut. Jika data di men
 | **Path** | `/businessdevelopment/sales-order-general` |
 | **Doc** | [Sales Order General](../sales-order-general/knowledge-base.md) |
 
-**Fungsi untuk PPL:** Sumber **Qty Sold** dan **Gross Sales** dari penjualan internal (manual, import Excel, POS).
+**Fungsi untuk PPL:** Sumber **harga line** (Before VAT) untuk Gross. **TO-BE:** Qty/Gross baru dihitung setelah outbound ref SOD.
 
 **Peran operator:** Buat/approve SO → pastikan masuk alur gudang (wave, WH Process) → setelah outbound approve, COGS ikut terhitung.
 
@@ -180,7 +180,7 @@ Product Profit Loss **membaca** data dari 3 menu utama berikut. Jika data di men
 | **Path** | `/omni/sales-order` |
 | **Doc** | [Sales Order General / Platform](../sales-order-general/knowledge-base.md) *(satu modul SO)* |
 
-**Fungsi untuk PPL:** Sumber **Qty Sold** dan **Gross Sales** dari order marketplace (Shopee, TikTok, Lazada, dll.) yang di-sync lewat **Store**.
+**Fungsi untuk PPL:** Sumber **harga line** platform. **TO-BE:** Qty/Gross ikut outbound (sama aturan General).
 
 **Peran operator:** Authorize store → sync order → approve SO platform → **Send to Default Waves** (penting untuk SKU random) → fulfillment sampai outbound approve.
 
@@ -196,7 +196,7 @@ Kolom **Platform** di modal detail PPL berasal dari order tipe ini.
 | **Path** | `/supplychain/mutation-outbound` |
 | **Doc** | [Outbound External](../supplychain-mutation-outbound/knowledge-base.md) |
 
-**Fungsi untuk PPL:** Sumber **Total COGS** (HPP) — hanya outbound **Approved** yang punya **referensi ke detail Sales Order**.
+**Fungsi untuk PPL:** Sumber **Qty Sold**, **Gross Sales** (× harga SOD), dan **Total COGS** — outbound **Approved** + ref SOD (**TO-BE** ETM-15857; AS-IS COGS saja).
 
 **Peran operator:** Pastikan outbound order sudah **Approved**. Outbound manual tanpa referensi SO **tidak** mempengaruhi COGS di laporan ini.
 
@@ -205,9 +205,9 @@ Kolom **Platform** di modal detail PPL berasal dari order tipe ini.
 ### 7.4 Ringkasan alur
 
 ```
-Sales Order (General / Platform)  →  Qty Sold + Gross Sales
-         ↓ fulfillment
-Outbound External (ref SO, Approved)  →  Total COGS
+AS-IS:  SO Approved → Qty/Gross | Outbound Approved → COGS
+TO-BE (ETM-15857): Outbound Approved (ref SOD) → Qty Sold + Gross Sales + Total COGS bersama
+                  (tanpa outbound → ketiga metrik = 0)
          ↓
 Product Profit Loss  →  Net Profit + Margin per SKU
 ```
@@ -273,7 +273,7 @@ Data laporan otomatis terbentuk dari transaksi yang **sudah ada** di sistem.
 | Gejala | Penyebab | Solusi |
 |--------|----------|--------|
 | Loading lama pertama buka | Generate snapshot per hari | Tunggu; buka lagi nanti lebih cepat |
-| Total COGS = 0, Qty/Gross terisi | Order belum Outbound Approved | Normal — proses outbound dulu |
+| Total COGS = 0, Qty/Gross terisi | Order belum Outbound Approved | **AS-IS** normal · **TO-BE:** Qty/Gross juga 0 sampai outbound |
 | SKU bundle tidak muncul | Value di komponen | Cek komponen bundle |
 | SKU random tidak muncul | Belum Send to Default Waves | Proses wave dulu |
 | Order Approved tidak muncul sama sekali | `wh_process_id` masih kosong | Assign Warehouse Process di SO atau Send to Default Waves |
@@ -288,6 +288,9 @@ Data laporan otomatis terbentuk dari transaksi yang **sudah ada** di sistem.
 
 **Q: Apa beda Primary Unit di sini dengan unit di order?**  
 A: Primary Unit dari Master Product. Di modal detail, Qty sudah dikonversi ke primary unit.
+
+**Q: Kenapa Gross/Qty menunggu outbound? (TO-BE ETM-15857)**  
+A: Supaya Gross, Qty Sold, dan Total COGS muncul **bersamaan** setelah fulfillment outbound — margin tidak menyesatkan.
 
 **Q: Kenapa Gross Sales tidak termasuk PPN? (TO-BE)**  
 A: Supaya sama dengan Total COGS yang juga tanpa PPN. Kalau Gross include PPN, margin terlihat lebih tinggi. Sumbernya = **Price Before VAT** di detail Sales Order (setelah diskon baris).

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-product-profit-loss
 menu_name: "Product Profit Loss"
-version: 1.4
-last_updated: 2026-08-11
+version: 1.5
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -13,12 +13,13 @@ related_docs:
 
 # Product Profit Loss — Technical Documentation
 
-> **DRAFT** — AS-IS codebase + TO-BE Gross Sales Before VAT (**G-13**, 11 Agustus 2026). Belum final review QA/PM.
+> **DRAFT** — AS-IS + TO-BE G-13 Before VAT + TO-BE **G-14** Gross/Qty inline outbound (ETM-15857). Belum final review QA/PM.
 
 ## 0. Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5 | 2026-09-09 | TO-BE Gross/Qty from outbound×SOD price (G-14 / ETM-15857); `generateDailyData` merge path |
 | 1.4 | 2026-08-11 | TO-BE Gross Sales = Price Before VAT; FE tooltip; §6.1 / §9 |
 | 1.3 | 2026-06-29 | Related menus & AS-IS docs |
 
@@ -345,9 +346,9 @@ Detail peran bisnis: [requirement.md §6](./requirement.md).
 
 | Menu terkait | Sidebar | Route | Data ke PPL |
 |--------------|---------|-------|-------------|
-| Sales Order General | Dev - Sales Order | `businessdevelopment/sales-order-general` | Qty Sold, Gross Sales (`type_sales_order = General`) |
-| Sales Platform | Dev - Sales Platform | `omni/sales-order` | Qty Sold, Gross Sales (`type_sales_order = Platform`) |
-| Outbound External | Outbound External | `supplychain/mutation-outbound` | Total COGS (approved, ref `SalesOrderDetail`) |
+| Sales Order General | Dev - Sales Order | `businessdevelopment/sales-order-general` | Harga line SOD; **AS-IS** juga Qty/Gross dari SO |
+| Sales Platform | Dev - Sales Platform | `omni/sales-order` | Harga line SOD platform |
+| Outbound External | Outbound External | `supplychain/mutation-outbound` | **TO-BE:** Qty Sold + Gross + Total COGS (approved, ref SOD) |
 
 ### 12.1 Tabel & join (AS-IS)
 

@@ -2,15 +2,15 @@
 doc_type: requirement
 menu: accounting-product-profit-loss
 menu_name: "Product Profit Loss"
-version: 1.4
-last_updated: 2026-08-11
+version: 1.5
+last_updated: 2026-09-09
 owner: QA - Yemima
 status: draft
 ---
 
 # Product Profit Loss — Requirement Documentation
 
-> **DRAFT** — Konsolidasi requirement bisnis (23 Juni 2026) + verifikasi AS-IS codebase (29 Juni 2026) + TO-BE Gross Sales Before VAT (11 Agustus 2026). Belum final review QA/PM.
+> **DRAFT** — AS-IS + TO-BE Gross Before VAT (G-13 / ETM-15485) + TO-BE Gross/Qty **inline outbound** (G-14 / ETM-15857). Belum final review QA/PM.
 
 **Modul:** Accounting  
 **Menu UI:** FA → Report → Product Profit Loss (`/accounting/product-profit-loss`)  
@@ -22,6 +22,7 @@ status: draft
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.5 | 2026-09-09 | QA - Yemima | TO-BE **Qty Sold** + **Gross Sales** inline Outbound Detail (qty outbound × SOD Before VAT); G-14 / ETM-15857
 | 1.4 | 2026-08-11 | QA - Yemima | TO-BE **Gross Sales** = Price Before VAT (setelah disc line); tooltip revisi; GAP **G-13**; turunan Net/Margin/Avg ikut |
 | 1.0 | 2026-06-23 | QA - Yemima | Requirement bisnis awal (sumber: diskusi Finance) |
 | 1.1 | 2026-06-29 | QA - Yemima | Verifikasi codebase; tambah AS-IS vs TO-BE; gap analysis; section import (N/A) |
@@ -173,11 +174,13 @@ Mata uang tampilan: **IDR** (primary currency via `CurrencyProcess::getPrimaryCu
 | Kolom | Formula / Sumber |
 |-------|------------------|
 | Product SKU / Name | `product_sku`, `product_name` dari snapshot |
-| Qty Sold | `SUM(sod.sales_order_quantity_in_base_unit) / stock_conversion_rate` per SO+product, lalu `SUM` per SKU |
+| Qty Sold (**AS-IS**) | `SUM(sod.sales_order_quantity_in_base_unit) / stock_conversion_rate` per SO+product (tanpa syarat outbound) |
+| Qty Sold (**TO-BE v1.5 · ETM-15857**) | `SUM(outbound_quantity_in_base_unit)` Outbound **Approved** ref SOD → konversi primary unit — **sama basis** dengan COGS |
 | Primary Unit | `scm_units.code` dari `p.stock_unit_id` |
-| Gross Sales (**AS-IS**) | `each_price` (atau before discount) × discount% × **VAT rule** × qty × `exchange_rate`; tanpa additional discount summary order |
-| Gross Sales (**TO-BE v1.4**) | **Price Before VAT** (setelah disc line, tanpa PPN) × qty × `exchange_rate` — setara kolom SO detail / accessor after-discount-before-VAT; **tanpa** VAT include/exclude multiplier; tanpa additional disc/cost header |
-| Total COGS | Outbound approved: `somd.outbound_quantity_in_base_unit × sis.each_price_before_vat`, proporsional ke primary unit (**tidak berubah**) |
+| Gross Sales (**AS-IS**) | Price (historis incl. VAT rules) × **qty order** × `exchange_rate` — tanpa syarat outbound |
+| Gross Sales (**TO-BE v1.4**) | **Price Before VAT** (after disc line) × **qty order** × `exchange_rate` — G-13 / ETM-15485 |
+| Gross Sales (**TO-BE v1.5 · ETM-15857**) | **Price Before VAT** (after disc line dari SOD) × **qty outbound** × `exchange_rate` — **inline outbound**; tanpa outbound → **0** |
+| Total COGS | Outbound approved: `somd.outbound_quantity_in_base_unit × sis.each_price_before_vat` (**tidak berubah**) |
 | Net Profit | Gross Sales − Total COGS *(ikut Gross baru)* |
 | Profit Margin (%) | `(Net Profit / Gross Sales) × 100`; jika Gross Sales = 0 → 0 |
 | Avg. Selling Price | Gross Sales / Qty Sold *(ikut Gross baru → rata-rata sebelum PPN)* |
@@ -202,6 +205,19 @@ Mata uang tampilan: **IDR** (primary currency via `CurrencyProcess::getPrimaryCu
 **TO-BE:** `The total selling amount based on Price Before VAT from Sales Order line details (after line discount, excluding VAT), converted to primary currency. Order-level additional discounts/costs are not included.`
 
 Lihat **G-13**.
+
+#### 5.1.3 Gross / Qty Sold — pengakuan outbound (TO-BE v1.5 · ETM-15857)
+
+**Masalah AS-IS:** Gross & Qty dari full SO approved; Total COGS baru setelah outbound → Net/Margin menyesatkan (Gross penuh + COGS 0).
+
+| Kondisi | Expected TO-BE |
+|---------|----------------|
+| SO Approved, belum Outbound Approved (ref SOD) | Qty Sold = 0, Gross = 0, Total COGS = 0 |
+| Outbound Approved partial (mis. 4 dari 10) | Qty/Gross/COGS hanya untuk **4** |
+| Outbound penuh | Qty/Gross/COGS selaras qty order (basis outbound) |
+| Outbound tanpa ref SOD | Tidak masuk Gross maupun COGS |
+
+**Kartu:** [ETM-15857](https://erpintegration.atlassian.net/browse/ETM-15857) · Request ID `recvuwsLhHaGar` · **G-14**.
 
 ---
 
@@ -256,7 +272,7 @@ Query `generateDailyData()` hanya mengambil order yang **sudah terikat ke gudang
 | `transaction_status` Approved atau Processed | ✅ |
 | `wh_process_id` NOT NULL | ✅ — lihat [§5.2](#52-aturan-wh_process_id-warehouse-process) |
 | `deleted_at` null (SO & detail) | ✅ |
-| Belum Outbound Approved | ✅ masuk; COGS & turunannya = 0 |
+| Belum Outbound Approved | **AS-IS:** ✅ masuk Gross/Qty; COGS = 0 · **TO-BE v1.5:** tidak menyumbang Qty/Gross/COGS (0) |
 | SKU bundle parent | ❌ (exclude) |
 | SKU variant random (master) | ❌ (exclude saat generate) |
 | Outbound manual tanpa referensi SO detail | ❌ (tidak masuk HPP query) |
@@ -374,7 +390,7 @@ flowchart LR
 | **Total COGS** | `SUM(outbound_quantity_in_base_unit × each_price_before_vat)` per SO + product |
 | **Syarat masuk HPP** | Outbound **Approved** + `transaction_reference_class = SalesOrderDetail` |
 | **Outbound manual** | Tanpa referensi SO detail → **tidak** masuk kalkulasi COGS PPL |
-| **Jika belum Outbound Approved** | Qty Sold & Gross Sales tetap terhitung; **Total COGS = 0** |
+| **Jika belum Outbound Approved** | **AS-IS:** Qty/Gross terhitung; COGS = 0 · **TO-BE v1.5 (ETM-15857):** Qty/Gross/COGS = **0** (inline outbound) |
 
 **Yang operator lakukan di menu / alur terkait (dampak ke PPL):**
 
@@ -398,8 +414,8 @@ flowchart LR
 
 | Metrik PPL | Menu sumber | Kondisi |
 |------------|-------------|---------|
-| Qty Sold | Sales Order General + Sales Platform | SO Approved/Processed, `wh_process_id` NOT NULL |
-| Gross Sales | Sales Order General + Sales Platform | Formula per detail item (tanpa additional disc summary) |
+| Qty Sold | **TO-BE:** Outbound External *(ref SOD)* (+ harga dari SO) | Outbound Approved; AS-IS masih dari qty SO |
+| Gross Sales | **TO-BE:** SOD Before VAT × qty outbound | Inline outbound; AS-IS = qty order |
 | Total COGS | Outbound External *(ref SO)* | Outbound Approved, referensi `SalesOrderDetail` |
 | Net Profit / Margin | Kalkulasi PPL | Gross − COGS |
 | Store / Platform label | Sales Platform (+ General) | Denormalized ke snapshot |
@@ -444,6 +460,7 @@ Requirement end user **tidak membahas** topik berikut. Perilaku codebase **diper
 | # | Item | Requirement | AS-IS | Action |
 |---|------|-------------|-------|--------|
 | **G-13** | Gross Sales Before VAT + tooltip | §5.1 / §5.1.2 | Gross include/after VAT; tooltip “including VAT” | **Improvement** — samakan basis dengan COGS (tanpa PPN) |
+| **G-14** | Gross/Qty Sold inline outbound (selaras COGS) | §5.1 / §5.1.3 | Gross/Qty dari full SO qty tanpa outbound | **Improvement** — [ETM-15857](https://erpintegration.atlassian.net/browse/ETM-15857) |
 | **G-01** | Modal detail 14 kolom audit | §6.2 | 6 kolom | **Tim dev akan implementasi** sesuai requirement |
 | **G-02** | Advanced Filter SearchBuilder | §4.2 | `advanced_filter=false` | **Tim dev akan implementasi** (`advanced_filter=true` + operator per kolom) |
 
@@ -490,7 +507,7 @@ Jika requirement masa depan menambah import, buat section terpisah di menu sumbe
 |----------|---------|----------------|
 | T-01 | Buka menu pertama kali (periode 3 bln) | Overlay calculating; progress bar; data muncul setelah batch selesai |
 | T-02 | Period > 3 bulan | Error toast FE |
-| T-03 | Order Approved tanpa Outbound | SKU muncul; Total COGS = 0 |
+| T-03 | Order Approved tanpa Outbound | **AS-IS:** SKU muncul; Gross/Qty terisi; COGS = 0 · **TO-BE v1.5:** Qty/Gross/COGS = 0 |
 | T-04 | Order bundle | Parent tidak muncul; komponen muncul |
 | T-05 | SKU random belum wave | Tidak muncul di datalist |
 | T-06 | Refresh Data | Snapshot periode dihapus & dihitung ulang |
@@ -506,6 +523,9 @@ Jika requirement masa depan menambah import, buat section terpisah di menu sumbe
 ---
 
 ## 11. FAQ (Requirement + AS-IS)
+
+**Q: Kenapa Gross Sales menunggu outbound? (TO-BE ETM-15857)**  
+A: Supaya Gross, Qty Sold, dan Total COGS **inline** — tidak ada Gross penuh + COGS 0 yang menyesatkan margin.
 
 **Q: Kenapa Total COGS = 0 padahal Qty Sold terisi?**  
 A: Order belum punya Outbound Approved — perilaku normal (§5.2).
