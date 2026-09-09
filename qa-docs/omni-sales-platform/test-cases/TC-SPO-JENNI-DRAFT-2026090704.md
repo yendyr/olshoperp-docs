@@ -1,9 +1,27 @@
 ---
-code: PENDING-JENNI-2026090704
+doc_type: e2e-test-case
+tc_code: PENDING-JENNI-2026090704
+menu: omni-sales-platform
+menu_name: "Sales Platform"
+test_type: regression
 title: Regresi Pemrosesan Void & Clone untuk Sales Order Internal / General (Non-Platform)
+summary: "Memastikan regresi void & clone untuk Sales Order General/Internal tetap berjalan sesuai ketentuan."
+status: draft
+owner: QA - Jeiniffer
+last_updated: 2026-09-07
+requirement_ref: "qa-docs/omni-sales-platform/requirement.md"
+automated: false
+automated_spec: null
 origin_jira: ETM-15717
-first_execution: null
-last_execution: null
+first_execution:
+  at: null
+  jira: null
+  via: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-SPO-JENNI-DRAFT-2026090704: Regresi Pemrosesan Void & Clone untuk Sales Order Internal / General (Non-Platform)

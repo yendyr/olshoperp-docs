@@ -1,9 +1,27 @@
 ---
-code: PENDING-JENNI-2026090703
+doc_type: e2e-test-case
+tc_code: PENDING-JENNI-2026090703
+menu: omni-sales-platform
+menu_name: "Sales Platform"
+test_type: happy
 title: Fitur Re-sync Marketplace pada Order Sales Platform Hasil Void & Clone
+summary: "Memastikan fitur re-sync marketplace bekerja dengan baik pada order Sales Platform hasil void & clone."
+status: draft
+owner: QA - Jeiniffer
+last_updated: 2026-09-07
+requirement_ref: "qa-docs/omni-sales-platform/requirement.md"
+automated: false
+automated_spec: null
 origin_jira: ETM-15717
-first_execution: null
-last_execution: null
+first_execution:
+  at: null
+  jira: null
+  via: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-SPO-JENNI-DRAFT-2026090703: Fitur Re-sync Marketplace pada Order Sales Platform Hasil Void & Clone

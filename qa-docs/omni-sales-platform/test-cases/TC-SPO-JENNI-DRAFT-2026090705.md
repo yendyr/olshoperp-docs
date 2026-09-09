@@ -1,9 +1,27 @@
 ---
-code: PENDING-JENNI-2026090705
+doc_type: e2e-test-case
+tc_code: PENDING-JENNI-2026090705
+menu: omni-sales-platform
+menu_name: "Sales Platform"
+test_type: happy
 title: End-to-End Processing Order Sales Platform Hasil Void & Clone (Send to Default Waves hingga Shipped)
+summary: "Memastikan alur E2E processing order Sales Platform hasil void & clone dapat diproses hingga Shipped."
+status: draft
+owner: QA - Jeiniffer
+last_updated: 2026-09-07
+requirement_ref: "qa-docs/omni-sales-platform/requirement.md"
+automated: false
+automated_spec: null
 origin_jira: ETM-15717
-first_execution: null
-last_execution: null
+first_execution:
+  at: null
+  jira: null
+  via: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-SPO-JENNI-DRAFT-2026090705: End-to-End Processing Order Sales Platform Hasil Void & Clone (Send to Default Waves hingga Shipped)

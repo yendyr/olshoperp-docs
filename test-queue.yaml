@@ -870,3 +870,95 @@ ETM-15717:
   jira_status: Done
   jira_type: Error
   summary: "[Sales Platform] Order hasil cloned dari proses void seharusnya tetap bertipe Sales Platform, bukan berubah menjadi Sales Order Internal/General"
+
+ETM-15820:
+  menu: businessdevelopment-sales-order-general
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Sales Order General] - Error 500 strtolower(): Argument #1 () must be of type string saat Advance Filter Kolom 'Trx. Status' Ditekan Enter"
+
+ETM-15824:
+  menu: omni-sales-platform
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Sales Platform] - Tombol Approve Muncul pada Halaman Detail Order saat Status Transaksi Masih DRAFT"
+
+ETM-15825:
+  menu: omni-skip-wave-process
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Skip Wave Process] - Tombol Counter Angka (Wave Success, Wave Failed, Picked Success) Tidak Menampilkan Datalist Order saat Diklik"
+
+ETM-15834:
+  menu: omni-skip-wave-process
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Skip Wave Process] - Advance Filter Kolom 'Wave Progress' Equals 100 Menampilkan Data Batch yang Wave Progress-nya Tidak Sama Dengan 100%"
+
+ETM-15835:
+  menu: supplychain-mutation-outbound
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Mutation Outbound] - Inline Edit Qty di Datalist Group View Memicu Soft Delete Data SKU pada Tabel Middle Details"
+
+ETM-15836:
+  menu: accounting-product-profit-loss
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Product Profit Loss] - Export All Data Gagal Error 500 Memory Size Exhausted saat Kapasitas Rows 5.000++"
+
+ETM-15885:
+  menu: manage-platform-product
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Platform Product] - Gagal Update SKU Code dan Sync Stuck 'In Progress' saat Meng-sync Perubahan SKU yang Menghapus Karakter Enter dari Seller Center"
+
+ETM-15821:
+  menu: all-sales-order
+  intent: extend
+  status: in_overview
+  reuse: []
+  drafts:
+    - PENDING-JENNI-2026090901
+    - PENDING-JENNI-2026090902
+    - PENDING-JENNI-2026090903
+    - PENDING-JENNI-2026090904
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[All Sales Order] Order unit price under benchmark cogs jadikan 1 di Phills Failed Process"

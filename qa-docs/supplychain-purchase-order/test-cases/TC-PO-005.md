@@ -61,7 +61,8 @@ last_execution:
   at: "2026-09-03"
   jira: "ETM-15598"
   status: passed
-  via: "manual:p"
+  via: "manual:QA - Yemima"
+  notes: "Pengujian manual import detail PO partial success berhasil dieksekusi di Staging."
 ---
 
 # Catatan QA & Referensi

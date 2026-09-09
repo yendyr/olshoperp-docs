@@ -54,6 +54,14 @@ Prefix folder: `ASO`.
 `TC-ASO-004` s/d `TC-ASO-010` — Dibuat untuk pengujian fitur Pill Filter `Net Sales < COGS` pada card origin [ETM-15446](https://erpintegration.atlassian.net/browse/ETM-15446).  
 `TC-ASO-011` s/d `TC-ASO-015` — Dibuat untuk pengujian fitur Extract This Bundle pada card origin [ETM-15605](https://erpintegration.atlassian.net/browse/ETM-15605).  
 `TC-ASO-016` s/d `TC-ASO-021` — Dibuat untuk pengujian fitur Extract This Bundle pada card origin [ETM-15637](https://erpintegration.atlassian.net/browse/ETM-15637).  
-`TC-ASO-022` s/d `TC-ASO-027` — Dibuat untuk validasi Price > 0 pada tombol Extract Bundle pada card origin [ETM-15732](https://erpintegration.atlassian.net/browse/ETM-15732).  
 `TC-ASO-028` s/d `TC-ASO-037` — Dibuat untuk pengujian Edit detail SO platform sebelum approve pada card origin [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748).  
 `PENDING-20260907110300` — Dibuat untuk pengujian Advanced Filter >2 parameter pada card origin [ETM-15819](https://erpintegration.atlassian.net/browse/ETM-15819).
+
+### ETM-15821 — [All Sales Order] Order unit price under benchmark cogs jadikan 1 di Phills Failed Process
+
+| Kode Draf | Judul Test Case | File | Status |
+|---|---|---|---|
+| `PENDING-JENNI-2026090901` | Verifikasi Takedown Pill Button Net Sales < COGS dari UI Datalist All Sales Order | [`TC-ASO-JENNI-DRAFT-2026090901.md`](./TC-ASO-JENNI-DRAFT-2026090901.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026090902` | Konsolidasi Order Under / Below Benchmark COGS ke Datalist Pill Button Failed Process | [`TC-ASO-JENNI-DRAFT-2026090902.md`](./TC-ASO-JENNI-DRAFT-2026090902.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026090903` | Tampilan Icon Error fa-arrow-trend-down pada Kolom Error Flag untuk Order Under Benchmark COGS | [`TC-ASO-JENNI-DRAFT-2026090903.md`](./TC-ASO-JENNI-DRAFT-2026090903.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026090904` | Tampilan Multiple Icon Indicator pada Kolom Error Flag untuk Transaksi dengan > 1 Error Flag | [`TC-ASO-JENNI-DRAFT-2026090904.md`](./TC-ASO-JENNI-DRAFT-2026090904.md) | DRAFT 🟡 |

@@ -1,9 +1,27 @@
 ---
-code: PENDING-JENNI-2026090701
+doc_type: e2e-test-case
+tc_code: PENDING-JENNI-2026090701
+menu: omni-sales-platform
+menu_name: "Sales Platform"
+test_type: happy
 title: Void & Clone Order Sales Platform — Tipe Order Baru Tetap Sales Platform & Mempertahankan Platform Order ID
+summary: "Memastikan order hasil void & clone dari Sales Platform tetap bertipe Sales Platform dan mempertahankan Platform Order ID."
+status: draft
+owner: QA - Jeiniffer
+last_updated: 2026-09-07
+requirement_ref: "qa-docs/omni-sales-platform/requirement.md"
+automated: false
+automated_spec: null
 origin_jira: ETM-15717
-first_execution: null
-last_execution: null
+first_execution:
+  at: null
+  jira: null
+  via: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-SPO-JENNI-DRAFT-2026090701: Void & Clone Order Sales Platform — Tipe Order Baru Tetap Sales Platform & Mempertahankan Platform Order ID

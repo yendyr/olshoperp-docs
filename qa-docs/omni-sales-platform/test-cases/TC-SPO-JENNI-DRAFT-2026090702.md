@@ -1,9 +1,27 @@
 ---
-code: PENDING-JENNI-2026090702
+doc_type: e2e-test-case
+tc_code: PENDING-JENNI-2026090702
+menu: omni-sales-platform
+menu_name: "Sales Platform"
+test_type: happy
 title: Verifikasi Halaman Datalist & Detail Sales Platform untuk Order Hasil Void & Clone
+summary: "Memastikan order hasil void & clone muncul di datalist Sales Platform dan detail page sesuai."
+status: draft
+owner: QA - Jeiniffer
+last_updated: 2026-09-07
+requirement_ref: "qa-docs/omni-sales-platform/requirement.md"
+automated: false
+automated_spec: null
 origin_jira: ETM-15717
-first_execution: null
-last_execution: null
+first_execution:
+  at: null
+  jira: null
+  via: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-SPO-JENNI-DRAFT-2026090702: Verifikasi Halaman Datalist & Detail Sales Platform untuk Order Hasil Void & Clone

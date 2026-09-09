@@ -12,6 +12,15 @@ last_updated: 2026-09-03
 requirement_ref: "qa-docs/accounting-debit-note/requirement.md §5.1"
 automated: false
 automated_spec: null
+first_execution:
+  at: null
+  jira: null
+  via: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 execution_company:
   id: 112
   code: FAT
