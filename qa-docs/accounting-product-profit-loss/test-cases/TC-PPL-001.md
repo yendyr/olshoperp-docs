@@ -49,18 +49,26 @@ test_result:
   finished_at: "2026-08-21T17:23:45+07:00"
   executed_by: "playwright@gmail.com"
   environment: staging
-  log_summary: "Gross Sales terverifikasi berbasis Price Before VAT (DPP), tooltip header terverifikasi tidak lagi menyebutkan including VAT, dan seluruh metrik turunan konsisten."
+  log_summary: "Gross Sales terverifikasi berbasis Price Before VAT (DPP) pada SKU CHARM-BEAR-BEADS-Green (Total Qty 3 pcs dari SO-5U46819A & SO-5U45Y9MD, Gross Sales Rp 27.027,03 IDR), tooltip header terverifikasi tidak lagi menyebutkan including VAT, dan seluruh metrik turunan konsisten."
   report_url: null
 test_data_used:
-  - sku: "SKU-PPL-1787307820999"
-    product_id: 92401
-    product_name: "Produk Test PPL 1787307820999"
-    po_number: "PO-6A88272E"
-    inbound_number: "IN-5U71XMQ6"
-    benchmark_cogs: 80000
+  - sku: "CHARM-BEAR-BEADS-Green"
+    product_id: 58479
+    product_name: "[SKU Platform milik LUMICHARMS] Beads manik manik - Green"
+    sales_orders:
+      - code: "SO-5U46819A"
+        qty: 1
+        transaction_date: "2026-08-12"
+      - code: "SO-5U45Y9MD"
+        qty: 2
+        transaction_date: "2026-08-13"
+    period: "2026-07-01 s/d 2026-09-07"
+    total_qty_sold: 3
+    gross_sales_before_vat: 27027.0270
+    avg_selling_price: 9009.0090
     module: "Accounting / Product Profit Loss"
 run_history:
-  - date: "2026-08-21"
+  - date: "2026-09-07"
     status: passed
     jira_card: "ETM-15635"
 origin_jira: ETM-15485
@@ -70,22 +78,27 @@ first_execution:
   via: "legacy:test_result"
   jira: "ETM-15635"
 last_execution:
-  at: "2026-08-21T17:23:45+07:00"
+  at: "2026-09-07T15:40:00+07:00"
   jira: "ETM-15635"
   status: passed
-  via: "legacy:test_result"
+  via: "manual:QA - Yemima"
 ---
 
 # Catatan QA & Referensi Data Testing (Evidence)
 Mengacu pada card **ETM-15485** ([Product Profit Loss - Gross Sales based on Price Before VAT](https://erpintegration.atlassian.net/browse/ETM-15485)).
 - Jira Test Case: [ETM-15635](https://erpintegration.atlassian.net/browse/ETM-15635) (Done ✅).
 - Target Testing Company: **lumicharmsid** (ID: 153).
-- Request ID: .
+- Periode Filter: `2026-07-01` s/d `2026-09-07`.
+- Request ID: `none`.
 
-### Referensi Dokumen Transaksi End-to-End:
-1. **System Product Baru:**  (ID:  - *Produk Test PPL 1787307820999*)
-2. **Purchase Order (PO Without PR):**  (ID: , Supplier: *PT Bumi Hijau Lestari*, Inbound Price: *Rp 80.000*)
-3. **Purchase Inbound:**  (ID: , Warehouse: *Wh Utama*, Qty: , Price: *Rp 80.000*)
-4. **Benchmark COGS:** Terverifikasi tercatat pada menu *Product Benchmark Price* ()
-5. **Sales Order:** Transaksi Tax Included (DPP: *Rp 100.000*, VAT: *10% / Rp 10.000*, Selling Price: *Rp 110.000*)
-6. **Laporan Product Profit Loss:** Kolom Gross Sales terverifikasi mengambil nilai Before VAT (*Rp 200.000,00* untuk 2 pcs, bukan *Rp 220.000,00*).
+### Referensi Dokumen Transaksi & Verifikasi Laporan:
+1. **Master SKU:** `CHARM-BEAR-BEADS-Green` (ID: `58479` - *[SKU Platform milik LUMICHARMS] Beads manik manik - Green*)
+2. **Sales Order Valid dalam Periode:**
+   - **`SO-5U46819A`** (ID: `2515560`, Tanggal: `12-08-2026`, Status: `Processed`): Qty `1` pcs, Selling Price `Rp 10.000` (Tax Included) $\rightarrow$ Price Before VAT = `Rp 9.009,0090`. Outbound COGS = `Rp 5.000,00`.
+   - **`SO-5U45Y9MD`** (ID: `2515556`, Tanggal: `13-08-2026`, Status: `Approved`): Qty `2` pcs (2 line items @ 1 pcs), Selling Price `Rp 10.000` (Tax Included) $\rightarrow$ Price Before VAT = `Rp 9.009,0090` / pcs. Total Gross = `Rp 18.018,0180`.
+3. **Hasil Verifikasi Laporan Product Profit Loss (Datalist UI):**
+   - **Total Qty Sold:** `3` pcs
+   - **Gross Sales (Before VAT):** `Rp 27.027,03` (`27.027,0270` IDR $\rightarrow$ murni dari $3 \times 9.009,0090$ DPP, bukan Rp 30.000 include VAT).
+   - **Total COGS (HPP):** `Rp 5.000,00`
+   - **Total Net Sales / Profit:** `Rp 22.027,03`
+   - **Avg. Selling Price:** `Rp 9.009,01` (`9.009,0090` IDR $\rightarrow$ Gross Sales Before VAT ÷ Qty Sold).
