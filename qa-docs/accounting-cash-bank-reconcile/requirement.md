@@ -2,10 +2,10 @@
 doc_type: requirement
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
-version: 1.5
+version: 1.6
 last_updated: 2026-09-10
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [cash bank reconcile, bank reconcile, CBR, rekonsiliasi bank, cash reconcile]
 ---
 
@@ -28,6 +28,7 @@ aliases: [cash bank reconcile, bank reconcile, CBR, rekonsiliasi bank, cash reco
 | 1.0 | 2026-06-19 | QA - Yemima | Placeholder pending |
 | 1.2 | 2026-07-17 | QA - Yemima | Rewrite dari SoT v1.1 + AS-IS codebase: matching, import, approve; gap CBR-01..12; matrix implementasi |
 | 1.5 | 2026-09-10 | QA - Yemima | TO-BE Matching Slideover 2 arah + Quick Journal (ETM-15856); keputusan terkunci D1–D5; update §5.4 / §6 / gap / matrix |
+| 1.6 | 2026-09-10 | QA - Yemima | Promote 3 layer ke review; Feature Map + Lingo; user-guide v1.0 |
 
 ---
 

@@ -2,10 +2,10 @@
 doc_type: knowledge-base
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
-version: 1.5
+version: 1.6
 last_updated: 2026-09-10
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 aliases: [cash bank reconcile, bank reconcile, rekonsiliasi bank, CBR, BR reconcile]
 ---

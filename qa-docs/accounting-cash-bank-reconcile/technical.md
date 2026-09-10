@@ -2,10 +2,10 @@
 doc_type: technical
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
-version: 1.5
+version: 1.6
 last_updated: 2026-09-10
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [cash bank reconcile technical, CBR API, bank reconciliation code]
 ---
 
@@ -13,7 +13,7 @@ aliases: [cash bank reconcile technical, CBR API, bank reconciliation code]
 
 **API prefix:** `accounting/cash-bank-reconcile`  
 **Module:** `Modules/Accounting`  
-**Behavior:** [requirement.md](./requirement.md) v1.5  
+**Behavior:** [requirement.md](./requirement.md) v1.6  
 **TO-BE matching:** ETM-15856 — `docs/qa-docs/_meta/sot/cbr-matching-slideover-brief.md`
 
 ---
