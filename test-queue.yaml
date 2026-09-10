@@ -962,3 +962,31 @@ ETM-15821:
   jira_status: QA Review
   jira_type: Improvement
   summary: "[All Sales Order] Order unit price under benchmark cogs jadikan 1 di Phills Failed Process"
+
+ETM-15891:
+  menu: all-sales-order
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Sales Order] Import Order yang Mengandung SKU Bundle Meloloskan Detail Sales Order > 100 Rows"
+
+ETM-15850:
+  menu: accounting-product-benchmark-price
+  intent: extend
+  status: in_overview
+  reuse: []
+  drafts:
+    - PENDING-JENNI-2026091001
+    - PENDING-JENNI-2026091002
+    - PENDING-JENNI-2026091003
+    - PENDING-JENNI-2026091004
+    - PENDING-JENNI-2026091005
+    - PENDING-JENNI-2026091006
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Benchmark COGS] - Manual COGS NULL vs 0, wajib Expiry (default +30), hapus override permanen"
