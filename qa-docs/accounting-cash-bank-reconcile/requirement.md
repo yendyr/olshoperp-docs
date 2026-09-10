@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-cash-bank-reconcile
 menu_name: "Cash/Bank Reconcile"
-version: 1.2
-last_updated: 2026-07-17
+version: 1.5
+last_updated: 2026-09-10
 owner: QA - Yemima
 status: draft
 aliases: [cash bank reconcile, bank reconcile, CBR, rekonsiliasi bank, cash reconcile]
@@ -16,7 +16,8 @@ aliases: [cash bank reconcile, bank reconcile, CBR, rekonsiliasi bank, cash reco
 **Audience:** PM, QA, Finance  
 **UI route:** `/accounting/cash-bank-reconcile`  
 **Prefix kode:** `BR-`  
-**SoT:** `cash_bank_reconcile_requirement.md` v1.1 (16 Jul 2026)
+**SoT:** `cash_bank_reconcile_requirement.md` v1.1 (16 Jul 2026)  
+**TO-BE matching:** ETM-15856 + brief `docs/qa-docs/_meta/sot/cbr-matching-slideover-brief.md` + mockup https://claude.ai/code/artifact/30842e2e-3647-485f-b96c-d54a6000f274
 
 ---
 
@@ -26,6 +27,7 @@ aliases: [cash bank reconcile, bank reconcile, CBR, rekonsiliasi bank, cash reco
 |---------|------|--------|---------|
 | 1.0 | 2026-06-19 | QA - Yemima | Placeholder pending |
 | 1.2 | 2026-07-17 | QA - Yemima | Rewrite dari SoT v1.1 + AS-IS codebase: matching, import, approve; gap CBR-01..12; matrix implementasi |
+| 1.5 | 2026-09-10 | QA - Yemima | TO-BE Matching Slideover 2 arah + Quick Journal (ETM-15856); keputusan terkunci D1–D5; update §5.4 / §6 / gap / matrix |
 
 ---
 
@@ -153,7 +155,9 @@ FE `public/files` saat ini hanya `.csv`; download UI mengarah `.xlsx` (GAP-CBR-1
 
 ### 5.4 Reconcile Process
 
-Panel Bank Statement (kiri) + Internal GL (kanan) + Match. AS-IS menampilkan Total Bank / Total Internal. **Difference strip header belum ada** (GAP-CBR-12).
+**AS-IS:** Panel Bank Statement (kiri) + Internal GL (kanan) + Match; Total Bank / Total Internal. Difference strip di tab process **belum ada** (GAP-CBR-12). Modal matching = `Dialog` 3xl; bank terkunci 1 baris; Create → redirect Journal.
+
+**TO-BE (ETM-15856):** matching utama di **Slideover** — lihat §6.5. Difference bar hidup di footer slideover (bukan wajib di header tab process).
 
 ---
 
@@ -172,18 +176,21 @@ Threshold **hardcoded** `abs(amount) * 0.05` (GAP-CBR-04).
 | 5 | Tanggal sama + ±5% sisi berlawanan | Extra |
 | 6 | ±5% sisi sama, tanggal beda | SoT #4 |
 
-Multi-kandidat: `"See {n} other matching transactions."` → modal. Tanpa kandidat: `"No matching transaction found."` + link **See Other……** (SoT: “Find or Create New” — GAP copy).
+Multi-kandidat: `"See {n} other matching transactions."` → panel matching. Tanpa kandidat: `"No matching transaction found."` + link **See Other……** (SoT: “Find or Create New” — GAP copy).
 
-Modal: filter period/amount, multi-select bulk match, tombol **Create** → `/accounting/journal/create`.
+**AS-IS modal:** filter period/amount, multi-select bulk match, tombol **Create** → `/accounting/journal/create`.  
+**TO-BE:** §6.5 (Slideover + Quick Journal, tanpa redirect).
 
 ### 6.2 Validasi Match (final)
 
-SoT: cukup total GL = nominal bank exact.
+SoT: cukup total GL = nominal bank exact. Toleransi ±5% **hanya** untuk suggestion — tidak dipakai saat Match.
 
-| Mode | AS-IS rules |
+| Mode | Rules |
 |------|-------------|
-| Single Match | (1) tanggal dalam period (2) **tanggal bank = tanggal GL** (3) sisi debit/credit sama (4) amount exact |
-| Bulk Match | Hanya **sum** debit/credit exact — tanpa cek tanggal/sisi per baris |
+| Single Match (AS-IS) | (1) tanggal dalam period (2) **tanggal bank = tanggal GL** (3) sisi debit/credit sama (4) amount exact |
+| Bulk / multi-select (AS-IS + TO-BE) | Validasi pada **sum** exact; baris tanggal/sisi beda **di-flag** agar user sadar (GAP-CBR-10 — simetri single vs multi tetap open) |
+| POV A (TO-BE) | 1 bank statement ↔ many GL — sum exact |
+| POV B (TO-BE) | 1 GL ↔ many bank statements (import-only) — sum exact |
 
 Error amount:  
 `Reconciliation cannot proceed. Bank statement amount {bank} is {higher|lower} than the GL amount {gl}. Fix the difference to reconcile.`
@@ -198,11 +205,55 @@ Hanya Draft/Open. Unmatch satu sisi → sisi lain kembali Not Reconciled. Approv
 
 | Aspek | SoT | AS-IS |
 |-------|-----|-------|
-| Jurnal pada approve | Tidak | Tidak (sesuai) |
+| Jurnal pada approve **CBR** | Tidak | Tidak (sesuai) |
 | Period lock COA+tanggal | Wajib | **Tidak ada** — journal/transaksi lain masih bisa (GAP-CBR-08) |
 | Early warning lock | Wajib | ApprovalModal generic saja (GAP-CBR-12) |
 | Partial reconcile approve | `[VERIFY]` | Diizinkan (cek full match di-comment) (GAP-CBR-09) |
 | Overlap period antar CBR | Ya | Ya — hanya antar dokumen CBR, bukan lock GL |
+
+> **Catatan:** Quick Journal di matching (TO-BE) **membuat** journal — itu terpisah dari Approve dokumen CBR.
+
+### 6.5 Matching Slideover + Quick Journal (TO-BE — ETM-15856)
+
+**Status:** planned (belum production). Mockup = SoT visual. Keputusan terkunci 10-09-2026:
+
+| ID | Keputusan |
+|----|-----------|
+| D1 | Setelah **Save & Approve** journal: hanya **auto-select** di list; **Match tetap klik manual** (tidak auto-Match) |
+| D2 | Bank statement **import-only** — tidak create dari panel; hanya Change / multi-select baris import |
+| D3 | Quick journal **ringkas** — tanpa attachment, store, transaction reference, rate |
+| D4 | Ganti anchor: clear selection + notice di footer picker (*Switching the line/transaction clears…*) — tanpa modal confirm terpisah |
+| D5 | Amount kas/bank di quick journal = Σ offset (**read-only**); hanya Description kas/bank editable |
+
+#### Panel matching
+
+| Elemen | Behavior |
+|--------|----------|
+| Container | **Slideover** (bukan Dialog 3xl); halaman reconcile tetap terlihat |
+| POV A (default) | Anchor = 1 bank statement; multi-select = GL Not Reconciled; **Create journal** tersedia |
+| POV B (baru) | Anchor = 1 journal detail GL; multi-select = bank statements Not Reconciled; **tanpa** Create journal |
+| Change anchor | Picker Not Reconciled (Search + Amount); baris aktif = Current; clear centangan; Match disabled ulang |
+| Difference bar | `anchor − selected = difference`; hanya angka selisih berwarna; Match disabled jika ≠ 0 |
+| Footer | Cancel · Create journal (POV A) · Match |
+
+#### Contoh case (mockup)
+
+Bank Receive **3.000.000**; pilih GL **2.850.000** → Difference **150.000** (Match disabled). User **Create journal** menutup 150.000 → Save & Approve → GL baru auto-checked → Difference **0** → user klik **Match**.
+
+#### Quick journal (modal di atas slideover)
+
+| Field | Rule |
+|-------|------|
+| Trx code | Auto, disabled |
+| Transaction date | Default = tanggal bank statement; wajib fiscal aktif + dalam period CBR + max backdate 6 bulan |
+| Currency | Locked dari cash/bank CBR |
+| Cash/bank block | COA fixed; Description wajib; Amount = Σ offset (read-only) |
+| Offset accounts | Multi-baris; **exclude** COA cash/bank CBR; baris pertama default = sisa selisih; amount > 0 |
+| Preview | Debit/Credit read-only; Receive→debit / Spent→credit kas/bank; Swap boleh jika tetap balance |
+| Save as draft | Warning: draft **tidak** masuk matching list sampai approve di Journal Transaction |
+| Save & Approve | Confirm recap; butuh permission approve journal; sukses → auto-select di list, Match **tidak** auto |
+
+CBR sudah Approved → panel read-only (`can_update`); Create journal & Match tidak tersedia.
 
 ---
 
@@ -228,7 +279,7 @@ Hanya Draft/Open. Unmatch satu sisi → sisi lain kembali Not Reconciled. Approv
 flowchart TB
     MCB[Master Cash/Bank] --> CBR[Cash Bank Reconcile]
     GL[Journal / GL Detail Approved] --> CBR
-    CBR -->|Create Journal dari modal| CJ[Create Journal]
+    CBR -->|AS-IS Create redirect / TO-BE Quick Journal| CJ[Journal Transaction]
     CBR -.->|TO-BE period lock| GL
 ```
 
@@ -236,7 +287,7 @@ flowchart TB
 |------|-------|
 | Master Cash/Bank | Opsi akun |
 | Journal / GL Reports | Sumber Internal Transaction; flag Reconciled |
-| Create Journal | Redirect dari modal matching |
+| Journal Transaction | AS-IS: redirect Create dari modal; TO-BE: Quick Journal di panel (+ draft menunggu approve di menu Journal) |
 
 ---
 
@@ -255,7 +306,8 @@ flowchart TB
 | GAP-CBR-09 | Approve mengizinkan partial (Not Reconciled tersisa) | Difference bisa non-zero saat Approved | Open |
 | GAP-CBR-10 | Single Match wajib tanggal sama; Bulk tidak; SoT hanya exact amount | UX/aturan tidak simetris | Open |
 | GAP-CBR-11 | Template download `.xlsx` vs file repo `.csv` | Risiko 404 / mismatch template | Open |
-| GAP-CBR-12 | Tidak ada Difference header di Reconcile Process + tidak ada early warning period lock | UX kurang dari SoT | Open |
+| GAP-CBR-12 | Tidak ada Difference header di tab Reconcile Process + tidak ada early warning period lock | UX kurang dari SoT; Difference **di slideover** ditutup ETM-15856 (TO-BE) — header tab + early warning lock tetap open | Partial / Open |
+| GAP-CBR-13 | Matching panel: Dialog 1-arah + Create redirect (kehilangan konteks) | UX matching dua sisi + quick journal | **Planned** ETM-15856 (§6.5) |
 
 ---
 
@@ -270,8 +322,14 @@ A: Toleransi hanya untuk suggestion. Match final wajib nominal exact (dan single
 **Q: Bisa unmatch?**  
 A: Ya selama Draft/Open. Setelah Approved, tidak bisa.
 
-**Q: Approve menerbitkan jurnal?**  
+**Q: Approve CBR menerbitkan jurnal?**  
 A: Tidak. Hanya mengubah status rekonsiliasi (dan seharusnya mengunci period — belum AS-IS).
+
+**Q: (TO-BE) Setelah Create journal di matching, apakah otomatis Match?**  
+A: Tidak. Journal yang di-approve hanya **tercentang otomatis**; user tetap klik **Match** (D1 / ETM-15856).
+
+**Q: (TO-BE) Bisa buat baris bank statement dari panel matching?**  
+A: Tidak — import-only; ganti baris lewat **Change bank statement** (D2).
 
 ---
 
@@ -286,11 +344,14 @@ A: Tidak. Hanya mengubah status rekonsiliasi (dan seharusnya mengunci period —
 | Suggestion ±5% + multi-kandidat modal | Implemented (+ opposite-side extra) |
 | Exact match + error higher/lower | Implemented |
 | Unmatch Draft/Open | Implemented |
-| Create Journal dari modal | Implemented |
-| Approve tanpa jurnal | Implemented |
+| Create Journal dari modal (redirect) | Implemented (AS-IS) |
+| Matching **Slideover** + POV A/B + difference bar | **Planned** ETM-15856 |
+| Quick Journal in-panel (draft/approve + auto-select) | **Planned** ETM-15856 |
+| Anchor picker + clear selection notice | **Planned** ETM-15856 |
+| Approve CBR tanpa jurnal | Implemented |
 | Period lock setelah Approve | **Not implemented** |
 | Early warning period lock | **Not implemented** |
 | Wajib full reconcile sebelum Approve | **Not implemented** (commented) |
 | Threshold configurable | **Not implemented** |
-| Difference strip di Reconcile Process | **Not implemented** |
+| Difference strip di tab Reconcile Process | **Not implemented** (slideover TO-BE) |
 | Copy “Find or Create New” | **Partial** (See Other……) |
