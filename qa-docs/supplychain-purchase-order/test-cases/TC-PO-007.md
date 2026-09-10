@@ -18,7 +18,7 @@ execution_company:
 related_menus: []
 preconditions:
   - Dokumen Purchase Order status Draft telah dibuat
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: file_empty
     value: file_kosong.xlsx (0 data rows)

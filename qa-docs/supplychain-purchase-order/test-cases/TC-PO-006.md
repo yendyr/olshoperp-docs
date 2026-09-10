@@ -20,7 +20,7 @@ related_menus:
 preconditions:
   - Terdapat dokumen Purchase Requisition berstatus Approved yang memiliki item dengan konfigurasi Auto Add Tax aktif
   - Dokumen Purchase Order With PR berstatus Draft telah dibuat dan memilih Supplier terkait
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: pr_number
     value: PR Approved dengan item auto add tax

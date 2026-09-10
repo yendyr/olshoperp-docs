@@ -20,14 +20,14 @@ related_menus:
 preconditions:
   - User login ke staging dengan akun yang memiliki hak akses menu All Sales Order
   - Terdapat data Sales Order dengan variasi kondisi harga jual dan Benchmark COGS
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: filter_pill
     value: "Net Sales < COGS"
 steps:
   - "Buka menu Omnichannel -> All Sales Order (/sales-order/all)"
-  - "Aktifkan pill "Net Sales < COGS" hingga tabel terfilter"
-  - "Klik kembali tombol pill "Net Sales < COGS" untuk menonaktifkannya"
+  - 'Aktifkan pill "Net Sales < COGS" hingga tabel terfilter'
+  - 'Klik kembali tombol pill "Net Sales < COGS" untuk menonaktifkannya'
   - "Periksa request datalist memastikan query param net_sales_below_cogs telah dihapus"
   - "Verifikasi tabel datalist memuat kembali seluruh Sales Order secara komprehensif"
 expected_result: |

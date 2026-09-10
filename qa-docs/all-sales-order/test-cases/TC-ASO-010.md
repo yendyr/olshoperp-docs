@@ -20,15 +20,15 @@ related_menus:
 preconditions:
   - User login ke staging dengan akun yang memiliki hak akses menu All Sales Order
   - Terdapat data Sales Order dengan variasi kondisi harga jual dan Benchmark COGS
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: filter_pill
     value: "Net Sales < COGS"
 steps:
   - "Buka menu Omnichannel -> All Sales Order (/sales-order/all)"
-  - "Aktifkan pill "Failed Process" untuk memunculkan kolom "Error Flag""
+  - 'Aktifkan pill "Failed Process" untuk memunculkan kolom "Error Flag"'
   - "Cari dokumen Sales Order yang memiliki item under benchmark COGS"
-  - "Verifikasi bahwa pada kolom Error Flag di header order muncul icon dollar (cogs-error) dengan tooltip "Below Benchmark COGS. Manual approval required.""
+  - 'Verifikasi bahwa pada kolom Error Flag di header order muncul icon dollar (cogs-error) dengan tooltip "Below Benchmark COGS. Manual approval required."'
   - "Klik baris Sales Order tersebut untuk membuka halaman Detail Order (/sales-order/detail/:id)"
   - "Periksa tabel rincian item (order details)"
   - "Verifikasi bahwa icon dollar / warning error flag muncul secara spesifik pada baris SKU yang under-COGS, dan tidak muncul pada baris SKU yang normal"

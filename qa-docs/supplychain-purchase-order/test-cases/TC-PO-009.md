@@ -19,7 +19,7 @@ related_menus: []
 preconditions:
   - Dokumen Purchase Order berstatus Draft telah dibuat
   - System Product memiliki master konfigurasi Purchase VAT (single atau multiple tax)
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: skenario_vat_yes_empty_code_type
     value: "SKU dengan master Tax | VAT: yes | VAT Code: (kosong) | VAT Type: (kosong)"

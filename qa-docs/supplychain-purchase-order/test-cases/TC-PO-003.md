@@ -19,7 +19,7 @@ related_menus: []
 preconditions:
   - User login ke staging dengan akun yang memiliki hak akses menu Purchase Order
   - Terdapat dokumen Purchase Order status Draft yang belum memiliki detail item
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: file_template_new
     value: Template-Import-PO-Without-PR.xlsx (dengan kolom VAT, VAT Code, VAT Type)
@@ -30,7 +30,7 @@ steps:
   - Buka dokumen Purchase Order target (status Draft) atau klik Create PO baru
   - Klik tombol 'Import Detail' dan unduh template Excel yang disediakan sistem
   - Periksa struktur kolom pada template hasil unduhan
-  - Verifikasi bahwa terdapat 3 kolom baru di posisi paling kanan: 'VAT', 'VAT Code', dan 'VAT Type'
+  - "Verifikasi bahwa terdapat 3 kolom baru di posisi paling kanan: 'VAT', 'VAT Code', dan 'VAT Type'"
   - Siapkan file import menggunakan format template lama (tanpa 3 kolom VAT) dengan data SKU dan Supplier yang memiliki setting Auto Add Tax aktif
   - Upload file template lama tersebut ke form Import Detail PO
   - Periksa detail item PO yang berhasil masuk dan verifikasi nilai pajak yang terbentuk

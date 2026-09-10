@@ -18,7 +18,7 @@ execution_company:
 related_menus: []
 preconditions:
   - Dokumen Purchase Order berstatus Draft telah dibuat (PO ID: 2565)
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: baris_1_valid
     value: "SKU-PO-VAT-TEST01 | Qty: 10 | Price: 50000 | VAT: yes | VAT Code: PPN12 | VAT Type: exclude"

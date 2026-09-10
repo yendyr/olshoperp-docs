@@ -20,7 +20,7 @@ preconditions:
   - Dokumen Purchase Order berstatus Draft telah dibuat (PO ID: 2563)
   - Terdapat Supplier dengan setting Auto Add Tax = Active (Supplier Test PO VAT Auto)
   - Produk target memiliki konfigurasi Pajak Purchase VAT (SKU-PO-VAT-TEST01 dengan Tax Code: PPN12)
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: baris_1_override_yes
     value: "SKU-PO-VAT-TEST01 | Qty: 10 | Price: 50000 | VAT: yes | VAT Code: PPN12 | VAT Type: exclude"

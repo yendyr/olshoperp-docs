@@ -20,7 +20,7 @@ related_menus:
 preconditions:
   - User login ke staging dengan akun yang memiliki hak akses menu All Sales Order
   - Terdapat data Sales Order dengan variasi kondisi harga jual dan Benchmark COGS
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: filter_pill
     value: "Net Sales < COGS"
@@ -29,7 +29,7 @@ steps:
   - "Identifikasi SO dengan kondisi Net Sales == Total COGS (impas)"
   - "Identifikasi SO dengan kondisi Net Sales > Total COGS (profit/normal)"
   - "Identifikasi SO dengan produk tanpa master COGS (Benchmark COGS = 0)"
-  - "Aktifkan tombol pill "Net Sales < COGS""
+  - 'Aktifkan tombol pill "Net Sales < COGS"'
   - "Verifikasi bahwa tidak ada satupun dari ketiga tipe SO di atas yang muncul pada tabel datalist"
 expected_result: |
   Sales Order dengan Net Sales == COGS, Net Sales > COGS, ataupun yang memiliki Total COGS = 0 diexclude secara presisi dari hasil filter Net Sales < COGS.

@@ -20,14 +20,14 @@ related_menus:
 preconditions:
   - User login ke staging dengan akun yang memiliki hak akses menu All Sales Order
   - Terdapat data Sales Order dengan variasi kondisi harga jual dan Benchmark COGS
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: filter_pill
     value: "Net Sales < COGS"
 steps:
   - "Buka menu Omnichannel -> All Sales Order (/sales-order/all)"
   - "Periksa jajaran PillButtons di atas tabel datalist"
-  - "Verifikasi tombol pill berlabel "Net Sales < COGS" berada di urutan ke-4 (setelah Ready to Process dan sebelum Order Synchronize Status)"
+  - 'Verifikasi tombol pill berlabel "Net Sales < COGS" berada di urutan ke-4 (setelah Ready to Process dan sebelum Order Synchronize Status)'
   - "Verifikasi warna tombol bertipe warning (kuning/oranye)"
   - "Periksa badge counter pada pill dan bandingkan dengan respon API /omnichannel/sales-order/pill-count?type=all"
 expected_result: |

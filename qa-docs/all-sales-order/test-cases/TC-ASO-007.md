@@ -20,16 +20,16 @@ related_menus:
 preconditions:
   - User login ke staging dengan akun yang memiliki hak akses menu All Sales Order
   - Terdapat data Sales Order dengan variasi kondisi harga jual dan Benchmark COGS
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: filter_pill
     value: "Net Sales < COGS"
 steps:
   - "Buka menu Omnichannel -> All Sales Order (/sales-order/all)"
-  - "Klik tombol pill "Failed Process" -> amati filter failed_process=true aktif"
-  - "Langsung klik tombol pill "Net Sales < COGS" tanpa mematikan pill sebelumnya"
-  - "Verifikasi pill "Failed Process" otomatis nonaktif dan "Net Sales < COGS" menjadi aktif"
-  - "Klik tombol pill "Ready to Process" -> verifikasi "Net Sales < COGS" otomatis nonaktif"
+  - 'Klik tombol pill "Failed Process" -> amati filter failed_process=true aktif'
+  - 'Langsung klik tombol pill "Net Sales < COGS" tanpa mematikan pill sebelumnya'
+  - 'Verifikasi pill "Failed Process" otomatis nonaktif dan "Net Sales < COGS" menjadi aktif'
+  - 'Klik tombol pill "Ready to Process" -> verifikasi "Net Sales < COGS" otomatis nonaktif'
 expected_result: |
   Pill buttons bekerja secara single-active toggle di mana hanya ada satu filter pill yang aktif pada satu waktu tanpa tumpang tindih parameter filter.
 test_result:

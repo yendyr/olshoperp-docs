@@ -20,7 +20,7 @@ preconditions:
   - Dokumen Purchase Order berstatus Draft telah dibuat
   - Terdapat Supplier dengan setting Auto Add VAT = NO
   - Terdapat System Product tanpa master konfigurasi Purchase VAT
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: skenario_1_supplier_no
     value: "Supplier Auto Add NO | SKU dengan Tax | VAT: (kosong), VAT Code: (kosong), VAT Type: exclude"

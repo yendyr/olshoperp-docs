@@ -20,14 +20,14 @@ related_menus:
 preconditions:
   - User login ke staging dengan akun yang memiliki hak akses menu All Sales Order
   - Terdapat data Sales Order dengan variasi kondisi harga jual dan Benchmark COGS
-  - Company aktif: lumicharmsid (id: 153)
+  - "Company aktif: lumicharmsid (id: 153)"
 test_data:
   - field: filter_pill
     value: "Net Sales < COGS"
 steps:
   - "Buka menu Omnichannel -> All Sales Order (/sales-order/all)"
   - "Pilih rentang tanggal atau store filter tertentu yang tidak memiliki transaksi under-COGS"
-  - "Aktifkan tombol pill "Net Sales < COGS""
+  - 'Aktifkan tombol pill "Net Sales < COGS"'
   - "Amati respon UI pada tabel datalist"
 expected_result: |
   Tabel datalist menampilkan pesan empty state informatif ("No data available in table" / "Tidak ada data") dengan bersih tanpa error console ataupun tampilan blank.
