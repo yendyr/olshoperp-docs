@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advisory — Refactor Transaction Status ke Enum · OlshopERP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #14212b;
+      --muted: #5a6b78;
+      --line: #d7e0e7;
+      --paper: #f7fafb;
+      --card: #ffffff;
+      --accent: #0f766e;
+      --accent-soft: #e6f4f2;
+      --warn: #9a3412;
+      --warn-soft: #fff1e8;
+      --ok: #166534;
+      --ok-soft: #eaf7ee;
+      --danger: #991b1b;
+      --danger-soft: #fdecec;
+      --shadow: 0 1px 0 rgba(20, 33, 43, 0.04), 0 12px 40px rgba(20, 33, 43, 0.06);
+      --radius: 14px;
+      --max: 920px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 10% -10%, #dff3ef 0%, transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, #e8eef5 0%, transparent 50%),
+        var(--paper);
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .wrap {
+      width: min(var(--max), calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2.5rem 0 4rem;
+    }
+
+    header.hero {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--shadow);
+      padding: 2rem 2rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .85rem;
+    }
+    .eyebrow span {
+      width: .45rem; height: .45rem; border-radius: 99px;
+      background: var(--accent);
+    }
+
+    h1 {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(1.7rem, 3.2vw, 2.35rem);
+      line-height: 1.2;
+      margin: 0 0 .75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 62ch;
+      margin: 0 0 1.25rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 999px;
+      padding: .28rem .75rem;
+      font-size: .82rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .chip strong { color: var(--ink); font-weight: 600; }
+
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    nav.toc h2 {
+      margin: 0 0 .6rem;
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    nav.toc ol {
+      margin: 0;
+      padding-left: 1.2rem;
+      columns: 2;
+      gap: 1.5rem;
+    }
+    @media (max-width: 720px) {
+      nav.toc ol { columns: 1; }
+    }
+    nav.toc a {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: .92rem;
+    }
+    nav.toc a:hover { color: var(--accent); text-decoration: underline; }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem 1.75rem 1.65rem;
+      margin-bottom: 1.1rem;
+    }
+
+    h2 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.35rem;
+      margin: 0 0 .85rem;
+      letter-spacing: -0.01em;
+    }
+    h3 {
+      font-size: 1rem;
+      margin: 1.25rem 0 .5rem;
+      font-weight: 600;
+    }
+
+    p { margin: 0 0 .85rem; }
+    ul, ol { margin: 0 0 1rem; padding-left: 1.2rem; }
+    li { margin-bottom: .35rem; }
+
+    .callout {
+      border-radius: 12px;
+      padding: .9rem 1rem;
+      margin: 1rem 0;
+      border: 1px solid transparent;
+    }
+    .callout.ok { background: var(--ok-soft); border-color: #bbdfc5; }
+    .callout.warn { background: var(--warn-soft); border-color: #f3d2ba; }
+    .callout.danger { background: var(--danger-soft); border-color: #f3c1c1; }
+    .callout.accent { background: var(--accent-soft); border-color: #b9e0da; }
+    .callout strong { display: block; margin-bottom: .2rem; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .92rem;
+      margin: .75rem 0 1rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: .65rem .7rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #eef3f6;
+      font-weight: 600;
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--muted);
+    }
+    tr:nth-child(even) td { background: #fbfcfd; }
+
+    code, .mono {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: .86em;
+      background: #eef3f6;
+      padding: .1em .35em;
+      border-radius: 5px;
+    }
+
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .steps > li {
+      position: relative;
+      padding: 1rem 1rem 1rem 3.4rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-bottom: .65rem;
+      background: #fbfdfe;
+    }
+    .steps > li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      width: 1.7rem;
+      height: 1.7rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      font-size: .85rem;
+      display: grid;
+      place-items: center;
+    }
+    .steps h3 { margin: 0 0 .35rem; font-size: 1rem; }
+    .steps p:last-child { margin-bottom: 0; }
+    .tag {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: .15rem .45rem;
+      border-radius: 999px;
+      margin-left: .35rem;
+      vertical-align: middle;
+    }
+    .tag.safe { background: var(--ok-soft); color: var(--ok); }
+    .tag.later { background: #eef3f6; color: var(--muted); }
+    .tag.risk { background: var(--danger-soft); color: var(--danger); }
+
+    .rating {
+      display: grid;
+      gap: .55rem;
+      margin: .75rem 0 0;
+    }
+    .rating-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: .7rem .85rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+    .badge {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      padding: .3rem .55rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .badge.best { background: var(--ok-soft); color: var(--ok); }
+    .badge.avoid { background: var(--danger-soft); color: var(--danger); }
+    .badge.careful { background: var(--warn-soft); color: var(--warn); }
+
+    footer {
+      margin-top: 1.5rem;
+      color: var(--muted);
+      font-size: .88rem;
+      text-align: center;
+    }
+
+    @media print {
+      body { background: white; }
+      section, header.hero, nav.toc { box-shadow: none; break-inside: avoid; }
+      nav.toc { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow"><span></span> Technical advisory · OlshopERP</div>
+      <h1>Refactor status transaksional ke Enum — dampak, risiko &amp; jalur aman</h1>
+      <p class="lede">
+        Feedback untuk Tech Lead: usulan merapikan pembacaan/penyimpanan status dokumen
+        (<span class="mono">draft</span>, <span class="mono">open</span>, <span class="mono">approved</span>, <span class="mono">void</span>, …)
+        dari string tersebar menuju enum, tanpa mengganggu pemakaian production yang sedang berjalan.
+      </p>
+      <div class="meta">
+        <div class="chip"><strong>Audience</strong> Tech Lead / BE / FE</div>
+        <div class="chip"><strong>Contoh konteks</strong> All Sales Order</div>
+        <div class="chip"><strong>Tanggal</strong> 10 Sep 2026</div>
+        <div class="chip"><strong>Status</strong> Discussion / RFC ringan</div>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="Daftar isi">
+      <h2>Isi dokumen</h2>
+      <ol>
+        <li><a href="#verdict">Verdict singkat</a></li>
+        <li><a href="#asis">AS-IS di codebase</a></li>
+        <li><a href="#rekomendasi">Rekomendasi arsitektur</a></li>
+        <li><a href="#checklist">Checklist dampak relasi</a></li>
+        <li><a href="#risiko">Risiko utama</a></li>
+        <li><a href="#fase">Step-by-step aman</a></li>
+        <li><a href="#aso">Catatan All Sales Order</a></li>
+        <li><a href="#next">Next action</a></li>
+      </ol>
+    </nav>
+
+    <section id="verdict">
+      <h2>1. Verdict singkat</h2>
+      <div class="callout ok">
+        <strong>Arahnya benar untuk jangka panjang.</strong>
+        Success-nya bukan di “ganti tipe kolom DB”, melainkan di
+        <em>PHP string-backed enum + kompatibilitas wire value + migrasi bertahap + 1 menu pilot</em>.
+      </div>
+      <div class="rating">
+        <div class="rating-row">
+          <div>PHP backed enum (<span class="mono">string</span>) + Eloquent cast bertahap; DB tetap <span class="mono">VARCHAR</span></div>
+          <span class="badge best">Paling aman</span>
+        </div>
+        <div class="rating-row">
+          <div>Tinyint / MySQL <span class="mono">ENUM</span> di awal project</div>
+          <span class="badge careful">Tinggi risiko</span>
+        </div>
+        <div class="rating-row">
+          <div>Big-bang semua menu + ubah skema DB sekaligus</div>
+          <span class="badge avoid">Hindari</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="asis">
+      <h2>2. AS-IS di codebase (ringkas)</h2>
+      <ul>
+        <li>Status dokumen hidup sebagai <strong>string</strong> di kolom <span class="mono">transaction_status</span>.</li>
+        <li>Konstanta pusat di <span class="mono">MainModel</span>:
+          <span class="mono">TS_DRAFT = 'draft'</span>,
+          <span class="mono">TS_OPEN</span>,
+          <span class="mono">TS_APPROVED</span>, …
+          (termasuk value seperti <span class="mono">'partially approved'</span>).
+        </li>
+        <li>Pemakaian sangat lebar: ratusan file PHP + job + export + filter datalist + FE Vue.</li>
+        <li>Masih ada campuran <span class="mono">MainModel::TS_APPROVED</span> dan literal <span class="mono">'approved'</span> → risiko typo &amp; inkonsistensi.</li>
+      </ul>
+      <div class="callout warn">
+        <strong>Penting di Sales Order: ada dua sumbu status.</strong>
+        <span class="mono">transaction_status</span> = lifecycle dokumen (draft/open/approved/void).<br />
+        <span class="mono">sales_order_process_status_id</span> = pipeline fulfillment (sudah mirip “enum via FK/master”).
+        Refactor enum harus jelas menyasar yang mana — jangan digabung diam-diam.
+      </div>
+    </section>
+
+    <section id="rekomendasi">
+      <h2>3. Rekomendasi arsitektur</h2>
+      <h3>Lakukan dulu</h3>
+      <ol>
+        <li><strong>PHP backed enum</strong> (<span class="mono">string</span>), mis. <span class="mono">TransactionStatus</span>.</li>
+        <li>Value wire tetap sama: <span class="mono">'draft'|'open'|'approved'|…</span> agar data &amp; API lama kompatibel.</li>
+        <li>Eloquent cast: <span class="mono">'transaction_status' =&gt; TransactionStatus::class</span>.</li>
+        <li>Query tetap memakai value string enum; kolom DB tetap <span class="mono">VARCHAR</span>.</li>
+      </ol>
+      <h3>Jangan mulai dari</h3>
+      <ul>
+        <li>ALTER kolom MySQL ke <span class="mono">ENUM(...)</span> global.</li>
+        <li>Rename value (<span class="mono">approved</span> → <span class="mono">APPROVED</span>) di fase awal.</li>
+        <li>Satu enum raksasa yang memaksa semua menu punya set status identik.</li>
+      </ul>
+      <div class="callout accent">
+        <strong>Kenapa urutan ini?</strong>
+        Laravel sudah mendukung enum casting. API/FE bisa tetap terima string.
+        Rollback mudah. Tidak ada lock ALTER besar di production.
+        Constraint DB (check / tinyint) boleh jadi fase belakangan setelah PHP enum merata.
+      </div>
+      <h3>Bentuk enum yang realistis</h3>
+      <ul>
+        <li><strong>Shared core</strong> untuk status umum: Draft / Open / Approved / Rejected / Void / Closed.</li>
+        <li><strong>Per-domain / per-menu</strong> untuk outlier (Processed, Prepared, Partially Approved, Complete, Declined, …).</li>
+        <li>Atau: shared enum + allowlist legacy string sementara untuk value langka — dengan ticket follow-up.</li>
+      </ul>
+    </section>
+
+    <section id="checklist">
+      <h2>4. Checklist dampak relasi (wajib ditinjau)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Yang perlu dicek</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Inventaris nilai</td>
+            <td>Distinct value per tabel (staging + sample production): typo historis, spasi, casing.</td>
+          </tr>
+          <tr>
+            <td>Shared vs menu-specific</td>
+            <td>Jangan paksakan 1 enum untuk SO, PO, CBR, Journal jika set statusnya beda.</td>
+          </tr>
+          <tr>
+            <td>Dual status SO</td>
+            <td>Pisahkan lifecycle vs process status; UI All SO sering gabungan keduanya.</td>
+          </tr>
+          <tr>
+            <td>API contract</td>
+            <td>Response tetap string value, atau <span class="mono">{value,label}</span>? Harus disepakati sebelum cast merata.</td>
+          </tr>
+          <tr>
+            <td>Filter / search</td>
+            <td><span class="mono">LIKE</span> di datalist, advanced filter, export — banding objek enum vs string mudah bikin bug.</td>
+          </tr>
+          <tr>
+            <td>Approval log</td>
+            <td><span class="mono">AS_APPROVED</span> / timeline approval ≠ selalu sama dengan <span class="mono">transaction_status</span>.</td>
+          </tr>
+          <tr>
+            <td>Raw SQL / report / temp table</td>
+            <td>Query dinamis &amp; report yang hardcode <span class="mono">VARCHAR</span> status.</td>
+          </tr>
+          <tr>
+            <td>Jobs / queue</td>
+            <td>Payload lama menyimpan string; worker baru harus tetap bisa baca.</td>
+          </tr>
+          <tr>
+            <td>Import / export</td>
+            <td>Mapping label Excel (<span class="mono">Draft</span>) ↔ value (<span class="mono">draft</span>).</td>
+          </tr>
+          <tr>
+            <td>Policy / gate / can_update</td>
+            <td>Cabang bisnis yang bergantung status.</td>
+          </tr>
+          <tr>
+            <td>Observer / stock / journal</td>
+            <td>Transisi status = side effect; enum tidak boleh mengubah aturan transisi.</td>
+          </tr>
+          <tr>
+            <td>FE Vue</td>
+            <td>Radio status, badge, filter query param — jangan pecah wire format di release yang sama tanpa koordinasi.</td>
+          </tr>
+          <tr>
+            <td>Multi-environment</td>
+            <td>Staging / Tyas / Merdian: data historis harus lolos whitelist enum.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="risiko">
+      <h2>5. Risiko utama</h2>
+      <ol>
+        <li><strong>Big-bang semua menu</strong> → regression masif (stock, journal, SO platform).</li>
+        <li><strong>Ubah tipe kolom DB dulu</strong> → lock table, deploy panjang, sulit rollback.</li>
+        <li><strong>Enum value ≠ string lama</strong> → query kosong / match gagal diam-diam.</li>
+        <li><strong>Strict compare setelah cast</strong>: <span class="mono">$model-&gt;status === 'approved'</span> jadi false jika masih membandingkan string vs objek enum.</li>
+        <li><strong>Satu enum global overfit</strong> → state invalid untuk menu yang punya status khusus.</li>
+        <li><strong>Partial deploy</strong> (BE cast on, FE/job lama) tanpa kompatibilitas string.</li>
+      </ol>
+    </section>
+
+    <section id="fase">
+      <h2>6. Step-by-step paling aman</h2>
+      <ol class="steps">
+        <li>
+          <h3>Fase 0 — Discovery <span class="tag safe">Zero risk</span></h3>
+          <p>Inventory tabel + distinct <span class="mono">transaction_status</span>. Klasifikasi shared vs menu-only. Tulis matriks transisi per menu. Putuskan bentuk enum (shared + per-domain).</p>
+        </li>
+        <li>
+          <h3>Fase 1 — Introduce tanpa ubah perilaku <span class="tag safe">Safe deploy</span></h3>
+          <p>Tambah <span class="mono">TransactionStatus</span> backed string. <span class="mono">MainModel::TS_*</span> tetap ada sebagai bridge (isi dari enum). Helper <span class="mono">tryFromLoose</span> / <span class="mono">values()</span> / <span class="mono">labels()</span>. Unit test round-trip. Belum wajib cast model.</p>
+        </li>
+        <li>
+          <h3>Fase 2 — Pilot 1 menu <span class="tag safe">Controlled</span></h3>
+          <p>Pilih menu relatif tenang (bukan All SO dulu jika bisa). Cast satu model. Ganti compare ke enum; JSON tetap emit string. Regression create→open→approve→void + filter + export. Monitor log 1–2 minggu.</p>
+        </li>
+        <li>
+          <h3>Fase 3 — Perluas per modul <span class="tag later">Incremental</span></h3>
+          <p>Omni → SCM → Accounting. Satu PR = satu menu/modul. Jangan campur refactor status + fitur bisnis. CI grep: larang literal status baru di path yang sudah dimigrate.</p>
+        </li>
+        <li>
+          <h3>Fase 4 — FE alignment <span class="tag later">Parallel</span></h3>
+          <p>Value dari BE (shared const / OpenAPI / generated types). Label display terpisah dari value. Jangan ubah query param filter tanpa versioning.</p>
+        </li>
+        <li>
+          <h3>Fase 5 — Bersihkan legacy <span class="tag later">Optional</span></h3>
+          <p>Deprecate <span class="mono">MainModel::TS_*</span> setelah 0 pemakaian. Hapus literal string. Baru pertimbangkan DB check constraint / tinyint — dual-write jika perlu.</p>
+        </li>
+      </ol>
+      <div class="callout danger">
+        <strong>Sengaja ditunda</strong>
+        MySQL <span class="mono">ENUM</span> column change global · rename value · menggabungkan process status SO ke transaction status.
+      </div>
+    </section>
+
+    <section id="aso">
+      <h2>7. Catatan khusus All Sales Order</h2>
+      <ol>
+        <li>Enum lifecycle saja untuk <span class="mono">transaction_status</span>.</li>
+        <li>Biarkan <span class="mono">sales_order_process_status_id</span> seperti sekarang.</li>
+        <li>Document di technical: kapan UI memakai lifecycle vs process status.</li>
+        <li>Bersihkan literal <span class="mono">'approved'</span> di cabang yang sudah campur konstanta.</li>
+        <li>Baru cast model <span class="mono">SalesOrder</span> + API resource setelah pola pilot terbukti.</li>
+      </ol>
+    </section>
+
+    <section id="next">
+      <h2>8. Next action yang murah</h2>
+      <ol>
+        <li>Acc arah: <strong>PHP string-backed enum dulu</strong>, bukan ubah kolom DB.</li>
+        <li>RFC 1–2 halaman: shared vs per-menu + daftar value distinct dari DB.</li>
+        <li>Pilih <strong>1 menu pilot</strong> (disarankan bukan ASO di gelombang pertama).</li>
+        <li>Setelah pilot hijau → backlog bertahap per modul.</li>
+      </ol>
+      <div class="callout ok">
+        <strong>Ringkas untuk keputusan Tech Lead</strong>
+        Setuju refactor ke enum untuk ketahanan jangka panjang.
+        Eksekusi = kompatibilitas value string + migrasi bertahap.
+        Hindari big-bang skema DB. Pilot dulu, baru All Sales Order.
+      </div>
+    </section>
+
+    <footer>
+      OlshopERP · Internal advisory · Buka file ini di browser apa pun · Boleh di-share sebagai HTML mandiri<br />
+      Path repo: <span class="mono">olshoperp-docs/briefs/transaction-status-enum-refactor-advisory.html</span>
+    </footer>
+  </div>
+</body>
+</html>
