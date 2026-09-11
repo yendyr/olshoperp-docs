@@ -43,14 +43,15 @@ test_data_used: []
 run_history: []
 origin_jira: ETM-15633
 last_execution:
-  at: null
-  jira: null
-  status: not_run
-  via: null
+  at: "2026-09-10"
+  jira: ETM-15822
+  status: passed
+  via: "manual:QA Engineer"
+  notes: "COL-6A90EFB4 dari Dokumen A berhasil ditampilkan dan diterapkan di Dokumen B pada WH Seruni Dropoff yang sama."
 first_execution:
-  at: null
-  via: null
-  jira: null
+  at: "2026-09-10"
+  via: "manual:QA Engineer"
+  jira: ETM-15822
 ---
 
 # Catatan QA & Referensi Data Testing (Evidence)

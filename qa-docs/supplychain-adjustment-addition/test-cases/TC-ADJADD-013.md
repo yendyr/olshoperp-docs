@@ -42,14 +42,15 @@ test_data_used: []
 run_history: []
 origin_jira: ETM-15633
 last_execution:
-  at: null
-  jira: null
-  status: not_run
-  via: null
+  at: "2026-09-10"
+  jira: ETM-15822
+  status: passed
+  via: "manual:QA Engineer"
+  notes: "Field Colli Code Destination sudah tampil di sebelah kanan Qty pada modal Receive This Item dan berfungsi normal."
 first_execution:
-  at: null
-  via: null
-  jira: null
+  at: "2026-09-10"
+  via: "manual:QA Engineer"
+  jira: ETM-15822
 ---
 
 # Catatan QA & Referensi Data Testing (Evidence)
