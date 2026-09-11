@@ -1,9 +1,27 @@
 ---
-code: PENDING-JENNI-2026091005
+doc_type: e2e-test-case
+tc_code: PENDING-APB-JENNI-2026091005
+menu: accounting-product-benchmark-price
+menu_name: "Product Benchmark Price"
+test_type: happy
 title: Verifikasi Penanganan Data Existing via Seeder/Migration Data
+summary: "Memastikan verifikasi penanganan data existing via seeder/migration data."
+status: draft
+owner: QA - Jeiniffer
+last_updated: 2026-09-10
+requirement_ref: "qa-docs/accounting-product-benchmark-price/requirement.md"
+automated: false
+automated_spec: null
 origin_jira: ETM-15850
-first_execution: null
-last_execution: null
+first_execution:
+  at: null
+  jira: null
+  via: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
 ---
 
 # TC-APB-JENNI-DRAFT-2026091005: Verifikasi Penanganan Data Existing via Seeder/Migration Data

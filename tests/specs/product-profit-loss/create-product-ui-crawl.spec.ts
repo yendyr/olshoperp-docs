@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { prepareSession } from '../../helpers/company-access';
 
-test('Create SKU-PPL-RET-001 in lumicharmsid', async ({ page }) => {
+test('@TC-SYSPROD-004 Create SKU-PPL-RET-001 in lumicharmsid', async ({ page }) => {
   test.setTimeout(300_000);
   const companyCode = 'lumicharmsid';
 

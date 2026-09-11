@@ -81,7 +81,8 @@ last_execution:
   at: "2026-09-07T15:40:00+07:00"
   jira: "ETM-15635"
   status: passed
-  via: "manual:QA - Yemima"
+  via: "manual:Yemima"
+  notes: "Pengujian manual Gross Sales berbasis Price Before VAT teruji sukses."
 ---
 
 # Catatan QA & Referensi Data Testing (Evidence)

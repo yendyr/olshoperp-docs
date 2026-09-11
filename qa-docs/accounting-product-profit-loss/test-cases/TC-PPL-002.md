@@ -77,13 +77,14 @@ run_history:
 origin_jira: ETM-15485
 first_execution:
   at: "2026-09-07T15:50:00+07:00"
-  via: "manual:QA - Yemima"
+  via: "manual:Yemima"
   jira: "ETM-15659"
 last_execution:
   at: "2026-09-07T15:50:00+07:00"
   jira: "ETM-15659"
   status: passed
-  via: "manual:QA - Yemima"
+  via: "manual:Yemima"
+  notes: "Pengujian manual Gross Sales berbasis Price Before VAT teruji sukses."
 ---
 
 # Catatan QA & Referensi Data Testing (Evidence)

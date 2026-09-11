@@ -990,3 +990,21 @@ ETM-15850:
   jira_status: QA Review
   jira_type: Improvement
   summary: "[Benchmark COGS] - Manual COGS NULL vs 0, wajib Expiry (default +30), hapus override permanen"
+
+ETM-15858:
+  menu: accounting-purchase-return
+  intent: extend
+  status: in_overview
+  reuse: []
+  drafts:
+    - PENDING-JENNI-2026091001
+    - PENDING-JENNI-2026091002
+    - PENDING-JENNI-2026091003
+    - PENDING-JENNI-2026091004
+    - PENDING-JENNI-2026091005
+    - PENDING-JENNI-2026091006
+    - PENDING-JENNI-2026091007
+  ready_tcs: []
+  jira_status: QA Review
+  jira_type: Improvement
+  summary: "[Purchase Return] - Unit Price (Before VAT) & Total Price Return di detail + modal"
