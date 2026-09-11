@@ -1004,7 +1004,48 @@ ETM-15858:
     - PENDING-JENNI-2026091005
     - PENDING-JENNI-2026091006
     - PENDING-JENNI-2026091007
+    - PENDING-JENNI-2026091101
+    - PENDING-JENNI-2026091102
+    - PENDING-JENNI-2026091103
+    - PENDING-JENNI-2026091104
+    - PENDING-JENNI-2026091105
+    - PENDING-JENNI-2026091106
+    - PENDING-JENNI-2026091107
+    - PENDING-JENNI-2026091108
   ready_tcs: []
   jira_status: QA Review
   jira_type: Improvement
   summary: "[Purchase Return] - Unit Price (Before VAT) & Total Price Return di detail + modal"
+
+ETM-15908:
+  menu: accounting-purchase-return
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Purchase Return] - Insert SKU via Select To Mengabaikan FIFO Memicu Error 'Stock inbound date is after outbound date'"
+
+ETM-15909:
+  menu: inventory-transaction-stock-tooltip
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Inventory] Penyesuaian Tooltip Kolom 'Transaction Stock' Menjadi 'Stock as of {date trx}' pada Detail Assembly, Stock Opname, & Opening Stock"
+
+ETM-15910:
+  menu: all-sales-order
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[All Sales Order] Lock Cache Export 600 Detik Tidak Dilepas Saat Job Export Selesai Memblokir Export Berikutnya"
