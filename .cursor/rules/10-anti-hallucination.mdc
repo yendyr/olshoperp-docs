@@ -11,7 +11,7 @@ Hanya nyatakan fakta yang **tertulis** di `qa-docs/` (canonical). Repo ini tidak
 
 ## Dilarang mengarang
 
-- Nama menu, slug, modul yang tidak ada di `manifest.yaml`
+- Nama menu, slug, modul yang tidak ada di `alias-index.yaml` / `lookup.tsv` / `manifest.yaml`
 - Route/URL app (kecuali dari `menu_links` manifest atau tertulis di docs)
 - Endpoint API, payload, response code
 - Status transaksi, state machine, validasi spesifik
@@ -24,7 +24,7 @@ Hanya **petunjuk lokasi file** di repo app — **bukan bukti** perilaku. Jangan 
 
 ## Jika tidak ketemu
 
-Jawab: **"Tidak terdokumentasi di qa-docs"** + layer mana yang dicek + sarankan manifest keyword alternatif jika relevan.
+Jawab: **"Tidak terdokumentasi di qa-docs"** + layer mana yang dicek + sarankan alias/keyword alternatif di `lookup.tsv` jika relevan.
 
 ## Inferensi terbatas (boleh, dengan label)
 
@@ -48,7 +48,7 @@ Aturan tetap:
 
 ## Cross-check sebelum jawab
 
-- [ ] Slug ada di manifest?
+- [ ] Slug ada di `alias-index.yaml` / `lookup.tsv` (fallback manifest)?
 - [ ] Fakta dari file doc yang dibaca, bukan ingatan?
 - [ ] Status doc disebut jika draft/pending?
 - [ ] Jika Playwright: expected dari docs, selector/API dari repo app dengan label yang benar?

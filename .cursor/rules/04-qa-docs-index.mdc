@@ -19,8 +19,13 @@ alwaysApply: true
 ```
 qa-docs/
 ├── README.md                 ← overview repo (bukan sumber per-menu)
-├── _meta/                    ← jangan kutip ke user; manifest boleh dibaca agent
-│   ├── manifest.yaml         ← SOURCE OF TRUTH index menu
+├── _meta/                    ← jangan kutip ke user; index boleh dibaca agent
+│   ├── lookup.tsv            ← Q&A: grep alias → slug (generated)
+│   ├── alias-index.yaml      ← Q&A: map alias + status/routes (generated)
+│   ├── lookup-overrides.yaml ← extra alias / collision (hand-maintained)
+│   ├── generate-lookup.py    ← regenerator
+│   ├── README-lookup.md      ← Q&A vs write-docs protocol
+│   ├── manifest.yaml         ← write-docs SoT (slug registry)
 │   ├── manifest-gate-gs-draft.yaml  ← snippet historis, bukan SoT
 │   ├── MERMAID_STYLE_GUIDE.md
 │   └── templates/            ← kb · requirement · technical · e2e-test-case
@@ -31,7 +36,7 @@ qa-docs/
     ├── knowledge-base.md     ← operator, support, ops
     ├── requirement.md        ← PM, QA, support
     ├── technical.md          ← developer
-    └── test-cases/           ← opsional (2 menu saat ini)
+    └── test-cases/           ← opsional — skip di Q&A kecuali pertanyaan TC
         ├── README.md
         └── TC-*.md
 ```
@@ -70,14 +75,16 @@ qa-docs/
 
 ## Workflow lookup (wajib)
 
-1. **Cari slug** — grep `manifest.yaml` by: `menu_name`, `menu_links`, atau teks user → keyword slug
+**Q&A** (lihat `20-qa-docs-lookup.mdc` + `qa-docs/_meta/README-lookup.md`):
+
+1. **Cari slug** — grep `qa-docs/_meta/lookup.tsv` / `alias-index.yaml` (alias, `menu_name`, route). Jangan baca fat `manifest.yaml` hanya untuk resolve menu.
 2. **Buka** `qa-docs/{slug}/README.md`
-3. **Pilih layer** by audience (lihat `09-menu-documentation.mdc`)
+3. **Pilih satu layer** by audience (lihat `09-menu-documentation.mdc`)
 4. **Cross-menu concept** → `random-sku/` (bukan satu menu app)
 5. **Sidebar kosong / menu hilang** → `sidebar-menu/technical.md` (status `final`)
-6. **Test case E2E** → cek manifest `test_cases:` dulu:
-   - `accounting-customer-payment/test-cases/`
-   - `generalsetting-general-company/test-cases/`
+6. **Test case E2E** — hanya jika pertanyaan tentang TC: folder `test-cases/` (skip di Q&A biasa)
+
+**Write-docs** tetap manifest-first: edit `manifest.yaml` + folder menu, lalu `python3 qa-docs/_meta/generate-lookup.py`.
 
 ## URL staging dari menu_links
 
@@ -96,6 +103,7 @@ Contoh: `menu_links: [accounting/journal]` → `/accounting/journal`
 
 ## Yang diabaikan saat indexing jawaban
 
-- `_legacy/**`, `_meta/templates/**`, `manifest-gate-gs-draft.yaml`
+- `_legacy/**`, `_meta/templates/**`, `_meta/docs-hub/**`, `_meta/gemini-briefs/**`, `manifest-gate-gs-draft.yaml`
+- `test-cases/**`, `{slug}/ETM-*/**`, `flows/**` — kecuali pertanyaan memang TC / card / flow
 - Skill/path lama `docs/qa-docs/` atau `.cursor/skills/` dari referensi docs
 - `code_globs` — hanya petunjuk repo app, bukan bukti perilaku

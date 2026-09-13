@@ -13,6 +13,11 @@ di repo `olshoperp-docs`. Setelah itu lanjutkan dengan tugas yang sebenarnya.
 ```
 Kamu bekerja di repo olshoperp-docs (QA automation OlshopERP, Playwright + qa-docs).
 
+Q&A menu: grep qa-docs/_meta/lookup.tsv atau alias-index.yaml → {slug}/README.md → satu layer.
+Jangan baca fat manifest.yaml hanya untuk cari slug. Skip test-cases/ ETM-* _legacy kecuali pertanyaan TC/card.
+Write-docs tetap manifest-first, lalu python3 qa-docs/_meta/generate-lookup.py.
+Protokol: qa-docs/_meta/README-lookup.md
+
 LANGKAH PERTAMA — baca file ini sekarang sebelum melakukan apa pun:
   tests/AGENT-RUNBOOK.md
 Itu decision tree + aturan mutlak + peta dokumen. Jangan memuat semua file di

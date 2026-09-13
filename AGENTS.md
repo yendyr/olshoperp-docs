@@ -29,10 +29,11 @@ Konten QA ada di **`qa-docs/`** (langsung di root repo). Bukan `docs/qa-docs/`.
 
 Untuk tugas dokumentasi/pertanyaan QA:
 
-1. Baca `.cursor/rules/` (alwaysApply)
-2. Baca **`qa-docs/_meta/manifest.yaml`** — 121 menu, source of truth
-3. Triage pertanyaan → `08-question-triage.mdc`
-4. Buka `qa-docs/{menu-slug}/README.md` → layer doc sesuai audience
+1. Baca `.cursor/rules/` (alwaysApply) — lookup: `20-qa-docs-lookup.mdc`
+2. **Q&A:** grep **`qa-docs/_meta/alias-index.yaml`** / **`lookup.tsv`** (bukan fat manifest) → `{slug}/README.md` → **satu** layer
+3. **Write-docs:** tetap **`qa-docs/_meta/manifest.yaml`** dulu, lalu regenerate `python3 qa-docs/_meta/generate-lookup.py`
+4. Triage pertanyaan → `08-question-triage.mdc`
+5. Protokol portable: `qa-docs/_meta/README-lookup.md`
 
 **Peta lengkap struktur:** `.cursor/rules/04-qa-docs-index.mdc`
 
@@ -64,7 +65,7 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `06-answer-format.mdc` | Format jawaban: AS-IS, sitasi, struktur |
 | `07-uncertainty-and-conflicts.mdc` | Draft/gap/konflik layer/mismatch staging |
 | `08-question-triage.mdc` | Klasifikasi pertanyaan → layer doc |
-| `09-menu-documentation.mdc` | Protokol **baca** dokumentasi menu |
+| `09-menu-documentation.mdc` | Protokol **baca** dokumentasi menu (Q&A lookup vs write-docs manifest) |
 | `10-anti-hallucination.mdc` | Larangan mengarang menu/API/status |
 | `11-cross-menu-navigation.mdc` | Trace alur lintas modul & menu terkait |
 | `12-jira-card-format.mdc` | Format Bug / Improvement / Change Requirement + trigger word. Site: **ETM** / `erpintegration.atlassian.net` saja — jangan org lain |
@@ -75,6 +76,7 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `17-e2e-cross-menu-flow.mdc` | E2E chain ≥2 menu: TC flow = recall TC origin (no duplikasi step), scenario layer `tests/scenarios/`, 1 spec kanonik per flow, fresh data per run, history last/prev-run |
 | `18-sync-jira-done.mdc` | Trigger `#sync-jira-done` / `#syncjiradone` — sync Jira Test Case Done (Test Result + Actual Result) ke `last_execution` / `first_execution` |
 | `19-database-data-verification.mdc` | Cek data level DB via webhook (Tyas/Staging shared, Merdian terpisah) — pointer ke `tests/DATA-VERIFICATION.md` + SoT `olshoperp` rule 19; bukan bukti TC passed |
+| `20-qa-docs-lookup.mdc` | Q&A: alias-index/lookup.tsv → README → satu layer; skip TC/ETM/legacy |
 
 **Sebelum menulis interaksi UI**: baca `tests/ui-components.md` — kontrak per komponen (multiselect, dialog headlessui, input numeric-mask, datepicker, modal outstanding) berisi jebakan yang sudah ditangani helper. Jangan tulis interaksi komponen dari nol.
 

@@ -1,0 +1,254 @@
+# Hand-maintained extra aliases + collision resolutions.
+# generate-lookup.py reads this file; it never overwrites it.
+#
+# Use this instead of mass-editing menu frontmatter when:
+#   - operators use a nickname that is not in requirement.md
+#   - two menus share a short code (SO, PI, invoice, inbound)
+#   - a route tail would otherwise map to the wrong slug
+#
+# Schema
+# ------
+# extra_aliases:
+#   {slug}:               # must exist in manifest.yaml
+#     - alias text
+# collisions:
+#   {normalized-alias}:   # lowercase, spaces not underscores
+#     prefer: {slug}
+#     also: [{slug}, ...]
+#     note: "disambiguation for agents"
+# ignore_aliases:         # never index (too generic)
+#   - create
+# ignore_frontmatter_aliases:  # skip even if a layer doc lists them
+#   - import processed
+
+version: 1
+
+# ---------------------------------------------------------------------------
+# Extra aliases — operator / QA nicknames without touching frontmatter
+# ---------------------------------------------------------------------------
+extra_aliases:
+  supplychain-purchase-order:
+    - PO
+    - pembelian
+    - purchase order scm
+  supplychain-purchase-requisition:
+    - PR
+    - permintaan pembelian
+    - purchase request
+  supplychain-new-purchase-inbound:
+    - GRN
+    - goods receipt note
+    - purchase inbound
+    - new purchase inbound
+    - penerimaan barang PO
+    - IN-
+    - inbound
+  accounting-supplier-invoice:
+    - purchase invoice
+    - faktur beli
+    - tagihan supplier
+  accounting-customer-invoice:
+    - customer invoice
+    - faktur penjualan
+    - invoice
+  accounting-customer-payment:
+    - customer payment
+    - AR payment
+    - penerimaan customer
+    - account receive
+    - ARCP
+    - payment
+  accounting-supplier-payment:
+    - supplier payment
+    - AP payment
+    - account payment
+    - pembayaran supplier
+  accounting-credit-note:
+    - CN
+    - nota kredit
+  accounting-debit-note:
+    - DN
+    - nota debit
+  sales-order-general:
+    - SO
+    - sales order
+    - SO general
+    - Dev Sales Order
+  all-sales-order:
+    - ASO
+    - gabungan SO
+  supplychain-delivery-order:
+    - DO
+    - surat jalan
+  supplychain-stock-opname:
+    - opname
+    - stock take
+    - stock opname
+  accounting-chart-of-account:
+    - COA
+    - chart of accounts
+    - bagan akun
+  general-ledger:
+    - GL
+    - buku besar
+  bill-of-material:
+    - BOM
+    - bill of materials
+  manage-platform-product:
+    - MPP
+    - platform product binding
+    - bind produk
+  system-product:
+    - SKU master
+    - master product
+    - product master
+  supplychain-variant:
+    - master variant
+    - variant group
+  random-sku:
+    - random variant
+    - SKU random
+  omni-waves-management:
+    - waves
+    - wave management
+    - send to default waves
+  sidebar-menu:
+    - sidebar
+    - menu sidebar hilang
+  accounting-sales-return:
+    - sales return accounting
+    - SR accounting
+  supplychain-sales-returns:
+    - sales return scm
+    - SR scm
+    - retur penjualan scm
+
+# ---------------------------------------------------------------------------
+# Collisions — short codes that map to more than one menu
+# ---------------------------------------------------------------------------
+collisions:
+  so:
+    prefer: sales-order-general
+    also:
+      - all-sales-order
+      - supplychain-stock-opname
+    note: >-
+      SO tanpa qualifier = Dev - Sales Order (sales-order-general).
+      All Sales Order = ASO. Stock Opname = opname / stock take (bukan SO).
+
+  pi:
+    prefer: accounting-supplier-invoice
+    also:
+      - supplychain-new-purchase-inbound
+    note: >-
+      PI tanpa qualifier = Purchase Invoice (prefix PI-, menu Purchase Invoice).
+      Purchase Inbound = GRN / IN- / new purchase inbound — bukan PI.
+
+  invoice:
+    prefer: accounting-customer-invoice
+    also:
+      - accounting-supplier-invoice
+    note: >-
+      invoice tanpa qualifier = Sales Invoice (SI).
+      Purchase Invoice = PI / supplier invoice / faktur beli.
+
+  payment:
+    prefer: accounting-customer-payment
+    also:
+      - accounting-supplier-payment
+    note: >-
+      payment tanpa qualifier = Account Receive (customer / AR).
+      Account Payment = supplier / AP payment.
+
+  inbound:
+    prefer: supplychain-new-purchase-inbound
+    also:
+      - supplychain-other-inbound
+      - supplychain-mutation-inbound
+      - supplychain-transfer-inbound
+      - accounting-adjustment-inbound
+    note: >-
+      inbound tanpa qualifier = BETA - New Purchase Inbound (GRN).
+      Qualifier: other / mutation / transfer / adjustment.
+
+  return:
+    prefer: supplychain-sales-returns
+    also:
+      - accounting-sales-return
+      - accounting-purchase-return
+    note: >-
+      return tanpa qualifier = Sales Returns (SCM).
+      Accounting Sales Return vs Purchase Return butuh qualifier.
+
+  product:
+    prefer: system-product
+    also:
+      - manage-platform-product
+      - supplychain-product-general-configuration
+      - supplychain-product-inventory-configuration
+    note: >-
+      product tanpa qualifier = System Product.
+      Binding marketplace = Manage Platform Product (MPP).
+
+  product-general-configuration:
+    prefer: supplychain-product-general-configuration
+    also:
+      - system-product
+    note: >-
+      Route tail product-general-configuration = menu Product General Configuration.
+      System Product juga mencantumkan route ini di manifest — jangan samakan slugs.
+
+  product-inventory-configuration:
+    prefer: supplychain-product-inventory-configuration
+    also:
+      - system-product
+    note: >-
+      Route tail product-inventory-configuration = menu Product Inventory Configuration.
+
+# ---------------------------------------------------------------------------
+# Too generic — never index
+# ---------------------------------------------------------------------------
+ignore_aliases:
+  - create
+  - edit
+  - save
+  - approve
+  - delete
+  - update
+  - menu
+  - docs
+  - requirement
+  - technical
+  - knowledge base
+  - user guide
+  - feature map
+  - test case
+  - test
+  - yes
+  - no
+  - on
+  - off
+  - id
+  - en
+
+# Frontmatter noise that is a field/feature name, not a menu resolver
+ignore_frontmatter_aliases:
+  - import processed
+  - import non-processed
+  - fulfillment mode
+  - below benchmark cogs
+  - manual cogs
+  - benchmark cogs snapshot
+  - auto add vat
+  - extract bundle
+  - extract bundle details
+  - pending orders
+  - unmatched bookings
+  - log data
+  - unavailable stock
+  - last checked
+  - void
+  - void & recreate
+  - recreate
+  - platform_order_id
+  - other cost/disc code

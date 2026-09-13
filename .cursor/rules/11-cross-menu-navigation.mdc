@@ -17,7 +17,8 @@ alwaysApply: true
 
 | Sumber | Lokasi |
 |--------|--------|
-| Manifest | `module`, `menu_links`, slug prefix modul |
+| Lookup index | `qa-docs/_meta/alias-index.yaml` / `lookup.tsv` — resolve slug (Q&A) |
+| Manifest | write-docs SoT: `module`, `menu_links`, slug (fallback jika lookup kosong) |
 | README menu | § Menu terkait, Route & code |
 | requirement | § integrasi, dependency, downstream |
 | technical | Controller/job yang refer menu lain |
