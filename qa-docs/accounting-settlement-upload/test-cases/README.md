@@ -5,6 +5,7 @@ Prefix folder: `SETU`.
 ### Cards Terkait:
 - [ETM-11494](https://erpintegration.atlassian.net/browse/ETM-11494) — tinggi/lebar field filtering vs Global Search dan Choose Store.
 - [ETM-15701](https://erpintegration.atlassian.net/browse/ETM-15701) — validasi approval instant settlement transaksi tanggal SI harus sama semua.
+- [ETM-15886](https://erpintegration.atlassian.net/browse/ETM-15886) — [Test Case Plan: Penyesuaian syarat Delete upload](./test-case-plan-etm-15886.md) (izinkan delete jika AR dari Approve IS, blokir hanya jika ada AR luar).
 
 | TC Code | Title | Status | Jira | Automated | Last Updated |
 |---------|-------|--------|------|-----------|-------------|
