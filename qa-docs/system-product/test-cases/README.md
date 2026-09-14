@@ -108,3 +108,7 @@ Prasyarat Master Variant Default: GAP-VAR-01 / [ETM-15511](https://erpintegratio
 | TC-SYSPROD-040 | Expand dengan relasi → leftover + confirm | draft | ❌ | 2026-08-21 |
 
 | TC-SYSPROD-041 | Omit Default segment + hide Default column | draft | ❌ | 2026-08-21 |
+| PENDING-20260910154001 | Upload Manual Foto Produk > 1 MB (Validation Error & Prevention 500) | draft | ❌ | 2026-09-10 |
+| PENDING-20260910154002 | Import Product Images Excel - Error Log Format & Validation Accuracy | draft | ❌ | 2026-09-10 |
+| PENDING-20260910154003 | Import File Gambar 0 KB via Google Drive (Empty File Rejection) | draft | ❌ | 2026-09-10 |
+
