@@ -77,10 +77,11 @@ first_execution:
   via: "legacy:test_result"
   jira: ETM-15553
 last_execution:
-  at: "2026-08-24"
-  jira: ETM-15553
-  status: passed
-  via: "legacy:test_result"
+  at: "2026-09-10"
+  jira: ETM-15675
+  status: failed
+  via: "manual:QA Engineer"
+  notes: "Title pada detail grid sudah benar tidak menggunakan Multi-SKU, namun pada modal Available Product header kolom masih menggunakan Multi-SKU COLLI..."
 ---
 
 # TC-MTIN-003

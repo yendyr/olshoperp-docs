@@ -61,11 +61,11 @@ run_history:
     note: "FAIL — Inkonsistensi UI unit dan qty pasca edit."
 origin_jira: ETM-15553
 last_execution:
-  at: "2026-08-30"
-  jira: "ETM-15553"
-  status: failed
-  via: "manual:p"
-  notes: "Verifikasi pengujian manual: status tersimpan, respon validasi dan datalist sesuai expected."
+  at: "2026-09-10"
+  jira: ETM-15675
+  status: passed
+  via: "manual:QA Engineer"
+  notes: "System sudah berhasil mengonversi Qty ke alternate unit yang dipilih secara otomatis dan konsisten di UI & DB."
 first_execution:
   at: "2026-08-30"
   via: "manual:p"

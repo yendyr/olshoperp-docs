@@ -61,11 +61,11 @@ run_history:
     note: "FAIL — Logical bug: 1 colli berada di 2 location destination berbeda."
 origin_jira: ETM-15553
 last_execution:
-  at: "2026-08-30"
-  jira: "ETM-15553"
-  status: failed
-  via: "manual:p"
-  notes: "Verifikasi pengujian manual: status tersimpan, respon validasi dan datalist sesuai expected."
+  at: "2026-09-10"
+  jira: ETM-15675
+  status: passed
+  via: "manual:QA Engineer"
+  notes: "Verified 4 cases: New Colli beda lokasi disabled, Existing Colli beda lokasi ditolak dengan error 'Selected COLLI is already used in another location destination.', dan location change auto-reset NULL."
 first_execution:
   at: "2026-08-30"
   via: "manual:p"
