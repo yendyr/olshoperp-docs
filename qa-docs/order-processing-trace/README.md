@@ -9,6 +9,7 @@ Menu **Order Processing Trace** — laporan read-only referensi proses fulfillme
 | Technical | [technical.md](./technical.md) | Developer | draft |
 | Feature Map | [feature-map.md](./feature-map.md) | QA, PM, Operator (Lingo) | draft |
 | Capability (Lingo) | [capabilities/](./capabilities/) | Operator (modal `?`) | draft |
+| Test Cases | [test-cases.md](./test-cases.md) | QA, Developer | draft |
 | User Guide | user-guide.md | Publish eksternal | pending |
 
 **SoT:** [`_meta/sot/order-processing-trace-source-of-truth.md`](../_meta/sot/order-processing-trace-source-of-truth.md) v1.4  
