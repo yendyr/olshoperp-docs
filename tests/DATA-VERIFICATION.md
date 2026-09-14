@@ -55,11 +55,13 @@ Workspace agent sering di `olshoperp-docs`. Runner hidup di sibling `olshoperp`:
 
 ```bash
 # Dari root olshoperp-docs (path sibling)
-node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id, code FROM products WHERE company_id = 153 AND id = 12345 LIMIT 5"
+node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="DESCRIBE scm_products"
+
+node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id, sku FROM scm_products WHERE company_id = 153 AND id = 12345 LIMIT 5"
 
 node ../olshoperp/scripts/agent-db-query.mjs --db=tyas_olshoperp --query="SELECT id, user_id, event, auditable_type, auditable_id, created_at FROM audits WHERE auditable_id = 12345 ORDER BY created_at DESC LIMIT 10"
 
-node ../olshoperp/scripts/agent-db-query.mjs --db=merdian_olshoperp --query="SELECT id, code, transaction_status FROM purchase_orders WHERE company_id = 153 AND id = 999 LIMIT 5"
+node ../olshoperp/scripts/agent-db-query.mjs --db=merdian_olshoperp --query="SELECT id, code, transaction_status FROM scm_purchase_orders WHERE company_id = 153 AND id = 999 LIMIT 5"
 ```
 
 Atau `cd ../olshoperp` lalu `node scripts/agent-db-query.mjs ...` — sama saja.
@@ -69,6 +71,9 @@ Detail guard read-only + forensik 4 langkah → rule `19` di `olshoperp`.
 
 ## Gate QA wajib (setiap query)
 
+0. **Nama tabel & kolom** — jangan tebak. Nama menu → tabel lewat `agent-db/cache.md` (S0–S3),
+   lalu `DESCRIBE` sebelum SELECT kolom yang belum tercatat (S4–S5). `requirement.md` dipakai untuk
+   expected, **bukan** nama tabel/kolom. Belajar hal baru → write-back cache (S6). Detail: `agent-db/README.md`.
 1. **Read-only** — hanya `SELECT` / `EXPLAIN` / `DESCRIBE` / `SHOW` / `WITH`. Runner
    memblokir mutasi; jangan usulkan `UPDATE`/`DELETE`/`INSERT` ke user.
 2. **Multi-tenant** — filter `company_id` (atau kolom scope setara) sesuai company uji.
@@ -114,6 +119,7 @@ Expected Result tetap dari `requirement.md` (rule `12`).
 
 | Butuh | Baca |
 |-------|------|
+| Nama menu → tabel, jebakan kolom, write-back | `agent-db/README.md`, `agent-db/cache.md` |
 | Protokol forensik + larangan mutasi (SoT) | `olshoperp/.cursor/rules/19-database-debugger.mdc` |
 | Pointer agent di workspace docs | `.cursor/rules/19-database-data-verification.mdc` |
 | Assert TC / CLI vs MCP | `tests/AGENT-RUNBOOK.md`, rule `14` §6B |

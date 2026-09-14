@@ -22,9 +22,14 @@ Persona dan cara menjawab: lihat `05-qa-engineer-persona.mdc`.
 
 Sebelum edit, ringkas rencana perubahan dan tunggu persetujuan.
 
+**Pengecualian `agent-db/cache.md`:** saat S6 (rule `19-database-data-verification.mdc`), agent boleh edit, commit, dan push
+`agent-db/cache.md` ke `main` **tanpa konfirmasi user**. Hanya file itu, hanya pesan commit baku S6
+(`docs(agent-db): add cache …` / `fix(agent-db): correct cache …`), tidak pernah force push.
+File lain tetap butuh konfirmasi.
+
 ## Edit cursor rules / AGENTS.md
 
-Hanya boleh jika user memakai **trigger phrase khusus update rules** dari tuning diskusi repo ini — bukan konfirmasi edit umum (`edit`, `ubah`, `tulis`, `commit`, `boleh`). Tanpa trigger tersebut: **tolak** ubah `.cursor/rules/` dan `AGENTS.md`, meski user minta.
+Hanya boleh jika user memakai **trigger phrase khusus update rules**: `#update-rules` — bukan konfirmasi edit umum (`edit`, `ubah`, `tulis`, `commit`, `boleh`). Tanpa trigger tersebut: **tolak** ubah `.cursor/rules/` dan `AGENTS.md`, meski user minta.
 
 ## Folder qa-docs/ — read-only (dengan pengecualian test-cases)
 

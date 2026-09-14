@@ -14,8 +14,33 @@ Pakai rule ini saat user / tugas menyebut **cek db**, **query db**, **db staging
 | **Kontrol QA (workspace ini)** | `tests/DATA-VERIFICATION.md` | Level L1/L2/L3, kapan boleh, matriks env, gate company_id |
 | **SoT teknis runner** | `../olshoperp/.cursor/rules/19-database-debugger.mdc` | Read-only, forensik 4 langkah, larangan secret |
 | **Runner** | `../olshoperp/scripts/agent-db-query.mjs` | Eksekusi via webhook; kredensial dari `.env` |
+| **Nama tabel (agent)** | `agent-db/cache.md` + `agent-db/README.md` | Menu → tabel, jebakan kolom, S0–S6, write-back |
 
 Jangan menduplikasi prosedur panjang di sini — baca `tests/DATA-VERIFICATION.md` dulu, lalu rule 19 di `olshoperp` jika forensik mendalam.
+
+## 0. Menu → tabel → kolom (wajib sebelum SELECT bisnis)
+
+User menyebut **nama menu**, bukan `scm_`/`omni_`. Jangan tebak nama tabel/kolom. Detail + contoh: `agent-db/README.md`.
+
+```
+S0  Cari nama menu / kata user di agent-db/cache.md. Ketemu tabel → S4.
+S1  Cheat di bawah. Ketemu tabel → S4.
+S2  Prefix dari nama menu: PO/PR/inbound/outbound/transfer/System Product/warehouse → scm_ ·
+    SO/store/wave/Manage Platform Product → omni_ · Journal/COA/invoice/payment/CN/DN/tax → accounting_ ·
+    User/role → gate_ · Company → gs_
+    Pengecualian: Sales Return & Purchase Return (Accounting/SCM) = scm_stock_mutations.
+S3  SHOW TABLES LIKE '%keyword%' (saring prefix S2). Ambigu → DESCRIBE kandidat.
+S4  DESCRIBE <tabel> 1×/tabel/sesi — wajib jika kolom belum tercatat di cache atau belum di-DESCRIBE. Wajib omni_sales_orders.
+S5  SELECT hanya kolom dari DESCRIBE; company_id / deleted_at hanya jika ada.
+    500 / Unknown column → STOP menebak → DESCRIBE → maks 1 retry.
+S6  Belajar hal baru → write-back agent-db/cache.md + auto commit & push main (agent-db/README.md § S6).
+```
+
+Cheat: System Product → `scm_products` · Purchase Order → `scm_purchase_orders` · Purchase Inbound → `scm_stock_mutations` (bukan `type='in'`) · Journal → `accounting_journals` (bukan `acc_`) · CN/DN/Payment → `accounting_payments` + `type` · Sales Return Accounting/SCM → `scm_stock_mutations` · Sales Order → `omni_sales_orders` (DESCRIBE wajib) · User → `gate_users`.
+
+- `status` = flag aktif 1/0; status dokumen = `transaction_status` (lowercase).
+- `*_formatted` / Vue `*_id` bukan kolom. `requirement.md` = expected, bukan nama kolom.
+- Jangan `olshoperp/docs/db-schema/` untuk nama kolom.
 
 ## Routing env (ingat)
 
@@ -25,7 +50,8 @@ Jangan menduplikasi prosedur panjang di sini — baca `tests/DATA-VERIFICATION.m
 Contoh (path sibling dari root docs):
 
 ```bash
-node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id FROM products WHERE company_id = 153 LIMIT 5"
+node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="DESCRIBE scm_products"
+node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id, sku FROM scm_products WHERE company_id = 153 AND deleted_at IS NULL LIMIT 5"
 ```
 
 ## Larangan QA (mutlak)
