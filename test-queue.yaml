@@ -1049,3 +1049,14 @@ ETM-15910:
   jira_status: To Do
   jira_type: Error
   summary: "[All Sales Order] Lock Cache Export 600 Detik Tidak Dilepas Saat Job Export Selesai Memblokir Export Berikutnya"
+
+ETM-15911:
+  menu: all-sales-order
+  intent: extend
+  status: needs_overview
+  reuse: []
+  drafts: []
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Multi Form - Export All] Lock Cache Export 600 Detik Tidak Dilepas Saat Job Export Selesai Memblokir Export Berikutnya"
