@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panduan Integrasi Telegram Bot Instant View (Telegraph API) — OlshopERP</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --accent-blue: #38bdf8;
+      --accent-indigo: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+      --code-bg: #090d16;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+    }
+
+    .card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent-blue);
+    }
+
+    .problem-solution {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .problem-solution {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .box-danger {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+
+    .box-danger h4 {
+      color: #f87171;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .box-success {
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+
+    .box-success h4 {
+      color: var(--accent-emerald);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .flow-step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-indigo);
+      color: white;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-content h4 {
+      font-size: 1.1rem;
+      margin-bottom: 0.35rem;
+      color: var(--text-primary);
+    }
+
+    .step-content p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .code-container {
+      position: relative;
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin: 0.75rem 0;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .copy-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-indigo);
+      color: white;
+    }
+
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    code .keyword { color: #f472b6; }
+    code .function { color: #60a5fa; }
+    code .string { color: #34d399; }
+    code .comment { color: #64748b; font-style: italic; }
+
+    .preview-phone {
+      background: #182232;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-top: 1rem;
+      max-width: 450px;
+    }
+
+    .chat-bubble {
+      background: #2b5278;
+      color: white;
+      padding: 0.85rem 1.1rem;
+      border-radius: 12px 12px 12px 2px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .instant-view-btn {
+      display: block;
+      margin-top: 0.75rem;
+      background: #2481cc;
+      color: white;
+      text-align: center;
+      padding: 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-decoration: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Tech Lead & Developer Guide</div>
+      <h1>Telegram Bot Instant View Integration</h1>
+      <p class="subtitle">Solusi Pencegahan Limit 4.096 Karakter & Tampilan Panduan/SOP Elegan di HP via Telegraph API</p>
+    </header>
+
+    <!-- Section Masalah & Solusi -->
+    <div class="card">
+      <div class="card-title">📌 Background & Tujuan</div>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Ketika asisten bot (Antigravity CLI / LLM) menghasilkan jawaban panduan komprehensif, SOP panjang, atau modul lengkap, pesan seringkali melampaui batas native Telegram.
+      </p>
+
+      <div class="problem-solution">
+        <div class="box-danger">
+          <h4>❌ Masalah Saat Ini</h4>
+          <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: #cbd5e1;">
+            <li>Limit 4.096 karakter Telegram memotong teks di tengah jalan (teks terputus).</li>
+            <li>Chat bubble menjadi sangat panjang dan sulit dibaca di layar HP.</li>
+            <li>Format tabel atau markdown kompleks sering rusak/terlipat.</li>
+          </ul>
+        </div>
+        <div class="box-success">
+          <h4>✅ Solusi Instant View (Telegraph)</h4>
+          <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: #cbd5e1;">
+            <li>0 limit karakter (mampu memuat panduan puluhan ribu kata).</li>
+            <li>Muncul tombol <strong>⚡ INSTANT VIEW</strong> resmi di aplikasi Telegram.</li>
+            <li>Membuka artikel secara instan, bersih (*reader mode*), tanpa kuota eksternal.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Arsitektur Alur -->
+    <div class="card">
+      <div class="card-title">⚡ Arsitektur Logika Pengiriman (Smart Routing)</div>
+      
+      <div class="flow-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4>Eksekusi CLI & Cek Panjang Output</h4>
+          <p>Script bridge di server menerima output teks dari perintah Antigravity CLI, lalu mengecek total panjang karakter (Threshold: <strong>800 karakter</strong>).</p>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4>Cabang Routing</h4>
+          <p>• <strong>Output Singkat (&lt; 800 char)</strong>: Langsung kirim ke Telegram seperti biasa.<br>
+             • <strong>Output Panjang (&ge; 800 char)</strong>: Terbitkan ke Telegraph API ➔ Dapatkan link artikel.</p>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h4>Kirim Summary + Link ke Telegram</h4>
+          <p>Bot hanya mengirim ringkasan eksekutif (3-5 poin) + link Telegraph. Telegram secara otomatis menyematkan tombol Instant View.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Panduan Implementasi Teknis -->
+    <div class="card">
+      <div class="card-title">💻 Panduan Implementasi Teknis (Step-by-Step)</div>
+
+      <!-- Step 1 -->
+      <h3 style="font-size: 1.1rem; margin: 1.25rem 0 0.5rem; color: var(--accent-emerald);">Langkah 1: Buat Akun Telegraph (Hanya 1x di Awal)</h3>
+      <p style="font-size: 0.9rem; color: var(--text-secondary);">Jalankan perintah cURL ini di terminal server untuk mendapatkan token akses gratis:</p>
+      
+      <div class="code-container">
+        <div class="code-header">
+          <span>Terminal (cURL)</span>
+          <button class="copy-btn" onclick="copyCode('curl-code')">Copy</button>
+        </div>
+        <pre><code id="curl-code">curl "https://api.telegra.ph/createAccount?short_name=OlshopERP&author_name=OlshopERP+Assistant"</code></pre>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.35rem;">
+        Simpan nilai <code>access_token</code> dari JSON response ke dalam <code>.env</code> server (misal: <code>TELEGRAPH_ACCESS_TOKEN=...</code>).
+      </p>
+
+      <!-- Step 2 -->
+      <h3 style="font-size: 1.1rem; margin: 1.75rem 0 0.5rem; color: var(--accent-emerald);">Langkah 2: Buat Helper Telegraph di Server</h3>
+      <p style="font-size: 0.9rem; color: var(--text-secondary);">Pilih bahasa pemrograman yang dipakai oleh runner bot kamu (Node.js atau Python):</p>
+
+      <!-- Code Node.js -->
+      <div class="code-container">
+        <div class="code-header">
+          <span>Node.js Helper (telegraphHelper.js)</span>
+          <button class="copy-btn" onclick="copyCode('nodejs-code')">Copy</button>
+        </div>
+        <pre><code id="nodejs-code"><span class="keyword">const</span> TELEGRAPH_TOKEN = process.env.TELEGRAPH_ACCESS_TOKEN || <span class="string">'PASTE_TOKEN_KAMU_DISINI'</span>;
+
+<span class="comment">/**
+ * Konversi teks markdown sederhana menjadi struktur DOM Nodes Telegraph
+ */</span>
+<span class="keyword">function</span> <span class="function">parseToTelegraphNodes</span>(markdownText) {
+  <span class="keyword">const</span> lines = markdownText.split(<span class="string">'\n'</span>);
+  <span class="keyword">const</span> nodes = [];
+
+  <span class="keyword">for</span> (<span class="keyword">const</span> rawLine <span class="keyword">of</span> lines) {
+    <span class="keyword">const</span> line = rawLine.trim();
+    <span class="keyword">if</span> (!line) <span class="keyword">continue</span>;
+
+    <span class="keyword">if</span> (line.startsWith(<span class="string">'# '</span>)) {
+      nodes.push({ tag: <span class="string">'h3'</span>, children: [line.replace(<span class="string">'# '</span>, <span class="string">''</span>)] });
+    } <span class="keyword">else if</span> (line.startsWith(<span class="string">'## '</span>) || line.startsWith(<span class="string">'### '</span>)) {
+      nodes.push({ tag: <span class="string">'h4'</span>, children: [line.replace(/#+\s*/, <span class="string">''</span>)] });
+    } <span class="keyword">else if</span> (line.startsWith(<span class="string">'- '</span>) || line.startsWith(<span class="string">'• '</span>)) {
+      nodes.push({ tag: <span class="string">'li'</span>, children: [line.replace(/^[-•]\s*/, <span class="string">''</span>)] });
+    } <span class="keyword">else</span> {
+      nodes.push({ tag: <span class="string">'p'</span>, children: [line] });
+    }
+  }
+  <span class="keyword">return</span> nodes;
+}
+
+<span class="comment">/**
+ * Terbitkan artikel ke Telegraph API
+ */</span>
+<span class="keyword">async function</span> <span class="function">createInstantViewPage</span>(title, textContent) {
+  <span class="keyword">const</span> nodes = parseToTelegraphNodes(textContent);
+
+  <span class="keyword">const</span> res = <span class="keyword">await</span> fetch(<span class="string">'https://api.telegra.ph/createPage'</span>, {
+    method: <span class="string">'POST'</span>,
+    headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
+    body: JSON.stringify({
+      access_token: TELEGRAPH_TOKEN,
+      title: title || <span class="string">'Panduan OlshopERP'</span>,
+      author_name: <span class="string">'OlshopERP Assistant'</span>,
+      content: nodes,
+      return_content: <span class="keyword">false</span>
+    })
+  });
+
+  <span class="keyword">const</span> data = <span class="keyword">await</span> res.json();
+  <span class="keyword">if</span> (data.ok) {
+    <span class="keyword">return</span> data.result.url; <span class="comment">// Mengembalikan format: https://telegra.ph/Judul-xxx</span>
+  }
+  <span class="keyword">throw new</span> Error(<span class="string">'Gagal create Telegraph page: '</span> + JSON.stringify(data));
+}
+
+module.exports = { createInstantViewPage };</code></pre>
+      </div>
+
+      <!-- Step 3 -->
+      <h3 style="font-size: 1.1rem; margin: 1.75rem 0 0.5rem; color: var(--accent-emerald);">Langkah 3: Pasang Handler Smart Threshold di Script Bot</h3>
+      <p style="font-size: 0.9rem; color: var(--text-secondary);">Tambahkan logika berikut saat menangkap output dari Antigravity CLI sebelum dikirim ke Telegram:</p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <span>Bridge Handler (botRunner.js)</span>
+          <button class="copy-btn" onclick="copyCode('bridge-code')">Copy</button>
+        </div>
+        <pre><code id="bridge-code"><span class="keyword">const</span> { createInstantViewPage } = require(<span class="string">'./telegraphHelper'</span>);
+
+<span class="keyword">async function</span> <span class="function">sendBotResponse</span>(chatId, cliOutput, topicTitle = <span class="string">'Panduan OlshopERP'</span>) {
+  <span class="keyword">const</span> THRESHOLD = <span class="number">800</span>; <span class="comment">// Batas karakter memicu Instant View</span>
+
+  <span class="keyword">if</span> (cliOutput.length > THRESHOLD) {
+    <span class="keyword">try</span> {
+      <span class="comment">// 1. Terbitkan teks lengkap ke Telegraph</span>
+      <span class="keyword">const</span> pageUrl = <span class="keyword">await</span> createInstantViewPage(topicTitle, cliOutput);
+
+      <span class="comment">// 2. Buat Executive Summary singkat untuk bubble chat</span>
+      <span class="keyword">const</span> summary = cliOutput.split(<span class="string">'\n\n'</span>).slice(<span class="number">0</span>, <span class="number">2</span>).join(<span class="string">'\n\n'</span>);
+      <span class="keyword">const</span> message = `${summary}\n\n📖 *Baca Dokumen Lengkap (Instant View):*\n${pageUrl}`;
+
+      <span class="comment">// 3. Kirim ke Telegram</span>
+      <span class="keyword">await</span> sendTelegramMessage(chatId, message);
+      <span class="keyword">return</span>;
+    } <span class="keyword">catch</span> (err) {
+      console.error(<span class="string">'Fallback error Telegraph:'</span>, err);
+      <span class="comment">// Jika gagal, fallback kirim pesan terpotong atau chunk</span>
+    }
+  }
+
+  <span class="comment">// Jika respon pendek, langsung kirim utuh</span>
+  <span class="keyword">await</span> sendTelegramMessage(chatId, cliOutput);
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- Section Preview UX -->
+    <div class="card">
+      <div class="card-title">📱 Visualisasi Tampilan di Aplikasi Telegram</div>
+      <p style="font-size: 0.9rem; color: var(--text-secondary);">Setelah integrasi ini aktif, inilah tampilan yang muncul di layar pengguna saat menerima panduan panjang:</p>
+
+      <div class="preview-phone">
+        <div class="chat-bubble">
+          <strong>📋 SOP ORDER FULFILLMENT (RINGKASAN)</strong><br><br>
+          Panduan ini mengatur siklus hidup pesanan secara end-to-end mulai dari sinkronisasi marketplace, alokasi stok gudang, batch wave picking, hingga pencatatan akuntansi.<br><br>
+          📖 <em>Baca Dokumen Lengkap:</em><br>
+          <span style="color: #64b5f6; font-size: 0.8rem;">https://telegra.ph/SOP-Order-Fulfillment-09-16</span>
+          
+          <a href="#" class="instant-view-btn" onclick="return false;">⚡ INSTANT VIEW</a>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>OlshopERP Documentation & Engineering Guide • 2026</p>
+    </footer>
+  </div>
+
+  <script>
+    function copyCode(id) {
+      const codeText = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(codeText).then(() => {
+        alert('Kode berhasil disalin ke clipboard!');
+      }).catch(err => {
+        console.error('Gagal menyalin:', err);
+      });
+    }
+  </script>
+</body>
+</html>
