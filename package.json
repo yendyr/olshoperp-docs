@@ -44,6 +44,8 @@
     "tc:backfill-first-execution": "node tests/tools/tc-backfill-first-execution.mjs",
     "tc:jira-drift": "node tests/tools/tc-jira-drift.mjs",
     "tc:jira-sync": "node tests/tools/tc-jira-sync-apply.mjs",
+    "agent:db": "node scripts/agent-db-query.mjs",
+    "agent:log": "node scripts/agent-log-fetch.mjs",
     "postinstall": "playwright install chromium"
   },
   "devDependencies": {

@@ -13,7 +13,7 @@ Pakai rule ini saat user / tugas menyebut **cek db**, **query db**, **db staging
 |-------|--------|-----|
 | **Kontrol QA (workspace ini)** | `tests/DATA-VERIFICATION.md` | Level L1/L2/L3, kapan boleh, matriks env, gate company_id |
 | **SoT teknis runner** | `../olshoperp/.cursor/rules/19-database-debugger.mdc` | Read-only, forensik 4 langkah, larangan secret |
-| **Runner** | `../olshoperp/scripts/agent-db-query.mjs` | Eksekusi via webhook; kredensial dari `.env` |
+| **Runner (Lokal Docs)** | `scripts/agent-db-query.mjs` (atau `.php`) | Eksekusi via webhook; kredensial dari `.env` |
 | **Nama tabel (agent)** | `agent-db/cache.md` + `agent-db/README.md` | Menu → tabel, jebakan kolom, S0–S6, write-back |
 
 Jangan menduplikasi prosedur panjang di sini — baca `tests/DATA-VERIFICATION.md` dulu, lalu rule 19 di `olshoperp` jika forensik mendalam.
@@ -47,11 +47,11 @@ Cheat: System Product → `scm_products` · Purchase Order → `scm_purchase_ord
 - **Tyas** (`tyas_olshoperp`) + **Staging** (`staging_olshoperp`) → webhook **shared**
 - **Merdian** (`merdian_olshoperp`) → webhook **terpisah** (server beda)
 
-Contoh (path sibling dari root docs):
+Contoh eksekusi langsung dari root `olshoperp-docs`:
 
 ```bash
-node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="DESCRIBE scm_products"
-node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id, sku FROM scm_products WHERE company_id = 153 AND deleted_at IS NULL LIMIT 5"
+node scripts/agent-db-query.mjs --db=staging_olshoperp --query="DESCRIBE scm_products"
+node scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id, sku FROM scm_products WHERE company_id = 153 AND deleted_at IS NULL LIMIT 5"
 ```
 
 ## Larangan QA (mutlak)
@@ -62,11 +62,13 @@ node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="SEL
 4. Read-only saja — jangan usulkan mutasi SQL.
 5. Jangan buat folder `qa-docs/{menu}` khusus “cek DB” — tooling ops, bukan fitur menu.
 
-## Triage cepat
+## Triage cepat: Kapan DB vs Kapan LOG
 
-| Permintaan | Aksi |
-|------------|------|
-| Assert TC / flow lulus | Playwright CLI (L1) — rule `14` |
-| “Ada gak data X di staging company 153?” | L3 + `--db=staging_olshoperp` |
-| “Cek di tyas / merdian” | L3 + flag `--db=` yang sesuai |
-| Bug forensik (siapa ubah / soft-delete) | L3 + tabel `audits` (protokol rule 19 olshoperp) |
+| Permintaan User / Intent | Jalur Eksekusi | Tool & Rule |
+| :--- | :--- | :--- |
+| **Assert TC / flow UI lulus** | Playwright CLI (L1) | Rule `14` (`npm test`) |
+| **Cek status data / kolom aktual** | Database Query | `scripts/agent-db-query.mjs` (Rule `19`) |
+| **Audit trail (siapa ubah data / void)** | DB `audits` table | `scripts/agent-db-query.mjs` (Rule `19`) |
+| **Hitung data kuantitatif / anomali** | DB Agregasi (`COUNT(*)`) | `scripts/agent-db-query.mjs` (Rule `19`) |
+| **Error 500 / Exception / Crash Server** | Log Fetching | `scripts/agent-log-fetch.mjs` (Rule `21`) |
+| **Investigasi Error 2 Arah** | Log ➡️ DB Cross-check | Fetch Log dulu ➡️ Query DB record ID terkait |

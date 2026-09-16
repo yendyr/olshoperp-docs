@@ -1,0 +1,80 @@
+---
+description: Laravel Log Debugger dan Log Analyzer untuk server Tyas, Staging, dan Merdian (QA olshoperp-docs). Pakai saat user minta cek log, debug log server, error 500, exception trace, atau investigasi runtime failure.
+alwaysApply: false
+---
+
+# Laravel Log Debugger & Analyzer (QA — olshoperp-docs)
+
+Gunakan rule ini setiap kali user meminta **cek log**, **debug log**, **log tyas**, **log staging**, **log merdian**, **log error**, **cari exception**, **baca laravel.log**, **error 500**, atau **investigasi runtime error** di server Tyas, Staging, maupun Merdian.
+
+---
+
+## 1. Mekanisme Eksekusi Fetch Log
+
+Semua pengambilan data log dari server **WAJIB** dijalankan melalui runner script lokal yang membaca credential dari `.env`:
+
+```bash
+# Target Staging (server: staging)
+node scripts/agent-log-fetch.mjs --server=staging --file=laravel-2026-09-16.log --level=error --start=1 --end=50
+
+# Target Production Tyas (server: tyas)
+node scripts/agent-log-fetch.mjs --server=tyas --file=laravel-2026-09-16.log --level=error --start=1 --end=50
+
+# Target Production Merdian (server: merdian)
+node scripts/agent-log-fetch.mjs --server=merdian --file=laravel-2026-09-16.log --level=error --start=1 --end=50
+```
+
+> [!IMPORTANT]
+> **DILARANG KERAS** mengekspos nilai API Key secara eksplisit di terminal command, file committed, atau teks percakapan. Kredensial dibaca otomatis dari environment variable (`LOG_DEBUG_API_KEY`, `LOG_DEBUG_WEBHOOK_URL_TYAS`, dan `LOG_DEBUG_WEBHOOK_URL_MERDIAN` pada file `.env`).
+
+---
+
+## 2. Spesifikasi Endpoint & Format File Log
+
+### Routing Endpoint:
+1. **Tyas & Staging**: `https://n8n.olshoperp.com/webhook/agent-log-tyas`
+2. **Merdian**: `https://n9n.olshoperp.com/webhook/agent-log-merdian`
+
+### Aturan Nama File Log (`file_name`):
+1. **Format Dasar**: `laravel-YYYY-MM-DD.log` (contoh: `laravel-2026-09-16.log`).
+2. **File Rotasi / Split (>50MB)**: Jika ukuran file log dalam 1 hari melebihi batas 50MB, periksa file split berikutnya (`_1.log`, `_2.log`, dst.).
+
+### Supported Log Levels (`level`):
+* `error`: Untuk menangkap Exception, Uncaught Error, Critical Failure, 500 Server Error.
+* `warning`: Untuk peringatan performa, deprecated features, atau fallback handling.
+* `info`: Untuk tracking alur eksekusi, payload webhook, audit activity, atau status background job.
+* `debug`: Untuk data verbose, raw payload, SQL query log, atau variabel debug.
+
+---
+
+## 3. Protokol Diagnostik: Kapan Baca LOG vs Kapan Baca DB
+
+```
+┌────────────────────────────────────────────────────────┐
+│                   DIAGNOSTIC PROTOCOL                  │
+├────────────────────────────┬───────────────────────────┤
+│        BACA LOG            │          BACA DB          │
+├────────────────────────────┼───────────────────────────┤
+│ • Error 500 / Exception    │ • Cek status data/kolom   │
+│ • Gagal save tanpa notif   │ • Audit trail siapa ubah  │
+│ • Background job macet     │ • Cek stok/saldo aktual   │
+│ • Cari baris kode error    │ • Hitung agregasi/anomali │
+│ • Server crash / timeout   │ • Cari sampel data test   │
+└────────────────────────────┴───────────────────────────┘
+```
+
+### Alur Investigasi 2 Arah (Log ➡️ DB):
+1. **Fetch Log**: Identifikasi Exception Class, File `.php`, Baris error, dan Payload Request (misal ID transaksi / data yang dikirim).
+2. **Cross-Check DB**: Gunakan `scripts/agent-db-query.mjs` untuk memeriksa baris data terkait di database target (misal: apakah record berstatus void, kolom foreign key null, atau duplikat).
+
+---
+
+## 4. Aturan Wajib Respon Kuantitatif pada Analisis Log
+
+Ketika user bertanya seputar data log:
+1. **Dilarang Frasa Kualitatif Samar**: Dilarang menyatakan *"error ini sering muncul"* atau *"ada beberapa log exception"* tanpa data frekuensi pasti.
+2. **Kuantifikasi Wajib**:
+   * **Total Kemunculan**: Berapa kali exception terjadi dalam rentang file log yang diperiksa.
+   * **Rentang Waktu**: Timestamp kemunculan pertama s.d. terakhir (`YYYY-MM-DD HH:mm:ss`).
+   * **Entitas Terpengaruh**: Jumlah unik ID/UUID yang terdampak.
+3. **Penyajian Terukur**: Sajikan breakdown tabel frekuensi error dan sertakan 3–5 sampel pesan error / trace konkret.
