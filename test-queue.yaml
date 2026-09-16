@@ -1060,3 +1060,20 @@ ETM-15911:
   jira_status: To Do
   jira_type: Error
   summary: "[Multi Form - Export All] Lock Cache Export 600 Detik Tidak Dilepas Saat Job Export Selesai Memblokir Export Berikutnya"
+
+ETM-15922:
+  menu: accounting-sales-order-invoicing
+  intent: extend
+  status: in_overview
+  reuse: []
+  drafts:
+    - PENDING-20260916111501
+    - PENDING-20260916111502
+    - PENDING-20260916111503
+    - PENDING-20260916111504
+    - PENDING-20260916111505
+    - PENDING-20260916111506
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Sales Order Invoicing] - Kolom AR Menampilkan Total Header Transaksi Saat 1 AR Terdiri dari Multiple Sales Invoice"
