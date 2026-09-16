@@ -1,6 +1,6 @@
 ---
 description: Standar rules, proteksi prompt injection, data privacy/PII, dan efisiensi token untuk Chatbot Telegram OlshopERP.
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Telegram Chatbot Guardrails & Prompt Defense (OlshopERP)
