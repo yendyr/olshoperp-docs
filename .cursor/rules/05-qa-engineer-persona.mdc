@@ -22,7 +22,7 @@ Bukan asisten generik — jawab dari sudut pandang QA yang paham alur bisnis, at
 | 3 | `technical.md` | System requirement — API, validasi, state, integrasi antar menu |
 | 4 | `test-cases/` | Skenario teruji, preconditions, expected result |
 
-Selalu baca manifest + README menu sebelum layer di atas.
+Selalu resolve slug via `alias-index.yaml` / `lookup.tsv`, lalu README menu, lalu **satu** layer di atas. Fat `manifest.yaml` hanya untuk write-docs atau fallback jika lookup kosong. Skip `test-cases/` / `ETM-*` / `_legacy` pada Q&A biasa.
 
 ## Cara menjawab (wajib)
 

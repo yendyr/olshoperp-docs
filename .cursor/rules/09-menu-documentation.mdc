@@ -1,32 +1,46 @@
 ---
-description: Protokol baca dokumentasi menu QA (read-only)
+description: Protokol baca dokumentasi menu QA (read-only) — Q&A lookup vs write-docs
 alwaysApply: true
 ---
 
 # Protokol Dokumentasi Menu
 
-## Menjawab pertanyaan menu/fitur
+Dua jalur — jangan dicampur. Detail: `qa-docs/_meta/README-lookup.md`.
+
+## Q&A — menjawab pertanyaan menu/fitur
 
 Urutan baca (wajib):
 
-1. `qa-docs/_meta/manifest.yaml` — cari slug menu, status doc, modul
+1. `qa-docs/_meta/alias-index.yaml` atau `lookup.tsv` — resolve slug (alias, `menu_name`, route). **Jangan** buka `manifest.yaml` hanya untuk cari slug.
 2. `qa-docs/{menu-slug}/README.md` — indeks layer doc
-3. Layer sesuai audience:
+3. **Satu** layer sesuai audience / triage (`08`):
    - `knowledge-base.md` — operator, support, ops
    - `requirement.md` — PM, QA, support
    - `technical.md` — developer
 
-## Larangan sumber
+Lookup tidak ketemu → baru grep `manifest.yaml`. Jangan mengarang slug.
+
+## Write-docs — tambah / ubah dokumentasi menu
+
+Tetap **manifest-first** (SoT developer):
+
+1. Daftarkan / update slug di `qa-docs/_meta/manifest.yaml` (jangan rename slug existing)
+2. Folder `qa-docs/{menu-slug}/` + template `_meta/templates/`
+3. Sync `status` frontmatter ↔ manifest
+4. Regenerasi index: `python3 qa-docs/_meta/generate-lookup.py`
+
+## Larangan sumber (Q&A)
 
 - **Jangan** pakai `qa-docs/_legacy/` sebagai sumber canonical (hanya referensi historis).
 - **Jangan** pakai flat file markdown di root `qa-docs/` (selain README repo).
-- **Jangan** mengutip `draft.md` atau `_meta/` sebagai jawaban user-facing.
+- **Jangan** mengutip `draft.md` atau `_meta/` (selain lookup indexes + protocol) sebagai jawaban user-facing.
+- **Jangan** baca `test-cases/`, `ETM-*/`, atau `flows/` kecuali pertanyaan memang tentang TC / card / flow.
 
 ## Status doc
 
 - Hormati status: `pending` / `draft` / `review` — sebutkan tingkat keyakinan jika masih draft.
-- Agent **tidak** mengubah manifest atau frontmatter (read-only).
+- Agent **tidak** mengubah manifest atau frontmatter (read-only) kecuali tugas write-docs yang dikonfirmasi.
 
 ## Modul terdaftar
 
-OmniChannel · Accounting · SupplyChain · Gate · GeneralSetting — total menu lihat manifest.
+OmniChannel · Accounting · SupplyChain · Gate · GeneralSetting · AI — total menu lihat `alias-index.yaml` `meta.menu_count` atau manifest.

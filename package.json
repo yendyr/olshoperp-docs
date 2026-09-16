@@ -30,6 +30,8 @@
     "tc:lint": "node tests/tools/tc-lint.mjs",
     "docs:drift": "node tests/tools/docs-drift.mjs",
     "docs:sync": "node tests/tools/docs-drift.mjs --fix",
+    "docs:lookup": "python3 qa-docs/_meta/generate-lookup.py",
+    "docs:lookup:check": "python3 qa-docs/_meta/generate-lookup.py --check",
     "tc:menus": "node tests/tools/tc-menus.mjs",
     "tc:pending": "node tests/tools/tc-pending.mjs",
     "tc:selftest": "node tests/tools/tc-selftest.mjs",

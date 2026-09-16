@@ -23,6 +23,7 @@ alwaysApply: true
 | Salah (monorepo lama) | Benar (repo ini) |
 |-----------------------|------------------|
 | `docs/qa-docs/_meta/manifest.yaml` | `qa-docs/_meta/manifest.yaml` |
+| `docs/qa-docs/_meta/lookup.tsv` | `qa-docs/_meta/lookup.tsv` |
 | `docs/qa-docs/{menu-slug}/` | `qa-docs/{menu-slug}/` |
 
 ## Repo aplikasi (sibling) — hanya untuk Playwright

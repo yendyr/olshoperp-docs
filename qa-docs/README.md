@@ -2,34 +2,45 @@
 
 Dokumentasi requirement & knowledge base per menu OlshopERP — dioptimalkan untuk agent, RAG, dan Cursor.
 
-> **Agent/Cursor:** Protokol wajib di `.cursor/rules/09-menu-documentation.mdc` (**alwaysApply**). Skill: `.cursor/skills/qa-menu-documentation/SKILL.md`. Jangan pakai `_legacy/` sebagai canonical.
+> **Agent/Cursor:** Protokol wajib di `.cursor/rules/09-menu-documentation.mdc` + `20-qa-docs-lookup.mdc`. Lookup portable: [`_meta/README-lookup.md`](./_meta/README-lookup.md). Jangan pakai `_legacy/` sebagai canonical.
 
 ## Agent protocol (ringkas)
 
 | Aksi | Wajib |
 |------|-------|
-| Jawab pertanyaan menu/fitur | Baca `manifest.yaml` → `{menu-slug}/README.md` → layer doc |
-| Buat menu doc baru | Folder `{menu-slug}/` + template + entry manifest |
-| Update doc | Edit canonical di folder menu; sync `status` manifest ↔ frontmatter |
+| **Q&A** — jawab pertanyaan menu/fitur | `_meta/alias-index.yaml` / `lookup.tsv` → `{menu-slug}/README.md` → **satu** layer. Skip `test-cases/`, `ETM-*`, `_legacy` |
+| **Write-docs** — buat/ubah menu | Folder `{menu-slug}/` + template + entry **`manifest.yaml`** (SoT slug) → `python3 qa-docs/_meta/generate-lookup.py` |
+| Update doc | Edit canonical di folder menu; sync `status` manifest ↔ frontmatter; regenerate lookup |
 | Implementasi kode | Baca requirement + technical; ingatkan update doc jika behavior berubah |
 
-**Larangan:** flat file di root `qa-docs/` · `_legacy/` sebagai sumber · manifest tanpa update commit.
+**Larangan:** flat file di root `qa-docs/` · `_legacy/` sebagai sumber · manifest tanpa update commit · hand-edit `lookup.tsv` / `alias-index.yaml`.
 
 ## Mulai di sini (agent / human)
 
-1. Baca **`_meta/manifest.yaml`** — source of truth semua menu, status doc, legacy sources, code globs
-2. Buka folder `{menu-slug}/README.md` untuk menu yang relevan
-3. Pilih layer doc sesuai audience:
+**Q&A**
+
+1. Grep **`_meta/lookup.tsv`** atau **`_meta/alias-index.yaml`** — alias, nama menu, route (jangan baca fat manifest dulu)
+2. Buka folder `{menu-slug}/README.md`
+3. Pilih **satu** layer sesuai audience:
    - `knowledge-base.md` — operator / ops
    - `requirement.md` — PM, QA, support
    - `technical.md` — developer
 
+**Write-docs**
+
+1. Baca **`_meta/manifest.yaml`** — registry slug, status, `menu_links`
+2. Edit folder menu + sync status
+3. Regenerasi: `python3 qa-docs/_meta/generate-lookup.py`
+
 ## Struktur
 
 ```
-docs/qa-docs/
+qa-docs/                         ← root di repo olshoperp-docs (bukan docs/qa-docs/)
 ├── _meta/
-│   ├── manifest.yaml          ← WAJIB dibaca agent dulu
+│   ├── lookup.tsv / alias-index.yaml  ← Q&A resolve slug (generated)
+│   ├── lookup-overrides.yaml          ← extra alias / collision
+│   ├── generate-lookup.py / README-lookup.md
+│   ├── manifest.yaml          ← write-docs SoT slug
 │   ├── MERMAID_STYLE_GUIDE.md ← standar penulisan diagram Mermaid
 │   ├── templates/             ← template doc baru
 │   ├── proposals/             ← desain belum jadi standar (review dulu)
@@ -81,7 +92,7 @@ Menu dengan konten lengkap (review/draft):
 
 Sisanya: stub `knowledge-base.md` status **pending** — konten diisi berkala oleh QA.
 
-Status detail semua menu: lihat `_meta/manifest.yaml`.
+Status detail semua menu (Q&A): `_meta/alias-index.yaml` → `menus.{slug}.docs`. Registry lengkap: `_meta/manifest.yaml`. Regenerasi index: `python3 qa-docs/_meta/generate-lookup.py`.
 
 ## Dokumentasi lain di repo
 
@@ -99,5 +110,6 @@ Status detail semua menu: lihat `_meta/manifest.yaml`.
 2. Buat folder `{menu-slug}/` + `README.md`
 3. Update `_meta/manifest.yaml` (commit yang sama)
 4. Sinkronkan `status` frontmatter dengan manifest
+5. `python3 qa-docs/_meta/generate-lookup.py` (commit yang sama)
 
 **Maintenance owner:** QA — Yemima
