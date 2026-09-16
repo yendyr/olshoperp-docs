@@ -65,3 +65,14 @@ Prefix folder: `ASO`.
 | `PENDING-JENNI-2026090902` | Konsolidasi Order Under / Below Benchmark COGS ke Datalist Pill Button Failed Process | [`TC-ASO-JENNI-DRAFT-2026090902.md`](./TC-ASO-JENNI-DRAFT-2026090902.md) | DRAFT 🟡 |
 | `PENDING-JENNI-2026090903` | Tampilan Icon Error fa-arrow-trend-down pada Kolom Error Flag untuk Order Under Benchmark COGS | [`TC-ASO-JENNI-DRAFT-2026090903.md`](./TC-ASO-JENNI-DRAFT-2026090903.md) | DRAFT 🟡 |
 | `PENDING-JENNI-2026090904` | Tampilan Multiple Icon Indicator pada Kolom Error Flag untuk Transaksi dengan > 1 Error Flag | [`TC-ASO-JENNI-DRAFT-2026090904.md`](./TC-ASO-JENNI-DRAFT-2026090904.md) | DRAFT 🟡 |
+
+### Advanced Filter Finance (>1 Parameter)
+
+| Kode Draf / TC | Judul Test Case | File | Status | Last Updated |
+|---|---|---|---|---|
+| `TC-ASO-ADVF-001` | [Audit Pesanan Siap Tagih / Belum Terbit Invoice (Uninvoiced Delivered Orders)](./TC-ASO-ADVF-DRAFT-20260916131101.md) | [`TC-ASO-ADVF-DRAFT-20260916131101.md`](./TC-ASO-ADVF-DRAFT-20260916131101.md) | DRAFT 🟡 | 2026-09-16 |
+| `TC-ASO-ADVF-002` | [Deteksi Risiko Rugi Kirim: Pesanan Batal Marketplace yang Terlanjur Outbound](./TC-ASO-ADVF-DRAFT-20260916131102.md) | [`TC-ASO-ADVF-DRAFT-20260916131102.md`](./TC-ASO-ADVF-DRAFT-20260916131102.md) | DRAFT 🟡 | 2026-09-16 |
+| `TC-ASO-ADVF-003` | [Pengawasan Piutang Berisiko: Pesanan COD Nominal Besar yang Sedang Berjalan](./TC-ASO-ADVF-DRAFT-20260916131103.md) | [`TC-ASO-ADVF-DRAFT-20260916131103.md`](./TC-ASO-ADVF-DRAFT-20260916131103.md) | DRAFT 🟡 | 2026-09-16 |
+| `TC-ASO-ADVF-004` | [Audit Kepatuhan Faktur Pajak: Order General B2B > 1 Juta Tanpa PPN/VAT](./TC-ASO-ADVF-DRAFT-20260916131104.md) | [`TC-ASO-ADVF-DRAFT-20260916131104.md`](./TC-ASO-ADVF-DRAFT-20260916131104.md) | DRAFT 🟡 | 2026-09-16 |
+| `TC-ASO-ADVF-005` | [Proteksi Margin: Pesanan Terindikasi Jual Rugi (Below Benchmark COGS) yang Belum Di-Invoice](./TC-ASO-ADVF-DRAFT-20260916131105.md) | [`TC-ASO-ADVF-DRAFT-20260916131105.md`](./TC-ASO-ADVF-DRAFT-20260916131105.md) | DRAFT 🟡 | 2026-09-16 |
+
