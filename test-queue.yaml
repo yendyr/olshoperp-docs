@@ -6,6 +6,19 @@
 # status agregat di header ini. Klaim seperti itu jadi usang diam-diam dan bertabrakan
 # dengan datanya sendiri (pernah tertulis "belum ada status ready" padahal sudah ada).
 
+ETM-15944:
+  menu: system-product
+  intent: new
+  status: ready
+  reuse: []
+  drafts:
+    - TC-SYSPROD-DRAFT-20260916140800
+  ready_tcs:
+    - TC-SYSPROD-DRAFT-20260916140800
+  jira_status: QA Review
+  jira_type: Error
+  summary: "[System Product] - Upload Gambar pada Spesifik Varian Meng-update Seluruh Varian Child Lainnya saat Default Variant Aktif"
+
 ETM-15508:
   menu: supplychain-warehouse-structure
   intent: new
@@ -1077,3 +1090,20 @@ ETM-15922:
   jira_status: To Do
   jira_type: Error
   summary: "[Sales Order Invoicing] - Kolom AR Menampilkan Total Header Transaksi Saat 1 AR Terdiri dari Multiple Sales Invoice"
+
+ETM-15945:
+  menu: omni-sales-platform
+  intent: extend
+  status: in_overview
+  reuse: []
+  drafts:
+    - PENDING-20260916153701
+    - PENDING-20260916153702
+    - PENDING-20260916153703
+    - PENDING-20260916153704
+    - PENDING-20260916153705
+    - PENDING-20260916153706
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Error
+  summary: "[Sales Platform] - SKU Komponen Bundle Gagal Di-insert ke Detail Trees Saat Binding Produk Platform ke Master Bundle"

@@ -66,4 +66,9 @@ Prefix folder: `SPLG`.
 | `PENDING-20260909103220` | Set Flag prevent_auto_approve = 1 Saat Detail SO Di-edit | [`TC-SPO-DRAFT-20260909103220.md`](./TC-SPO-DRAFT-20260909103220.md) | DRAFT 🟡 |
 | `PENDING-20260909103221` | Pencatatan Audit Log Perubahan Detail Sales Order Platform | [`TC-SPO-DRAFT-20260909103221.md`](./TC-SPO-DRAFT-20260909103221.md) | DRAFT 🟡 |
 | `PENDING-20260909103222` | Paritas Perilaku Edit SO Platform via All Sales Order (ASO) | [`TC-SPO-DRAFT-20260909103222.md`](./TC-SPO-DRAFT-20260909103222.md) | DRAFT 🟡 |
-
+| PENDING-20260916153701 | Pembentukan Komponen Bundle & Detail Tree Saat Binding Platform Product via Single Binding | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| PENDING-20260916153702 | Pembentukan Komponen Bundle & Detail Tree Saat Binding Platform Product via Bulk Binding | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| PENDING-20260916153703 | Pembentukan Komponen Bundle & Detail Tree Saat Binding Platform Product via Scheduler Auto Binding Hourly | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| PENDING-20260916153704 | Pembentukan Komponen Bundle & Detail Tree Saat Auto Binding pada Proses Pull Product Platform | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| PENDING-20260916153705 | Verifikasi Regresi Binding Platform Product ke Master System Product Non-Bundle | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| PENDING-20260916153706 | Verifikasi Remediasi Data Fix untuk Order Platform Existing Terdampak di Server Merdian | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
