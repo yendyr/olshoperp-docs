@@ -112,3 +112,15 @@ Prasyarat Master Variant Default: GAP-VAR-01 / [ETM-15511](https://erpintegratio
 | PENDING-20260910154002 | Import Product Images Excel - Error Log Format & Validation Accuracy | draft | ❌ | 2026-09-10 |
 | PENDING-20260910154003 | Import File Gambar 0 KB via Google Drive (Empty File Rejection) | draft | ❌ | 2026-09-10 |
 
+### ETM-15944 — [System Product] Upload Gambar pada Spesifik Varian Meng-update Seluruh Varian Child Lainnya saat Default Variant Aktif
+
+| TC Code | Judul Test Case | File | Status Hasil | Last Updated |
+|---|---|---|---|---|
+| `TC-SYSPROD-042` | [Upload Gambar via Import pada Spesifik Varian Child saat Default Variant Aktif](./TC-SYSPROD-042.md) | [`TC-SYSPROD-042.md`](./TC-SYSPROD-042.md) | **FAILED** ❌ | 2026-09-16 |
+| `TC-SYSPROD-043` | [Upload Manual Foto Produk ke Varian Child melalui Section Product Detail](./TC-SYSPROD-043.md) | [`TC-SYSPROD-043.md`](./TC-SYSPROD-043.md) | **FAILED** ❌ | 2026-09-16 |
+| `TC-SYSPROD-044` | [Upload Foto Utama pada Level Parent Tidak Menimpa Foto Spesifik Varian Child](./TC-SYSPROD-044.md) | [`TC-SYSPROD-044.md`](./TC-SYSPROD-044.md) | **PASSED** ✅ | 2026-09-16 |
+| `TC-SYSPROD-045` | [Ganti / Replace Foto pada Varian Child yang Sudah Memiliki Gambar](./TC-SYSPROD-045.md) | [`TC-SYSPROD-045.md`](./TC-SYSPROD-045.md) | **PASSED** ✅ | 2026-09-16 |
+| `TC-SYSPROD-046` | [Bulk Upload Multiple Foto untuk Varian Berbeda Sekaligus via 1 File Import](./TC-SYSPROD-046.md) | [`TC-SYSPROD-046.md`](./TC-SYSPROD-046.md) | **PASSED** ✅ | 2026-09-16 |
+
+
+
