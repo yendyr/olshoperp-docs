@@ -72,3 +72,16 @@ Prefix folder: `SPLG`.
 | PENDING-20260916153704 | Pembentukan Komponen Bundle & Detail Tree Saat Auto Binding pada Proses Pull Product Platform | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
 | PENDING-20260916153705 | Verifikasi Regresi Binding Platform Product ke Master System Product Non-Bundle | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
 | PENDING-20260916153706 | Verifikasi Remediasi Data Fix untuk Order Platform Existing Terdampak di Server Merdian | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+
+### ETM-15859 / ETM-15798 — Void vs Void & Recreate vs Recreate + Anti Auto-Create Sync on Platform Orders
+
+| TC Code | Judul Test Case | File | Status |
+|---|---|---|---|
+| `TC-SPLG-018` | Verifikasi Void Murni Tanpa Prefix Platform Order ID pada Status APPROVED | [`TC-SPLG-018.md`](./TC-SPLG-018.md) | PASSED 🟢 |
+| `TC-SPLG-019` | Verifikasi Sync Gate Anti Auto-Create SO Baru pada Order Void Ber-ID Asli | [`TC-SPLG-019.md`](./TC-SPLG-019.md) | PASSED 🟢 |
+| `TC-SPLG-020` | Verifikasi Tombol dan Aksi Recreate pada Halaman Show SO Void | [`TC-SPLG-020.md`](./TC-SPLG-020.md) | FAILED 🔴 |
+| `TC-SPLG-021` | Verifikasi Penanganan Prefix Bertingkat (void-2-) pada Multiple Recreate | [`TC-SPLG-021.md`](./TC-SPLG-021.md) | BLOCKED ⛔ |
+| `TC-SPLG-022` | Verifikasi Aksi Void & Recreate Langsung dari Dialog Void | [`TC-SPLG-022.md`](./TC-SPLG-022.md) | SKIPPED ⚪ |
+| `TC-SPLG-023` | Verifikasi Alur Void & Recreate pada Menu All Sales Order | [`TC-SPLG-023.md`](./TC-SPLG-023.md) | PASSED 🟢 |
+| `TC-SPLG-024` | Verifikasi Paritas Alur Void Only pada Menu All Sales Order | [`TC-SPLG-024.md`](./TC-SPLG-024.md) | PASSED 🟢 |
+
