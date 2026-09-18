@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-09-18
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -20,6 +20,11 @@ related_docs:
 **Menu slug:** `supplychain-stock-opname`  
 **UI route:** `/supplychain/stock-opname`  
 **API base:** `{VITE_API_URL}supplychain/stock-opname*`
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-09-18 | §9 GAP-SOPNAME-01 — unit price decimal guard map + implementation notes |
+| 1.0 | 2026-06-19 | Draft awal dari codebase |
 
 ---
 
@@ -195,7 +200,7 @@ Global scope `ignore_opname` pada `StockMutation` — di-bypass via `withoutGlob
 | `origin_avail_quantity_in_base_unit` | Stok sistem saat create |
 | `adjustment_quantity_in_base_unit` | Selisih (bisa +/-) |
 | `adjustment_type` | `in` atau `out` |
-| `each_price_before_discount_before_vat` | Harga untuk adjustment in |
+| `each_price_before_discount_before_vat` | Harga untuk adjustment in — **sudah** `decimal(21,4)` (migration `create_opname_details_table`); schema siap desimal; blocker AS-IS hanya guard aplikasi |
 
 ### 5.3 Auto-generated children
 
@@ -252,3 +257,44 @@ On approve (`StockOpnameController@approve`):
 | `StockOpnameFAPolicy` | Accounting stock opname approval |
 
 Approve cache helpers: `addCacheApproveStockMutation()`, `deleteCacheApproveStockMutation()`, `ensureMutationNotApprovedOrApproving()`.
+
+---
+
+## 9. Unit price decimal — GAP-SOPNAME-01
+
+Requirement: [requirement.md §3.4](./requirement.md#34-gap-sopname-01--unit-price-desimal-to-be).
+
+### 9.1 AS-IS guards (hapus / relax saat implementasi)
+
+| Lokasi | Method / area | Check |
+|--------|---------------|-------|
+| `Modules/SupplyChain/Http/Controllers/StockOpnameDetailController.php` | `store` (~L508–514) | `floor((float)$price) != (float)$price` → error whole numbers |
+| Same | `update` (~L991–997) | Same |
+| `Modules/SupplyChain/Http/Controllers/StockOpnameController.php` | `approve` (~L999–1009) | Filter detail dengan harga fraksi → error per SKU |
+| `Modules/SupplyChain/Import/StockOpnameDetailImport.php` | `validationUnitPrice` (~L896–901) | Same floor check on import |
+
+Pesan AS-IS: `"Unit Price must be entered in whole numbers not decimals."`
+
+Qty manual tetap di-guard dengan `ctype_digit` / pesan *quantity in whole numbers* — **jangan** diubah bersama GAP harga.
+
+### 9.2 Downstream (tidak perlu guard price-whole)
+
+| Komponen | Catatan |
+|----------|---------|
+| `StockMutationAdditionDetailController` | Menerima `each_price_before_vat`; qty whole saja — tidak menolak price desimal |
+| Journal via addition approve | Nominal = harga × qty; ikut fraksi sen setelah TO-BE |
+| Benchmark fallback | `product.benchmarkPrice.benchmark_price` sudah bisa desimal |
+| Opening Stock | Flag `is_opening_stock` memakai controller/import yang sama — **wajib** regresi bersama |
+
+### 9.3 TO-BE implementasi (dev checklist)
+
+1. Hapus/relax ketiga `floor` price checks di atas.
+2. Optional align PO: `roundHalfDown($price, 4)` sebelum persist.
+3. FE: kolom UNIT PRICE di `DatalistDetail.vue` (`type: "amount"`) — pastikan tidak memaksa integer; bandingkan perilaku edit amount di Purchase Order.
+4. Regression: C1–C5 di requirement §3.4; include Opening Stock + Stock Opname Approval (`is_finance`).
+5. Update TC yang expect whole-price rejection setelah deploy.
+
+### 9.4 Referensi PO (pola target)
+
+- `PurchaseOrderDetailController`: `each_price_*` → `numeric` + `roundHalfDown(..., 4)` — **tidak** ada floor-whole pada unit price.
+- Qty manual PO: whole; import boleh desimal qty — Opname **tidak** mengikuti longgarnya import qty PO; Opname qty manual tetap whole.

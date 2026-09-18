@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-opening-stock
 menu_name: "Opening Stock"
-version: 1.0
-last_updated: 2026-08-31
+version: 1.1
+last_updated: 2026-09-18
 owner: QA - Yemima
 status: review
 aliases: [OS, opening stock, saldo awal stok, opening balance stock]
@@ -25,6 +25,7 @@ Engine AS-IS = **Stock Opname** + flag `is_opening_stock`. **Standalone** (bukan
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-09-18 | QA - Yemima | Cross-ref GAP-SOPNAME-01: unit price desimal TO-BE shared dengan Stock Opname |
 | 1.0 | 2026-08-31 | QA - Yemima | Full 5-file dari SoT v1.0: Opname engine, COA Assets/Equity, Generated Trx, GAP-OS-01..10; keep Benchmark COGS + Stock Remapping refs |
 
 ---
@@ -159,7 +160,7 @@ Default COA dari Opening Stock terakhir. Tippy: Debit = Assets; Credit = Equity 
 
 ### 6.3 Approve
 
-1. Validasi: detail ada; WH Active; fiscal; qty match child; unit price whole; bukan Service.  
+1. Validasi: detail ada; WH Active; fiscal; qty match child; **unit price (AS-IS whole — TO-BE desimal, shared Stock Opname GAP-SOPNAME-01)**; bukan Service.  
 2. Approve tiap Addition (opening) → job Item Stock (**tanpa** `stockInboundAutoJournal` standar).  
 3. `OpeningStockCoa.total_*` = Σ (unit price × qty base) detail **in**.  
 4. `openingStockAutoJournal`: **Dr** Assets, **Cr** Equity (satu pasangan); journal auto-approved; date = Trx Date.  
@@ -193,7 +194,8 @@ Hanya di detail; rack level ≥ 20, Active, non-virtual; bebas struktur (origin 
 | Trx Date luar fiscal | Blok |
 | COA Debit/Credit kosong | Required |
 | Product Service / random | Ditolak |
-| Qty / unit price desimal | Blok (whole) |
+| Qty desimal (input manual) | Blok (whole) — **tidak berubah** di TO-BE |
+| Unit price desimal | **AS-IS:** blok (whole). **TO-BE:** boleh (max 4 dp) — guard shared dengan Stock Opname; lihat [GAP-SOPNAME-01](../supplychain-stock-opname/requirement.md#34-gap-sopname-01--unit-price-desimal-to-be) |
 | Duplikat product + same WH | *Product has been added…* |
 | Approve tanpa detail / WH inactive | Blok |
 | Qty child mismatch | *failed to generate addition or deduction* |
@@ -206,7 +208,7 @@ Hanya di detail; rack level ≥ 20, Active, non-virtual; bebas struktur (origin 
 
 | Menu | Relasi |
 |------|--------|
-| Stock Opname / Opname Approval | Engine & UI shared; filter data beda |
+| Stock Opname / Opname Approval | Engine & UI shared; filter data beda · **validasi unit price shared** (GAP-SOPNAME-01) |
 | Stock Addition / Deduction | Child Generated Trx |
 | Journal / Item Stock | Hasil approve |
 | Balance Sheet | Assets & Equity naik setelah journal |
@@ -232,6 +234,7 @@ Hanya di detail; rack level ≥ 20, Active, non-virtual; bebas struktur (origin 
 | GAP-OS-08 | `validate_max_details` 100 tidak terlihat dipanggil | Open — watch |
 | GAP-OS-09 | Error copy masih “stock opname” | Open |
 | GAP-OS-10 | Standalone + Approved final | **Resolved** |
+| GAP-SOPNAME-01 | Unit price boleh desimal (shared Opname engine) — lihat [Stock Opname §3.4](../supplychain-stock-opname/requirement.md#34-gap-sopname-01--unit-price-desimal-to-be) | **TO-BE** — ikut implementasi Opname |
 
 ---
 

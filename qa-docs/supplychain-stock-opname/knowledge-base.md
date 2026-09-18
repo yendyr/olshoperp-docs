@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-09-18
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -45,7 +45,7 @@ audience: operator
 Untuk setiap produk/lokasi:
 
 1. Pilih produk & warehouse destination (rak/lokasi).
-2. Input **qty fisik** (opname quantity).
+2. Input **qty fisik** (opname quantity) — **bilangan bulat** (input manual tidak boleh desimal).
 3. Sistem hitung selisih vs stok sistem saat tanggal transaksi:
    - Selisih **positif** → adjustment **in** (butuh harga unit)
    - Selisih **negatif** → adjustment **out**
@@ -65,13 +65,25 @@ Cek di panel terkait sebelum approve.
 
 1. Pastikan semua baris punya warehouse destination aktif.
 2. Pastikan produk bukan tipe **Service**.
-3. Harga unit adjustment in harus **bilangan bulat** (bukan desimal).
+3. **Harga unit (adjustment in):**
+   - **AS-IS:** harus **bilangan bulat** (desimal ditolak).
+   - **TO-BE (rencana):** boleh desimal seperti di Purchase Order — lihat requirement §3.4 GAP-SOPNAME-01.
 4. Klik **Approve**.
 5. Sistem approve adjustment addition/deduction terkait, lalu approve header opname.
 
 ### 5. Approval Finance (jika dipakai)
 
 Menu paralel **Stock Opname Approval** (`accounting/stock-opname-approval`) memakai entity `StockOpnameFA` — alur approve sama, audience finance/akuntansi.
+
+## Bisa / Tidak bisa
+
+| Aksi | AS-IS | TO-BE (setelah GAP-SOPNAME-01) |
+|------|-------|--------------------------------|
+| Input unit price bulat (`12500`) | Bisa | Bisa |
+| Input unit price desimal (`12500.50`) | Tidak — ditolak | Bisa (max 4 desimal) |
+| Input qty fisik desimal manual (`1.5`) | Tidak | Tidak (tetap whole) |
+| Qty hasil konversi unit / selisih sistem | Sesuai hitung sistem | Tidak berubah |
+| Pakai fallback Benchmark COGS | Bisa | Bisa (lebih selaras jika harga benchmark desimal) |
 
 ## Status dokumen
 
@@ -98,9 +110,10 @@ Menu paralel **Stock Opname Approval** (`accounting/stock-opname-approval`) mema
 | "failed to generate addition or deduction" | Qty adjustment tidak match dokumen auto-generated | Hapus & buat ulang detail bermasalah |
 | Warehouse inactive | `warehouse_destination` nonaktif di master | Pilih warehouse aktif |
 | Service product error | Produk tipe service tidak boleh opname | Ganti produk |
-| Decimal unit price | Harga adjustment in desimal | Bulatkan harga ke integer |
+| Decimal unit price ditolak | **AS-IS:** guard whole number aktif | **Sementara:** bulatkan ke integer. **Setelah TO-BE:** harga desimal diterima — jangan paksa bulat |
 | Destination warehouse empty | `warehouse_destination_id` null | Lengkapi lokasi per baris |
 | Update in progress | Cache update detail aktif | Tunggu import/update selesai |
+| Qty desimal ditolak | Input manual qty harus bilangan bulat | Isi qty bulat; biarkan sistem hitung selisih |
 
 ## Relasi menu
 
@@ -111,6 +124,8 @@ Menu paralel **Stock Opname Approval** (`accounting/stock-opname-approval`) mema
 | Adjustment Deduction | `supplychain/adjustment-deduction` | Auto-generated untuk selisih kurang |
 | Warehouse Structure | `supplychain/warehouse-structure` | Master lokasi destination |
 | Real Stock | `supplychain/real-stock` | Referensi stok aktual |
+| Opening Stock | `accounting/opening-stock` | Engine & validasi harga shared |
+| Purchase Order | `supplychain/purchase-order` | Pola referensi unit price desimal |
 
 ## Istilah
 
@@ -120,3 +135,4 @@ Menu paralel **Stock Opname Approval** (`accounting/stock-opname-approval`) mema
 | Adjustment In/Out | Penambahan / pengurangan stok akibat selisih |
 | Warehouse Origin | Gudang induk sesi opname |
 | Warehouse Destination | Lokasi/rak spesifik per baris detail |
+| Unit Price | Harga per unit untuk baris surplus (adjustment in) |

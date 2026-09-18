@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-opening-stock
 menu_name: "Opening Stock"
-version: 1.0
-last_updated: 2026-08-31
+version: 1.1
+last_updated: 2026-09-18
 owner: QA - Yemima
 status: review
 aliases: [OS, opening stock, saldo awal stok, opening balance]
@@ -92,12 +92,13 @@ flowchart TD
 
 | Gejala | Cek / tindakan |
 |--------|----------------|
-| Tidak bisa Approve | Detail kosong? Location kosong? Fiscal? Unit price desimal? |
+| Tidak bisa Approve | Detail kosong? Location kosong? Fiscal? **AS-IS:** unit price desimal ditolak (guard shared Stock Opname). **TO-BE:** harga desimal akan diterima — lihat Stock Opname GAP-SOPNAME-01 |
 | Item Stock Status lama loading | Job queue; banyak baris — tunggu |
 | Angka jurnal salah | Total = harga × qty masuk; cek COA Debit/Credit header |
 | SKU ditolak | Bukan Service/random; cek duplikat SKU+lokasi |
 | Tidak ada Building Origin | Normal untuk Opening Stock |
 | Error menyebut “stock opname” | Known copy issue (GAP-OS-09) |
+| Qty desimal ditolak | Input qty manual harus bilangan bulat (tidak berubah di TO-BE harga) |
 
 ---
 

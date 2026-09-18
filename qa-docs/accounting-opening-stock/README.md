@@ -13,7 +13,7 @@ Menu **Opening Stock** (Accounting / FA) — saldo awal stok & nilai inventory.
 
 **UI route:** `/accounting/opening-stock`  
 **SoT:** [`_meta/sot/accounting-opening-stock-source-of-truth.md`](../_meta/sot/accounting-opening-stock-source-of-truth.md) v1.0  
-**3 layer version:** 1.0 · **User-guide:** v1.1 · **Feature Map:** 1.0 · **Last updated:** 2026-08-31 16:05
+**3 layer version:** 1.1 · **User-guide:** v1.1 · **Feature Map:** 1.0 · **Last updated:** 2026-09-18 09:45
 
 ## Changelog
 
@@ -22,6 +22,7 @@ Menu **Opening Stock** (Accounting / FA) — saldo awal stok & nilai inventory.
 | stub | 2026-07-09 | Placeholder KB + relasi Benchmark COGS |
 | 1.0 | 2026-08-31 15:55 | Full 5-file dari SoT: saldo awal stok, COA Assets/Equity, Generated Trx, Item Stock job, GAP-OS-01..10 |
 | 1.0b | 2026-08-31 16:05 | Feature Map + 5 Lingo cards (SF-OS-01..05); UG v1.1 SF tags |
+| 1.1 | 2026-09-18 09:45 | Cross-ref GAP-SOPNAME-01: unit price desimal TO-BE shared dengan Stock Opname (qty manual tetap whole) |
 
 ## Related menus
 
