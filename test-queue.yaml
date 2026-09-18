@@ -1107,3 +1107,20 @@ ETM-15945:
   jira_status: To Do
   jira_type: Error
   summary: "[Sales Platform] - SKU Komponen Bundle Gagal Di-insert ke Detail Trees Saat Binding Produk Platform ke Master Bundle"
+
+ETM-15968:
+  menu: supplychain-stock-opname
+  intent: extend
+  status: in_overview
+  reuse: []
+  drafts:
+    - PENDING-20260918155501
+    - PENDING-20260918155502
+    - PENDING-20260918155503
+    - PENDING-20260918155504
+    - PENDING-20260918155505
+    - PENDING-20260918155506
+  ready_tcs: []
+  jira_status: To Do
+  jira_type: Improvement
+  summary: "[Stock Opname Approval] Lakukan penyesuaian pada kolom unit price agar user dapat input nilai desimal 2 angka dibelakang koma"
