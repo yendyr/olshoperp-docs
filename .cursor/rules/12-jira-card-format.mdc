@@ -1,5 +1,5 @@
 ---
-description: Format standar Jira card — Bug Report, Improvement, Change Requirement
+description: Format standar Jira card — Bug Report, Improvement, Change Requirement, Test Case
 alwaysApply: true
 ---
 
@@ -80,6 +80,21 @@ Contoh anti-pola yang **dilarang**:
 - Judul: `Finance Complete billed Sales Return…` ← istilah karangan
 - Steps: `Klik Finance Complete` + tidak ada URL edit SR
 - Benar: judul/steps pakai **Complete**; steps buka `…/accounting/sales-return/edit/{id}` lalu klik **Complete**
+
+---
+
+## Proyek ETM — tipe issue & relasi (WAJIB)
+
+| Maksud user | Issue type Jira ETM | Bukan |
+|-------------|---------------------|--------|
+| **Bug / finding / error report** | **`Error`** (standalone) | **`Bug`** — di ETM ini **subtask**; jangan dipakai |
+| Improvement | `Improvement` | — |
+| Change Requirement | `Change Requirement` | — |
+| Test Case | `Test Case` | — |
+
+- Jangan create type `Bug` — hasilnya jadi subtask di bawah parent, bukan card independen.
+- Kalau konteks bug/issue **terbit dari card lain** (tes improvement, finding QA, regresi dari tiket X): **Relates** ke card sumber (`createIssueLink` type `Relates`). Jangan jadikan subtask sebagai pengganti relasi.
+- Setelah create, laporkan URL card + card yang di-relate.
 
 ---
 
@@ -276,6 +291,45 @@ Contoh anti-pola yang **dilarang**:
 
 ---
 
+## Tipe 4 — Test Case Card
+
+```
+## Judul Card
+
+[Nama Menu] - short desc test case
+
+---
+
+## Description
+
+**Summary**
+[Ringkasan skenario pengujian dan tujuan verifikasi]
+
+---
+
+**Environment**
+- Menu/Fitur: [Nama Menu - Sub Fitur]
+- Environment: [Staging / Production / UAT]
+- URL (retest): [Link edit dokumen staging jika fixture ada]
+
+---
+
+**Precondition Data**
+[Kondisi awal data, konfigurasi modul, status transaksi pendukung]
+
+---
+
+**Steps to Reproduce**
+1. [Buka URL route / form edit menu terkait]
+2. [Langkah konkret UI: input field, pilih dropdown, klik tombol persis di UI]
+3. ...
+
+---
+
+**Expected Result**
+[Hasil yang diharapkan berdasarkan requirement.md menu terkait]
+```
+
 ---
 
 ## Aturan Tone & Bahasa (berlaku semua tipe)
@@ -347,10 +401,46 @@ expected result perlu dikonfirmasi ke QA lead sebelum card difinalisasi.]
 
 ---
 
+## Tabel Pemetaan Custom Fields Wajib di Jira ETM
+
+Berikut ringkasan field & custom field yang wajib diisi saat membuat (*create*) atau memperbarui (*edit*) issue di project **ETM**.
+Issue type → lihat § Proyek ETM — tipe issue & relasi.
+
+| Field Name | Custom Field Key | Tipe Data | Error (`10033`) | Test Case (`10051`) | Improvement (`10088`) | Change Requirement (`10048`) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Summary** | `summary` | String | `[Menu] - desc` | `[Menu] - desc` | `[Menu] - desc` | `[Menu] - desc` |
+| **Description** | `description` | Markdown / ADF | Format Bug | Format TC | Format Improvement | Format CR |
+| **Menu Name / Notion Page** | `customfield_10429` | String | **Wajib** nama menu | **Wajib** nama menu | **Wajib** nama menu | **Wajib** nama menu |
+| **Request ID** | `customfield_10495` | String | Origin / `"none"` | Origin / `"none"` | Origin / `"none"` | Origin / `"none"` |
+| **Story Points** | `customfield_10043` | Number | `1` / `2` | `1` / `0.5` | `3` / `5` | `3` / `5` |
+| **Labels** | `labels` | Array String | `["bug", ...]` | `["test-case", ...]`| `["improvement", ...]`| `["change-requirement", ...]` |
+| **Priority** | `priority` | Object (`{"id": "..."}`) | `1` (Highest) s/d `5` | Default Medium / High | Default | Default |
+| **Assignee** | `assignee` | Account ID | Developer (Alvin/dll) | Tester (Yemima/dll) | Developer | Developer / PM |
+| **Actual Result** *(Post-Test)* | `customfield_10203` | Doc / ADF / Text | — | **Wajib** saat Done | — | — |
+| **Test Result** *(Post-Test)* | `customfield_10202` | Object (`{"value": "Passed"}`) | — | **Wajib** saat Done | — | — |
+
+---
+
+## Urutan Transisi Status Card Test Case Jira (WAJIB)
+
+Khusus issue bertipe **`Test Case`**. Transisi tetap **hanya atas permintaan user di sesi itu** (lihat WARNING di atas). Twin di `olshoperp/.cursor/rules/17-jira-testcase-status-transition.mdc` — ubah di satu tempat → sync keduanya.
+
+1. **Memulai Pengujian:** pindahkan status ke **`TESTING PROGRESS`**.
+2. **Saat Pengujian Selesai (Passed / Failed / Blocked)** — isi berurutan:
+   1. **`customfield_10203` (Actual Result)** — rincian bukti pengujian: nomor transaksi (SO/Inbound/FS), SKU, **company** (dari `execution_company`, mis. `FAT`), **user/login** yang dipakai, URL fixture, dan temuan aktual.
+   2. **`customfield_10202` (Test Result)** — `{"value": "Passed"}`, `{"value": "Failed"}`, atau `{"value": "Blocked"}`. Jangan diisi sebelum Actual Result (validasi workflow bisa gagal).
+   3. Tambahkan komentar eksekusi di Jira yang merangkum hasil verifikasi.
+3. **Penyelesaian:** setelah kedua field terisi, baru pindahkan status ke **`Done`**.
+4. **Larangan:** dilarang menggeser Test Case ke `Done` sebelum Actual Result dan Test Result terisi.
+
+---
+
 ## Self-check sebelum output (semua tipe)
 
 - [ ] Judul pakai format `[Nama Menu] - short desc`?
 - [ ] Nama menu di `[]` tidak diubah dari nama asli di sistem?
+- [ ] Bug report di ETM memakai type **`Error`** (bukan `Bug` / subtask)?
+- [ ] Kalau terbit dari card lain: sudah **Relates** ke card sumber?
 - [ ] Semua section ada dengan separator `---`?
 - [ ] Tidak ada istilah yang diganti/ditambah sendiri di luar input reporter?
 - [ ] Label tombol/field/status di judul–steps = teks UI atau QA docs (bukan alias karangan agent)?
@@ -359,27 +449,14 @@ expected result perlu dikonfirmasi ke QA lead sebelum card difinalisasi.]
 - [ ] Expected Result sudah divalidasi dari requirement.md?
 - [ ] Additional Context kosong ditulis "(tidak ada catatan tambahan)", bukan dihapus?
 
-## Aturan Custom Field Request ID (`customfield_10495`) (WAJIB)
+## Custom Field Request ID (`customfield_10495`) (WAJIB)
 
-Setiap pembuatan Jira card di project ETM (Error / Test Case / Improvement / Change Requirement):
-- **Wajib mengisi custom field Request ID (`customfield_10495`)**.
-- Jika card relate maupun card origin-nya memiliki `Request ID` (atau terdapat Record ID / Request ID di description/field origin), maka **copy nilai Request ID dari card origin-nya**.
-- Jika card referensi / origin-nya bernilai `null` (tidak memiliki Request ID / card baru), maka isi dengan text **`none`**.
-- Jika ada case khusus/lainnya, konfirmasi ke user terlebih dahulu.
+Berlaku untuk setiap pembuatan card ETM (Error / Test Case / Improvement / Change Requirement). Field: `Request ID`, tipe `string`.
 
-
-## Detail Spesifikasi Custom Field Request ID di Jira ETM
-
-- **Field Name:** `Request ID`
-- **Custom Field Key:** `customfield_10495`
-- **Schema Type:** `string` (text field)
-- **Aturan Pembacaan & Gotcha API Jira:**
-  - Saat membaca issue via API Jira (`getJiraIssue`), respon default seringkali hanya me-render field standar jika tanpa ekspansi `fields=*`. **Jangan berasumsi Request ID kosong hanya dari payload ringkas `getJiraIssue`**.
-  - Wajib periksa `customfield_10495` secara eksplisit atau cek field description / Notion / Airtable request context.
-- **Aturan Penulisan:**
-  - Jika card relate / origin memiliki Request ID (misal: `recvqWrTHZ1dOV`), **wajib copy nilai persis ke `customfield_10495`**.
-  - Jika benar-benar card baru / mandiri tanpa referensi request user, isi dengan string **`none`**.
-
+- Card origin / relate punya Request ID (mis. `recvqWrTHZ1dOV`) → **copy nilai persis**.
+- Card baru / mandiri tanpa referensi request user → isi string **`none`**.
+- Case khusus lain → konfirmasi ke user dulu.
+- **Gotcha API:** `getJiraIssue` tanpa `fields=*` sering hanya me-render field standar. Jangan simpulkan Request ID kosong dari payload ringkas — cek `customfield_10495` secara eksplisit, atau description / Notion / Airtable request context.
 
 ## Rate Limiting & Jeda Eksekusi Pembuatan/Perubahan Card Jira (MCP Anti Session Drop)
 

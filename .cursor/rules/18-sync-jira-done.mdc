@@ -47,7 +47,7 @@ Config lengkap: `tests/tools/jira-etm-config.json`
    + `expand: names` bila perlu debug nama field.
 3. Validasi per card:
    - Status **Done** — kalau belum, **laporkan** ke prompter (jangan sync ke `passed`).
-   - **Test Result** terisi — kalau kosong, skip card itu (rule 17: Actual + Test Result wajib sebelum Done).
+   - **Test Result** terisi — kalau kosong, skip card itu (rule 12 § Urutan Transisi: Actual + Test Result wajib sebelum Done).
 4. Bangun payload JSON `{ "cards": [ ... ] }` — normalize dengan `normalizeJiraIssue()` di `tc-jira-sync-lib.mjs`.
 5. Jalankan:
    ```bash
@@ -115,6 +115,6 @@ Menampilkan TC yang `last_execution` masih `not_run` tapi punya rujukan card —
 ## Relasi rule lain
 
 - Rule `16` § Card Done — pola `via: card:ETM-*` + verifikasi status real (trigger ini **mengotomatisasi** langkah tulis file).
-- Rule `17` — urutan isi Actual Result → Test Result → Done di Jira.
+- Rule `12` § Urutan Transisi Status Card Test Case — urutan isi Actual Result → Test Result → Done di Jira.
 - Rule `13` — schema `first_execution` / `last_execution`.
 - Rule `12` — card Done ≠ bukti otomatis; sync ini **menyalin** Test Result + Actual Result yang sudah ada di Jira.
