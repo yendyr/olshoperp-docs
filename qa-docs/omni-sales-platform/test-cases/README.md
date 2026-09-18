@@ -83,5 +83,5 @@ Prefix folder: `SPLG`.
 | `TC-SPLG-021` | Verifikasi Penanganan Prefix Bertingkat (void-2-) pada Multiple Recreate | [`TC-SPLG-021.md`](./TC-SPLG-021.md) | BLOCKED ⛔ |
 | `TC-SPLG-022` | Verifikasi Aksi Void & Recreate Langsung dari Dialog Void | [`TC-SPLG-022.md`](./TC-SPLG-022.md) | SKIPPED ⚪ |
 | `TC-SPLG-023` | Verifikasi Alur Void & Recreate pada Menu All Sales Order | [`TC-SPLG-023.md`](./TC-SPLG-023.md) | PASSED 🟢 |
-| `TC-SPLG-024` | Verifikasi Paritas Alur Void Only pada Menu All Sales Order | [`TC-SPLG-024.md`](./TC-SPLG-024.md) | PASSED 🟢 |
+| `TC-SPLG-024` | Verifikasi Paritas Alur Void Only pada Menu All Sales Order | [`TC-SPLG-024.md`](./TC-SPLG-024.md) | FAILED 🔴 |
 

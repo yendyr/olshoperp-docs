@@ -36,12 +36,12 @@ steps:
 expected_result: |
   Sales order SO-693B8BF7 berhasil di-void dan nilai Platform Order ID tetap asli nomor 346357434232 tanpa prefix void-.
 test_result:
-  status: passed
+  status: failed
   started_at: "2026-09-17T15:20:00+07:00"
   finished_at: "2026-09-17T15:35:00+07:00"
   executed_by: "QA - Yemima"
   environment: staging
-  log_summary: "Sukses voided, status berubah menjadi 'void', platform order id tetap 346357434232 tanpa prefix void-. Catatan temuan: Tombol Recreate pasca-void tidak tersedia di halaman detail All Sales Order (memerlukan klarifikasi apakah Recreate hanya diimplementasikan di menu Sales Platform)."
+  log_summary: "FAILED (Defect Paritas UI): Status SO-693B8BF7 berhasil void dan platform order id tetap 346357434232 tanpa prefix void-, namun tombol Recreate TIDAK MUNCUL / belum diimplementasikan pada halaman detail All Sales Order untuk order void (melanggar Acceptance Criteria ETM-15859)."
   report_url: null
 test_data_used:
   - field: "Sales Order Code"
@@ -51,7 +51,7 @@ test_data_used:
   - field: "Status Akhir"
     value: "void"
   - field: "Ketersediaan Tombol Recreate"
-    value: "Tidak ada tombol Recreate di halaman detail All Sales Order"
+    value: "Tidak ada tombol Recreate di halaman detail All Sales Order (Bug)"
 run_history: []
 origin_jira: ETM-15798
 first_execution:
@@ -61,7 +61,7 @@ first_execution:
 last_execution:
   at: "2026-09-17"
   jira: ETM-15798
-  status: passed
+  status: failed
   via: "manual:Yemima"
-  notes: "Order SO-693B8BF7 sukses berubah status void dengan platform order id tetap 346357434232 tanpa prefix void dan tombol recreate tidak tersedia pada halaman detail."
+  notes: "Status SO-693B8BF7 sukses void dan platform order id tetap 346357434232 tanpa prefix, namun FAILED/BUG pada paritas UI: Tombol Recreate tidak muncul/tidak diimplementasikan pada halaman detail All Sales Order untuk order berstatus VOID (melanggar AC ETM-15859)."
 ---
