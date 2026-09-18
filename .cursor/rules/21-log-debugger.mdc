@@ -9,23 +9,32 @@ Gunakan rule ini setiap kali user meminta **cek log**, **debug log**, **log tyas
 
 ---
 
-## 1. Mekanisme Eksekusi Fetch Log
+## 1. Mekanisme Eksekusi Fetch Log (Direct HTTP Request)
 
-Semua pengambilan data log dari server **WAJIB** dijalankan melalui runner script lokal yang membaca credential dari `.env`:
+Semua pengambilan data log dari server **DILARANG** menggunakan runner script `.mjs` (`scripts/agent-log-fetch.mjs`). Eksekusi **WAJIB** dijalankan langsung melalui **HTTP POST Request** ke Webhook n8n dengan kredensial dari `.env`:
 
 ```bash
 # Target Staging (server: staging)
-node scripts/agent-log-fetch.mjs --server=staging --file=laravel-2026-09-16.log --level=error --start=1 --end=50
+curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-log-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $LOG_DEBUG_API_KEY" \
+  -d '{"server":"staging","file_name":"laravel-2026-09-18.log","level":"error","startLine":1,"endLine":50}'
 
 # Target Production Tyas (server: tyas)
-node scripts/agent-log-fetch.mjs --server=tyas --file=laravel-2026-09-16.log --level=error --start=1 --end=50
+curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-log-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $LOG_DEBUG_API_KEY" \
+  -d '{"server":"tyas","file_name":"laravel-2026-09-18.log","level":"error","startLine":1,"endLine":50}'
 
 # Target Production Merdian (server: merdian)
-node scripts/agent-log-fetch.mjs --server=merdian --file=laravel-2026-09-16.log --level=error --start=1 --end=50
+curl -s -X POST "https://n9n.olshoperp.com/webhook/agent-log-merdian" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $LOG_DEBUG_API_KEY_MERDIAN" \
+  -d '{"file_name":"laravel-2026-09-18.log","level":"error","startLine":1,"endLine":50}'
 ```
 
 > [!IMPORTANT]
-> **DILARANG KERAS** mengekspos nilai API Key secara eksplisit di terminal command, file committed, atau teks percakapan. Kredensial dibaca otomatis dari environment variable (`LOG_DEBUG_API_KEY`, `LOG_DEBUG_WEBHOOK_URL_TYAS`, dan `LOG_DEBUG_WEBHOOK_URL_MERDIAN` pada file `.env`).
+> **DILARANG KERAS** mengekspos nilai API Key secara eksplisit di teks percakapan, git commit, atau tiket. Gunakan environment variable (`$LOG_DEBUG_API_KEY` / `$LOG_DEBUG_API_KEY_MERDIAN`) saat mengeksekusi request.
 
 ---
 
@@ -65,7 +74,7 @@ node scripts/agent-log-fetch.mjs --server=merdian --file=laravel-2026-09-16.log 
 
 ### Alur Investigasi 2 Arah (Log ➡️ DB):
 1. **Fetch Log**: Identifikasi Exception Class, File `.php`, Baris error, dan Payload Request (misal ID transaksi / data yang dikirim).
-2. **Cross-Check DB**: Gunakan `scripts/agent-db-query.mjs` untuk memeriksa baris data terkait di database target (misal: apakah record berstatus void, kolom foreign key null, atau duplikat).
+2. **Cross-Check DB**: Gunakan Direct HTTP POST ke Webhook DB (Rule `19`) untuk memeriksa baris data terkait di database target (misal: apakah record berstatus void, kolom foreign key null, atau duplikat).
 
 ---
 

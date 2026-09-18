@@ -13,7 +13,7 @@ Pakai rule ini saat user / tugas menyebut **cek db**, **query db**, **db staging
 |-------|--------|-----|
 | **Kontrol QA (workspace ini)** | `tests/DATA-VERIFICATION.md` | Level L1/L2/L3, kapan boleh, matriks env, gate company_id |
 | **SoT teknis runner** | `../olshoperp/.cursor/rules/19-database-debugger.mdc` | Read-only, forensik 4 langkah, larangan secret |
-| **Runner (Lokal Docs)** | `scripts/agent-db-query.mjs` (atau `.php`) | Eksekusi via webhook; kredensial dari `.env` |
+| **Mekanisme Eksekusi** | Direct HTTP POST (Webhook n8n) | Eksekusi via HTTP Request; kredensial dari `.env` |
 | **Nama tabel (agent)** | `agent-db/cache.md` + `agent-db/README.md` | Menu → tabel, jebakan kolom, S0–S6, write-back |
 
 Jangan menduplikasi prosedur panjang di sini — baca `tests/DATA-VERIFICATION.md` dulu, lalu rule 19 di `olshoperp` jika forensik mendalam.
@@ -42,33 +42,55 @@ Cheat: System Product → `scm_products` · Purchase Order → `scm_purchase_ord
 - `*_formatted` / Vue `*_id` bukan kolom. `requirement.md` = expected, bukan nama kolom.
 - Jangan `olshoperp/docs/db-schema/` untuk nama kolom.
 
-## Routing env (ingat)
+## Routing env & HTTP Request
 
-- **Tyas** (`tyas_olshoperp`) + **Staging** (`staging_olshoperp`) → webhook **shared**
-- **Merdian** (`merdian_olshoperp`) → webhook **terpisah** (server beda)
+DILARANG menjalankan runner script `.mjs` (`scripts/agent-db-query.mjs`). Eksekusi wajib langsung via **HTTP POST Request** ke Webhook n8n.
 
-Contoh eksekusi langsung dari root `olshoperp-docs`:
+- **Tyas** (`tyas_olshoperp`) + **Staging** (`staging_olshoperp`) → webhook **shared**:
+  * **URL**: `https://n8n.olshoperp.com/webhook/agent-db-tyas`
+  * **Header**: `Content-Type: application/json`, `X-API-Key: <DB_DEBUG_API_KEY>`
+- **Merdian** (`merdian_olshoperp`) → webhook **terpisah** (server beda):
+  * **URL**: `https://n9n.olshoperp.com/webhook/agent-db-merdian`
+  * **Header**: `Content-Type: application/json`, `X-API-Key: <DB_DEBUG_API_KEY_MERDIAN>`
+
+Contoh eksekusi via HTTP Request (`curl`):
 
 ```bash
-node scripts/agent-db-query.mjs --db=staging_olshoperp --query="DESCRIBE scm_products"
-node scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id, sku FROM scm_products WHERE company_id = 153 AND deleted_at IS NULL LIMIT 5"
+# Query Staging
+curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $DB_DEBUG_API_KEY" \
+  -d '{"db":"staging_olshoperp","query":"DESCRIBE scm_products"}'
+
+# Query Tyas
+curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $DB_DEBUG_API_KEY" \
+  -d '{"db":"tyas_olshoperp","query":"SELECT id, sku FROM scm_products WHERE company_id = 153 AND deleted_at IS NULL LIMIT 5"}'
+
+# Query Merdian
+curl -s -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $DB_DEBUG_API_KEY_MERDIAN" \
+  -d '{"db":"merdian_olshoperp","query":"SELECT id, name FROM gate_users LIMIT 5"}'
 ```
 
 ## Larangan QA (mutlak)
 
 1. Hasil DB **bukan** bukti `last_execution.status: passed` untuk TC UI-crawling.
 2. Jangan expose `DB_DEBUG_API_KEY*` / URL override di chat, TC, atau commit.
-3. Selalu filter scope **company** yang sedang diuji; SoftDeletes awareness.
-4. Read-only saja — jangan usulkan mutasi SQL.
-5. Jangan buat folder `qa-docs/{menu}` khusus “cek DB” — tooling ops, bukan fitur menu.
+3. Dilarang menggunakan runner script `.mjs` — wajib HTTP POST Request langsung ke Webhook.
+4. Selalu filter scope **company** yang sedang diuji; SoftDeletes awareness.
+5. Read-only saja — hanya `SELECT`, `EXPLAIN`, `DESCRIBE`, `SHOW`, `WITH`. Dilarang mutasi SQL (`INSERT`/`UPDATE`/`DELETE`/`DROP`).
+6. Jangan buat folder `qa-docs/{menu}` khusus “cek DB” — tooling ops, bukan fitur menu.
 
 ## Triage cepat: Kapan DB vs Kapan LOG
 
 | Permintaan User / Intent | Jalur Eksekusi | Tool & Rule |
 | :--- | :--- | :--- |
 | **Assert TC / flow UI lulus** | Playwright CLI (L1) | Rule `14` (`npm test`) |
-| **Cek status data / kolom aktual** | Database Query | `scripts/agent-db-query.mjs` (Rule `19`) |
-| **Audit trail (siapa ubah data / void)** | DB `audits` table | `scripts/agent-db-query.mjs` (Rule `19`) |
-| **Hitung data kuantitatif / anomali** | DB Agregasi (`COUNT(*)`) | `scripts/agent-db-query.mjs` (Rule `19`) |
-| **Error 500 / Exception / Crash Server** | Log Fetching | `scripts/agent-log-fetch.mjs` (Rule `21`) |
-| **Investigasi Error 2 Arah** | Log ➡️ DB Cross-check | Fetch Log dulu ➡️ Query DB record ID terkait |
+| **Cek status data / kolom aktual** | Direct HTTP POST (DB Webhook) | Rule `19` |
+| **Audit trail (siapa ubah data / void)** | Direct HTTP POST (DB `audits`) | Rule `19` |
+| **Hitung data kuantitatif / anomali** | Direct HTTP POST (DB Agregasi `COUNT(*)`) | Rule `19` |
+| **Error 500 / Exception / Crash Server** | Direct HTTP POST (Log Webhook) | Rule `21` |
+| **Investigasi Error 2 Arah** | Log ➡️ DB Cross-check | HTTP Fetch Log dulu ➡️ HTTP Query DB record ID terkait |
