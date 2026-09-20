@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.1
-last_updated: 2026-07-28
+version: 1.2
+last_updated: 2026-09-20
 owner: QA - Yemima
 status: draft
-aliases: [skip wave process, skip wave, upload skip wave, SW batch, processing order date]
+aliases: [skip wave process, skip wave, upload skip wave, SW batch, processing order date, skip wave jobs]
 ---
 
 # Skip Wave Process — Requirement Documentation
@@ -17,7 +17,7 @@ aliases: [skip wave process, skip wave, upload skip wave, SW batch, processing o
 **UI route:** `/omni/skip-wave-process`  
 **SoT:** `skip-wave-process-sot.md` v1.0 (20 Jul 2026)
 
-Related: [Unassign Wave](../omni-unassign-wave/requirement.md) · [Skip Processing](../omni-skip-processing/requirement.md)
+Related: [Unassign Wave](../omni-unassign-wave/requirement.md) · [Skip Processing](../omni-skip-processing/requirement.md) · [Horizon Jobs — Skip Wave pipeline](../horizon-jobs/pipelines/skip-wave-process.md)
 
 ---
 
@@ -25,6 +25,7 @@ Related: [Unassign Wave](../omni-unassign-wave/requirement.md) · [Skip Processi
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-09-20 | QA - Yemima | Rujuk Horizon jobs pipeline; status macet / Redispatch; DO inline |
 | 1.1 | 2026-07-28 | QA - Yemima | TO-BE Processing Order Date per company (shared Unassign Wave); supersede GAP-SW-05 order+10m |
 | 1.0 | 2026-07-20 | QA - Yemima | Initial 5-file dari SoT v1.0 + verifikasi ImportJob/cron/gaps SW-01…05 |
 
@@ -176,10 +177,16 @@ Cron `skip-wave:dispatch` tiap menit memicu `SkipWaveProcessJob` untuk `in_queue
 ### 6.3 Stage 2 — Wave + Skip Processing
 
 1. Send to Default Wave (`SOApproveToWave`, log `WV-`)  
-2. Picking → Checking → Packing → Collecting (grouping shipper)  
-3. DO per kelompok shipper → approve → Shipped (`SP-` logs)
+2. Picking → Checking → Packing → Collecting  
+3. **Shipping / DO:** create + approve Delivery Order **inline** per SO di tahap skip shipping (bukan job Create/Approve DO terpisah) → Shipped (`SP-` logs)
 
 Reuse job/log Unassign Wave + Skip Processing. Waves Management **dilewati** (langsung processing setelah Default Wave).
+
+Detail fan-out Horizon (primary ≈ 1.102 job / 1.000 SO, job turunan, dead-code DO jobs): [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/pipelines/skip-wave-process.md).
+
+### 6.3a Status macet & Redispatch
+
+Jika progress Wave / Skip Processing sudah hampir penuh tetapi `skip_wave_status` tetap `processing` lama, gerbang (§6.2) menahan seluruh antrean. AS-IS: tombol **Redispatch** tersedia bila batch diam lebih dari **60 menit** (lanjut fase yang belum selesai). Penutup normal bergantung callback batch queue — lihat pipeline Horizon § Failure / Observasi.
 
 ### 6.4 Trx date transfer / tanggal processing
 
@@ -265,6 +272,8 @@ flowchart TB
 **Q: Total Order Processed < total file?** Validasi background masih jalan.  
 **Q: Download file?** Max 24 jam.  
 **Q: Lama pending?** Ada batch aktif lain (mungkin company lain — GAP-SW-02).  
+**Q: Progress penuh tapi status masih Processing?** Kemungkinan penutup batch tidak jalan — coba **Redispatch** jika diam lebih dari 60 menit; detail di [horizon-jobs pipeline](../horizon-jobs/pipelines/skip-wave-process.md).  
+**Q: Completed di layar tapi server masih sibuk?** Job turunan (stok/audit/sync) bisa masih mengantre setelah status completed.  
 **Q: Shipped bermasalah?** Lanjut Failed Ship.  
 **Q: Processing Order Date ikut Unassign Wave?** Ya — satu setting per company.  
 **Q: Order stok terlambat dari tanggal order?** Set Processing Order Date ke tanggal stok ready, lalu upload.
@@ -275,5 +284,6 @@ flowchart TB
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-09-20 | Link Horizon jobs; DO inline; Redispatch / status macet |
 | 1.1 | 2026-07-28 | Processing Order Date; GAP-SW-05 superseded |
 | 1.0 | 2026-07-20 | Dari SoT v1.0 ke qa-docs-standard |

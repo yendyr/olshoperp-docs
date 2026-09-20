@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.1
-last_updated: 2026-07-28
+version: 1.2
+last_updated: 2026-09-20
 owner: QA - Yemima
 status: draft
 aliases: [skip wave process, skip wave upload, upload order to wave and ship, processing order date]
@@ -60,7 +60,9 @@ flowchart TD
 - **All-or-nothing:** satu baris gagal = seluruh file tidak diproses. Perbaiki lalu upload ulang **seluruh** file.
 - **Antrian:** boleh upload banyak file; sistem proses **satu batch** sampai selesai baru batch berikutnya.
 - **Progress:** Wave Progress = sudah masuk Default Wave; Skip Processing = sudah sampai Shipped.
-- **Tidak ada tombol Retry** di menu ini untuk batch gagal — perbaikan = upload ulang (retry otomatis hanya di belakang layar untuk error teknis sementara).
+- **Tidak ada tombol Retry** untuk batch gagal validasi — perbaikan = upload ulang (retry otomatis hanya di belakang layar untuk error teknis sementara).
+- **Redispatch:** kalau progress sudah hampir selesai tetapi status batch masih “Processing” lama (diam lebih dari 60 menit), gunakan **Redispatch** agar antrian batch lain bisa lanjut.
+- **Setelah Completed:** sistem masih bisa sibuk menghitung stok / sync marketplace di belakang layar — itu normal; jangan langsung upload batch besar beruntun tanpa pantau.
 
 ---
 
@@ -108,6 +110,8 @@ Toolbar **Log Data** membuka riwayat import:
 | Seluruh batch gagal padahal cuma 1 salah | All-or-nothing | Buka modal detail, perbaiki baris Failed, upload ulang seluruh file |
 | Total Processed < total file | Validasi masih jalan | Tunggu sampai angka sama |
 | Lama di Pending | Ada batch lain masih Processing | Tunggu batch aktif selesai (bisa dari company lain) |
+| Progress hampir penuh, status masih Processing lama | Penutup otomatis batch tidak jalan | Tunggu diam lebih dari 60 menit → **Redispatch**; jika gagal, eskalasi ke Support/DevOps |
+| Layar Completed tapi sistem masih lambat | Pekerjaan hitung stok / sync masih mengantre | Jeda upload batch besar berikutnya; pantau bersama Support |
 | File tidak bisa didownload | Lewat 24 jam | Simpan salinan file sendiri sejak awal |
 | Order tidak muncul di batch aktif | Sudah lanjut / sudah Shipped | Cek progress Shipped / Failed Ship |
 | Tidak bisa ubah Processing Order Date | Periode akuntansi tertutup | Pilih tanggal di periode terbuka |
@@ -128,3 +132,9 @@ A: Tidak — setelah masuk Default Wave langsung lanjut skip processing (bypass 
 
 **Q: Processing Order Date diubah kolega — kenapa ikut berubah?**  
 A: Nilai per company, bukan per user.
+
+**Q: Progress penuh tapi status batch tidak Completed?**  
+A: Coba **Redispatch** setelah batch diam lebih dari 60 menit. Kalau banyak file lain ikut menunggu, satu batch macet bisa menahan semuanya.
+
+**Q: Ada panduan antrean job untuk Support/DevOps?**  
+A: Ya — lihat dokumentasi [Horizon Jobs — Skip Wave pipeline](../horizon-jobs/pipelines/skip-wave-process.md) (teknis) atau [Horizon Jobs KB](../horizon-jobs/knowledge-base.md).

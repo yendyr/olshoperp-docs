@@ -11,13 +11,15 @@ Menu **Skip Wave Process** (SupplyChain / OmniChannel).
 
 **SoT:** `skip-wave-process-sot.md` v1.0 (20 Jul 2026)  
 **User-guide:** v1.1 · `source_version` 1.1  
-**Version (3 layer):** 1.1 · **Last updated:** 2026-07-28  
+**Version (3 layer):** 1.2 · **Last updated:** 2026-09-20  
+**Horizon jobs (kanonik):** [../horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/pipelines/skip-wave-process.md)  
 **Implementer brief:** `~/Downloads/processing-order-date-unassign-skip-wave-implementer-brief.md`
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-09-20 21:13 | Dokumentasi pergerakan Horizon jobs (primary + derived); link ke horizon-jobs pipeline |
 | 1.1 | 2026-07-28 | TO-BE Processing Order Date per company (shared Unassign Wave); GAP-SW-05 superseded |
 | 1.0 | 2026-07-20 | Initial 5-file dari SoT v1.0 + verifikasi ImportJob/cron/gaps SW-01…05 |
 | ug-1.1 | 2026-07-28 | Sync user-guide ke sumber 1.1 |
@@ -27,6 +29,7 @@ Menu **Skip Wave Process** (SupplyChain / OmniChannel).
 
 | Menu | Link |
 |------|------|
+| Horizon Jobs | [../horizon-jobs/](../horizon-jobs/) — pipeline queue / job turunan (lintas menu) |
 | Unassign Wave | [../omni-unassign-wave/](../omni-unassign-wave/) — reuse `SOApproveToWave` + Send Wave Logs; **shared Processing Order Date** |
 | Skip Processing | [../omni-skip-processing/](../omni-skip-processing/) — reuse jobs + logs sampai Shipped |
 | Order Process | [../omni-process-summary/](../omni-process-summary/) — pantau/PL/resi (bukan upload skip wave) |

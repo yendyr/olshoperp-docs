@@ -2307,6 +2307,40 @@ menus:
         - Modules/OmniChannel/Entities/SalesOrderDetailRandom.php
       frontend: []
 
+  horizon-jobs:
+    menu_name: "Horizon Jobs"
+    short_description: "Document queue and Horizon job pipelines (primary vs derived) across menus."
+    path: horizon-jobs
+    module: OmniChannel
+    menu_links: []
+    cross_menu: true
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Jobs/SkipWaveProcessImportJob.php
+        - Modules/OmniChannel/Jobs/SkipWaveProcessJob.php
+        - Modules/OmniChannel/Logics/SkipWave/SkipWaveLogic.php
+        - Modules/OmniChannel/Jobs/SkipProcessingJob.php
+        - Modules/OmniChannel/Services/ProcessingService.php
+        - app/Console/Commands/SalesOrder/SkipWaveDispatchCommand.php
+        - Modules/SupplyChain/Observers/ItemStockObserver.php
+        - app/Helpers/SupplyChain/StockAfterApproveHandler.php
+      frontend: []
+
   supplychain-variant:
     menu_name: "Master Variant"
     short_description: "Maintain variant groups and options used when enabling product variations."

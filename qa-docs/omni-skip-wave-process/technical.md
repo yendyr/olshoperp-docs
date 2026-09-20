@@ -2,11 +2,11 @@
 doc_type: technical
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.1
-last_updated: 2026-07-28
+version: 1.2
+last_updated: 2026-09-20
 owner: QA - Yemima
 status: draft
-aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing order date]
+aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing order date, skip wave horizon jobs]
 ---
 
 # Skip Wave Process — Technical Documentation
@@ -84,7 +84,10 @@ Wave/processing drilldown memakai API Unassign Wave / Skip Processing (bukan met
 
 ---
 
-## 4. Import → Dispatch flow
+## 4. Import → Dispatch flow (jobs)
+
+**Kanonik lengkap (primary + derived + dead-code DO + observasi Horizon):**  
+[horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/pipelines/skip-wave-process.md)
 
 ```mermaid
 sequenceDiagram
@@ -93,18 +96,29 @@ sequenceDiagram
   participant Imp as SkipWaveProcessImportJob
   participant Cron as skip-wave:dispatch
   participant Wave as SkipWaveProcessJob
+  participant Proc as SkipProcessingJob
 
   FE->>API: POST upload
   API->>API: pre-check header/rows; create SW/WV/SP; log In Progress
   API->>Imp: dispatch queue import
   Imp->>Imp: validate rows; write details; is_eligible; lock SOs
   Note over Imp: Does NOT dispatch Wave job
-  Cron->>Cron: gate no pending/processing
+  Cron->>Cron: gate no pending/processing global
   Cron->>Wave: in_queue + eligible → pending + SkipWaveProcessJob
-  Wave->>Wave: SOApproveToWave batch → SkipWaveLogic → SkipProcessing…
+  Wave->>Wave: Bus batch SOApproveToWave → cleanupSkipWave
+  Wave->>Proc: chunk 10 → skip stages incl skipShipping DO
+  Note over Proc: Create/Approve DO jobs dead in runBatchFinally
 ```
 
-Hard cap: **1000** data rows. Chunks processing: 10 SO/job; DO create 100; approve 10.
+| Job | Queue | Fan-out (1.000 SO) |
+|-----|-------|---------------------|
+| `SkipWaveProcessImportJob` | import | 1 |
+| `SkipWaveProcessJob` | SalesOrder | 1 |
+| `SOApproveToWave` | SalesOrder | 1.000 |
+| `SkipProcessingJob` | SalesOrder | 100 (10/SO) |
+| `SkipProcessingRetryJob` | SalesOrder | hanya retry |
+
+Hard cap: **1000** data rows. Chunks: 10 SO / `SkipProcessingJob`. DO = **inline** `skipShipping` (bukan Create/Approve DO job batch). Retry transient max 5 · delay 5/10/15s.
 
 ---
 
@@ -191,6 +205,8 @@ Hard cap: **1000** data rows. Chunks processing: 10 SO/job; DO create 100; appro
 | GAP-SW-02 | `SkipWaveDispatchCommand` `exists()` tanpa filter company |
 | GAP-SW-05 | **Superseded** — implement Processing Order Date; wire `PicklistService` + `WaveService` |
 | — | ImportJob imports `SkipWaveProcessJob` but does not dispatch it |
+| — | `runBatchFinally` early-return: Create/Approve DO jobs dead code; DO di `skipShipping` |
+| — | Job turunan (audit/ending stock/sync) — lihat horizon-jobs pipeline § Derived |
 
 ---
 
@@ -198,5 +214,6 @@ Hard cap: **1000** data rows. Chunks processing: 10 SO/job; DO create 100; appro
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-09-20 | Link kanonik Horizon jobs pipeline; tabel fan-out; dead-code DO path |
 | 1.1 | 2026-07-28 | Processing Order Date; GAP-SW-05 superseded; PicklistService wire note |
 | 1.0 | 2026-07-20 | Initial dari SoT + ImportJob/cron map |

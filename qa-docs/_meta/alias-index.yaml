@@ -1,0 +1,980 @@
+# GENERATED — do not edit by hand.
+# Regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
+# Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
+# docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
+version: 1
+generated: '2026-09-20T14:15:59Z'
+source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
+regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
+menu_count: 129
+alias_count: 754
+ambiguous_count: 26
+aliases:
+  account payable report: accounting-account-payable-report
+  account payment: accounting-supplier-payment
+  account payment docs: accounting-supplier-payment
+  account receivable report: accounting-account-receivable-report
+  account receive: accounting-customer-payment
+  accounting account payable report: accounting-account-payable-report
+  accounting account receivable report: accounting-account-receivable-report
+  accounting adjustment inbound: accounting-adjustment-inbound
+  accounting adjustment outbound: accounting-adjustment-outbound
+  accounting asset category: accounting-asset-category
+  accounting asset list: accounting-asset-list
+  accounting balance sheet: accounting-balance-sheet
+  accounting cash bank reconcile: accounting-cash-bank-reconcile
+  accounting chart of account: accounting-chart-of-account
+  accounting company detail bank: accounting-company-detail-bank
+  accounting consolidation report: accounting-consolidation-report
+  accounting credit note: accounting-credit-note
+  accounting customer invoice: accounting-customer-invoice
+  accounting customer payment: accounting-customer-payment
+  accounting debit note: accounting-debit-note
+  accounting default vat: accounting-default-vat
+  accounting fiscal period: accounting-fiscal-period
+  accounting item: accounting-item
+  accounting journal: journal
+  accounting opening stock: accounting-opening-stock
+  accounting platform account labels: accounting-platform-account-labels
+  accounting platform account mapping: accounting-platform-account-mapping
+  accounting product benchmark price: accounting-product-benchmark-price
+  accounting product coa group: accounting-product-coa-group
+  accounting product profit loss: accounting-product-profit-loss
+  accounting profit loss: accounting-profit-loss
+  accounting profit loss v1: accounting-profit-loss-v1
+  accounting purchase report: accounting-purchase-report
+  accounting purchase return: accounting-purchase-return
+  accounting sales order invoicing: accounting-sales-order-invoicing
+  accounting sales order profit loss: accounting-sales-order-profit-loss
+  accounting sales return: accounting-sales-return
+  accounting settlement mapping: accounting-settlement-mapping
+  accounting settlement upload: accounting-settlement-upload
+  accounting stock monitoring value: accounting-stock-monitoring-value
+  accounting stock opname approval: accounting-stock-opname-approval
+  accounting stock remapping: accounting-stock-remapping
+  accounting supplier invoice: accounting-supplier-invoice
+  accounting supplier payment: accounting-supplier-payment
+  accounting tax: accounting-tax
+  accounting trial balance: accounting-trial-balance
+  accounting-account-payable-report: accounting-account-payable-report
+  accounting-account-receivable-report: accounting-account-receivable-report
+  accounting-adjustment-inbound: accounting-adjustment-inbound
+  accounting-adjustment-outbound: accounting-adjustment-outbound
+  accounting-asset-category: accounting-asset-category
+  accounting-asset-list: accounting-asset-list
+  accounting-balance-sheet: accounting-balance-sheet
+  accounting-cash-bank-reconcile: accounting-cash-bank-reconcile
+  accounting-chart-of-account: accounting-chart-of-account
+  accounting-company-detail-bank: accounting-company-detail-bank
+  accounting-consolidation-report: accounting-consolidation-report
+  accounting-credit-note: accounting-credit-note
+  accounting-customer-invoice: accounting-customer-invoice
+  accounting-customer-payment: accounting-customer-payment
+  accounting-debit-note: accounting-debit-note
+  accounting-default-vat: accounting-default-vat
+  accounting-fiscal-period: accounting-fiscal-period
+  accounting-item: accounting-item
+  accounting-opening-stock: accounting-opening-stock
+  accounting-platform-account-labels: accounting-platform-account-labels
+  accounting-platform-account-mapping: accounting-platform-account-mapping
+  accounting-product-benchmark-price: accounting-product-benchmark-price
+  accounting-product-coa-group: accounting-product-coa-group
+  accounting-product-profit-loss: accounting-product-profit-loss
+  accounting-profit-loss: accounting-profit-loss
+  accounting-profit-loss-v1: accounting-profit-loss-v1
+  accounting-purchase-report: accounting-purchase-report
+  accounting-purchase-return: accounting-purchase-return
+  accounting-sales-order-invoicing: accounting-sales-order-invoicing
+  accounting-sales-order-profit-loss: accounting-sales-order-profit-loss
+  accounting-sales-return: accounting-sales-return
+  accounting-settlement-mapping: accounting-settlement-mapping
+  accounting-settlement-upload: accounting-settlement-upload
+  accounting-stock-monitoring-value: accounting-stock-monitoring-value
+  accounting-stock-opname-approval: accounting-stock-opname-approval
+  accounting-stock-remapping: accounting-stock-remapping
+  accounting-supplier-invoice: accounting-supplier-invoice
+  accounting-supplier-payment: accounting-supplier-payment
+  accounting-tax: accounting-tax
+  accounting-trial-balance: accounting-trial-balance
+  ad hoc picking: supplychain-manual-picking-list
+  ad-hoc picking: supplychain-manual-picking-list
+  advance package: omni-sales-platform
+  ai assistant: ai-kb-assistant
+  ai kb assistant: ai-kb-assistant
+  ai-kb-assistant: ai-kb-assistant
+  akun buku besar: accounting-chart-of-account
+  all sales order: all-sales-order
+  all-sales-order: all-sales-order
+  ap payment: accounting-supplier-payment
+  ap report: accounting-account-payable-report
+  application: generalsetting-application
+  approval penambahan stok: accounting-adjustment-inbound
+  approval pengurangan stok: accounting-adjustment-outbound
+  approval stock opname: accounting-stock-opname-approval
+  ar invoice: accounting-customer-invoice
+  ar payment: accounting-customer-payment
+  aso: all-sales-order
+  assembly: supplychain-assembly
+  asset category: accounting-asset-category
+  asset list: accounting-asset-list
+  auto add vat:
+    slugs:
+    - omni-sales-platform
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). BusinessDevelopment = All Sales Order
+      (/businessdevelopment/all-sales-order).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  automated distribution: omni-waves-management
+  available product: accounting-purchase-return
+  balance sheet: accounting-balance-sheet
+  bank reconcile: accounting-cash-bank-reconcile
+  bank reconciliation code: accounting-cash-bank-reconcile
+  barang masuk: supplychain-new-purchase-inbound
+  barang masuk v2: supplychain-new-purchase-inbound
+  batch macet: horizon-jobs
+  below benchmark cogs:
+    slugs:
+    - omni-sales-platform
+    - sales-order-general
+    - all-sales-order
+    - accounting-product-benchmark-price
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general).
+      BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order). Accounting = Benchmark
+      COGS (/accounting/product-benchmark-price).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+      accounting-product-benchmark-price: Accounting = Benchmark COGS (/accounting/product-benchmark-price)
+  benchmark cogs: accounting-product-benchmark-price
+  benchmark cogs snapshot:
+    slugs:
+    - omni-sales-platform
+    - sales-order-general
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general).
+      BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  beta - new purchase inbound: supplychain-new-purchase-inbound
+  beta - transaction history: supplychain-transaction-history
+  beta new purchase inbound: supplychain-new-purchase-inbound
+  beta transaction history: supplychain-transaction-history
+  bill of material: bill-of-material
+  bill-of-material: bill-of-material
+  booking shopee: omni-sales-platform
+  box: supplychain-colli-type
+  box pallet: supplychain-colli-type
+  br reconcile: accounting-cash-bank-reconcile
+  broken (transfer scrap): supplychain-mutation-transfer-scrap
+  bs: accounting-balance-sheet
+  buku besar: general-ledger
+  bulk action log: omni-process-summary
+  bulk generate pick list: omni-process-summary
+  bulk pick list: omni-process-summary
+  bulk skip: omni-skip-processing
+  bulk skip processing: omni-skip-processing
+  bundle parent tax hide: system-product
+  bundle pricing proportion: system-product
+  bundle stock: supplychain-bundle-stock-report
+  bundle stock report: supplychain-bundle-stock-report
+  bundle sum: accounting-product-benchmark-price
+  bus batch finally: horizon-jobs
+  bus::batch finally: horizon-jobs
+  cancelled order: supplychain-cancelled-order
+  cash bank account: accounting-company-detail-bank
+  cash bank reconcile: accounting-cash-bank-reconcile
+  cash bank reconcile technical: accounting-cash-bank-reconcile
+  cash reconcile: accounting-cash-bank-reconcile
+  cash/bank account: accounting-company-detail-bank
+  cash/bank reconcile: accounting-cash-bank-reconcile
+  cbr: accounting-cash-bank-reconcile
+  cbr api: accounting-cash-bank-reconcile
+  chart of account: accounting-chart-of-account
+  chart of account (master coa): accounting-chart-of-account
+  chart-of-account: accounting-chart-of-account
+  checking list: omni-checking-list
+  checking process: omni-checking-process
+  closing period: accounting-fiscal-period
+  cn: accounting-credit-note
+  cn technical: accounting-credit-note
+  coa: accounting-chart-of-account
+  coa group: accounting-product-coa-group
+  cod failed: supplychain-failed-ship
+  coefficient tax bundle: system-product
+  cogs benchmark: accounting-product-benchmark-price
+  cogs benchmark menu: accounting-product-benchmark-price
+  cogs error: sales-order-general
+  cogs-error: sales-order-general
+  colli: supplychain-new-purchase-inbound
+  colli type: supplychain-colli-type
+  colli v2: supplychain-new-purchase-inbound
+  colli v2 tf: supplychain-mutation-transfer-internal
+  company detail bank: accounting-company-detail-bank
+  complete sales return: accounting-sales-return
+  consolidation report: accounting-consolidation-report
+  credit note: accounting-credit-note
+  credit note api: accounting-credit-note
+  credit note code: accounting-credit-note
+  credit note docs: accounting-credit-note
+  customer credit: accounting-credit-note
+  customer deposit credit: accounting-credit-note
+  customer invoice: accounting-customer-invoice
+  customer invoice api: accounting-customer-invoice
+  customer payment: accounting-customer-payment
+  daily cogs: accounting-product-benchmark-price
+  debit note: accounting-debit-note
+  default pajak: accounting-default-vat
+  default ppn: accounting-default-vat
+  default tax: accounting-default-vat
+  default vat: accounting-default-vat
+  default wave: omni-unassign-wave
+  default wave queue: omni-unassign-wave
+  default waves: omni-waves-management
+  delivery order: supplychain-delivery-order
+  deposit credit note: accounting-credit-note
+  dev - inventory detail: supplychain-inventory-detail
+  dev - product ending stock: supplychain-product-ending-stock
+  dev - product mutation history: supplychain-product-mutation
+  dev - product transaction history: supplychain-product-transaction-history
+  dev - profit & loss: accounting-profit-loss-v1
+  dev - sales order: sales-order-general
+  dev - sales platform: omni-sales-platform
+  dev - stock monitoring: supplychain-stock-monitoring
+  dev inventory detail: supplychain-inventory-detail
+  dev p and l: accounting-profit-loss-v1
+  dev p l: accounting-profit-loss-v1
+  dev p&l: accounting-profit-loss-v1
+  dev product ending stock: supplychain-product-ending-stock
+  dev product mutation history: supplychain-product-mutation
+  dev product transaction history: supplychain-product-transaction-history
+  dev profit & loss: accounting-profit-loss-v1
+  dev profit and loss: accounting-profit-loss-v1
+  dev profit loss: accounting-profit-loss-v1
+  dev profit loss technical: accounting-profit-loss-v1
+  dev sales order: sales-order-general
+  dev sales platform: omni-sales-platform
+  dev stock monitoring: supplychain-stock-monitoring
+  dimension and weight label: supplychain-dimension-and-weight-label
+  dn: accounting-debit-note
+  edit detail before approve: omni-sales-platform
+  edit platform detail: all-sales-order
+  ending balance per warehouse: supplychain-product-mutation-stock
+  ending balance warehouse: supplychain-product-mutation-stock
+  etm 15673: accounting-purchase-report
+  etm 15674: accounting-purchase-report
+  etm 15713: order-processing-trace
+  etm 15726: accounting-purchase-return
+  etm 15728: accounting-account-payable-report
+  etm 15729: accounting-purchase-report
+  extract bundle:
+    slugs:
+    - omni-sales-platform
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). BusinessDevelopment = All Sales Order
+      (/businessdevelopment/all-sales-order).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  extract bundle details:
+    slugs:
+    - omni-sales-platform
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). BusinessDevelopment = All Sales Order
+      (/businessdevelopment/all-sales-order).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  failed process: omni-sales-platform
+  failed process wave: omni-unassign-wave
+  failed ship: supplychain-failed-ship
+  faktur beli: accounting-supplier-invoice
+  faktur jual: accounting-customer-invoice
+  fifo invalid: omni-unassign-wave
+  fifo stock date: omni-unassign-wave
+  fiscal period: accounting-fiscal-period
+  fs: supplychain-failed-ship
+  fulfillment mode:
+    slugs:
+    - sales-order-general
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general). BusinessDevelopment
+      = All Sales Order (/businessdevelopment/all-sales-order).
+    by_slug:
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  gabungan sales order: all-sales-order
+  gabungan so: all-sales-order
+  gagal kirim: supplychain-failed-ship
+  gate global audit log: gate-global-audit-log
+  gate role: gate-role
+  gate user: gate-user
+  gate-global-audit-log: gate-global-audit-log
+  gate-role: gate-role
+  gate-user: gate-user
+  general company: generalsetting-general-company
+  general ledger: general-ledger
+  general ledger report: general-ledger
+  general-ledger: general-ledger
+  generalsetting application: generalsetting-application
+  generalsetting country: generalsetting-country
+  generalsetting currency: generalsetting-currency
+  generalsetting general company: generalsetting-general-company
+  generalsetting internal company: generalsetting-internal-company
+  generalsetting region: generalsetting-region
+  generalsetting-application: generalsetting-application
+  generalsetting-country: generalsetting-country
+  generalsetting-currency: generalsetting-currency
+  generalsetting-general-company: generalsetting-general-company
+  generalsetting-internal-company: generalsetting-internal-company
+  generalsetting-region: generalsetting-region
+  generate pick list: omni-waves-management
+  generate pick list wave: omni-waves-management
+  generatewavejob: omni-waves-management
+  get resi: omni-process-summary
+  get resi log: omni-process-summary
+  gl: general-ledger
+  gl journal: journal
+  global audit log: gate-global-audit-log
+  global settings: omni-global-settings
+  goods receipt: supplychain-new-purchase-inbound
+  google drive product image: system-product
+  grn: supplychain-new-purchase-inbound
+  grn requirement: supplychain-new-purchase-inbound
+  highest bundle variant: accounting-product-benchmark-price
+  horizon jobs: horizon-jobs
+  horizon jobs requirement: horizon-jobs
+  horizon jobs technical: horizon-jobs
+  horizon-jobs: horizon-jobs
+  hpp acuan: accounting-product-benchmark-price
+  hutang supplier: accounting-supplier-invoice
+  import non processed:
+    slugs:
+    - sales-order-general
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general). BusinessDevelopment
+      = All Sales Order (/businessdevelopment/all-sales-order).
+    by_slug:
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  import non-processed:
+    slugs:
+    - sales-order-general
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general). BusinessDevelopment
+      = All Sales Order (/businessdevelopment/all-sales-order).
+    by_slug:
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  import processed:
+    slugs:
+    - sales-order-general
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general). BusinessDevelopment
+      = All Sales Order (/businessdevelopment/all-sales-order).
+    by_slug:
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  import product images: system-product
+  import so: sales-order-general
+  import so general: sales-order-general
+  inbound lama: supplychain-mutation-inbound
+  income statement: accounting-profit-loss
+  instant settlement: accounting-settlement-upload
+  internal company: generalsetting-internal-company
+  inventory detail: supplychain-inventory-detail
+  is_default: supplychain-variant
+  item category: supplychain-item-category
+  item coa: accounting-item
+  jasa kirim internal: omni-shipping-service
+  jasa kirim marketplace: omni-shipping-service-platform
+  jenis colli: supplychain-colli-type
+  job antrean: horizon-jobs
+  job antrean horizon: horizon-jobs
+  job turunan: horizon-jobs
+  journal: journal
+  journal api: journal
+  journal code: journal
+  journalprocess: journal
+  jurnal: journal
+  jurnal akuntansi: journal
+  kb store monitor: kb-store-monitor
+  kb-store-monitor: kb-store-monitor
+  klaim supplier: accounting-debit-note
+  laba rugi:
+    slugs:
+    - accounting-profit-loss
+    - accounting-profit-loss-v1
+    hint: Current Profit & Loss vs Dev / legacy Profit Loss v1.
+    by_slug:
+      accounting-profit-loss: Current Profit & Loss — /accounting/profit-loss
+      accounting-profit-loss-v1: Dev / legacy Profit & Loss
+  laba rugi dev: accounting-profit-loss-v1
+  laporan hutang: accounting-account-payable-report
+  laporan laba rugi: accounting-profit-loss-v1
+  laporan pembelian sku: accounting-purchase-report
+  last checked:
+    slugs:
+    - all-sales-order
+    - omni-unassign-wave
+    hint: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order). SupplyChain =
+      Unassign Wave (/omni/unassign-wave).
+    by_slug:
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+      omni-unassign-wave: SupplyChain = Unassign Wave (/omni/unassign-wave)
+  ledger account: accounting-chart-of-account
+  leftover variant: system-product
+  legacy profit loss: accounting-profit-loss-v1
+  lihat semua order: all-sales-order
+  location: supplychain-location
+  log data: all-sales-order
+  manage platform product: manage-platform-product
+  manage-platform-product: manage-platform-product
+  manual cogs:
+    slugs:
+    - omni-sales-platform
+    - sales-order-general
+    - all-sales-order
+    - accounting-product-benchmark-price
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general).
+      BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order). Accounting = Benchmark
+      COGS (/accounting/product-benchmark-price).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+      accounting-product-benchmark-price: Accounting = Benchmark COGS (/accounting/product-benchmark-price)
+  manual cogs expiry: accounting-product-benchmark-price
+  manual journal: journal
+  manual picking list: supplychain-manual-picking-list
+  marketplace sales order: omni-sales-platform
+  master brand: supplychain-master-brand
+  master coa: accounting-chart-of-account
+  master country: generalsetting-country
+  master currency: generalsetting-currency
+  master region: generalsetting-region
+  master shipping service: omni-shipping-service
+  master tax: accounting-tax
+  master variant: supplychain-variant
+  master variant default: system-product
+  master warranty: supplychain-warranty
+  matched: omni-sales-platform
+  mpl: supplychain-manual-picking-list
+  mss: omni-shipping-service
+  mutation inbound: supplychain-mutation-inbound
+  mutation stock: supplychain-product-mutation-stock
+  mutation transfer external: supplychain-mutation-transfer-external
+  mutation transfer internal: supplychain-mutation-transfer-internal
+  mutation-transfer-external: supplychain-mutation-transfer-external
+  mutation-transfer-internal: supplychain-mutation-transfer-internal
+  neraca: accounting-balance-sheet
+  new purchase inbound: supplychain-new-purchase-inbound
+  nota debit: accounting-debit-note
+  nota kredit: accounting-credit-note
+  omni channel settings: omni-global-settings
+  omni checking list: omni-checking-list
+  omni checking process: omni-checking-process
+  omni global settings: omni-global-settings
+  omni other cost: omni-other-cost
+  omni other discount: omni-other-discount
+  omni packing list: omni-packing-list
+  omni packing process: omni-packing-process
+  omni picking list: omni-picking-list
+  omni picking process: omni-picking-process
+  omni platform api: omni-platform-api
+  omni process summary: omni-process-summary
+  omni sales order: omni-sales-platform
+  omni sales order report: omni-sales-order-report
+  omni sales platform: omni-sales-platform
+  omni settings: omni-global-settings
+  omni shipping service: omni-shipping-service
+  omni shipping service platform: omni-shipping-service-platform
+  omni skip processing: omni-skip-processing
+  omni skip wave process: omni-skip-wave-process
+  omni store binding: omni-store-binding
+  omni unassign wave: omni-unassign-wave
+  omni warehouse binding: omni-warehouse-binding
+  omni waves management: omni-waves-management
+  omni-checking-list: omni-checking-list
+  omni-checking-process: omni-checking-process
+  omni-global-settings: omni-global-settings
+  omni-other-cost: omni-other-cost
+  omni-other-discount: omni-other-discount
+  omni-packing-list: omni-packing-list
+  omni-packing-process: omni-packing-process
+  omni-picking-list: omni-picking-list
+  omni-picking-process: omni-picking-process
+  omni-platform-api: omni-platform-api
+  omni-process-summary: omni-process-summary
+  omni-sales-order-report: omni-sales-order-report
+  omni-sales-platform: omni-sales-platform
+  omni-shipping-service: omni-shipping-service
+  omni-shipping-service-platform: omni-shipping-service-platform
+  omni-skip-processing: omni-skip-processing
+  omni-skip-wave-process: omni-skip-wave-process
+  omni-store-binding: omni-store-binding
+  omni-unassign-wave: omni-unassign-wave
+  omni-warehouse-binding: omni-warehouse-binding
+  omni-waves-management: omni-waves-management
+  opening balance: accounting-opening-stock
+  opening balance stock: accounting-opening-stock
+  opening stock: accounting-opening-stock
+  opening stock api: accounting-opening-stock
+  order marketplace: omni-sales-platform
+  order process: omni-process-summary
+  order process api: omni-process-summary
+  order processing trace: order-processing-trace
+  order-processing-trace: order-processing-trace
+  os: accounting-opening-stock
+  os technical: accounting-opening-stock
+  other cost: omni-other-cost
+  other cost disc: sales-order-general
+  other cost/disc code: sales-order-general
+  other discount: omni-other-discount
+  other inbound: supplychain-other-inbound
+  outbound external: supplychain-mutation-outbound
+  outstanding pr:
+    slugs:
+    - supplychain-purchase-order
+    - supplychain-purchase-requisition
+    hint: SupplyChain = Purchase Order (/supplychain/purchase-order). SupplyChain = Purchase Requisition
+      (/supplychain/purchase-requisition).
+    by_slug:
+      supplychain-purchase-order: SupplyChain = Purchase Order (/supplychain/purchase-order)
+      supplychain-purchase-requisition: SupplyChain = Purchase Requisition (/supplychain/purchase-requisition)
+  p and l: accounting-profit-loss
+  p l: accounting-profit-loss
+  p&l: accounting-profit-loss
+  packing list: omni-packing-list
+  packing process: omni-packing-process
+  pallet: supplychain-colli-type
+  pcg: accounting-product-coa-group
+  pelunasan supplier: accounting-supplier-payment
+  pembayaran hutang: accounting-supplier-payment
+  pembelian: supplychain-purchase-order
+  penambahan stok: supplychain-adjustment-addition
+  pending orders:
+    slugs:
+    - omni-sales-platform
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). BusinessDevelopment = All Sales Order
+      (/businessdevelopment/all-sales-order).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  penerimaan customer: accounting-customer-payment
+  penerimaan tf ext: supplychain-transfer-inbound
+  pengurangan stok: supplychain-adjustment-deduction
+  period lock: accounting-fiscal-period
+  periode fiskal: accounting-fiscal-period
+  permintaan pembelian: supplychain-purchase-requisition
+  pesanan pembelian: supplychain-purchase-order
+  pi: accounting-supplier-invoice
+  pi technical: accounting-supplier-invoice
+  picking list: omni-picking-list
+  picking list scm: supplychain-manual-picking-list
+  picking process: omni-picking-process
+  piutang: accounting-customer-invoice
+  pl manual: supplychain-manual-picking-list
+  platform account labelling: accounting-platform-account-labels
+  platform account mapping: accounting-platform-account-mapping
+  platform api: omni-platform-api
+  platform shipping service: omni-shipping-service-platform
+  platform_order_id: all-sales-order
+  po: supplychain-purchase-order
+  po pi report supplier: accounting-purchase-report
+  po requirement: supplychain-purchase-order
+  po validation: supplychain-purchase-order
+  posisi keuangan: accounting-balance-sheet
+  ppn: accounting-tax
+  pr:
+    slugs:
+    - supplychain-purchase-requisition
+    - accounting-purchase-return
+    hint: PR can mean Purchase Requisition (SCM) or Purchase Return (Accounting, billed).
+    by_slug:
+      supplychain-purchase-requisition: Purchase Requisition — permintaan pembelian
+      accounting-purchase-return: Purchase Return — retur beli / PR billed
+  pr billed: accounting-purchase-return
+  price before vat bundle: system-product
+  primary vs derived jobs: horizon-jobs
+  print awb: omni-process-summary
+  print awb technical: omni-process-summary
+  process summary: omni-process-summary
+  processing order date:
+    slugs:
+    - omni-skip-wave-process
+    - omni-unassign-wave
+    hint: SupplyChain = Skip Wave Process (/omni/skip-wave-process). SupplyChain = Unassign Wave (/omni/unassign-wave).
+    by_slug:
+      omni-skip-wave-process: SupplyChain = Skip Wave Process (/omni/skip-wave-process)
+      omni-unassign-wave: SupplyChain = Unassign Wave (/omni/unassign-wave)
+  processingservice skip: omni-skip-processing
+  product accounting group: accounting-product-coa-group
+  product benchmark price: accounting-product-benchmark-price
+  product bundle: accounting-product-benchmark-price
+  product bundle cogs: accounting-product-benchmark-price
+  product bundle tax: system-product
+  product coa group: accounting-product-coa-group
+  product ending stock: supplychain-product-ending-stock
+  product general configuration: supplychain-product-general-configuration
+  product image sync: system-product
+  product interchange: supplychain-item-interchange
+  product inventory configuration: supplychain-product-inventory-configuration
+  product mutation history: supplychain-product-mutation
+  product profit loss: accounting-product-profit-loss
+  product transaction history: supplychain-product-transaction-history
+  product_sync_url: system-product
+  profit & loss: accounting-profit-loss
+  profit and loss: accounting-profit-loss
+  profit loss: accounting-profit-loss
+  profit loss legacy: accounting-profit-loss-v1
+  profit loss v1: accounting-profit-loss-v1
+  profit loss v1 api: accounting-profit-loss-v1
+  profit-loss-v1 api: accounting-profit-loss-v1
+  profitlossold: accounting-profit-loss-v1
+  psp: omni-shipping-service-platform
+  purchase inbound:
+    slugs:
+    - supplychain-mutation-inbound
+    - supplychain-new-purchase-inbound
+    hint: Legacy Purchase Inbound (mutation inbound) vs BETA New Purchase Inbound (COLLI / GRN).
+    by_slug:
+      supplychain-mutation-inbound: Legacy Purchase Inbound — /supplychain/mutation-inbound
+      supplychain-new-purchase-inbound: BETA New Purchase Inbound (COLLI/GRN) — /supplychain/new-purchase-inbound
+  purchase inbound docs: supplychain-new-purchase-inbound
+  purchase invoice: accounting-supplier-invoice
+  purchase invoice code: accounting-supplier-invoice
+  purchase invoice docs: accounting-supplier-invoice
+  purchase order: supplychain-purchase-order
+  purchase order docs: supplychain-purchase-order
+  purchase report: accounting-purchase-report
+  purchase requisition: supplychain-purchase-requisition
+  purchase return: accounting-purchase-return
+  py: accounting-supplier-payment
+  qc procedure: supplychain-qc-procedure
+  queue connection salesorder: horizon-jobs
+  queue jobs: horizon-jobs
+  queue pipeline: horizon-jobs
+  queue pipeline rules: horizon-jobs
+  random sku: random-sku
+  random-sku: random-sku
+  real time stock: supplychain-real-stock
+  receiving: supplychain-new-purchase-inbound
+  rekening bank: accounting-company-detail-bank
+  rekening kas: accounting-company-detail-bank
+  rekening kas bank: accounting-company-detail-bank
+  rekonsiliasi bank: accounting-cash-bank-reconcile
+  remapping stok: accounting-stock-remapping
+  restock lost scrap: supplychain-failed-ship
+  retry skip: omni-skip-processing
+  retur beli: accounting-purchase-return
+  retur jual finance: accounting-sales-return
+  retur jual gudang: supplychain-sales-returns
+  retur pembelian: accounting-purchase-return
+  retur penjualan finance: accounting-sales-return
+  retur penjualan gudang: supplychain-sales-returns
+  revert wave: omni-waves-management
+  riwayat stok: supplychain-product-mutation-stock
+  rm: accounting-stock-remapping
+  role (gate): gate-role
+  saldo awal stok: accounting-opening-stock
+  sales invoice: accounting-customer-invoice
+  sales invoice code: accounting-customer-invoice
+  sales order general: sales-order-general
+  sales order import: sales-order-general
+  sales order internal: sales-order-general
+  sales order invoicing: accounting-sales-order-invoicing
+  sales order processing trace: order-processing-trace
+  sales order profit loss: accounting-sales-order-profit-loss
+  sales order report: omni-sales-order-report
+  sales platform: omni-sales-platform
+  sales return:
+    slugs:
+    - accounting-sales-return
+    - supplychain-sales-returns
+    hint: Accounting = Finance Complete/approval. SupplyChain = warehouse qty input.
+    by_slug:
+      accounting-sales-return: Finance Complete/approval — /accounting/sales-return
+      supplychain-sales-returns: Warehouse qty input — /supplychain/sales-returns
+  sales return approval: accounting-sales-return
+  sales return scm: supplychain-sales-returns
+  sales-order-general: sales-order-general
+  salesorderimportsheet2: sales-order-general
+  select multiple products: supplychain-purchase-order
+  select outstanding pr products: supplychain-purchase-order
+  send to default waves: omni-unassign-wave
+  send wave logs: omni-unassign-wave
+  send wave logs technical: omni-unassign-wave
+  set as default system product:
+    slugs:
+    - supplychain-variant
+    - system-product
+    hint: SupplyChain = Master Variant (/supplychain/variant). SupplyChain = System Product (/supplychain/product).
+    by_slug:
+      supplychain-variant: SupplyChain = Master Variant (/supplychain/variant)
+      system-product: SupplyChain = System Product (/supplychain/product)
+  setelan akun produk: accounting-product-coa-group
+  settlement mapping: accounting-settlement-mapping
+  shipping service: omni-shipping-service
+  shipping service platform: omni-shipping-service-platform
+  shopee booking: omni-sales-platform
+  si: accounting-customer-invoice
+  si technical: accounting-customer-invoice
+  sidebar menu: sidebar-menu
+  sidebar menu (gate): sidebar-menu
+  sidebar-menu: sidebar-menu
+  skip picking: omni-skip-processing
+  skip picking packing: omni-skip-processing
+  skip processing: omni-skip-processing
+  skip processing api: omni-skip-processing
+  skip processing log: omni-skip-processing
+  skip wave: omni-skip-wave-process
+  skip wave horizon jobs: omni-skip-wave-process
+  skip wave jobs:
+    slugs:
+    - omni-skip-wave-process
+    - horizon-jobs
+    hint: SupplyChain = Skip Wave Process (/omni/skip-wave-process). OmniChannel = Horizon Jobs — Document
+      queue and Horizon job pipelines (primary vs derived) across menus.
+    by_slug:
+      omni-skip-wave-process: SupplyChain = Skip Wave Process (/omni/skip-wave-process)
+      horizon-jobs: OmniChannel = Horizon Jobs — Document queue and Horizon job pipelines (primary vs
+        derived) across menus
+  skip wave process: omni-skip-wave-process
+  skip wave process api: omni-skip-wave-process
+  skip wave upload: omni-skip-wave-process
+  skipprocessingjob: omni-skip-processing
+  skipwavelogic: omni-skip-wave-process
+  skipwaveprocessjob: omni-skip-wave-process
+  sku (parent): system-product
+  sku-(parent): system-product
+  so general: sales-order-general
+  so general technical: sales-order-general
+  so internal: sales-order-general
+  so platform: omni-sales-platform
+  soapprovetowave: omni-unassign-wave
+  sr:
+    slugs:
+    - accounting-sales-return
+    - supplychain-sales-returns
+    hint: Accounting = Finance Complete/approval. SupplyChain = warehouse qty input.
+    by_slug:
+      accounting-sales-return: Finance Complete/approval — /accounting/sales-return
+      supplychain-sales-returns: Warehouse qty input — /supplychain/sales-returns
+  sr accounting: accounting-sales-return
+  sr finance: accounting-sales-return
+  sr gudang: supplychain-sales-returns
+  sr warehouse: supplychain-sales-returns
+  stock acak: accounting-stock-remapping
+  stock addition: supplychain-adjustment-addition
+  stock addition approval: accounting-adjustment-inbound
+  stock conversion: accounting-stock-remapping
+  stock deduction: supplychain-adjustment-deduction
+  stock deduction approval: accounting-adjustment-outbound
+  stock history: supplychain-product-mutation-stock
+  stock history api: supplychain-product-mutation-stock
+  stock history docs: supplychain-product-mutation-stock
+  stock history technical: supplychain-product-mutation-stock
+  stock history v2: supplychain-product-mutation-stock
+  stock monitoring value: accounting-stock-monitoring-value
+  stock movement report: supplychain-product-mutation-stock
+  stock opname: supplychain-stock-opname
+  stock opname approval: accounting-stock-opname-approval
+  stock opname gudang: supplychain-stock-opname
+  stock remapping: accounting-stock-remapping
+  stock take: supplychain-stock-opname
+  store: omni-store-binding
+  supplier deposit: accounting-debit-note
+  supplier invoice: accounting-supplier-invoice
+  supplier invoice api: accounting-supplier-invoice
+  supplychain adjustment addition: supplychain-adjustment-addition
+  supplychain adjustment deduction: supplychain-adjustment-deduction
+  supplychain assembly: supplychain-assembly
+  supplychain bundle stock report: supplychain-bundle-stock-report
+  supplychain cancelled order: supplychain-cancelled-order
+  supplychain colli type: supplychain-colli-type
+  supplychain delivery order: supplychain-delivery-order
+  supplychain dimension and weight label: supplychain-dimension-and-weight-label
+  supplychain failed ship: supplychain-failed-ship
+  supplychain inventory detail: supplychain-inventory-detail
+  supplychain item category: supplychain-item-category
+  supplychain item interchange: supplychain-item-interchange
+  supplychain location: supplychain-location
+  supplychain manual picking list: supplychain-manual-picking-list
+  supplychain master brand: supplychain-master-brand
+  supplychain mutation inbound: supplychain-mutation-inbound
+  supplychain mutation outbound: supplychain-mutation-outbound
+  supplychain mutation transfer external: supplychain-mutation-transfer-external
+  supplychain mutation transfer internal: supplychain-mutation-transfer-internal
+  supplychain mutation transfer scrap: supplychain-mutation-transfer-scrap
+  supplychain mutation transfer void: supplychain-mutation-transfer-void
+  supplychain new purchase inbound: supplychain-new-purchase-inbound
+  supplychain other inbound: supplychain-other-inbound
+  supplychain product ending stock: supplychain-product-ending-stock
+  supplychain product general configuration: supplychain-product-general-configuration
+  supplychain product inventory configuration: supplychain-product-inventory-configuration
+  supplychain product mutation: supplychain-product-mutation
+  supplychain product mutation stock: supplychain-product-mutation-stock
+  supplychain product transaction history: supplychain-product-transaction-history
+  supplychain purchase order: supplychain-purchase-order
+  supplychain purchase requisition: supplychain-purchase-requisition
+  supplychain qc procedure: supplychain-qc-procedure
+  supplychain real stock: supplychain-real-stock
+  supplychain sales returns: supplychain-sales-returns
+  supplychain setting: supplychain-setting
+  supplychain stock monitoring: supplychain-stock-monitoring
+  supplychain stock opname: supplychain-stock-opname
+  supplychain tagging: supplychain-tagging
+  supplychain transaction history: supplychain-transaction-history
+  supplychain transfer inbound: supplychain-transfer-inbound
+  supplychain unit: supplychain-unit
+  supplychain variant: supplychain-variant
+  supplychain warehouse layout: supplychain-warehouse-layout
+  supplychain warehouse structure: supplychain-warehouse-structure
+  supplychain warehouse type: supplychain-warehouse-type
+  supplychain warranty: supplychain-warranty
+  supplychain-adjustment-addition: supplychain-adjustment-addition
+  supplychain-adjustment-deduction: supplychain-adjustment-deduction
+  supplychain-assembly: supplychain-assembly
+  supplychain-bundle-stock-report: supplychain-bundle-stock-report
+  supplychain-cancelled-order: supplychain-cancelled-order
+  supplychain-colli-type: supplychain-colli-type
+  supplychain-delivery-order: supplychain-delivery-order
+  supplychain-dimension-and-weight-label: supplychain-dimension-and-weight-label
+  supplychain-failed-ship: supplychain-failed-ship
+  supplychain-inventory-detail: supplychain-inventory-detail
+  supplychain-item-category: supplychain-item-category
+  supplychain-item-interchange: supplychain-item-interchange
+  supplychain-location: supplychain-location
+  supplychain-manual-picking-list: supplychain-manual-picking-list
+  supplychain-master-brand: supplychain-master-brand
+  supplychain-mutation-inbound: supplychain-mutation-inbound
+  supplychain-mutation-outbound: supplychain-mutation-outbound
+  supplychain-mutation-transfer-external: supplychain-mutation-transfer-external
+  supplychain-mutation-transfer-internal: supplychain-mutation-transfer-internal
+  supplychain-mutation-transfer-scrap: supplychain-mutation-transfer-scrap
+  supplychain-mutation-transfer-void: supplychain-mutation-transfer-void
+  supplychain-new-purchase-inbound: supplychain-new-purchase-inbound
+  supplychain-other-inbound: supplychain-other-inbound
+  supplychain-product-ending-stock: supplychain-product-ending-stock
+  supplychain-product-general-configuration: supplychain-product-general-configuration
+  supplychain-product-inventory-configuration: supplychain-product-inventory-configuration
+  supplychain-product-mutation: supplychain-product-mutation
+  supplychain-product-mutation-stock: supplychain-product-mutation-stock
+  supplychain-product-transaction-history: supplychain-product-transaction-history
+  supplychain-purchase-order: supplychain-purchase-order
+  supplychain-purchase-requisition: supplychain-purchase-requisition
+  supplychain-qc-procedure: supplychain-qc-procedure
+  supplychain-real-stock: supplychain-real-stock
+  supplychain-sales-returns: supplychain-sales-returns
+  supplychain-setting: supplychain-setting
+  supplychain-stock-monitoring: supplychain-stock-monitoring
+  supplychain-stock-opname: supplychain-stock-opname
+  supplychain-tagging: supplychain-tagging
+  supplychain-transaction-history: supplychain-transaction-history
+  supplychain-transfer-inbound: supplychain-transfer-inbound
+  supplychain-unit: supplychain-unit
+  supplychain-variant: supplychain-variant
+  supplychain-warehouse-layout: supplychain-warehouse-layout
+  supplychain-warehouse-structure: supplychain-warehouse-structure
+  supplychain-warehouse-type: supplychain-warehouse-type
+  supplychain-warranty: supplychain-warranty
+  sw batch: omni-skip-wave-process
+  sync lock: omni-sales-platform
+  sync product images: system-product
+  sync shopee: omni-sales-platform
+  system product: system-product
+  system-product: system-product
+  tagging: supplychain-tagging
+  tagihan customer: accounting-customer-invoice
+  tagihan supplier: accounting-supplier-invoice
+  tax: accounting-tax
+  template vat: accounting-default-vat
+  tf ext: supplychain-mutation-transfer-external
+  tf inbound: supplychain-transfer-inbound
+  tfi: supplychain-mutation-transfer-internal
+  tipe wadah: supplychain-colli-type
+  total price return: accounting-purchase-return
+  transfer broken: supplychain-mutation-transfer-scrap
+  transfer external: supplychain-mutation-transfer-external
+  transfer inbound: supplychain-transfer-inbound
+  transfer internal: supplychain-mutation-transfer-internal
+  transfer summary: omni-process-summary
+  transfer void: supplychain-mutation-transfer-void
+  trial balance: accounting-trial-balance
+  unassign wave: omni-unassign-wave
+  unassign wave api: omni-unassign-wave
+  unassign waves: omni-unassign-wave
+  unavailable stock:
+    slugs:
+    - all-sales-order
+    - omni-unassign-wave
+    hint: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order). SupplyChain =
+      Unassign Wave (/omni/unassign-wave).
+    by_slug:
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+      omni-unassign-wave: SupplyChain = Unassign Wave (/omni/unassign-wave)
+  unit: supplychain-unit
+  unit price before vat: accounting-purchase-return
+  unmatched bookings:
+    slugs:
+    - omni-sales-platform
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). BusinessDevelopment = All Sales Order
+      (/businessdevelopment/all-sales-order).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  upload order to wave and ship: omni-skip-wave-process
+  upload skip wave: omni-skip-wave-process
+  user (gate): gate-user
+  variant group: supplychain-variant
+  variant type: supplychain-variant
+  vat: accounting-tax
+  vat master: accounting-tax
+  void & recreate:
+    slugs:
+    - omni-sales-platform
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). BusinessDevelopment = All Sales Order
+      (/businessdevelopment/all-sales-order).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  void and recreate:
+    slugs:
+    - omni-sales-platform
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). BusinessDevelopment = All Sales Order
+      (/businessdevelopment/all-sales-order).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  void recreate:
+    slugs:
+    - omni-sales-platform
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). BusinessDevelopment = All Sales Order
+      (/businessdevelopment/all-sales-order).
+    by_slug:
+      omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  void transfer: supplychain-mutation-transfer-void
+  warehouse binding: omni-warehouse-binding
+  warehouse layout: supplychain-warehouse-layout
+  warehouse level: supplychain-warehouse-type
+  warehouse sales return: supplychain-sales-returns
+  warehouse setting: supplychain-setting
+  warehouse stock addition: supplychain-adjustment-addition
+  warehouse stock deduction: supplychain-adjustment-deduction
+  warehouse structure: supplychain-warehouse-structure
+  warranty: supplychain-warranty
+  wave automation technical: omni-waves-management
+  wave management: omni-waves-management
+  waves management: omni-waves-management
+  waves management api: omni-waves-management

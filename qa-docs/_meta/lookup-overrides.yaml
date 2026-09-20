@@ -1,0 +1,239 @@
+# Hand-maintained extras for the agent lookup indexes.
+# Merged by generate-lookup.py — not a substitute for manifest.yaml.
+# Prefer adding aliases here instead of mass-editing menu frontmatter.
+# No secrets.
+
+# Extra UI / chat phrases → slug. Keys are slugs already in manifest.yaml.
+extra_aliases:
+  horizon-jobs:
+    - horizon jobs
+    - queue jobs
+    - queue pipeline
+    - job turunan
+    - skip wave jobs
+    - Bus batch finally
+    - job antrean Horizon
+  accounting-supplier-invoice:
+    - Purchase Invoice
+    - PI
+    - supplier invoice
+    - faktur beli
+    - tagihan supplier
+    - hutang supplier
+    - purchase invoice docs
+  accounting-customer-invoice:
+    - Sales Invoice
+    - SI
+    - customer invoice
+    - faktur jual
+    - tagihan customer
+  accounting-supplier-payment:
+    - Account Payment
+    - AP payment
+    - pembayaran hutang
+    - PY
+    - pelunasan supplier
+  accounting-customer-payment:
+    - Account Receive
+    - AR payment
+    - customer payment
+    - penerimaan customer
+  accounting-sales-return:
+    - Sales Return Approval
+    - SR
+    - SR finance
+    - SR accounting
+    - retur jual finance
+    - retur penjualan finance
+    - complete sales return
+  supplychain-sales-returns:
+    - Sales Return SCM
+    - SR
+    - SR warehouse
+    - SR gudang
+    - retur jual gudang
+    - retur penjualan gudang
+    - warehouse sales return
+  supplychain-purchase-order:
+    - PO
+    - purchase order
+    - pembelian
+    - pesanan pembelian
+  supplychain-purchase-requisition:
+    - Purchase Requisition
+    - PR
+    - permintaan pembelian
+    - outstanding PR
+  accounting-purchase-return:
+    - Purchase Return
+    - PR
+    - retur beli
+    - PR billed
+    - retur pembelian
+  supplychain-new-purchase-inbound:
+    - GRN
+    - goods receipt
+    - COLLI
+    - receiving
+    - new purchase inbound
+    - barang masuk v2
+  supplychain-mutation-inbound:
+    - Purchase Inbound
+    - inbound lama
+    - mutation inbound
+  accounting-profit-loss:
+    - P&L
+    - Profit and Loss
+    - income statement
+    - laba rugi
+  accounting-profit-loss-v1:
+    - Dev Profit Loss
+    - Dev P&L
+    - profit loss v1
+    - legacy profit loss
+  supplychain-adjustment-addition:
+    - Stock Addition
+    - penambahan stok
+    - warehouse stock addition
+  accounting-adjustment-inbound:
+    - Stock Addition Approval
+    - approval penambahan stok
+  supplychain-adjustment-deduction:
+    - Stock Deduction
+    - pengurangan stok
+    - warehouse stock deduction
+  accounting-adjustment-outbound:
+    - Stock Deduction Approval
+    - approval pengurangan stok
+  supplychain-stock-opname:
+    - Stock Opname
+    - stock take
+    - stock opname gudang
+  accounting-stock-opname-approval:
+    - Stock Opname Approval
+    - approval stock opname
+  sales-order-general:
+    - Dev Sales Order
+    - SO General
+    - sales order internal
+  all-sales-order:
+    - All Sales Order
+    - ASO
+    - lihat semua order
+  omni-sales-platform:
+    - Dev Sales Platform
+    - sales platform
+    - marketplace sales order
+  journal:
+    - journal
+    - jurnal
+    - jurnal akuntansi
+    - manual journal
+  general-ledger:
+    - GL
+    - general ledger
+    - buku besar
+    - General Ledger Report
+
+# When a normalized phrase maps to more than one slug, show this hint.
+# Keys are normalized (lowercase, collapsed spaces) alias phrases.
+collision_hints:
+  "sales return":
+    hint: "Accounting = Finance Complete/approval. SupplyChain = warehouse qty input."
+    by_slug:
+      accounting-sales-return: "Finance Complete/approval — /accounting/sales-return"
+      supplychain-sales-returns: "Warehouse qty input — /supplychain/sales-returns"
+  "retur jual":
+    hint: "Accounting = Finance Complete/approval. SupplyChain = warehouse qty input."
+    by_slug:
+      accounting-sales-return: "Finance Complete/approval — /accounting/sales-return"
+      supplychain-sales-returns: "Warehouse qty input — /supplychain/sales-returns"
+  "retur penjualan":
+    hint: "Accounting = Finance Complete/approval. SupplyChain = warehouse qty input."
+    by_slug:
+      accounting-sales-return: "Finance Complete/approval — /accounting/sales-return"
+      supplychain-sales-returns: "Warehouse qty input — /supplychain/sales-returns"
+  "sr":
+    hint: "Accounting = Finance Complete/approval. SupplyChain = warehouse qty input."
+    by_slug:
+      accounting-sales-return: "Finance Complete/approval — /accounting/sales-return"
+      supplychain-sales-returns: "Warehouse qty input — /supplychain/sales-returns"
+  "purchase inbound":
+    hint: "Legacy Purchase Inbound (mutation inbound) vs BETA New Purchase Inbound (COLLI / GRN)."
+    by_slug:
+      supplychain-mutation-inbound: "Legacy Purchase Inbound — /supplychain/mutation-inbound"
+      supplychain-new-purchase-inbound: "BETA New Purchase Inbound (COLLI/GRN) — /supplychain/new-purchase-inbound"
+  "grn":
+    hint: "Prefer BETA New Purchase Inbound for current receiving / COLLI. Legacy menu is Purchase Inbound."
+    by_slug:
+      supplychain-new-purchase-inbound: "Current GRN / COLLI receiving — /supplychain/new-purchase-inbound"
+      supplychain-mutation-inbound: "Legacy Purchase Inbound"
+  "goods receipt":
+    hint: "Prefer BETA New Purchase Inbound for current receiving / COLLI."
+    by_slug:
+      supplychain-new-purchase-inbound: "Current GRN / COLLI receiving"
+      supplychain-mutation-inbound: "Legacy Purchase Inbound"
+  "laba rugi":
+    hint: "Current Profit & Loss vs Dev / legacy Profit Loss v1."
+    by_slug:
+      accounting-profit-loss: "Current Profit & Loss — /accounting/profit-loss"
+      accounting-profit-loss-v1: "Dev / legacy Profit & Loss"
+  "p&l":
+    hint: "Current Profit & Loss vs Dev / legacy Profit Loss v1."
+    by_slug:
+      accounting-profit-loss: "Current Profit & Loss — /accounting/profit-loss"
+      accounting-profit-loss-v1: "Dev / legacy Profit Loss v1"
+  "profit loss":
+    hint: "Current Profit & Loss vs Dev / legacy Profit Loss v1."
+    by_slug:
+      accounting-profit-loss: "Current Profit & Loss — /accounting/profit-loss"
+      accounting-profit-loss-v1: "Dev / legacy Profit Loss v1"
+  "stock addition":
+    hint: "SupplyChain = warehouse mutation. Accounting = Finance approval."
+    by_slug:
+      supplychain-adjustment-addition: "Warehouse Stock Addition"
+      accounting-adjustment-inbound: "Stock Addition Approval (Finance)"
+  "stock deduction":
+    hint: "SupplyChain = warehouse mutation. Accounting = Finance approval."
+    by_slug:
+      supplychain-adjustment-deduction: "Warehouse Stock Deduction"
+      accounting-adjustment-outbound: "Stock Deduction Approval (Finance)"
+  "stock opname":
+    hint: "SupplyChain = warehouse count. Accounting = Finance approval."
+    by_slug:
+      supplychain-stock-opname: "Warehouse Stock Opname"
+      accounting-stock-opname-approval: "Stock Opname Approval (Finance)"
+  "pr":
+    hint: "PR can mean Purchase Requisition (SCM) or Purchase Return (Accounting, billed)."
+    by_slug:
+      supplychain-purchase-requisition: "Purchase Requisition — permintaan pembelian"
+      accounting-purchase-return: "Purchase Return — retur beli / PR billed"
+  "sales order":
+    hint: "Internal Dev SO vs All Sales Order vs marketplace Sales Platform vs invoicing."
+    by_slug:
+      sales-order-general: "Dev / internal Sales Order"
+      all-sales-order: "All Sales Order (combined list)"
+      omni-sales-platform: "Marketplace Sales Platform"
+      accounting-sales-order-invoicing: "Sales Order Invoicing (Finance)"
+  "so":
+    hint: "Internal Dev SO vs All Sales Order vs marketplace Sales Platform."
+    by_slug:
+      sales-order-general: "Dev / internal Sales Order"
+      all-sales-order: "All Sales Order (combined list)"
+      omni-sales-platform: "Marketplace Sales Platform"
+  "checking":
+    hint: "Checking Process (work) vs Checking List (report)."
+    by_slug:
+      omni-checking-process: "Checking Process — /omni/checking-process"
+      omni-checking-list: "Checking List — report"
+  "packing":
+    hint: "Packing Process (work) vs Packing List (report)."
+    by_slug:
+      omni-packing-process: "Packing Process — /omni/packing-process"
+      omni-packing-list: "Packing List — report"
+  "picking":
+    hint: "Picking Process (work) vs Picking List (report) vs Manual Picking List (SCM)."
+    by_slug:
+      omni-picking-process: "Picking Process — /omni/picking-process"
+      omni-picking-list: "Picking List — report"
+      supplychain-manual-picking-list: "Manual Picking List (SCM)"
