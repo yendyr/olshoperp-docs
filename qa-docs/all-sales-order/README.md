@@ -8,6 +8,7 @@ Route: `/businessdevelopment/all-sales-order`
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | review |
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
+| Test Plan (ETM-15986 Adv Filter REUSE ADVF) | [ETM-15986/](./ETM-15986/) | QA | reuse ADVF-001…005 |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **User-guide:** v1.7 · `source_version` 1.11  
