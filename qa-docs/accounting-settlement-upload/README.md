@@ -7,6 +7,7 @@ Menu **Instant Settlement** (Accounting) — juga dikenal sebagai Upload Settlem
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) (v1.8) | Operator | review |
 | Requirement | [requirement.md](./requirement.md) (v1.8) | PM, QA | review |
 | Technical | [technical.md](./technical.md) (v1.7) | Developer | review |
+| Test Cases (ETM-15980 entries vs Adv Filter) | [ETM-15980/test-cases/](./ETM-15980/test-cases/) | QA | draft (3 DRAFT) |
 | User Guide | [user-guide.md](./user-guide.md) (v1.2) | Publish eksternal | review |
 
 **UI route:** `/accounting/settlement-upload`  
