@@ -2,7 +2,7 @@
 doc_type: technical
 menu: horizon-jobs
 menu_name: "Horizon Jobs"
-version: 1.0
+version: 1.1
 last_updated: 2026-09-20
 owner: QA - Yemima
 status: draft
@@ -12,7 +12,8 @@ aliases: [horizon jobs technical, Bus::batch finally, queue connection salesorde
 # Horizon Jobs — Technical
 
 **Audience:** Developer, QA automation  
-**Index pipelines:** [README](./README.md) · Skip Wave: [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md)
+**Index pipelines:** [README](./README.md) · Skip Wave: [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md)  
+**Aturan QA:** [requirement.md](./requirement.md) v1.1 (HJ-01…HJ-08, PROP-HJ-01)
 
 ---
 
@@ -104,9 +105,9 @@ sequenceDiagram
 
 | Ref | Note |
 |-----|------|
+| PROP-HJ-01 | Proposal remediasi — lihat requirement §8 / pipeline § Proposal |
 | GAP-SW-02 | Gerbang Skip Wave global — lihat menu Skip Wave |
-| Dead DO jobs | `SkipProcessingCreateDeliveryOrdersJob` / `ApproveDO*` unreachable dari `runBatchFinally` |
-| Proposal remediasi | Hanya di pipeline doc § Proposal — belum GAP resmi |
+| Dead DO jobs | Create/Approve DO job path unreachable dari `runBatchFinally`; DO di `skipShipping` |
 
 ---
 
@@ -114,4 +115,5 @@ sequenceDiagram
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-09-20 | Rujuk HJ-01…08 + PROP-HJ-01 dari requirement v1.1 |
 | 1.0 | 2026-09-20 | Initial pola + index Skip Wave pipeline |

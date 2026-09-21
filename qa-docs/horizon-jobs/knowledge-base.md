@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: horizon-jobs
 menu_name: "Horizon Jobs"
-version: 1.0
+version: 1.1
 last_updated: 2026-09-20
 owner: QA - Yemima
 status: draft
@@ -14,6 +14,8 @@ audience: operator
 
 **Audience:** Ops, Support, QA saat investigasi antrean  
 **Bukan menu UI** — ini panduan membaca pekerjaan latar belakang (Horizon) yang dipicu menu seperti Skip Wave Process.
+
+> **v1.1:** selaras requirement yang dirapikan (struktur standar); konten operator tidak berubah substantif.
 
 ---
 

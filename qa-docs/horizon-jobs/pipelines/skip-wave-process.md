@@ -191,7 +191,7 @@ Contoh: `SW-20260919095547190-8D` — hampir semua SO sudah `Shipped`, tetapi `s
 
 ## 7. Proposal remediasi (BUKAN TO-BE / BUKAN AC)
 
-Diambil dari rencana optimasi Claude; landasan kode sebagian ada (`disableAuditing()`, `ShouldBeUnique`, dll.). **Belum** dipromote ke GAP resmi Skip Wave.
+Diambil dari rencana optimasi Claude; landasan kode sebagian ada. **Belum** dipromote ke GAP resmi Skip Wave. Registry: **PROP-HJ-01** di [requirement.md](../requirement.md) §8.
 
 | # | Usulan | Efek yang diharapkan | Risiko |
 |---|--------|----------------------|--------|

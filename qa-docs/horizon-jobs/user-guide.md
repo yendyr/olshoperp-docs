@@ -7,7 +7,7 @@ last_updated: 2026-09-20
 owner: QA - Yemima
 status: pending
 source_docs: [knowledge-base.md, requirement.md, technical.md]
-source_version: "1.0"
+source_version: "1.1"
 ---
 
 # Horizon Jobs — User Guide

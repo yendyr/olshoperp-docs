@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.1
-last_updated: 2026-07-28
+version: 1.2
+last_updated: 2026-09-20
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.1
+source_version: 1.2
 owner: QA - Yemima
 status: draft
 ---
@@ -78,6 +78,8 @@ Pastikan:
 - Batch **Completed** → cek Wave Progress & angka Shipped.
 - Kalau ada masalah pengiriman setelah shipped → menu **Failed Ship**.
 - Batch gagal validasi → buka **Log Data**, perbaiki file, **upload ulang seluruh file**.
+- Progress hampir penuh tetapi status masih **Processing** lama (diam lebih dari 60 menit) → coba **Redispatch** agar antrian file lain bisa lanjut.
+- Setelah status Completed, sistem masih bisa sibuk di belakang layar (hitung stok / sync marketplace). Wajar — jangan langsung upload batch besar beruntun tanpa jeda.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -93,6 +95,7 @@ Pastikan:
 - File di Log Data hanya bisa didownload **24 jam**.
 - Tidak ada tombol “lanjutkan hanya yang sukses” — perbaikan = upload ulang.
 - Batch bisa menunggu lama jika ada batch lain yang masih jalan (termasuk dari company lain).
+- Satu batch macet di Processing bisa menahan **semua** file yang menunggu.
 
 ---
 
@@ -116,6 +119,8 @@ Pastikan:
 - **Semua gagal padahal cuma 1 salah** — memang begitu (all-or-nothing).
 - **Angka Processed masih naik** — validasi masih berjalan di background.
 - **Lama Pending** — tunggu batch aktif lain selesai.
+- **Progress penuh tapi status belum Completed** — setelah diam lebih dari 60 menit, coba **Redispatch**.
+- **Completed tapi sistem masih lambat** — pekerjaan hitung stok / sync masih mengantre; jeda dulu sebelum upload besar berikutnya.
 - **Order stok terlambat** — set Processing Order Date ke tanggal stok ready.
 - **Beda Skip Processing menu** — itu untuk order yang sudah di wave, dipilih dari list.
 - **Beda Unassign Wave** — itu hanya sampai Default Wave, tidak auto sampai shipped; tanggal processing-nya sama.
@@ -130,5 +135,6 @@ Pastikan:
 | Aturan & gap QA | [requirement.md](./requirement.md) |
 | Troubleshooting | [knowledge-base.md](./knowledge-base.md) |
 | API, job, lock, cron | [technical.md](./technical.md) |
+| Antrean Horizon (ops/DevOps) | [../horizon-jobs/](../horizon-jobs/) |
 
 **Related menus:** [Unassign Wave](../omni-unassign-wave/) · [Skip Processing](../omni-skip-processing/) · [Order Process](../omni-process-summary/) · Delivery Order · Failed Ship

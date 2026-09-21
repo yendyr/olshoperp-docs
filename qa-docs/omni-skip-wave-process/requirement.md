@@ -25,7 +25,7 @@ Related: [Unassign Wave](../omni-unassign-wave/requirement.md) · [Skip Processi
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.2 | 2026-09-20 | QA - Yemima | Rujuk Horizon jobs pipeline; status macet / Redispatch; DO inline |
+| 1.2 | 2026-09-20 | QA - Yemima | Rujuk Horizon jobs pipeline; status macet / Redispatch; DO inline; kurangi nama class di How It Works |
 | 1.1 | 2026-07-28 | QA - Yemima | TO-BE Processing Order Date per company (shared Unassign Wave); supersede GAP-SW-05 order+10m |
 | 1.0 | 2026-07-20 | QA - Yemima | Initial 5-file dari SoT v1.0 + verifikasi ImportJob/cron/gaps SW-01…05 |
 
@@ -162,31 +162,31 @@ Bukan form transaksi order — upload + setting tanggal processing.
 
 ### 6.1 Stage 1 — Import & validasi
 
-Upload → pre-check file (sync) → `SkipWaveProcessImportJob` (async): validasi baris (exist, duplikat, company, tx status, wave status) → tulis detail → all-or-nothing → lock SO → set `is_eligible`.
+Upload → pre-check file (sinkron di request) → **job import** (async): validasi baris (exist, duplikat, company, tx status, wave status) → tulis detail → all-or-nothing → kunci order → set eligible.
 
 Validasi bisnis Unassign Wave (bundle, stock, binding, COA, harga) jalan di **fase wave**, bukan stage 1 — GAP-SW-01.
 
-**All-or-nothing:** 1 baris gagal → seluruh batch `completed`, tidak dispatch stage 2.
+**All-or-nothing:** 1 baris gagal → seluruh batch `completed`, tidak lanjut stage 2.
 
 ### 6.2 Antrian batch
 
 Upload banyak file OK; eksekusi **1 batch aktif** (`pending`/`processing`) pada satu waktu. Berikutnya mulai setelah completed. Scope AS-IS **global** lintas company — GAP-SW-02.
 
-Cron `skip-wave:dispatch` tiap menit memicu `SkipWaveProcessJob` untuk `in_queue` + eligible. ImportJob **tidak** langsung dispatch wave.
+Scheduler tiap menit memicu **orkestrator wave** untuk batch `in_queue` + eligible. Job import **tidak** langsung memicu wave.
 
 ### 6.3 Stage 2 — Wave + Skip Processing
 
-1. Send to Default Wave (`SOApproveToWave`, log `WV-`)  
+1. Kirim ke Default Wave (**satu pekerjaan antrean per order**, log `WV-`)  
 2. Picking → Checking → Packing → Collecting  
-3. **Shipping / DO:** create + approve Delivery Order **inline** per SO di tahap skip shipping (bukan job Create/Approve DO terpisah) → Shipped (`SP-` logs)
+3. **Shipping / DO:** buat + approve Delivery Order **inline** per order di tahap shipping (bukan fase job create/approve DO terpisah yang aktif) → Shipped (log `SP-`)
 
-Reuse job/log Unassign Wave + Skip Processing. Waves Management **dilewati** (langsung processing setelah Default Wave).
+Reuse jalur Unassign Wave + Skip Processing. Waves Management **dilewati** (langsung processing setelah Default Wave).
 
-Detail fan-out Horizon (primary ≈ 1.102 job / 1.000 SO, job turunan, dead-code DO jobs): [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/pipelines/skip-wave-process.md).
+Detail fan-out Horizon (primary ≈ 1.102 job / 1.000 order, job turunan, path DO lama tidak aktif): [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/pipelines/skip-wave-process.md).
 
 ### 6.3a Status macet & Redispatch
 
-Jika progress Wave / Skip Processing sudah hampir penuh tetapi `skip_wave_status` tetap `processing` lama, gerbang (§6.2) menahan seluruh antrean. AS-IS: tombol **Redispatch** tersedia bila batch diam lebih dari **60 menit** (lanjut fase yang belum selesai). Penutup normal bergantung callback batch queue — lihat pipeline Horizon § Failure / Observasi.
+Jika progress Wave / Skip Processing sudah hampir penuh tetapi status batch tetap `processing` lama, gerbang (§6.2) menahan seluruh antrean. AS-IS: tombol **Redispatch** tersedia bila batch diam lebih dari **60 menit** (lanjut fase yang belum selesai). Penutup normal bergantung callback antrean grup — lihat pipeline Horizon § Failure / Observasi.
 
 ### 6.4 Trx date transfer / tanggal processing
 
@@ -284,6 +284,6 @@ flowchart TB
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.2 | 2026-09-20 | Link Horizon jobs; DO inline; Redispatch / status macet |
+| 1.2 | 2026-09-20 | Link Horizon jobs; DO inline; Redispatch / status macet; How It Works tanpa nama class |
 | 1.1 | 2026-07-28 | Processing Order Date; GAP-SW-05 superseded |
 | 1.0 | 2026-07-20 | Dari SoT v1.0 ke qa-docs-standard |
