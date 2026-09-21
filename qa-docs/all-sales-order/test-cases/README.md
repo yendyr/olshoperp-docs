@@ -35,16 +35,16 @@ Prefix folder: `ASO`.
 | TC-ASO-025 | [Multi-bundle dalam 1 order dengan kombinasi Price = 0 dan Price > 0](./TC-ASO-025.md) | **passed** | [ETM-15737](https://erpintegration.atlassian.net/browse/ETM-15737) | OlshopERP | ✅ | 2026-09-03 |
 | TC-ASO-026 | [Verifikasi regresi guard status order (Approved / Void) pada SKU Bundle berharga valid](./TC-ASO-026.md) | **passed** | [ETM-15738](https://erpintegration.atlassian.net/browse/ETM-15738) | Jeiniffer | ❌ | 2026-09-03 |
 | TC-ASO-027 | [Lifecycle Booking Order: Tertahan saat Price = 0 dan Berhasil setelah Convert (Price > 0)](./TC-ASO-027.md) | **passed** | [ETM-15739](https://erpintegration.atlassian.net/browse/ETM-15739) | OlshopERP | ❌ | 2026-09-03 |
-| TC-ASO-028 | [Penambahan baris produk baru (Add Product) pada SO Platform status DRAFT/OPEN](./TC-ASO-028.md) | draft | [ETM-15750](https://erpintegration.atlassian.net/browse/ETM-15750) | Jeiniffer | ❌ | 2026-09-03 |
-| TC-ASO-029 | [Penggantian produk sistem (Replace SKU) pada baris item platform existing](./TC-ASO-029.md) | draft | [ETM-15751](https://erpintegration.atlassian.net/browse/ETM-15751) | OlshopERP | ❌ | 2026-09-03 |
-| TC-ASO-030 | [Edit Unit Price, Discount per item, dan VAT pada baris detail SO Platform](./TC-ASO-030.md) | draft | [ETM-15752](https://erpintegration.atlassian.net/browse/ETM-15752) | Jeiniffer | ❌ | 2026-09-03 |
-| TC-ASO-031 | [Validasi input Quantity bernilai 0 atau negatif (Qty ≤ 0)](./TC-ASO-031.md) | draft | [ETM-15753](https://erpintegration.atlassian.net/browse/ETM-15753) | OlshopERP | ❌ | 2026-09-03 |
-| TC-ASO-032 | [Batas maksimum 100 baris item detail pada dokumen SO Platform via Add Product](./TC-ASO-032.md) | draft | [ETM-15754](https://erpintegration.atlassian.net/browse/ETM-15754) | Jeiniffer | ❌ | 2026-09-03 |
-| TC-ASO-033 | [Ekstraksi SKU Bundle saat dokumen SO Platform sudah mencapai kuota 100 baris detail](./TC-ASO-033.md) | draft | [ETM-15755](https://erpintegration.atlassian.net/browse/ETM-15755) | OlshopERP | ❌ | 2026-09-03 |
-| TC-ASO-034 | [Ketiadaan tombol Delete Row di seluruh permukaan UI (Aturan No Delete)](./TC-ASO-034.md) | draft | [ETM-15756](https://erpintegration.atlassian.net/browse/ETM-15756) | Jeiniffer | ❌ | 2026-09-03 |
-| TC-ASO-035 | [Proteksi Sync Lock Pasca Edit User terhadap pembaruan harga platform](./TC-ASO-035.md) | draft | [ETM-15757](https://erpintegration.atlassian.net/browse/ETM-15757) | OlshopERP | ❌ | 2026-09-03 |
-| TC-ASO-036 | [Pemicuan prevent_auto_approve dan kelengkapan Audit Trail pasca edit detail](./TC-ASO-036.md) | draft | [ETM-15758](https://erpintegration.atlassian.net/browse/ETM-15758) | Jeiniffer | ❌ | 2026-09-03 |
-| TC-ASO-037 | [Read-Only Guard pada Dokumen Berstatus Approved (UI dan Button Save Hilang)](./TC-ASO-037.md) | draft | [ETM-15759](https://erpintegration.atlassian.net/browse/ETM-15759) | OlshopERP | ❌ | 2026-09-03 |
+| TC-ASO-028-15750 | [Penambahan baris produk baru (Add Product) pada SO Platform status DRAFT/OPEN](./TC-ASO-028-15750.md) | draft | [ETM-15750](https://erpintegration.atlassian.net/browse/ETM-15750) | Jeiniffer | ❌ | 2026-09-03 |
+| TC-ASO-029-15751 | [Penggantian produk sistem (Replace SKU) pada baris item platform existing](./TC-ASO-029-15751.md) | draft | [ETM-15751](https://erpintegration.atlassian.net/browse/ETM-15751) | OlshopERP | ❌ | 2026-09-03 |
+| TC-ASO-030-15752 | [Edit Unit Price, Discount per item, dan VAT pada baris detail SO Platform](./TC-ASO-030-15752.md) | draft | [ETM-15752](https://erpintegration.atlassian.net/browse/ETM-15752) | Jeiniffer | ❌ | 2026-09-03 |
+| TC-ASO-031-15753 | [Validasi input Quantity bernilai 0 atau negatif (Qty ≤ 0)](./TC-ASO-031-15753.md) | draft | [ETM-15753](https://erpintegration.atlassian.net/browse/ETM-15753) | OlshopERP | ❌ | 2026-09-03 |
+| TC-ASO-032-15754 | [Batas maksimum 100 baris item detail pada dokumen SO Platform via Add Product](./TC-ASO-032-15754.md) | draft | [ETM-15754](https://erpintegration.atlassian.net/browse/ETM-15754) | Jeiniffer | ❌ | 2026-09-03 |
+| TC-ASO-033-15755 | [Ekstraksi SKU Bundle saat dokumen SO Platform sudah mencapai kuota 100 baris detail](./TC-ASO-033-15755.md) | draft | [ETM-15755](https://erpintegration.atlassian.net/browse/ETM-15755) | OlshopERP | ❌ | 2026-09-03 |
+| TC-ASO-034-15756 | [Ketiadaan tombol Delete Row di seluruh permukaan UI (Aturan No Delete)](./TC-ASO-034-15756.md) | draft | [ETM-15756](https://erpintegration.atlassian.net/browse/ETM-15756) | Jeiniffer | ❌ | 2026-09-03 |
+| TC-ASO-035-15757 | [Proteksi Sync Lock Pasca Edit User terhadap pembaruan harga platform](./TC-ASO-035-15757.md) | draft | [ETM-15757](https://erpintegration.atlassian.net/browse/ETM-15757) | OlshopERP | ❌ | 2026-09-03 |
+| TC-ASO-036-15758 | [Pemicuan prevent_auto_approve dan kelengkapan Audit Trail pasca edit detail](./TC-ASO-036-15758.md) | draft | [ETM-15758](https://erpintegration.atlassian.net/browse/ETM-15758) | Jeiniffer | ❌ | 2026-09-03 |
+| TC-ASO-037-15759 | [Read-Only Guard pada Dokumen Berstatus Approved (UI dan Button Save Hilang)](./TC-ASO-037-15759.md) | draft | [ETM-15759](https://erpintegration.atlassian.net/browse/ETM-15759) | OlshopERP | ❌ | 2026-09-03 |
 | PENDING-20260907110300 | [Advanced Filter All Sales Order — Kombinasi >2 Parameter Filter (Trx Date, Booking Number, Platform Status)](./TC-ASO-DRAFT-20260907110300.md) | draft | [ETM-15819](https://erpintegration.atlassian.net/browse/ETM-15819) | QA - Yemima | ❌ | 2026-09-08 |
 | PENDING-20260907141801 | [Advanced Filter All Sales Order — Kombinasi Filter Pesanan Batal Bernomor Outbound (Risiko Rugi Kirim)](./TC-ASO-DRAFT-20260907141801.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
 | PENDING-20260907141802 | [Advanced Filter All Sales Order — Audit Pesanan COD Nominal Besar Berstatus Processed](./TC-ASO-DRAFT-20260907141802.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
@@ -54,7 +54,7 @@ Prefix folder: `ASO`.
 `TC-ASO-004` s/d `TC-ASO-010` — Dibuat untuk pengujian fitur Pill Filter `Net Sales < COGS` pada card origin [ETM-15446](https://erpintegration.atlassian.net/browse/ETM-15446).  
 `TC-ASO-011` s/d `TC-ASO-015` — Dibuat untuk pengujian fitur Extract This Bundle pada card origin [ETM-15605](https://erpintegration.atlassian.net/browse/ETM-15605).  
 `TC-ASO-016` s/d `TC-ASO-021` — Dibuat untuk pengujian fitur Extract This Bundle pada card origin [ETM-15637](https://erpintegration.atlassian.net/browse/ETM-15637).  
-`TC-ASO-028` s/d `TC-ASO-037` — Dibuat untuk pengujian Edit detail SO platform sebelum approve pada card origin [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748).  
+`TC-ASO-028-15750` s/d `TC-ASO-037-15759` — Dibuat untuk pengujian Edit detail SO platform sebelum approve pada card origin [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748).  
 `PENDING-20260907110300` — Dibuat untuk pengujian Advanced Filter >2 parameter pada card origin [ETM-15819](https://erpintegration.atlassian.net/browse/ETM-15819).
 
 ### ETM-15821 — [All Sales Order] Order unit price under benchmark cogs jadikan 1 di Phills Failed Process
@@ -75,4 +75,17 @@ Prefix folder: `ASO`.
 | `TC-ASO-ADVF-003` | [Pengawasan Piutang Berisiko: Pesanan COD Nominal Besar yang Sedang Berjalan](./TC-ASO-ADVF-DRAFT-20260916131103.md) | [`TC-ASO-ADVF-DRAFT-20260916131103.md`](./TC-ASO-ADVF-DRAFT-20260916131103.md) | DRAFT 🟡 | 2026-09-16 |
 | `TC-ASO-ADVF-004` | [Audit Kepatuhan Faktur Pajak: Order General B2B > 1 Juta Tanpa PPN/VAT](./TC-ASO-ADVF-DRAFT-20260916131104.md) | [`TC-ASO-ADVF-DRAFT-20260916131104.md`](./TC-ASO-ADVF-DRAFT-20260916131104.md) | DRAFT 🟡 | 2026-09-16 |
 | `TC-ASO-ADVF-005` | [Proteksi Margin: Pesanan Terindikasi Jual Rugi (Below Benchmark COGS) yang Belum Di-Invoice](./TC-ASO-ADVF-DRAFT-20260916131105.md) | [`TC-ASO-ADVF-DRAFT-20260916131105.md`](./TC-ASO-ADVF-DRAFT-20260916131105.md) | DRAFT 🟡 | 2026-09-16 |
+
+### ETM-15969 — [All Sales Order] Pemisahan Filter Code dan Penambahan Filter Date DO, Outbound, Sales Invoice
+
+| TC Code | Judul Test Case | Tipe | File | Status | Last Updated |
+|---|---|:---:|---|:---:|:---:|
+| `TC-ASO-15969-01` | [Advanced Filter Multi-Condition — Rekonsiliasi SI Date, Filter Customer Multi-Value & Net Sales](./TC-ASO-15969-01.md) | `happy` | [`TC-ASO-15969-01.md`](./TC-ASO-15969-01.md) | PASSED 🟢 | 2026-09-21 |
+| `TC-ASO-15969-02` | [Advanced Filter Multi-Condition — Pelacakan DO Date Periode Berjalan & Spesifik Trx Code (SO-5UGTV)](./TC-ASO-15969-02.md) | `happy` | [`TC-ASO-15969-02.md`](./TC-ASO-15969-02.md) | PASSED 🟢 | 2026-09-21 |
+| `TC-ASO-15969-03` | [Advanced Filter Multi-Condition — Audit DO Date Periode Bulan Lalu & Processing Status Collected](./TC-ASO-15969-03.md) | `happy` | [`TC-ASO-15969-03.md`](./TC-ASO-15969-03.md) | PASSED 🟢 | 2026-09-21 |
+| `TC-ASO-15969-04` | [Advanced Filter Multi-Condition — Pencarian Presisi Pasangan Outbound Code & Outbound Date Dokumen yang Sama](./TC-ASO-15969-04.md) | `happy` | [`TC-ASO-15969-04.md`](./TC-ASO-15969-04.md) | PASSED 🟢 | 2026-09-21 |
+| `TC-ASO-15969-05` | [Advanced Filter Multi-Condition — Audit Pesanan Unbilled Periode Juli (Outbound Date Between & Sales Invoice Code is Empty)](./TC-ASO-15969-05.md) | `happy` | [`TC-ASO-15969-05.md`](./TC-ASO-15969-05.md) | PASSED 🟢 | 2026-09-21 |
+
+
+
 
