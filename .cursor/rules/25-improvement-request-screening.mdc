@@ -1,0 +1,68 @@
+---
+description: Screening card Improvement ber-Request ID — auto-lengkapi description (simple) atau notify Telegram (butuh konfirmasi)
+alwaysApply: true
+---
+
+# Screening & Auto-Complete Card Improvement (Request ID Terisi)
+
+Cross-repo: ringkasan setara di `olshoperp/.cursor/rules/24-improvement-request-screening.mdc`. Ubah salah satu → sync keduanya di commit yang sama.
+
+Gaya bahasa (description card & notifikasi) **wajib** ikut `24-plain-language-team-comms.mdc`.
+
+## Kapan rule ini berlaku
+
+Card Jira ETM issue type **Improvement** yang `customfield_10495` (Request ID) terisi (bukan kosong / `"none"`) — artinya card ini lahir dari request end user, bukan inisiatif internal tim.
+
+**Khusus Improvement** — Change Requirement, Story, Task, Error/Bug **tidak** masuk rule ini, tetap full manual review QA lead.
+
+## Klasifikasi: Simple vs Butuh Konfirmasi
+
+| Kategori | Syarat |
+|---|---|
+| **Simple** → bot auto-lengkapi description | **Semua** harus terpenuhi: 1) Menu spesifik teridentifikasi & ada di `qa-docs/_meta/manifest.yaml`; 2) `requirement.md` menu itu status `review`/`approved`; 3) Permintaan TIDAK bertentangan dengan requirement/business rule yang sudah terdokumentasi; 4) TIDAK ada indikasi dampak ke menu lain; 5) Acceptance Criteria bisa dirumuskan konkret & terukur langsung dari requirement yang ada |
+| **Butuh konfirmasi** → notify saja, description tidak disentuh | **Salah satu** cukup: menu belum ada di manifest / requirement belum ada / masih `draft`; permintaan bertentangan dengan requirement existing; ada indikasi dampak cross-menu; ambigu / butuh keputusan bisnis baru; atau kelihatan duplikat/overlap dengan Improvement/Change Requirement lain yang masih open |
+
+Ragu antara dua kategori → default **Butuh konfirmasi**. Salah kirim notifikasi jauh lebih murah daripada salah nulis description final.
+
+## Idempotency — jangan proses ulang card yang sudah di-auto-complete
+
+Sebelum jalan, cek dulu apakah description udah punya section **"Request Asli (dari User)"** atau footer penanda auto-complete (lihat § Jalur Simple langkah 3). Kalau sudah ada → **skip**, jangan diproses ulang meski trigger fire lagi (mis. field lain di card berubah).
+
+## Jalur Simple — Auto-lengkapi Description
+
+1. Identifikasi teks asli permintaan end user yang sudah ada di description (biasanya belum mengikuti section baku template Improvement — bisa paragraf bebas, bisa di bawah heading lain). Teks itu **WAJIB dipertahankan verbatim** — taruh di section tersendiri dengan heading **"Request Asli (dari User)"** kalau belum ada headingnya. **Dilarang dihapus, ditimpa, atau diparafrase.**
+2. Lengkapi section lain sesuai template `12-jira-card-format.mdc` Tipe 2 (Improvement): Environment, Background, Example Data, Current Behavior (AS-IS), Expected Improvement (TO-BE), Acceptance Criteria, Additional Context — isi berdasarkan `requirement.md` / `knowledge-base.md` menu terkait, **bukan** asumsi umum ERP.
+3. Tambahkan footer penanda di paling bawah description:
+
+   ```
+   ---
+   *Draf awal disusun otomatis berdasarkan requirement.md — tolong dicek ulang sebelum di-assign ke dev.*
+   ```
+
+4. Bot **tidak** mengubah status, assignee, atau story points — cuma description.
+5. Update card Jira via API (edit description), format Markdown sesuai `12-jira-card-format.mdc`.
+
+## Jalur Butuh Konfirmasi — Notify Telegram
+
+1. Bot **tidak** menyentuh description card sama sekali.
+2. Kirim pesan ke Telegram topic `https://t.me/c/1931573603/6059` (config: `tests/tools/telegram-jira-mapping.json`), **mention** `yemimatifani` (accountId `70121:4ae91cca-e288-40ee-aed0-32b6050a1bc1`).
+3. Isi pesan (ikuti `24-plain-language-team-comms.mdc`): sebutkan card-nya, dan poin-poin **spesifik** yang perlu diputuskan — bukan cuma "butuh review", tapi pertanyaan konkret yang bisa langsung dijawab singkat.
+
+> [!TIP]
+> Kalau memungkinkan, bot boleh menyertakan draf rekomendasi jawaban di pesan notifikasi (mis. "kemungkinan X karena requirement Y bilang Z — bener gak?") biar QA lead tinggal konfirmasi/koreksi, bukan mulai dari kosong. Bukan wajib, tapi disarankan — sesuai semangat automasi ini: kurangi beban mikir dari nol, bukan cuma mindahin notifikasi.
+
+## Larangan
+
+- Jangan pernah hapus/timpa/parafrase section request asli dari end user.
+- Jangan auto-lengkapi kalau ada satu saja syarat Simple yang tidak terpenuhi — pindah ke jalur notify.
+- Jangan ubah status/assignee/story points di jalur mana pun — itu tetap keputusan manusia.
+- Jangan tulis Acceptance Criteria atau Expected Improvement dari asumsi umum ERP — harus dari `requirement.md`/`knowledge-base.md` yang ada.
+- Jangan kirim notifikasi tanpa poin konkret — "butuh review" doang bukan notifikasi yang berguna.
+- Jangan proses ulang card yang sudah punya penanda auto-complete (lihat § Idempotency).
+
+## Relasi rule lain
+
+- `12-jira-card-format.mdc` — struktur & template Improvement.
+- `13-sot-generator.mdc` (olshoperp) — sumber requirement terverifikasi codebase kalau perlu Prompt B.
+- `24-plain-language-team-comms.mdc` — gaya bahasa description & notifikasi.
+- `23-tc-screening-notify.mdc` — pola notify-only yang sama, beda konteks (Test Case vs Improvement).
