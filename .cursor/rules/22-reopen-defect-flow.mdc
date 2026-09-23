@@ -1,0 +1,78 @@
+---
+description: Alur Reopen & Defect Handling card Jira ETM saat verifikasi QA Review tidak sesuai Expected Result / Acceptance Criteria
+alwaysApply: true
+---
+
+# Reopen & Defect Handling Flow (Jira ETM)
+
+Cross-repo: ringkasan setara di `olshoperp/.cursor/rules/21-reopen-defect-flow.mdc`. Ubah salah satu → sync keduanya di commit yang sama.
+
+**Site Jira:** hanya ETM (`erpintegration.atlassian.net`, `cloudId` `44cc9820-3372-4c12-884c-698b1397173c`) — lihat `16-card-tc-queue.mdc` § Site Jira.
+
+## Kapan rule ini berlaku
+
+Card Jira ETM berstatus **QA Review** yang hasil verifikasinya menyatakan **tidak sesuai** Expected Result / Acceptance Criteria di description card:
+
+- **Scope sederhana** (1 menu, Acceptance Criteria tidak menyebut dampak ke menu lain) → boleh live check (Playwright crawl / query DB read-only) dulu, baru simpulkan match/mismatch.
+- **Scope kompleks** (cross-menu / E2E panjang) → **jangan** live check otomatis — rawan hasil tidak valid dan boros token. Lempar ke overview manual QA lead; rule ini baru jalan setelah QA lead mengonfirmasi mismatch-nya.
+
+## Dua jalur berdasarkan tipe issue
+
+### Jalur 1 — `Error` / `Bug`
+
+Scope selalu tunggal (1 acceptance criteria) — **tidak** melahirkan Test Case card, tidak berpotensi melebar.
+
+1. Transisi status card origin → **Re-OPEN**.
+2. **Clone** card origin (fitur Clone Jira; kalau tidak ada endpoint clone via API/MCP, create manual + copy field satu-satu — lihat § Prasyarat teknis).
+3. Judul clone wajib prefix: `RE-OPEN [Nama Menu] - {desc asli}` (format dasar tetap ikut `12-jira-card-format.mdc`).
+4. Copy persis dari origin: `customfield_10495` (Request ID), `customfield_10429` (Menu Name), `customfield_10043` (Story Points), `labels`.
+5. **Assignee clone = assignee card origin** — jangan default/acak.
+6. Card clone inilah target retest berikutnya (bukan card origin yang sudah Re-OPEN).
+
+### Jalur 2 — `Improvement` / `Change Requirement` / `Story` / `Task`
+
+Tipe ini **wajib** melahirkan Test Case card dulu (lihat `16-card-tc-queue.mdc`) — tidak diverifikasi langsung tanpa TC.
+
+1. Transisi status card origin → **Re-OPEN** — **TANPA clone**.
+2. Buat card **Error/Bug baru** untuk defect yang ditemukan, format penuh sesuai `12-jira-card-format.mdc` Tipe 1 (Summary, Environment, Precondition Data, Steps to Reproduce, Expected Result, Actual Result, Additional Context lengkap — bukan comment singkat).
+3. Card Bug baru **relates** ke: (a) card origin Improvement/Change Requirement/Story/Task, dan (b) card Test Case yang menemukan defect (kalau defect ditemukan lewat TC — lihat § Test Case di bawah).
+4. **Assignee card Bug baru = assignee card origin** — jangan assignee/tester TC.
+
+## Test Case card — tidak punya status Re-OPEN
+
+Test Case **tidak pernah** ditransisikan ke Re-OPEN. Status akhirnya tetap **Done** — hasil dicatat di `customfield_10202` (Test Result). Urutan pengisian sebelum Done: **wajib** ikut `17-jira-testcase-status-transition.mdc` (repo `olshoperp`) — Actual Result → Test Result → baru Done.
+
+- **Test Result = Failed** (atau Blocked) → **wajib** terbit card Bug/Error baru:
+  - Relates ke card Test Case itu sendiri **dan** ke `origin_jira` (card Improvement/Change Requirement/Story/Task yang melahirkan TC ini).
+  - Assignee = assignee card origin (bukan tester/QA yang menjalankan TC).
+  - Origin Improvement/Change Requirement/Story/Task otomatis masuk **Jalur 2** di atas (reopen).
+- **Test Result = Passed** → tidak ada aksi lanjutan.
+
+> [!NOTE]
+> Mismatch yang ketahuan **sebelum** Test Result difinalkan (screening kelengkapan field / kualitas Actual Result) **bukan** bagian rule ini — itu notifikasi ke tim QA untuk revisi/retest, belum tentu defect sistem. Rule ini berlaku setelah Test Result = Failed benar-benar ditetapkan.
+
+## Larangan
+
+- Jangan reopen card Test Case — field statusnya tidak punya opsi itu.
+- Jangan clone card Improvement/Change Requirement/Story/Task — clone hanya untuk Jalur 1.
+- Jangan buat card Bug baru tanpa relates ke origin + (kalau relevan) TC penemunya.
+- Jangan set assignee default/acak — selalu trace assignee dari card origin.
+- Jangan tulis Actual Result / description card Bug baru dari asumsi — dasarnya wajib bukti verifikasi nyata (live check atau catatan QA lead).
+- Jangan live-check otomatis untuk scope cross-menu/E2E panjang — lempar ke overview manual dulu.
+
+## Prasyarat teknis — WAJIB diverifikasi sebelum automasi dijalankan penuh
+
+> [!CAUTION]
+> Dua hal ini belum diverifikasi langsung ke Jira ETM (butuh akses admin/API):
+> 1. Transisi status **Re-OPEN** benar-benar tersedia di workflow untuk issue type `Error`, `Improvement`, `Change Requirement`, `Story`, `Task` — cek nama transition persis (case-sensitive) sebelum bot memanggil API.
+> 2. Fitur **Clone** punya endpoint API/MCP resmi, atau harus direplikasi manual (create issue baru + copy field). Kalau manual, urutan create harus konsisten supaya tidak ada field yang lolos.
+>
+> Kalau transition belum ada di workflow, minta Jira admin tambahkan dulu — jangan diakali dengan status lain yang mirip.
+
+## Relasi rule lain
+
+- `12-jira-card-format.mdc` — format & custom field wajib tiap tipe card (dipakai saat create card Bug baru / clone).
+- `16-card-tc-queue.mdc` — antrian Test Case per card (`test-queue.yaml`), kewajiban TC untuk Improvement/Change Requirement/Story/Task.
+- `18-sync-jira-done.mdc` — sync hasil Done dari Jira ke file TC.
+- `13-test-case-format.mdc` — `origin_jira`, evidence tier `last_execution`.
+- `olshoperp/.cursor/rules/17-jira-testcase-status-transition.mdc` — urutan isi Actual Result → Test Result → Done.
