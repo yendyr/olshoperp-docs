@@ -1,0 +1,46 @@
+---
+description: Gaya bahasa non-teknis WAJIB untuk description card Jira, judul card, comment, dan notifikasi Telegram ke tim QA
+alwaysApply: true
+---
+
+# Gaya Bahasa Team-Facing (Jira & Telegram) — WAJIB Non-Teknis
+
+**Twin file (harus identik):** `olshoperp/.cursor/rules/23-plain-language-team-comms.mdc`. Ubah salah satu → sync keduanya di commit yang sama.
+
+Berlaku untuk **semua konten yang dibaca tim QA/operasional** (bukan developer): description card Jira (Error/Bug/Improvement/Change Requirement/Test Case), judul card, comment card, dan pesan notifikasi Telegram — termasuk hasil `22-reopen-defect-flow.mdc` dan `23-tc-screening-notify.mdc`.
+
+## Kenapa
+
+Istilah teknis (nama custom field mentah, nama variable/kode, jargon automation) bikin tim QA bingung dan harus nanya ulang ke lead — itu justru nambah kerjaan, padahal tujuan automasi ini mempercepat.
+
+## Wajib
+
+- Bahasa Indonesia sehari-hari, kalimat pendek, langsung ke poin — bukan gaya dokumen formal/legal.
+- Sebutkan **apa yang perlu dilakukan orangnya**, bukan mekanisme internal bot (jangan sebut `customfield_10203`, `webhook`, `automation rule`, `JQL`, nama script, dll ke tim QA).
+- Istilah UI/status Jira boleh dipakai kalau memang istilah yang mereka lihat sehari-hari di Jira (`Actual Result`, `Test Result`, `QA Review`, `Done`, `Re-OPEN`) — bukan key field mentah.
+- Nada ramah, kayak rekan kerja ngobrol biasa — bukan robot yang baca log error.
+
+## Contoh
+
+❌ Salah (terlalu teknis):
+> "Validasi gagal: customfield_10203 kosong, automation rule menolak transisi issue_updated."
+
+✅ Benar:
+> "Actual Result-nya masih kosong nih, tolong dilengkapi dulu ya sebelum lanjut."
+
+❌ Salah (istilah internal bocor keluar):
+> "origin_jira TC ini nggak match sama last_execution.jira, tolong sync ulang."
+
+✅ Benar:
+> "Test case ini kelihatannya belum ke-update hasil terbarunya, tolong dicek & di-update ya."
+
+## Larangan
+
+- Jangan sebut nama field/kode/endpoint teknis ke tim QA.
+- Jangan pakai istilah agent-internal (`origin_jira`, `last_execution`, `tc:lint`, `test-queue.yaml`) di komunikasi keluar — itu cuma buat dokumentasi internal repo, bukan buat dibaca tim QA.
+- Jangan kaku/berlebihan formal, tapi tetap sopan dan jelas — bukan basa-basi panjang juga.
+
+## Relasi rule lain
+
+- `22-reopen-defect-flow.mdc`, `23-tc-screening-notify.mdc` — semua pesan Telegram & description card baru yang dibuat rule ini wajib ikut gaya di atas.
+- `12-jira-card-format.mdc` — struktur/section card tetap wajib mengikuti rule itu; rule ini cuma soal **gaya bahasa** isi tiap section, bukan strukturnya.

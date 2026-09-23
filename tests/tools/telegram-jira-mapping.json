@@ -1,0 +1,21 @@
+{
+  "telegram_topic": {
+    "chat_id": "-1001931573603",
+    "thread_id": 6059,
+    "url": "https://t.me/c/1931573603/6059",
+    "note": "chat_id diturunkan dari format standar t.me/c/{internal_id} -> -100{internal_id}. Verifikasi ulang via getChat bot Telegram sebelum dipakai production."
+  },
+  "mapping": {
+    "alvinn_ardi": "63fdf7d44d5e4b44e231530b",
+    "dlo_meeree": "600e88f0332cbe0070b39f09",
+    "Heri_Efendi": "712020:a38f037e-7f59-425c-b543-2252fc385f3a",
+    "egadirga": "6091127d4424570071081056",
+    "faisallbhr": "712020:17f2bde2-783f-4861-92fb-024c8cfb442a",
+    "dapirdaa": "630c4b7f9796033b256b906d",
+    "Jeiniiii": "625e6030fd06270069bf6920",
+    "rendezvuous": "712020:a4e6703a-050a-4a64-aa35-9995bf67e080",
+    "qudumawang": "712020:0c17e089-3209-4e99-ae60-aa13d745cb57",
+    "yemimatifani": "70121:4ae91cca-e288-40ee-aed0-32b6050a1bc1",
+    "mellyanat": "712020:975198ce-42b0-4cc4-a0be-b65781c21f0b"
+  }
+}

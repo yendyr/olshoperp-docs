@@ -1,0 +1,87 @@
+---
+description: Screening otomatis kelengkapan & kualitas Actual Result Test Case saat Done — notify-only via Telegram
+alwaysApply: true
+---
+
+# Screening Kelengkapan & Kualitas Test Case (Notify-Only)
+
+Cross-repo: ringkasan setara di `olshoperp/.cursor/rules/22-tc-screening-notify.mdc`. Ubah salah satu → sync keduanya di commit yang sama.
+
+Gaya bahasa notifikasi & comment yang dihasilkan rule ini **wajib** ikut `24-plain-language-team-comms.mdc` — tim QA bukan developer, jangan pakai istilah teknis.
+
+## Kapan rule ini berlaku
+
+Card Jira ETM issue type **Test Case** yang statusnya **Done** dan field `customfield_10202` (Test Result) atau `customfield_10203` (Actual Result) baru saja berubah — baik transisi pertama ke Done, maupun revisi field itu setelah card sudah Done sebelumnya.
+
+**Bukan** bagian dari `22-reopen-defect-flow.mdc` — rule ini jalan duluan, notify-only, tidak eksekusi apa pun ke Jira (tidak reopen, tidak create card baru). Alur reopen/defect baru relevan setelah Test Result = Failed benar-benar final dan diverifikasi manusia (lihat `22-reopen-defect-flow.mdc` § Test Case card).
+
+## Check 1 — Kelengkapan Dasar (deterministic, cek isi/kosong saja)
+
+| Sumber | Field | Syarat |
+|---|---|---|
+| Jira card | `customfield_10429` (Menu Name) | Terisi |
+| Jira card | `customfield_10495` (Request ID) | Terisi (atau `"none"`) |
+| Jira card | assignee | Terisi |
+| Jira card | `customfield_10203` (Actual Result) | Terisi, bukan kosong/placeholder |
+| Jira card | `customfield_10202` (Test Result) | Salah satu: Passed / Failed / Blocked |
+| Jira card | company & identitas tester | Disebut di Actual Result atau comment (`17-jira-testcase-status-transition.mdc`, repo `olshoperp`) |
+| File TC (`qa-docs/{menu-slug}/test-cases/TC-*.md`) kalau ada rujukannya | `steps`, `preconditions`, `expected_result` | Nggak kosong |
+
+Kalau ada yang kosong → langsung masuk daftar temuan, tidak perlu AI judgment.
+
+## Check 2 — Kualitas Actual Result (butuh AI baca & bandingkan)
+
+Bandingkan isi Actual Result dengan Expected Result / Acceptance Criteria di description card. Tandai sebagai temuan kalau:
+
+1. **Generik tanpa bukti** — cuma "OK", "berhasil", "sesuai" tanpa detail konkret (nomor dokumen, SKU, company, URL, atau hasil yang benar-benar diamati).
+2. **Nggak nyambung ke skenario card** — isinya kelihatan hasil test case lain / copy-paste, tidak menjawab Acceptance Criteria yang diminta.
+3. **Kontradiksi sama Test Result** — Test Result = Failed tapi Actual Result cerita semua sukses (atau sebaliknya). Prioritas tertinggi — paling sering nunjukin human error input, bukan bug sistem.
+
+> [!CAUTION]
+> Check 2 hanya menandai untuk **diverifikasi manusia**, bukan memutuskan sendiri Test Result-nya salah. Jangan sampai bot ini jatuh ke masalah yang sama seperti keluhan awal: AI menilai AI tanpa bukti nyata. Temuan Check 2 selalu berbunyi "tolong dicek ulang", bukan "ini salah".
+
+## Trigger teknis
+
+Jira Automation Rule (project ETM) — event **issue updated**, filter `issuetype = Test Case` + `status = Done` + field yang berubah termasuk `customfield_10202` atau `customfield_10203` → panggil webhook bot.
+
+## Output — Notify-only, tidak pernah eksekusi ke Jira
+
+- **Ada temuan** → kirim pesan ke Telegram topic `https://t.me/c/1931573603/6059` (`tests/tools/telegram-jira-mapping.json` § `telegram_topic`), **mention** tester yang bersangkutan (lookup di bawah), isi pesan mengikuti `24-plain-language-team-comms.mdc` — sebutkan apa yang kurang/perlu dibenerin, minta revisi/retest.
+- **Bersih (tidak ada temuan)** → diam, jangan kirim notifikasi apa pun. Hindari noise.
+- Bot **tidak** mengubah status Jira, **tidak** membuat card baru, **tidak** menulis ulang Actual Result — itu tetap tugas manusia (tim QA yang direvisi).
+
+## Mapping Telegram username ↔ Jira accountId (WAJIB dipakai untuk mention)
+
+Config lengkap (machine-readable): `tests/tools/telegram-jira-mapping.json`
+
+| Telegram username | Jira accountId |
+|---|---|
+| `alvinn_ardi` | `63fdf7d44d5e4b44e231530b` |
+| `dlo_meeree` | `600e88f0332cbe0070b39f09` |
+| `Heri_Efendi` | `712020:a38f037e-7f59-425c-b543-2252fc385f3a` |
+| `egadirga` | `6091127d4424570071081056` |
+| `faisallbhr` | `712020:17f2bde2-783f-4861-92fb-024c8cfb442a` |
+| `dapirdaa` | `630c4b7f9796033b256b906d` |
+| `Jeiniiii` | `625e6030fd06270069bf6920` |
+| `rendezvuous` | `712020:a4e6703a-050a-4a64-aa35-9995bf67e080` |
+| `qudumawang` | `712020:0c17e089-3209-4e99-ae60-aa13d745cb57` |
+| `yemimatifani` | `70121:4ae91cca-e288-40ee-aed0-32b6050a1bc1` |
+| `mellyanat` | `712020:975198ce-42b0-4cc4-a0be-b65781c21f0b` |
+
+Lookup: ambil identitas tester dari `customfield_10201` (Test Execute By) atau assignee card → cocokkan `accountId` ke tabel ini → mention username Telegram yang match.
+
+**Kalau accountId belum ada di tabel** (anggota baru belum di-map): tetap kirim notifikasi ke topic tanpa mention personal, dan tambahkan catatan di pesan "belum ke-mapping ke Telegram, tolong update `tests/tools/telegram-jira-mapping.json`" — jangan diam-diam skip notifikasinya.
+
+## Larangan
+
+- Jangan jalankan Check 2 di luar trigger di atas (hemat token) — kecuali diminta eksplisit di chat (mis. QA lead minta cek manual satu card).
+- Jangan auto-ubah Test Result / Actual Result apa pun hasilnya.
+- Jangan kirim notifikasi kalau bersih — silent pass itu sah, bukan bug.
+- Jangan pakai istilah teknis di pesan Telegram — ikuti `24-plain-language-team-comms.mdc`.
+
+## Relasi rule lain
+
+- `17-jira-testcase-status-transition.mdc` (olshoperp) — syarat Actual Result + Test Result sebelum Done, jadi dasar Check 1.
+- `22-reopen-defect-flow.mdc` — jalur lanjutan setelah Test Result = Failed final & diverifikasi manusia.
+- `24-plain-language-team-comms.mdc` — gaya bahasa wajib semua notifikasi & comment.
+- `13-test-case-format.mdc` — evidence tier `last_execution`, dipakai Check 1 untuk cross-check file TC.

@@ -76,3 +76,5 @@ Test Case **tidak pernah** ditransisikan ke Re-OPEN. Status akhirnya tetap **Don
 - `18-sync-jira-done.mdc` — sync hasil Done dari Jira ke file TC.
 - `13-test-case-format.mdc` — `origin_jira`, evidence tier `last_execution`.
 - `olshoperp/.cursor/rules/17-jira-testcase-status-transition.mdc` — urutan isi Actual Result → Test Result → Done.
+- `23-tc-screening-notify.mdc` — jalan **sebelum** rule ini, notify-only ke tim QA saat Test Case Done; rule ini baru relevan setelah Test Result = Failed final & diverifikasi manusia.
+- `24-plain-language-team-comms.mdc` — gaya bahasa wajib description card Bug baru & pesan Telegram.
