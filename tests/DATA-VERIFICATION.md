@@ -5,7 +5,8 @@ Ini **bukan** dokumentasi menu bisnis (`qa-docs/{menu}/`). SoT teknis runner + k
 query ada di repo developer:
 
 - Rule: `../olshoperp/.cursor/rules/19-database-debugger.mdc`
-- Runner: `../olshoperp/scripts/agent-db-query.mjs`
+- Rule: `../olshoperp/.cursor/rules/19-database-debugger.mdc`
+- Eksekusi: Direct HTTP POST Request ke Webhook n8n (Rule `19`)
 
 Baca halaman ini saat perlu **cek data di DB** (precondition, forensik FAIL, audit).
 Jangan pakai DB sebagai pengganti assert UI untuk menandai TC `passed`.
@@ -18,7 +19,7 @@ Jangan pakai DB sebagai pengganti assert UI untuk menandai TC `passed`.
 |-------|------|-------|-------------------------------|
 | **L1 UI** | Playwright CLI + POM / Browser MCP (observasi) | Default act & assert TC | **Ya** — hanya CLI + `via:` path spec (atau `manual:{Nama}` + notes) |
 | **L2 API read** | `page.request` / network response (hati-hati) | Debug payload, select2, status HTTP | Tidak sendirian |
-| **L3 DB read** | Webhook via `agent-db-query.mjs` | Precondition (“id X ada di company Y?”), FAIL forensik, UI ≠ DB, audit trail | **Tidak** — supporting evidence saja |
+| **L3 DB read** | Direct HTTP POST Webhook (Rule `19`) | Precondition (“id X ada di company Y?”), FAIL forensik, UI ≠ DB, audit trail | **Tidak** — supporting evidence saja |
 
 > [!CAUTION]
 > Hasil L3 DB **dilarang** menulis `last_execution.status: passed` untuk TC yang
@@ -29,14 +30,13 @@ Jangan pakai DB sebagai pengganti assert UI untuk menandai TC `passed`.
 
 ## Matriks environment & webhook
 
-| Env app | Host (contoh) | Flag `--db=` | Webhook |
-|---------|---------------|--------------|---------|
-| **Staging** | staging.olshoperp.com | `staging_olshoperp` | **Shared** dengan Tyas (`DB_DEBUG_WEBHOOK_URL` → default path `agent-db-tyas` di n8n) |
-| **Tyas** | tyas.olshoperp.com | `tyas_olshoperp` | **Shared** dengan Staging (webhook yang sama) |
-| **Merdian** | merdian.olshoperp.com | `merdian_olshoperp` | **Terpisah** (`DB_DEBUG_WEBHOOK_URL_MERDIAN` → host n9n / path `agent-db-merdian`) |
+| Env app | Host (contoh) | Payload `"db"` | Webhook URL |
+|---------|---------------|----------------|-------------|
+| **Staging** | staging.olshoperp.com | `staging_olshoperp` | `https://n8n.olshoperp.com/webhook/agent-db-tyas` (Shared) |
+| **Tyas** | tyas.olshoperp.com | `tyas_olshoperp` | `https://n8n.olshoperp.com/webhook/agent-db-tyas` (Shared) |
+| **Merdian** | merdian.olshoperp.com | `merdian_olshoperp` | `https://n9n.olshoperp.com/webhook/agent-db-merdian` (Terpisah) |
 
-Runner memilih URL & key otomatis dari flag `--db=` — **jangan** hardcode API key di
-command, chat, TC markdown, atau commit.
+DILARANG menggunakan runner script `.mjs`. Eksekusi langsung via HTTP POST. **Jangan** hardcode API key di chat, TC markdown, atau commit.
 
 Kredensial (hanya di `.env` lokal / mesin agent, tidak di repo docs):
 
@@ -49,22 +49,36 @@ Kredensial (hanya di `.env` lokal / mesin agent, tidak di repo docs):
 
 ---
 
-## Cara jalankan (dari mesin yang punya akses)
+## Cara jalankan (Direct HTTP POST via cURL)
 
-Workspace agent sering di `olshoperp-docs`. Runner hidup di sibling `olshoperp`:
+DILARANG menjalankan runner script `.mjs`. Gunakan perintah HTTP POST langsung:
 
 ```bash
-# Dari root olshoperp-docs (path sibling)
-node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="DESCRIBE scm_products"
+# Staging (DESCRIBE tabel)
+curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $DB_DEBUG_API_KEY" \
+  -d '{"db":"staging_olshoperp","query":"DESCRIBE scm_products"}'
 
-node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id, sku FROM scm_products WHERE company_id = 153 AND id = 12345 LIMIT 5"
+# Staging (SELECT data)
+curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $DB_DEBUG_API_KEY" \
+  -d '{"db":"staging_olshoperp","query":"SELECT id, sku FROM scm_products WHERE company_id = 153 AND id = 12345 LIMIT 5"}'
 
-node ../olshoperp/scripts/agent-db-query.mjs --db=tyas_olshoperp --query="SELECT id, user_id, event, auditable_type, auditable_id, created_at FROM audits WHERE auditable_id = 12345 ORDER BY created_at DESC LIMIT 10"
+# Tyas (Audit trail)
+curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $DB_DEBUG_API_KEY" \
+  -d '{"db":"tyas_olshoperp","query":"SELECT id, user_id, event, auditable_type, auditable_id, created_at FROM audits WHERE auditable_id = 12345 ORDER BY created_at DESC LIMIT 10"}'
 
-node ../olshoperp/scripts/agent-db-query.mjs --db=merdian_olshoperp --query="SELECT id, code, transaction_status FROM scm_purchase_orders WHERE company_id = 153 AND id = 999 LIMIT 5"
+# Merdian (Purchase Order)
+curl -s -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $DB_DEBUG_API_KEY_MERDIAN" \
+  -d '{"db":"merdian_olshoperp","query":"SELECT id, code, transaction_status FROM scm_purchase_orders WHERE company_id = 153 AND id = 999 LIMIT 5"}'
 ```
 
-Atau `cd ../olshoperp` lalu `node scripts/agent-db-query.mjs ...` — sama saja.
 Detail guard read-only + forensik 4 langkah → rule `19` di `olshoperp`.
 
 ---
