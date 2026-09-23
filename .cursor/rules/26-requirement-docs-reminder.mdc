@@ -1,0 +1,50 @@
+---
+description: Reminder harian jam 10 pagi — max 3 menu prioritas tertinggi yang requirement.md-nya masih draft/belum ada
+alwaysApply: true
+---
+
+# Reminder Harian Requirement Docs Backlog (Interim — Area 1)
+
+Cross-repo: ringkasan setara di `olshoperp/.cursor/rules/25-requirement-docs-reminder.mdc`. Ubah salah satu → sync keduanya di commit yang sama.
+
+Versi **sementara/ringan** sebelum automasi Area 1 (requirement docs end-to-end) yang lebih lengkap digarap. Scope-nya sengaja diminimalkan — **tanpa** cross-reference ke Jira — biar hemat token dan gampang jalan duluan.
+
+## Jadwal
+
+Jalan **1x sehari, jam 10:00 WIB**. Butuh scheduler (cron / n8n Schedule Trigger) — bukan event-based kayak rule lain di repo ini.
+
+## Logika (sengaja sederhana — tanpa cross-check ke Jira/sumber lain)
+
+1. Baca `qa-docs/_meta/manifest.yaml` — kumpulkan semua menu yang `requirement.md`-nya berstatus `draft`, atau file `requirement.md`-nya belum ada sama sekali.
+2. Urutkan berdasarkan **paling lama nggak disentuh** — `last_updated` di frontmatter `requirement.md` paling tua duluan. Menu yang filenya belum ada sama sekali dianggap paling prioritas (naik ke atas urutan).
+3. Ambil **maksimal 3** teratas.
+4. Kalau kandidatnya kosong (semua requirement sudah `review`/`approved`) → **tidak** kirim reminder hari itu — jangan paksa tampil walau kosong.
+
+> [!NOTE]
+> Sengaja **tidak** membandingkan ke jumlah card Jira aktif atau sumber lain — itu bikin bot harus query API tambahan tiap hari, boros token untuk hal yang sifatnya cuma reminder ringan. Kalau nanti Area 1 digarap versi lengkap, logika ranking ini boleh dipertimbangkan ulang.
+
+## Output
+
+Kirim reminder lewat **interface Grok bot sendiri** (bukan Telegram) — Yemima akan pantau langsung dari situ bareng bot-bot lain. Detail platform/dashboard-nya menyusul saat arsitektur bot utuh ditentukan.
+
+Format isi (ikuti `24-plain-language-team-comms.mdc` — bahasa ringan, bukan dump data):
+
+```
+Reminder hari ini — 3 menu requirement paling butuh dilengkapi:
+1. {Nama Menu} — belum disentuh sejak {tanggal} (atau "belum pernah dibuat")
+2. {Nama Menu} — ...
+3. {Nama Menu} — ...
+```
+
+## Larangan
+
+- Jangan query Jira atau sumber eksternal lain untuk menentukan prioritas — cukup dari `manifest.yaml` + `requirement.md` frontmatter.
+- Jangan kirim reminder kalau kandidatnya kosong.
+- Jangan kirim lebih dari 3 menu.
+- Jangan otomatis menulis/mengisi `requirement.md`-nya — ini reminder saja, penulisan requirement tetap kerjaan manual Yemima (itu keahliannya, bukan area yang didelegasikan ke bot).
+
+## Relasi rule lain
+
+- `qa-docs/_meta/manifest.yaml` — sumber status tiap menu.
+- `13-sot-generator.mdc` (olshoperp) — kalau nanti Yemima mau generate draft requirement dari raw input, itu proses terpisah, bukan bagian reminder ini.
+- `24-plain-language-team-comms.mdc` — gaya bahasa pesan reminder.
