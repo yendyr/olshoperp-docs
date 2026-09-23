@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260918155501
+tc_code: TC-SOPNAME-PASS-01
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
 test_type: happy
@@ -29,7 +29,7 @@ last_execution:
   via: null
 ---
 
-# TC-SOPNAME-DRAFT-20260918155501: Input Unit Price Desimal Minimal 2 Angka Dibelakang Koma pada Detail Stock Opname Surplus
+# TC-SOPNAME-PASS-01: Input Unit Price Desimal Minimal 2 Angka Dibelakang Koma pada Detail Stock Opname Surplus
 
 ## Objective
 Memvalidasi bahwa penyesuaian pada kolom UNIT PRICE di detail Stock Opname / Stock Opname Approval mengizinkan input angka desimal (minimal 2 angka di belakang koma, misal `12500.50`) untuk baris surplus (Adjustment In) dan tidak lagi memunculkan pesan error penolakan desimal.

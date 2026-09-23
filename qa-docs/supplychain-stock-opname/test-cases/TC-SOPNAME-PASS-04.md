@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260918155504
+tc_code: TC-SOPNAME-PASS-04
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
 test_type: negative
@@ -29,7 +29,7 @@ last_execution:
   via: null
 ---
 
-# TC-SOPNAME-DRAFT-20260918155504: Validasi Penolakan Input Nilai Qty Manual Desimal pada Detail Stock Opname
+# TC-SOPNAME-PASS-04: Validasi Penolakan Input Nilai Qty Manual Desimal pada Detail Stock Opname
 
 ## Objective
 Memastikan bahwa pelonggaran validasi desimal HANYA berlaku untuk UNIT PRICE, sedangkan input manual kolom Qty Opname (Physical Qty) tetap divalidasi ketat sebagai bilangan bulat (*whole number*).

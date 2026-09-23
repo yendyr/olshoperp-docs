@@ -1,6 +1,6 @@
 ---
 doc_type: e2e-test-case
-tc_code: PENDING-20260918155502
+tc_code: TC-SOPNAME-PASS-02
 menu: supplychain-stock-opname
 menu_name: "Stock Opname"
 test_type: happy
@@ -29,7 +29,7 @@ last_execution:
   via: null
 ---
 
-# TC-SOPNAME-DRAFT-20260918155502: Approval Dokumen Stock Opname dengan Unit Price Desimal pada Menu Stock Opname Approval
+# TC-SOPNAME-PASS-02: Approval Dokumen Stock Opname dengan Unit Price Desimal pada Menu Stock Opname Approval
 
 ## Objective
 Memverifikasi pelepasan validasi whole-number saat proses Approve di menu Stock Opname Approval (`/accounting/stock-opname-approval`), sehingga dokumen dengan baris unit price desimal dapat disetujui (Approved) dan membentuk transaksi Adjustment Addition serta jurnal finansial yang sinkron.
