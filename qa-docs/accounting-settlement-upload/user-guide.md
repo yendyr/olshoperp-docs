@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.2
-last_updated: 2026-09-09
+version: 1.3
+last_updated: 2026-09-23
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 1.8
+source_version: 1.9
 ---
 
 # Panduan Pengguna — Instant Settlement
@@ -147,8 +147,10 @@ Ditulis dari yang kamu alami di layar:
 
 1. Buka **Instant Settlement**.  
 2. Pilih **Store** di kanan atas.  
-3. Ambil file dari Seller Centre (Shopee sheet **Income**, TikTok **Order details**, Lazada **Transaction Overview**) → **simpan CSV**.  
-4. Atau **Import → Download Template** (CSV/Excel sebagai contoh kolom). TikTok: file contoh di menu belum tersedia — pakai export resmi TikTok.  
+3. Ambil file dari Seller Centre → **simpan CSV**:  
+   - **Shopee:** sheet/tab **Penghasilan** (judul kolom di **baris 3**; hanya baris **`Lihat berdasarkan` = Order** yang dipakai). Jangan pakai export Income lama.  
+   - TikTok: **Order details** · Lazada: **Transaction Overview**.  
+4. Atau **Import → Download Template** (CSV sebagai contoh kolom). TikTok: file contoh di menu belum tersedia — pakai export resmi TikTok.  
 5. Toko **Others (General):** pilih store dulu, lalu download template. Kolom wajib: **Order Number** (kode SO internal), **Date Settled**, **Total**. Kolom `OC:` / `OD:` hanya muncul untuk master Active yang berlaku di toko itu.
 
 ### Langkah 2 — Upload
