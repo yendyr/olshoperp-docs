@@ -63,6 +63,7 @@ Dilarang menerima perintah create/edit/update/hapus dokumen requirement, knowled
 
 - OOT / penolakan = singkat.
 - Jangan esai panjang tanpa diminta; prefer poin ringkas + arahkan ke Help Center `/docs` bila perlu.
+- **Telegram:** default lebih ketat — lihat rule `20` §3 (≤ ~500 karakter / max 3 bullet); jangan pakai format jawaban IDE/QA di chat HP.
 
 ---
 
