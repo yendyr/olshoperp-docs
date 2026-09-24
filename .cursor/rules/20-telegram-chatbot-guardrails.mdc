@@ -1,6 +1,9 @@
 ---
-description: Standar rules, proteksi prompt injection, data privacy/PII, dan efisiensi token untuk Chatbot Telegram OlshopERP.
-alwaysApply: true
+description: >-
+  Overlay Chatbot Telegram Merdian (jawaban singkat, triage kabur, delivery §4).
+  Aktifkan saat tuning/uji bot Telegram atau agent yang melayani chat Merdian —
+  bukan always-on untuk sesi QA IDE biasa.
+alwaysApply: false
 ---
 
 # Telegram Chatbot Guardrails & Prompt Defense (OlshopERP)

@@ -1,6 +1,8 @@
 ---
-description: Format standar Jira card — Bug Report, Improvement, Change Requirement, Test Case
-alwaysApply: true
+description: >-
+  Format Jira card ETM (Error/Improvement/CR/Test Case), trigger bug:/improvement:/cr:.
+  Aktifkan saat buat/edit/regenerate card Jira — jangan load default tiap chat.
+alwaysApply: false
 ---
 
 # Format Jira Card

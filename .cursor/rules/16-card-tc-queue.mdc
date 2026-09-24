@@ -1,6 +1,8 @@
 ---
-description: Antrian uji card Jira — trigger #card-tc, test-queue.yaml, origin/last_execution
-alwaysApply: true
+description: >-
+  Antrian test-queue.yaml / #card-tc / testing card ETM-xxxxx. Aktifkan saat
+  #card-tc, sync antrian, atau user minta test case untuk card Jira spesifik.
+alwaysApply: false
 ---
 
 # Card Jira → Test Queue

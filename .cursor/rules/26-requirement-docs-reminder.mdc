@@ -1,6 +1,8 @@
 ---
-description: Reminder harian jam 10 pagi — max 3 menu prioritas tertinggi yang requirement.md-nya masih draft/belum ada
-alwaysApply: true
+description: >-
+  Reminder harian backlog requirement.md draft. Aktifkan saat reminder
+  requirement docs / "menu apa yang perlu dilengkapi".
+alwaysApply: false
 ---
 
 # Reminder Harian Requirement Docs Backlog (Interim — Area 1)

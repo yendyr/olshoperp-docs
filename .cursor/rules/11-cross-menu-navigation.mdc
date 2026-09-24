@@ -1,6 +1,8 @@
 ---
-description: Alur lintas modul — trace menu terkait & proses end-to-end
-alwaysApply: true
+description: >-
+  Trace alur lintas menu/modul (E2E order→invoice, Random SKU, related_menus).
+  Aktifkan saat pertanyaan end-to-end atau efek lintas menu.
+alwaysApply: false
 ---
 
 # Navigasi Cross-Menu

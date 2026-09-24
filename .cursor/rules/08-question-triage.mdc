@@ -1,6 +1,8 @@
 ---
-description: Klasifikasi pertanyaan user → layer doc & workflow baca
-alwaysApply: true
+description: >-
+  Triage pertanyaan → layer doc & workflow. Aktifkan di awal Q&A / sebelum
+  pilih requirement vs KB vs technical vs TC/Playwright/Jira.
+alwaysApply: false
 ---
 
 # Triage Pertanyaan

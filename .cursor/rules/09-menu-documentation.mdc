@@ -1,6 +1,8 @@
 ---
-description: Protokol baca dokumentasi menu QA (read-only)
-alwaysApply: true
+description: >-
+  Protokol baca dokumentasi menu (manifest → README → layer). Aktifkan saat
+  jawab pertanyaan menu/fitur atau lookup requirement/KB/technical.
+alwaysApply: false
 ---
 
 # Protokol Dokumentasi Menu

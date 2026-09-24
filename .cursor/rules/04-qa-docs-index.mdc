@@ -1,6 +1,8 @@
 ---
-description: Peta struktur qa-docs/ untuk navigasi & indexing agent (read-only)
-alwaysApply: true
+description: >-
+  Peta struktur qa-docs/ (121 menu, slug, lookup). Aktifkan saat navigasi index,
+  cari slug, atau bingung struktur folder — bukan tiap Q&A singkat.
+alwaysApply: false
 ---
 
 # Index qa-docs/

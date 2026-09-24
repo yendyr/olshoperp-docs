@@ -1,6 +1,8 @@
 ---
-description: Format standar jawaban QA — struktur, sitasi, audience, AS-IS vs rekomendasi
-alwaysApply: true
+description: >-
+  Format jawaban QA IDE (Ringkasan/Detail/Konteks/Gap, AS-IS vs rekomendasi).
+  Aktifkan saat Q&A requirement/menu di Cursor — jangan untuk bot Telegram.
+alwaysApply: false
 ---
 
 # Format Jawaban QA

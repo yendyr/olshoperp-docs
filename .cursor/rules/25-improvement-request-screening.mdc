@@ -1,6 +1,8 @@
 ---
-description: Screening card Improvement ber-Request ID — auto-lengkapi description (simple) atau notify Telegram (butuh konfirmasi)
-alwaysApply: true
+description: >-
+  Screening Improvement ber-Request ID (auto-lengkapi vs notify). Aktifkan saat
+  card Improvement dari request user / screening description.
+alwaysApply: false
 ---
 
 # Screening & Auto-Complete Card Improvement (Request ID Terisi)

@@ -1,6 +1,8 @@
 ---
-description: Alur Reopen & Defect Handling card Jira ETM saat verifikasi QA Review tidak sesuai Expected Result / Acceptance Criteria
-alwaysApply: true
+description: >-
+  Re-OPEN / defect handling saat QA Review gagal AC. Aktifkan saat reopen,
+  defect dari QA Review, atau Test Result Failed → card Error.
+alwaysApply: false
 ---
 
 # Reopen & Defect Handling Flow (Jira ETM)

@@ -1,6 +1,8 @@
 ---
-description: Gaya bahasa non-teknis WAJIB untuk description card Jira, judul card, comment, dan notifikasi Telegram ke tim QA
-alwaysApply: true
+description: >-
+  Bahasa non-teknis untuk card Jira / comment / notif Telegram ke tim QA.
+  Aktifkan bersama buat/edit card atau pesan ke QA (dengan rule 12).
+alwaysApply: false
 ---
 
 # Gaya Bahasa Team-Facing (Jira & Telegram) — WAJIB Non-Teknis

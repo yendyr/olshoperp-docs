@@ -1,6 +1,8 @@
 ---
-description: Screening otomatis kelengkapan & kualitas Actual Result Test Case saat Done — notify-only via Telegram
-alwaysApply: true
+description: >-
+  Screening kelengkapan/kualitas Actual Result TC Done (notify Telegram).
+  Aktifkan saat screening TC Done atau notif screening.
+alwaysApply: false
 ---
 
 # Screening Kelengkapan & Kualitas Test Case (Notify-Only)

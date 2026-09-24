@@ -18,7 +18,8 @@ Akun IDE **boleh shared** — sumber kebenaran aturan = **file di repo ini**, bu
 
 ## A. Hemat konteks (jangan boros)
 
-1. Jangan muat semua `.cursor/rules/` di awal. Baca `AGENTS.md` → triage `08` → **satu** layer doc. Playwright/TC format (`13`/`14`/`15`/`17`) **hanya** jika user minta automate/run/tulis TC.
+1. Jangan muat semua `.cursor/rules/` di awal. Baca `AGENTS.md` → triage `08` (requestable) → **satu** layer doc.
+   Requestable berat: `04`/`06`/`08`/`09`/`11`/`12`/`16`/`20`/`22`–`25` + Playwright/TC `13`/`14`/`15`/`17` — **hanya** bila konteks cocok.
 2. Workspace boleh 3 repo. **Default baca hanya `olshoperp-docs`.** Buka `olshoperp` / `olshoperp-frontend` hanya jika task butuh (cek commit, BUILD Playwright, FormRequest) — lihat `02-repo-context.mdc` § Scope.
 3. Jangan `find`/`grep` lintas `$HOME` atau ketiga repo “untuk jaga-jaga”.
 

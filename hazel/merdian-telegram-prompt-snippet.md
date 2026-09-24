@@ -16,7 +16,7 @@ Bot sudah connect ke **`olshoperp-docs`** dan membaca rules/docs dari repo.
 ## Urutan baca (wajib)
 
 1. `hazel/universal-agent-guardrails.md` — inti semua channel (OOT, requirement=Yemima, jailbreak, PII)
-2. `.cursor/rules/20-telegram-chatbot-guardrails.mdc` — overlay Telegram:
+2. `.cursor/rules/20-telegram-chatbot-guardrails.mdc` — overlay Telegram (**bot wajib load file ini**; di Cursor IDE rule-nya requestable):
    - **§3** = jawaban mobile singkat (default)
    - **§4** = delivery (Telegraph / xlsx / PDF / ASCII / link `/docs`)
 
