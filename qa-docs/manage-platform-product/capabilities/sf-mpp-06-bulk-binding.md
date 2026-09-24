@@ -8,8 +8,9 @@ scope: menu
 summary: >-
   Bulk Binding mengikat satu Platform SKU yang sama di semua toko aktif
   ke satu System Product yang kamu pilih — berbeda dari Auto Binding per store.
-version: 1.0
-last_updated: 2026-07-31
+  TO-BE: sanitize saat match (tanpa ubah SKU tersimpan).
+version: 1.1
+last_updated: 2026-09-23
 status: review
 ---
 
@@ -35,10 +36,12 @@ status: review
 
 ## Catatan
 
-- SKU harus **100% sama persis** (huruf, spasi). Beda sedikit = tidak ikut.
+- **AS-IS:** SKU harus **100% sama persis** di DB (huruf, spasi, newline). Beda sedikit / Enter tersembunyi = tidak ikut.
+- **TO-BE (GAP-MPP-01 / ETM-16016):** match memakai kunci sanitized (trim, lowercase, buang newline/HTML) — **tanpa** rewrite SKU platform. Target System Product tetap yang kamu pilih.
 - System Product harus milik company yang sama; kalau tidak, seluruh operasi ditolak.
 - Beda dengan **Auto Binding**: Auto = per store + match otomatis SKU sama; Bulk = lintas toko + kamu pilih System Product.
 - Tidak ada bulk unbind dedicated — unbind lewat [Manual Binding](#sf-lingo:SF-MPP-04) per baris.
+- Related: [System Product](../system-product/README.md).
 
 ## Lihat juga
 

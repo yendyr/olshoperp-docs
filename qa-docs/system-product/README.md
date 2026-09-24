@@ -12,7 +12,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 | Capability cards | [capabilities/](./capabilities/) | Semua | draft |
 
 **Help Center:** [`_meta/docs-hub/menus/system-product/`](../_meta/docs-hub/menus/system-product/)  
-**3 layer:** v2.4 · **User Guide:** v1.2 (`source_version` 2.4) · **Feature Map:** v1.0  
+**3 layer:** v2.4b · **User Guide:** v1.2 (`source_version` 2.4) · **Feature Map:** v1.0  
 **Maintenance owner:** QA — Yemima
 
 ---
@@ -21,6 +21,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-09-23 11:10 | 2.4b | Cross-ref **Manage Platform Product** binding: sanitize SKU saat match (GAP-MPP-01 / ETM-16016) — tidak ubah storage SKU System Product |
 | 2026-09-01 11:17 | 2.4 | Dokumentasi AS-IS **Product Image Sync** (API pull path by SKU, `is_synced`, setting Application Form, tombol datalist) — requirement §13.2, KB, technical §17, user-guide |
 | 2026-08-12 | 2.3b | Cross-ref MV: create+Default ON skips `random` inject (MV v1.2) |
 | 2026-08-12 | 2.3 | Default Variant create/import (`GAP-SP-17`) + expand soft-delete/leftover (`GAP-SP-18`); parent `-(PARENT)` |
@@ -67,6 +68,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 
 ## Related menus
 
+- [Manage Platform Product](../manage-platform-product/README.md) — binding SKU marketplace ↔ System Product; **GAP-MPP-01** sanitize saat match (ETM-16016)
 - [bill-of-material](../bill-of-material/) — Header BOM untuk Assembly  
 - [Master Variant](../supplychain-variant/) — Variant Group + options · TO-BE Default (`GAP-VAR-01`)  
 - [random-sku](../random-sku/) — virtual SKU `-random`  

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.4
-last_updated: 2026-09-01
+version: 2.4b
+last_updated: 2026-09-23
 owner: QA - Yemima
 status: review
 audience: operator
@@ -264,7 +264,10 @@ Fitur **terpisah** dari Import Product Images dan upload manual. Dipakai saat co
 ## 10. FAQ
 
 **Q: Beda System Product vs Platform Product?**  
-A: System Product = master internal. Platform Product = mirror marketplace (menu terpisah).
+A: System Product = master internal. Platform Product = mirror marketplace (menu **Manage Platform Product**). Binding menghubungkan keduanya.
+
+**Q: SKU System Product dan Platform Product sudah sama, kenapa Auto Binding gagal?**  
+A: Sering karena SKU di Platform Product punya **spasi/Enter tersembunyi** di ujung, sementara SKU di sini bersih. Binding diurus di Manage Platform Product — **AS-IS** match sensitif terhadap karakter itu; **TO-BE** sanitize saat match tanpa mengubah SKU di System Product maupun yang tersimpan dari marketplace. Workaround: bind manual, atau rapikan SKU di seller center lalu Pull.
 
 **Q: Kenapa parent variant tidak bisa dijual?**  
 A: Hanya SKU child yang stockable. Parent hanya grouping.

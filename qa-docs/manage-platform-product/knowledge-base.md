@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
-version: 1.1
-last_updated: 2026-06-22
+version: 1.2
+last_updated: 2026-09-23
 owner: QA - Yemima
 status: review
 audience: operator
@@ -90,7 +90,7 @@ Tunggu sebentar lalu refresh — jangan klik berulang.
 | Lihat daftar produk per toko | ✅ Bisa | Pilih satu atau lebih **Store** di filter atas |
 | **Pull Products** (sync produk dari marketplace) | ✅ Bisa | Wajib pilih Store; proses background |
 | **Push Stock** (kirim stok ke marketplace) | ✅ Bisa | Wajib pilih Store; butuh **Binded** atau **Fake Stock** |
-| **Auto Binding** (cocokkan SKU otomatis) | ✅ Bisa | Hanya SKU **belum bind** & SKU platform = SKU system; per store terpilih |
+| **Auto Binding** (cocokkan SKU otomatis) | ✅ Bisa | Hanya SKU **belum bind**; cocokkan ke System Product (AS-IS: huruf besar/kecil diabaikan, **tanpa** bersihkan spasi/Enter di ujung; TO-BE: sanitize saat match — lihat FAQ) |
 | **Bulk Binding** (bind SKU sama di semua toko) | ✅ Bisa | Tombol Bulk Binding → pilih Platform SKU + System Product |
 | Bind manual (per baris) | ✅ Bisa | Klik ikon binding → modal **Specification Product** → section Binding |
 | Atur Fake Stock / Minimum Stock / Stock Ratio | ✅ Bisa | Di modal Specification → section Stock Management |
@@ -145,11 +145,12 @@ Tunggu sebentar lalu refresh — jangan klik berulang.
 |---|---|---|
 | SKU tidak muncul setelah order masuk di marketplace | Produk belum di-pull ke OlshopERP | Pilih Store → **Pull Products** → cek Sync Log |
 | **Not Binded** tidak hilang setelah bind | System Product inactive, Fix Asset, atau SKU random tidak cocok | Cek System Product aktif & tipe SKU; coba bind manual dengan produk yang tepat |
-| **Auto Binding** "No product to be bound" | Semua sudah bind, atau SKU platform ≠ SKU system | Pakai bind manual / Bulk Binding jika SKU sengaja beda |
+| **Auto Binding** "No product to be bound" | Semua sudah bind, atau SKU platform ≠ SKU system (termasuk beda spasi/Enter tersembunyi di ujung) | Cek di seller center / paste SKU ke editor teks; pakai bind manual / Bulk Binding jika SKU sengaja beda. TO-BE: sistem akan sanitize saat match (ETM-16016) |
 | **Push Stock** gagal / stok tetap 0 | Belum bind & tidak ada Fake Stock; ATS di bawah minimum | Bind dulu atau set Fake Stock; cek ATS di System Product |
 | Tombol Pull/Push/Auto Binding disabled | Store belum dipilih atau job masih jalan | Pilih Store; tunggu 1–2 menit; refresh halaman |
 | Order marketplace stuck **unbinded product** | Platform Product belum bind saat order masuk | Bind SKU → error order hilang otomatis (tidak perlu re-sync order) |
-| Bulk Binding tidak meng-update semua toko | SKU di DB tidak **100% sama persis** (huruf/spasi) | Samakan SKU di seller center atau bind manual per toko |
+| Bulk Binding tidak meng-update semua toko | SKU di DB tidak sama (huruf/spasi/**newline**) | Samakan SKU di seller center atau bind manual per toko; AS-IS exact match — TO-BE sanitize (GAP-MPP-01) |
+| SKU “sudah sama” di UI tapi bind gagal | Platform Product punya **Enter/spasi di akhir** SKU; System Product bersih | Bukan beda SKU bisnis — karakter tersembunyi. Manual bind sementara; setelah GAP-MPP-01, Auto/Bulk harus match tanpa ubah SKU tersimpan |
 
 ---
 
@@ -163,6 +164,9 @@ A: Ya. Filter Store wajib — tanpa itu tombol disabled.
 
 **Q: Apa beda Auto Binding dan Bulk Binding?**  
 A: **Auto Binding** = per store, hanya SKU belum bind, cocok otomatis jika SKU platform = SKU system. **Bulk Binding** = satu SKU platform, bind sekaligus di **semua toko** ke System Product **yang Anda pilih**.
+
+**Q: SKU di Manage Platform Product dan System Product sudah sama, kenapa Auto/Bulk Binding tetap gagal?**  
+A: Sering karena Platform Product membawa **spasi atau Enter di akhir** teks SKU (tidak terlihat di tabel), sementara System Product bersih. **AS-IS:** sistem membandingkan string apa adanya (Auto hanya longgar di huruf besar/kecil). **TO-BE (ETM-16016):** saat binding, sistem akan **sanitize** kedua sisi (trim, lowercase, buang newline/HTML noise) **tanpa mengubah** SKU yang tersimpan dari marketplace. Workaround sementara: bind **manual**, atau perbaiki SKU di seller center lalu Pull ulang.
 
 **Q: Kenapa produk PARENT tidak bisa di-bind?**  
 A: Yang ditransaksikan variannya. Bind tiap baris **VARIANT**; PARENT hanya ringkasan.

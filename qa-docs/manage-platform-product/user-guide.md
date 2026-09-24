@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
-version: 1.0
-last_updated: 2026-07-31
+version: 1.1
+last_updated: 2026-09-23
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 1.2
+source_version: 1.3
 ---
 
 # Panduan Pengguna — Manage Platform Product
@@ -102,7 +102,8 @@ Lanjutan operasional: order diproses di Sales Order Platform → wave/picking/fu
 - Kalau System Product bertipe **Fix Asset**: bind ditolak.
 - Kalau satu sisi random dan yang lain bukan (tanpa konfirmasi): bind ditolak.
 - Kalau Auto Binding: hanya cocokkan SKU yang **belum bind** dan SKU platform = SKU system (per store terpilih). Kalau SKU sengaja beda, pakai bind manual atau Bulk Binding.
-- Kalau Bulk Binding: SKU platform harus **100% sama persis** (huruf/spasi) di toko-toko yang mau ikut; System Product harus milik company yang sama.
+- Kalau Bulk Binding: SKU platform harus sama di toko-toko yang mau ikut; System Product harus milik company yang sama. **AS-IS:** match exact (huruf/spasi/newline). **TO-BE:** sistem sanitize saat match tanpa mengubah SKU tersimpan.
+- Kalau SKU “sudah sama” di layar tapi Auto/Bulk gagal: sering ada **Enter/spasi tersembunyi** di SKU platform — bind manual dulu, atau perbaiki di seller center lalu Pull.
 - Kalau Push Stock tanpa bind dan tanpa **Fake Stock**: push gagal / tidak ada data ke platform.
 - Kalau Fake Stock diisi: angka itu yang diprioritaskan saat push (override stok gudang).
 - Kalau Stock Ratio: harus bilangan bulat 0–100 (bukan desimal).
@@ -161,7 +162,8 @@ Lanjutan operasional: order diproses di Sales Order Platform → wave/picking/fu
 - **"Push Stock gagal / stok tetap 0."** Belum bind dan belum Fake Stock, atau stok tersedia jual di bawah minimum. Bind dulu atau set Fake Stock; cek stok di System Product.
 - **"Tombol abu-abu."** Store belum dipilih, atau job masih jalan — tunggu 1–2 menit lalu refresh.
 - **"Order stuck unbinded product."** Bind SKU terkait — error order biasanya hilang otomatis tanpa re-sync order.
-- **"Bulk Binding tidak update semua toko."** SKU di database tidak 100% sama (huruf/spasi). Samakan di seller center atau bind manual per toko.
+- **"Bulk Binding tidak update semua toko."** SKU di database tidak sama (huruf/spasi/newline). Samakan di seller center atau bind manual per toko.
+- **"SKU sudah sama dengan System Product tapi Auto Binding gagal."** Cek karakter tersembunyi (Enter di akhir SKU platform). Manual bind sementara; perbaikan sistem: sanitize saat match (tanpa ubah SKU tersimpan).
 - **"Apa beda Auto Binding dan Bulk Binding?"** Auto = per store, cocok otomatis jika SKU sama. Bulk = satu SKU platform, bind sekaligus di banyak toko ke System Product yang kamu pilih.
 - **"Fake Stock kapan dipakai?"** Saat belum bind, atau sengaja override stok gudang dengan angka tetap ke marketplace.
 

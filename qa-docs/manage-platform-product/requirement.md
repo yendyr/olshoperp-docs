@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
-version: 1.2
-last_updated: 2026-06-22
+version: 1.3
+last_updated: 2026-09-23
 owner: QA - Yemima
 status: review
 legacy_sources:
@@ -21,6 +21,7 @@ legacy_sources:
 | 1.0 | 2026-06-19 | QA - Yemima | Initial AS-IS documentation |
 | 1.1 | 2026-06-19 | QA - Yemima | Merge glossary §12 + bulk binding §13 from legacy |
 | 1.2 | 2026-06-22 | QA - Yemima | Onboarding sequencing sync produk (§14); update entry point store bind |
+| 1.3 | 2026-09-23 | QA - Yemima | GAP-MPP-01: sanitize SKU saat match binding (trim / lowercase / newline / HTML) — compare-only; ETM-16016 |
 
 ---
 
@@ -469,10 +470,35 @@ flowchart TB
 | Method | Scope | Matching | `type_binding` |
 |---|---|---|---|
 | Manual | 1 platform product × 1 store | User selects system product | null (not set) |
-| Auto-bind | All unbound × selected store(s) | SKU identical (case-insensitive) | null in job |
-| Bulk Binding | 1 platform SKU × all active stores | User selects system product; exact SKU match | `bulk` |
+| Auto-bind | All unbound × selected store(s) | **AS-IS:** SKU via `whereIn` + `strtolower` (no trim/newline). **TO-BE (GAP-MPP-01):** match on sanitized key | null in job |
+| Bulk Binding | 1 platform SKU × all active stores | User selects system product; **AS-IS:** exact `sku`. **TO-BE:** same sanitize for cross-store / system match | `bulk` |
 
 **Post-bind effects (all methods):** copy stock units → `handleErrorFlagBinding` → observer dispatches `UpdateOrderDetailOnProductBindJob` → audit bind/unbind on system + platform product.
+
+#### 8.2.1 SKU sanitize on binding match — GAP-MPP-01 (ETM-16016) · TO-BE
+
+**Problem (user feedback):** Binding gagal meski SKU di Manage Platform Product dan System Product **terlihat sama**. Penyebab tipikal: Platform Product menyimpan karakter tak terlihat di ujung SKU (contoh **Enter / newline**), System Product tidak.
+
+**Rules (TO-BE):**
+
+| Rule | Detail |
+|---|---|
+| Scope | **Compare-time only** — Auto Binding & Bulk Binding (jalur match SKU). Manual Binding tetap user-select System Product. |
+| Do **not** rewrite | Kolom SKU Platform Product di DB **tetap** nilai asli dari marketplace / sync. |
+| Sanitize both sides | Platform SKU **dan** System Product SKU di-normalize **hanya untuk kunci match**: trim spasi awal/akhir; hapus newline / `\n` / `\r` (dan sejenis); convert **lowercase**; HTML sanitize (buang artefak HTML di teks SKU). |
+| After match | Pivot binding dibuat seperti biasa; display/storage SKU platform tidak berubah. |
+| Unchanged guards | PARENT skip, Fix Asset block, random confirmation, owner company, inactive product — tetap berlaku. |
+
+**Contoh kasus:**
+
+| Situasi | Platform SKU (tersimpan) | System Product SKU | AS-IS | TO-BE |
+|---|---|---|---|---|
+| Enter di akhir | `ABC123` + newline | `ABC123` | Tidak match / bind gagal | Match sukses |
+| Spasi ujung | ` ABC123 ` | `ABC123` | Gagal / partial | Match sukses |
+| Beda casing | `AbC123` | `abc123` | Auto sering OK; Bulk exact | OK via sanitize |
+| SKU sengaja beda | `ABC123` | `XYZ999` | Tidak match | Tetap tidak match |
+
+**Related menu:** [System Product](../system-product/README.md) — master SKU internal; tidak mengubah unique/storage SKU di sana.
 
 ### 8.3 Binding ↔ Sales Order Platform
 
@@ -499,7 +525,8 @@ flowchart TB
 | Concurrent sync | Pull Products + cron sync same store | Duplicate jobs / queue lock (`JOB_LOCK`) | — |
 | Auto-bind + manual bind | User manual bind while auto-bind batch running | Race on same SKU pivot | — |
 | Bulk bind 50+ stores | Single transaction loop | Timeout / long lock on pivot table | — |
-| SKU case sensitivity | Bulk bind `ABC` vs `abc` across stores | Only exact DB match binds subset | — |
+| SKU case sensitivity | Bulk bind `ABC` vs `abc` across stores | Only exact DB match binds subset | GAP-MPP-01 / ETM-16016 |
+| Trailing newline / whitespace | Platform SKU `ABC123\\n` vs System `ABC123` | UI looks identical; Auto/Bulk fail | GAP-MPP-01 / ETM-16016 |
 | Delete PARENT with children | Bulk delete mixed selection | Partial fail; treeDestroyCheck | — |
 | Push after unbind | Unbind but SO still has product_id | Push uses binding path vs stale SO | — |
 | Fake stock = 0 | User sets fake_stock 0 intentionally | Should push zero (by design tooltip) | — |
@@ -531,6 +558,7 @@ flowchart TB
 
 | Gap/Pertanyaan | Status | Catatan |
 |---|---|---|
+| **GAP-MPP-01** — Sanitize SKU saat match binding (trim, lowercase, newline/`\\n`/`\\r`, HTML sanitize); **jangan** rewrite SKU platform di DB | Open / TO-BE | ETM-16016 · §8.2.1 · Auto + Bulk |
 | Manual create Platform Product di UI | Open | `can_create: false` — by design? |
 | `bulk_bind` tidak validasi Fix Asset / random / skip PARENT | Open | Manual bind punya validasi; bulk belum parity |
 | `bulk_bind` filter store tanpa `authorization_status` | Open | Error message vs code mismatch |
@@ -556,7 +584,7 @@ flowchart TB
 | Platform Product | Salinan produk marketplace di OlshopERP | Manage Platform Product |
 | System Product | Master SKU internal | System Product (SCM) |
 | Binding | 1 SKU marketplace ↔ 1 SKU internal per toko | Binded / Not Binded |
-| Auto-bind | Cocokkan SKU otomatis (case-insensitive) | Tombol Auto-bind |
+| Auto-bind | Cocokkan SKU otomatis (**AS-IS:** case-insensitive tanpa trim/newline; **TO-BE:** sanitize key — GAP-MPP-01) | Tombol Auto-bind |
 | Fake Stock | Stok manual push tanpa binding | Stock settings |
 | ATS | Available To Sell dari System Product | System Product datalist |
 | bind-error | Order error: belum terhubung ke internal | SO Platform filter |

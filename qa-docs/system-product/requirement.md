@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.4
-last_updated: 2026-09-01
+version: 2.4b
+last_updated: 2026-09-23
 owner: QA - Yemima
 status: review
 aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant]
@@ -20,6 +20,8 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 **Table:** `scm_products` (+ trees, units, D&W profiles, specs, taxes, BoM)
 
 **PM sources:** User requirement (chat) · D&W artifact v1.0 (7 Mei 2026)
+
+> **Changelog 2.4b (2026-09-23):** Cross-ref binding SKU sanitize di Manage Platform Product (GAP-MPP-01 / ETM-16016) — compare-only; storage SKU System Product tidak diubah.
 
 ---
 
@@ -47,7 +49,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 | Multi-tipe SKU | Single, Variant (parent/child), Bundle |
 | Stok multi-gudang | Availability, On Hand, ATS per SKU (bundle = lowest denominator) |
 | Satuan & konversi | Primary + alternate unit; D&W **per unit** |
-| Penjualan marketplace | Platform binding (menu terpisah); D&W Platform Default |
+| Penjualan marketplace | Platform binding di [Manage Platform Product](../manage-platform-product/README.md); D&W Platform Default. **Match Auto/Bulk:** TO-BE sanitize compare-time di MPP (GAP-MPP-01 / ETM-16016) — **tidak** mengubah SKU System Product |
 | Produksi | Header BOM (`is_bom=1`) di menu Bill of Material — **bukan** toggle bundle |
 | Pajak transaksi | Hierarki Company → Product `auto_add` |
 

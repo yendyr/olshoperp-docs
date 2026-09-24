@@ -7,9 +7,10 @@ aliases: [auto bind, cocokkan SKU otomatis]
 scope: menu
 summary: >-
   Auto Binding mencocokkan SKU platform yang belum bind ke System Product
-  dengan SKU sama (per store terpilih). Tidak cocok jika SKU sengaja beda.
-version: 1.0
-last_updated: 2026-07-31
+  dengan SKU sama (per store terpilih). TO-BE: sanitize saat match (trim/newline/HTML/lowercase)
+  tanpa mengubah SKU tersimpan. Tidak cocok jika SKU sengaja beda.
+version: 1.1
+last_updated: 2026-09-23
 status: review
 ---
 
@@ -39,6 +40,8 @@ status: review
 - Fix Asset / System Product inactive tidak ikut.
 - Pesan **"No product to be bound"** = tidak ada kandidat (semua sudah bind atau SKU tidak match).
 - Sering jalan otomatis setelah sync sukses — klik manual tetap boleh untuk memaksa ulang.
+- **AS-IS:** match longgar di casing saja — spasi/Enter di ujung SKU platform bisa membuat gagal meski UI “terlihat sama” dengan System Product.
+- **TO-BE (GAP-MPP-01 / ETM-16016):** saat match, sanitize kedua sisi (trim, lowercase, buang newline/HTML noise) **tanpa** rewrite SKU platform di DB. Lihat [System Product](../system-product/README.md).
 
 ## Lihat juga
 

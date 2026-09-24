@@ -2,8 +2,8 @@
 doc_type: technical
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
-version: 1.2
-last_updated: 2026-06-22
+version: 1.3
+last_updated: 2026-09-23
 owner: QA - Yemima
 status: review
 related_docs:
@@ -20,6 +20,7 @@ related_docs:
 | 1.0 | 2026-06-19 | QA - Yemima | Initial AS-IS technical inventory |
 | 1.1 | 2026-06-19 | QA - Yemima | Merge sync pipeline design spec (§8.2) |
 | 1.2 | 2026-06-22 | QA - Yemima | Onboarding sequencing sync (§3.9) |
+| 1.3 | 2026-09-23 | QA - Yemima | GAP-MPP-01: SKU sanitize on binding match (ETM-16016) — §7.5 |
 
 **Stack:** Laravel 13 API · Vue 3 SPA · Horizon queues · MariaDB  
 **Primary module:** `Modules/OmniChannel`  
@@ -521,7 +522,7 @@ Unbind: delete pivot + null platform stock unit fields.
 - Per row: delete existing pivot → create with `type_binding = 'bulk'`  
 - **Gap:** no Fix Asset / random / parent skip (see requirement §11)
 
-### 7.3 Auto-bind (`AutobindSingleJob`)
+### 7.3 Auto-bind (`AutobindSingleJob` / `CanAutoBind::bindExisting`)
 
 ```php
 ProductBindingPivot::updateOrCreate([
@@ -533,6 +534,11 @@ ProductBindingPivot::updateOrCreate([
 // copies stock_unit_id, conversion, base unit
 ```
 
+**AS-IS match (`CanAutoBind::bindExisting`):**
+- Collect platform `$product->sku` (raw; optional `-random` → `-acak`).
+- `SystemProduct::whereIn('sku', $skus)` then `keyBy(strtolower($item->sku))`; lookup `strtolower($product->sku)`.
+- **No** trim / strip newline / HTML sanitize — trailing `\n` / spaces make `whereIn` + key miss even when UI “looks” equal.
+
 ### 7.4 Downstream: Sales Order
 
 | Component | Path |
@@ -540,6 +546,19 @@ ProductBindingPivot::updateOrCreate([
 | `handleErrorFlagBinding()` | `ProductController` — sync path clear flags |
 | `UpdateOrderDetailOnProductBindJob` | `Jobs/UpdateOrderDetailOnProductBindJob.php` |
 | `pickBundleChildren()` | `SalesOrderDetailController` — bundle expansion |
+
+### 7.5 SKU sanitize on binding match — GAP-MPP-01 (ETM-16016) · TO-BE
+
+| Item | Detail |
+|---|---|
+| Goal | Seamless Auto/Bulk match when SKUs differ only by invisible chars / casing / HTML noise |
+| Must **not** | `UPDATE` / rewrite `products.sku` (Omni platform product) or System Product SKU |
+| Apply | Shared helper used by Auto-bind (`CanAutoBind`) and Bulk (`bulk_bind` / preview query) when comparing or grouping by SKU |
+| Normalize | `trim` → strip `\n`/`\r` (and agreed whitespace) → `strip_tags` / HTML sanitize → `strtolower` — both platform & system sides |
+| Query note | Prefer match on sanitized key (PHP-side map / expression), not raw `whereIn('sku', rawPlatformSkus)` alone |
+| Guards | Keep PARENT / Fix Asset / random / owner checks after identity match |
+
+See requirement §8.2.1.
 
 ---
 
