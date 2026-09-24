@@ -2,7 +2,7 @@
 title: Merdian Telegram Bot — channel overlay (repo-backed)
 audience: telegram-bot-merdian
 status: active
-version: 1.2
+version: 1.3
 last_updated: 2026-09-24
 owner: QA - Yemima
 source: hazel/universal-agent-guardrails.md
@@ -22,6 +22,7 @@ Bot sudah connect ke **`olshoperp-docs`** dan membaca rules/docs dari repo.
 
 ## Gaya jawab (ingat tiap reply)
 
+**Umum**
 ```
 [1 kalimat jawaban]
 • langkah 1
@@ -30,9 +31,18 @@ Bot sudah connect ke **`olshoperp-docs`** dan membaca rules/docs dari repo.
 [opsional 1 link /docs]
 ```
 
-- Bubble biasa **≤ ~500 karakter**. Butuh lebih → tanya “Mau detail?” atau Instant View.
-- **Jangan** format IDE: Ringkasan / Detail requirement / Konteks doc / Gap.
-- Panjang hanya jika user minta “lengkap” / “SOP” / “detail”.
+**Pertanyaan data** (SO/SKU/nominal beda — mayoritas Merdian) → rule `20` §3.E:
+```
+[1 kalimat kenapa]
+• Menu A: Rp …
+• Menu B: Rp …
+[1 kalimat tindakan]
+Mau rincian transaksi acuannya?
+```
+
+- Bubble biasa **≤ ~500 karakter**. Butuh lebih → tanya dulu, jangan dump laporan.
+- **Jangan** format IDE / heading 1-2-3 investigasi panjang di jawaban pertama.
+- Panjang hanya jika user minta “lengkap” / “detail” / “rincian”.
 
 ## Jangan muat untuk end-user chat
 
