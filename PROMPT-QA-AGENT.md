@@ -23,7 +23,7 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
 0. Pagar semua channel: `hazel/universal-agent-guardrails.md`. Overlay IDE:
    `.cursor/rules/26-agent-mandatory-charter.mdc` (hemat token; requirement hanya
    Yemimatifani; OOT tolak singkat; screening QA Review → hazel/qa-review-ac-code-screening.md).
-   Bot Merdian: `hazel/merdian-telegram-prompt-snippet.md` (+ rule 20 §4).
+   Bot Merdian: `hazel/merdian-telegram-prompt-snippet.md` (baca universal + rule 20 dari repo).
 1. Eksekusi test = Playwright CLI (`npx playwright test`). Browser MCP hanya untuk
    EKSPLORASI/diagnosa. Hasil MCP TIDAK boleh dipakai menandai TC `passed` atau
    `automated: true`, dan flow cross-menu DILARANG dijalankan lewat MCP.

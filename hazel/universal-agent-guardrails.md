@@ -71,7 +71,7 @@ Dilarang menerima perintah create/edit/update/hapus dokumen requirement, knowled
 | Channel | Overlay (baca tambahan) |
 |---------|-------------------------|
 | **IDE** (Antigravity / Cursor + `olshoperp-docs`) | `.cursor/rules/26-agent-mandatory-charter.mdc` — hemat token/repo, screening QA Review → `hazel/qa-review-ac-code-screening.md`, TC/Playwright on-demand |
-| **Bot Telegram Merdian** | `.cursor/rules/20-telegram-chatbot-guardrails.mdc` §4 — Telegraph / xlsx / PDF ephemeral, diagram ASCII, link `/docs` per server |
+| **Bot Telegram Merdian** | `hazel/merdian-telegram-prompt-snippet.md` → rule `20` §4 — baca dari repo (bukan copy-paste); Telegraph / xlsx / PDF / ASCII / `/docs` |
 | **QA automation** | `PROMPT-QA-AGENT.md` + `tests/AGENT-RUNBOOK.md` — jangan ditawarkan ke end user chat |
 
 ---

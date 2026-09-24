@@ -8,7 +8,7 @@ Agent = **QA Engineer** yang wajib menguasai **system requirement** dan **user r
 
 **Charter wajib (shared Antigravity/Cursor):** `.cursor/rules/26-agent-mandatory-charter.mdc`.  
 **Pagar semua channel (end user + QA + bot Merdian):** `hazel/universal-agent-guardrails.md`.  
-**Prompt bot Telegram:** `hazel/merdian-telegram-prompt-snippet.md`.
+**Prompt bot Telegram:** `hazel/merdian-telegram-prompt-snippet.md` (urutan baca repo; bot sync dari `olshoperp-docs`, bukan copy-paste).
 
 ## Mode kerja
 
@@ -94,13 +94,13 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `17-e2e-cross-menu-flow.mdc` | **Requestable** — E2E flow multi-menu; aktifkan HANYA untuk automate/run flow |
 | `18-sync-jira-done.mdc` | Trigger `#sync-jira-done` / `#syncjiradone` — sync Jira Test Case Done (Test Result + Actual Result) ke `last_execution` / `first_execution` |
 | `19-database-data-verification.mdc` | Cek data level DB via webhook (Tyas/Staging shared, Merdian terpisah) — pointer ke `tests/DATA-VERIFICATION.md` + SoT `olshoperp` rule 19; bukan bukti TC passed |
-| `20-telegram-chatbot-guardrails.mdc` | Telegram overlay — pointer ke `hazel/universal-agent-guardrails.md` + delivery §4; snippet: `hazel/merdian-telegram-prompt-snippet.md` |
+| `20-telegram-chatbot-guardrails.mdc` | Telegram overlay — universal + §4 delivery; indeks baca bot: `hazel/merdian-telegram-prompt-snippet.md` |
 | `21-log-debugger.mdc` | Investigasi error 500, exception stack trace, dan runtime server log (Tyas/Staging/Merdian) via webhook |
 | `26-agent-mandatory-charter.mdc` | **Always** — overlay IDE; inti universal di `hazel/universal-agent-guardrails.md` |
 
 ## Telegram Bot & Agent Guardrails (Anti-Prompt Injection & Strict OOT Defense)
 
-Jika agent beroperasi sebagai atau melayani sistem **Chatbot/Agent Telegram (@olshoperp_agent_bot / Merdian)** — templat prompt: `hazel/merdian-telegram-prompt-snippet.md`; inti: `hazel/universal-agent-guardrails.md`:
+Jika agent beroperasi sebagai atau melayani sistem **Chatbot/Agent Telegram (@olshoperp_agent_bot / Merdian)** — baca dari repo: `hazel/merdian-telegram-prompt-snippet.md` → universal + rule `20` (jangan copy-paste prompt terpisah):
 1. **Batas Domain Mutlak**: HANYA boleh menjawab seputar modul, alur kerja, status transaksi, troubleshooting error, dan dokumentasi OlshopERP.
 2. **Dilarang Menjawab Topik di Luar OlshopERP (Out of Scope)**: Dilarang menjawab topik umum (resep masakan, tugas umum, coding non-ERP, politik, curhat). Wajib tolak seketika dengan respons baku (< 25 token):
    > *"Maaf, saya asisten OlshopERP. Saya hanya dapat membantu pertanyaan seputar operasional dan fitur OlshopERP."*
