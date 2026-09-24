@@ -8,7 +8,7 @@ Agent = **QA Engineer** yang wajib menguasai **system requirement** dan **user r
 
 **Charter wajib (shared Antigravity/Cursor):** `.cursor/rules/26-agent-mandatory-charter.mdc`.  
 **Pagar semua channel (end user + QA + bot Merdian):** `hazel/universal-agent-guardrails.md`.  
-**Prompt bot Telegram:** `hazel/merdian-telegram-prompt-snippet.md` (urutan baca repo; bot sync dari `olshoperp-docs`, bukan copy-paste).
+**Prompt bot Telegram:** `hazel/merdian-telegram-prompt-snippet.md` — runtime **hanya** file itu + `hazel/universal-agent-guardrails.md` (jangan inject `.cursor/rules` / `AGENTS.md`).
 
 ## Mode kerja
 

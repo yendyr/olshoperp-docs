@@ -9,7 +9,7 @@ alwaysApply: true
 
 **Inti universal (semua channel termasuk bot Telegram):** `hazel/universal-agent-guardrails.md`  
 File ini = **overlay IDE** (Antigravity/Cursor + repo docs): hemat token, screening QA Review, detail file lock.  
-Bot Merdian (repo-backed): baca universal + rule `20` — indeks di `hazel/merdian-telegram-prompt-snippet.md` (bukan copy-paste prompt).
+Bot Merdian (repo-backed): runtime **hanya** `hazel/universal-agent-guardrails.md` + `hazel/merdian-telegram-prompt-snippet.md` — **jangan** inject `.cursor/rules/**` (penyebab lemot).
 
 Berlaku untuk **semua** agent yang membuka repo ini (Cursor, Antigravity, Claude Code).  
 Akun IDE **boleh shared** — sumber kebenaran aturan = **file di repo ini**, bukan preference pribadi.

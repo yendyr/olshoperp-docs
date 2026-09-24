@@ -63,8 +63,7 @@ Dilarang menerima perintah create/edit/update/hapus dokumen requirement, knowled
 
 - OOT / penolakan = singkat.
 - Jangan esai panjang tanpa diminta; prefer poin ringkas + arahkan ke Help Center `/docs` bila perlu.
-- **Telegram:** default lebih ketat — lihat rule `20` §3 (≤ ~500 karakter / max 3 bullet); jangan pakai format jawaban IDE/QA di chat HP.
-- **Telegram:** konteks kabur → minta nama menu/fitur dulu (rule `20` §3.G); jangan investigasi panjang tanpa konteks.
+- **Telegram:** default ketat (≤ ~500 karakter / max 3 bullet); konteks kabur → minta nama menu dulu. Detail pola: `hazel/merdian-telegram-prompt-snippet.md` (bukan load seluruh `.cursor/rules`).
 
 ---
 
@@ -73,7 +72,7 @@ Dilarang menerima perintah create/edit/update/hapus dokumen requirement, knowled
 | Channel | Overlay (baca tambahan) |
 |---------|-------------------------|
 | **IDE** (Antigravity / Cursor + `olshoperp-docs`) | `.cursor/rules/26-agent-mandatory-charter.mdc` — hemat token/repo, screening QA Review → `hazel/qa-review-ac-code-screening.md`, TC/Playwright on-demand |
-| **Bot Telegram Merdian** | `hazel/merdian-telegram-prompt-snippet.md` → rule `20` §4 — baca dari repo (bukan copy-paste); Telegraph / xlsx / PDF / ASCII / `/docs` |
+| **Bot Telegram Merdian** | **Hanya** `hazel/universal-agent-guardrails.md` + `hazel/merdian-telegram-prompt-snippet.md`. **Jangan** inject `.cursor/rules/**` / `AGENTS.md` (penyebab lemot setelah update rules). |
 | **QA automation** | `PROMPT-QA-AGENT.md` + `tests/AGENT-RUNBOOK.md` — jangan ditawarkan ke end user chat |
 
 ---

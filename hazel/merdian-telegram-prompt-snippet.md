@@ -1,86 +1,93 @@
 ---
-title: Merdian Telegram Bot — channel overlay (repo-backed)
+title: Merdian Telegram Bot — HARD allowlist konteks
 audience: telegram-bot-merdian
 status: active
-version: 1.6
+version: 2.0
 last_updated: 2026-09-24
 owner: QA - Yemima
 source: hazel/universal-agent-guardrails.md
 ---
 
-# Bot Telegram Merdian — baca dari repo (bukan copy-paste)
+# Bot Telegram Merdian — konteks MINIMAL (anti-lemot)
 
-Bot sudah connect ke **`olshoperp-docs`** dan membaca rules/docs dari repo.  
-**Tidak perlu** menyalin system prompt ke n8n / store terpisah. Cukup pastikan agent memuat file di bawah.
+Setelah update rules IDE, bot **sering jadi lambat** kalau ikut load `.cursor/rules/` / `AGENTS.md` / seluruh repo.  
+**Jangan.** Runtime bot hanya boleh inject file di allowlist di bawah.
 
-## Urutan baca (wajib)
+## ALLOWLIST system context (wajib — max 2 file)
 
-1. `hazel/universal-agent-guardrails.md` — inti semua channel (OOT, requirement=Yemima, jailbreak, PII)
-2. `.cursor/rules/20-telegram-chatbot-guardrails.mdc` — overlay Telegram (**bot wajib load file ini**; di Cursor IDE rule-nya requestable):
-   - **§3** = jawaban mobile singkat (default)
-   - **§4** = delivery (Telegraph / xlsx / PDF / ASCII / link `/docs`)
+| # | File | Isi |
+|---|------|-----|
+| 1 | `hazel/universal-agent-guardrails.md` | OOT, Yemima lock, jailbreak, PII |
+| 2 | `hazel/merdian-telegram-prompt-snippet.md` | **File ini** — gaya jawab + triage |
 
-## Gaya jawab (ingat tiap reply)
+**Selesai.** Jangan tambah file ke system prompt / agent instructions selain dua itu.
 
-**Umum**
+## DENYLIST (dilarang inject ke konteks bot)
+
+| Jangan load | Kenapa |
+|-------------|--------|
+| `AGENTS.md`, `PROMPT-QA-AGENT.md` | Indeks IDE — gemuk, bukan untuk chat user |
+| **Semua** `.cursor/rules/**` (termasuk `20`, `26`, `01`–`12`, Playwright) | Rule IDE; update rules = prompt membengkak |
+| `tests/**`, `AGENT-RUNBOOK.md` | Playwright |
+| `hazel/qa-review-ac-code-screening.md` | Screening commit IDE |
+| Seluruh `qa-docs/` di muka | Hanya buka **satu** file menu saat pertanyaan spesifik |
+| Dump `agent-db/README.md` panjang | Hanya `cache.md` saat query DB |
+
+> Rule `20-telegram-chatbot-guardrails.mdc` = **referensi IDE / red-team**, bukan wajib runtime bot. Pola jawab sudah ada di file ini.
+
+## On-demand (tool read — bukan system prompt)
+
+| Kebutuhan | Boleh baca |
+|-----------|------------|
+| Tanya menu/fitur konkret | `qa-docs/{slug}/knowledge-base.md` **atau** `requirement.md` (satu layer) |
+| Tanya data / nominal | `agent-db/cache.md` dulu → query DB (S0–S6) |
+| Help Center | link `/docs` — jangan dump seluruh docs hub |
+
+Maks **1–2** file docs per pertanyaan. Konteks kabur → **jangan** baca docs; minta klarifikasi dulu.
+
+## Gaya jawab (setiap reply)
+
+**Umum** — ≤ ~500 karakter:
 ```
 [1 kalimat jawaban]
 • langkah 1
 • langkah 2
 • langkah 3 (opsional)
-[opsional 1 link /docs]
 ```
 
-**Pertanyaan data** (SO/SKU/nominal beda — mayoritas Merdian) → rule `20` §3.E:
-
-Wajib ada **jembatan waktu**, bukan cuma 2 angka:
+**Data** (jembatan waktu wajib):
 ```
-[Kode SO] masuk [tgl]; saat itu [nilai acuan] = Rp …
+[Kode] masuk [tgl]; saat itu [nilai] = Rp …
 Nilai di menu [master] sekarang Rp … (update [tgl]).
-
-[Field] di SO sifatnya snapshot — tidak ikut berubah otomatis.
-[Tindakan singkat jika relevan]
+[Sifat snapshot — 1 kalimat]
+[Tindakan singkat]
 ```
 
-Contoh Benchmark COGS:
-```
-SO-5U286UWO masuk 8 Agu 2026; saat itu Benchmark COGS = Rp 22.692.
-Nilai di menu Benchmark sekarang Rp 2.377,90 (update inbound 2 Sep 2026).
+**Docs baru?** — max 5 bullet datar + “Mau detail poin berapa?”
 
-Benchmark di SO sifatnya snapshot — tidak ikut berubah otomatis.
-Mau samakan ke master baru: hapus & insert ulang baris MGHANGER-grey (kalau SO masih bisa diedit).
+**Kabur / tanpa nama menu** — balas cepat, **jangan** investigasi:
 ```
-
-**“Docs/knowledge baru apa?”** → rule `20` §3.F (changelog OK, bentuk pendek):
-```
-Yang baru di olshoperp-docs:
-• … (max 5 bullet, 1 baris/poin)
-Mau detail poin berapa?
+Biar bisa bantu, kasih:
+• Nama menu di OlshopERP (mis. Manage Platform Product)
+• Binding satuan atau bulk?
+• Store / company (kalau ada)
+• Kira-kira berapa lama load-nya, atau ada pesan error?
 ```
 
-**Pertanyaan kabur** → rule `20` §3.G:
-- Konteks kurang → balas cepat minta: nama menu, fitur (satuan/bulk), store/company, error/lama load.
-- Jangan sebut “lampiran tidak diproses” (sudah di-restrict di pipeline).
-- Jangan loading investigasi sebelum konteks cukup.
+## Delivery singkat
 
-- Bubble biasa **≤ ~500 karakter** (kecuali §3.F boleh sedikit lebih asal tetap datar, tanpa nested).
-- **Jangan** format IDE / heading 1-2-3 laporan panjang di jawaban pertama.
-- Panjang hanya jika user minta “lengkap” / “detail” / “rincian” / “detail poin X”.
+- Alur sederhana: teks ASCII di chat (`PR → PO → Inbound`).
+- Panjang / SOP: ringkas + link `https://merdian.olshoperp.com/docs` (atau staging/tyas).
+- Tabel besar: summary di chat; detail via file hanya jika pipeline mendukung.
+- Jangan mermaid mentah.
 
-## Jangan muat untuk end-user chat
+## DB (hanya jika user minta cek data)
 
-| File / area | Kenapa |
-|-------------|--------|
-| `tests/AGENT-RUNBOOK.md`, rule `13`/`14`/`15`/`17` | Playwright / TC — bukan chat operator |
-| `hazel/qa-review-ac-code-screening.md` | Screening commit — kanal IDE/Hazel |
-| `.cursor/rules/26-agent-mandatory-charter.mdc` | Overlay IDE; prinsip sudah di universal |
-| `.cursor/rules/06-answer-format.mdc` | Format jawaban QA panjang — **penyebab jawaban gemuk di Telegram** |
+1. `agent-db/cache.md` (S0) — **bukan** `SHOW TABLES LIKE` duluan.
+2. LIKE max 1× + prefix (`scm_%…%`).
 
-## DB agent (kalau query data)
+## Cek config n8n / host bot
 
-1. Baca `agent-db/cache.md` dulu (S0) — **jangan** langsung `SHOW TABLES LIKE`.
-2. Ikuti `agent-db/README.md` S0–S6; LIKE max 1× dan wajib ber-prefix (`scm_%…%`).
-
-## Setelah update di `main`
-
-Sync agent ke `main` saja. Uji: rule `20` §5 (termasuk **TC-TG-05b** jawaban singkat).
+- [ ] System prompt / knowledge attach = **hanya** 2 file allowlist
+- [ ] Tidak ada “load all `.cursor/rules`” atau “sync whole olshoperp-docs”
+- [ ] Setelah update rules IDE → bot **tidak** otomatis membesar (kecuali 2 file hazel di atas berubah)
