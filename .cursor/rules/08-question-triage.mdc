@@ -17,14 +17,14 @@ Klasifikasikan pertanyaan sebelum jawab; baca layer yang tepat (lihat `05-qa-eng
 | **Validasi / error** | "Kenapa save ditolak?" | `technical.md` | requirement, KB troubleshooting |
 | **API / integrasi** | "Endpoint apa dipanggil?" | `technical.md` | — |
 | **Test / E2E** | "Skenario uji AR payment?" | `test-cases/` | requirement |
-| **Playwright — tulis spec / TC baru** | "automate TC-001", "tambah POM PO" | `15` mode **BUILD** | `14` §8A–8B, registry, FE/BE jika gap |
-| **Playwright — re-run TC lengkap** | "run @TC-ARCP-001 lagi" | `15` mode **RUN** | TC, registry, helper — **tanpa** repo app |
+| **Playwright — tulis spec / TC baru** | "automate TC-001", "tambah POM PO" | **Baca dulu** `14`+`15` (+`13` bila TC baru; `17` bila flow) — requestable, bukan always-on | `15` mode **BUILD**, registry, FE/BE jika gap |
+| **Playwright — re-run TC lengkap** | "run @TC-ARCP-001 lagi" | **Baca dulu** `14`+`15` | `15` mode **RUN**; TC, registry, helper — **tanpa** repo app |
 | **Konsep lintas menu** | "Random SKU di waves?" | `random-sku/` | README menu terkait |
 | **Infra / sidebar** | "Menu hilang di sidebar?" | `sidebar-menu/technical.md` | gate-user, gate-role |
 | **Cari menu** | "Menu X ada di modul apa?" | `manifest.yaml` | README menu |
 | **Jira card** | `bug:` / `improvement:` / `cr:` atau minta tiket | `requirement.md` | KB, technical |
-| **Buat / edit TC** | "buat test case untuk…" | `13-test-case-format.mdc` | `requirement.md`, `test-cases/` |
-| **Renumber TC** | `#renumber-tc` atau `#renumber-tc {menu-slug}` | `13-test-case-format.mdc` §9 | scan DRAFT per menu, update README |
+| **Buat / edit TC** | "buat test case untuk…" | **Baca dulu** `13-test-case-format.mdc` (requestable) | `requirement.md`, `test-cases/` |
+| **Renumber TC** | `#renumber-tc` atau `#renumber-tc {menu-slug}` | **Baca dulu** `13` §9 | scan DRAFT per menu, update README |
 | **Antrian TC per card Jira** | `#card-tc` atau `#card-tc ETM-xxxxx` | `16-card-tc-queue.mdc` | To Do + QA Review → `test-queue.yaml`; overview dulu, run hanya `ready` |
 | **Tes card Jira spesifik** | "test ETM-xxxxx", "testing card ETM-…", "test case ETM-…" | `16-card-tc-queue.mdc` § Testing specific Jira card | cek queue + `origin_jira`; reuse dulu; **dilarang** `tests/scripts/` — runbook **I**; TC baru tetap `13` |
 | **Sync Jira Done → file TC** | `#sync-jira-done` / `#syncjiradone ETM-*` | `18-sync-jira-done.mdc` | fetch Jira Test Result + Actual Result; `tc:jira-sync --apply` |

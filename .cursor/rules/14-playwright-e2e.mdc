@@ -1,6 +1,9 @@
 ---
-description: Standar eksekusi Playwright E2E — OlshopERP QA automation
-alwaysApply: true
+description: >-
+  Playwright E2E automation — jalankan/tulis spec, POM, test:tc, crawling UI,
+  debug FAIL selector, SIGN-OFF. Aktifkan HANYA jika user minta otomatisasi /
+  run Playwright (bukan Q&A requirement/Jira biasa).
+alwaysApply: false
 ---
 
 # Playwright E2E Execution Standard
