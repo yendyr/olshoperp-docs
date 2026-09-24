@@ -2,7 +2,7 @@
 title: Merdian Telegram Bot — channel overlay (repo-backed)
 audience: telegram-bot-merdian
 status: active
-version: 1.3
+version: 1.4
 last_updated: 2026-09-24
 owner: QA - Yemima
 source: hazel/universal-agent-guardrails.md
@@ -32,12 +32,23 @@ Bot sudah connect ke **`olshoperp-docs`** dan membaca rules/docs dari repo.
 ```
 
 **Pertanyaan data** (SO/SKU/nominal beda — mayoritas Merdian) → rule `20` §3.E:
+
+Wajib ada **jembatan waktu**, bukan cuma 2 angka:
 ```
-[1 kalimat kenapa]
-• Menu A: Rp …
-• Menu B: Rp …
-[1 kalimat tindakan]
-Mau rincian transaksi acuannya?
+[Kode SO] masuk [tgl]; saat itu [nilai acuan] = Rp …
+Nilai di menu [master] sekarang Rp … (update [tgl]).
+
+[Field] di SO sifatnya snapshot — tidak ikut berubah otomatis.
+[Tindakan singkat jika relevan]
+```
+
+Contoh Benchmark COGS:
+```
+SO-5U286UWO masuk 8 Agu 2026; saat itu Benchmark COGS = Rp 22.692.
+Nilai di menu Benchmark sekarang Rp 2.377,90 (update inbound 2 Sep 2026).
+
+Benchmark di SO sifatnya snapshot — tidak ikut berubah otomatis.
+Mau samakan ke master baru: hapus & insert ulang baris MGHANGER-grey (kalau SO masih bisa diedit).
 ```
 
 - Bubble biasa **≤ ~500 karakter**. Butuh lebih → tanya dulu, jangan dump laporan.
