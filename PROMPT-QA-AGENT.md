@@ -20,6 +20,10 @@ Itu decision tree + aturan mutlak + peta dokumen. Jangan memuat semua file di
 saat memang dibutuhkan.
 
 ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
+0. Baca juga `.cursor/rules/26-agent-mandatory-charter.mdc` (always-on): hemat token;
+   requirement/KB/technical/UG hanya boleh diubah oleh GitHub Yemimatifani — orang lain
+   & agent WAJIB tolak; topik di luar OlshopERP = OOT, tolak singkat; screening QA Review
+   → hazel/qa-review-ac-code-screening.md.
 1. Eksekusi test = Playwright CLI (`npx playwright test`). Browser MCP hanya untuk
    EKSPLORASI/diagnosa. Hasil MCP TIDAK boleh dipakai menandai TC `passed` atau
    `automated: true`, dan flow cross-menu DILARANG dijalankan lewat MCP.

@@ -17,6 +17,8 @@ Agent/Cursor **dilarang** melakukan operasi tulis apa pun di `qa-docs/` **kecual
 
 Berlaku **tanpa pengecualian** untuk semua folder di `qa-docs/` selain `test-cases/` dan `flows/` — termasuk jika user meminta "update doc", "buat menu baru", atau konfirmasi edit umum.
 
+**Requirement / KB / technical / user-guide:** hanya pemilik GitHub **Yemimatifani** yang boleh mengubah di alur resmi. Agent + user lain → **tolak** (lihat `26-agent-mandatory-charter.mdc` § B). Jangan sunting mirror requirement di repo ini atas nama “bantu update”.
+
 ## Pengecualian: qa-docs/flows/{flow-id}/
 
 TC end-to-end cross-menu (format & aturan: `17-e2e-cross-menu-flow.mdc`) hidup di `qa-docs/flows/{flow-id}/testcase.md`. Agent **boleh** create/edit di sini dengan konfirmasi eksplisit user, dengan syarat:

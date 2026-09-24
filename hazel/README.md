@@ -6,4 +6,6 @@ Playbook operasional untuk bot QA (Hazel / Grokbot). Bukan pengganti `.cursor/ru
 |------|-----|
 | [qa-review-ac-code-screening.md](./qa-review-ac-code-screening.md) | Screening card **QA Review**: map Acceptance Criteria vs commit/diff (Define ≠ Enforce, verdict PASS/REWORK) |
 
-Promosi ke rule Cursor: pakai trigger `#update-rules` di sesi yang relevan.
+Charter agent (Antigravity/Cursor shared) yang mewajibkan playbook ini: `.cursor/rules/26-agent-mandatory-charter.mdc` § C.
+
+Promosi ke rule Cursor twin di olshoperp: opsional via `#update-rules`.
