@@ -2,7 +2,7 @@
 title: Merdian Telegram Bot — channel overlay (repo-backed)
 audience: telegram-bot-merdian
 status: active
-version: 1.5
+version: 1.6
 last_updated: 2026-09-24
 owner: QA - Yemima
 source: hazel/universal-agent-guardrails.md
@@ -57,6 +57,11 @@ Yang baru di olshoperp-docs:
 • … (max 5 bullet, 1 baris/poin)
 Mau detail poin berapa?
 ```
+
+**Lampiran / pertanyaan kabur** → rule `20` §3.G:
+- **Jangan** baca/proses video, foto, file, voice.
+- Konteks kurang → balas cepat minta: nama menu, fitur (satuan/bulk), store/company, error/lama load.
+- Contoh binding lambat + video → minta klarifikasi, jangan loading investigasi.
 
 - Bubble biasa **≤ ~500 karakter** (kecuali §3.F boleh sedikit lebih asal tetap datar, tanpa nested).
 - **Jangan** format IDE / heading 1-2-3 laporan panjang di jawaban pertama.
