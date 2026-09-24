@@ -48,6 +48,7 @@ AND is_return_process = 0
 | Chart of Account | coa / acc_coa | `accounting_chart_of_accounts` | |
 | Purchase Invoice | supplier invoice / PI | `accounting_supplier_invoices` | |
 | Sales Invoice | customer invoice / SI | `accounting_customer_invoices` | |
+| Benchmark COGS | product benchmark / b.cogs / benchmark_cogs | `accounting_product_benchmark_prices` | Snapshot di baris SO = `omni_sales_order_details.benchmark_cogs` (bukan update live dari master) |
 | Customer Payment / Supplier Payment / Credit Note / Debit Note | payments / CN / DN | `accounting_payments` | `type`: `Payment from Customer` / `Payment to Supplier` / `Credit Note` / `Debit Note` — bukan tabel terpisah |
 | Tax | taxes | `accounting_taxes` | |
 | Sales Return (Accounting) | sales return / SR | `scm_stock_mutations` | `is_return_process = 1`, `code LIKE 'SR-%'`. **Bukan** `omni_sales_returns` |

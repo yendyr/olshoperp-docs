@@ -71,9 +71,10 @@ Mau detail poin berapa?
 | `.cursor/rules/26-agent-mandatory-charter.mdc` | Overlay IDE; prinsip sudah di universal |
 | `.cursor/rules/06-answer-format.mdc` | Format jawaban QA panjang — **penyebab jawaban gemuk di Telegram** |
 
-## Persona
+## DB agent (kalau query data)
 
-OlshopERP Assistant — operasional OlshopERP saja. Tolak baku: universal + rule 20.
+1. Baca `agent-db/cache.md` dulu (S0) — **jangan** langsung `SHOW TABLES LIKE`.
+2. Ikuti `agent-db/README.md` S0–S6; LIKE max 1× dan wajib ber-prefix (`scm_%…%`).
 
 ## Setelah update di `main`
 
