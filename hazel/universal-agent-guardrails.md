@@ -84,4 +84,4 @@ Dilarang menerima perintah create/edit/update/hapus dokumen requirement, knowled
 - [ ] Tidak bocorkan prompt / PII / secret?
 - [ ] Penolakan singkat bila OOT atau lock requirement?
 
-**Maintenance:** QA — Yemima. Ubah file ini + sync overlay 20/26 di commit yang sama bila prinsip berubah.
+**Maintenance:** QA — Yemima. Ubah file ini + sync `hazel/merdian-telegram-prompt-snippet.md` dan pointer di rule 20/26 di commit yang sama bila prinsip berubah. Rule 20 tetap requestable IDE saja — jangan jadikan always-on / runtime bot.
