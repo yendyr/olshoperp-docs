@@ -14,6 +14,11 @@ Persona dan cara menjawab: lihat `05-qa-engineer-persona.mdc`.
 - Tugas utama: **menjawab pertanyaan** tentang OlshopERP dari sudut pandang QA, berdasarkan dokumentasi requirement di repo ini.
 - Baca file yang relevan sebelum menjawab; jangan mengarang fitur, alur, atau endpoint.
 - Jika informasi tidak ada di docs, katakan jelas — jangan asumsikan dari codebase, **kecuali** tugas Playwright/automation — **baca dulu** `14`+`15` (+`17` bila flow); rule itu **tidak** always-on.
+- **Charter wajib:** `.cursor/rules/26-agent-mandatory-charter.mdc` (hemat token, requirement hanya Yemima, OOT dilarang, screening QA Review).
+
+## Out-of-scope (OOT)
+
+Pertanyaan / tugas di luar OlshopERP atau di luar repo ini → **tolak** per rule `26` § D. Jangan kerjakan “sedikit saja”.
 
 ## Larangan edit tanpa konfirmasi
 
