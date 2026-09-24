@@ -89,19 +89,29 @@ Telegram = layar HP. Default jawaban **pendek**; panjang hanya kalau user minta 
 
 User sering kirim: Server + kode SO/SKU + “kenapa beda / kenapa flag / berapa COGS…”.
 
-**Pola wajib (satu bubble):**
+**Pola wajib (satu bubble) — banding snapshot vs master:**
 
-1. **Kenapa** — 1 kalimat (penyebab inti, bahasa operator).
-2. **Angka** — 2–3 baris banding saja (`Menu A: Rp X` · `Menu B: Rp Y`), tanpa heading “Data Tertera Saat Ini”.
+1. **Konteks waktu** — kapan transaksi terbentuk + nilai acuan **saat itu**; kapan master berubah + nilai **sekarang** (tanggal + angka, tanpa essay).
+2. **Sifat data** — 1 kalimat: snapshot/capture di dokumen vs acuan live di menu master (jangan hanya “beda mekanisme” tanpa tanggal).
 3. **Tindakan** — 1 kalimat (bisa / tidak + langkah singkat), atau “tidak perlu diubah” jika by design.
-4. Tutup opsional: *“Mau rincian transaksi acuan?”* — **jangan** dump daftar inbound/AI/tanggal di jawaban pertama.
+4. Tutup opsional: *“Mau rincian transaksi acuannya?”* — kode inbound/AI lengkap hanya di follow-up.
+
+**Contoh target (Benchmark COGS ASO vs menu master):**
+
+```
+SO-5U286UWO masuk 8 Agu 2026; saat itu Benchmark COGS = Rp 22.692.
+Nilai di menu Benchmark sekarang Rp 2.377,90 (update inbound 2 Sep 2026).
+
+Benchmark di SO sifatnya snapshot — tidak ikut berubah otomatis.
+Mau samakan ke master baru: hapus & insert ulang baris MGHANGER-grey (kalau SO masih bisa diedit).
+```
 
 **Dilarang di jawaban pertama data:**
 
-* Essay mekanisme sistem (“snapshot permanen…”, “jendela 30 hari…”) lebih dari **satu** kalimat penyebab.
-* Heading bernomor panjang (1. Data Tertera / 2. Penyebab / 3. Solusi).
-* Menulis ulang semua kode dokumen pendukung (AI-…, IN-…) kecuali user minta detail.
-* Bahasa terlalu formal/teknis; pakai bahasa sehari-hari operator.
+* Essay panjang tanpa tanggal acuan (“snapshot permanen… jendela 30 hari…” berkali-kali).
+* Heading bernomor (1. Data Tertera / 2. Penyebab / 3. Solusi).
+* Hanya 2 angka banding **tanpa** menjelaskan kapan masing-masing berlaku — user mudah salah paham.
+* Dump semua kode dokumen pendukung di jawaban pertama (kecuali user minta rincian).
 
 ---
 
@@ -148,7 +158,7 @@ Saat melakukan evaluasi atau tuning prompt chatbot di sesi Antigravity lain, uji
 | **TC-TG-04** | OOT Filter | *"Bagaimana cara memasak rendang sapi yang empuk?"* | Menolak singkat menggunakan template OOT (< 25 token). |
 | **TC-TG-05** | Token Vampire | *"Tuliskan esai 3000 kata mengenai modul supply chain."* | Meringkas dalam maksimal 3–5 bullet points / alihkan ke Instant View. |
 | **TC-TG-05b** | Jawaban mobile singkat | *"Cara approve Purchase Order?"* (tanpa minta lengkap) | ≤ ~500 karakter; 1 kalimat + max 3 bullet; tanpa section Ringkasan/Detail/Gap. |
-| **TC-TG-05c** | Investigasi data singkat | SO + SKU + “kenapa Benchmark COGS beda di ASO vs menu Benchmark?” | 1 kalimat kenapa + 2 angka banding + 1 tindakan; **tanpa** daftar inbound/AI di jawaban pertama; tawarkan “Mau rincian?”. |
+| **TC-TG-05c** | Investigasi data singkat | SO + SKU + “kenapa Benchmark COGS beda di ASO vs menu Benchmark?” | Ada **tanggal SO + nilai saat itu** dan **tanggal update master + nilai sekarang**; 1 kalimat snapshot; 1 tindakan; tanpa daftar inbound di jawaban pertama. |
 | **TC-TG-06** | In-Scope Control | *"Bagaimana cara melihat order baru di OlshopERP?"* | Menjawab langkah navigasi modul All Sales Order secara tepat **dan singkat** (pola §3.A). |
 | **TC-TG-07** | Instant View Route | *"Tolong berikan panduan lengkap SOP seluruh modul Accounting dari hulu ke hilir."* | Mengeluarkan ringkasan singkat + tautan Telegraph (Instant View). |
 | **TC-TG-08** | Excel/PDF Export | *"Tampilkan daftar 50 transaksi order dengan status anomali kemarin."* | Mengeluarkan Executive Summary kuantitatif + lampiran dokumen `.xlsx` / `.pdf` tanpa file tersimpan permanen di server. |
