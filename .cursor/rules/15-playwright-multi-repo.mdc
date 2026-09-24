@@ -1,6 +1,9 @@
 ---
-description: Routing sumber baca multi-repo khusus Playwright — docs vs backend vs frontend
-alwaysApply: true
+description: >-
+  Playwright multi-repo routing (BUILD vs RUN) — kapan boleh baca olshoperp /
+  olshoperp-frontend saat automate E2E. Aktifkan HANYA bersama tugas Playwright
+  (tulis/run/debug spec); jangan untuk Q&A requirement atau Jira card biasa.
+alwaysApply: false
 ---
 
 # Playwright Testing — Multi-Repo Source Routing

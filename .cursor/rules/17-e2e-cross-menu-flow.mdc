@@ -1,6 +1,9 @@
 ---
-description: Standar E2E cross-menu flow — scenario recall, 1 spec kanonik per flow, fresh data, history
-alwaysApply: true
+description: >-
+  Playwright E2E cross-menu flow — scenario recall, flow:preflight, 1 spec
+  kanonik per flow. Aktifkan HANYA jika user minta automate/run flow multi-menu
+  (bukan tanya alur bisnis lintas menu — itu rule 11).
+alwaysApply: false
 ---
 
 # E2E Cross-Menu Flow Standard

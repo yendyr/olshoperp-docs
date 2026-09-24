@@ -14,7 +14,8 @@ Agent = **QA Engineer** yang wajib menguasai **system requirement** dan **user r
 
 ## Root dokumentasi
 
-Konten QA ada di **`qa-docs/`** (langsung di root repo). Bukan `docs/qa-docs/`.
+Konten QA ada di **`qa-docs/`** (langsung di root repo). Bukan `docs/qa-docs/`.  
+Dokumentasi referensi / suplemen sistem eksternal (misal: UPFOS Open API) ada di **`docs/supplementary-knowledge/`**.
 
 ## Mulai di sini
 
@@ -27,14 +28,28 @@ Konten QA ada di **`qa-docs/`** (langsung di root repo). Bukan `docs/qa-docs/`.
 > mutlak dalam satu halaman. Runbook memberi tahu dokumen mana yang perlu dibuka;
 > **tidak perlu membaca semua rule dulu**.
 
-Untuk tugas dokumentasi/pertanyaan QA:
+Untuk tugas dokumentasi/pertanyaan QA & Sistem:
 
-1. Baca `.cursor/rules/` (alwaysApply)
+1. Baca `.cursor/rules/` yang **alwaysApply** (jangan load Playwright/TC format kecuali dibutuhkan — lihat di bawah)
 2. Baca **`qa-docs/_meta/manifest.yaml`** — 121 menu, source of truth
-3. Triage pertanyaan → `08-question-triage.mdc`
-4. Buka `qa-docs/{menu-slug}/README.md` → layer doc sesuai audience
+3. Pertanyaan seputar integrasi legacy/UPFOS API → rujuk `docs/supplementary-knowledge/upfos-api-jianjie.md`
+4. Triage pertanyaan → `08-question-triage.mdc`
+5. Buka `qa-docs/{menu-slug}/README.md` → layer doc sesuai audience
 
 **Peta lengkap struktur:** `.cursor/rules/04-qa-docs-index.mdc`
+
+### Rules requestable (hemat token — jangan always-on)
+
+Hanya **baca/aktifkan** saat konteks cocok:
+
+| File | Kapan aktifkan |
+|------|----------------|
+| `13-test-case-format.mdc` | Buat/edit `TC-*.md`, `#renumber-tc`, atau TC untuk automation |
+| `14-playwright-e2e.mdc` | User minta **otomatisasi / run / debug Playwright** |
+| `15-playwright-multi-repo.mdc` | Bersama `14` (BUILD vs RUN, kapan buka repo app) |
+| `17-e2e-cross-menu-flow.mdc` | Automate/run **flow** multi-menu |
+
+Q&A requirement, Jira card screening, docs — **tidak** perlu load keempat file di atas.
 
 ## Staging app
 
@@ -68,11 +83,11 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `10-anti-hallucination.mdc` | Larangan mengarang menu/API/status |
 | `11-cross-menu-navigation.mdc` | Trace alur lintas modul & menu terkait |
 | `12-jira-card-format.mdc` | Format Bug / Improvement / Change Requirement + trigger word. Site: **ETM** / `erpintegration.atlassian.net` saja — jangan org lain |
-| `13-test-case-format.mdc` | Standar `TC-*.md`, DRAFT naming, `#renumber-tc` (semua menu), expected dari requirement, `origin_jira` / `last_execution` |
-| `14-playwright-e2e.mdc` | Eksekusi Playwright — fidelity TC, run scope, auth, POM, **kontrak tooling MCP vs CLI (§6B)** |
-| `15-playwright-multi-repo.mdc` | BUILD vs RUN: docs-only re-test jika TC automation lengkap; FE/BE hanya BUILD/debug |
+| `13-test-case-format.mdc` | **Requestable** — standar `TC-*.md`; aktifkan saat buat/edit TC / `#renumber-tc` / automate |
+| `14-playwright-e2e.mdc` | **Requestable** — eksekusi Playwright; aktifkan HANYA jika minta otomatisasi/run/debug |
+| `15-playwright-multi-repo.mdc` | **Requestable** — BUILD vs RUN; aktifkan bersama tugas Playwright |
 | `16-card-tc-queue.mdc` | `#card-tc` → antrian `test-queue.yaml`; tes card `ETM-xxxxx` = cek TC existing dulu, baru DRAFT jika delta |
-| `17-e2e-cross-menu-flow.mdc` | E2E chain ≥2 menu: TC flow = recall TC origin (no duplikasi step), scenario layer `tests/scenarios/`, 1 spec kanonik per flow, fresh data per run, history last/prev-run |
+| `17-e2e-cross-menu-flow.mdc` | **Requestable** — E2E flow multi-menu; aktifkan HANYA untuk automate/run flow |
 | `18-sync-jira-done.mdc` | Trigger `#sync-jira-done` / `#syncjiradone` — sync Jira Test Case Done (Test Result + Actual Result) ke `last_execution` / `first_execution` |
 | `19-database-data-verification.mdc` | Cek data level DB via webhook (Tyas/Staging shared, Merdian terpisah) — pointer ke `tests/DATA-VERIFICATION.md` + SoT `olshoperp` rule 19; bukan bukti TC passed |
 | `20-telegram-chatbot-guardrails.mdc` | Standar rules, proteksi prompt injection, data privacy/PII, dan efisiensi token untuk Chatbot Telegram OlshopERP |

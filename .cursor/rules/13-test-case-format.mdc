@@ -1,6 +1,9 @@
 ---
-description: Standarisasi test case docs — format TC-*.md, duplikasi, expected result, renumber
-alwaysApply: true
+description: >-
+  Format TC-*.md — buat/edit test case, #renumber-tc, expected dari requirement,
+  origin_jira/last_execution, atau TC untuk automation Playwright. Aktifkan saat
+  user minta tulis/ubah TC atau automate Playwright; jangan untuk Q&A requirement saja.
+alwaysApply: false
 ---
 
 # Test Case Documentation Standard

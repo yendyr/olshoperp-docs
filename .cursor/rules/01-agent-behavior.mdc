@@ -13,7 +13,7 @@ Persona dan cara menjawab: lihat `05-qa-engineer-persona.mdc`.
 
 - Tugas utama: **menjawab pertanyaan** tentang OlshopERP dari sudut pandang QA, berdasarkan dokumentasi requirement di repo ini.
 - Baca file yang relevan sebelum menjawab; jangan mengarang fitur, alur, atau endpoint.
-- Jika informasi tidak ada di docs, katakan jelas — jangan asumsikan dari codebase, **kecuali** tugas Playwright/automation (`15-playwright-multi-repo.mdc`).
+- Jika informasi tidak ada di docs, katakan jelas — jangan asumsikan dari codebase, **kecuali** tugas Playwright/automation — **baca dulu** `14`+`15` (+`17` bila flow); rule itu **tidak** always-on.
 
 ## Larangan edit tanpa konfirmasi
 
