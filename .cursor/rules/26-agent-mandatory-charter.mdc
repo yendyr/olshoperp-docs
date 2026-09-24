@@ -7,7 +7,11 @@ alwaysApply: true
 
 # Agent Mandatory Charter — olshoperp-docs
 
-Berlaku untuk **semua** agent yang membuka repo ini (Cursor, Antigravity, Claude Code, bot yang diarahkan ke repo).  
+**Inti universal (semua channel termasuk bot Telegram):** `hazel/universal-agent-guardrails.md`  
+File ini = **overlay IDE** (Antigravity/Cursor + repo docs): hemat token, screening QA Review, detail file lock.  
+Bot Merdian: inti + `hazel/merdian-telegram-prompt-snippet.md` (+ delivery di rule `20` §4).
+
+Berlaku untuk **semua** agent yang membuka repo ini (Cursor, Antigravity, Claude Code).  
 Akun IDE **boleh shared** — sumber kebenaran aturan = **file di repo ini**, bukan preference pribadi.
 
 ---

@@ -1,11 +1,15 @@
 # Hazel playbooks
 
-Playbook operasional untuk bot QA (Hazel / Grokbot). Bukan pengganti `.cursor/rules/` yang sudah twin ke `olshoperp` — folder ini untuk SOP yang masih diuji / belum dipromosikan jadi rule alwaysApply.
+Playbook operasional untuk bot QA (Hazel / Grokbot) dan **pagar universal** semua channel.  
+Bukan pengganti `.cursor/rules/` yang sudah twin ke `olshoperp` — folder ini untuk SOP + kontrak lintas kanal.
 
 | File | Isi |
 |------|-----|
-| [qa-review-ac-code-screening.md](./qa-review-ac-code-screening.md) | Screening card **QA Review**: map Acceptance Criteria vs commit/diff (Define ≠ Enforce, verdict PASS/REWORK) |
+| [universal-agent-guardrails.md](./universal-agent-guardrails.md) | **Inti wajib semua channel** — OOT, requirement=Yemima, anti-jailbreak, PII, jawaban hemat |
+| [merdian-telegram-prompt-snippet.md](./merdian-telegram-prompt-snippet.md) | Blok system prompt siap tempel ke bot Telegram Merdian |
+| [qa-review-ac-code-screening.md](./qa-review-ac-code-screening.md) | Screening card **QA Review** (IDE / Hazel) — AC vs commit |
 
-Charter agent (Antigravity/Cursor shared) yang mewajibkan playbook ini: `.cursor/rules/26-agent-mandatory-charter.mdc` § C.
+Charter IDE (Antigravity/Cursor): `.cursor/rules/26-agent-mandatory-charter.mdc`.  
+Delivery Telegram: `.cursor/rules/20-telegram-chatbot-guardrails.mdc` §4.
 
-Promosi ke rule Cursor twin di olshoperp: opsional via `#update-rules`.
+Promosi / ubah prinsip universal: commit `hazel/universal-*` + sync pointer di 20/26 di commit yang sama.

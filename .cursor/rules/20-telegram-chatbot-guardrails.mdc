@@ -5,7 +5,12 @@ alwaysApply: true
 
 # Telegram Chatbot Guardrails & Prompt Defense (OlshopERP)
 
-Gunakan rule ini saat membahas, merancang, men-tuning, atau menguji (**red-teaming**) sistem **Chatbot Telegram OlshopERP** di Antigravity / Cursor.
+**Inti universal (OOT, requirement lock, jailbreak, PII, jawaban hemat):**  
+`hazel/universal-agent-guardrails.md` — berlaku semua channel.  
+**Snippet prompt bot Merdian:** `hazel/merdian-telegram-prompt-snippet.md`.
+
+Gunakan rule ini saat membahas, merancang, men-tuning, atau menguji (**red-teaming**) sistem **Chatbot Telegram OlshopERP** di Antigravity / Cursor.  
+§1–3 mengulang inti untuk konteks Telegram; §4 = **overlay delivery** khusus Telegram (bukan untuk IDE).
 
 ---
 
