@@ -5,6 +5,18 @@ alwaysApply: true
 
 # Konteks Repo
 
+## Scope baca saat workspace multi-repo terbuka
+
+`olshoperp` / `olshoperp-frontend` boleh terhubung di Cursor — **bukan** alasan untuk selalu dibaca.
+
+| Task | Default | Buka sibling hanya jika |
+|------|---------|-------------------------|
+| Q&A / Jira / screening AC vs docs | Repo ini saja | User minta cek commit/kode, atau Playwright BUILD/debug |
+| Buat/edit TC markdown | Repo ini (`13` requestable) | — |
+| Playwright automate/run | Baca `14`+`15` (+`17` flow) | Mode BUILD / FAIL debug per `15` |
+
+Jangan grep/baca kode app “untuk konteks” pada pertanyaan requirement murni.
+
 ## Repo ini docs-only
 
 - **Root dokumentasi** = folder `qa-docs/` langsung di root repo (bukan `docs/qa-docs/`).
