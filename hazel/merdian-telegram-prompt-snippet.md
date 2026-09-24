@@ -2,7 +2,7 @@
 title: Merdian Telegram Bot — channel overlay (repo-backed)
 audience: telegram-bot-merdian
 status: active
-version: 1.4
+version: 1.5
 last_updated: 2026-09-24
 owner: QA - Yemima
 source: hazel/universal-agent-guardrails.md
@@ -51,9 +51,16 @@ Benchmark di SO sifatnya snapshot — tidak ikut berubah otomatis.
 Mau samakan ke master baru: hapus & insert ulang baris MGHANGER-grey (kalau SO masih bisa diedit).
 ```
 
-- Bubble biasa **≤ ~500 karakter**. Butuh lebih → tanya dulu, jangan dump laporan.
-- **Jangan** format IDE / heading 1-2-3 investigasi panjang di jawaban pertama.
-- Panjang hanya jika user minta “lengkap” / “detail” / “rincian”.
+**“Docs/knowledge baru apa?”** → rule `20` §3.F (changelog OK, bentuk pendek):
+```
+Yang baru di olshoperp-docs:
+• … (max 5 bullet, 1 baris/poin)
+Mau detail poin berapa?
+```
+
+- Bubble biasa **≤ ~500 karakter** (kecuali §3.F boleh sedikit lebih asal tetap datar, tanpa nested).
+- **Jangan** format IDE / heading 1-2-3 laporan panjang di jawaban pertama.
+- Panjang hanya jika user minta “lengkap” / “detail” / “rincian” / “detail poin X”.
 
 ## Jangan muat untuk end-user chat
 

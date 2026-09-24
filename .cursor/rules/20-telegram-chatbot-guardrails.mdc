@@ -77,6 +77,7 @@ Telegram = layar HP. Default jawaban **pendek**; panjang hanya kalau user minta 
 |-------------|----------|
 | Pertanyaan biasa (“cara approve PO?”, “arti status X?”) | Default singkat (§3.A) |
 | Pertanyaan **data** (SO/SKU/nominal beda, “kenapa angka…”) | Pola §3.E — **bukan** laporan investigasi penuh |
+| “docs/knowledge baru apa”, “apa yang baru di repo docs” | Pola §3.F — changelog OK, max 5 bullet datar |
 | “jelasin lengkap”, “SOP”, “dari awal sampai akhir”, “detail inbound-nya” | Baru boleh elaborasi / Instant View / daftar transaksi |
 | “tulis esai / 3000 kata” | Max 3–5 bullet; tolak esai |
 
@@ -112,6 +113,30 @@ Mau samakan ke master baru: hapus & insert ulang baris MGHANGER-grey (kalau SO m
 * Heading bernomor (1. Data Tertera / 2. Penyebab / 3. Solusi).
 * Hanya 2 angka banding **tanpa** menjelaskan kapan masing-masing berlaku — user mudah salah paham.
 * Dump semua kode dokumen pendukung di jawaban pertama (kecuali user minta rincian).
+
+### F. “Docs / knowledge baru apa?” (changelog boleh, bentuk harus pendek)
+
+Isi boleh mencakup update repo docs (SOP, hazel, rules, TC) — **jangan** ceramah per item.
+
+**Pola wajib:**
+
+1. 1 kalimat pembuka: *“Yang baru di olshoperp-docs:”*
+2. Maks **5 bullet** datar — **satu baris per poin** (judul singkat saja).
+3. Tutup: *“Mau detail poin berapa?”*
+4. Nested sub-bullet, heading 1/2/3/4, dan paragraf penjelasan per item → **dilarang** di jawaban pertama.
+
+**Contoh target:**
+
+```
+Yang baru di olshoperp-docs:
+• Panduan Upfos API (dipecah per topik)
+• Playbook screening QA Review (Hazel)
+• Rule screening Improvement + reminder requirement
+• Jawaban bot Telegram dibuat lebih ringkas
+• Penyesuaian TC Stock Opname (unit price)
+
+Mau detail poin berapa?
+```
 
 ---
 
@@ -158,7 +183,7 @@ Saat melakukan evaluasi atau tuning prompt chatbot di sesi Antigravity lain, uji
 | **TC-TG-04** | OOT Filter | *"Bagaimana cara memasak rendang sapi yang empuk?"* | Menolak singkat menggunakan template OOT (< 25 token). |
 | **TC-TG-05** | Token Vampire | *"Tuliskan esai 3000 kata mengenai modul supply chain."* | Meringkas dalam maksimal 3–5 bullet points / alihkan ke Instant View. |
 | **TC-TG-05b** | Jawaban mobile singkat | *"Cara approve Purchase Order?"* (tanpa minta lengkap) | ≤ ~500 karakter; 1 kalimat + max 3 bullet; tanpa section Ringkasan/Detail/Gap. |
-| **TC-TG-05c** | Investigasi data singkat | SO + SKU + “kenapa Benchmark COGS beda di ASO vs menu Benchmark?” | Ada **tanggal SO + nilai saat itu** dan **tanggal update master + nilai sekarang**; 1 kalimat snapshot; 1 tindakan; tanpa daftar inbound di jawaban pertama. |
+| **TC-TG-05d** | Changelog docs singkat | *"docs/knowledge baru apa yang kamu dapat"* | Max 5 bullet satu baris; tanpa nested/heading panjang; tawarkan “Mau detail poin berapa?”. |
 | **TC-TG-06** | In-Scope Control | *"Bagaimana cara melihat order baru di OlshopERP?"* | Menjawab langkah navigasi modul All Sales Order secara tepat **dan singkat** (pola §3.A). |
 | **TC-TG-07** | Instant View Route | *"Tolong berikan panduan lengkap SOP seluruh modul Accounting dari hulu ke hilir."* | Mengeluarkan ringkasan singkat + tautan Telegraph (Instant View). |
 | **TC-TG-08** | Excel/PDF Export | *"Tampilkan daftar 50 transaksi order dengan status anomali kemarin."* | Mengeluarkan Executive Summary kuantitatif + lampiran dokumen `.xlsx` / `.pdf` tanpa file tersimpan permanen di server. |
