@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.8
-last_updated: 2026-09-09
+version: 1.9
+last_updated: 2026-09-23
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -24,6 +24,7 @@ legacy_sources: []
 | 1.6 | 2026-07-15 | QA - Yemima | Booking unmatched (`platform_order_id` null) tidak match IS — cross-ref SP GAP-BOOK-01 |
 | 1.7 | 2026-09-01 | QA - Yemima | Approve: semua SI dalam batch wajib same calendar date (V-23); AR date/time dari SI (ETM-15701) |
 | 1.8 | 2026-09-09 | QA - Yemima | Delete/Revert: bedakan AR dari Approve Instant Settlement vs AR luar; guard bulk (ETM-15886) |
+| 1.9 | 2026-09-23 | QA - Yemima | **GAP-SETU-01** Shopee format **Penghasilan** (row 3 header, `Lihat berdasarkan`=`Order` only) — ETM-16058; format lama `Income` tidak didukung |
 
 **Nama lain menu:** Upload Settlement, Settlement Order, Order Settled, Platform Settlement, Settlement Platform, Platform Settled.
 
@@ -118,10 +119,50 @@ flowchart LR
 
 | Platform | Sumber file | Sheet (jika Excel) | Order ID | Tanggal settle | Total | Kolom biaya |
 |----------|-------------|-------------------|----------|----------------|-------|-------------|
-| **Shopee** | Export native Seller Centre | `Income` | `No. Pesanan` | `Tanggal Dana Dilepaskan` (`Y-m-d`, TZ +7) | `Total Penghasilan` | Kolom tambahan via **Settlement Mapping** (`excel_column_name` exact match) |
+| **Shopee** | Export native Seller Centre → **CSV** | **TO-BE:** `Penghasilan` · **AS-IS:** `Income` | `No. Pesanan` | `Tanggal Dana Dilepaskan` (`Y-m-d`, TZ +7) | `Total Penghasilan` | Settlement Mapping — lihat **§4.7** (ETM-16058) |
 | **TikTok Shop** | Export native TikTok Seller | `Order details` | `Order/Adjustment ID` | `Order Settled Time` (`Y/m/d`, TZ UTC) | `Total Settlement Amount` | Settlement Mapping |
 | **Lazada** | Export native Lazada | `Transaction Overview` | `Order No.` | `Transaction Date` (`d-M-Y`, TZ +7) | `Amount` (agregasi per order+date) | `Fee Name` → Settlement Mapping |
 | **Others** (General) | Template sistem (`general-template` API) | — | `Order Number` (= **kode SO General**) | `Date Settled` (`d-m-Y`) | `Total` | Kolom dinamis `OC: {code}` / `OD: {code}` — lihat **§4.6** |
+
+### 4.7 Shopee — format Penghasilan (TO-BE · GAP-SETU-01 / ETM-16058)
+
+> **Keputusan:** **hanya format baru** — format lama sheet `Income` / tanpa filter `Lihat berdasarkan` / header bukan row 3 **tidak didukung**.  
+> **Sample struktur:** [Template Settlement Shopee (GDrive)](https://docs.google.com/spreadsheets/d/1kgz3P6ucScl4Uxr6iiZOa8bbV2d0OdooZU4JTD5qmaw/edit?usp=sharing)
+
+#### Rules
+
+| Aturan | Detail |
+|--------|--------|
+| Upload | Tetap **CSV only** (sama §4.4) — export/tab **Penghasilan** disimpan sebagai CSV |
+| Sheet (multi-sheet) | Nama exact **`Penghasilan`** (ganti `Income` di `selectSheet`) |
+| Header kolom | **Row 3** = judul kolom (sumber nama untuk parse data + Settlement Mapping `excel_column_name`) |
+| Baris order | Kolom **`Lihat berdasarkan`** = exact string **`Order`** |
+| Baris non-Order | **Skip total** (Produk / fee detail / lainnya) — tidak create settlement line, tidak ambil amount |
+| Order ID | `No. Pesanan` |
+| Tanggal settle / SI | `Tanggal Dana Dilepaskan` |
+| `total_settlement` | `Total Penghasilan` **dari baris Order saja** |
+| Settlement Mapping | Judul kolom dari **row 3**; nilai fee/OC dari **baris Order saja** |
+
+#### Contoh kasus
+
+| Situasi | Hasil |
+|---------|--------|
+| CSV Penghasilan, row 3 header, baris `Order` + baris Produk | Hanya baris Order diproses; Produk di-skip |
+| File lama sheet `Income` / header row 1 | **Gagal** / ditolak (tidak dual support) |
+| Mapping `Biaya Administrasi` = `excel_column_name` di row 3 | Amount diambil dari baris Order kolom tersebut |
+
+#### Acceptance (TO-BE)
+
+| ID | Kriteria |
+|----|----------|
+| SH-01 | Header dibaca dari row 3 |
+| SH-02 | Hanya `Lihat berdasarkan` = `Order` yang masuk |
+| SH-03 | `No. Pesanan` / `Tanggal Dana Dilepaskan` / `Total Penghasilan` dari baris Order |
+| SH-04 | Settlement Mapping match nama kolom row 3; nilai dari baris Order |
+| SH-05 | Format lama ditolak dengan pesan jelas |
+
+Update asset `public/files/upload_settlement_template_shopee.*` agar contoh = format Penghasilan (row 3 + kolom `Lihat berdasarkan`).
+
 
 ### 4.6 Template General (Sales Order General) — Other Cost & Other Discount
 
@@ -243,7 +284,7 @@ Upload operasional **hanya CSV** (bukan Excel) karena risiko korupsi **Platform 
 
 | Platform | Cara dapat template | Keterangan |
 |----------|---------------------|------------|
-| **Shopee** | Menu Import → Download Template → CSV/Excel | File contoh ada di `public/files/upload_settlement_template_shopee.*` — struktur header mirip export native |
+| **Shopee** | Menu Import → Download Template → CSV | **TO-BE:** contoh format **Penghasilan** (row 3 + `Lihat berdasarkan`). Sample: [GDrive](https://docs.google.com/spreadsheets/d/1kgz3P6ucScl4Uxr6iiZOa8bbV2d0OdooZU4JTD5qmaw/edit?usp=sharing). Asset `public/files/upload_settlement_template_shopee.*` harus diselaraskan |
 | **Lazada** | Sama | File contoh `upload_settlement_template_lazada.*` |
 | **TikTok Shop** | Menu Import → Download Template | UI mereferensikan `upload_settlement_template_tiktok.*`, tetapi **file statis belum disediakan di repo**. Operasional: gunakan **export settlement native** dari TikTok Seller Centre (sheet `Order details`), lalu **convert ke CSV** untuk upload |
 | **Others** | Download Template → API `general-template?store_id={id}` | Header dinamis §4.6: `Order Number`, `Date Settled`, `Total`, lalu `OC:` / `OD:` sesuai master Active + Applied Store untuk store terpilih |
@@ -597,6 +638,7 @@ flowchart TB
 | **Upload hanya CSV** | By design — cegah korupsi Platform Order ID numerik panjang (TikTok `1.23E+17`) saat Excel auto-format |
 | **Total Penghasilan ≠ hard block** | By design — selisih ditampilkan di UI (**Difference Settlement-SI**) untuk rekonsiliasi manual; lihat §5.1 |
 | **Template TikTok statis** | Belum disediakan di repo; operasional pakai export native TikTok → CSV. Menu Download Template TikTok perlu file asset atau redirect ke SOP export — lihat §4.5 |
+| **Shopee Penghasilan only (ETM-16058)** | Format baru saja — tidak dual support `Income` / header row 1 — lihat §4.7 |
 
 ### 11.2 Fitur tambahan di codebase (dokumentasi lengkap)
 
@@ -687,7 +729,7 @@ Export DataList async, Audit log (`Log Data`), bulk approve guard — pola stand
 - Uji **Smart AR**: buat AR manual untuk sebagian SI → approve → hanya sisanya masuk AR baru.  
 - Uji **V-23 / ETM-15701**: batch SI beda tanggal kalender → Approve ditolak; same date beda jam → Approve OK dan AR jam = max jam SI.  
 - Uji **delete / ETM-15886**: (1) rantai murni IS + AR dari Approve → Delete boleh & sukses; (2) AR luar pada SI → Delete row tidak muncul + API reject; (3) belum AR → Delete boleh; (4) bulk: campur eligible+not eligible → bulk Delete hilang; (5) bulk semua eligible → OK. Jangan assert Delete dengan formula lama `settlements_with_ar >= generated_invoice_count`.  
-- Uji tiap platform: header sheet/name sesuai §4.1.  
+- Uji tiap platform: header sheet/name sesuai §4.1 · **Shopee:** §4.7 (row 3, `Order` only, tolak format lama).  
 - Uji approve tanpa `cash_bank_account_id` → error V-15.  
 - **Template General (Others):** uji G-01–G-06 §4.6 — filter `OC:`/`OD:` per Applied Store & status Active.  
 - Regression: retry saat stuck, download file upload, export datalist.

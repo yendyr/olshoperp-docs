@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.8
-last_updated: 2026-09-09
+version: 1.9
+last_updated: 2026-09-23
 owner: QA - Yemima
 status: review
 audience: operator
@@ -100,10 +100,14 @@ flowchart LR
 > ⚠️ **Upload hanya `.csv`** — bukan Excel. Order ID TikTok/Shopee berupa angka panjang; Excel mengubahnya jadi `1.23E+17` sehingga order tidak ketemu dan **seluruh batch gagal**.
 
 ### Shopee
-- **File:** export native Seller Centre (disarankan sheet/tab **Income**)
-- **Kolom wajib:** `No. Pesanan`, `Tanggal Dana Dilepaskan`, `Total Penghasilan`
+- **File:** export Seller Centre tab/sheet **Penghasilan** → **simpan sebagai CSV** (bukan Excel).  
+  Sample struktur: [Template Settlement Shopee](https://docs.google.com/spreadsheets/d/1kgz3P6ucScl4Uxr6iiZOa8bbV2d0OdooZU4JTD5qmaw/edit?usp=sharing)
+- **Header kolom:** di **baris ke-3** file (bukan baris 1)
+- **Hanya baris order:** kolom **`Lihat berdasarkan`** = **`Order`**. Baris Produk / detail lain **diabaikan**
+- **Kolom wajib (di baris Order):** `No. Pesanan`, `Tanggal Dana Dilepaskan`, `Total Penghasilan`
 - **Format tanggal:** `Y-m-d` (contoh: `2026-06-19`)
-- **Biaya lain:** kolom sesuai Settlement Mapping (nama kolom harus sama persis dengan mapping)
+- **Biaya lain:** Settlement Mapping — nama kolom harus sama dengan judul di baris 3; nilai diambil dari baris Order
+- **Format lama** (sheet Income / tanpa filter Order) **tidak dipakai lagi** — upload ulang dengan export Penghasilan baru
 
 ### TikTok Shop
 - **File:** export native TikTok Seller (sheet **Order details**) → **simpan sebagai CSV**
@@ -290,7 +294,7 @@ Detail integrasi lengkap: [requirement.md §10](./requirement.md#10-relasi-menu-
 |--------|---------------|--------|
 | *Unable to find order* / SO Failed | Order ID di file tidak ada di sistem | Cek typo No. Pesanan; untuk **booking Shopee** tunggu **MATCHED** (Platform Order ID terisi di baris booking) — lihat Sales Platform KB § Booking |
 | Seluruh batch gagal, SO Failed > 0 | Ada order belum Shipped / tidak ditemukan / stok | Klik SO Failed → perbaiki order → upload ulang file **baru** |
-| *File does not match selected store* | File platform salah atau header tidak dikenali | Pastikan file dari platform yang sama dengan store; cek kolom wajib §5 |
+| *File does not match selected store* | File platform salah atau header tidak dikenali | Pastikan file dari platform yang sama dengan store; cek kolom wajib §5. **Shopee:** pakai CSV Penghasilan (header row 3, ada `Lihat berdasarkan`) — format Income lama ditolak |
 | Import macet, ikon ⚠️ | Queue/job lambat atau error background | Klik ⚠️ atau tunggu; hubungi admin jika >1 jam |
 | Tombol Approve disabled | Semua SI sudah punya AR | Normal jika piutang sudah lunas manual |
 | Error saat Approve: Receiving Destination COA | Cash/Bank Receiving belum di Store Setting | Isi di menu Store Setting |
@@ -305,6 +309,12 @@ Detail integrasi lengkap: [requirement.md §10](./requirement.md#10-relasi-menu-
 ---
 
 ## 12. FAQ
+
+**Q: File Shopee saya format lama (Income) — masih bisa upload?**  
+A: **Tidak.** Hanya format **Penghasilan** (header di baris 3, kolom `Lihat berdasarkan`, baris Order saja). Export ulang dari Seller Centre → simpan CSV. Sample: [Template Settlement Shopee](https://docs.google.com/spreadsheets/d/1kgz3P6ucScl4Uxr6iiZOa8bbV2d0OdooZU4JTD5qmaw/edit?usp=sharing).
+
+**Q: Baris “Produk” di file Penghasilan ikut di-settle?**  
+A: **Tidak.** Hanya baris dengan `Lihat berdasarkan` = **Order**.
 
 **Q: Booking Shopee (Order ID masih `-`) bisa di-settle?**
 A: **Belum.** Settlement toko marketplace mencocokkan **Platform Order ID**. Tunggu booking status **MATCHED** → ID terisi di baris Sales Platform → baru upload. Approve booking amount 0 juga **tidak** langsung buat invoice. Pola: booking masuk dulu by Booking Number; Order ID sering nempel belakangan (lihat Sales Platform KB § Booking).

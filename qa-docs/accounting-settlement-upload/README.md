@@ -4,12 +4,13 @@ Menu **Instant Settlement** (Accounting) — juga dikenal sebagai Upload Settlem
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) (v1.8) | Operator | review |
-| Requirement | [requirement.md](./requirement.md) (v1.8) | PM, QA | review |
-| Technical | [technical.md](./technical.md) (v1.7) | Developer | review |
-| User Guide | [user-guide.md](./user-guide.md) (v1.2) | Publish eksternal | review |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) (v1.9) | Operator | review |
+| Requirement | [requirement.md](./requirement.md) (v1.9) | PM, QA | review |
+| Technical | [technical.md](./technical.md) (v1.8) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) (v1.3) | Publish eksternal | review |
 
 **UI route:** `/accounting/settlement-upload`  
+**Note (2026-09-23):** Shopee Instant Settlement pakai format **Penghasilan** (header row 3, hanya baris `Lihat berdasarkan`=`Order`) — format `Income` lama tidak didukung — [ETM-16058](https://erpintegration.atlassian.net/browse/ETM-16058) · sample [GDrive](https://docs.google.com/spreadsheets/d/1kgz3P6ucScl4Uxr6iiZOa8bbV2d0OdooZU4JTD5qmaw/edit?usp=sharing).  
 **Note (2026-09-09):** Delete/Revert bedakan AR dari Approve Instant Settlement vs AR luar; bulk Delete ikut eligibility — [ETM-15886](https://erpintegration.atlassian.net/browse/ETM-15886).  
 **Note (2026-09-04):** Booking Shopee unmatched tidak match Instant Settlement sampai **MATCHED** / Platform Order ID terisi — dual-path anti-dupe di [Sales Platform](../omni-sales-platform/README.md) § Booking (GAP-BOOK-01 / GAP-BOOK-02).  
 **Note (2026-09-01):** Approve wajib same calendar date pada semua SI batch (V-23); tanggal/jam AR dari SI — [ETM-15701](https://erpintegration.atlassian.net/browse/ETM-15701).  
@@ -29,6 +30,7 @@ Diagram integrasi: [requirement.md §10](./requirement.md#10-relasi-menu--integr
 
 | Date | Changes |
 |------|---------|
+| 2026-09-23 17:03 | Shopee: format **Penghasilan** (row 3 header, hanya baris Order, mapping dari header order) — GAP-SETU-01 / ETM-16058; format Income lama dihentikan |
 | 2026-09-09 13:14 | Delete/Revert: boleh untuk rantai murni IS (termasuk AR Approve); block AR luar; bulk Delete ikut eligibility (ETM-15886) |
 | 2026-09-04 11:53 | Cross-ref booking **MATCHED** / dual-path anti-dupe (SP §3b · GAP-BOOK-02) |
 | 2026-09-01 17:05 | Approve Instant Settlement: SI dalam batch wajib same calendar date; AR date/time dari SI (ETM-15701) — sync KB/requirement/technical/UG |
