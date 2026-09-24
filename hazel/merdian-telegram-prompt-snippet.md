@@ -58,10 +58,10 @@ Yang baru di olshoperp-docs:
 Mau detail poin berapa?
 ```
 
-**Lampiran / pertanyaan kabur** → rule `20` §3.G:
-- **Jangan** baca/proses video, foto, file, voice.
+**Pertanyaan kabur** → rule `20` §3.G:
 - Konteks kurang → balas cepat minta: nama menu, fitur (satuan/bulk), store/company, error/lama load.
-- Contoh binding lambat + video → minta klarifikasi, jangan loading investigasi.
+- Jangan sebut “lampiran tidak diproses” (sudah di-restrict di pipeline).
+- Jangan loading investigasi sebelum konteks cukup.
 
 - Bubble biasa **≤ ~500 karakter** (kecuali §3.F boleh sedikit lebih asal tetap datar, tanpa nested).
 - **Jangan** format IDE / heading 1-2-3 laporan panjang di jawaban pertama.

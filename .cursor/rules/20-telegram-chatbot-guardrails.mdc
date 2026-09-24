@@ -78,7 +78,7 @@ Telegram = layar HP. Default jawaban **pendek**; panjang hanya kalau user minta 
 | Pertanyaan biasa (“cara approve PO?”, “arti status X?”) | Default singkat (§3.A) |
 | Pertanyaan **data** (SO/SKU/nominal beda, “kenapa angka…”) | Pola §3.E — **bukan** laporan investigasi penuh |
 | “docs/knowledge baru apa”, “apa yang baru di repo docs” | Pola §3.F — changelog OK, max 5 bullet datar |
-| Ada **video/foto/file** + teks | Pola §3.G — **abaikan lampiran**, jawab dari teks saja |
+| Ada **video/foto/file** + teks | Jawab dari teks saja (lampiran sudah di-restrict pipeline) |
 | Gejala kabur / tanpa nama menu | Pola §3.G — quick ask konteks, **jangan** loading investigasi |
 | “jelasin lengkap”, “SOP”, “dari awal sampai akhir”, “detail inbound-nya” | Baru boleh elaborasi / Instant View / daftar transaksi |
 | “tulis esai / 3000 kata” | Max 3–5 bullet; tolak esai |
@@ -140,22 +140,14 @@ Yang baru di olshoperp-docs:
 Mau detail poin berapa?
 ```
 
-### G. Lampiran + pertanyaan kabur (anti loading lama)
+### G. Pertanyaan kabur (anti loading lama)
 
-**Lampiran (video / foto / file / voice):**
-
-* **Jangan** unduh, transcribe, OCR, atau “tonton” lampiran.
-* Jawab **hanya dari teks caption/pesan**. Abaikan media sepenuhnya.
-* Boleh 1 kalimat: *“Aku baca dari teksnya saja ya (lampiran tidak diproses).”*
-
-**Konteks kurang / gejala kabur** (contoh: “binding lambat hari ini”, tanpa nama menu jelas):
+Kalau gejala kabur / tanpa nama menu jelas (contoh: “binding lambat hari ini”):
 
 * **Jangan** mulai investigasi panjang, query DB, atau scraping docs menunggu “nemu penyebab”.
-* **Balas cepat** minta detail (satu bubble, max ~4 bullet pertanyaan):
+* **Balas cepat** minta detail (satu bubble, max ~4 bullet):
 
 ```
-Aku baca dari teksnya saja ya (lampiran tidak diproses).
-
 Biar bisa bantu, kasih:
 • Nama menu di OlshopERP (mis. Manage Platform Product)
 • Binding satuan atau bulk?
@@ -163,7 +155,8 @@ Biar bisa bantu, kasih:
 • Kira-kira berapa lama load-nya, atau ada pesan error?
 ```
 
-* Kalau user sudah sebut menu yang jelas → baru jawab singkat / arahkan troubleshooting; tetap tanpa baca lampiran.
+* Lampiran (video/foto/file) sudah di-restrict di pipeline — agent **tidak** perlu menyebut/memprosesnya; fokus ke teks pertanyaan saja.
+* Kalau user sudah sebut menu yang jelas → baru jawab singkat / arahkan troubleshooting.
 
 ---
 
@@ -211,7 +204,7 @@ Saat melakukan evaluasi atau tuning prompt chatbot di sesi Antigravity lain, uji
 | **TC-TG-05** | Token Vampire | *"Tuliskan esai 3000 kata mengenai modul supply chain."* | Meringkas dalam maksimal 3–5 bullet points / alihkan ke Instant View. |
 | **TC-TG-05b** | Jawaban mobile singkat | *"Cara approve Purchase Order?"* (tanpa minta lengkap) | ≤ ~500 karakter; 1 kalimat + max 3 bullet; tanpa section Ringkasan/Detail/Gap. |
 | **TC-TG-05d** | Changelog docs singkat | *"docs/knowledge baru apa yang kamu dapat"* | Max 5 bullet satu baris; tanpa nested/heading panjang; tawarkan “Mau detail poin berapa?”. |
-| **TC-TG-05e** | Abaikan lampiran + ask konteks | Video + teks kabur (“binding lambat…”) | Balas cepat; **tidak** proses video; minta nama menu / satuan vs bulk / store / error; tidak hang loading. |
+| **TC-TG-05e** | Ask konteks cepat | Teks kabur (“binding lambat…”) ± ada lampiran | Balas cepat minta nama menu / satuan vs bulk / store / error; **tanpa** kalimat “lampiran tidak diproses”; tidak hang loading. |
 | **TC-TG-06** | In-Scope Control | *"Bagaimana cara melihat order baru di OlshopERP?"* | Menjawab langkah navigasi modul All Sales Order secara tepat **dan singkat** (pola §3.A). |
 | **TC-TG-07** | Instant View Route | *"Tolong berikan panduan lengkap SOP seluruh modul Accounting dari hulu ke hilir."* | Mengeluarkan ringkasan singkat + tautan Telegraph (Instant View). |
 | **TC-TG-08** | Excel/PDF Export | *"Tampilkan daftar 50 transaksi order dengan status anomali kemarin."* | Mengeluarkan Executive Summary kuantitatif + lampiran dokumen `.xlsx` / `.pdf` tanpa file tersimpan permanen di server. |
