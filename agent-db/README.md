@@ -1,7 +1,7 @@
 ---
 doc_type: agent-db-catalog
-version: 5.0
-last_updated: 2026-09-14
+version: 5.1
+last_updated: 2026-09-24
 owner: QA - Yemima
 ---
 
@@ -56,9 +56,10 @@ S2  Peta prefix dari nama menu:
     Pengecualian: Sales Return & Purchase Return (menu Accounting / SCM) = scm_stock_mutations.
     Adjustment Inbound/Outbound (Accounting): kemungkinan scm_stock_mutations
       (is_inventory_adjustment = 1) — belum diverifikasi, DESCRIBE dulu.
-S3  SHOW TABLES LIKE '%keyword%' (saring prefix S2).
+S3  **LAST RESORT** — hanya jika S0+S1+S2 gagal. Maks **1** `SHOW TABLES LIKE` per pertanyaan.
+    Wajib pakai prefix S2: `SHOW TABLES LIKE 'scm_%inbound%'` — **bukan** `LIKE '%cogs%'` / `LIKE '%order%'` tanpa prefix.
+    Dilarang beruntun LIKE dengan keyword beda (menebak). Ambigu → DESCRIBE max 2 kandidat, lalu pilih.
     System Product → scm_products; Manage Platform Product → omni_products.
-    Ambigu → DESCRIBE kandidat, jangan SELECT tebakan.
 S4  DESCRIBE <tabel> — 1× per tabel per sesi.
     Wajib jika kolom yang akan dipakai belum tercatat di cache atau belum di-DESCRIBE di sesi ini.
     Wajib untuk omni_sales_orders.
@@ -67,6 +68,15 @@ S5  SELECT hanya kolom yang muncul di DESCRIBE.
     HTTP 500 / Unknown column → STOP menebak → DESCRIBE → perbaiki query → maks 1 retry.
 S6  Write-back cache.md + auto commit & push (lihat bawah). Hanya kalau belajar hal baru.
 ```
+
+**Anti-boros usage (wajib):**
+
+| Lakukan | Jangan |
+|---------|--------|
+| Baca `cache.md` dulu (S0) | Langsung `SHOW TABLES LIKE '%…%'` |
+| 1 LIKE ber-prefix jika S0–S2 miss | 3–10 LIKE berganti keyword |
+| DESCRIBE 1× lalu SELECT | Tebak kolom → 500 → tebak lagi |
+| S6 tulis cache setelah ketemu tabel baru | Ulangi LIKE di sesi/agent berikutnya untuk menu yang sama |
 
 ---
 

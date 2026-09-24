@@ -29,14 +29,16 @@ S2  Prefix dari nama menu: PO/PR/inbound/outbound/transfer/System Product/wareho
     SO/store/wave/Manage Platform Product → omni_ · Journal/COA/invoice/payment/CN/DN/tax → accounting_ ·
     User/role → gate_ · Company → gs_
     Pengecualian: Sales Return & Purchase Return (Accounting/SCM) = scm_stock_mutations.
-S3  SHOW TABLES LIKE '%keyword%' (saring prefix S2). Ambigu → DESCRIBE kandidat.
+S3  **LAST RESORT** — hanya jika S0+S1+S2 gagal. Maks **1** `SHOW TABLES LIKE` per pertanyaan.
+    Wajib prefix S2 (`scm_%…%`), dilarang `LIKE '%keyword%'` tanpa prefix / LIKE beruntun.
+    Ambigu → DESCRIBE max 2 kandidat.
 S4  DESCRIBE <tabel> 1×/tabel/sesi — wajib jika kolom belum tercatat di cache atau belum di-DESCRIBE. Wajib omni_sales_orders.
 S5  SELECT hanya kolom dari DESCRIBE; company_id / deleted_at hanya jika ada.
     500 / Unknown column → STOP menebak → DESCRIBE → maks 1 retry.
 S6  Belajar hal baru → write-back agent-db/cache.md + auto commit & push main (agent-db/README.md § S6).
 ```
 
-Cheat: System Product → `scm_products` · Purchase Order → `scm_purchase_orders` · Purchase Inbound → `scm_stock_mutations` (bukan `type='in'`) · Journal → `accounting_journals` (bukan `acc_`) · CN/DN/Payment → `accounting_payments` + `type` · Sales Return Accounting/SCM → `scm_stock_mutations` · Sales Order → `omni_sales_orders` (DESCRIBE wajib) · User → `gate_users`.
+Cheat: System Product → `scm_products` · Purchase Order → `scm_purchase_orders` · Purchase Inbound → `scm_stock_mutations` (bukan `type='in'`) · Journal → `accounting_journals` (bukan `acc_`) · CN/DN/Payment → `accounting_payments` + `type` · Sales Return Accounting/SCM → `scm_stock_mutations` · Sales Order → `omni_sales_orders` (DESCRIBE wajib) · User → `gate_users` · Benchmark COGS → `accounting_product_benchmark_prices`.
 
 - `status` = flag aktif 1/0; status dokumen = `transaction_status` (lowercase).
 - `*_formatted` / Vue `*_id` bukan kolom. `requirement.md` = expected, bukan nama kolom.
