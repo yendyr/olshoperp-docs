@@ -40,22 +40,24 @@ expected_result: |
   Dokumen lama SO-681D7C9C kini Platform Order ID-nya berubah menjadi 'void-2622880139669007'.
   Sistem berhasil membentuk dokumen Sales Order platform baru berstatus OPEN dengan nomor Platform Order ID asli '2622880139669007'.
 test_result:
-  status: failed
-  started_at: "2026-09-17T14:30:00+07:00"
-  finished_at: "2026-09-17T14:45:00+07:00"
+  status: passed
+  started_at: "2026-09-18T16:00:00+07:00"
+  finished_at: "2026-09-18T16:15:00+07:00"
   executed_by: "QA - Yemima"
   environment: staging
-  log_summary: "Tombol recreate tampil dan dapat diklik. Namun, ketika diklik muncul notifikasi error 500: 'Attempt to read property \"data_owner_id\" on null'."
+  log_summary: "PASSED (Retest ETM-15971): Error 500 telah diperbaiki dengan graceful error handling. Recreate pada order dengan store deleted (2622880139669007) memunculkan notifikasi 'Unable to get data from platform because store has been deleted'. Recreate pada order dengan store inactive (250802R6NPC0CF) memunculkan notifikasi 'Unable to get data from platform because store is inactive'."
   report_url: null
 test_data_used:
-  - field: "Sales Order Code"
+  - field: "Sales Order Code 1"
     value: "SO-681D7C9C"
-  - field: "Platform Order ID"
-    value: "2622880139669007"
-  - field: "Status Order Saat Recreate"
-    value: "VOID"
-  - field: "Error Response"
-    value: "HTTP 500: Attempt to read property \"data_owner_id\" on null"
+  - field: "Platform Order ID 1"
+    value: "2622880139669007 (Store: Deleted)"
+  - field: "Respon 1"
+    value: "Unable to get data from platform because store has been deleted"
+  - field: "Platform Order ID 2"
+    value: "250802R6NPC0CF (Store: Inactive)"
+  - field: "Respon 2"
+    value: "Unable to get data from platform because store is inactive"
 run_history: []
 origin_jira: ETM-15798
 first_execution:
@@ -63,9 +65,9 @@ first_execution:
   via: "manual:Yemima"
   jira: ETM-15798
 last_execution:
-  at: "2026-09-17"
-  jira: ETM-15798
-  status: failed
+  at: "2026-09-18"
+  jira: ETM-15971
+  status: passed
   via: "manual:Yemima"
-  notes: "Tombol recreate tampil dan dapat diklik namun memicu notifikasi error 500 Attempt to read property data_owner_id on null."
+  notes: "Retest ETM-15971 lolos dengan penanganan notifikasi: store deleted memunculkan 'Unable to get data from platform because store has been deleted' dan store inactive memunculkan 'Unable to get data from platform because store is inactive'."
 ---

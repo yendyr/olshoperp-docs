@@ -17,6 +17,7 @@ Prefix folder: `SPLG`.
 | TC-SPLG-005 | Memastikan Deaktivasi Filter Pill (Toggle OFF) Mengembalikan Seluruh Data Platform Sales Order | **passed** | [ETM-15447](https://erpintegration.atlassian.net/browse/ETM-15447) | - | ✅ | 2026-08-20 |
 | TC-SPLG-006 | Memastikan Interaksi Single-Active Toggle antar Pill Buttons di Sales Platform | **passed** | [ETM-15447](https://erpintegration.atlassian.net/browse/ETM-15447) | - | ✅ | 2026-08-20 |
 | TC-SPLG-007 | Memastikan Kondisi Batas (Boundary: Net Sales == COGS, Net Sales > COGS, dan COGS = 0) Tidak Lolos Filter di Sales Platform | **passed** | [ETM-15447](https://erpintegration.atlassian.net/browse/ETM-15447) | - | ✅ | 2026-08-20 |
+
 | TC-SPLG-008 | Memastikan Penanganan Empty State saat 0 Data Memenuhi Kriteria Filter di Sales Platform | **passed** | [ETM-15447](https://erpintegration.atlassian.net/browse/ETM-15447) | - | ✅ | 2026-08-20 |
 | TC-SPLG-009 | Memastikan Tampilan Icon Under Benchmark COGS (cogs-error) pada Kolom Error Flag & Baris Detail Order di Sales Platform | **passed** | [ETM-15447](https://erpintegration.atlassian.net/browse/ETM-15447) | - | ✅ | 2026-08-20 |
 | TC-SPLG-010 | Memastikan Platform SKU yang Belum Terbinding (Unbound) Tidak Memicu Filter Net Sales < COGS (benchmark_cogs = 0) | **passed** | [ETM-15447](https://erpintegration.atlassian.net/browse/ETM-15447) | - | ✅ | 2026-08-20 |
@@ -73,15 +74,34 @@ Prefix folder: `SPLG`.
 | PENDING-20260916153705 | Verifikasi Regresi Binding Platform Product ke Master System Product Non-Bundle | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
 | PENDING-20260916153706 | Verifikasi Remediasi Data Fix untuk Order Platform Existing Terdampak di Server Merdian | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
 
-### ETM-15859 / ETM-15798 — Void vs Void & Recreate vs Recreate + Anti Auto-Create Sync on Platform Orders
+### ETM-15859 / ETM-15798 / ETM-15971 — Void vs Void & Recreate platform orders (anti auto re-create)
 
 | TC Code | Judul Test Case | File | Status |
 |---|---|---|---|
 | `TC-SPLG-018` | Verifikasi Void Murni Tanpa Prefix Platform Order ID pada Status APPROVED | [`TC-SPLG-018.md`](./TC-SPLG-018.md) | PASSED 🟢 |
 | `TC-SPLG-019` | Verifikasi Sync Gate Anti Auto-Create SO Baru pada Order Void Ber-ID Asli | [`TC-SPLG-019.md`](./TC-SPLG-019.md) | PASSED 🟢 |
-| `TC-SPLG-020` | Verifikasi Tombol dan Aksi Recreate pada Halaman Show SO Void | [`TC-SPLG-020.md`](./TC-SPLG-020.md) | FAILED 🔴 |
+| `TC-SPLG-020` | Verifikasi Tombol dan Aksi Recreate pada Halaman Show SO Void | [`TC-SPLG-020.md`](./TC-SPLG-020.md) | PASSED 🟢 |
 | `TC-SPLG-021` | Verifikasi Penanganan Prefix Bertingkat (void-2-) pada Multiple Recreate | [`TC-SPLG-021.md`](./TC-SPLG-021.md) | BLOCKED ⛔ |
 | `TC-SPLG-022` | Verifikasi Aksi Void & Recreate Langsung dari Dialog Void | [`TC-SPLG-022.md`](./TC-SPLG-022.md) | SKIPPED ⚪ |
 | `TC-SPLG-023` | Verifikasi Alur Void & Recreate pada Menu All Sales Order | [`TC-SPLG-023.md`](./TC-SPLG-023.md) | PASSED 🟢 |
-| `TC-SPLG-024` | Verifikasi Paritas Alur Void Only pada Menu All Sales Order | [`TC-SPLG-024.md`](./TC-SPLG-024.md) | FAILED 🔴 |
+| `TC-SPLG-024` | Verifikasi Paritas Alur Void Only pada Menu All Sales Order | [`TC-SPLG-024.md`](./TC-SPLG-024.md) | PASSED 🟢 |
+
+### ETM-15893 — [Sales Platform / Sales Order] Order Lifecycle panel (Platform ≠ General)
+
+Origin Card: [ETM-15893](https://erpintegration.atlassian.net/browse/ETM-15893)
+
+| TC Code | Judul Test Case | File | Status |
+|---|---|---|---|
+| `TC-SOP-ORDLSC-01` | Entry Point Navigasi Form Edit dan Pembukaan Slideover Order Lifecycle XL | [`TC-SOP-ORDLSC-01.md`](./TC-SOP-ORDLSC-01.md) | PASSED 🟢 |
+| `TC-SOP-ORDLSC-02` | Tampilan Layout dan Persona Mode Sales Platform pada Order Lifecycle | [`TC-SOP-ORDLSC-02.md`](./TC-SOP-ORDLSC-02.md) | PASSED 🟢 |
+| `TC-SOP-ORDLSC-03` | Tampilan Layout dan Persona Mode Sales Order General pada Order Lifecycle | [`TC-SOP-ORDLSC-03.md`](./TC-SOP-ORDLSC-03.md) | PASSED 🟢 |
+| `TC-SOP-ORDLSC-04` | Kalkulasi dan Integritas Strip Quantity dan Strip Money pada Order Lifecycle | [`TC-SOP-ORDLSC-04.md`](./TC-SOP-ORDLSC-04.md) | FAILED 🔴 |
+| `TC-SOP-ORDLSC-05` | Card Dokumen Transaksi Terkait (Related Transactions) dan Validasi Hyperlink | [`TC-SOP-ORDLSC-05.md`](./TC-SOP-ORDLSC-05.md) | FAILED 🔴 |
+| `TC-SOP-ORDLSC-06` | Humanized Wording pada Section What Held This Order Up | [`TC-SOP-ORDLSC-06.md`](./TC-SOP-ORDLSC-06.md) | PASSED 🟢 |
+| `TC-SOP-ORDLSC-07` | Fungsionalitas Print Order Lifecycle dan Keselarasan Data Cetak | [`TC-SOP-ORDLSC-07.md`](./TC-SOP-ORDLSC-07.md) | FAILED 🔴 |
+| `TC-SOP-ORDLSC-08` | Pembukaan Order Lifecycle pada Status Terminal VOID / REJECTED dan Status Awal (DRAFT / OPEN) | [`TC-SOP-ORDLSC-08.md`](./TC-SOP-ORDLSC-08.md) | PASSED 🟢 |
+| `TC-SOP-ORDLSC-09` | Penanganan Order dengan Failed Ship (Partial FS dan Full FS) pada Strip Quantity dan Money | [`TC-SOP-ORDLSC-09.md`](./TC-SOP-ORDLSC-09.md) | PASSED 🟢 |
+| `TC-SOP-ORDLSC-10` | Penanganan Retur Pasca-Settlement dan Pembentukan Credit Note (CN) pada Money Trail | [`TC-SOP-ORDLSC-10.md`](./TC-SOP-ORDLSC-10.md) | FAILED 🔴 |
+| `TC-SOP-ORDLSC-11` | Penanganan Selisih Pembayaran (Under/Overpayment) dengan Penyesuaian Adjustment dan Debit/Credit Note pada Card AR | [`TC-SOP-ORDLSC-11.md`](./TC-SOP-ORDLSC-11.md) | FAILED 🔴 |
+| `TC-SOP-ORDLSC-12` | Breakdown Rincian Nilai Sales Invoice (Line Items + Other Cost - Other Discount = Total Invoice) | [`TC-SOP-ORDLSC-12.md`](./TC-SOP-ORDLSC-12.md) | FAILED 🔴 |
 
