@@ -16,6 +16,7 @@ Kolom: **Menu** | **Tebakan** | **Table** | **Catatan**
 | Outbound | outbound | `scm_stock_mutations` | `code LIKE 'OT-%' AND is_inventory_adjustment = 0 AND is_return_process = 0` |
 | Transfer Internal | TFI | `scm_stock_mutations` | `type = 'tf internal'` |
 | Transfer External | TFE | `scm_stock_mutations` | `type = 'tf external'` |
+| Stock Opname | opname / SP | `scm_stock_mutations` | header sama tabel mutasi; detail `scm_opname_details`; deduction/addition otomatis juga `scm_stock_mutations` (`transaction_reference_class` StockOpname). Bukan tabel `scm_stock_opnames` |
 | Warehouse | warehouses | `scm_warehouses` | |
 | Sales Return (Supply Chain) | sales return / SR | `scm_stock_mutations` | `is_return_process = 1`, `code LIKE 'SR-%'`. **Bukan** `omni_sales_returns` |
 | (stok) | item stock / stok | `scm_item_stocks` | large — jangan `SELECT *` |
