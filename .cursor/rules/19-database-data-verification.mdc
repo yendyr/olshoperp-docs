@@ -12,41 +12,36 @@ Pakai rule ini saat user / tugas menyebut **cek db**, **query db**, **db staging
 | Layer | Lokasi | Isi |
 |-------|--------|-----|
 | **Kontrol QA (workspace ini)** | `tests/DATA-VERIFICATION.md` | Level L1/L2/L3, kapan boleh, matriks env, gate company_id |
+| **Katalog Skema (agent)** | `agent-db/schema-catalog.yaml` + `agent-db/cache.md` | Skema tabel, kolom kunci, kolom index, tenant `owned_by` |
 | **SoT teknis runner** | `../olshoperp/.cursor/rules/19-database-debugger.mdc` | Read-only, forensik 4 langkah, larangan secret |
 | **Mekanisme Eksekusi** | Direct HTTP POST (Webhook n8n) | Eksekusi via HTTP Request; kredensial dari `.env` |
-| **Nama tabel (agent)** | `agent-db/cache.md` + `agent-db/README.md` | Menu → tabel, jebakan kolom, S0–S6, write-back |
 
-Jangan menduplikasi prosedur panjang di sini — baca `tests/DATA-VERIFICATION.md` dulu, lalu rule 19 di `olshoperp` jika forensik mendalam.
+Jangan menduplikasi prosedur panjang di sini — baca `agent-db/schema-catalog.yaml` dulu untuk skema presisi.
 
-## 0. Menu → tabel → kolom (wajib sebelum SELECT bisnis)
+## 0. Zero-Exploration Sequence (One-Shot Query)
 
-User menyebut **nama menu**, bukan `scm_`/`omni_`. Jangan tebak nama tabel/kolom. Detail + contoh: `agent-db/README.md`.
+Agent **DILARANG SPAM QUERY** (`SHOW TABLES` / `DESCRIBE`). Seluruh skema tabel, kolom, relasi, dan indeks sudah tersedia lokal di `agent-db/schema-catalog.yaml`.
 
 ```
-S0  Cari nama menu / kata user di agent-db/cache.md. Ketemu tabel → S4.
-S1  Cheat di bawah. Ketemu tabel → S4.
-S2  Prefix dari nama menu: PO/PR/inbound/outbound/transfer/System Product/warehouse → scm_ ·
-    SO/store/wave/Manage Platform Product → omni_ · Journal/COA/invoice/payment/CN/DN/tax → accounting_ ·
-    User/role → gate_ · Company → gs_
-    Pengecualian: Sales Return & Purchase Return (Accounting/SCM) = scm_stock_mutations.
-S3  **LAST RESORT** — hanya jika S0+S1+S2 gagal. Maks **1** `SHOW TABLES LIKE` per pertanyaan.
-    Wajib prefix S2 (`scm_%…%`), dilarang `LIKE '%keyword%'` tanpa prefix / LIKE beruntun.
-    Ambigu → DESCRIBE max 2 kandidat.
-S4  DESCRIBE <tabel> 1×/tabel/sesi — wajib jika kolom belum tercatat di cache atau belum di-DESCRIBE. Wajib omni_sales_orders.
-S5  SELECT hanya kolom dari DESCRIBE; company_id / deleted_at hanya jika ada.
-    500 / Unknown column → STOP menebak → DESCRIBE → maks 1 retry.
-S6  Belajar hal baru → write-back agent-db/cache.md + auto commit & push main (agent-db/README.md § S6).
+S0  CEK KONTEKS & LOKAL: Jika skema sudah ada di ingatanmu, JANGAN baca file berulang. Jika belum, cek `agent-db/cache.md`. Hanya baca `agent-db/schema-catalog.yaml` jika butuh detail index/struktur.
+S1  TENANT SCOPE: Gunakan `owned_by = <company_id>` (BUKAN `company_id`).
+    Semua tabel SCM, Omni, Accounting, Gate memiliki composite index (owned_by, is_all_company, deleted_at).
+S2  INDEX-AWARE: Susun filter WHERE HANYA menggunakan kolom ber-indeks (mis. order_no, code, created_at range).
+S3  ONE-SHOT QUERY: Langsung kirim 1x SELECT spesifik dengan LIMIT. Dilarang SELECT * pada tabel besar.
+S4  FALLBACK: Hanya jika tabel sama sekali belum ada di catalog, boleh 1x DESCRIBE lalu catat ke schema-catalog.yaml.
 ```
 
-Cheat: System Product → `scm_products` · Purchase Order → `scm_purchase_orders` · Purchase Inbound → `scm_stock_mutations` (bukan `type='in'`) · Journal → `accounting_journals` (bukan `acc_`) · CN/DN/Payment → `accounting_payments` + `type` · Sales Return Accounting/SCM → `scm_stock_mutations` · Sales Order → `omni_sales_orders` (DESCRIBE wajib) · User → `gate_users` · Benchmark COGS → `accounting_product_benchmark_prices`.
-
-- `status` = flag aktif 1/0; status dokumen = `transaction_status` (lowercase).
-- `*_formatted` / Vue `*_id` bukan kolom. `requirement.md` = expected, bukan nama kolom.
-- Jangan `olshoperp/docs/db-schema/` untuk nama kolom.
+Aturan Kolom & Nilai Kunci:
+- Tenant Company = `owned_by` (Bukan `company_id`).
+- `status` = flag aktif 1/0; status dokumen = `transaction_status` (lowercase: `draft`, `open`, `approved`, `void`, dll).
+- DILARANG `LIKE '%keyword%'` (Leading Wildcard) — selalu gunakan exact match (`=`) atau prefix match (`LIKE 'OT-%'`). Leading `%` mematikan index dan memaksa Full Table Scan (>15 detik).
+- `audits` = WAJIB `auditable_type = 'App\\\\Models\\\\...' AND auditable_id = <id>`. Dilarang query audits tanpa `auditable_type`.
+- Backslash JSON = Format 4 backslash di body JSON: `"SELECT 'App\\\\Models\\\\X' AS t"`.
 
 ## Routing env & HTTP Request
 
-DILARANG menjalankan runner script `.mjs` (`scripts/agent-db-query.mjs`). Eksekusi wajib langsung via **HTTP POST Request** ke Webhook n8n.
+DILARANG MEMBUAT FILE SCRIPT (`.ps1`, `.mjs`, `.sh`, `.py`) di dalam direktori workspace (`_local/`, root, atau folder repo manapun) yang berpotensi menjadi file sampah dan membocorkan API key.
+Eksekusi wajib langsung via **HTTP POST Request inline (`curl`)** atau temporary scratch artifact (`brain/<conversation-id>/scratch/`). Kredensial dibaca dinamis dari `.env` (Dilarang hardcode API key).
 
 - **Tyas** (`tyas_olshoperp`) + **Staging** (`staging_olshoperp`) → webhook **shared**:
   * **URL**: `https://n8n.olshoperp.com/webhook/agent-db-tyas`
@@ -62,19 +57,19 @@ Contoh eksekusi via HTTP Request (`curl`):
 curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: $DB_DEBUG_API_KEY" \
-  -d '{"db":"staging_olshoperp","query":"DESCRIBE scm_products"}'
+  -d '{"db":"staging_olshoperp","query":"SELECT id, sku, name FROM scm_products WHERE owned_by = 153 AND deleted_at IS NULL LIMIT 5"}'
 
 # Query Tyas
 curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: $DB_DEBUG_API_KEY" \
-  -d '{"db":"tyas_olshoperp","query":"SELECT id, sku FROM scm_products WHERE company_id = 153 AND deleted_at IS NULL LIMIT 5"}'
+  -d '{"db":"tyas_olshoperp","query":"SELECT id, order_no, transaction_status FROM omni_sales_orders WHERE owned_by = 153 AND deleted_at IS NULL LIMIT 5"}'
 
 # Query Merdian
 curl -s -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: $DB_DEBUG_API_KEY_MERDIAN" \
-  -d '{"db":"merdian_olshoperp","query":"SELECT id, name FROM gate_users LIMIT 5"}'
+  -d '{"db":"merdian_olshoperp","query":"SELECT id, username, first_name FROM gate_users WHERE owned_by = 1 LIMIT 5"}'
 ```
 
 ## Larangan QA (mutlak)
@@ -82,7 +77,7 @@ curl -s -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
 1. Hasil DB **bukan** bukti `last_execution.status: passed` untuk TC UI-crawling.
 2. Jangan expose `DB_DEBUG_API_KEY*` / URL override di chat, TC, atau commit.
 3. Dilarang menggunakan runner script `.mjs` — wajib HTTP POST Request langsung ke Webhook.
-4. Selalu filter scope **company** yang sedang diuji; SoftDeletes awareness.
+4. Selalu filter scope **company** (`owned_by`) yang sedang diuji; SoftDeletes awareness (`deleted_at IS NULL`).
 5. Read-only saja — hanya `SELECT`, `EXPLAIN`, `DESCRIBE`, `SHOW`, `WITH`. Dilarang mutasi SQL (`INSERT`/`UPDATE`/`DELETE`/`DROP`).
 6. Jangan buat folder `qa-docs/{menu}` khusus “cek DB” — tooling ops, bukan fitur menu.
 

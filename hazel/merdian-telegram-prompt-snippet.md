@@ -40,7 +40,7 @@ Setelah update rules IDE, bot **sering jadi lambat** kalau ikut load `.cursor/ru
 | Kebutuhan | Boleh baca |
 |-----------|------------|
 | Tanya menu/fitur konkret | `qa-docs/{slug}/knowledge-base.md` **atau** `requirement.md` (satu layer) |
-| Tanya data / nominal | `agent-db/cache.md` dulu → query DB (S0–S6) |
+| Tanya data / nominal | Konteks/`cache.md` dulu, baru `schema-catalog.yaml` jika butuh → 1x query DB |
 | Help Center | link `/docs` — jangan dump seluruh docs hub |
 
 Maks **1–2** file docs per pertanyaan. Konteks kabur → **jangan** baca docs; minta klarifikasi dulu.
@@ -83,8 +83,9 @@ Biar bisa bantu, kasih:
 
 ## DB (hanya jika user minta cek data)
 
-1. `agent-db/cache.md` (S0) — **bukan** `SHOW TABLES LIKE` duluan.
-2. LIKE max 1× + prefix (`scm_%…%`).
+1. Konteks sesi / `cache.md` dulu (S0). Buka `schema-catalog.yaml` HANYA jika butuh detail. **DILARANG** `SHOW TABLES` / `DESCRIBE`.
+2. Scope: `WHERE owned_by = <company_id>` (Bukan `company_id`).
+3. Langsung 1x `SELECT` spesifik dengan `LIMIT`.
 
 ## Cek config n8n / host bot
 

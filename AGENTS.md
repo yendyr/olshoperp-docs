@@ -59,7 +59,7 @@ Hanya **baca/aktifkan** saat konteks cocok:
 | `16-card-tc-queue.mdc` | `#card-tc` / antrian / testing card ETM |
 | `17-e2e-cross-menu-flow.mdc` | Automate/run **flow** multi-menu |
 | `18-sync-jira-done.mdc` | `#sync-jira-done` / sync TC dari Jira Done |
-| `19-database-data-verification.mdc` | Cek/query DB via webhook |
+| `19-database-data-verification.mdc` | Cek/query DB via webhook (Zero-Exploration via `agent-db/schema-catalog.yaml`) |
 | `20-telegram-chatbot-guardrails.mdc` | Tuning/uji bot di IDE (bukan runtime bot) |
 | `21-log-debugger.mdc` | Cek log server / exception |
 | `22-reopen-defect-flow.mdc` | Re-OPEN / defect dari QA Review |
@@ -67,6 +67,7 @@ Hanya **baca/aktifkan** saat konteks cocok:
 | `24-plain-language-team-comms.mdc` | Tulis card/comment/Telegram ke tim QA |
 | `25-improvement-request-screening.mdc` | Screening Improvement ber-Request ID |
 | `26-requirement-docs-reminder.mdc` | Reminder backlog requirement docs |
+| `26-agent-mandatory-charter.mdc` | **Always** — overlay IDE; inti universal di `hazel/universal-agent-guardrails.md` |
 
 Always-on tipis: `01` behavior · `02` repo · `03` immutable · `05` persona · `07` uncertainty · `10` anti-hallucination · `26` charter.
 
@@ -108,7 +109,7 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `16-card-tc-queue.mdc` | **Requestable** — `#card-tc` / test-queue / testing card ETM |
 | `17-e2e-cross-menu-flow.mdc` | **Requestable** — E2E flow multi-menu; aktifkan HANYA untuk automate/run flow |
 | `18-sync-jira-done.mdc` | **Requestable** — `#sync-jira-done` → `last_execution` |
-| `19-database-data-verification.mdc` | **Requestable** — cek DB via webhook |
+| `19-database-data-verification.mdc` | **Requestable** — cek DB via webhook (Zero-Exploration; wajib pakai `agent-db/schema-catalog.yaml`) |
 | `20-telegram-chatbot-guardrails.mdc` | **Requestable** — referensi IDE/red-team bot Telegram (**bukan** runtime; runtime = 2 file hazel) |
 | `21-log-debugger.mdc` | **Requestable** — log server / exception |
 | `22-reopen-defect-flow.mdc` | **Requestable** — Re-OPEN / defect QA Review |

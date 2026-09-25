@@ -40,43 +40,34 @@ Pola umum:
 
 ---
 
-## Sequence S0–S6
+## Sequence Baru: Zero-Exploration (Fast & Token Efficient)
 
-S0–S3 = cari **nama tabel**. Tabel ketemu → lanjut S4 (bukan langsung SELECT).
+Agent **DILARANG** melakukan query eksplorasi (`SHOW TABLES LIKE` dan `DESCRIBE`) jika tabel sudah tercatat di `schema-catalog.yaml` atau `cache.md`.
 
 ```
-S0  Cari nama menu / kata user di cache.md (kolom Menu + Tebakan). Ketemu tabel → S4.
-S1  Cheat sheet di rule 19. Ketemu tabel → S4.
-S2  Peta prefix dari nama menu:
-      PO / PR / inbound / outbound / transfer / System Product / warehouse → scm_
-      SO / store / wave / Manage Platform Product → omni_
-      Journal / COA / invoice / payment / CN / DN / tax → accounting_
-      User / role → gate_
-      Company → gs_
-    Pengecualian: Sales Return & Purchase Return (menu Accounting / SCM) = scm_stock_mutations.
-    Adjustment Inbound/Outbound (Accounting): kemungkinan scm_stock_mutations
-      (is_inventory_adjustment = 1) — belum diverifikasi, DESCRIBE dulu.
-S3  **LAST RESORT** — hanya jika S0+S1+S2 gagal. Maks **1** `SHOW TABLES LIKE` per pertanyaan.
-    Wajib pakai prefix S2: `SHOW TABLES LIKE 'scm_%inbound%'` — **bukan** `LIKE '%cogs%'` / `LIKE '%order%'` tanpa prefix.
-    Dilarang beruntun LIKE dengan keyword beda (menebak). Ambigu → DESCRIBE max 2 kandidat, lalu pilih.
-    System Product → scm_products; Manage Platform Product → omni_products.
-S4  DESCRIBE <tabel> — 1× per tabel per sesi.
-    Wajib jika kolom yang akan dipakai belum tercatat di cache atau belum di-DESCRIBE di sesi ini.
-    Wajib untuk omni_sales_orders.
-S5  SELECT hanya kolom yang muncul di DESCRIBE.
-    company_id / deleted_at hanya jika kolomnya ada di DESCRIBE.
-    HTTP 500 / Unknown column → STOP menebak → DESCRIBE → perbaiki query → maks 1 retry.
-S6  Write-back cache.md + auto commit & push (lihat bawah). Hanya kalau belajar hal baru.
+S0  CEK KONTEKS & LOKAL: Jika skema sudah diketahui dari konteks sesi, JANGAN baca file berulang. Jika belum, cek `agent-db/cache.md`. Buka `agent-db/schema-catalog.yaml` HANYA jika butuh detail index dan kolom (0 HTTP Request).
+S1  SCOPE MULTI-TENANT: Gunakan `owned_by = <company_id>` (Bukan `company_id`).
+    Hampir seluruh tabel SCM, Omni, Accounting, dan Gate menggunakan `owned_by` dengan composite index `(owned_by, is_all_company, deleted_at)`.
+S2  INDEX-AWARE FILTER: Susun WHERE clause HANYA menggunakan kolom yang ada di daftar index schema-catalog.yaml.
+    - omni_sales_orders: order_no / reference_no / created_at range
+    - audits: auditable_type ('App\\\\Models\\\\...') AND auditable_id
+S3  ONE-SHOT SELECT: Langsung kirim 1 query SELECT spesifik dengan LIMIT.
+    Dilarang SELECT * pada tabel besar (scm_item_stocks, omni_sales_orders, audits).
+S4  FALLBACK (HANYA jika tabel BENAR-BENAR belum ada di catalog):
+    Boleh 1x DESCRIBE hanya untuk tabel baru yang tidak ada di schema-catalog.yaml.
+S5  WRITE-BACK & COMMIT: Tambahkan tabel baru tersebut ke schema-catalog.yaml / cache.md (lihat § S6).
 ```
 
-**Anti-boros usage (wajib):**
+**Anti-boros Usage & Anti-Spam (Mutlak):**
 
-| Lakukan | Jangan |
-|---------|--------|
-| Baca `cache.md` dulu (S0) | Langsung `SHOW TABLES LIKE '%…%'` |
-| 1 LIKE ber-prefix jika S0–S2 miss | 3–10 LIKE berganti keyword |
-| DESCRIBE 1× lalu SELECT | Tebak kolom → 500 → tebak lagi |
-| S6 tulis cache setelah ketemu tabel baru | Ulangi LIKE di sesi/agent berikutnya untuk menu yang sama |
+| Lakukan | Dilarang Keras |
+|---------|----------------|
+| Baca `schema-catalog.yaml` lokal dulu (S0) | Kirim `SHOW TABLES LIKE '%...%'` ke DB |
+| Langsung SELECT kolom spesifik | Kirim `DESCRIBE <table>` untuk tabel yang sudah di catalog |
+| Filter `WHERE owned_by = <company_id>` | Tebak `WHERE company_id = ...` (tidak ada kolomnya) |
+| Gunakan exact match (`=`) atau prefix `LIKE 'OT-%'` | Gunakan `LIKE '%keyword%'` (leading wildcard = Full Table Scan) |
+| Filter `audits` dengan `auditable_type` + `auditable_id` | Query `audits` hanya dengan `user_id` atau `event` (full scan) |
+| Escaping `App\\\\Models\\\\X` di JSON payload | Kirim backslash tunggal `App\Models\X` (kena 422) |
 
 ---
 

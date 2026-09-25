@@ -1,0 +1,314 @@
+# Master Schema Catalog for OlshopERP DB-Agent (Read-Only)
+# Version: 1.0
+# Engine: MariaDB 12.3.3
+# Standard Tenant Filter: owned_by = <company_id> AND deleted_at IS NULL (Bukan 'company_id')
+
+modules:
+  supply_chain:
+    scm_products:
+      menu: "System Product"
+      table: "scm_products"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[sku, owned_by]"
+        - "[code, owned_by]"
+        - "[name]"
+      key_columns: [id, code, sku, name, status, owned_by, barcode, uom_id, product_category_id, created_at, deleted_at]
+      note: "Master SKU Sistem. Beda dengan platform product (omni_products)."
+
+    scm_purchase_orders:
+      menu: "Purchase Order"
+      table: "scm_purchase_orders"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[transaction_status]"
+        - "[transaction_date]"
+      status_col: "transaction_status"
+      status_values: [draft, open, approved, processed, rejected, void, cancelled]
+      key_columns: [id, code, transaction_date, transaction_status, supplier_id, warehouse_id, owned_by, grand_total, created_at, deleted_at]
+      detail_relation:
+        table: "scm_purchase_order_details"
+        fk: "purchase_order_id"
+        key_columns: [id, purchase_order_id, product_id, qty, unit_price, subtotal]
+
+    scm_purchase_requisitions:
+      menu: "Purchase Requisition"
+      table: "scm_purchase_requisitions"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[transaction_status]"
+      status_col: "transaction_status"
+      key_columns: [id, code, transaction_date, transaction_status, warehouse_id, owned_by, created_at, deleted_at]
+      detail_relation:
+        table: "scm_purchase_requisition_detail"
+        fk: "purchase_requisition_id"
+        key_columns: [id, purchase_requisition_id, product_id, qty]
+
+    scm_stock_mutations:
+      menu: "Inbound / Outbound / Transfer / Sales Return / Purchase Return"
+      table: "scm_stock_mutations"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[transaction_status]"
+        - "[transaction_date]"
+        - "[warehouse_origin]"
+        - "[warehouse_destination]"
+        - "[type]"
+      status_col: "transaction_status"
+      key_columns: [id, code, transaction_date, transaction_status, type, warehouse_origin, warehouse_destination, supplier_id, customer_id, is_inventory_adjustment, is_return_process, owned_by, created_at, deleted_at]
+      type_filters:
+        inbound_grn: "warehouse_origin IS NULL AND supplier_id IS NOT NULL AND type IS NULL AND is_inventory_adjustment = 0 AND is_return_process = 0"
+        outbound: "code LIKE 'OT-%' AND is_inventory_adjustment = 0 AND is_return_process = 0"
+        transfer_internal: "type = 'tf internal'"
+        transfer_external: "type = 'tf external'"
+        sales_return_scm: "is_return_process = 1 AND code LIKE 'SR-%'"
+        purchase_return_scm: "is_return_process = 1 AND supplier_id IS NOT NULL AND customer_id IS NULL AND warehouse_destination IS NULL"
+      detail_relation:
+        table: "scm_stock_mutation_details"
+        fk: "stock_mutation_id"
+        key_columns: [id, stock_mutation_id, product_id, qty, cogs]
+
+    scm_warehouses:
+      menu: "Warehouse"
+      table: "scm_warehouses"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[name]"
+      key_columns: [id, code, name, status, owned_by, is_default, address, created_at, deleted_at]
+
+    scm_item_stocks:
+      menu: "Item Stock"
+      table: "scm_item_stocks"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[product_id, warehouse_id]"
+      key_columns: [id, product_id, warehouse_id, stock, reserved_stock, available_stock, owned_by]
+      warning: "Tabel besar. DILARANG SELECT * tanpa filter product_id atau warehouse_id."
+
+  omni_channel:
+    omni_products:
+      menu: "Manage Platform Product"
+      table: "omni_products"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[store_id]"
+        - "[platform_product_id]"
+        - "[sku]"
+      key_columns: [id, store_id, name, sku, platform_product_id, platform_sku, price, stock, status, owned_by, created_at, deleted_at]
+      note: "Produk marketplace/toko platform."
+
+    omni_sales_orders:
+      menu: "Sales Order / All Sales Order / Sales Platform"
+      table: "omni_sales_orders"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[order_no, owned_by]"
+        - "[reference_no, owned_by]"
+        - "[store_id]"
+        - "[transaction_status]"
+        - "[order_date]"
+      status_col: "transaction_status"
+      status_values: [draft, open, approved, wave_processing, ready_to_pack, packed, ready_to_ship, shipped, delivered, void, cancelled]
+      key_columns: [id, order_no, reference_no, order_date, transaction_status, store_id, customer_name, total_amount, payment_method, courier, tracking_number, owned_by, created_at, deleted_at]
+      detail_relation:
+        table: "omni_sales_order_details"
+        fk: "sales_order_id"
+        key_columns: [id, sales_order_id, product_id, sku, item_name, qty, unit_price, benchmark_cogs, subtotal]
+
+    omni_stores:
+      menu: "Store Binding"
+      table: "omni_stores"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[platform_id]"
+      key_columns: [id, code, name, platform_id, status, owned_by, created_at, deleted_at]
+
+    omni_waves:
+      menu: "Waves Management"
+      table: "omni_waves"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[wave_no, owned_by]"
+        - "[status]"
+      key_columns: [id, wave_no, warehouse_id, status, total_order, total_item, owned_by, created_at, deleted_at]
+
+    omni_sales_returns:
+      menu: "Sales Return (Omni)"
+      table: "omni_sales_returns"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[sales_order_id]"
+      key_columns: [id, code, sales_order_id, store_id, return_reason, status, owned_by, created_at, deleted_at]
+      detail_relation:
+        table: "omni_sales_return_details"
+        fk: "sales_return_id"
+        key_columns: [id, sales_return_id, product_id, qty]
+
+  accounting:
+    accounting_journals:
+      menu: "Journal"
+      table: "accounting_journals"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[transaction_status]"
+        - "[transaction_date]"
+      status_col: "transaction_status"
+      key_columns: [id, code, transaction_date, transaction_status, reference_no, description, grand_total, owned_by, created_at, deleted_at]
+      detail_relation:
+        table: "accounting_journal_details"
+        fk: "journal_id"
+        key_columns: [id, journal_id, coa_id, debit, credit, description]
+
+    accounting_chart_of_accounts:
+      menu: "Chart of Account"
+      table: "accounting_chart_of_accounts"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[name]"
+      key_columns: [id, code, name, chart_of_account_class_id, status, owned_by, created_at, deleted_at]
+
+    accounting_supplier_invoices:
+      menu: "Purchase Invoice"
+      table: "accounting_supplier_invoices"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[supplier_id]"
+        - "[transaction_status]"
+      status_col: "transaction_status"
+      key_columns: [id, code, supplier_id, transaction_date, due_date, transaction_status, grand_total_after_vat, owned_by, created_at, deleted_at]
+
+    accounting_customer_invoices:
+      menu: "Sales Invoice"
+      table: "accounting_customer_invoices"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[customer_id]"
+        - "[store_id]"
+        - "[transaction_status]"
+      status_col: "transaction_status"
+      key_columns: [id, code, customer_id, store_id, transaction_date, due_date, transaction_status, grand_total_after_vat, owned_by, created_at, deleted_at]
+
+    accounting_payments:
+      menu: "Customer Payment / Supplier Payment / Credit Note / Debit Note"
+      table: "accounting_payments"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+        - "[transaction_date]"
+      status_col: "transaction_status"
+      key_columns: [id, code, type, transaction_date, transaction_status, document_reference, grand_total, owned_by, created_at, deleted_at]
+      types:
+        - "Payment from Customer"
+        - "Payment to Supplier"
+        - "Credit Note"
+        - "Debit Note"
+
+    accounting_product_benchmark_prices:
+      menu: "Benchmark COGS"
+      table: "accounting_product_benchmark_prices"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[product_id]"
+      key_columns: [id, product_id, benchmark_price, manual_price, manual_effective_date, owned_by, created_at, deleted_at]
+
+    accounting_taxes:
+      menu: "Tax"
+      table: "accounting_taxes"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+      key_columns: [id, code, name, tariff, purchase_coa_id, sales_coa_id, status, owned_by, created_at, deleted_at]
+
+  system_and_gate:
+    gate_users:
+      menu: "User"
+      table: "gate_users"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[username]"
+        - "[email]"
+      key_columns: [id, username, first_name, last_name, email, is_employee, status, owned_by, created_at, deleted_at]
+
+    gate_roles:
+      menu: "Role"
+      table: "gate_roles"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[code, owned_by]"
+      key_columns: [id, code, role_name, role_name_alias, status, owned_by, created_at, deleted_at]
+
+    gs_companies:
+      menu: "Company"
+      table: "gs_companies"
+      pk: "id"
+      tenant_col: "owned_by"
+      indexes:
+        - "[owned_by, is_all_company, deleted_at]"
+        - "[name]"
+      key_columns: [id, code, name, company_type, status, owned_by, created_at, deleted_at]
+
+    audits:
+      menu: "Global Audit Log"
+      table: "audits"
+      pk: "id"
+      tenant_col: null # Audits tidak punya owned_by / company_id
+      indexes:
+        - "[auditable_type, auditable_id]"
+        - "[created_at]"
+        - "[user_id]"
+      mandatory_rules:
+        - "WAJIB sertakan auditable_type DAN auditable_id."
+        - "Format escaping auditable_type: 'App\\\\Models\\\\ModelName' (4 backslash di level JSON)."
+        - "Jika filter rentang waktu: created_at >= CURDATE() - INTERVAL 7 DAY."
+        - "DILARANG query audits hanya dengan user_id atau event (memicu full table scan)."
+      key_columns: [id, user_id, event, auditable_type, auditable_id, old_values, new_values, url, ip_address, created_at]
