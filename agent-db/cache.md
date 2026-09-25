@@ -51,6 +51,7 @@ AND is_return_process = 0
 | Sales Invoice | customer invoice / SI | `accounting_customer_invoices` | |
 | Benchmark COGS | product benchmark / b.cogs / benchmark_cogs | `accounting_product_benchmark_prices` | Snapshot di baris SO = `omni_sales_order_details.benchmark_cogs` (bukan update live dari master) |
 | Customer Payment / Supplier Payment / Credit Note / Debit Note | payments / CN / DN | `accounting_payments` | `type`: `Payment from Customer` / `Payment to Supplier` / `Credit Note` / `Debit Note` — bukan tabel terpisah |
+| Instant Settlement | settlement upload / ST | `accounting_settlement_uploads` | detail order `accounting_settlements`; generate AR = `accounting_payments` type Payment from Customer (`receive_id`) |
 | Tax | taxes | `accounting_taxes` | |
 | Sales Return (Accounting) | sales return / SR | `scm_stock_mutations` | `is_return_process = 1`, `code LIKE 'SR-%'`. **Bukan** `omni_sales_returns` |
 | Purchase Return (Accounting) | purchase return | `scm_stock_mutations` | `is_return_process = 1 AND supplier_id IS NOT NULL AND customer_id IS NULL AND warehouse_destination IS NULL` |
