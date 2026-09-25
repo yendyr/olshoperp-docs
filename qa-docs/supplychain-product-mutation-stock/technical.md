@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-product-mutation-stock
 menu_name: "Stock History"
-version: 2.0
-last_updated: 2026-07-17
+version: 2.1
+last_updated: 2026-09-25
 owner: QA - Yemima
 status: review
 aliases: [stock history technical, stock history API, ending balance per warehouse]
@@ -108,13 +108,33 @@ Command baca todo `status=1` → batch:
 
 | Job | Scope |
 |-----|-------|
-| `CalculateEndingBalance` | Global dari `start_date` |
+| `CalculateEndingBalance` | Global dari `start_date` (`scmag_ending_balances`) |
 | `CalculateEndingBalancePerWarehouse` | Per product+WH+space type; skip TF internal di building level |
 | `CalculateEndingBalancePerBuilding` | Per product+building |
 
 Chunk 10 products/job. Set `is_calculating_ending_balance` 1→0. `finally` set todo `status=0`, `calculated_date=now()`.
 
 Schedule: hourly; manual via Product Mutation calculation endpoint.
+
+### 4.3 Ending balance job optim (ETM-15967 · ETM-15984)
+
+Hotspots: `CalculateEndingBalance*`, `CalculateStockEndingBalance` (`stock:calculate-ending-balance`).
+
+| Item | AS-IS (Sep 2026) |
+|------|------------------|
+| Job timeout | `$timeout = 480` (8 menit) |
+| Tries | `$tries = 1` (jangan auto-retry panjang — pakai deadlock helper) |
+| Flush bulk | `flushThreshold = 2000` pending CASE updates per flush |
+| Deadlock | `flushBulkEndingBalanceUpdates` dibungkus `runWithDeadlockRetry` (detect `deadlock` / `Lock wait timeout`) |
+| Query path | Rewrite join EB ↔ MutationSummary ↔ StockMutation; drop cabang skip TF_EXTERNAL yang redundant |
+| Index global | `scmag_ending_balances.idx_eb_pid_txdate_id` → `(product_id, transaction_date, id)` |
+| Index per WH | `…_pid_wid_idx`, `…_wh_space_date_prod` |
+| Index per building | `ebpb_wh_bldg_prod_trx_date_id_idx` → `(warehouse_building_id, product_id, transaction_date, id)` |
+| Overlap guard | Command skip jika batch name `manual-ending-balance-calculation*` belum `finished_at` |
+
+**Simptom yang ditangani:** `TimeoutExceededException` / deadlock saat recalc backdate jauh (ratusan ribu baris) — lihat [ETM-15967](https://erpintegration.atlassian.net/browse/ETM-15967), [ETM-15984](https://erpintegration.atlassian.net/browse/ETM-15984).
+
+**Shared:** job yang sama dipakai Product Mutation History (EB global) — update di sini berlaku lintas menu.
 
 ---
 
@@ -234,3 +254,12 @@ Automated: `docs/qa-docs/supplychain-product-mutation-stock/test-cases/`.
 | [GAP-SH-05](./requirement.md) | Tooltip SoT §6.5 belum di template |
 
 **V1 vs V2 API:** `indexPerWarehouse` join space type via warehouse; `indexStockHistory` via EB per WH space type + filter root WH exclude TF saat tanpa building. Menu aktif memakai V2.
+
+---
+
+## 13. Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.1 | 2026-09-25 | Document CalculateEndingBalance* optim: timeout 480, flush 2000 + deadlock retry, composite indexes (ETM-15967, ETM-15984) |
+| 2.0 | 2026-07-17 | Rewrite SoT v2.0 + AS-IS Stock History V2 |

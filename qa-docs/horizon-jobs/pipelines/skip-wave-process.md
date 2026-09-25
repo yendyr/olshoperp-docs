@@ -3,8 +3,8 @@ doc_type: job-pipeline
 menu: horizon-jobs
 pipeline: skip-wave-process
 related_menu: omni-skip-wave-process
-version: 1.0
-last_updated: 2026-09-20
+version: 1.1
+last_updated: 2026-09-25
 owner: QA - Yemima
 status: draft
 aliases: [skip wave jobs, SkipWaveProcessJob, SOApproveToWave fan-out, skip wave derived jobs]
@@ -219,10 +219,29 @@ Diambil dari rencana optimasi Claude; landasan kode sebagian ada. **Belum** dipr
 | `Modules/OmniChannel/Jobs/SkipProcessingRetryJob.php` | Retry processing |
 | `Modules/OmniChannel/Services/ProcessingService.php` | Stages, finalisasi, dead DO dispatch block |
 | `Modules/OmniChannel/Traits/Processing/SkipProcessTrait.php` | `skipShipping` DO inline |
+| `Modules/SupplyChain/Logics/Processing/*ListLogic.php` | Optimized skip stages (ETM-16006) |
 | `app/Console/Commands/SalesOrder/SkipWaveDispatchCommand.php` | Gerbang |
 | `Modules/SupplyChain/Observers/ItemStockObserver.php` | Derived ending stock |
 | `app/Helpers/SupplyChain/StockAfterApproveHandler.php` | Derived balances / ending stock |
+| `Modules/SupplyChain/Jobs/CalculateEndingBalance*.php` | Derived recalc EB (optim ETM-15984) |
 | `vendor/owen-it/laravel-auditing/.../ProcessDispatchAudit.php` | Derived audit |
+
+---
+
+## 8b. Implemented reliability (Sep 2026) — bukan proposal
+
+Sudah di kode (lihat juga [omni-skip-wave-process/technical.md §5b](../omni-skip-wave-process/technical.md)):
+
+| ETM | Perubahan pipeline |
+|-----|-------------------|
+| 15972 / 15985 | Datalist: defer+cache aggregates (bukan job Horizon, tapi mengurangi load saat operator pantau) |
+| 15963 / 16002 | Redispatch incomplete wave via `error_retriable` |
+| 16032 | Exclude “processing date &lt; trx date” dari auto-retry |
+| 15988 / 16037 | DO existence + deadlock di skipShipping |
+| 15999 | Skip SO yang sudah punya DO saat retry processing |
+| 16006 | `*ListLogic` + `approveSkipTransfer` path |
+
+Proposal §7 di atas tetap **bukan** AC — PROP-HJ-01.
 
 ---
 
@@ -230,4 +249,5 @@ Diambil dari rencana optimasi Claude; landasan kode sebagian ada. **Belum** dipr
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-09-25 | §8b reliability implemented; file map *ListLogic + CalculateEndingBalance |
 | 1.0 | 2026-09-20 | Initial dari validasi artifact + kode; dead DO path; observasi Merdian; proposal terpisah |

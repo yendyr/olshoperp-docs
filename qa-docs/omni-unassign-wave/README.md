@@ -11,12 +11,13 @@ Menu **Unassign Wave** (SupplyChain / OmniChannel).
 
 **SoT:** `unassign-waves-source-of-truth.md` v1.0 (18 Jul 2026)  
 **User-guide:** v1.2 · `source_version` 1.2  
-**Version (3 layer):** 1.2 · **Last updated:** 2026-09-08 11:00
+**Version:** technical **1.3** · **Last updated:** 2026-09-25
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3 | 2026-09-25 12:59 | Technical: `error_retriable` pada wave logs + link Skip Wave redispatch (ETM-16032) |
 | 1.2 | 2026-09-08 11:00 | Cek stok FIFO / Unavailable Stock memakai Processing Order Date (NULL → now); Last Checked Expected = tanggal evaluasi (GAP-UW-04 Decided, GAP-UW-06) |
 | status | 2026-08-12 | Promote 5-file ke **review** (Tier 1 — isi sudah lengkap dari SoT) |
 | 1.1 | 2026-07-28 | TO-BE Processing Order Date manual per company (shared Skip Wave); fiscal; GAP-UW-04 |

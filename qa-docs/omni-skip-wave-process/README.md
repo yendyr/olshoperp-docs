@@ -11,7 +11,7 @@ Menu **Skip Wave Process** (SupplyChain / OmniChannel).
 
 **SoT:** `skip-wave-process-sot.md` v1.0 (20 Jul 2026)  
 **User-guide:** v1.2 · `source_version` 1.2  
-**Version (3 layer):** 1.2 · **Last updated:** 2026-09-20  
+**Version (3 layer):** technical **1.3** · requirement/KB 1.2 · **Last updated:** 2026-09-25  
 **Horizon jobs (kanonik):** [../horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/pipelines/skip-wave-process.md)  
 **Implementer brief:** `~/Downloads/processing-order-date-unassign-skip-wave-implementer-brief.md`
 
@@ -19,6 +19,7 @@ Menu **Skip Wave Process** (SupplyChain / OmniChannel).
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3 | 2026-09-25 12:59 | Technical: perf datalist + reliability Sep 2026 (ETM-15972…16037) — defer/cache agg, redispatch, DO guards, optimized skip flow |
 | ug-1.2 | 2026-09-20 21:39 | Sync user-guide: Redispatch, completed vs pekerjaan latar, link Horizon Jobs |
 | 1.2 | 2026-09-20 21:13 | Dokumentasi pergerakan Horizon jobs (primary + derived); link ke horizon-jobs pipeline |
 | 1.1 | 2026-07-28 | TO-BE Processing Order Date per company (shared Unassign Wave); GAP-SW-05 superseded |

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.2
-last_updated: 2026-09-08
+version: 1.3
+last_updated: 2026-09-25
 owner: QA - Yemima
 status: review
 aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processing order date, FIFO stock date, Last Checked]
@@ -117,13 +117,18 @@ Query list: `failed_process=true`, `on_process_queue=true`.
 
 ### `omni_unassign_wave_logs`
 
+Dipakai Unassign Wave **dan** fase wave Skip Wave (`WV-`).
+
 | Column | Notes |
 |--------|-------|
 | `sales_order_id`, `sales_order_number` | FK order |
 | `batch_code` | Prefix `WV-…` (atau batch skip wave) |
 | `status_progress` | in progress / success / failed |
 | `error_message`, `processed_at` | Hasil attempt |
+| `error_retriable` (bool) | `true` = kandidat auto-retry / redispatch. Error **Processing Date &lt; SO trx date** → **false** (hindari 5× retry sia-sia) — [ETM-16032](https://erpintegration.atlassian.net/browse/ETM-16032). Diisi/filter `SOApproveToWave` + `SkipWaveLogic` |
 | Audit | `created_by` = processed by |
+
+Redispatch Skip Wave: [omni-skip-wave-process/technical.md](../omni-skip-wave-process/technical.md) §5b.
 
 ### Related
 
@@ -281,6 +286,7 @@ sequenceDiagram
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3 | 2026-09-25 | Document `error_retriable` on wave logs + link Skip Wave redispatch (ETM-16032) |
 | 1.2 | 2026-09-08 | GAP-UW-04 Decided (`getStockDate`); GAP-UW-06 Last Checked; file map ScmSetting / CheckOrderFlags / RefreshAvailabilityStock |
 | 1.1 | 2026-07-28 | Processing Order Date (OmniSetting + resolver + FE picker); INV-UW-09/10 |
 | 1.0 | 2026-07-20 | Initial dari SoT + codebase map |

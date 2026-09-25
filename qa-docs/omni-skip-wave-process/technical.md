@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.2
-last_updated: 2026-09-20
+version: 1.3
+last_updated: 2026-09-25
 owner: QA - Yemima
 status: draft
 aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing order date, skip wave horizon jobs]
@@ -31,11 +31,14 @@ aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing o
 | Wave job | `Modules/OmniChannel/Jobs/SkipWaveProcessJob.php` |
 | Orchestrator | `Modules/OmniChannel/Logics/SkipWave/SkipWaveLogic.php` |
 | Processing | `Modules/OmniChannel/Services/ProcessingService.php` (+ Skip/DO traits) |
+| Optimized skip stages | `Modules/SupplyChain/Logics/Processing/{Picking,Checking,Packing,Collecting,Shipping,DeliveryOrder}ListLogic.php` + `Traits/ManagesProcessingDetail.php` (ETM-16006) |
+| Skip approve path | `app/Helpers/SupplyChain/ItemStockMutation::approveSkipTransfer()` |
 | Dispatch cron | `app/Console/Commands/SalesOrder/SkipWaveDispatchCommand.php` (`skip-wave:dispatch`) |
 | Shared wave | `Modules/OmniChannel/Jobs/SOApproveToWave.php` |
 | Shared skip | `Modules/OmniChannel/Jobs/SkipProcessingJob.php` (+ DO jobs, RetryJob) |
 | PL dates | `Modules/OmniChannel/Services/PicklistService.php` (`is_skip_process` trx date) |
 | Entities | `SkipWaveProcess`, `SkipWaveProcessUploadLog`, `SkipWaveProcessUploadLogDetail` |
+| Wave log flag | `omni_unassign_wave_logs.error_retriable` — filter retry wave (ETM-15963 / redispatch) |
 | **TO-BE setting** | `OmniSetting.processing_order_date` + shared GET/PUT + `validate_fiscal_period` |
 | **TO-BE resolver** | Helper company processing date — wire WaveService FIFO + PicklistService PL |
 
@@ -134,6 +137,36 @@ Hard cap: **1000** data rows. Chunks: 10 SO / `SkipProcessingJob`. DO = **inline
 | Wave Retried | success + failed Savepoint |
 | ETA Echo | Weighted `ESTIMATE_STAGE_WEIGHTS` |
 
+### 5.1 Datalist performance (ETM-15972 · ETM-15985)
+
+Hotspot: `SkipWaveProcessController@index`.
+
+| Teknik | Detail |
+|--------|--------|
+| Defer aggregates | Agregasi upload / wave / processing **hanya untuk baris halaman aktif** (`start`/`length`), bukan seluruh eligible batch |
+| Cache keys | `skip_wave_agg_upload_{SW}`, `skip_wave_agg_wave_{WV}`, `skip_wave_agg_proc_{SP}` |
+| TTL selesai | Status batch `completed`/`failed` → cache **7 hari** |
+| TTL in-flight | Status lain → cache **30 detik** (refresh progress) |
+| Inject column | `_inject_aggregates` lazy-load via closure sekali per response page |
+
+Tanpa pola ini, index bisa ~20s karena N× aggregate heavy joins.
+
+---
+
+## 5b. Reliability & pipeline optim (Sep 2026)
+
+| ETM | Area | Perilaku teknis |
+|-----|------|-----------------|
+| [ETM-15963](https://erpintegration.atlassian.net/browse/ETM-15963) / [ETM-16002](https://erpintegration.atlassian.net/browse/ETM-16002) | Redispatch | `SkipWaveLogic::redispatch` — wave incomplete via `error_retriable`; API `POST …/redispatch/{batchCode}` |
+| [ETM-16032](https://erpintegration.atlassian.net/browse/ETM-16032) | Wave retry filter | Error **Processing Date &lt; SO trx date** **tidak** di-flag `error_retriable` (hindari 5× auto-retry sia-sia) |
+| [ETM-15988](https://erpintegration.atlassian.net/browse/ETM-15988) | DO kosong | Guard eksistensi DO di `skipShipping` + command temp `FixDuplicateSkipWaveDoCommand` |
+| [ETM-15999](https://erpintegration.atlassian.net/browse/ETM-15999) | Retry idempotency | `ProcessingService`: SO yang sudah punya DO Approved → **skip** stage ulang (cegah redispatch 1000 SO penuh) |
+| [ETM-16006](https://erpintegration.atlassian.net/browse/ETM-16006) | Optimized skip flow | Stage Picking→Shipping memakai `*ListLogic` + `ItemStockMutation::approveSkipTransfer` (jalur terpisah dari approve transfer reguler) |
+| [ETM-16037](https://erpintegration.atlassian.net/browse/ETM-16037) | Deadlock / DO corrupt | `SkipProcessTrait` — retry deadlock + perbaikan race `skipShipping` (DO tanpa detail) |
+
+Detail shared stages: [omni-skip-processing/technical.md](../omni-skip-processing/technical.md) §4b.  
+Fan-out Horizon: [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/pipelines/skip-wave-process.md).
+
 ---
 
 ## 6. Invariants
@@ -172,7 +205,9 @@ Hard cap: **1000** data rows. Chunks: 10 SO / `SkipProcessingJob`. DO = **inline
 | Baris invalid | Entire batch completed; no stage 2 (GAP-SW-01) |
 | Lock conflict | Release all; completed |
 | Import exception | completed + generic Import Failed message |
-| Wave/processing/DO retry | Auto max 5, delay 5/10/15s; patterns savepoint/deadlock/lock/… — no UI Retry button |
+| Wave/processing/DO retry | Auto max 5, delay 5/10/15s; patterns savepoint/deadlock/lock/… — hanya log `error_retriable=true` |
+| Stuck &gt;60 menit | UI **Redispatch** → `SkipWaveLogic::redispatch` (bukan re-upload file) |
+| SO sudah punya DO | Skip Processing job **no-op** untuk SO itu (ETM-15999) |
 
 ---
 
@@ -214,6 +249,7 @@ Hard cap: **1000** data rows. Chunks: 10 SO / `SkipProcessingJob`. DO = **inline
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3 | 2026-09-25 | Perf datalist (defer + cache agg ETM-15972/15985); reliability: redispatch, DO guard, retry idempotency, optimized skip flow, deadlock (ETM-15963…16037) |
 | 1.2 | 2026-09-20 | Link kanonik Horizon jobs pipeline; tabel fan-out; dead-code DO path |
 | 1.1 | 2026-07-28 | Processing Order Date; GAP-SW-05 superseded; PicklistService wire note |
 | 1.0 | 2026-07-20 | Initial dari SoT + ImportJob/cron map |

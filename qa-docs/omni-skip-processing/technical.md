@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-skip-processing
 menu_name: "Skip Processing"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.1
+last_updated: 2026-09-25
 owner: QA - Yemima
 status: draft
 aliases: [skip processing API, SkipProcessingJob, ProcessingService skip]
@@ -29,6 +29,9 @@ aliases: [skip processing API, SkipProcessingJob, ProcessingService skip]
 | Log API | `Modules/OmniChannel/Http/Controllers/SkipProcessingLogController.php` |
 | Orchestrator | `Modules/OmniChannel/Services/ProcessingService.php` |
 | Stages | `Modules/OmniChannel/Traits/Processing/SkipProcessTrait.php` |
+| Optimized stage logics | `Modules/SupplyChain/Logics/Processing/{Picking,Checking,Packing,Collecting,Shipping,DeliveryOrder}ListLogic.php` |
+| Shared trait | `Modules/SupplyChain/Logics/Processing/Traits/ManagesProcessingDetail.php` |
+| Skip stock approve | `ItemStockMutation::approveSkipTransfer()` |
 | DO / ship | `Modules/OmniChannel/Traits/Processing/DeliveryOrderProcessTrait.php` |
 | Helpers / Echo / log | `Modules/OmniChannel/Traits/Processing/ProcessHelperTrait.php` |
 | Status const | `Modules/OmniChannel/Constants/SkipProcessingStatus.php` |
@@ -114,6 +117,27 @@ sequenceDiagram
 
 **Retry:** `SkipProcessingRetryJob` delay 5/10/15s max 5 untuk deadlock/lock/SAVEPOINTS/dll; collecting retries ≤3.
 
+### 4b. Optimized skip flow (ETM-16006) + DO guards
+
+AS-IS (Sep 2026): jalur skip **tidak** memakai approve transfer UI biasa. Per stage:
+
+| Stage | Logic class | Stock side-effect |
+|-------|-------------|-------------------|
+| Picking approve | `PickingListLogic::skipApprove` | `ItemStockMutation::approveSkipTransfer` |
+| Checking generate/approve | `CheckingListLogic` | sama |
+| Packing | `PackingListLogic` | sama |
+| Collecting | `CollectingListLogic` | sama |
+| DO + shipping | `DeliveryOrderLogic::skip` + `ShippingListLogic` | inline DO (bukan Create/Approve DO job batch dari Skip Wave) |
+
+**Idempotency / anti-dupe DO** (dipakai Skip Wave retry & Skip Processing):
+
+| Guard | Where | Behavior |
+|-------|-------|----------|
+| SO already has DO | `ProcessingService` sebelum stage loop ([ETM-15999](https://erpintegration.atlassian.net/browse/ETM-15999)) | `continue` — log info, no duplicate docs |
+| DO existence di skipShipping | `SkipProcessTrait` ([ETM-15988](https://erpintegration.atlassian.net/browse/ETM-15988), [ETM-16037](https://erpintegration.atlassian.net/browse/ETM-16037)) | Cegah DO header kosong / race deadlock |
+
+Cross-ref: [omni-skip-wave-process/technical.md](../omni-skip-wave-process/technical.md) §5b.
+
 ---
 
 ## 5. Invariants
@@ -193,4 +217,5 @@ sequenceDiagram
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-09-25 | Optimized skip flow (`*ListLogic` + `approveSkipTransfer`); DO idempotency/deadlock guards (ETM-16006, 15988, 15999, 16037) |
 | 1.0 | 2026-07-20 | Initial dari SoT + ProcessingService map |

@@ -15,13 +15,14 @@ Konsep **pipeline queue / Horizon** OlshopERP: job primer per menu vs job turuna
 |----------|--------------|------|
 | Skip Wave Process | [omni-skip-wave-process](../omni-skip-wave-process/) | [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md) |
 
-**Version (3 layer):** 1.1 · **Last updated:** 2026-09-20  
+**Version (3 layer):** 1.1 · pipeline Skip Wave **1.1** · **Last updated:** 2026-09-25  
 **Maintenance owner:** QA — Yemima
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| pipeline-1.1 | 2026-09-25 12:59 | Skip Wave pipeline: §8b reliability implemented (ETM-15972…16037) + file map *ListLogic / EB jobs |
 | 1.1 | 2026-09-20 21:39 | Rapikan requirement ke struktur standar; HJ-05…08; PROP-HJ-01; sync Skip Wave UG `source_version` 1.2 |
 | 1.0 | 2026-09-20 21:13 | Initial: pola primary vs derived jobs; pipeline Skip Wave (validasi artifact Claude + kode) |
 

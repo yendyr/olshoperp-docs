@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-product-mutation
 menu_name: "Product Mutation History"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-09-25
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -86,11 +86,27 @@ Export menggunakan endpoint `product-mutation-stock/*` dengan type query param.
 | Komponen | Fungsi |
 |----------|--------|
 | `stock:calculate-ending-balance` | Artisan command |
-| `CalculateEndingBalance` | Queue job per batch |
+| `CalculateEndingBalance` | Queue job per batch (EB **global**) |
+| `CalculateEndingBalancePerWarehouse` / `PerBuilding` | Dipakai Stock History; command yang sama memicu ketiganya |
 | `ProductMutationHistory` | Export chunk |
+
+### 6.1 Optimisasi ending balance (shared · Sep 2026)
+
+Detail kanonik: [supplychain-product-mutation-stock/technical.md §4.3](../supplychain-product-mutation-stock/technical.md) — timeout 480s, `tries=1`, flush bulk 2000 + `runWithDeadlockRetry`, index `idx_eb_pid_txdate_id` (ETM-15967, ETM-15984).
+
+Jobs EB **global** untuk menu ini = class `CalculateEndingBalance` yang sama.
 
 ---
 
 ## 7. Related docs
 
-- [supplychain-product-mutation-stock/technical.md](../supplychain-product-mutation-stock/technical.md)
+- [supplychain-product-mutation-stock/technical.md](../supplychain-product-mutation-stock/technical.md) — Stock History + EB per WH/building + job optim
+
+---
+
+## 8. Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-09-25 | Cross-ref CalculateEndingBalance optim (ETM-15967 / 15984) ke Stock History technical §4.3 |
+| 1.0 | 2026-06-19 | Draft awal analisis otomatis |
