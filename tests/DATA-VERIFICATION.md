@@ -1,12 +1,12 @@
 # Data Verification — Level Cek (UI → API → DB)
 
 Kontrol operasional untuk **Antigravity / agent QA** di workspace `olshoperp-docs`.
-Ini **bukan** dokumentasi menu bisnis (`qa-docs/{menu}/`). SoT teknis runner + keamanan
+Ini **bukan** dokumentasi menu bisnis (`qa-docs/{menu}/`). SoT teknis webhook + keamanan
 query ada di repo developer:
 
 - Rule: `../olshoperp/.cursor/rules/19-database-debugger.mdc`
-- Rule: `../olshoperp/.cursor/rules/19-database-debugger.mdc`
-- Eksekusi: Direct HTTP POST Request ke Webhook n8n (Rule `19`)
+- Rule docs: `.cursor/rules/19-database-data-verification.mdc`
+- Eksekusi: **Direct HTTP POST** ke webhook n8n saja — **dilarang** `agent-db-query.mjs` / `.php`
 
 Baca halaman ini saat perlu **cek data di DB** (precondition, forensik FAIL, audit).
 Jangan pakai DB sebagai pengganti assert UI untuk menandai TC `passed`.
@@ -34,9 +34,9 @@ Jangan pakai DB sebagai pengganti assert UI untuk menandai TC `passed`.
 |---------|---------------|----------------|-------------|
 | **Staging** | staging.olshoperp.com | `staging_olshoperp` | `https://n8n.olshoperp.com/webhook/agent-db-tyas` (Shared) |
 | **Tyas** | tyas.olshoperp.com | `tyas_olshoperp` | `https://n8n.olshoperp.com/webhook/agent-db-tyas` (Shared) |
-| **Merdian** | merdian.olshoperp.com | `merdian_olshoperp` | `https://n9n.olshoperp.com/webhook/agent-db-merdian` (Terpisah) |
+| **Merdian** | merdian.olshoperp.com | `merdian_olshoperp` | `https://n9n.olshoperp.com/webhook/agent-db-merdian` (host **n9n**, terpisah) |
 
-DILARANG menggunakan runner script `.mjs`. Eksekusi langsung via HTTP POST. **Jangan** hardcode API key di chat, TC markdown, atau commit.
+**WAJIB** direct HTTP POST. **DILARANG** `agent-db-query.mjs` / `.php`. **Jangan** hardcode API key di chat, TC markdown, atau commit.
 
 Kredensial (hanya di `.env` lokal / mesin agent, tidak di repo docs):
 
@@ -51,32 +51,32 @@ Kredensial (hanya di `.env` lokal / mesin agent, tidak di repo docs):
 
 ## Cara jalankan (Direct HTTP POST via cURL)
 
-DILARANG menjalankan runner script `.mjs`. Gunakan perintah HTTP POST langsung:
+**DILARANG** `agent-db-query.mjs` / `.php`. Gunakan HTTP POST langsung:
 
 ```bash
 # Staging (DESCRIBE tabel)
-curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: $DB_DEBUG_API_KEY" \
   -d '{"db":"staging_olshoperp","query":"DESCRIBE scm_products"}'
 
 # Staging (SELECT data)
-curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: $DB_DEBUG_API_KEY" \
-  -d '{"db":"staging_olshoperp","query":"SELECT id, sku FROM scm_products WHERE company_id = 153 AND id = 12345 LIMIT 5"}'
+  -d '{"db":"staging_olshoperp","query":"SELECT id, sku FROM scm_products WHERE owned_by = 153 AND id = 12345 LIMIT 5"}'
 
 # Tyas (Audit trail)
-curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: $DB_DEBUG_API_KEY" \
   -d '{"db":"tyas_olshoperp","query":"SELECT id, user_id, event, auditable_type, auditable_id, created_at FROM audits WHERE auditable_id = 12345 ORDER BY created_at DESC LIMIT 10"}'
 
-# Merdian (Purchase Order)
-curl -s -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
+# Merdian (Purchase Order) — host n9n
+curl -sS -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: $DB_DEBUG_API_KEY_MERDIAN" \
-  -d '{"db":"merdian_olshoperp","query":"SELECT id, code, transaction_status FROM scm_purchase_orders WHERE company_id = 153 AND id = 999 LIMIT 5"}'
+  -H "X-API-Key: ${DB_DEBUG_API_KEY_MERDIAN:-$DB_DEBUG_API_KEY}" \
+  -d '{"db":"merdian_olshoperp","query":"SELECT id, code, transaction_status FROM scm_purchase_orders WHERE owned_by = 153 AND id = 999 LIMIT 5"}'
 ```
 
 Detail guard read-only + forensik 4 langkah → rule `19` di `olshoperp`.
@@ -88,8 +88,8 @@ Detail guard read-only + forensik 4 langkah → rule `19` di `olshoperp`.
 0. **Nama tabel & kolom** — jangan tebak. Nama menu → tabel lewat `agent-db/cache.md` (S0–S3),
    lalu `DESCRIBE` sebelum SELECT kolom yang belum tercatat (S4–S5). `requirement.md` dipakai untuk
    expected, **bukan** nama tabel/kolom. Belajar hal baru → write-back cache (S6). Detail: `agent-db/README.md`.
-1. **Read-only** — hanya `SELECT` / `EXPLAIN` / `DESCRIBE` / `SHOW` / `WITH`. Runner
-   memblokir mutasi; jangan usulkan `UPDATE`/`DELETE`/`INSERT` ke user.
+1. **Read-only** — hanya `SELECT` / `EXPLAIN` / `DESCRIBE` / `SHOW` / `WITH`. Agent
+   enforce sendiri (tanpa runner `.mjs`); jangan usulkan `UPDATE`/`DELETE`/`INSERT` ke user.
 2. **Multi-tenant** — filter `company_id` (atau kolom scope setara) sesuai company uji.
    Default E2E staging sering **FAT (112)** atau **lumicharmsid (153)** — jangan campur.
 3. **SoftDeletes** — jika “tidak ketemu”, cek `deleted_at IS NOT NULL` / `withTrashed` di model.

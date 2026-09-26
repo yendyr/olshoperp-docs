@@ -191,15 +191,19 @@ Detail cara membaca hasil + menindaklanjuti → § "Kalau TC-nya dijalankan manu
 Precondition, forensik FAIL, atau audit trail — **bukan** pengganti assert UI.
 
 ```bash
-# Runner di sibling olshoperp; kredensial dari .env (jangan hardcode key)
-node ../olshoperp/scripts/agent-db-query.mjs --db=staging_olshoperp --query="SELECT id FROM products WHERE company_id = 153 LIMIT 5"
-node ../olshoperp/scripts/agent-db-query.mjs --db=tyas_olshoperp --query="..."
-node ../olshoperp/scripts/agent-db-query.mjs --db=merdian_olshoperp --query="..."
+# Direct POST ke webhook n8n; kredensial dari .env (jangan hardcode key / jangan pakai .mjs)
+curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $DB_DEBUG_API_KEY" \
+  -d '{"db":"staging_olshoperp","query":"SELECT id, sku FROM scm_products WHERE owned_by = 153 LIMIT 5"}'
+# Tyas: ganti "db":"tyas_olshoperp" (URL sama)
+# Merdian: URL https://n9n.olshoperp.com/webhook/agent-db-merdian + "db":"merdian_olshoperp"
 ```
 
-- **Tyas + Staging** → webhook **shared** · **Merdian** → webhook **terpisah**
+- **Tyas + Staging** → webhook **shared** (`n8n…/agent-db-tyas`) · **Merdian** → **`n9n…/agent-db-merdian`** (host terpisah)
 - Hasil DB = **supporting evidence** saja — **dilarang** jadi `last_execution: passed`
   untuk TC UI-crawling
+- **Dilarang** `agent-db-query.mjs` / `.php`
 
 → Baca: `tests/DATA-VERIFICATION.md` · rule docs `19-database-data-verification.mdc` ·
 SoT teknis `olshoperp/.cursor/rules/19-database-debugger.mdc`

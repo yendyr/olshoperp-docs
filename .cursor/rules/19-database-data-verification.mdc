@@ -13,8 +13,8 @@ Pakai rule ini saat user / tugas menyebut **cek db**, **query db**, **db staging
 |-------|--------|-----|
 | **Kontrol QA (workspace ini)** | `tests/DATA-VERIFICATION.md` | Level L1/L2/L3, kapan boleh, matriks env, gate company_id |
 | **Katalog Skema (agent)** | `agent-db/schema-catalog.yaml` + `agent-db/cache.md` | Skema tabel, kolom kunci, kolom index, tenant `owned_by` |
-| **SoT teknis runner** | `../olshoperp/.cursor/rules/19-database-debugger.mdc` | Read-only, forensik 4 langkah, larangan secret |
-| **Mekanisme Eksekusi** | Direct HTTP POST (Webhook n8n) | Eksekusi via HTTP Request; kredensial dari `.env` |
+| **SoT teknis (developer)** | `../olshoperp/.cursor/rules/19-database-debugger.mdc` | Kontrak webhook, read-only, forensik 4 langkah, larangan secret + larangan `.mjs`/`.php` |
+| **Mekanisme Eksekusi** | Direct HTTP POST (Webhook n8n) **saja** | `curl` / HTTP client; kredensial dari `.env` — **dilarang** `agent-db-query.mjs` / `.php` |
 
 Jangan menduplikasi prosedur panjang di sini — baca `agent-db/schema-catalog.yaml` dulu untuk skema presisi.
 
@@ -40,35 +40,42 @@ Aturan Kolom & Nilai Kunci:
 
 ## Routing env & HTTP Request
 
-DILARANG MEMBUAT FILE SCRIPT (`.ps1`, `.mjs`, `.sh`, `.py`) di dalam direktori workspace (`_local/`, root, atau folder repo manapun) yang berpotensi menjadi file sampah dan membocorkan API key.
-Eksekusi wajib langsung via **HTTP POST Request inline (`curl`)** atau temporary scratch artifact (`brain/<conversation-id>/scratch/`). Kredensial dibaca dinamis dari `.env` (Dilarang hardcode API key).
+**WAJIB: direct HTTP `POST` ke webhook n8n saja.**  
+**DILARANG** `scripts/agent-db-query.mjs`, `scripts/agent-db-query.php`, atau wrapper lokal lain (SoT: `olshoperp/.cursor/rules/19-database-debugger.mdc` §1).
 
-- **Tyas** (`tyas_olshoperp`) + **Staging** (`staging_olshoperp`) → webhook **shared**:
-  * **URL**: `https://n8n.olshoperp.com/webhook/agent-db-tyas`
-  * **Header**: `Content-Type: application/json`, `X-API-Key: <DB_DEBUG_API_KEY>`
-- **Merdian** (`merdian_olshoperp`) → webhook **terpisah** (server beda):
-  * **URL**: `https://n9n.olshoperp.com/webhook/agent-db-merdian`
-  * **Header**: `Content-Type: application/json`, `X-API-Key: <DB_DEBUG_API_KEY_MERDIAN>`
+DILARANG MEMBUAT FILE SCRIPT (`.ps1`, `.mjs`, `.sh`, `.py`) di dalam direktori workspace (`_local/`, root, atau folder repo manapun) yang berpotensi menjadi file sampah dan membocorkan API key.
+Eksekusi wajib langsung via **HTTP POST Request inline (`curl`)**. Kredensial dibaca dinamis dari `.env` (Dilarang hardcode API key).
+
+Host **beda** untuk merdian: Tyas+Staging = `n8n…/agent-db-tyas` (shared; beda `db` di body). Merdian = `n9n…/agent-db-merdian`.
+
+| Target | `db` (body) | URL webhook | Env API Key |
+|--------|-------------|-------------|-------------|
+| Tyas | `tyas_olshoperp` | `https://n8n.olshoperp.com/webhook/agent-db-tyas` | `DB_DEBUG_API_KEY` |
+| Staging | `staging_olshoperp` | `https://n8n.olshoperp.com/webhook/agent-db-tyas` (shared) | `DB_DEBUG_API_KEY` |
+| Merdian | `merdian_olshoperp` | `https://n9n.olshoperp.com/webhook/agent-db-merdian` | `DB_DEBUG_API_KEY_MERDIAN` (fallback `DB_DEBUG_API_KEY`) |
+
+Header: `Content-Type: application/json`, `X-API-Key: <dari .env>`.  
+Body: `{ "query": "<SQL read-only>", "db": "<nama_db>" }`.
 
 Contoh eksekusi via HTTP Request (`curl`):
 
 ```bash
 # Query Staging
-curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: $DB_DEBUG_API_KEY" \
   -d '{"db":"staging_olshoperp","query":"SELECT id, sku, name FROM scm_products WHERE owned_by = 153 AND deleted_at IS NULL LIMIT 5"}'
 
 # Query Tyas
-curl -s -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
+curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: $DB_DEBUG_API_KEY" \
   -d '{"db":"tyas_olshoperp","query":"SELECT id, order_no, transaction_status FROM omni_sales_orders WHERE owned_by = 153 AND deleted_at IS NULL LIMIT 5"}'
 
-# Query Merdian
-curl -s -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
+# Query Merdian — host n9n, path agent-db-merdian
+curl -sS -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: $DB_DEBUG_API_KEY_MERDIAN" \
+  -H "X-API-Key: ${DB_DEBUG_API_KEY_MERDIAN:-$DB_DEBUG_API_KEY}" \
   -d '{"db":"merdian_olshoperp","query":"SELECT id, username, first_name FROM gate_users WHERE owned_by = 1 LIMIT 5"}'
 ```
 
@@ -76,7 +83,7 @@ curl -s -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
 
 1. Hasil DB **bukan** bukti `last_execution.status: passed` untuk TC UI-crawling.
 2. Jangan expose `DB_DEBUG_API_KEY*` / URL override di chat, TC, atau commit.
-3. Dilarang menggunakan runner script `.mjs` — wajib HTTP POST Request langsung ke Webhook.
+3. **Dilarang** `agent-db-query.mjs` / `.php` — **wajib** HTTP POST langsung ke webhook.
 4. Selalu filter scope **company** (`owned_by`) yang sedang diuji; SoftDeletes awareness (`deleted_at IS NULL`).
 5. Read-only saja — hanya `SELECT`, `EXPLAIN`, `DESCRIBE`, `SHOW`, `WITH`. Dilarang mutasi SQL (`INSERT`/`UPDATE`/`DELETE`/`DROP`).
 6. Jangan buat folder `qa-docs/{menu}` khusus “cek DB” — tooling ops, bukan fitur menu.

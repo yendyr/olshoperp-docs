@@ -136,9 +136,10 @@ Ikuti rule `18-sync-jira-done.mdc`: fetch Jira (Done + Test Result + Actual Resu
 
 ```
 Tugas: cek data di DB {staging|tyas|merdian} untuk {pertanyaan singkat}.
-Baca tests/DATA-VERIFICATION.md dulu. Pakai runner
-`node ../olshoperp/scripts/agent-db-query.mjs --db={staging_olshoperp|tyas_olshoperp|merdian_olshoperp}`.
-Read-only + filter company_id. Hasil DB = supporting evidence saja — JANGAN tandai TC passed.
+Baca tests/DATA-VERIFICATION.md + rule 19-database-data-verification.mdc dulu.
+WAJIB direct HTTP POST: tyas/staging → n8n…/agent-db-tyas; merdian → n9n…/agent-db-merdian.
+DILARANG agent-db-query.mjs / .php.
+Read-only + filter owned_by. Hasil DB = supporting evidence saja — JANGAN tandai TC passed.
 Jangan paparkan API key di chat.
 ```
 

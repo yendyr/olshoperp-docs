@@ -1,13 +1,14 @@
 ---
 doc_type: agent-db-catalog
-version: 5.1
-last_updated: 2026-09-24
+version: 5.2
+last_updated: 2026-09-26
 owner: QA - Yemima
 ---
 
 # Agent DB — nama menu → tabel
 
-Untuk agent yang menjalankan `agent-db-query.mjs` ke **tyas / staging / merdian** (read-only).
+Untuk agent yang **direct POST** ke webhook (`n8n…/agent-db-tyas` untuk tyas/staging; `n9n…/agent-db-merdian` untuk merdian) — read-only.
+**Dilarang** `agent-db-query.mjs` / `.php` — lihat rule `19-database-data-verification.mdc`.
 Tujuan: tidak menebak nama tabel / kolom → tidak kena HTTP 500 `Unknown column` berulang.
 
 - Cache nama tabel: [`cache.md`](cache.md)
