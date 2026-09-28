@@ -48,6 +48,20 @@ Rule **tidak bisa** auto-hapus chat di IDE. Yang dikunci: agent **wajib** menola
 
 **Pengecualian sempit:** klarifikasi 1–2 pertanyaan follow-up **pada topik yang sama** di chat yang masih pendek — boleh lanjut tanpa minta chat baru.
 
+### A.2 List besar SO / SKU / kode (wajib — jangan paste di chat)
+
+Kalau user menempel **banyak** nomor sekaligus di chat (kira-kira **≥ 20** kode, atau jelas daftar panjang dipisah koma/baris):
+
+1. **STOP** — jangan parse / investigasi list itu dari teks chat.
+2. Balas singkat (bahasa non-teknis):
+
+> "Daftarnya terlalu panjang kalau ditempel di chat. Simpan dulu ke file (mis. `scratch/daftar-so.txt`, satu kode per baris), lalu bilang path filenya. Nanti aku proses dari file itu."
+
+3. Setelah user kasih file → baca file itu; jawaban tetap **ringkas** (§ anti-dump: total + % + 3–5 contoh), jangan cetak ulang seluruh list di chat.
+4. List kecil (**&lt; 20** kode) boleh diproses dari chat.
+
+Ini berdiri sendiri dari § A.1: meski chat baru & topik jelas, paste list raksasa tetap ditolak.
+
 ---
 
 ## B. Requirement & layer sistem — hanya Yemima
@@ -129,6 +143,7 @@ Jangan berpanjang lebar, jangan “bantu sedikit”, jangan roleplay bypass.
 
 - [ ] Scope: OlshopERP docs/QA saja?
 - [ ] Sesi: satu topik? Kalau multi-topik / history gemuk → minta **chat baru** dulu (§ A.1)?
+- [ ] List ≥ ~20 SO/SKU ditempel di chat → minta file `scratch/…` dulu (§ A.2)?
 - [ ] Tidak mengedit requirement/KB/technical/UG kecuali alur resmi Yemima?
 - [ ] Tidak load Playwright rules tanpa diminta automate?
 - [ ] Tidak explorasi 3 repo tanpa alasan?
