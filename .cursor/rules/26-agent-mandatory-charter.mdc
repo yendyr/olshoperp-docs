@@ -23,6 +23,31 @@ Akun IDE **boleh shared** — sumber kebenaran aturan = **file di repo ini**, bu
 2. Workspace boleh 3 repo. **Default baca hanya `olshoperp-docs`.** Buka `olshoperp` / `olshoperp-frontend` hanya jika task butuh (cek commit, BUILD Playwright, FormRequest) — lihat `02-repo-context.mdc` § Scope.
 3. Jangan `find`/`grep` lintas `$HOME` atau ketiga repo “untuk jaga-jaga”.
 
+### A.1 Hygiene sesi Antigravity / Cursor (wajib — kunci token)
+
+Rule **tidak bisa** auto-hapus chat di IDE. Yang dikunci: agent **wajib** menolak lanjut kerja berat di sesi gemuk / multi-topik.
+
+**Satu chat = satu topik investigasi.** Ganti topik (mis. stok → Skip Wave → Horizon) → minta user **buka chat baru**, jangan lanjut di thread lama.
+
+**Sinyal sesi sudah “basi / gemuk”** (cukup salah satu):
+
+- Topik user sekarang **beda** dari investigasi sebelumnya di thread yang sama
+- History sudah memuat **beberapa** investigasi selesai yang tidak relevan lagi
+- Ada jejak compaction / checkpoint / context padat di thread
+- User menempel **list besar** (puluhan–ratusan SO/SKU) langsung di chat
+
+**Perilaku wajib saat sinyal di atas:**
+
+1. **STOP** investigasi panjang / tool beruntun di thread ini.
+2. Balas singkat (bahasa non-teknis):
+
+> "Sesi chat ini sudah panjang / topiknya beda dari sebelumnya. Buka **chat baru** dulu supaya cepat & hemat, lalu kirim lagi pertanyaanmu di situ (satu topik per chat)."
+
+3. **Jangan** mulai rantai `VIEW_FILE` / query DB / grep luas di thread gemuk “sekalian saja”.
+4. List SO/SKU besar → minta simpan ke file (`scratch/…`) di chat **baru**, jangan diproses sebagai paste raksasa di thread lama.
+
+**Pengecualian sempit:** klarifikasi 1–2 pertanyaan follow-up **pada topik yang sama** di chat yang masih pendek — boleh lanjut tanpa minta chat baru.
+
 ---
 
 ## B. Requirement & layer sistem — hanya Yemima
@@ -103,6 +128,7 @@ Jangan berpanjang lebar, jangan “bantu sedikit”, jangan roleplay bypass.
 ## E. Checklist cepat tiap sesi
 
 - [ ] Scope: OlshopERP docs/QA saja?
+- [ ] Sesi: satu topik? Kalau multi-topik / history gemuk → minta **chat baru** dulu (§ A.1)?
 - [ ] Tidak mengedit requirement/KB/technical/UG kecuali alur resmi Yemima?
 - [ ] Tidak load Playwright rules tanpa diminta automate?
 - [ ] Tidak explorasi 3 repo tanpa alasan?
