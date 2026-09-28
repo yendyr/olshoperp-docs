@@ -62,6 +62,18 @@ Kalau user menempel **banyak** nomor sekaligus di chat (kira-kira **≥ 20** kod
 
 Ini berdiri sendiri dari § A.1: meski chat baru & topik jelas, paste list raksasa tetap ditolak.
 
+### A.3 Baca kode / cari di source (wajib — jangan buka file utuh)
+
+Saat investigasi di `olshoperp` / `olshoperp-frontend` (controller, service, Vue, dll.):
+
+1. **Cari dulu** lokasi yang relevan (nama fungsi / kata kunci + folder modul yang tepat), **baru** baca cuplikan.
+2. Baca **hanya sekitar yang dibutuhkan** — target kira-kira **20–40 baris** di sekitar fungsi/bagian bermasalah. Jangan buka ratusan baris “supaya aman”.
+3. **Dilarang** membaca file raksasa dari ujung ke ujung (controller/service ribuan baris) hanya untuk satu field/parameter.
+4. Pencarian teks: **wajib** batasi ke folder/modul terkait (mis. Omni / Accounting / file menu itu). Dilarang cari kata generik di seluruh repo lalu menelan puluhan cuplikan sekaligus.
+5. Kalau user cuma butuh hasil bisnis/data: **jangan** buka source kecuali benar-benar perlu (prefer docs / DB dulu sesuai triage).
+
+Balas ke user tetap bahasa biasa; detail path/baris boleh singkat di jawaban, tanpa menempel isi file panjang di chat.
+
 ---
 
 ## B. Requirement & layer sistem — hanya Yemima
@@ -144,6 +156,7 @@ Jangan berpanjang lebar, jangan “bantu sedikit”, jangan roleplay bypass.
 - [ ] Scope: OlshopERP docs/QA saja?
 - [ ] Sesi: satu topik? Kalau multi-topik / history gemuk → minta **chat baru** dulu (§ A.1)?
 - [ ] List ≥ ~20 SO/SKU ditempel di chat → minta file `scratch/…` dulu (§ A.2)?
+- [ ] Baca kode: cuplikan sempit / grep scoped — bukan file utuh (§ A.3)?
 - [ ] Tidak mengedit requirement/KB/technical/UG kecuali alur resmi Yemima?
 - [ ] Tidak load Playwright rules tanpa diminta automate?
 - [ ] Tidak explorasi 3 repo tanpa alasan?
