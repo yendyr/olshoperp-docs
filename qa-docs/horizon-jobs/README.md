@@ -8,6 +8,8 @@ Konsep **pipeline queue / Horizon** OlshopERP: job primer per menu vs job turuna
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
+| Feature Map | [feature-map.md](./feature-map.md) | Ops (Lingo index) | review |
+| Capability Lingo | [capabilities/](./capabilities/) | Ops (modal cards) | review |
 
 ## Dua lapisan docs (jangan campur peran)
 
@@ -25,11 +27,13 @@ Keduanya **melengkapi** `qa-docs/{menu-slug}/` (requirement bisnis tetap di ruma
 | Skip Wave Process | [omni-skip-wave-process](../omni-skip-wave-process/) | [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md) (kanonik) · [peta/artifact di `_meta`](../_meta/horizon-jobs/README.md) | review |
 | Settlement Upload | [accounting-settlement-upload](../accounting-settlement-upload/) | [`_meta/…/settlement-upload.md`](../_meta/horizon-jobs/settlement-upload.md) (+ HTML/Artifact) | documented (`_meta`) |
 | Sales Order | [all-sales-order](../all-sales-order/) | [`_meta/…/sales-order.md`](../_meta/horizon-jobs/sales-order.md) (+ HTML/Artifact) | documented (`_meta`) |
+| Transfer Picking & Packing | [omni-picking-list](../omni-picking-list/) · [omni-packing-list](../omni-packing-list/) | [`_meta/…/transfer-picking-packing.md`](../_meta/horizon-jobs/transfer-picking-packing.md) (+ HTML/Artifact) · Skip Processing engine → [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md) | documented (`_meta`) |
 
 **Peta zoom-out (banyak menu):** [`_meta/horizon-jobs/index.html`](../_meta/horizon-jobs/index.html)
 
 **Version (3 layer):** **1.3** · pipeline Skip Wave **1.1** · **Last updated:** 2026-09-28  
 **User-guide:** v1.0 · `source_version` 1.3  
+**Feature Map / Lingo:** v1.0 (2026-09-28)  
 **Help Center overview:** belum  
 **Maintenance owner:** QA — Yemima
 
@@ -37,6 +41,7 @@ Keduanya **melengkapi** `qa-docs/{menu-slug}/` (requirement bisnis tetap di ruma
 
 | Version | Date | Changes |
 |---------|------|---------|
+| fm-1.0 | 2026-09-28 16:20 | Feature Map + 4 kartu Lingo (primary/derived, gerbang batch, redispatch, katalog `/docs/horizon-jobs`) |
 | 1.3 | 2026-09-28 14:13 | Link silang hub ↔ `_meta/horizon-jobs`; indeks Settlement Upload + Sales Order; klarifikasi dua lapisan docs |
 | 1.2 | 2026-09-28 12:42 | Promote KB/requirement/technical/UG + pipeline Skip Wave ke **review**; PROP-HJ-01 tetap proposal; pipeline menu lain masih TBD |
 | pipeline-1.1 | 2026-09-25 12:59 | Skip Wave pipeline: §8b reliability implemented (ETM-15972…16037) + file map *ListLogic / EB jobs |

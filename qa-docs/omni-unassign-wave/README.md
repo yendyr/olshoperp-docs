@@ -8,15 +8,19 @@ Menu **Unassign Wave** (SupplyChain / OmniChannel).
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
+| Feature Map | [feature-map.md](./feature-map.md) | Operator (Lingo index) | review |
+| Capability Lingo | [capabilities/](./capabilities/) | Operator (modal cards) | review |
 
 **SoT:** `unassign-waves-source-of-truth.md` v1.0 (18 Jul 2026)  
 **User-guide:** v1.3 · `source_version` 1.4  
-**Version (3 layer):** **1.4** · **Last updated:** 2026-09-28
+**Version (3 layer):** **1.4** · **Last updated:** 2026-09-28  
+**Feature Map / Lingo:** v1.0 (2026-09-28)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| fm-1.0 | 2026-09-28 16:20 | Feature Map + 5 kartu Lingo (Send Wave, Processing Date, Error Flag, Refresh Stock, Send Wave Logs) |
 | 1.4 | 2026-09-28 11:08 | Processing Date: kosong → `now()` (bukan UI 23:59:59); align Skip Wave v1.4; API `supplychain/settings` |
 | 1.3 | 2026-09-25 12:59 | Technical: `error_retriable` pada wave logs + link Skip Wave redispatch (ETM-16032) |
 | 1.2 | 2026-09-08 11:00 | Cek stok FIFO / Unavailable Stock memakai Processing Order Date (NULL → now); Last Checked Expected = tanggal evaluasi (GAP-UW-04 Decided, GAP-UW-06) |
