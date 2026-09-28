@@ -25,7 +25,8 @@ Rules mengunci **perilaku agent**. Hapus file chat di `~/.gemini/antigravity-ide
 1. Topik baru → **New chat** (jangan numpuk 1 thread berhari-hari).
 2. Chat sudah panjang / ganti topik → agent akan minta chat baru (rule 26 § A.1).
 3. List SO/SKU besar → file `scratch/…`, bukan paste di chat.
-4. Hapus chat lama lewat trash di sidebar Agent (ikon jam/history) kalau sudah selesai.
+4. **Cek data banyak baris** → agent wajib kasih **ringkasan angka + beberapa contoh saja**, bukan tempel daftar panjang di chat (rule 19 / `agent-db/README`).
+5. Hapus chat lama lewat trash di sidebar Agent (ikon jam/history) kalau sudah selesai.
 
 ## Kalau tetap lemot / overload API
 

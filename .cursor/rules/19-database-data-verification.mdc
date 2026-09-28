@@ -87,6 +87,7 @@ curl -sS -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
 4. Selalu filter scope **company** (`owned_by`) yang sedang diuji; SoftDeletes awareness (`deleted_at IS NULL`).
 5. Read-only saja — hanya `SELECT`, `EXPLAIN`, `DESCRIBE`, `SHOW`, `WITH`. Dilarang mutasi SQL (`INSERT`/`UPDATE`/`DELETE`/`DROP`).
 6. Jangan buat folder `qa-docs/{menu}` khusus “cek DB” — tooling ops, bukan fitur menu.
+7. **Anti-dump hasil data (token):** jawaban ke user = angka total + % + **maks 3–5 contoh** kode/ID. Dilarang menempel daftar panjang / JSON penuh di chat atau stdout terminal. Detail besar → file `scratch/` (atau artifact), bukan print semuanya ke layar. Lihat `agent-db/README.md` § Jawaban ke manusia.
 
 ## Triage cepat: Kapan DB vs Kapan LOG
 

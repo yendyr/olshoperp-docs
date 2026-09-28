@@ -70,6 +70,18 @@ S5  WRITE-BACK & COMMIT: Tambahkan tabel baru tersebut ke schema-catalog.yaml / 
 | Filter `audits` dengan `auditable_type` + `auditable_id` | Query `audits` hanya dengan `user_id` atau `event` (full scan) |
 | Escaping `App\\\\Models\\\\X` di JSON payload | Kirim backslash tunggal `App\Models\X` (kena 422) |
 
+### Jawaban ke manusia (anti-dump hasil data)
+
+Saat cek banyak baris (order, stok, audit):
+
+| Wajib di jawaban chat | Dilarang |
+|----------------------|----------|
+| Total jumlah + persentase / sebaran status | Menempel ratusan baris data mentah di chat atau terminal |
+| 3–5 contoh kode saja (SO / SKU / ID) | Menampilkan daftar penuh “supaya lengkap” |
+| Kalau detail perlu disimpan: file di `scratch/` atau artifact, **bukan** print semua ke layar | `console.log` / cetak array besar ke terminal yang ikut masuk history chat |
+
+User cukup lihat **ringkasan + beberapa contoh**. Detail lengkap hanya kalau user minta eksplisit (“tampilkan semua”), dan tetap batasi atau pakai file — jangan dump ke chat.
+
 ---
 
 ## S6 — write-back, anti-dobel, auto commit & push `main`
