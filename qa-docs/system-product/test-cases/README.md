@@ -122,5 +122,33 @@ Prasyarat Master Variant Default: GAP-VAR-01 / [ETM-15511](https://erpintegratio
 | `TC-SYSPROD-045` | [Ganti / Replace Foto pada Varian Child yang Sudah Memiliki Gambar](./TC-SYSPROD-045.md) | [`TC-SYSPROD-045.md`](./TC-SYSPROD-045.md) | **PASSED** ✅ | 2026-09-16 |
 | `TC-SYSPROD-046` | [Bulk Upload Multiple Foto untuk Varian Berbeda Sekaligus via 1 File Import](./TC-SYSPROD-046.md) | [`TC-SYSPROD-046.md`](./TC-SYSPROD-046.md) | **PASSED** ✅ | 2026-09-16 |
 
+### ETM-15120 — [System Product] Konfigurasi dimensi dan berat kini diatur per unit
+
+Origin Card: [ETM-15120](https://erpintegration.atlassian.net/browse/ETM-15120)
+
+| TC Code | Judul Test Case | Tipe | File | Status Hasil | Last Updated |
+|---|---|:---:|---|:---:|:---:|
+| `TC-SYSPROD-15120-01` | [T01: Buka Create System Product Baru (Unit Configuration Default & Editable Primary)](./TC-SYSPROD-15120-01.md) | `happy` | [`TC-SYSPROD-15120-01.md`](./TC-SYSPROD-15120-01.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-02` | [T02: Klik Edit pada Primary Unit yang Sudah Dipakai Transaksi](./TC-SYSPROD-15120-02.md) | `happy` | [`TC-SYSPROD-15120-02.md`](./TC-SYSPROD-15120-02.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-03` | [T03: Klik Edit pada Alternate Unit yang Belum Dipakai Transaksi](./TC-SYSPROD-15120-03.md) | `happy` | [`TC-SYSPROD-15120-03.md`](./TC-SYSPROD-15120-03.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-04` | [T04: Klik Edit pada Alternate Unit yang Sudah Dipakai Transaksi](./TC-SYSPROD-15120-04.md) | `happy` | [`TC-SYSPROD-15120-04.md`](./TC-SYSPROD-15120-04.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-05` | [T05: Tambah D&W Profile dari Modal Konfigurasi D&W](./TC-SYSPROD-15120-05.md) | `happy` | [`TC-SYSPROD-15120-05.md`](./TC-SYSPROD-15120-05.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-06` | [T06: Set Platform Default di Unit Lain (Cross-Unit Mutual Exclusion)](./TC-SYSPROD-15120-06.md) | `happy` | [`TC-SYSPROD-15120-06.md`](./TC-SYSPROD-15120-06.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-07` | [T07: Set Trx & Report Default di Unit Lain (Cross-Unit Mutual Exclusion)](./TC-SYSPROD-15120-07.md) | `happy` | [`TC-SYSPROD-15120-07.md`](./TC-SYSPROD-15120-07.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-08` | [T08: Toggle OFF Baris D&W yang Sedang Menjadi Default (Auto-Clear State)](./TC-SYSPROD-15120-08.md) | `edge` | [`TC-SYSPROD-15120-08.md`](./TC-SYSPROD-15120-08.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-09` | [T09: Pengelolaan dan Penambahan Baris D&W Terisolasi per Unit](./TC-SYSPROD-15120-09.md) | `happy` | [`TC-SYSPROD-15120-09.md`](./TC-SYSPROD-15120-09.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-10` | [T10: System Product dengan Variant (Pewarisan Unit Parent dan Redirect Child)](./TC-SYSPROD-15120-10.md) | `happy` | [`TC-SYSPROD-15120-10.md`](./TC-SYSPROD-15120-10.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-11` | [T11: Hapus Alternate Unit yang Belum Dipakai Transaksi](./TC-SYSPROD-15120-11.md) | `happy` | [`TC-SYSPROD-15120-11.md`](./TC-SYSPROD-15120-11.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-12` | [T12: Proteksi Hapus Alternate Unit yang Sudah Dipakai Transaksi (Delete Disabled)](./TC-SYSPROD-15120-12.md) | `happy` | [`TC-SYSPROD-15120-12.md`](./TC-SYSPROD-15120-12.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-13` | [T13: Proteksi Permanen Primary Unit (Ketiadaan Opsi Delete)](./TC-SYSPROD-15120-13.md) | `happy` | [`TC-SYSPROD-15120-13.md`](./TC-SYSPROD-15120-13.md) | **PASSED** ✅ | 2026-09-27 |
+| `TC-SYSPROD-15120-FINDING` | [FINDING: Validasi Nilai 0 / Null dan Label Kosong Lolos pada Modal D&W](./TC-SYSPROD-15120-FINDING.md) | `negative` | [`TC-SYSPROD-15120-FINDING.md`](./TC-SYSPROD-15120-FINDING.md) | **FAILED** ❌ | 2026-09-27 |
+
+
+
+
+
+
+
+
 
 
