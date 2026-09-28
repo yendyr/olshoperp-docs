@@ -2,10 +2,10 @@
 doc_type: knowledge-base
 menu: horizon-jobs
 menu_name: "Horizon Jobs"
-version: 1.1
-last_updated: 2026-09-20
+version: 1.2
+last_updated: 2026-09-28
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [horizon jobs, queue jobs, job antrean, batch macet, job turunan]
 audience: operator
 ---
@@ -15,7 +15,7 @@ audience: operator
 **Audience:** Ops, Support, QA saat investigasi antrean  
 **Bukan menu UI** — ini panduan membaca pekerjaan latar belakang (Horizon) yang dipicu menu seperti Skip Wave Process.
 
-> **v1.1:** selaras requirement yang dirapikan (struktur standar); konten operator tidak berubah substantif.
+> **v1.2:** status **review** — selaras requirement/technical; konten operator tidak berubah substantif.
 
 ---
 

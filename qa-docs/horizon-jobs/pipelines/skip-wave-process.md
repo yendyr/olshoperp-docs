@@ -4,9 +4,9 @@ menu: horizon-jobs
 pipeline: skip-wave-process
 related_menu: omni-skip-wave-process
 version: 1.1
-last_updated: 2026-09-25
+last_updated: 2026-09-28
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [skip wave jobs, SkipWaveProcessJob, SOApproveToWave fan-out, skip wave derived jobs]
 ---
 
@@ -249,5 +249,6 @@ Proposal §7 di atas tetap **bukan** AC — PROP-HJ-01.
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-09-28 | Status **review** (hub Horizon Jobs promote); konten §8b tidak berubah |
 | 1.1 | 2026-09-25 | §8b reliability implemented; file map *ListLogic + CalculateEndingBalance |
 | 1.0 | 2026-09-20 | Initial dari validasi artifact + kode; dead DO path; observasi Merdian; proposal terpisah |

@@ -2,10 +2,10 @@
 doc_type: technical
 menu: horizon-jobs
 menu_name: "Horizon Jobs"
-version: 1.1
-last_updated: 2026-09-20
+version: 1.2
+last_updated: 2026-09-28
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [horizon jobs technical, Bus::batch finally, queue connection salesorder]
 ---
 
@@ -115,5 +115,6 @@ sequenceDiagram
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-09-28 | Promote ke **review**; index tetap 1 pipeline (Skip Wave) |
 | 1.1 | 2026-09-20 | Rujuk HJ-01…08 + PROP-HJ-01 dari requirement v1.1 |
 | 1.0 | 2026-09-20 | Initial pola + index Skip Wave pipeline |

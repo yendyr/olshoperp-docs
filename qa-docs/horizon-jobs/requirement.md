@@ -2,10 +2,10 @@
 doc_type: requirement
 menu: horizon-jobs
 menu_name: "Horizon Jobs"
-version: 1.1
-last_updated: 2026-09-20
+version: 1.2
+last_updated: 2026-09-28
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [horizon jobs requirement, queue pipeline rules, primary vs derived jobs]
 cross_menu: true
 ---
@@ -24,6 +24,7 @@ cross_menu: true
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-09-28 | QA - Yemima | Promote ke **review** (pipeline Skip Wave + HJ-01…08 cukup sebagai AS-IS hub; PROP-HJ-01 tetap proposal) |
 | 1.1 | 2026-09-20 | QA - Yemima | Rapikan ke struktur standar (siklus, how-it-works, validasi, gap); kurangi jargon class |
 | 1.0 | 2026-09-20 | QA - Yemima | Initial: primary vs derived; gerbang; retry; observasi vs aturan |
 
