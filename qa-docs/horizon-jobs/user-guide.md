@@ -5,7 +5,7 @@ menu_name: "Horizon Jobs"
 version: 1.0
 last_updated: 2026-09-28
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.2
+source_version: 1.3
 owner: QA - Yemima
 status: review
 ---
@@ -129,4 +129,5 @@ Pastikan:
 | Troubleshooting ops | [knowledge-base.md](./knowledge-base.md) |
 | Pola teknis / indeks pipeline | [technical.md](./technical.md) |
 | Detail job Skip Wave | [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md) |
+| Job-flow Settlement / Sales Order (contoh visual) | [../_meta/horizon-jobs/](../_meta/horizon-jobs/) |
 | Perilaku bisnis menu | [Skip Wave Process](../omni-skip-wave-process/) |

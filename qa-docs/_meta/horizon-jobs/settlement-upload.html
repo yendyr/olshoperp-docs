@@ -1,0 +1,560 @@
+<title>Settlement Upload — Alur Job</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#f4f5fa; --surface:#ffffff; --surface-2:#f8f9fd; --line:#e4e6f0;
+    --ink:#1a1d2b; --ink-soft:#565b73; --ink-faint:#8a8fa8;
+    --accent:#5a4be0; --accent-soft:#ece9fd; --accent-ink:#3a2eb0;
+    --auto:#2563a8; --auto-soft:#e2eefb;
+    --manual:#b4611a; --manual-soft:#fbeacf;
+    --observer:#a63a6b; --observer-soft:#fbe3ee;
+    --worker:#7a53c9; --worker-soft:#efe7fb;
+    --ok:#1c9d6b; --ok-soft:#dff4ec;
+    --danger:#c0392b; --danger-soft:#fbe4e1;
+    --card-shadow:0 1px 3px rgba(26,29,43,.07),0 6px 20px rgba(26,29,43,.04);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      color-scheme:dark;
+      --bg:#0f1119; --surface:#181b27; --surface-2:#1f2330; --line:#2c3140;
+      --ink:#eef0f7; --ink-soft:#a9afc4; --ink-faint:#727a94;
+      --accent:#8f83ff; --accent-soft:#26234a; --accent-ink:#c3bcff;
+      --auto:#8dc0f5; --auto-soft:#16304d;
+      --manual:#f0b46a; --manual-soft:#3a2a12;
+      --observer:#e888b3; --observer-soft:#3c1b2c;
+      --worker:#b9a3f0; --worker-soft:#281f45;
+      --ok:#4ecb96; --ok-soft:#12362a;
+      --danger:#f0857a; --danger-soft:#3a1d1a;
+      --card-shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0f1119; --surface:#181b27; --surface-2:#1f2330; --line:#2c3140;
+    --ink:#eef0f7; --ink-soft:#a9afc4; --ink-faint:#727a94;
+    --accent:#8f83ff; --accent-soft:#26234a; --accent-ink:#c3bcff;
+    --auto:#8dc0f5; --auto-soft:#16304d;
+    --manual:#f0b46a; --manual-soft:#3a2a12;
+    --observer:#e888b3; --observer-soft:#3c1b2c;
+    --worker:#b9a3f0; --worker-soft:#281f45;
+    --ok:#4ecb96; --ok-soft:#12362a;
+    --danger:#f0857a; --danger-soft:#3a1d1a;
+    --card-shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55}
+  h1,h2,h3{font-family:"Sora",system-ui,sans-serif;text-wrap:balance;margin:0}
+  .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+  .wrap{max-width:920px;margin:0 auto;padding-inline:18px}
+
+  header.top{border-bottom:1px solid var(--line);background:
+    linear-gradient(180deg,color-mix(in srgb,var(--accent-soft) 40%,var(--bg)),var(--bg))}
+  .head-in{padding-block:22px 18px}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent-ink);font-weight:700}
+  h1{font-size:clamp(23px,5vw,33px);font-weight:700;margin-top:5px;letter-spacing:-.015em}
+  .sub{color:var(--ink-soft);font-size:14px;margin-top:8px;max-width:70ch}
+  .crumb{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-faint);
+    margin-top:12px;font-family:"JetBrains Mono",monospace}
+  .crumb a{color:var(--accent-ink);text-decoration:none}
+  .crumb a:hover{text-decoration:underline}
+
+  .keybox{background:var(--observer-soft);border:1px solid color-mix(in srgb,var(--observer) 40%,var(--line));
+    border-radius:13px;padding:15px 17px;margin-top:18px}
+  .keybox h3{font-size:14px;color:var(--observer);display:flex;align-items:center;gap:8px}
+  .keybox p{font-size:13px;color:var(--ink);margin:8px 0 0;line-height:1.6}
+  .keybox .mono{color:var(--observer);font-weight:600;font-size:12.5px}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 4px}
+  .lg{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-soft);
+    background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:4px 10px}
+  .sw{width:10px;height:10px;border-radius:3px;flex:none}
+
+  /* pipeline */
+  .pipe{margin:24px 0 8px;position:relative}
+  .stage{position:relative;padding-left:46px;padding-bottom:14px}
+  .stage:not(:last-child)::before{content:"";position:absolute;left:17px;top:34px;bottom:-4px;
+    width:2px;background:var(--line)}
+  .snum{position:absolute;left:0;top:0;width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-family:"Sora",sans-serif;
+    font-weight:700;font-size:15px;background:var(--accent);color:#fff;z-index:1;
+    box-shadow:0 0 0 4px var(--bg)}
+  .stage.manualgate .snum{background:var(--manual)}
+  .stage.final .snum{background:var(--ok)}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--card-shadow);overflow:hidden}
+  .card-h{padding:13px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .card-h h2{font-size:15.5px;font-weight:600;flex:1;min-width:180px}
+  .statepill{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;
+    padding:3px 9px;border-radius:7px;background:var(--surface-2);border:1px solid var(--line);
+    color:var(--ink-soft);white-space:nowrap}
+  .trigpill{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;
+    letter-spacing:.04em;white-space:nowrap}
+  .trigpill.auto{background:var(--auto-soft);color:var(--auto)}
+  .trigpill.manual{background:var(--manual-soft);color:var(--manual)}
+  .trigpill.entry{background:var(--accent-soft);color:var(--accent-ink)}
+  .card-b{padding:0 16px 15px;display:flex;flex-direction:column;gap:12px}
+  .row{display:flex;gap:10px;font-size:13px;align-items:flex-start}
+  .row .k{flex:none;width:78px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--ink-faint);font-weight:600;padding-top:2px}
+  .row .v{flex:1;color:var(--ink)}
+  .jobline{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:5px}
+  .jtag{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:500;
+    padding:3px 8px;border-radius:7px;background:var(--surface-2);border:1px solid var(--line)}
+  .jtag.orch{background:var(--auto-soft);border-color:color-mix(in srgb,var(--auto) 30%,var(--line));color:var(--auto)}
+  .jtag.work{background:var(--worker-soft);border-color:color-mix(in srgb,var(--worker) 30%,var(--line));color:var(--worker)}
+  .fan{color:var(--ink-faint);font-size:11px;font-family:"JetBrains Mono",monospace}
+  .obsbox{background:var(--observer-soft);border-left:3px solid var(--observer);
+    border-radius:0 8px 8px 0;padding:9px 12px;font-size:12.5px}
+  .obsbox .m{font-family:"JetBrains Mono",monospace;color:var(--observer);font-weight:700;font-size:12px}
+  .cond{color:var(--ink-soft);font-size:12px}
+  .counter{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--worker);font-weight:600}
+  .nextnote{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-faint);
+    padding-top:2px}
+  .arrowdown{color:var(--accent);font-weight:700}
+
+  .gatebar{background:var(--manual-soft);border:1px dashed color-mix(in srgb,var(--manual) 50%,var(--line));
+    border-radius:12px;padding:12px 15px;font-size:13px}
+  .gatebar b{color:var(--manual)}
+  .gatebar ul{margin:8px 0 0;padding-left:20px;color:var(--ink-soft);font-size:12.5px}
+  .gatebar li{margin-bottom:3px}
+
+  h2.sec{font-size:17px;margin:34px 0 4px;letter-spacing:-.01em}
+  .secsub{color:var(--ink-soft);font-size:13px;margin:0 0 14px}
+
+  /* branches */
+  .branches{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .bcard{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:14px 15px;
+    box-shadow:var(--card-shadow)}
+  .bcard h3{font-size:14px;display:flex;align-items:center;gap:8px}
+  .bcard .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+  .bcard p{font-size:12.5px;color:var(--ink-soft);margin:9px 0 0;line-height:1.6}
+  .bcard .mono{font-size:11.5px;color:var(--accent-ink);font-weight:500}
+
+  /* state table */
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:6px}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:520px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+  th{background:var(--surface-2);font-size:11px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--ink-faint);font-weight:700}
+  tr:last-child td{border-bottom:0}
+  td.mono{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-soft)}
+  .st{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+
+  .infobox{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;margin-top:14px;font-size:13px;color:var(--ink-soft);line-height:1.65}
+  .infobox code{font-family:"JetBrains Mono",monospace;background:var(--surface);border:1px solid var(--line);
+    padding:1px 6px;border-radius:5px;color:var(--accent-ink);font-size:12px}
+  .infobox b{color:var(--ink)}
+
+  /* flowchart */
+  .chartwrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--card-shadow);padding:14px 12px;overflow-x:auto;margin-top:6px}
+  #flow{display:block;width:100%;max-width:430px;height:auto;margin:0 auto}
+  .fl-cap{font-size:12px;color:var(--ink-faint);margin-top:10px;text-align:center;line-height:1.6}
+  #flow .n{fill:var(--surface-2);stroke-width:1.6}
+  #flow .n-auto{stroke:var(--auto)}
+  #flow .n-recv{stroke:var(--manual)}
+  #flow .n-start{stroke:var(--ink-faint)}
+  #flow .n-end{stroke:var(--ok);fill:var(--ok-soft)}
+  #flow .n-pause{stroke:var(--accent);stroke-dasharray:5 3;fill:var(--accent-soft)}
+  #flow .diam{fill:var(--manual-soft);stroke:var(--manual);stroke-width:1.6}
+  #flow .t1{fill:var(--ink);font-family:"Sora",sans-serif;font-weight:600;font-size:11px}
+  #flow .t2{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:8.5px}
+  #flow .t2a{fill:var(--auto)} #flow .t2r{fill:var(--manual)} #flow .t2e{fill:var(--ok)} #flow .t2p{fill:var(--accent-ink)}
+  #flow .edge{stroke:var(--ink-faint);stroke-width:1.5;fill:none;marker-end:url(#ah)}
+  #flow .edge.d{stroke-dasharray:4 3}
+  #flow .ah{fill:var(--ink-faint)}
+  #flow .lbl{fill:var(--observer);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:8.5px}
+  #flow .lbl-m{fill:var(--manual);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:8.5px}
+  #flow .lblbg{fill:var(--bg)}
+  #flow .side{fill:var(--ink-faint);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:8px}
+
+  /* doc links + example + routing */
+  .doclinks{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 2px}
+  .doclinks a,.doclinks span.dl{display:inline-flex;align-items:center;gap:7px;font-size:12px;
+    background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:6px 12px;
+    color:var(--ink-soft);text-decoration:none;font-family:"JetBrains Mono",monospace}
+  .doclinks a{color:var(--accent-ink);font-weight:600}
+  .doclinks a:hover{border-color:var(--accent);text-decoration:underline}
+  .example{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--ok);
+    border-radius:12px;padding:16px 18px;margin-top:18px}
+  .example h3{font-size:15px;color:var(--ok);display:flex;align-items:center;gap:8px}
+  .example p{font-size:13.5px;margin:8px 0 0;line-height:1.65}
+  .example ol{margin:10px 0 0;padding-left:20px}
+  .example li{font-size:13px;margin-bottom:7px;line-height:1.55}
+  .example .tag{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--accent-ink);
+    background:var(--accent-soft);padding:1px 6px;border-radius:5px}
+  .example b{color:var(--ink)}
+  .routing{background:var(--surface);border:1px solid var(--line);border-radius:13px;
+    box-shadow:var(--card-shadow);padding:15px 17px;margin-top:8px}
+  .routing ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .routing li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px}
+  .routing .ic{flex:none}
+  .routing a{color:var(--accent-ink);text-decoration:none;font-weight:600}
+  .routing a:hover{text-decoration:underline}
+  .routing code{font-family:"JetBrains Mono",monospace;font-size:11px;background:var(--surface-2);
+    border:1px solid var(--line);padding:1px 5px;border-radius:5px;color:var(--ink-soft)}
+  .routing .desc{color:var(--ink-soft);display:block;margin-top:2px;font-weight:400}
+
+  footer{margin:30px 0 24px;color:var(--ink-faint);font-size:12px;line-height:1.7}
+  footer code{font-family:"JetBrains Mono",monospace;background:var(--surface-2);padding:1px 5px;border-radius:5px}
+  .theme-btn{background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);
+    border-radius:9px;padding:6px 10px;cursor:pointer;font-size:12px;position:absolute;top:16px;right:18px}
+</style>
+
+<header class="top">
+  <div class="wrap head-in" style="position:relative">
+    <button class="theme-btn" id="themeBtn">◐ Tema</button>
+    <div class="eyebrow">OlshopERP · Accounting · Horizon Job Flow</div>
+    <h1>Settlement Upload — Alur Job End-to-End</h1>
+    <p class="sub">Bagaimana satu file settlement yang di-upload berubah jadi Invoice, Outbound, Jurnal, sampai penerimaan pembayaran (AR) — lewat rantai job antrian yang dikendalikan sebuah state machine.</p>
+    <div class="crumb">📍 <a href="https://claude.ai/artifact/CuKxHnM5uxLeixvHZXw4to">Peta Job Horizon</a> › Accounting › SettlementUpload</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="doclinks">
+    <a href="https://claude.ai/artifact/X8Lz3madDjKjuQdv7taUzh" target="_blank" rel="noopener">🔗 Versi live (artifact)</a>
+    <a href="https://claude.ai/artifact/CuKxHnM5uxLeixvHZXw4to" target="_blank" rel="noopener">🗺️ Peta semua job Horizon</a>
+    <span class="dl">📄 SoT: docs/qa-docs/_meta/horizon-jobs/settlement-upload.md</span>
+  </div>
+
+  <div class="keybox">
+    <h3>🔑 Konsep inti: rantainya digerakkan Observer, bukan job-manggil-job</h3>
+    <p>Job di sini <b>tidak</b> memanggil job tahap berikutnya secara langsung. Setiap job hanya <b>menambah counter</b> di record <span class="mono">SettlementUpload</span> (mis. <span class="mono">generated_invoice_count</span>). Lalu <span class="mono">SettlementUploadObserver::updated()</span> mengawasi kolom mana yang berubah; begitu counter sebuah tahap mencapai target, observer <b>menaikkan status</b> (<span class="mono">progress</span>) dan <b>men-dispatch job tahap berikutnya</b>. <span class="mono">Cache::lock</span> mencegah tahap naik dua kali saat banyak job selesai bersamaan.</p>
+  </div>
+
+  <div class="example">
+    <h3>📦 Contoh gampangnya (buat non-teknis)</h3>
+    <p>Bayangkan kamu upload <b>1 file settlement dari Shopee berisi 1.000 baris</b> (1.000 pesanan yang sudah dibayar Shopee ke toko). Sistem memprosesnya seperti <b>ban berjalan pabrik</b> — tiap pos kerja punya tugas sendiri:</p>
+    <ol>
+      <li><span class="tag">validating</span> Petugas cek 1.000 baris satu per satu, dicocokkan ke pesanan aslinya. Yang tak cocok → ditandai error.</li>
+      <li><span class="tag">generating</span> Tiap baris dibuatkan <b>tagihan (invoice)</b> + <b>surat barang keluar (outbound)</b>. Jadi ±1.000 invoice + 1.000 outbound.</li>
+      <li><span class="tag">approving</span> Sistem otomatis cap "disetujui" ke semua invoice &amp; outbound tadi.</li>
+      <li><span class="tag">journals</span> Semua dicatat ke <b>pembukuan (jurnal)</b>, lalu jurnalnya di-posting.</li>
+      <li><span class="tag">manual</span> Kamu klik tombol <b>Approve</b> → sistem membuat <b>bukti penerimaan uang (AR)</b> dari Shopee.</li>
+      <li><span class="tag">selesai</span> Uang dari Shopee resmi tercatat masuk &amp; pembukuan beres.</li>
+    </ol>
+    <p style="margin-top:12px">🔔 <b>Peran "Observer"</b>: anggap dia <b>mandor</b>. Tiap pekerja yang selesai lapor "1 selesai". Begitu mandor lihat <b>semua 1.000 selesai</b> di satu pos, dia baru meniup peluit menyuruh pindah ke pos berikutnya — jadi tahap tidak akan lompat sebelum tahap sebelumnya benar-benar tuntas.</p>
+  </div>
+
+  <div class="legend">
+    <span class="lg"><span class="sw" style="background:var(--accent)"></span>Tahap otomatis</span>
+    <span class="lg"><span class="sw" style="background:var(--auto)"></span>Job orkestrator (fan-out)</span>
+    <span class="lg"><span class="sw" style="background:var(--worker)"></span>Job worker (per-baris)</span>
+    <span class="lg"><span class="sw" style="background:var(--observer)"></span>Observer (pemicu transisi)</span>
+    <span class="lg"><span class="sw" style="background:var(--manual)"></span>Aksi manual user</span>
+  </div>
+
+  <h2 class="sec" style="margin-top:26px">Diagram alur (flowchart)</h2>
+  <p class="secsub">Peta ringkas satu upload dari awal sampai selesai. Anak panah antar tahap = transisi; label pada panah = observer/aksi pemicunya. Kotak jingga butuh aksi user.</p>
+  <div class="chartwrap">
+    <svg id="flow" role="img" aria-label="Flowchart alur job Settlement Upload"></svg>
+    <div class="fl-cap">Tahap 1→5 &amp; 6→7 berpindah otomatis lewat <b style="color:var(--observer)">SettlementUploadObserver</b>. Gagal di tahap mana pun → status <b style="color:var(--danger)">failed</b> (bisa di-Retry).</div>
+  </div>
+
+  <h2 class="sec">Timeline urutan job</h2>
+  <p class="secsub">Rincian tiap tahap: job yang dijalankan, counter yang bertambah, dan observer pemicu tahap berikutnya.</p>
+  <div class="pipe" id="pipe"></div>
+
+  <h2 class="sec">Jalur cabang (di luar pipeline utama)</h2>
+  <p class="secsub">Aksi lain di menu Settlement Upload yang juga men-dispatch job.</p>
+  <div class="branches" id="branches"></div>
+
+  <h2 class="sec">Referensi status (kolom <span class="mono" style="font-size:14px">progress</span>)</h2>
+  <p class="secsub">Nilai <span class="mono">progress</span> yang dilewati satu upload dari awal sampai selesai.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>#</th><th>progress</th><th>Arti</th><th>Dipicu / dinaikkan oleh</th></tr></thead>
+      <tbody id="statetbl"></tbody>
+    </table>
+  </div>
+
+  <h2 class="sec">Infrastruktur queue</h2>
+  <div class="infobox">
+    Semua job settlement berjalan di queue <code>import_connection_{branch}</code> — hasil dari <code>getQueueName('import')</code> di tiap constructor job. Di Horizon, queue ini diproses supervisor <code>spv_import_conn_{env}</code> (production/staging/dev/development/local). <br><br>
+    Semua job extend <code>BaseJob</code> dan implement <code>WithCompanyContext</code>, jadi <b>konteks company ikut terbawa</b> ke worker (multi-tenant tetap benar walau eksekusi async). Job per-baris memakai <code>afterCommit()</code> + <code>retryUniqueConstraint()</code> supaya aman dari race saat transaksi paralel.
+  </div>
+
+  <h2 class="sec">Routing — dokumentasi menu terkait</h2>
+  <p class="secsub">Doc alur job ini melengkapi dokumentasi fungsional menu berikut di <span class="mono">docs/qa-docs/</span>.</p>
+  <div class="routing">
+    <ul>
+      <li><span class="ic">📁</span><div><a href="../../accounting-settlement-upload/README.md">accounting-settlement-upload</a><span class="desc">Dokumen utama menu Settlement Upload (fungsi, aturan, test case). <code>docs/qa-docs/accounting-settlement-upload/</code></span></div></li>
+      <li><span class="ic">📁</span><div><a href="../../accounting-settlement-mapping/README.md">accounting-settlement-mapping</a><span class="desc">Mapping kolom settlement per platform. <code>docs/qa-docs/accounting-settlement-mapping/</code></span></div></li>
+      <li><span class="ic">📁</span><div><a href="../../accounting-customer-invoice/README.md">accounting-customer-invoice</a><span class="desc">Invoice yang dihasilkan pada tahap generate. <code>docs/qa-docs/accounting-customer-invoice/</code></span></div></li>
+      <li><span class="ic">📁</span><div><a href="../../accounting-customer-payment/README.md">accounting-customer-payment</a><span class="desc">Penerimaan (AR) yang dibuat pada tahap approve manual. <code>docs/qa-docs/accounting-customer-payment/</code></span></div></li>
+    </ul>
+  </div>
+
+  <footer>
+    <div>Sumber kode (branch <code>dev</code>): <code>SettlementUploadController.php</code>, <code>Entities/SettlementUpload.php</code>, <code>Observers/SettlementUploadObserver.php</code>, <code>Jobs/Settlement*Job.php</code>, <code>Import/SettlementSheet.php</code>.</div>
+    <div id="genline" style="margin-top:6px"></div>
+  </footer>
+</main>
+
+<script>
+(function(){
+  var stages=[
+    {n:1, state:"validating", trig:"entry", title:"Upload & Validasi file",
+     trigger:"User pilih Store + upload file CSV/Excel → <span class='mono'>store()</span> → <span class='mono'>Excel::import()</span>",
+     jobs:[
+       {t:"SettlementSheet", c:"orch", note:"buat record SettlementUpload (progress=validating), set total_rows; baca per chunk 200 baris"},
+       {t:"ImportSettlementJob", c:"work", note:"per chunk — platform umum"},
+       {t:"ImportLazadaSettlementJob", c:"work", note:"per chunk — khusus Lazada"}
+     ],
+     worker:"Buat baris <span class='mono'>Settlement</span>, cocokkan ke Sales Order / Invoice, jalankan validasi.",
+     counter:"addValidated() → validated_rows++",
+     obs:"afterValidation()", cond:"saat validated_rows ≥ total_rows &amp; lolos validasi → progress <b>generating</b> lalu panggil processSettlement(). Kalau gagal → <b>failed</b>.",
+     next:"lanjut otomatis ke Tahap 2"},
+
+    {n:2, state:"generating", trig:"auto", title:"Generate Invoice &amp; Outbound",
+     trigger:"<span class='mono'>processSettlement()</span> (dipanggil observer Tahap 1)",
+     jobs:[
+       {t:"SettlementGenerateInvoiceJob", c:"orch", note:"chunkById(500) → fan-out per settlement"},
+       {t:"SettlementGenerateInvoiceSingleJob", c:"work", note:"1 job / 1 settlement"},
+       {t:"SettlementGenerateOutboundJob", c:"orch", note:"chunkById(500) → fan-out per settlement"},
+       {t:"SettlementGenerateOutboundSingleJob", c:"work", note:"1 job / 1 settlement"}
+     ],
+     worker:"<span class='mono'>generateInvoice()</span> / <span class='mono'>generateOutbound()</span> membuat CustomerInvoice &amp; Outbound.",
+     counter:"addInvoice() / addOutbound() + addProcessed()",
+     obs:"afterGenerating()", cond:"saat processing_attempted memenuhi (validated − skipped) → progress <b>approving</b> + auto-dispatch job Approve. Kalau ada error → <b>failed</b>.",
+     next:"lanjut otomatis ke Tahap 3"},
+
+    {n:3, state:"approving", trig:"auto", title:"Approve Invoice &amp; Outbound (auto)",
+     trigger:"observer <span class='mono'>afterGenerating()</span>",
+     jobs:[
+       {t:"SettlementApproveInvoiceJob", c:"orch", note:"chunkById(500) → fan-out"},
+       {t:"SettlementApproveInvoiceSingleJob", c:"work", note:"auto-approve tiap invoice"},
+       {t:"SettlementApproveOutboundJob", c:"orch", note:"chunkById(500) → fan-out"},
+       {t:"SettlementApproveOutboundSingleJob", c:"work", note:"auto-approve tiap outbound"}
+     ],
+     worker:"Approve invoice &amp; outbound otomatis oleh sistem (\"Auto approved by system\").",
+     counter:"addApprovedInvoice() / addApprovedOutbound() ; approving_attempted",
+     obs:"onApproved()", cond:"saat approving_attempted ≥ (generated_invoice + generated_outbound) → progress <b>generating journals</b> + auto-dispatch job Generate Jurnal.",
+     next:"lanjut otomatis ke Tahap 4"},
+
+    {n:4, state:"generating journals", trig:"auto", title:"Generate Jurnal",
+     trigger:"observer <span class='mono'>onApproved()</span>",
+     jobs:[
+       {t:"SettlementGenerateInvoiceJournalJob", c:"orch", note:"jurnal invoice"},
+       {t:"SettlementGenerateOutboundJournalJob", c:"orch", note:"jurnal outbound (HPP/persediaan)"}
+     ],
+     worker:"Membuat <span class='mono'>Journal</span> untuk tiap invoice &amp; outbound.",
+     counter:"addInvoiceJournal() / addOutboundJournal() ; generating_journal_attempted",
+     obs:"afterJournalGenerate()", cond:"saat generating_journal_attempted memenuhi → progress <b>approving journals</b> + auto-dispatch job Approve Jurnal.",
+     next:"lanjut otomatis ke Tahap 5"},
+
+    {n:5, state:"approving journals", trig:"auto", title:"Approve Jurnal",
+     trigger:"observer <span class='mono'>afterJournalGenerate()</span>",
+     jobs:[
+       {t:"SettlementApproveInvoiceJournalJob", c:"orch", note:"posting jurnal invoice"},
+       {t:"SettlementApproveOutboundJournalJob", c:"orch", note:"posting jurnal outbound"}
+     ],
+     worker:"Approve/posting jurnal ke buku besar.",
+     counter:"addApprovedInvoiceJournal() / addApprovedOutboundJournal() ; approving_journal_attempted",
+     obs:"afterJournalApprove()", cond:"saat semua jurnal ter-approve → progress <b>journals approved</b>. Bagian otomatis selesai; menunggu approve manual user.",
+     next:"BERHENTI — menunggu tombol Approve dari user"}
+  ];
+
+  var gate={
+    title:"Gerbang manual — user klik tombol Approve",
+    desc:"Setelah jurnal ter-approve, user menekan <b>Approve</b> (<span class='mono'>approve()</span> controller). Sebelum lanjut, sistem cek:",
+    checks:[
+      "<span class='mono'>can_approve</span> = true &amp; COA penerimaan (cash_bank_account) sudah di-set",
+      "Tanggal AR &amp; COA belum dipakai di Cash/Bank Reconcile yang sudah approved",
+      "Semua invoice transaksinya dalam <b>satu hari yang sama</b>",
+      "Upload tidak berstatus failed, dan tidak semua invoice sudah dibayar"
+    ],
+    then:"Lolos → model <span class='mono'>approve()</span> set progress <b>generating receives</b> + dispatch <span class='mono'>SettlementGenerateCustomerPaymentJob</span>."
+  };
+
+  var stages2=[
+    {n:6, state:"generating receives", trig:"manual", title:"Generate AR / Penerimaan Customer",
+     trigger:"aksi manual <span class='mono'>approve()</span>",
+     jobs:[
+       {t:"SettlementGenerateCustomerPaymentJob", c:"orch", note:"buat Payment 'Payment from Customer' + detail + fund"}
+     ],
+     worker:"Membentuk penerimaan pembayaran (Receive) dari customer atas invoice yang sudah dibuat.",
+     counter:"addReceive() ; attempted_receive_count",
+     obs:"afterReceiveGenerated()", cond:"saat attempted_receive_count ≥ approved_invoice_count → progress <b>approving receives</b> + dispatch job Approve AR.",
+     next:"lanjut otomatis ke Tahap 7"},
+
+    {n:7, state:"receive journals approved", trig:"auto", title:"Approve AR &amp; Jurnal Penerimaan", final:true,
+     trigger:"observer <span class='mono'>afterReceiveGenerated()</span>",
+     jobs:[
+       {t:"SettlementApproveCustomerPaymentJob", c:"orch", note:"→ approveReceive() → PaymentController::approve()"}
+     ],
+     worker:"Approve penerimaan &amp; posting jurnal penerimaan lewat <span class='mono'>PaymentController</span>.",
+     counter:"— (set status akhir langsung)",
+     obs:"(di dalam job)", cond:"sukses → progress <b>receive journals approved</b> = SELESAI penuh. Gagal → <b>failed</b>.",
+     next:"✓ Settlement selesai end-to-end"}
+  ];
+
+  var branches=[
+    {icon:"📤", title:"Export", color:"var(--auto)", bg:"var(--auto-soft)",
+     job:"SettlementUploadExportJob",
+     desc:"<span class='mono'>export()</span> membangun query list settlement lalu men-dispatch job untuk menulis file Excel export."},
+    {icon:"🔄", title:"Re-read Excel", color:"var(--accent-ink)", bg:"var(--accent-soft)",
+     job:"(Excel::import ulang)",
+     desc:"<span class='mono'>reread()</span> mengulang validasi file untuk upload yang <b>belum di-approve</b> — reset counter, hapus log order, jalankan import lagi dari Tahap 1."},
+    {icon:"↻", title:"Retry", color:"var(--manual)", bg:"var(--manual-soft)",
+     job:"Settlement…Job (sesuai tahap gagal)",
+     desc:"<span class='mono'>retry()</span> / <b>SettlementUploadRetryController</b> melanjutkan dari tahap yang <b>failed</b>: re-dispatch job Generate/Approve/Journal/Receive sesuai <span class='mono'>progress</span> terakhir."},
+    {icon:"🗑️", title:"Delete", color:"var(--danger)", bg:"var(--danger-soft)",
+     job:"DeleteSettlementJob",
+     desc:"<span class='mono'>delete()</span> set progress <b>deleting</b> + dispatch job yang force-delete Settlement, Invoice+jurnal, Outbound+jurnal, Payment, lalu record upload."}
+  ];
+
+  var statetable=[
+    ["1","validating","File sedang divalidasi baris demi baris","ImportSettlementJob → afterValidation()"],
+    ["2","generating","Membuat invoice &amp; outbound","processSettlement() → Generate*Job"],
+    ["3","approving","Invoice &amp; outbound di-approve otomatis","afterGenerating() → Approve*Job"],
+    ["4","generating journals","Membuat jurnal invoice &amp; outbound","onApproved() → GenerateJournal*Job"],
+    ["5","approving journals","Posting jurnal","afterJournalGenerate() → ApproveJournal*Job"],
+    ["—","journals approved","Bagian otomatis selesai, tunggu approve user","afterJournalApprove()"],
+    ["6","generating receives","Membuat penerimaan (AR) dari customer","approve() manual → GenerateCustomerPaymentJob"],
+    ["7","approving receives","Approve penerimaan","afterReceiveGenerated() → ApproveCustomerPaymentJob"],
+    ["✓","receive journals approved","SELESAI — jurnal penerimaan ter-posting","SettlementApproveCustomerPaymentJob"],
+    ["✕","failed","Ada error di salah satu tahap → bisa di-Retry","semua observer (cek isSuccess())"],
+    ["🗑","deleting","Sedang dihapus","DeleteSettlementJob"]
+  ];
+
+  function jobHtml(j){
+    return '<div class="jobline"><span class="jtag '+j.c+'">'+j.t+'</span>'
+      +(j.note?'<span class="fan">'+j.note+'</span>':'')+'</div>';
+  }
+  function stageHtml(s){
+    var cls='stage'+(s.final?' final':'');
+    var h='<div class="'+cls+'"><div class="snum">'+(s.final?'✓':s.n)+'</div><div class="card">';
+    h+='<div class="card-h"><h2>'+s.title+'</h2>'
+      +'<span class="trigpill '+s.trig+'">'+(s.trig==='auto'?'otomatis':s.trig==='manual'?'manual':'entry')+'</span>'
+      +'<span class="statepill">'+s.state+'</span></div>';
+    h+='<div class="card-b">';
+    h+='<div class="row"><span class="k">Dipicu</span><span class="v">'+s.trigger+'</span></div>';
+    h+='<div class="row"><span class="k">Job</span><span class="v">'+s.jobs.map(jobHtml).join('')+'</span></div>';
+    h+='<div class="row"><span class="k">Kerja</span><span class="v">'+s.worker+'</span></div>';
+    h+='<div class="row"><span class="k">Counter</span><span class="v"><span class="counter">'+s.counter+'</span></span></div>';
+    h+='<div class="obsbox">🔔 Observer <span class="m">'+s.obs+'</span> — <span class="cond">'+s.cond+'</span></div>';
+    h+='<div class="nextnote"><span class="arrowdown">↓</span> '+s.next+'</div>';
+    h+='</div></div></div>';
+    return h;
+  }
+
+  var pipe=document.getElementById('pipe');
+  var html=stages.map(stageHtml).join('');
+  // manual gate
+  html+='<div class="stage manualgate"><div class="snum">✋</div>'
+    +'<div class="gatebar"><b>'+gate.title+'</b><div style="margin-top:5px">'+gate.desc+'</div>'
+    +'<ul>'+gate.checks.map(function(c){return '<li>'+c+'</li>';}).join('')+'</ul>'
+    +'<div style="margin-top:8px;color:var(--ink)">'+gate.then+'</div></div></div>';
+  html+=stages2.map(stageHtml).join('');
+  pipe.innerHTML=html;
+
+  document.getElementById('branches').innerHTML=branches.map(function(b){
+    return '<div class="bcard"><h3><span>'+b.icon+'</span>'+b.title
+      +'<span class="badge" style="color:'+b.color+';background:'+b.bg+';margin-left:auto">job</span></h3>'
+      +'<p><span class="mono">'+b.job+'</span></p>'
+      +'<p>'+b.desc+'</p></div>';
+  }).join('');
+
+  var dot={
+    "validating":"var(--auto)","generating":"var(--worker)","approving":"var(--worker)",
+    "generating journals":"var(--worker)","approving journals":"var(--worker)",
+    "journals approved":"var(--accent)","generating receives":"var(--manual)",
+    "approving receives":"var(--manual)","receive journals approved":"var(--ok)",
+    "failed":"var(--danger)","deleting":"var(--danger)"
+  };
+  document.getElementById('statetbl').innerHTML=statetable.map(function(r){
+    return '<tr><td class="mono">'+r[0]+'</td>'
+      +'<td class="mono"><span class="st" style="background:'+(dot[r[1].replace(/&amp;/g,"&")]||'var(--ink-faint)')+'"></span>'+r[1]+'</td>'
+      +'<td>'+r[2]+'</td><td class="mono">'+r[3]+'</td></tr>';
+  }).join('');
+
+  document.getElementById('genline').textContent='Pipeline: 7 tahap · 18 job class terlibat · 1 observer state machine · queue import_connection_{branch}.';
+
+  // ---- flowchart builder (theme-aware SVG)
+  (function buildFlow(){
+    var W=380, cx=W/2, y=10;
+    var body=[], edges=[], labels=[], geo={};
+    function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function txt(x,yy,s,cls,anchor){
+      return '<text x="'+x+'" y="'+yy+'" class="'+cls+'" text-anchor="'+(anchor||'middle')+'">'+esc(s)+'</text>';
+    }
+    var flow=[
+      {id:'start', type:'pill-start', t1:'Upload file (CSV/Excel)', t2:'store() → Excel::import'},
+      {id:'s1', type:'auto', t1:'1 · Validasi', t2:'validating'},
+      {id:'s2', type:'auto', t1:'2 · Generate Invoice & Outbound', t2:'generating', lbl:'🔔 afterValidation()'},
+      {id:'s3', type:'auto', t1:'3 · Approve Invoice & Outbound', t2:'approving', lbl:'🔔 afterGenerating()'},
+      {id:'s4', type:'auto', t1:'4 · Generate Jurnal', t2:'generating journals', lbl:'🔔 onApproved()'},
+      {id:'s5', type:'auto', t1:'5 · Approve Jurnal', t2:'approving journals', lbl:'🔔 afterJournalGenerate()'},
+      {id:'pause', type:'pause', t1:'⏸ journals approved — tunggu user', t2:'', lbl:'🔔 afterJournalApprove()'},
+      {id:'gate', type:'diamond', t1:'User Approve?', t2:'guard lolos?'},
+      {id:'s6', type:'recv', t1:'6 · Generate AR (Receive)', t2:'generating receives', lbl:'✋ MANUAL approve()', lblM:true},
+      {id:'s7', type:'recv', t1:'7 · Approve AR + Jurnal', t2:'approving receives', lbl:'🔔 afterReceiveGenerated()'},
+      {id:'end', type:'pill-end', t1:'✓ SELESAI', t2:'receive journals approved'}
+    ];
+    var prevBottom=null;
+    flow.forEach(function(node){
+      var h = node.type==='diamond'?80 : ((node.type.indexOf('pill')===0||node.type==='pause')?36:52);
+      var w = node.type==='diamond'?162 : (node.type==='pause'?258 : (node.type.indexOf('pill')===0?226:216));
+      var top=y, cyy=y+h/2, left=cx-w/2;
+      if(prevBottom!=null){
+        edges.push('<line class="edge" x1="'+cx+'" y1="'+prevBottom+'" x2="'+cx+'" y2="'+top+'"/>');
+        if(node.lbl){
+          var midY=(prevBottom+top)/2, lw=node.lbl.length*4.7+10;
+          labels.push('<rect class="lblbg" x="'+(cx-lw/2)+'" y="'+(midY-8)+'" width="'+lw+'" height="13" rx="3"/>'
+            +txt(cx,midY+2,node.lbl,node.lblM?'lbl-m':'lbl','middle'));
+        }
+      }
+      if(node.type==='diamond'){
+        var pts=[cx+','+top,(left+w)+','+cyy,cx+','+(top+h),left+','+cyy].join(' ');
+        body.push('<polygon class="diam" points="'+pts+'"/>');
+        body.push(txt(cx,cyy-3,node.t1,'t1'));
+        body.push(txt(cx,cyy+11,node.t2,'t2 t2r'));
+      } else {
+        var clsMap={'auto':'n-auto','recv':'n-recv','pill-start':'n-start','pill-end':'n-end','pause':'n-pause'};
+        body.push('<rect class="n '+(clsMap[node.type]||'n-auto')+'" x="'+left+'" y="'+top+'" width="'+w+'" height="'+h+'" rx="11"/>');
+        if(node.t2){
+          body.push(txt(cx,cyy-3,node.t1,'t1'));
+          var t2c = node.type==='recv'?'t2 t2r':(node.type==='pill-end'?'t2 t2e':(node.type==='pause'?'t2 t2p':(node.type==='pill-start'?'t2 t2p':'t2 t2a')));
+          body.push(txt(cx,cyy+11,node.t2,t2c));
+        } else {
+          body.push(txt(cx,cyy+3,node.t1,'t1'));
+        }
+      }
+      geo[node.id]={top:top,cy:cyy,left:left,right:left+w,bottom:top+h};
+      prevBottom=top+h;
+      y=top+h+(flow[flow.indexOf(node)+1] && flow[flow.indexOf(node)+1].lbl ? 32 : 24);
+    });
+    // gate "Tidak" side branch → berhenti
+    var g=geo['gate'];
+    edges.push('<line class="edge d" x1="'+g.right+'" y1="'+g.cy+'" x2="'+(W-52)+'" y2="'+g.cy+'"/>');
+    body.push(txt((g.right+W-52)/2, g.cy-4, 'Tidak', 'side'));
+    body.push(txt(W-50, g.cy-2, 'belum', 'side', 'start'));
+    body.push(txt(W-50, g.cy+8, 'di-approve', 'side', 'start'));
+
+    var H=geo['end'].bottom+12;
+    var svg=document.getElementById('flow');
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    svg.innerHTML='<defs><marker id="ah" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto">'
+      +'<path d="M0,0 L6.5,3 L0,6 Z" class="ah"/></marker></defs>'
+      + edges.join('') + body.join('') + labels.join('');
+  })();
+
+  // theme
+  var root=document.documentElement;
+  try{var t=localStorage.getItem('hz-theme'); if(t) root.setAttribute('data-theme',t);}catch(e){}
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var next=cur==='dark'?'light':(cur==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('hz-theme',next);}catch(e){}
+  });
+})();
+</script>

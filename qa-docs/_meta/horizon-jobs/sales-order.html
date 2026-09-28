@@ -1,0 +1,417 @@
+<title>Sales Order — Alur Job</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#f4f5fa; --surface:#ffffff; --surface-2:#f8f9fd; --line:#e4e6f0;
+    --ink:#1a1d2b; --ink-soft:#565b73; --ink-faint:#8a8fa8;
+    --accent:#5a4be0; --accent-soft:#ece9fd; --accent-ink:#3a2eb0;
+    --auto:#2563a8; --auto-soft:#e2eefb;
+    --manual:#b4611a; --manual-soft:#fbeacf;
+    --observer:#a63a6b; --observer-soft:#fbe3ee;
+    --ok:#1c9d6b; --ok-soft:#dff4ec;
+    --danger:#c0392b; --danger-soft:#fbe4e1;
+    --sync:#0e8f8f; --sync-soft:#d9f2f2;
+    --card-shadow:0 1px 3px rgba(26,29,43,.07),0 6px 20px rgba(26,29,43,.04);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      color-scheme:dark;
+      --bg:#0f1119; --surface:#181b27; --surface-2:#1f2330; --line:#2c3140;
+      --ink:#eef0f7; --ink-soft:#a9afc4; --ink-faint:#727a94;
+      --accent:#8f83ff; --accent-soft:#26234a; --accent-ink:#c3bcff;
+      --auto:#8dc0f5; --auto-soft:#16304d;
+      --manual:#f0b46a; --manual-soft:#3a2a12;
+      --observer:#e888b3; --observer-soft:#3c1b2c;
+      --ok:#4ecb96; --ok-soft:#12362a;
+      --danger:#f0857a; --danger-soft:#3a1d1a;
+      --sync:#63d3d3; --sync-soft:#123536;
+      --card-shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0f1119; --surface:#181b27; --surface-2:#1f2330; --line:#2c3140;
+    --ink:#eef0f7; --ink-soft:#a9afc4; --ink-faint:#727a94;
+    --accent:#8f83ff; --accent-soft:#26234a; --accent-ink:#c3bcff;
+    --auto:#8dc0f5; --auto-soft:#16304d;
+    --manual:#f0b46a; --manual-soft:#3a2a12;
+    --observer:#e888b3; --observer-soft:#3c1b2c;
+    --ok:#4ecb96; --ok-soft:#12362a;
+    --danger:#f0857a; --danger-soft:#3a1d1a;
+    --sync:#63d3d3; --sync-soft:#123536;
+    --card-shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55}
+  h1,h2,h3{font-family:"Sora",system-ui,sans-serif;text-wrap:balance;margin:0}
+  .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+  .wrap{max-width:940px;margin:0 auto;padding-inline:18px}
+
+  header.top{border-bottom:1px solid var(--line);background:
+    linear-gradient(180deg,color-mix(in srgb,var(--accent-soft) 40%,var(--bg)),var(--bg))}
+  .head-in{padding-block:22px 18px;position:relative}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent-ink);font-weight:700}
+  h1{font-size:clamp(23px,5vw,33px);font-weight:700;margin-top:5px;letter-spacing:-.015em}
+  .sub{color:var(--ink-soft);font-size:14px;margin-top:8px;max-width:72ch}
+  .crumb{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-faint);
+    margin-top:12px;font-family:"JetBrains Mono",monospace;flex-wrap:wrap}
+  .crumb a{color:var(--accent-ink);text-decoration:none}
+  .crumb a:hover{text-decoration:underline}
+  .theme-btn{background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);
+    border-radius:9px;padding:6px 10px;cursor:pointer;font-size:12px;position:absolute;top:16px;right:0}
+
+  .keybox{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));
+    border-radius:13px;padding:15px 17px;margin-top:18px}
+  .keybox h3{font-size:14px;color:var(--accent-ink);display:flex;align-items:center;gap:8px}
+  .keybox p{font-size:13px;color:var(--ink);margin:8px 0 0;line-height:1.6}
+  .keybox .mono{color:var(--accent-ink);font-weight:600;font-size:12.5px}
+  .keybox b{color:var(--accent-ink)}
+
+  h2.sec{font-size:18px;margin:34px 0 4px;letter-spacing:-.01em}
+  .secsub{color:var(--ink-soft);font-size:13px;margin:0 0 14px;max-width:74ch}
+
+  /* flowchart */
+  .chartwrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--card-shadow);padding:14px 12px;overflow-x:auto;margin-top:6px}
+  #flow{display:block;width:100%;max-width:440px;height:auto;margin:0 auto}
+  .fl-cap{font-size:12px;color:var(--ink-faint);margin-top:10px;text-align:center;line-height:1.6}
+  #flow .n{fill:var(--surface-2);stroke-width:1.6}
+  #flow .n-auto{stroke:var(--auto)}
+  #flow .n-wave{stroke:var(--accent);fill:var(--accent-soft)}
+  #flow .n-opt{stroke:var(--ink-faint);stroke-dasharray:5 3}
+  #flow .n-start{stroke:var(--ink-faint)}
+  #flow .n-end{stroke:var(--ok);fill:var(--ok-soft)}
+  #flow .n-err{stroke:var(--danger);fill:var(--danger-soft)}
+  #flow .diam{fill:var(--manual-soft);stroke:var(--manual);stroke-width:1.6}
+  #flow .t1{fill:var(--ink);font-family:"Sora",sans-serif;font-weight:600;font-size:11px}
+  #flow .t2{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:8.5px}
+  #flow .t2a{fill:var(--auto)} #flow .t2w{fill:var(--accent-ink)} #flow .t2e{fill:var(--ok)}
+  #flow .t2p{fill:var(--accent-ink)} #flow .t2d{fill:var(--danger)} #flow .t2f{fill:var(--ink-faint)}
+  #flow .edge{stroke:var(--ink-faint);stroke-width:1.5;fill:none;marker-end:url(#ah)}
+  #flow .edge.d{stroke-dasharray:4 3}
+  #flow .ah{fill:var(--ink-faint)}
+  #flow .lbl{fill:var(--observer);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:8.3px}
+  #flow .lblbg{fill:var(--bg)}
+  #flow .side{fill:var(--ink-faint);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:8px}
+
+  /* pipeline (timeline) */
+  .pipe{margin:18px 0 8px;position:relative}
+  .stage{position:relative;padding-left:44px;padding-bottom:13px}
+  .stage:not(:last-child)::before{content:"";position:absolute;left:16px;top:32px;bottom:-4px;width:2px;background:var(--line)}
+  .snum{position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;display:flex;
+    align-items:center;justify-content:center;font-family:"Sora",sans-serif;font-weight:700;font-size:14px;
+    background:var(--accent);color:#fff;z-index:1;box-shadow:0 0 0 4px var(--bg)}
+  .stage.final .snum{background:var(--ok)}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:13px;box-shadow:var(--card-shadow);overflow:hidden}
+  .card-h{padding:12px 15px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .card-h h3{font-size:14.5px;font-weight:600;flex:1;min-width:160px}
+  .card-b{padding:0 15px 13px;display:flex;flex-direction:column;gap:8px;font-size:13px}
+  .tagp{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+  .tagp.sync{background:var(--danger-soft);color:var(--danger)}
+  .tagp.async{background:var(--auto-soft);color:var(--auto)}
+  .jtag{font-family:"JetBrains Mono",monospace;font-size:11.5px;padding:2px 7px;border-radius:6px;
+    background:var(--surface-2);border:1px solid var(--line)}
+  .row{display:flex;gap:9px}
+  .row .k{flex:none;width:62px;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:600;padding-top:2px}
+  .row .v{flex:1}
+
+  /* flow catalog chains */
+  .fcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--card-shadow);
+    padding:15px 16px;margin-bottom:12px}
+  .fcard-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+  .fcard-h h3{font-size:15px;font-weight:600}
+  .qpill{font-family:"JetBrains Mono",monospace;font-size:10.5px;padding:3px 8px;border-radius:7px;
+    background:var(--sync-soft);color:var(--sync);font-weight:700;margin-left:auto;white-space:nowrap}
+  .trig{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px}
+  .trig b{color:var(--ink)}
+  .chain{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+  .cbox{font-family:"JetBrains Mono",monospace;font-size:11.5px;padding:6px 10px;border-radius:9px;
+    background:var(--surface-2);border:1px solid var(--line);line-height:1.3}
+  .cbox.orch{border-color:color-mix(in srgb,var(--auto) 40%,var(--line));color:var(--auto);background:var(--auto-soft)}
+  .cbox.batch{border-color:color-mix(in srgb,var(--manual) 40%,var(--line));color:var(--manual);background:var(--manual-soft)}
+  .cbox.work{border-color:color-mix(in srgb,var(--accent) 35%,var(--line));color:var(--accent-ink);background:var(--accent-soft)}
+  .cbox.note{color:var(--ink-soft);font-family:system-ui,sans-serif;font-size:11.5px}
+  .carr{color:var(--ink-faint);font-weight:700;flex:none}
+  .cplus{color:var(--ink-faint);font-weight:700;flex:none;font-size:13px}
+  .fnote{font-size:12px;color:var(--ink-faint);margin-top:9px;line-height:1.55}
+  .fnote code{font-family:"JetBrains Mono",monospace;background:var(--surface-2);border:1px solid var(--line);padding:1px 5px;border-radius:5px;color:var(--accent-ink)}
+
+  /* queue table */
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:6px}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:540px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--surface-2);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:700}
+  tr:last-child td{border-bottom:0}
+  td.mono{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft)}
+  .qname{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:700;color:var(--sync);white-space:nowrap}
+
+  /* doc links + example + routing */
+  .doclinks{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 2px}
+  .doclinks a,.doclinks span.dl{display:inline-flex;align-items:center;gap:7px;font-size:12px;
+    background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:6px 12px;
+    color:var(--ink-soft);text-decoration:none;font-family:"JetBrains Mono",monospace}
+  .doclinks a{color:var(--accent-ink);font-weight:600}
+  .doclinks a:hover{border-color:var(--accent);text-decoration:underline}
+  .example{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--ok);
+    border-radius:12px;padding:16px 18px;margin-top:18px}
+  .example h3{font-size:15px;color:var(--ok);display:flex;align-items:center;gap:8px}
+  .example p{font-size:13.5px;margin:8px 0 0;line-height:1.65}
+  .example ol{margin:10px 0 0;padding-left:20px}
+  .example li{font-size:13px;margin-bottom:7px;line-height:1.55}
+  .example b{color:var(--ink)}
+  .routing{background:var(--surface);border:1px solid var(--line);border-radius:13px;
+    box-shadow:var(--card-shadow);padding:15px 17px;margin-top:8px}
+  .routing ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .routing li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px}
+  .routing .ic{flex:none}
+  .routing a{color:var(--accent-ink);text-decoration:none;font-weight:600}
+  .routing a:hover{text-decoration:underline}
+  .routing code{font-family:"JetBrains Mono",monospace;font-size:11px;background:var(--surface-2);
+    border:1px solid var(--line);padding:1px 5px;border-radius:5px;color:var(--ink-soft)}
+  .routing .desc{color:var(--ink-soft);display:block;margin-top:2px;font-weight:400}
+
+  footer{margin:30px 0 24px;color:var(--ink-faint);font-size:12px;line-height:1.7}
+  footer code{font-family:"JetBrains Mono",monospace;background:var(--surface-2);padding:1px 5px;border-radius:5px}
+</style>
+
+<header class="top">
+  <div class="wrap head-in">
+    <button class="theme-btn" id="themeBtn">◐ Tema</button>
+    <div class="eyebrow">OlshopERP · OmniChannel · Horizon Job Flow</div>
+    <h1>Sales Order — Alur Job End-to-End</h1>
+    <p class="sub">Sales Order bukan satu pipeline linear seperti Settlement. Ada beberapa alur job yang terpisah — dari tarik order platform, approve, sampai export/import. Jantungnya adalah <b>Approve SO</b>, yang begitu berhasil langsung mendorong SO masuk Wave.</p>
+    <div class="crumb">📍 <a href="https://claude.ai/artifact/CuKxHnM5uxLeixvHZXw4to">Peta Job Horizon</a> › OmniChannel › SalesOrder</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="doclinks">
+    <a href="https://claude.ai/artifact/1EU2utNEMhgBkj7mvU2CfC" target="_blank" rel="noopener">🔗 Versi live (artifact)</a>
+    <a href="https://claude.ai/artifact/CuKxHnM5uxLeixvHZXw4to" target="_blank" rel="noopener">🗺️ Peta semua job Horizon</a>
+    <span class="dl">📄 SoT: docs/qa-docs/_meta/horizon-jobs/sales-order.md</span>
+  </div>
+
+  <div class="keybox">
+    <h3>🔑 Konsep inti: banyak alur, satu jembatan ke fulfillment</h3>
+    <p>Berbeda dengan Settlement (observer state-machine), Sales Order punya <b>beberapa alur job independen</b>. Alur terpenting = <b>Approve SO</b>: setelah lolos validasi, SO langsung dimasukkan ke Wave lewat <span class="mono">MoveSOToWaveMixJob</span>. Perhatikan job ini dipanggil <span class="mono">dispatchSync</span> — <b>jalan inline di dalam request approve, bukan lewat antrian</b>. Job lain (flags, stok, export, sync) berjalan async di antrian Horizon. Wave inilah jembatan ke dunia Picking / Packing / Shipping.</p>
+  </div>
+
+  <div class="example">
+    <h3>🛒 Contoh gampangnya (buat non-teknis)</h3>
+    <p>Bayangkan pelanggan di Shopee memesan <b>2 barang</b>. Perjalanannya:</p>
+    <ol>
+      <li><b>Order masuk (sync).</b> Sistem menarik pesanan dari Shopee → jadi 1 record Sales Order di OlshopERP (seperti "menyalin" pesanan dari lapak ke buku pesanan gudang).</li>
+      <li><b>Approve SO.</b> Petugas cek: stok cukup? alamat &amp; kurir valid? Kalau ya → setujui.</li>
+      <li><b>Langsung masuk "gelombang" (Wave Mix).</b> Begitu disetujui, pesanan <b>saat itu juga</b> ditaruh ke keranjang besar berisi pesanan yang siap diambil barangnya. Ini dikerjakan <b>langsung</b> (bukan nitip antrian) — makanya kalau berat, klik Approve terasa agak lama.</li>
+      <li><b>Di belakang layar.</b> Sistem mengecek flag order &amp; menghitung ulang stok — ini <b>nitip antrian</b> (Horizon), jadi tidak bikin approve menunggu.</li>
+    </ol>
+    <p style="margin-top:12px">🚪 <b>Analogi Wave</b>: Approve = "pesanan lolos pemeriksaan, masuk keranjang packing gelombang berikutnya". Dari keranjang inilah tim gudang lanjut ke <b>Picking → Packing → Shipping</b>.</p>
+    <p style="margin-top:10px">🎫 <b>Analogi antrian (queue)</b>: Horizon seperti kantor dengan <b>beberapa loket</b> — loket "tarik order", "cek flag", "export", "import" — masing-masing punya barisan sendiri. Kalau satu loket ramai, yang lain tetap jalan.</p>
+  </div>
+
+  <h2 class="sec">Diagram alur — Approve Sales Order</h2>
+  <p class="secsub">Jalur utama saat sebuah SO di-approve. Label pada panah = cara pemanggilan job (inline vs antrian). Kotak ungu = langkah kunci (masuk Wave); kotak putus-putus = opsional; kotak jingga (diamond) = keputusan validasi.</p>
+  <div class="chartwrap">
+    <svg id="flow" role="img" aria-label="Flowchart approve Sales Order"></svg>
+    <div class="fl-cap"><b style="color:var(--accent-ink)">MoveSOToWaveMixJob</b> jalan <b style="color:var(--danger)">inline (dispatchSync)</b> dalam transaksi approve. Job flags &amp; stok menyusul async di antrian.</div>
+  </div>
+
+  <h2 class="sec">Timeline langkah Approve SO</h2>
+  <p class="secsub">Rincian tiap langkah pada method <span class="mono">CheckApproveSoPlatform()</span>.</p>
+  <div class="pipe" id="pipe"></div>
+
+  <h2 class="sec">Katalog alur job lain (di menu Sales Order)</h2>
+  <p class="secsub">Alur-alur job lain yang dipicu dari menu / callback Sales Order, di luar jalur approve.</p>
+  <div id="catalog"></div>
+
+  <h2 class="sec">Peta queue Horizon</h2>
+  <p class="secsub">Job Sales Order tersebar di beberapa queue berbeda (bukan satu seperti Settlement). Nama lengkap = <span class="mono">{queue}_{branch}</span>.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Queue</th><th>Job yang berjalan di sini</th></tr></thead>
+      <tbody id="qtbl"></tbody>
+    </table>
+  </div>
+
+  <h2 class="sec">Routing — dokumentasi menu terkait</h2>
+  <p class="secsub">Doc alur job ini melengkapi dokumentasi fungsional menu berikut di <span class="mono">docs/qa-docs/</span>.</p>
+  <div class="routing">
+    <ul>
+      <li><span class="ic">📁</span><div><a href="../../all-sales-order/README.md">all-sales-order</a><span class="desc">Daftar &amp; lifecycle Sales Order. <code>docs/qa-docs/all-sales-order/</code></span></div></li>
+      <li><span class="ic">📁</span><div><a href="../../omni-sales-order-report/README.md">omni-sales-order-report</a><span class="desc">Laporan / ekspor Sales Order. <code>docs/qa-docs/omni-sales-order-report/</code></span></div></li>
+      <li><span class="ic">📁</span><div><a href="../../omni-waves-management/README.md">omni-waves-management</a><span class="desc">Wave — tujuan SO setelah approve. <code>docs/qa-docs/omni-waves-management/</code></span></div></li>
+      <li><span class="ic">📁</span><div><a href="../../omni-skip-wave-process/README.md">omni-skip-wave-process</a><span class="desc">Skip Wave Process (lanjutan fulfillment). <code>docs/qa-docs/omni-skip-wave-process/</code></span></div></li>
+      <li><span class="ic">📁</span><div><a href="../../omni-picking-list/README.md">omni-picking-list</a> · <a href="../../omni-packing-list/README.md">omni-packing-list</a><span class="desc">Picking &amp; Packing setelah masuk Wave. <code>docs/qa-docs/omni-picking-list/</code>, <code>omni-packing-list/</code></span></div></li>
+    </ul>
+  </div>
+
+  <footer>
+    <div>Sumber kode (branch <code>dev</code>): <code>SalesOrderController.php</code>, <code>OmniCallbackController.php</code>, <code>OmniChannelController.php</code>, <code>Jobs/*.php</code>, <code>Services/ProcessingService.php</code>, <code>Import/SalesOrderImport*.php</code>.</div>
+    <div id="genline" style="margin-top:6px"></div>
+  </footer>
+</main>
+
+<script>
+(function(){
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  /* ---------- Flowchart: Approve SO ---------- */
+  (function buildFlow(){
+    var W=380, cx=W/2, y=10;
+    var body=[], edges=[], labels=[], geo={};
+    function txt(x,yy,s,cls,anchor){return '<text x="'+x+'" y="'+yy+'" class="'+cls+'" text-anchor="'+(anchor||'middle')+'">'+esc(s)+'</text>';}
+    var flow=[
+      {id:'start', type:'pill-start', t1:'Approve SO', t2:'approve() → CheckApproveSo…'},
+      {id:'gate', type:'diamond', t1:'Validasi lolos?', t2:'bundle·stok·shipping'},
+      {id:'first', type:'auto', t1:'firstStepApprove', t2:'status → approved', lbl:'✓ validasi lolos'},
+      {id:'wavecreate', type:'auto', t1:'createTransferWave', t2:'semua WH process'},
+      {id:'move', type:'wave', t1:'MoveSOToWaveMixJob', t2:'→ addToDefaultWave', lbl:'dispatchSync · INLINE', lblErr:true},
+      {id:'ship', type:'opt', t1:'shipSalesOrder → platform', t2:'opsional', lbl:'jika config shipped_at'},
+      {id:'flags', type:'auto', t1:'CheckOrderFlagsJob', t2:'cek flag order', lbl:'dispatch · q:salesorder'},
+      {id:'stock', type:'auto', t1:'StoreSOBasedStock ×2', t2:'recompute stok SO', lbl:'dispatch · q:default'},
+      {id:'end', type:'pill-end', t1:"✓ Masuk Wave 'Mix'", t2:'siap fulfillment', lbl:'handoff ke Wave'}
+    ];
+    var prevBottom=null;
+    flow.forEach(function(node,i){
+      var h = node.type==='diamond'?80 : ((node.type.indexOf('pill')===0)?36:52);
+      var w = node.type==='diamond'?168 : (node.type.indexOf('pill')===0?226:222);
+      var top=y, cyy=y+h/2, left=cx-w/2;
+      if(prevBottom!=null){
+        edges.push('<line class="edge" x1="'+cx+'" y1="'+prevBottom+'" x2="'+cx+'" y2="'+top+'"/>');
+        if(node.lbl){
+          var midY=(prevBottom+top)/2, lw=node.lbl.length*4.6+10;
+          labels.push('<rect class="lblbg" x="'+(cx-lw/2)+'" y="'+(midY-8)+'" width="'+lw+'" height="13" rx="3"/>'
+            +txt(cx,midY+2,node.lbl,node.lblErr?'lbl':'lbl','middle'));
+        }
+      }
+      if(node.type==='diamond'){
+        var pts=[cx+','+top,(left+w)+','+cyy,cx+','+(top+h),left+','+cyy].join(' ');
+        body.push('<polygon class="diam" points="'+pts+'"/>');
+        body.push(txt(cx,cyy-3,node.t1,'t1'));
+        body.push(txt(cx,cyy+11,node.t2,'t2 t2f'));
+      } else {
+        var clsMap={'auto':'n-auto','wave':'n-wave','opt':'n-opt','pill-start':'n-start','pill-end':'n-end'};
+        body.push('<rect class="n '+(clsMap[node.type]||'n-auto')+'" x="'+left+'" y="'+top+'" width="'+w+'" height="'+h+'" rx="11"/>');
+        body.push(txt(cx,cyy-3,node.t1,'t1'));
+        var t2c = node.type==='wave'?'t2 t2w':(node.type==='pill-end'?'t2 t2e':(node.type==='pill-start'?'t2 t2p':(node.type==='opt'?'t2 t2f':'t2 t2a')));
+        body.push(txt(cx,cyy+11,node.t2,t2c));
+      }
+      geo[node.id]={top:top,cy:cyy,left:left,right:left+w,bottom:top+h};
+      prevBottom=top+h;
+      y=top+h+(flow[i+1] && flow[i+1].lbl ? 32 : 24);
+    });
+    // error side branch from gate
+    var g=geo['gate'];
+    edges.push('<line class="edge d" x1="'+g.right+'" y1="'+g.cy+'" x2="'+(W-70)+'" y2="'+g.cy+'"/>');
+    body.push(txt((g.right+W-70)/2, g.cy-4, 'gagal', 'side'));
+    body.push('<rect class="n n-err" x="'+(W-72)+'" y="'+(g.cy-16)+'" width="70" height="32" rx="8"/>');
+    body.push(txt(W-37, g.cy-2, '✕ Validation', 't2 t2d'));
+    body.push(txt(W-37, g.cy+8, 'belum approve', 't2 t2d'));
+
+    var H=geo['end'].bottom+12;
+    var svg=document.getElementById('flow');
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    svg.innerHTML='<defs><marker id="ah" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto"><path d="M0,0 L6.5,3 L0,6 Z" class="ah"/></marker></defs>'
+      + edges.join('') + body.join('') + labels.join('');
+  })();
+
+  /* ---------- Timeline: Approve SO ---------- */
+  var stages=[
+    {n:1, title:"Validasi awal", tag:null, jobs:[],
+     desc:"Cek pembatalan platform (opsional), <span class='mono'>validateBundleComponents()</span>, generate random detail + cek insufficient stock, <span class='mono'>validateOrderDetails()</span> (stok / FIFO), dan validasi shipping service (berat, dimensi, binding). Gagal → <b>ValidationException</b>, SO tidak ter-approve dan <span class='mono'>error_info</span> diisi."},
+    {n:2, title:"firstStepApprove", tag:null, jobs:[],
+     desc:"Jika <span class='mono'>config('omni.approve_so.approve_with_validation')</span> aktif → set status SO menjadi <b>approved</b> (dalam DB transaction)."},
+    {n:3, title:"Siapkan Wave", tag:null, jobs:[],
+     desc:"<span class='mono'>createTransferWave()</span> untuk semua WH process, lalu ambil <span class='mono'>Wave::getDefaultWave()</span> (wave 'Mix')."},
+    {n:4, title:"Masukkan SO ke Wave", tag:"sync", jobs:["MoveSOToWaveMixJob"],
+     desc:"<span class='mono'>MoveSOToWaveMixJob::dispatchSync()</span> → <span class='mono'>WaveService::addToDefaultWave()</span>. Dipanggil <b>inline</b> (sync) di dalam transaksi — jadi kalau berat, approve terasa lambat. Inilah jembatan ke fulfillment."},
+    {n:5, title:"Ship ke platform (opsional)", tag:null, jobs:[],
+     desc:"Jika <span class='mono'>config('omni.shipped_at.default_wave')</span> &amp; tipe SO platform → <span class='mono'>OmniService::shipSalesOrder()</span> minta shipping document. Gagal → rollback + WarningException."},
+    {n:6, title:"Cek flag order (async)", tag:"async", jobs:["CheckOrderFlagsJob"],
+     desc:"<span class='mono'>CheckOrderFlagsJob::dispatch()</span> di queue <span class='mono'>salesorder</span> — evaluasi flag/label order setelah approve."},
+    {n:7, title:"Recompute stok berbasis SO", tag:"async", final:true, jobs:["StoreSOBasedStockJob","StoreSOBasedStockPerWarehouseJob"],
+     desc:"Untuk tiap product terdampak → <span class='mono'>StoreSOBasedStockJob</span> + <span class='mono'>StoreSOBasedStockPerWarehouseJob</span> (queue default) menghitung ulang stok berbasis SO. ✓ SO siap masuk fulfillment."}
+  ];
+  document.getElementById('pipe').innerHTML=stages.map(function(s){
+    var jobs=s.jobs.map(function(j){return '<span class="jtag">'+j+'</span>';}).join(' ');
+    var tag=s.tag?'<span class="tagp '+s.tag+'">'+(s.tag==='sync'?'inline / sync':'async · antrian')+'</span>':'';
+    return '<div class="stage'+(s.final?' final':'')+'"><div class="snum">'+(s.final?'✓':s.n)+'</div>'
+      +'<div class="card"><div class="card-h"><h3>'+s.title+'</h3>'+tag+'</div>'
+      +'<div class="card-b"><div>'+s.desc+'</div>'+(jobs?'<div class="row"><span class="k">Job</span><span class="v">'+jobs+'</span></div>':'')+'</div></div></div>';
+  }).join('');
+
+  /* ---------- Flow catalog ---------- */
+  function chain(items){
+    var h='<div class="chain">';
+    items.forEach(function(it,i){
+      if(it.op==='+'){ h+='<span class="cplus">+</span>'; return; }
+      if(i>0 && items[i-1].op!=='+') h+='<span class="carr">→</span>';
+      h+='<span class="cbox '+(it.c||'')+'">'+esc(it.t)+'</span>';
+    });
+    h+='</div>';
+    return h;
+  }
+  var flows=[
+    {title:"① Sync ingress — tarik order dari platform", q:"sales_order_sync",
+     trig:"OmniChannel <b>Get Order</b> / store-bind callback (OmniCallback) / manual sync",
+     chain:[{t:"SalesOrderSynchronizeJob",c:"orch"},{t:"OmniService (Shopee/Lazada/TikTok)",c:"work"},{t:"create / update SalesOrder",c:"note"}],
+     note:"Paralel: <code>WarehouseSyncJob</code> (sync gudang). Update status via webhook: <code>SalesOrderStatusNotificationJob</code> → <code>GetCancellationReasonJob</code> + <code>UpdateSalesOrderFieldsJob</code>; serta <code>SalesBookingStatusNotificationJob</code>."},
+    {title:"② Revalidate flag (bulk)", q:"salesorder",
+     trig:"Tombol <b>Revalidate Flag</b> (<span class='mono'>revalidateFlag()</span>)",
+     chain:[{t:"RecheckOrderFlagsJob",c:"orch"},{t:"Bus::batch",c:"batch"},{t:"CheckOrderFlagsJob × N SO",c:"work"},{t:"broadcast websocket",c:"note"}],
+     note:"Batch pakai <code>Cache::lock</code> per company &amp; nomor batch, <code>allowFailures()</code>, dan <code>finally()</code> untuk broadcast ke channel bizdev + lepas lock."},
+    {title:"③ Stok berbasis SO saat SO berubah", q:"default",
+     trig:"SO diubah / void → <span class='mono'>UpdateSoBasedStockOnSoChangeJob</span>",
+     chain:[{t:"UpdateSoBasedStockOnSoChangeJob",c:"orch"},{t:"StoreSOBasedStockJob",c:"work"},{op:"+"},{t:"StoreSOBasedStockPerWarehouseJob",c:"work"}],
+     note:"Menghitung ulang stok berbasis SO per product (global) dan per warehouse."},
+    {title:"④ Sync update (rentang tanggal)", q:"sales_order_sync_list",
+     trig:"Manual sync rentang <b>from–to</b> (per store)",
+     chain:[{t:"SalesOrderSynchronizeUpdateJob (+ …UpdateBookingJob)",c:"orch"},{t:"SalesOrderSynchronizeUpdateCleanupJob",c:"work"}],
+     note:"Job <code>ShouldBeUnique</code> + <code>WithCompanyContext</code> — mencegah sync ganda untuk store &amp; rentang yang sama."},
+    {title:"⑤ Export Excel", q:"import",
+     trig:"Export <b>Platform Details</b> / <b>Without Details</b> / <b>General</b>",
+     chain:[{t:"Bus::batch",c:"batch"},{t:"SalesOrderExportExcelJob × chunk",c:"orch"},{t:"SalesOrderPlatformMergeExcelFilesJob",c:"work"},{t:"SalesOrderPlatformCleanupTempFilesJob",c:"work"}],
+     note:"Pola export → batch → merge → cleanup. Versi <b>General</b> memakai <code>SalesOrderGeneralExportExcelJob</code> pada <code>then()</code> batch."},
+    {title:"⑥ Import Excel", q:"import",
+     trig:"Upload Excel (<span class='mono'>uploadExcel()</span>) → catat <span class='mono'>SalesOrderImportHistory</span>",
+     chain:[{t:"Excel::import(SalesOrderImport)",c:"note"},{t:"SalesOrderImportJob × chunk",c:"orch"},{t:"SalesOrderImportFinalizeJob",c:"work"}],
+     note:"Chunk baris di-dispatch dari <code>SalesOrderImportSheet1</code>; setelah semua chunk selesai → job finalize."}
+  ];
+  document.getElementById('catalog').innerHTML=flows.map(function(f){
+    return '<div class="fcard"><div class="fcard-h"><h3>'+f.title+'</h3>'
+      +'<span class="qpill">q: '+f.q+'</span></div>'
+      +'<div class="trig">Pemicu: '+f.trig+'</div>'
+      + chain(f.chain)
+      +(f.note?'<div class="fnote">'+f.note+'</div>':'')+'</div>';
+  }).join('');
+
+  /* ---------- Queue table ---------- */
+  var qrows=[
+    ["salesorder_connection","CheckOrderFlagsJob · RecheckOrderFlagsJob · WarehouseSyncJob · SalesOrderStatusNotificationJob · SalesBookingStatusNotificationJob · GetCancellationReasonJob · UpdateSalesOrderFieldsJob"],
+    ["salesorder_sync_connection","SalesOrderSynchronizeJob"],
+    ["salesorder_sync_list_connection","SalesOrderSynchronizeUpdateJob · SalesOrderSynchronizeUpdateBookingJob · SalesOrderSynchronizeUpdateCleanupJob"],
+    ["import_connection","SalesOrderExportExcelJob · SalesOrderGeneralExportExcelJob · SalesOrderPlatformMergeExcelFilesJob · SalesOrderPlatformCleanupTempFilesJob · SalesOrderImportJob · SalesOrderImportFinalizeJob"],
+    ["(default / inline)","MoveSOToWaveMixJob → dispatchSync (inline, tanpa antrian) · StoreSOBasedStockJob · StoreSOBasedStockPerWarehouseJob · UpdateSoBasedStockOnSoChangeJob"]
+  ];
+  document.getElementById('qtbl').innerHTML=qrows.map(function(r){
+    return '<tr><td><span class="qname">'+r[0]+'</span></td><td class="mono">'+r[1]+'</td></tr>';
+  }).join('');
+
+  document.getElementById('genline').textContent='Alur utama: Approve SO (7 langkah). Total 6 alur job lain · tersebar di 4 queue Horizon + jalur inline.';
+
+  /* theme */
+  var root=document.documentElement;
+  try{var t=localStorage.getItem('hz-theme'); if(t) root.setAttribute('data-theme',t);}catch(e){}
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var next=cur==='dark'?'light':(cur==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('hz-theme',next);}catch(e){}
+  });
+})();
+</script>

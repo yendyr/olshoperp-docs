@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: horizon-jobs
 menu_name: "Horizon Jobs"
-version: 1.2
+version: 1.3
 last_updated: 2026-09-28
 owner: QA - Yemima
 status: review
@@ -15,7 +15,7 @@ audience: operator
 **Audience:** Ops, Support, QA saat investigasi antrean  
 **Bukan menu UI** — ini panduan membaca pekerjaan latar belakang (Horizon) yang dipicu menu seperti Skip Wave Process.
 
-> **v1.2:** status **review** — selaras requirement/technical; konten operator tidak berubah substantif.
+> **v1.3:** ditambah rujuk job-flow visual Settlement Upload / Sales Order di `_meta/horizon-jobs` (contoh & HTML). Aturan ops Skip Wave tidak berubah.
 
 ---
 
@@ -41,6 +41,8 @@ Satu file Skip Wave berisi 1.000 order bisa menghasilkan **ribuan** job di belak
 | Perlu tahu kenapa antrian batch tidak maju | Mengganti perilaku job tanpa ticket |
 
 Pipeline detail Skip Wave: [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md) · Menu: [Skip Wave Process](../omni-skip-wave-process/knowledge-base.md).
+
+Alur job Instant Settlement (Settlement Upload) & Sales Order (contoh + visual): [folder `_meta/horizon-jobs`](../_meta/horizon-jobs/).
 
 ---
 

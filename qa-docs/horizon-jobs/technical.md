@@ -2,7 +2,7 @@
 doc_type: technical
 menu: horizon-jobs
 menu_name: "Horizon Jobs"
-version: 1.2
+version: 1.3
 last_updated: 2026-09-28
 owner: QA - Yemima
 status: review
@@ -12,8 +12,8 @@ aliases: [horizon jobs technical, Bus::batch finally, queue connection salesorde
 # Horizon Jobs — Technical
 
 **Audience:** Developer, QA automation  
-**Index pipelines:** [README](./README.md) · Skip Wave: [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md)  
-**Aturan QA:** [requirement.md](./requirement.md) v1.1 (HJ-01…HJ-08, PROP-HJ-01)
+**Index:** [README](./README.md) · Skip Wave: [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md) · Job-flow visual: [`../_meta/horizon-jobs/`](../_meta/horizon-jobs/)  
+**Aturan QA:** [requirement.md](./requirement.md) v1.3 (HJ-01…HJ-08, PROP-HJ-01)
 
 ---
 
@@ -77,9 +77,12 @@ sequenceDiagram
 
 ## 4. Index pipelines
 
-| Slug file | Menu | Primary entry |
-|-----------|------|---------------|
+| Slug / lokasi | Menu | Primary entry |
+|---------------|------|---------------|
 | [skip-wave-process.md](./pipelines/skip-wave-process.md) | omni-skip-wave-process | Upload → ImportJob → `skip-wave:dispatch` → SkipWaveProcessJob |
+| [`_meta/…/settlement-upload.md`](../_meta/horizon-jobs/settlement-upload.md) | accounting-settlement-upload | Observer state machine (validating → … → receive journals) · queue `import` |
+| [`_meta/…/sales-order.md`](../_meta/horizon-jobs/sales-order.md) | all-sales-order / Omni SO | Approve (`MoveSOToWaveMixJob` sync) + sync/export/import catalogs |
+| [`_meta/…/index.html`](../_meta/horizon-jobs/index.html) | (peta) | Zoom-out ~260 job / 39 menu |
 
 ---
 
@@ -115,6 +118,7 @@ sequenceDiagram
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3 | 2026-09-28 | Index Settlement Upload + Sales Order + peta `_meta`; rujuk requirement v1.3 |
 | 1.2 | 2026-09-28 | Promote ke **review**; index tetap 1 pipeline (Skip Wave) |
 | 1.1 | 2026-09-20 | Rujuk HJ-01…08 + PROP-HJ-01 dari requirement v1.1 |
 | 1.0 | 2026-09-20 | Initial pola + index Skip Wave pipeline |

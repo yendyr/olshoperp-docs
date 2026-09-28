@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: horizon-jobs
 menu_name: "Horizon Jobs"
-version: 1.2
+version: 1.3
 last_updated: 2026-09-28
 owner: QA - Yemima
 status: review
@@ -16,6 +16,7 @@ cross_menu: true
 **Audience:** PM, QA  
 **Prefix aturan:** `HJ-`  
 **Pipeline Skip Wave (detail teknis):** [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md)  
+**Job-flow visual (Settlement / Sales Order / peta):** [`../_meta/horizon-jobs/`](../_meta/horizon-jobs/)  
 **Perilaku bisnis menu:** [Skip Wave Process](../omni-skip-wave-process/requirement.md)
 
 ---
@@ -24,6 +25,7 @@ cross_menu: true
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.3 | 2026-09-28 | QA - Yemima | Link ke `_meta/horizon-jobs` (Settlement Upload, Sales Order, peta); peran hub vs job-flow visual |
 | 1.2 | 2026-09-28 | QA - Yemima | Promote ke **review** (pipeline Skip Wave + HJ-01…08 cukup sebagai AS-IS hub; PROP-HJ-01 tetap proposal) |
 | 1.1 | 2026-09-20 | QA - Yemima | Rapikan ke struktur standar (siklus, how-it-works, validasi, gap); kurangi jargon class |
 | 1.0 | 2026-09-20 | QA - Yemima | Initial: primary vs derived; gerbang; retry; observasi vs aturan |
@@ -158,8 +160,10 @@ flowchart TD
 
 | Menu | Relasi |
 |------|--------|
-| [Skip Wave Process](../omni-skip-wave-process/) | Pipeline kanonik pertama |
-| Unassign Wave / Skip Processing | Berbagi sebagian primary job — pipeline terpisah TBD |
+| [Skip Wave Process](../omni-skip-wave-process/) | Pipeline kanonik di `pipelines/` |
+| [Settlement Upload](../accounting-settlement-upload/) | Job-flow visual: [`_meta/…/settlement-upload.md`](../_meta/horizon-jobs/settlement-upload.md) |
+| [Sales Order / All SO](../all-sales-order/) | Job-flow visual: [`_meta/…/sales-order.md`](../_meta/horizon-jobs/sales-order.md) |
+| Unassign Wave / Skip Processing | Berbagi sebagian primary job — pipeline hub terpisah TBD |
 | Stok / binding marketplace | Sumber derived (hitung stok, sync) |
 
 ---

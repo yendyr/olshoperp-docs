@@ -1,0 +1,1941 @@
+<title>Peta Job Horizon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#f4f5fa; --surface:#ffffff; --surface-2:#f8f9fd; --line:#e4e6f0;
+    --ink:#1a1d2b; --ink-soft:#565b73; --ink-faint:#8a8fa8;
+    --accent:#5a4be0; --accent-soft:#ece9fd; --accent-ink:#3a2eb0;
+    --ok:#1c9d6b; --ok-soft:#dff4ec;
+    --amber:#c07a17; --amber-soft:#fbeecb;
+    --pill-shadow:0 1px 2px rgba(26,29,43,.06);
+    --card-shadow:0 1px 3px rgba(26,29,43,.07),0 6px 20px rgba(26,29,43,.04);
+    /* type badge colors */
+    --t-export:#2563a8;   --t-export-bg:#e2eefb;
+    --t-import:#8a4bd6;   --t-import-bg:#efe4fb;
+    --t-sync:#0e8f8f;     --t-sync-bg:#d9f2f2;
+    --t-wave:#b4611a;     --t-wave-bg:#fbeacf;
+    --t-approval:#1c9d6b; --t-approval-bg:#def3ea;
+    --t-settlement:#a63a6b;--t-settlement-bg:#fbe3ee;
+    --t-processing:#5a4be0;--t-processing-bg:#e9e6fc;
+    --t-merge:#6b7280;    --t-merge-bg:#eceef2;
+    --t-file:#5b6472;     --t-file-bg:#eaedf1;
+    --t-notif:#b0851a;    --t-notif-bg:#f8eecb;
+    --t-other:#6b7280;    --t-other-bg:#edeef1;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      color-scheme:dark;
+      --bg:#0f1119; --surface:#181b27; --surface-2:#1f2330; --line:#2c3140;
+      --ink:#eef0f7; --ink-soft:#a9afc4; --ink-faint:#6f7690;
+      --accent:#8f83ff; --accent-soft:#26234a; --accent-ink:#c3bcff;
+      --ok:#4ecb96; --ok-soft:#173428;
+      --amber:#e0a94a; --amber-soft:#3a2e14;
+      --card-shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.25);
+      --t-export:#8dc0f5;--t-export-bg:#16304d; --t-import:#c9a5f2;--t-import-bg:#2c1f45;
+      --t-sync:#63d3d3;--t-sync-bg:#123536; --t-wave:#f0b46a;--t-wave-bg:#3a2a12;
+      --t-approval:#68d6a3;--t-approval-bg:#12362a; --t-settlement:#e888b3;--t-settlement-bg:#3c1b2c;
+      --t-processing:#a99bff;--t-processing-bg:#241f47; --t-merge:#aab2c2;--t-merge-bg:#242833;
+      --t-file:#a6adba;--t-file-bg:#232833; --t-notif:#e0bd5a;--t-notif-bg:#352b12;
+      --t-other:#a6adba;--t-other-bg:#232833;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0f1119; --surface:#181b27; --surface-2:#1f2330; --line:#2c3140;
+    --ink:#eef0f7; --ink-soft:#a9afc4; --ink-faint:#6f7690;
+    --accent:#8f83ff; --accent-soft:#26234a; --accent-ink:#c3bcff;
+    --ok:#4ecb96; --ok-soft:#173428;
+    --amber:#e0a94a; --amber-soft:#3a2e14;
+    --card-shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.25);
+    --t-export:#8dc0f5;--t-export-bg:#16304d; --t-import:#c9a5f2;--t-import-bg:#2c1f45;
+    --t-sync:#63d3d3;--t-sync-bg:#123536; --t-wave:#f0b46a;--t-wave-bg:#3a2a12;
+    --t-approval:#68d6a3;--t-approval-bg:#12362a; --t-settlement:#e888b3;--t-settlement-bg:#3c1b2c;
+    --t-processing:#a99bff;--t-processing-bg:#241f47; --t-merge:#aab2c2;--t-merge-bg:#242833;
+    --t-file:#a6adba;--t-file-bg:#232833; --t-notif:#e0bd5a;--t-notif-bg:#352b12;
+    --t-other:#a6adba;--t-other-bg:#232833;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;}
+  h1,h2,h3{font-family:"Sora",system-ui,sans-serif;text-wrap:balance;margin:0}
+  .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+  .wrap{max-width:1080px;margin:0 auto;padding-inline:18px}
+
+  /* header */
+  header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+    background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .head-in{padding-block:16px}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent-ink);font-weight:700}
+  h1{font-size:clamp(21px,4.5vw,30px);font-weight:700;margin-top:4px;letter-spacing:-.01em}
+  .sub{color:var(--ink-soft);font-size:13.5px;margin-top:6px;max-width:64ch}
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:9px 14px;box-shadow:var(--pill-shadow);min-width:92px}
+  .stat b{font-family:"Sora",sans-serif;font-size:20px;display:block;line-height:1;font-variant-numeric:tabular-nums}
+  .stat span{font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em}
+
+  /* controls */
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 6px}
+  .search{flex:1 1 240px;display:flex;align-items:center;gap:8px;background:var(--surface);
+    border:1px solid var(--line);border-radius:11px;padding:9px 12px;box-shadow:var(--pill-shadow)}
+  .search input{border:0;background:transparent;color:var(--ink);font-size:14px;width:100%;outline:none}
+  .search svg{flex:none;color:var(--ink-faint)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-size:12px;font-weight:600;padding:6px 11px;border-radius:20px;cursor:pointer;
+    border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);
+    user-select:none;transition:.12s}
+  .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .chip:hover{border-color:var(--accent)}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 4px;font-size:12px;color:var(--ink-soft)}
+  .legend b{font-weight:600}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+
+  /* module section */
+  .module{margin-top:22px}
+  .module-h{display:flex;align-items:center;gap:10px;cursor:pointer;padding:6px 2px}
+  .module-h h2{font-size:15px;font-weight:600;letter-spacing:.02em}
+  .module-h .count{font-size:12px;color:var(--ink-faint);font-family:"JetBrains Mono",monospace}
+  .module-h .caret{margin-left:auto;color:var(--ink-faint);transition:transform .18s}
+  .module.collapsed .caret{transform:rotate(-90deg)}
+  .module.collapsed .grid{display:none}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin-top:10px}
+
+  /* menu card */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--card-shadow);overflow:hidden;display:flex;flex-direction:column}
+  .card.done{border-color:color-mix(in srgb,var(--ok) 40%,var(--line))}
+  .card-h{padding:13px 15px 11px;display:flex;align-items:flex-start;gap:9px}
+  .card-h .name{font-family:"Sora",sans-serif;font-weight:600;font-size:14.5px;line-height:1.3}
+  .card-h .menuname{color:var(--ink-faint);font-size:11px;font-family:"JetBrains Mono",monospace;
+    margin-top:3px;word-break:break-word}
+  .status-pill{margin-left:auto;flex:none;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px;
+    text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+  .status-pill.done{background:var(--ok-soft);color:var(--ok)}
+  .status-pill.todo{background:var(--surface-2);color:var(--ink-faint);border:1px solid var(--line)}
+  .jobs-list{padding:0 15px 13px;display:flex;flex-direction:column;gap:7px}
+  .job{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);overflow:hidden}
+  .job-row{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer}
+  .job-row:hover{background:color-mix(in srgb,var(--accent-soft) 50%,transparent)}
+  .job-row.noexpand{cursor:default}
+  .job-row.noexpand:hover{background:transparent}
+  .jname{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:500;word-break:break-word;flex:1}
+  .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap;flex:none;
+    text-transform:uppercase;letter-spacing:.03em}
+  .chain-n{font-size:10.5px;font-family:"JetBrains Mono",monospace;color:var(--ink-faint);flex:none;
+    display:flex;align-items:center;gap:3px}
+  .exp-caret{flex:none;color:var(--ink-faint);transition:transform .16s;width:12px}
+  .job.open .exp-caret{transform:rotate(90deg)}
+  .tree{display:none;padding:2px 10px 11px 14px;border-top:1px dashed var(--line);
+    background:color-mix(in srgb,var(--surface) 60%,var(--bg))}
+  .job.open .tree{display:block}
+  .tnode{padding-top:8px}
+  .tline{display:flex;align-items:center;gap:7px}
+  .tconn{color:var(--ink-faint);font-family:"JetBrains Mono",monospace;font-size:11px;flex:none}
+  .tname{font-family:"JetBrains Mono",monospace;font-size:11.5px}
+  .tchildren{padding-left:16px;border-left:1px solid var(--line);margin-left:5px}
+  .bus{font-style:normal;color:var(--amber);background:var(--amber-soft);
+    padding:1px 6px;border-radius:5px;font-size:10.5px;font-weight:700}
+  .leaf-note{font-size:11px;color:var(--ink-faint);padding:7px 0 1px}
+  .refs{padding:0 15px 14px;display:flex;flex-direction:column;gap:6px}
+  .ref-link{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--accent-ink);
+    text-decoration:none;background:var(--accent-soft);padding:8px 11px;border-radius:9px;font-weight:600}
+  .ref-link:hover{text-decoration:underline}
+  .empty{text-align:center;color:var(--ink-faint);padding:50px 20px;font-size:14px}
+
+  .doclinks{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 2px}
+  .doclinks a,.doclinks span.dl{display:inline-flex;align-items:center;gap:7px;font-size:12px;
+    background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:6px 12px;
+    color:var(--ink-soft);text-decoration:none;font-family:"JetBrains Mono",monospace}
+  .doclinks a{color:var(--accent-ink);font-weight:600}
+  .doclinks a:hover{border-color:var(--accent);text-decoration:underline}
+  footer{margin:34px 0 20px;color:var(--ink-faint);font-size:12px;line-height:1.7}
+  footer code{font-family:"JetBrains Mono",monospace;background:var(--surface-2);padding:1px 5px;border-radius:5px}
+  .note{background:var(--amber-soft);border:1px solid color-mix(in srgb,var(--amber) 35%,var(--line));
+    border-radius:11px;padding:11px 14px;font-size:12.5px;color:var(--ink);margin-top:14px}
+  .note b{color:var(--amber)}
+  .theme-btn{margin-left:auto;background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);
+    border-radius:9px;padding:6px 9px;cursor:pointer;font-size:12px}
+  .toprow{display:flex;align-items:flex-start;gap:10px}
+</style>
+
+<header class="top">
+  <div class="wrap head-in">
+    <div class="toprow">
+      <div>
+        <div class="eyebrow">OlshopERP · Laravel Horizon</div>
+        <h1>Peta Job Horizon per Menu</h1>
+      </div>
+      <button class="theme-btn" id="themeBtn" title="Ganti tema">◐ Tema</button>
+    </div>
+    <p class="sub">Katalog menu/proses yang men-dispatch job antrian Horizon, beserta rantai turunan job-nya. Dipakai untuk membahas alur end-to-end tiap menu satu per satu.</p>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="doclinks">
+    <a href="https://claude.ai/artifact/CuKxHnM5uxLeixvHZXw4to" target="_blank" rel="noopener">🔗 Versi live (artifact)</a>
+    <span class="dl">📄 SoT: docs/qa-docs/_meta/horizon-jobs/</span>
+    <span class="dl">💡 Klik kartu ✓ done untuk buka doc detail</span>
+  </div>
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="Cari menu atau nama job… (mis. wave, settlement, export)" autocomplete="off">
+    </label>
+  </div>
+  <div class="chips" id="typeChips"></div>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--ok)"></span><b>Sudah didokumentasikan</b></span>
+    <span><span class="dot" style="background:var(--ink-faint)"></span>Belum dibahas (kandidat deep-dive)</span>
+    <span>⛓ = jumlah job turunan terdeteksi</span>
+  </div>
+
+  <div id="modules"></div>
+  <div class="empty" id="empty" hidden>Tidak ada menu/job yang cocok dengan pencarian.</div>
+
+  <div class="note">
+    <b>Catatan cara baca:</b> rantai turunan di sini hasil <i>static scan</i> panggilan langsung <code>Job::dispatch()</code> / <code>new Job()</code> di dalam file job. Sebagian job memicu turunan lewat <b>Service</b> atau <b>Bus::chain/batch</b> yang tidak selalu tertangkap statis — itu yang kita lengkapi manual saat deep-dive per menu.
+  </div>
+
+  <footer>
+    <div>Sumber: pemindaian <code>Modules/**/Jobs</code> + <code>Http/Controllers</code> pada branch <code>dev</code>.</div>
+    <div id="genline"></div>
+  </footer>
+</main>
+
+<script id="data" type="application/json">{
+ "generated_from": "static-scan",
+ "total_jobs": 260,
+ "modules": {
+  "Accounting": [
+   {
+    "menu": "AssetListController",
+    "entry_jobs": [
+     {
+      "name": "StockMonitoringExportExcelJob",
+      "type": "Export",
+      "children": [
+       "Bus::batch",
+       "StockMonitoringMergeExcelFilesJob"
+      ],
+      "chain": 3
+     }
+    ],
+    "complexity": 4
+   },
+   {
+    "menu": "ChartOfAccountController",
+    "entry_jobs": [
+     {
+      "name": "CoaExportExcelJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "CustomerPaymentController",
+    "entry_jobs": [
+     {
+      "name": "CustomerPaymentExportCombineJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "ImportReceiveValidateBankMutationJob",
+      "type": "Import",
+      "children": [
+       "ImportReceiveValidateDetailJob"
+      ],
+      "chain": 3
+     }
+    ],
+    "complexity": 5
+   },
+   {
+    "menu": "ProductBenchmarkPriceController",
+    "entry_jobs": [
+     {
+      "name": "ProductBenchmarkPriceJob",
+      "type": "Other",
+      "children": [
+       "ProductBenchmarkPriceBunddleJob"
+      ],
+      "chain": 1
+     }
+    ],
+    "complexity": 2
+   },
+   {
+    "menu": "ProductCoaGroupController",
+    "entry_jobs": [
+     {
+      "name": "ProductCoaGroupProductAccountingJob",
+      "type": "Other",
+      "children": [
+       "UpdateProductAccountingJob"
+      ],
+      "chain": 1
+     }
+    ],
+    "complexity": 2
+   },
+   {
+    "menu": "ProductProfitLossController",
+    "entry_jobs": [
+     {
+      "name": "GenerateProductProfitLossExportJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "SalesOrderInvoicingController",
+    "entry_jobs": [
+     {
+      "name": "SalesOrderInvoicingExportExcelJob",
+      "type": "Export",
+      "children": [
+       "Bus::batch"
+      ],
+      "chain": 1
+     }
+    ],
+    "complexity": 2
+   },
+   {
+    "menu": "SettlementUploadController",
+    "entry_jobs": [
+     {
+      "name": "SettlementApproveCustomerPaymentJob",
+      "type": "Settlement",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "SettlementApproveInvoiceJournalJob",
+      "type": "Settlement",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "SettlementApproveOutboundJournalJob",
+      "type": "Settlement",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "SettlementGenerateCustomerPaymentJob",
+      "type": "Settlement",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 4
+   },
+   {
+    "menu": "SettlementUploadRetryController",
+    "entry_jobs": [
+     {
+      "name": "SettlementApproveInvoiceJournalJob",
+      "type": "Settlement",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "SettlementApproveOutboundJournalJob",
+      "type": "Settlement",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 2
+   },
+   {
+    "menu": "StockMonitoringValueController",
+    "entry_jobs": [
+     {
+      "name": "StockMonitoringExportExcelJob",
+      "type": "Export",
+      "children": [
+       "Bus::batch",
+       "StockMonitoringMergeExcelFilesJob"
+      ],
+      "chain": 3
+     }
+    ],
+    "complexity": 4
+   },
+   {
+    "menu": "SupplierPaymentImportController",
+    "entry_jobs": [
+     {
+      "name": "ImportSupplierPaymentValidateBankMutationJob",
+      "type": "Import",
+      "children": [
+       "ImportSupplierPaymentValidateDetailJob"
+      ],
+      "chain": 2
+     }
+    ],
+    "complexity": 3
+   }
+  ],
+  "GeneralSetting": [
+   {
+    "menu": "InternalCompanyController",
+    "entry_jobs": [
+     {
+      "name": "ImportCoaDevJob",
+      "type": "Import",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   }
+  ],
+  "HumanResources": [
+   {
+    "menu": "AttendanceLogController",
+    "entry_jobs": [
+     {
+      "name": "SyncAttendanceData",
+      "type": "Sync",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   }
+  ],
+  "OmniChannel": [
+   {
+    "menu": "OmniCallbackController",
+    "entry_jobs": [
+     {
+      "name": "WarehouseSyncJob",
+      "type": "Sync",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "OmniChannelController",
+    "entry_jobs": [
+     {
+      "name": "ProductPlatformSyncStoreJob",
+      "type": "Sync",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "WarehouseSyncJob",
+      "type": "Sync",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 2
+   },
+   {
+    "menu": "PlatformAccountFieldController",
+    "entry_jobs": [
+     {
+      "name": "SyncPlatformAccountPerPlatformJob",
+      "type": "Sync",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "ProductController",
+    "entry_jobs": [
+     {
+      "name": "BulkBindingLogExportJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "ProductPlatformSyncSingleJob",
+      "type": "Sync",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "ProductPlatformSyncStoreJob",
+      "type": "Sync",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 3
+   },
+   {
+    "menu": "SalesOrderController",
+    "entry_jobs": [
+     {
+      "name": "MoveSOToWaveMixJob",
+      "type": "Wave/Fulfillment",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "RecheckOrderFlagsJob",
+      "type": "Other",
+      "children": [
+       "Bus::batch"
+      ],
+      "chain": 1
+     },
+     {
+      "name": "SalesBookingStatusNotificationJob",
+      "type": "Notification",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "SalesOrderExportExcelJob",
+      "type": "Export",
+      "children": [
+       "Bus::batch",
+       "SalesOrderPlatformMergeExcelFilesJob"
+      ],
+      "chain": 3
+     },
+     {
+      "name": "SalesOrderGeneralExportExcelJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "StoreSOBasedStockJob",
+      "type": "Other",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "StoreSOBasedStockPerWarehouseJob",
+      "type": "Other",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 11
+   },
+   {
+    "menu": "SalesReturnController",
+    "entry_jobs": [
+     {
+      "name": "SalesReturnSynchronizeJob",
+      "type": "Sync",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "ShippingServicePlatformController",
+    "entry_jobs": [
+     {
+      "name": "ShippingServiceSyncJob",
+      "type": "Sync",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "SkipWaveProcessController",
+    "entry_jobs": [
+     {
+      "name": "SkipWaveProcessExportJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "TransferCheckingController",
+    "entry_jobs": [
+     {
+      "name": "SkipProcessingIndividualMenuJob",
+      "type": "Processing",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "TransferPackingController",
+    "entry_jobs": [
+     {
+      "name": "SkipProcessingIndividualMenuJob",
+      "type": "Processing",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "TransferPickingController",
+    "entry_jobs": [
+     {
+      "name": "GeneratePicklistByWaveAndSOJob",
+      "type": "Wave/Fulfillment",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "GeneratePicklistByWaveJob",
+      "type": "Wave/Fulfillment",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "SkipProcessingIndividualMenuJob",
+      "type": "Processing",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 3
+   },
+   {
+    "menu": "TransferSummaryController",
+    "entry_jobs": [
+     {
+      "name": "SkipProcessingExportExcelJob",
+      "type": "Export",
+      "children": [
+       "GenerateExcelPartJob"
+      ],
+      "chain": 3
+     }
+    ],
+    "complexity": 4
+   },
+   {
+    "menu": "UnassignWaveController",
+    "entry_jobs": [
+     {
+      "name": "RefreshAvailabilityStockJob",
+      "type": "Other",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "UnassignWaveExportExcelJob",
+      "type": "Export",
+      "children": [
+       "GenerateExcelPartJob"
+      ],
+      "chain": 3
+     }
+    ],
+    "complexity": 5
+   },
+   {
+    "menu": "UnassignWaveLogController",
+    "entry_jobs": [
+     {
+      "name": "UnassignWaveLogExportJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   }
+  ],
+  "SupplyChain": [
+   {
+    "menu": "FailedShipController",
+    "entry_jobs": [
+     {
+      "name": "FailedShipApprovalJob",
+      "type": "Approval",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "FailedShipExportExcelJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 2
+   },
+   {
+    "menu": "InventoryDetailController",
+    "entry_jobs": [
+     {
+      "name": "InventoryDetailExportJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "InventoryDetailTempJob",
+      "type": "Other",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 2
+   },
+   {
+    "menu": "ItemTransactionHistoryController",
+    "entry_jobs": [
+     {
+      "name": "AllSalesOrderExportExcelJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "AllSalesOrderMergeExcelFilesJob",
+      "type": "Merge/Cleanup",
+      "children": [
+       "AllSalesOrderCleanupTempFilesJob"
+      ],
+      "chain": 1
+     },
+     {
+      "name": "ProductTransactionHistoryExportJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 4
+   },
+   {
+    "menu": "ProductController",
+    "entry_jobs": [
+     {
+      "name": "ProductExportExcelJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "ProductMergeExcelFilesJob",
+      "type": "Merge/Cleanup",
+      "children": [
+       "ProductCleanupTempFilesJob"
+      ],
+      "chain": 1
+     }
+    ],
+    "complexity": 3
+   },
+   {
+    "menu": "ProductMutationController",
+    "entry_jobs": [
+     {
+      "name": "MutationSummaryPerWhExportJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "RealStockController",
+    "entry_jobs": [
+     {
+      "name": "RealStockSoBasedStockJob",
+      "type": "Other",
+      "children": [
+       "StoreSOBasedStockPerWarehouseJob"
+      ],
+      "chain": 1
+     }
+    ],
+    "complexity": 2
+   },
+   {
+    "menu": "StockMonitoringController",
+    "entry_jobs": [
+     {
+      "name": "StockMonitoringExportExcelJob",
+      "type": "Export",
+      "children": [
+       "Bus::batch",
+       "StockMonitoringMergeExcelFilesJob"
+      ],
+      "chain": 3
+     }
+    ],
+    "complexity": 4
+   },
+   {
+    "menu": "StockMutationInboundController",
+    "entry_jobs": [
+     {
+      "name": "ApproveInboundJob",
+      "type": "Approval",
+      "children": [
+       "Bus::batch"
+      ],
+      "chain": 1
+     }
+    ],
+    "complexity": 2
+   },
+   {
+    "menu": "StockMutationTransferController",
+    "entry_jobs": [
+     {
+      "name": "TransferApproveToWaveJob",
+      "type": "Wave/Fulfillment",
+      "children": [
+       "TransferWaveToPickingListJob"
+      ],
+      "chain": 1
+     },
+     {
+      "name": "TransferExternalTransactionalJob",
+      "type": "Other",
+      "children": [
+       "TransferExternalHiddenInTransitJob",
+       "TransferExternalProcessApproveJob"
+      ],
+      "chain": 2
+     }
+    ],
+    "complexity": 5
+   },
+   {
+    "menu": "VariantController",
+    "entry_jobs": [
+     {
+      "name": "VariantExportExcelJob",
+      "type": "Export",
+      "children": [],
+      "chain": 0
+     }
+    ],
+    "complexity": 1
+   },
+   {
+    "menu": "WarehouseController",
+    "entry_jobs": [
+     {
+      "name": "WarehouseGeneratorV2Job",
+      "type": "Other",
+      "children": [
+       "Bus::batch",
+       "GenerateWarehouseCleanUpJob"
+      ],
+      "chain": 2
+     }
+    ],
+    "complexity": 3
+   },
+   {
+    "menu": "WorkorderController",
+    "entry_jobs": [
+     {
+      "name": "WorkOrderApprovalJob",
+      "type": "Approval",
+      "children": [],
+      "chain": 0
+     },
+     {
+      "name": "WorkOrderExportExcelJob",
+      "type": "Export",
+      "children": [
+       "Bus::batch",
+       "WorkOrderMergeExcelFilesJob"
+      ],
+      "chain": 3
+     }
+    ],
+    "complexity": 5
+   }
+  ]
+ },
+ "graph": {
+  "CreditNoteDetailExportJob": [],
+  "CashBankReconciliationExportJob": [],
+  "CustomerInvoiceExportJob": [],
+  "SettlementApproveOutboundJournalJob": [],
+  "CoaImportJob": [],
+  "ProductBenchmarkPriceExportJob": [],
+  "ProductBenchmarkPriceBunddleJob": [],
+  "CustomerPaymentExportChunkJob": [],
+  "SalesReturnAutoApproveJob": [],
+  "SalesOrderInvoicingExportExcelJob": [
+   "Bus::batch"
+  ],
+  "JournalExportJob": [],
+  "StockMutationSalesReturnExportJob": [],
+  "SettlementApproveInvoiceJournalJob": [],
+  "PaymentExportJob": [],
+  "SettlementGenerateInvoiceSingleJob": [],
+  "ImportSupplierPaymentValidateDetailJob": [
+   "ImportSupplierPaymentValidateAdjustmentJob"
+  ],
+  "SyncPlatformAccountPerPlatformJob": [],
+  "StockRemappingDetailExportJob": [],
+  "CreditNoteDetailFundExportJob": [],
+  "ReceiveDetailImportJob": [],
+  "GenerateProductProfitLossExportJob": [],
+  "SupplierPaymentDetailExportJob": [],
+  "SettlementGenerateCustomerPaymentJob": [],
+  "ImportSupplierPaymentValidateBankMutationJob": [
+   "ImportSupplierPaymentValidateDetailJob"
+  ],
+  "ProductBenchmarkPriceJob": [
+   "ProductBenchmarkPriceBunddleJob"
+  ],
+  "CreditNoteExportJob": [],
+  "InboundValueAdjustmentImportJob": [],
+  "SettlementApproveCustomerPaymentJob": [],
+  "DebitNoteExportJob": [],
+  "CustomerPaymentExportCombineJob": [],
+  "PurchaseReturnExportJob": [],
+  "SalesReturnImportJob": [],
+  "StockMonitoringValueExportJob": [],
+  "GenerateProductProfitLossDataJob": [],
+  "StockRemappingExportJob": [],
+  "SalesOrderSettlementStatusExportChunkJob": [],
+  "OpeningStockExportJob": [],
+  "SettlementApproveOutboundSingleJob": [],
+  "SettlementApproveInvoiceSingleJob": [],
+  "AccountBalanceCalculationJob": [],
+  "AssetListExportJob": [],
+  "PaymentImportJob": [],
+  "JournalDetailExportJob": [],
+  "SettlementRereadExcelJob": [],
+  "SalesOrderInvoicingExportJob": [],
+  "PurchaseReturnExportDetailJob": [],
+  "ImportReceiveFinalValidationJob": [],
+  "ImportReceiveValidateDetailJob": [
+   "ImportReceiveValidateAdjustmentJob"
+  ],
+  "SalesReturnExportDetailJob": [],
+  "ImportSupplierPaymentValidateAdjustmentJob": [],
+  "PurchaseReportExportJob": [],
+  "SupplierInvoiceExportJob": [],
+  "CoaExportExcelJob": [],
+  "GeneralLedgerExportJob": [],
+  "JournalImportJob": [],
+  "ImportReceiveValidateAdjustmentJob": [
+   "ImportReceiveFinalValidationJob"
+  ],
+  "PaymentDetailImportJob": [],
+  "CoaExportJob": [],
+  "ImportReceiveValidateBankMutationJob": [
+   "ImportReceiveValidateDetailJob"
+  ],
+  "SettlementMappingImportJob": [],
+  "CustomerInvoiceImportJob": [],
+  "SalesReturnDetailImportJob": [],
+  "DebitNoteDetailExportJob": [],
+  "ReceiveValidateAdjustmentSheet": [],
+  "PaymentValidateBankMutationSheet": [],
+  "ReceiveValidateDetailSheet": [],
+  "ReceiveValidateBankMutationSheet": [],
+  "PaymentValidateDetailSheet": [],
+  "PaymentValidateAdjustmentSheet": [],
+  "AdditionDetailImportJob": [],
+  "ApproveInboundOpeningJob": [
+   "Bus::batch"
+  ],
+  "WarehouseStructureGeneratorJob": [],
+  "PurchaseOrderExportJob": [],
+  "StockMutationTransferExternalExportJob": [],
+  "StockMutationExportJob": [],
+  "VariantImportJob": [],
+  "ProductExportExcelJob": [],
+  "UpdateWarehouseParentByTypeJob": [],
+  "InventoryDetailExportJob": [],
+  "TransferExternalTransactionalJob": [
+   "TransferExternalHiddenInTransitJob",
+   "TransferExternalProcessApproveJob"
+  ],
+  "WorkOrderGenerateSingleExcelFileJob": [],
+  "StockMutationTransferInboundDetailExportJob": [],
+  "WorkOrderCleanupTempFilesJob": [],
+  "ProductEndingStockJob": [],
+  "UpdateProductImport": [],
+  "ProductMutationHistory": [],
+  "StockOpnameDetailImportJob": [],
+  "GenerateWarehouseChunkJob": [],
+  "ProductBundleImportJob": [],
+  "StoreEndingStockJob": [],
+  "StockMonitoringGenerateSingleExcelFileJob": [],
+  "WorkOrderImportJob": [],
+  "CalculateEndingBalance": [],
+  "MutationSummaryPerWhExportJob": [],
+  "FailedShipApprovalJob": [],
+  "PurchaseRequisitionImportJob": [],
+  "AdditionDetailImportColliJob": [],
+  "StockMonitoringExportJob": [],
+  "PurchaseOrderWithoutPrImportJob": [],
+  "ProductTransactionHistoryExportJob": [],
+  "StockMutationOutboundExportWithoutDetailJob": [],
+  "StockMutationOutboundExportDetailJob": [],
+  "ProductBulkUpdateVatImportJob": [],
+  "TransferWaveToPickingListJob": [],
+  "WarehouseGeneratorJob": [
+   "Bus::batch"
+  ],
+  "SendProductWebhookJob": [],
+  "UpdateProductAccountingJob": [],
+  "RealStockLocationExportJob": [],
+  "BillofMaterialDetailImportJob": [],
+  "ProductCleanupTempFilesJob": [],
+  "InventoryDetailTempJob": [],
+  "CalculateGlobalAtsJob": [],
+  "ProductImportJob": [],
+  "StoreSOBasedStockJob": [],
+  "StockMonitoringMergeExcelFilesJob": [
+   "StockMonitoringCleanupTempFilesJob"
+  ],
+  "OrderProcessingTraceExportJob": [],
+  "WarehouseTreeImportJob": [],
+  "StockMutationDeductionExportJob": [],
+  "StoreWhDetailJob": [],
+  "ManualPickingListDetailImportJob": [],
+  "StockMonitoringCleanupTempFilesJob": [],
+  "StockMutationOutboundExportJob": [],
+  "BillOfMaterialImportJob": [],
+  "PickingListExportDetailJob": [],
+  "TransferExternalProcessApproveJob": [],
+  "StockMutationStockOpnameExportJob": [],
+  "GenerateAisleJob": [
+   "StoreWhDetailJob"
+  ],
+  "DeliveryOrderDetailExportJob": [],
+  "TransferInternalDetailImportJob": [],
+  "WarehouseGeneratorV2Job": [
+   "Bus::batch",
+   "GenerateWarehouseCleanUpJob"
+  ],
+  "RealStockSkuExportJob2": [],
+  "WarehouseGeneratorChecking": [],
+  "StockMutationInboundExportJob": [],
+  "InboundDetailImportJob": [],
+  "VariantExportExcelJob": [],
+  "TransferExternalHiddenInTransitJob": [],
+  "StockImportJob": [],
+  "StockMutationTransferInternalExportJob": [],
+  "PriceListCategoryImportJob": [],
+  "PurchaseOrderWithPrImportJob": [],
+  "MutationSummaryPerWhTempJob": [],
+  "TransferApproveToWaveJob": [
+   "TransferWaveToPickingListJob"
+  ],
+  "CalculateEndingBalancePerWarehouse": [],
+  "CalculateEndingBalancePerBuilding": [],
+  "PurchaseRequisitionExportJob": [],
+  "TransferExternalApproveMutationJob": [],
+  "StockMutationDetailExportJob": [],
+  "WorkOrderApprovalJob": [],
+  "TransactionHistoryExportCombineJob": [],
+  "UpdateProductVariantImportJob": [],
+  "ProductCoaGroupProductAccountingJob": [
+   "UpdateProductAccountingJob"
+  ],
+  "ProductMergeExcelFilesJob": [
+   "ProductCleanupTempFilesJob"
+  ],
+  "InstantProcessingSalesOrderJob": [],
+  "WorkOrderMergeExcelFilesJob": [
+   "WorkOrderCleanupTempFilesJob"
+  ],
+  "StockMutationAdditionExportJob": [],
+  "ApproveInboundJob": [
+   "Bus::batch"
+  ],
+  "StockMonitoringExportExcelJob": [
+   "Bus::batch",
+   "StockMonitoringMergeExcelFilesJob"
+  ],
+  "ProductImportTemJob": [],
+  "StockMutationTransferInboundExportJob": [],
+  "InsertProductRandomImportJob": [],
+  "MasterBillOfMaterialExportJob": [],
+  "ProcessWorkOrderDetailsJob": [],
+  "GenerateItemStockChunkJob": [],
+  "WorkOrderExportExcelJob": [
+   "Bus::batch",
+   "WorkOrderMergeExcelFilesJob"
+  ],
+  "FailedShipExportExcelJob": [],
+  "RealStockSkuExportJob": [],
+  "GenerateWarehouseCleanUpJob": [],
+  "DeductionDetailImportJob": [],
+  "PurchaseOrderDetailExportJob": [],
+  "InsertProductAlternativeUnitImportJob": [],
+  "InboundDetailImportColliJob": [],
+  "StockAfterApproveHandlerJob": [],
+  "StoreSOBasedStockPerWarehouseJob": [],
+  "WarehouseCreateVirtualJob": [],
+  "RealStockSoBasedStockJob": [
+   "StoreSOBasedStockPerWarehouseJob"
+  ],
+  "UploadKbCorpusChunkJob": [],
+  "WarmKbCorpusChunkIndexJob": [],
+  "DispatchKbCorpusIndexJob": [],
+  "GeneratePicklistByWaveJob": [],
+  "SalesOrderGeneralExportAllJob": [],
+  "BulkBindingLogExportJob": [],
+  "SkipProcessingApproveDOChunkJob": [],
+  "SkipProcessingExportExcelJob": [
+   "GenerateExcelPartJob"
+  ],
+  "ShippingServiceDetailExportJob": [],
+  "SalesOrderValidateImportDetailJob": [],
+  "GetCancellationReasonJob": [],
+  "RecheckOrderFlagsJob": [
+   "Bus::batch"
+  ],
+  "MoveSOToWaveMixJob": [],
+  "DeleteOldSalesOrderSyncLogsJob": [],
+  "SalesOrderImportCleanupJob": [],
+  "CheckStatusSOApprovedJob": [],
+  "SalesBookingStatusNotificationJob": [],
+  "ProductPlatformSyncStoreJob": [],
+  "SalesOrderSyncSingleJob": [],
+  "SalesOrderExportJob": [],
+  "UnassignWaveExportExcelJob": [
+   "GenerateExcelPartJob"
+  ],
+  "UnassignWaveLogExportJob": [],
+  "ProductPlatformExportJob": [],
+  "SyncStockPlatformJob": [],
+  "AutobindSingleJob": [],
+  "SalesOrderSynchronizeUpdateCleanupJob": [],
+  "SkipProcessingJob": [
+   "Bus::batch"
+  ],
+  "SalesOrderGeneralExportJob": [],
+  "WarehouseSyncJob": [],
+  "SalesOrderGeneralExportExcelJob": [],
+  "BrandJob": [],
+  "ProcessSalesOrdersWithoutDetailsJob": [
+   "SalesOrderExportJob"
+  ],
+  "GeneratePicklistByWaveAndSOJob": [],
+  "SalesOrderImportFinalizeJob": [],
+  "BatchValidateOrderPlatformStatusJob": [],
+  "ProcessSalesOrderDetailsJob": [
+   "SalesOrderExportJob"
+  ],
+  "SalesOrderExportExcelJob": [
+   "Bus::batch",
+   "SalesOrderPlatformMergeExcelFilesJob"
+  ],
+  "BackfillSalesOrderCogsErrorJob": [],
+  "DeliveryOrExportJob": [],
+  "DeleteOldSalesOrderSyncHistoryJob": [],
+  "MergeExcelFilesJob": [
+   "SalesOrderPlatformCleanupTempFilesJob"
+  ],
+  "SalesOrderPlatformCleanupTempFilesJob": [],
+  "SalesOrderAutoApproveJob": [],
+  "SalesOrderImportDetailJob": [],
+  "ShippingServiceSyncJob": [],
+  "PushStockBatchJob": [
+   "Bus::batch"
+  ],
+  "SalesOrderDraftAutoDeleteJob": [],
+  "SalesOrderErrorApproveJob": [],
+  "ProductPlatformRetrySyncJob": [
+   "Bus::batch"
+  ],
+  "GenerateSODetailRandomJob": [],
+  "ProductPlatformSyncSingleJob": [],
+  "SalesOrderImportJob": [
+   "SalesOrderImportFinalizeJob"
+  ],
+  "SalesReturnSynchronizeJob": [],
+  "SalesOrderInitiateImportJob": [],
+  "SalesReturnWebhookJob": [],
+  "UpdateSoBasedStockOnSoChangeJob": [
+   "StoreSOBasedStockJob",
+   "StoreSOBasedStockPerWarehouseJob"
+  ],
+  "MoveBufferToWaveJob": [],
+  "SalesOrderPlatformMergeExcelFilesJob": [
+   "SalesOrderPlatformCleanupTempFilesJob"
+  ],
+  "AutobindBatchJob": [],
+  "SkipWaveProcessExportJob": [],
+  "PushStockSingleJob": [],
+  "GenerateExcelPartJob": [
+   "MergeExcelFilesJob"
+  ],
+  "SalesOrderValidateImportOtherJob": [],
+  "SkipProcessingIndividualMenuJob": [],
+  "UpdateSOPlatformFields": [],
+  "SalesOrderPlatformGenerateSingleExcelFileJob": [],
+  "AutobindBatchCleanupJob": [],
+  "RefreshAvailabilityStockJob": [],
+  "SQLImportJob": [],
+  "ScreeningQueryExportJob": [],
+  "RedisQueueHeartbeatJob": [],
+  "CopyCOA": [],
+  "ImportCoaDevJob": [],
+  "GenerateSOGeneralDetailJob": [],
+  "PayrollJob": [],
+  "SyncAttendanceData": [],
+  "AttendanceCalculatedJob": [],
+  "AllSalesOrderExportExcelJob": [],
+  "AllSalesOrderMergeExcelFilesJob": [
+   "AllSalesOrderCleanupTempFilesJob"
+  ],
+  "AllSalesOrderExportExcel2Job": [],
+  "AllSalesOrderDetailExportExcelJob": [],
+  "AllSalesOrderGenerateSingleExcelFileJob": [],
+  "PricelistExportJob": [],
+  "AllSalesOrderCleanupTempFilesJob": [],
+  "PricelistTempJob": []
+ },
+ "job_types": {
+  "CreditNoteDetailExportJob": "Export",
+  "CashBankReconciliationExportJob": "Export",
+  "CustomerInvoiceExportJob": "Export",
+  "SettlementApproveOutboundJournalJob": "Settlement",
+  "CoaImportJob": "Import",
+  "ProductBenchmarkPriceExportJob": "Export",
+  "ProductBenchmarkPriceBunddleJob": "Other",
+  "CustomerPaymentExportChunkJob": "Export",
+  "SalesReturnAutoApproveJob": "Approval",
+  "SalesOrderInvoicingExportExcelJob": "Export",
+  "JournalExportJob": "Export",
+  "StockMutationSalesReturnExportJob": "Export",
+  "SettlementApproveInvoiceJournalJob": "Settlement",
+  "PaymentExportJob": "Export",
+  "SettlementGenerateInvoiceSingleJob": "Settlement",
+  "ImportSupplierPaymentValidateDetailJob": "Import",
+  "SyncPlatformAccountPerPlatformJob": "Sync",
+  "StockRemappingDetailExportJob": "Export",
+  "CreditNoteDetailFundExportJob": "Export",
+  "ReceiveDetailImportJob": "Import",
+  "GenerateProductProfitLossExportJob": "Export",
+  "SupplierPaymentDetailExportJob": "Export",
+  "SettlementGenerateCustomerPaymentJob": "Settlement",
+  "ImportSupplierPaymentValidateBankMutationJob": "Import",
+  "ProductBenchmarkPriceJob": "Other",
+  "CreditNoteExportJob": "Export",
+  "InboundValueAdjustmentImportJob": "Import",
+  "SettlementApproveCustomerPaymentJob": "Settlement",
+  "DebitNoteExportJob": "Export",
+  "CustomerPaymentExportCombineJob": "Export",
+  "PurchaseReturnExportJob": "Export",
+  "SalesReturnImportJob": "Import",
+  "StockMonitoringValueExportJob": "Export",
+  "GenerateProductProfitLossDataJob": "Other",
+  "StockRemappingExportJob": "Export",
+  "SalesOrderSettlementStatusExportChunkJob": "Export",
+  "OpeningStockExportJob": "Export",
+  "SettlementApproveOutboundSingleJob": "Settlement",
+  "SettlementApproveInvoiceSingleJob": "Settlement",
+  "AccountBalanceCalculationJob": "Other",
+  "AssetListExportJob": "Export",
+  "PaymentImportJob": "Import",
+  "JournalDetailExportJob": "Export",
+  "SettlementRereadExcelJob": "Settlement",
+  "SalesOrderInvoicingExportJob": "Export",
+  "PurchaseReturnExportDetailJob": "Export",
+  "ImportReceiveFinalValidationJob": "Import",
+  "ImportReceiveValidateDetailJob": "Import",
+  "SalesReturnExportDetailJob": "Export",
+  "ImportSupplierPaymentValidateAdjustmentJob": "Import",
+  "PurchaseReportExportJob": "Export",
+  "SupplierInvoiceExportJob": "Export",
+  "CoaExportExcelJob": "Export",
+  "GeneralLedgerExportJob": "Export",
+  "JournalImportJob": "Import",
+  "ImportReceiveValidateAdjustmentJob": "Import",
+  "PaymentDetailImportJob": "Import",
+  "CoaExportJob": "Export",
+  "ImportReceiveValidateBankMutationJob": "Import",
+  "SettlementMappingImportJob": "Import",
+  "CustomerInvoiceImportJob": "Import",
+  "SalesReturnDetailImportJob": "Import",
+  "DebitNoteDetailExportJob": "Export",
+  "ReceiveValidateAdjustmentSheet": "Other",
+  "PaymentValidateBankMutationSheet": "Other",
+  "ReceiveValidateDetailSheet": "Other",
+  "ReceiveValidateBankMutationSheet": "Other",
+  "PaymentValidateDetailSheet": "Other",
+  "PaymentValidateAdjustmentSheet": "Other",
+  "AdditionDetailImportJob": "Import",
+  "ApproveInboundOpeningJob": "Approval",
+  "WarehouseStructureGeneratorJob": "Other",
+  "PurchaseOrderExportJob": "Export",
+  "StockMutationTransferExternalExportJob": "Export",
+  "StockMutationExportJob": "Export",
+  "VariantImportJob": "Import",
+  "ProductExportExcelJob": "Export",
+  "UpdateWarehouseParentByTypeJob": "Other",
+  "InventoryDetailExportJob": "Export",
+  "TransferExternalTransactionalJob": "Other",
+  "WorkOrderGenerateSingleExcelFileJob": "Other",
+  "StockMutationTransferInboundDetailExportJob": "Export",
+  "WorkOrderCleanupTempFilesJob": "Merge/Cleanup",
+  "ProductEndingStockJob": "Other",
+  "UpdateProductImport": "Import",
+  "ProductMutationHistory": "Other",
+  "StockOpnameDetailImportJob": "Import",
+  "GenerateWarehouseChunkJob": "Other",
+  "ProductBundleImportJob": "Import",
+  "StoreEndingStockJob": "Other",
+  "StockMonitoringGenerateSingleExcelFileJob": "Other",
+  "WorkOrderImportJob": "Import",
+  "CalculateEndingBalance": "Other",
+  "MutationSummaryPerWhExportJob": "Export",
+  "FailedShipApprovalJob": "Approval",
+  "PurchaseRequisitionImportJob": "Import",
+  "AdditionDetailImportColliJob": "Import",
+  "StockMonitoringExportJob": "Export",
+  "PurchaseOrderWithoutPrImportJob": "Import",
+  "ProductTransactionHistoryExportJob": "Export",
+  "StockMutationOutboundExportWithoutDetailJob": "Export",
+  "StockMutationOutboundExportDetailJob": "Export",
+  "ProductBulkUpdateVatImportJob": "Import",
+  "TransferWaveToPickingListJob": "Wave/Fulfillment",
+  "WarehouseGeneratorJob": "Other",
+  "SendProductWebhookJob": "Other",
+  "UpdateProductAccountingJob": "Other",
+  "RealStockLocationExportJob": "Export",
+  "BillofMaterialDetailImportJob": "Import",
+  "ProductCleanupTempFilesJob": "Merge/Cleanup",
+  "InventoryDetailTempJob": "Other",
+  "CalculateGlobalAtsJob": "Other",
+  "ProductImportJob": "Import",
+  "StoreSOBasedStockJob": "Other",
+  "StockMonitoringMergeExcelFilesJob": "Merge/Cleanup",
+  "OrderProcessingTraceExportJob": "Export",
+  "WarehouseTreeImportJob": "Import",
+  "StockMutationDeductionExportJob": "Export",
+  "StoreWhDetailJob": "Other",
+  "ManualPickingListDetailImportJob": "Import",
+  "StockMonitoringCleanupTempFilesJob": "Merge/Cleanup",
+  "StockMutationOutboundExportJob": "Export",
+  "BillOfMaterialImportJob": "Import",
+  "PickingListExportDetailJob": "Export",
+  "TransferExternalProcessApproveJob": "Approval",
+  "StockMutationStockOpnameExportJob": "Export",
+  "GenerateAisleJob": "Other",
+  "DeliveryOrderDetailExportJob": "Export",
+  "TransferInternalDetailImportJob": "Import",
+  "WarehouseGeneratorV2Job": "Other",
+  "RealStockSkuExportJob2": "Export",
+  "WarehouseGeneratorChecking": "Wave/Fulfillment",
+  "StockMutationInboundExportJob": "Export",
+  "InboundDetailImportJob": "Import",
+  "VariantExportExcelJob": "Export",
+  "TransferExternalHiddenInTransitJob": "Other",
+  "StockImportJob": "Import",
+  "StockMutationTransferInternalExportJob": "Export",
+  "PriceListCategoryImportJob": "Import",
+  "PurchaseOrderWithPrImportJob": "Import",
+  "MutationSummaryPerWhTempJob": "Other",
+  "TransferApproveToWaveJob": "Wave/Fulfillment",
+  "CalculateEndingBalancePerWarehouse": "Other",
+  "CalculateEndingBalancePerBuilding": "Other",
+  "PurchaseRequisitionExportJob": "Export",
+  "TransferExternalApproveMutationJob": "Approval",
+  "StockMutationDetailExportJob": "Export",
+  "WorkOrderApprovalJob": "Approval",
+  "TransactionHistoryExportCombineJob": "Export",
+  "UpdateProductVariantImportJob": "Import",
+  "ProductCoaGroupProductAccountingJob": "Other",
+  "ProductMergeExcelFilesJob": "Merge/Cleanup",
+  "InstantProcessingSalesOrderJob": "Processing",
+  "WorkOrderMergeExcelFilesJob": "Merge/Cleanup",
+  "StockMutationAdditionExportJob": "Export",
+  "ApproveInboundJob": "Approval",
+  "StockMonitoringExportExcelJob": "Export",
+  "ProductImportTemJob": "Import",
+  "StockMutationTransferInboundExportJob": "Export",
+  "InsertProductRandomImportJob": "Import",
+  "MasterBillOfMaterialExportJob": "Export",
+  "ProcessWorkOrderDetailsJob": "Processing",
+  "GenerateItemStockChunkJob": "Other",
+  "WorkOrderExportExcelJob": "Export",
+  "FailedShipExportExcelJob": "Export",
+  "RealStockSkuExportJob": "Export",
+  "GenerateWarehouseCleanUpJob": "Merge/Cleanup",
+  "DeductionDetailImportJob": "Import",
+  "PurchaseOrderDetailExportJob": "Export",
+  "InsertProductAlternativeUnitImportJob": "Import",
+  "InboundDetailImportColliJob": "Import",
+  "StockAfterApproveHandlerJob": "Approval",
+  "StoreSOBasedStockPerWarehouseJob": "Other",
+  "WarehouseCreateVirtualJob": "Other",
+  "RealStockSoBasedStockJob": "Other",
+  "UploadKbCorpusChunkJob": "File",
+  "WarmKbCorpusChunkIndexJob": "Other",
+  "DispatchKbCorpusIndexJob": "Other",
+  "GeneratePicklistByWaveJob": "Wave/Fulfillment",
+  "SalesOrderGeneralExportAllJob": "Export",
+  "BulkBindingLogExportJob": "Export",
+  "SkipProcessingApproveDOChunkJob": "Approval",
+  "SkipProcessingExportExcelJob": "Export",
+  "ShippingServiceDetailExportJob": "Export",
+  "SalesOrderValidateImportDetailJob": "Import",
+  "GetCancellationReasonJob": "Other",
+  "RecheckOrderFlagsJob": "Other",
+  "MoveSOToWaveMixJob": "Wave/Fulfillment",
+  "DeleteOldSalesOrderSyncLogsJob": "Sync",
+  "SalesOrderImportCleanupJob": "Import",
+  "CheckStatusSOApprovedJob": "Approval",
+  "SalesBookingStatusNotificationJob": "Notification",
+  "ProductPlatformSyncStoreJob": "Sync",
+  "SalesOrderSyncSingleJob": "Sync",
+  "SalesOrderExportJob": "Export",
+  "UnassignWaveExportExcelJob": "Export",
+  "UnassignWaveLogExportJob": "Export",
+  "ProductPlatformExportJob": "Export",
+  "SyncStockPlatformJob": "Sync",
+  "AutobindSingleJob": "Other",
+  "SalesOrderSynchronizeUpdateCleanupJob": "Merge/Cleanup",
+  "SkipProcessingJob": "Processing",
+  "SalesOrderGeneralExportJob": "Export",
+  "WarehouseSyncJob": "Sync",
+  "SalesOrderGeneralExportExcelJob": "Export",
+  "BrandJob": "Other",
+  "ProcessSalesOrdersWithoutDetailsJob": "Processing",
+  "GeneratePicklistByWaveAndSOJob": "Wave/Fulfillment",
+  "SalesOrderImportFinalizeJob": "Import",
+  "BatchValidateOrderPlatformStatusJob": "Other",
+  "ProcessSalesOrderDetailsJob": "Processing",
+  "SalesOrderExportExcelJob": "Export",
+  "BackfillSalesOrderCogsErrorJob": "Other",
+  "DeliveryOrExportJob": "Export",
+  "DeleteOldSalesOrderSyncHistoryJob": "Sync",
+  "MergeExcelFilesJob": "Merge/Cleanup",
+  "SalesOrderPlatformCleanupTempFilesJob": "Merge/Cleanup",
+  "SalesOrderAutoApproveJob": "Approval",
+  "SalesOrderImportDetailJob": "Import",
+  "ShippingServiceSyncJob": "Sync",
+  "PushStockBatchJob": "Other",
+  "SalesOrderDraftAutoDeleteJob": "Other",
+  "SalesOrderErrorApproveJob": "Approval",
+  "ProductPlatformRetrySyncJob": "Sync",
+  "GenerateSODetailRandomJob": "Other",
+  "ProductPlatformSyncSingleJob": "Sync",
+  "SalesOrderImportJob": "Import",
+  "SalesReturnSynchronizeJob": "Sync",
+  "SalesOrderInitiateImportJob": "Import",
+  "SalesReturnWebhookJob": "Other",
+  "UpdateSoBasedStockOnSoChangeJob": "Other",
+  "MoveBufferToWaveJob": "Wave/Fulfillment",
+  "SalesOrderPlatformMergeExcelFilesJob": "Merge/Cleanup",
+  "AutobindBatchJob": "Other",
+  "SkipWaveProcessExportJob": "Export",
+  "PushStockSingleJob": "Other",
+  "GenerateExcelPartJob": "Other",
+  "SalesOrderValidateImportOtherJob": "Import",
+  "SkipProcessingIndividualMenuJob": "Processing",
+  "UpdateSOPlatformFields": "Other",
+  "SalesOrderPlatformGenerateSingleExcelFileJob": "Other",
+  "AutobindBatchCleanupJob": "Merge/Cleanup",
+  "RefreshAvailabilityStockJob": "Other",
+  "SQLImportJob": "Import",
+  "ScreeningQueryExportJob": "Export",
+  "RedisQueueHeartbeatJob": "Other",
+  "CopyCOA": "Other",
+  "ImportCoaDevJob": "Import",
+  "GenerateSOGeneralDetailJob": "Other",
+  "PayrollJob": "Other",
+  "SyncAttendanceData": "Sync",
+  "AttendanceCalculatedJob": "Other",
+  "AllSalesOrderExportExcelJob": "Export",
+  "AllSalesOrderMergeExcelFilesJob": "Merge/Cleanup",
+  "AllSalesOrderExportExcel2Job": "Export",
+  "AllSalesOrderDetailExportExcelJob": "Export",
+  "AllSalesOrderGenerateSingleExcelFileJob": "Other",
+  "PricelistExportJob": "Export",
+  "AllSalesOrderCleanupTempFilesJob": "Merge/Cleanup",
+  "PricelistTempJob": "Other"
+ },
+ "job_files": {
+  "CreditNoteDetailExportJob": "Modules/Accounting/Jobs/CreditNoteDetailExportJob.php",
+  "CashBankReconciliationExportJob": "Modules/Accounting/Jobs/CashBankReconciliationExportJob.php",
+  "CustomerInvoiceExportJob": "Modules/Accounting/Jobs/CustomerInvoiceExportJob.php",
+  "SettlementApproveOutboundJournalJob": "Modules/Accounting/Jobs/SettlementApproveOutboundJournalJob.php",
+  "CoaImportJob": "Modules/Accounting/Jobs/CoaImportJob.php",
+  "ProductBenchmarkPriceExportJob": "Modules/Accounting/Jobs/ProductBenchmarkPriceExportJob.php",
+  "ProductBenchmarkPriceBunddleJob": "Modules/Accounting/Jobs/ProductBenchmarkPriceBunddleJob.php",
+  "CustomerPaymentExportChunkJob": "Modules/Accounting/Jobs/CustomerPaymentExportChunkJob.php",
+  "SalesReturnAutoApproveJob": "Modules/Accounting/Jobs/SalesReturnAutoApproveJob.php",
+  "SalesOrderInvoicingExportExcelJob": "Modules/Accounting/Jobs/SalesOrderInvoicingExportExcelJob.php",
+  "JournalExportJob": "Modules/Accounting/Jobs/JournalExportJob.php",
+  "StockMutationSalesReturnExportJob": "Modules/Accounting/Jobs/StockMutationSalesReturnExportJob.php",
+  "SettlementApproveInvoiceJournalJob": "Modules/Accounting/Jobs/SettlementApproveInvoiceJournalJob.php",
+  "PaymentExportJob": "Modules/Accounting/Jobs/PaymentExportJob.php",
+  "SettlementGenerateInvoiceSingleJob": "Modules/Accounting/Jobs/SettlementGenerateInvoiceSingleJob.php",
+  "ImportSupplierPaymentValidateDetailJob": "Modules/Accounting/Jobs/ImportSupplierPaymentValidateDetailJob.php",
+  "SyncPlatformAccountPerPlatformJob": "Modules/Accounting/Jobs/SyncPlatformAccountPerPlatformJob.php",
+  "StockRemappingDetailExportJob": "Modules/Accounting/Jobs/StockRemappingDetailExportJob.php",
+  "CreditNoteDetailFundExportJob": "Modules/Accounting/Jobs/CreditNoteDetailFundExportJob.php",
+  "ReceiveDetailImportJob": "Modules/Accounting/Jobs/ReceiveDetailImportJob.php",
+  "GenerateProductProfitLossExportJob": "Modules/Accounting/Jobs/GenerateProductProfitLossExportJob.php",
+  "SupplierPaymentDetailExportJob": "Modules/Accounting/Jobs/SupplierPaymentDetailExportJob.php",
+  "SettlementGenerateCustomerPaymentJob": "Modules/Accounting/Jobs/SettlementGenerateCustomerPaymentJob.php",
+  "ImportSupplierPaymentValidateBankMutationJob": "Modules/Accounting/Jobs/ImportSupplierPaymentValidateBankMutationJob.php",
+  "ProductBenchmarkPriceJob": "Modules/Accounting/Jobs/ProductBenchmarkPriceJob.php",
+  "CreditNoteExportJob": "Modules/Accounting/Jobs/CreditNoteExportJob.php",
+  "InboundValueAdjustmentImportJob": "Modules/Accounting/Jobs/InboundValueAdjustmentImportJob.php",
+  "SettlementApproveCustomerPaymentJob": "Modules/Accounting/Jobs/SettlementApproveCustomerPaymentJob.php",
+  "DebitNoteExportJob": "Modules/Accounting/Jobs/DebitNoteExportJob.php",
+  "CustomerPaymentExportCombineJob": "Modules/Accounting/Jobs/CustomerPaymentExportCombineJob.php",
+  "PurchaseReturnExportJob": "Modules/Accounting/Jobs/PurchaseReturnExportJob.php",
+  "SalesReturnImportJob": "Modules/Accounting/Jobs/SalesReturnImportJob.php",
+  "StockMonitoringValueExportJob": "Modules/Accounting/Jobs/StockMonitoringValueExportJob.php",
+  "GenerateProductProfitLossDataJob": "Modules/Accounting/Jobs/GenerateProductProfitLossDataJob.php",
+  "StockRemappingExportJob": "Modules/Accounting/Jobs/StockRemappingExportJob.php",
+  "SalesOrderSettlementStatusExportChunkJob": "Modules/Accounting/Jobs/SalesOrderSettlementStatusExportChunkJob.php",
+  "OpeningStockExportJob": "Modules/Accounting/Jobs/OpeningStockExportJob.php",
+  "SettlementApproveOutboundSingleJob": "Modules/Accounting/Jobs/SettlementApproveOutboundSingleJob.php",
+  "SettlementApproveInvoiceSingleJob": "Modules/Accounting/Jobs/SettlementApproveInvoiceSingleJob.php",
+  "AccountBalanceCalculationJob": "Modules/Accounting/Jobs/AccountBalanceCalculationJob.php",
+  "AssetListExportJob": "Modules/Accounting/Jobs/AssetListExportJob.php",
+  "PaymentImportJob": "Modules/Accounting/Jobs/PaymentImportJob.php",
+  "JournalDetailExportJob": "Modules/Accounting/Jobs/JournalDetailExportJob.php",
+  "SettlementRereadExcelJob": "Modules/Accounting/Jobs/SettlementRereadExcelJob.php",
+  "SalesOrderInvoicingExportJob": "Modules/Accounting/Jobs/SalesOrderInvoicingExportJob.php",
+  "PurchaseReturnExportDetailJob": "Modules/Accounting/Jobs/PurchaseReturnExportDetailJob.php",
+  "ImportReceiveFinalValidationJob": "Modules/Accounting/Jobs/ImportReceiveFinalValidationJob.php",
+  "ImportReceiveValidateDetailJob": "Modules/Accounting/Jobs/ImportReceiveValidateDetailJob.php",
+  "SalesReturnExportDetailJob": "Modules/Accounting/Jobs/SalesReturnExportDetailJob.php",
+  "ImportSupplierPaymentValidateAdjustmentJob": "Modules/Accounting/Jobs/ImportSupplierPaymentValidateAdjustmentJob.php",
+  "PurchaseReportExportJob": "Modules/Accounting/Jobs/PurchaseReportExportJob.php",
+  "SupplierInvoiceExportJob": "Modules/Accounting/Jobs/SupplierInvoiceExportJob.php",
+  "CoaExportExcelJob": "Modules/Accounting/Jobs/CoaExportExcelJob.php",
+  "GeneralLedgerExportJob": "Modules/Accounting/Jobs/GeneralLedgerExportJob.php",
+  "JournalImportJob": "Modules/Accounting/Jobs/JournalImportJob.php",
+  "ImportReceiveValidateAdjustmentJob": "Modules/Accounting/Jobs/ImportReceiveValidateAdjustmentJob.php",
+  "PaymentDetailImportJob": "Modules/Accounting/Jobs/PaymentDetailImportJob.php",
+  "CoaExportJob": "Modules/Accounting/Jobs/CoaExportJob.php",
+  "ImportReceiveValidateBankMutationJob": "Modules/Accounting/Jobs/ImportReceiveValidateBankMutationJob.php",
+  "SettlementMappingImportJob": "Modules/Accounting/Jobs/SettlementMappingImportJob.php",
+  "CustomerInvoiceImportJob": "Modules/Accounting/Jobs/CustomerInvoiceImportJob.php",
+  "SalesReturnDetailImportJob": "Modules/Accounting/Jobs/SalesReturnDetailImportJob.php",
+  "DebitNoteDetailExportJob": "Modules/Accounting/Jobs/DebitNoteDetailExportJob.php",
+  "ReceiveValidateAdjustmentSheet": "Modules/Accounting/Import/ReceiveValidateAdjustmentSheet.php",
+  "PaymentValidateBankMutationSheet": "Modules/Accounting/Import/PaymentValidateBankMutationSheet.php",
+  "ReceiveValidateDetailSheet": "Modules/Accounting/Import/ReceiveValidateDetailSheet.php",
+  "ReceiveValidateBankMutationSheet": "Modules/Accounting/Import/ReceiveValidateBankMutationSheet.php",
+  "PaymentValidateDetailSheet": "Modules/Accounting/Import/PaymentValidateDetailSheet.php",
+  "PaymentValidateAdjustmentSheet": "Modules/Accounting/Import/PaymentValidateAdjustmentSheet.php",
+  "AdditionDetailImportJob": "Modules/SupplyChain/Jobs/AdditionDetailImportJob.php",
+  "ApproveInboundOpeningJob": "Modules/SupplyChain/Jobs/ApproveInboundOpeningJob.php",
+  "WarehouseStructureGeneratorJob": "Modules/SupplyChain/Jobs/WarehouseStructureGeneratorJob.php",
+  "PurchaseOrderExportJob": "Modules/SupplyChain/Jobs/PurchaseOrderExportJob.php",
+  "StockMutationTransferExternalExportJob": "Modules/SupplyChain/Jobs/StockMutationTransferExternalExportJob.php",
+  "StockMutationExportJob": "Modules/SupplyChain/Jobs/StockMutationExportJob.php",
+  "VariantImportJob": "Modules/SupplyChain/Jobs/VariantImportJob.php",
+  "ProductExportExcelJob": "Modules/SupplyChain/Jobs/ProductExportExcelJob.php",
+  "UpdateWarehouseParentByTypeJob": "Modules/SupplyChain/Jobs/UpdateWarehouseParentByTypeJob.php",
+  "InventoryDetailExportJob": "Modules/SupplyChain/Jobs/InventoryDetailExportJob.php",
+  "TransferExternalTransactionalJob": "Modules/SupplyChain/Jobs/TransferExternalTransactionalJob.php",
+  "WorkOrderGenerateSingleExcelFileJob": "Modules/SupplyChain/Jobs/WorkOrderGenerateSingleExcelFileJob.php",
+  "StockMutationTransferInboundDetailExportJob": "Modules/SupplyChain/Jobs/StockMutationTransferInboundDetailExportJob.php",
+  "WorkOrderCleanupTempFilesJob": "Modules/SupplyChain/Jobs/WorkOrderCleanupTempFilesJob.php",
+  "ProductEndingStockJob": "Modules/SupplyChain/Jobs/ProductEndingStockJob.php",
+  "UpdateProductImport": "Modules/SupplyChain/Jobs/UpdateProductImport.php",
+  "ProductMutationHistory": "Modules/SupplyChain/Jobs/ProductMutationHistory.php",
+  "StockOpnameDetailImportJob": "Modules/SupplyChain/Jobs/StockOpnameDetailImportJob.php",
+  "GenerateWarehouseChunkJob": "Modules/SupplyChain/Jobs/GenerateWarehouseChunkJob.php",
+  "ProductBundleImportJob": "Modules/SupplyChain/Jobs/ProductBundleImportJob.php",
+  "StoreEndingStockJob": "Modules/SupplyChain/Jobs/StoreEndingStockJob.php",
+  "StockMonitoringGenerateSingleExcelFileJob": "Modules/SupplyChain/Jobs/StockMonitoringGenerateSingleExcelFileJob.php",
+  "WorkOrderImportJob": "Modules/SupplyChain/Jobs/WorkOrderImportJob.php",
+  "CalculateEndingBalance": "Modules/SupplyChain/Jobs/CalculateEndingBalance.php",
+  "MutationSummaryPerWhExportJob": "Modules/SupplyChain/Jobs/MutationSummaryPerWhExportJob.php",
+  "FailedShipApprovalJob": "Modules/SupplyChain/Jobs/FailedShipApprovalJob.php",
+  "PurchaseRequisitionImportJob": "Modules/SupplyChain/Jobs/PurchaseRequisitionImportJob.php",
+  "AdditionDetailImportColliJob": "Modules/SupplyChain/Jobs/AdditionDetailImportColliJob.php",
+  "StockMonitoringExportJob": "Modules/SupplyChain/Jobs/StockMonitoringExportJob.php",
+  "PurchaseOrderWithoutPrImportJob": "Modules/SupplyChain/Jobs/PurchaseOrderWithoutPrImportJob.php",
+  "ProductTransactionHistoryExportJob": "Modules/SupplyChain/Jobs/ProductTransactionHistoryExportJob.php",
+  "StockMutationOutboundExportWithoutDetailJob": "Modules/SupplyChain/Jobs/StockMutationOutboundExportWithoutDetailJob.php",
+  "StockMutationOutboundExportDetailJob": "Modules/SupplyChain/Jobs/StockMutationOutboundExportDetailJob.php",
+  "ProductBulkUpdateVatImportJob": "Modules/SupplyChain/Jobs/ProductBulkUpdateVatImportJob.php",
+  "TransferWaveToPickingListJob": "Modules/SupplyChain/Jobs/TransferWaveToPickingListJob.php",
+  "WarehouseGeneratorJob": "Modules/SupplyChain/Jobs/WarehouseGeneratorJob.php",
+  "SendProductWebhookJob": "Modules/SupplyChain/Jobs/SendProductWebhookJob.php",
+  "UpdateProductAccountingJob": "Modules/SupplyChain/Jobs/UpdateProductAccountingJob.php",
+  "RealStockLocationExportJob": "Modules/SupplyChain/Jobs/RealStockLocationExportJob.php",
+  "BillofMaterialDetailImportJob": "Modules/SupplyChain/Jobs/BillofMaterialDetailImportJob.php",
+  "ProductCleanupTempFilesJob": "Modules/SupplyChain/Jobs/ProductCleanupTempFilesJob.php",
+  "InventoryDetailTempJob": "Modules/SupplyChain/Jobs/InventoryDetailTempJob.php",
+  "CalculateGlobalAtsJob": "Modules/SupplyChain/Jobs/CalculateGlobalAtsJob.php",
+  "ProductImportJob": "Modules/SupplyChain/Jobs/ProductImportJob.php",
+  "StoreSOBasedStockJob": "Modules/SupplyChain/Jobs/StoreSOBasedStockJob.php",
+  "StockMonitoringMergeExcelFilesJob": "Modules/SupplyChain/Jobs/StockMonitoringMergeExcelFilesJob.php",
+  "OrderProcessingTraceExportJob": "Modules/SupplyChain/Jobs/OrderProcessingTraceExportJob.php",
+  "WarehouseTreeImportJob": "Modules/SupplyChain/Jobs/WarehouseTreeImportJob.php",
+  "StockMutationDeductionExportJob": "Modules/SupplyChain/Jobs/StockMutationDeductionExportJob.php",
+  "StoreWhDetailJob": "Modules/SupplyChain/Jobs/StoreWhDetailJob.php",
+  "ManualPickingListDetailImportJob": "Modules/SupplyChain/Jobs/ManualPickingListDetailImportJob.php",
+  "StockMonitoringCleanupTempFilesJob": "Modules/SupplyChain/Jobs/StockMonitoringCleanupTempFilesJob.php",
+  "StockMutationOutboundExportJob": "Modules/SupplyChain/Jobs/StockMutationOutboundExportJob.php",
+  "BillOfMaterialImportJob": "Modules/SupplyChain/Jobs/BillOfMaterialImportJob.php",
+  "PickingListExportDetailJob": "Modules/SupplyChain/Jobs/PickingListExportDetailJob.php",
+  "TransferExternalProcessApproveJob": "Modules/SupplyChain/Jobs/TransferExternalProcessApproveJob.php",
+  "StockMutationStockOpnameExportJob": "Modules/SupplyChain/Jobs/StockMutationStockOpnameExportJob.php",
+  "GenerateAisleJob": "Modules/SupplyChain/Jobs/GenerateAisleJob.php",
+  "DeliveryOrderDetailExportJob": "Modules/SupplyChain/Jobs/DeliveryOrderDetailExportJob.php",
+  "TransferInternalDetailImportJob": "Modules/SupplyChain/Jobs/TransferInternalDetailImportJob.php",
+  "WarehouseGeneratorV2Job": "Modules/SupplyChain/Jobs/WarehouseGeneratorV2Job.php",
+  "RealStockSkuExportJob2": "Modules/SupplyChain/Jobs/RealStockSkuExportJob2.php",
+  "WarehouseGeneratorChecking": "Modules/SupplyChain/Jobs/WarehouseGeneratorChecking.php",
+  "StockMutationInboundExportJob": "Modules/SupplyChain/Jobs/StockMutationInboundExportJob.php",
+  "InboundDetailImportJob": "Modules/SupplyChain/Jobs/InboundDetailImportJob.php",
+  "VariantExportExcelJob": "Modules/SupplyChain/Jobs/VariantExportExcelJob.php",
+  "TransferExternalHiddenInTransitJob": "Modules/SupplyChain/Jobs/TransferExternalHiddenInTransitJob.php",
+  "StockImportJob": "Modules/SupplyChain/Jobs/StockImportJob.php",
+  "StockMutationTransferInternalExportJob": "Modules/SupplyChain/Jobs/StockMutationTransferInternalExportJob.php",
+  "PriceListCategoryImportJob": "Modules/SupplyChain/Jobs/PriceListCategoryImportJob.php",
+  "PurchaseOrderWithPrImportJob": "Modules/SupplyChain/Jobs/PurchaseOrderWithPrImportJob.php",
+  "MutationSummaryPerWhTempJob": "Modules/SupplyChain/Jobs/MutationSummaryPerWhTempJob.php",
+  "TransferApproveToWaveJob": "Modules/SupplyChain/Jobs/TransferApproveToWaveJob.php",
+  "CalculateEndingBalancePerWarehouse": "Modules/SupplyChain/Jobs/CalculateEndingBalancePerWarehouse.php",
+  "CalculateEndingBalancePerBuilding": "Modules/SupplyChain/Jobs/CalculateEndingBalancePerBuilding.php",
+  "PurchaseRequisitionExportJob": "Modules/SupplyChain/Jobs/PurchaseRequisitionExportJob.php",
+  "TransferExternalApproveMutationJob": "Modules/SupplyChain/Jobs/TransferExternalApproveMutationJob.php",
+  "StockMutationDetailExportJob": "Modules/SupplyChain/Jobs/StockMutationDetailExportJob.php",
+  "WorkOrderApprovalJob": "Modules/SupplyChain/Jobs/WorkOrderApprovalJob.php",
+  "TransactionHistoryExportCombineJob": "Modules/SupplyChain/Jobs/TransactionHistoryExportCombineJob.php",
+  "UpdateProductVariantImportJob": "Modules/SupplyChain/Jobs/UpdateProductVariantImportJob.php",
+  "ProductCoaGroupProductAccountingJob": "Modules/SupplyChain/Jobs/ProductCoaGroupProductAccountingJob.php",
+  "ProductMergeExcelFilesJob": "Modules/SupplyChain/Jobs/ProductMergeExcelFilesJob.php",
+  "InstantProcessingSalesOrderJob": "Modules/SupplyChain/Jobs/InstantProcessingSalesOrderJob.php",
+  "WorkOrderMergeExcelFilesJob": "Modules/SupplyChain/Jobs/WorkOrderMergeExcelFilesJob.php",
+  "StockMutationAdditionExportJob": "Modules/SupplyChain/Jobs/StockMutationAdditionExportJob.php",
+  "ApproveInboundJob": "Modules/SupplyChain/Jobs/ApproveInboundJob.php",
+  "StockMonitoringExportExcelJob": "Modules/SupplyChain/Jobs/StockMonitoringExportExcelJob.php",
+  "ProductImportTemJob": "Modules/SupplyChain/Jobs/ProductImportTemJob.php",
+  "StockMutationTransferInboundExportJob": "Modules/SupplyChain/Jobs/StockMutationTransferInboundExportJob.php",
+  "InsertProductRandomImportJob": "Modules/SupplyChain/Jobs/InsertProductRandomImportJob.php",
+  "MasterBillOfMaterialExportJob": "Modules/SupplyChain/Jobs/MasterBillOfMaterialExportJob.php",
+  "ProcessWorkOrderDetailsJob": "Modules/SupplyChain/Jobs/ProcessWorkOrderDetailsJob.php",
+  "GenerateItemStockChunkJob": "Modules/SupplyChain/Jobs/GenerateItemStockChunkJob.php",
+  "WorkOrderExportExcelJob": "Modules/SupplyChain/Jobs/WorkOrderExportExcelJob.php",
+  "FailedShipExportExcelJob": "Modules/SupplyChain/Jobs/FailedShipExportExcelJob.php",
+  "RealStockSkuExportJob": "Modules/SupplyChain/Jobs/RealStockSkuExportJob.php",
+  "GenerateWarehouseCleanUpJob": "Modules/SupplyChain/Jobs/GenerateWarehouseCleanUpJob.php",
+  "DeductionDetailImportJob": "Modules/SupplyChain/Jobs/DeductionDetailImportJob.php",
+  "PurchaseOrderDetailExportJob": "Modules/SupplyChain/Jobs/PurchaseOrderDetailExportJob.php",
+  "InsertProductAlternativeUnitImportJob": "Modules/SupplyChain/Jobs/InsertProductAlternativeUnitImportJob.php",
+  "InboundDetailImportColliJob": "Modules/SupplyChain/Jobs/InboundDetailImportColliJob.php",
+  "StockAfterApproveHandlerJob": "Modules/SupplyChain/Jobs/StockAfterApproveHandlerJob.php",
+  "StoreSOBasedStockPerWarehouseJob": "Modules/SupplyChain/Jobs/StoreSOBasedStockPerWarehouseJob.php",
+  "WarehouseCreateVirtualJob": "Modules/SupplyChain/Jobs/WarehouseCreateVirtualJob.php",
+  "RealStockSoBasedStockJob": "Modules/SupplyChain/Jobs/RealStockSoBasedStockJob.php",
+  "UploadKbCorpusChunkJob": "Modules/AI/app/Jobs/UploadKbCorpusChunkJob.php",
+  "WarmKbCorpusChunkIndexJob": "Modules/AI/app/Jobs/WarmKbCorpusChunkIndexJob.php",
+  "DispatchKbCorpusIndexJob": "Modules/AI/app/Jobs/DispatchKbCorpusIndexJob.php",
+  "GeneratePicklistByWaveJob": "Modules/OmniChannel/Jobs/GeneratePicklistByWaveJob.php",
+  "SalesOrderGeneralExportAllJob": "Modules/OmniChannel/Jobs/SalesOrderGeneralExportAllJob.php",
+  "BulkBindingLogExportJob": "Modules/OmniChannel/Jobs/BulkBindingLogExportJob.php",
+  "SkipProcessingApproveDOChunkJob": "Modules/OmniChannel/Jobs/SkipProcessingApproveDOChunkJob.php",
+  "SkipProcessingExportExcelJob": "Modules/OmniChannel/Jobs/SkipProcessingExportExcelJob.php",
+  "ShippingServiceDetailExportJob": "Modules/OmniChannel/Jobs/ShippingServiceDetailExportJob.php",
+  "SalesOrderValidateImportDetailJob": "Modules/OmniChannel/Jobs/SalesOrderValidateImportDetailJob.php",
+  "GetCancellationReasonJob": "Modules/OmniChannel/Jobs/GetCancellationReasonJob.php",
+  "RecheckOrderFlagsJob": "Modules/OmniChannel/Jobs/RecheckOrderFlagsJob.php",
+  "MoveSOToWaveMixJob": "Modules/OmniChannel/Jobs/MoveSOToWaveMixJob.php",
+  "DeleteOldSalesOrderSyncLogsJob": "Modules/OmniChannel/Jobs/DeleteOldSalesOrderSyncLogsJob.php",
+  "SalesOrderImportCleanupJob": "Modules/OmniChannel/Jobs/SalesOrderImportCleanupJob.php",
+  "CheckStatusSOApprovedJob": "Modules/OmniChannel/Jobs/CheckStatusSOApprovedJob.php",
+  "SalesBookingStatusNotificationJob": "Modules/OmniChannel/Jobs/SalesBookingStatusNotificationJob.php",
+  "ProductPlatformSyncStoreJob": "Modules/OmniChannel/Jobs/ProductPlatformSyncStoreJob.php",
+  "SalesOrderSyncSingleJob": "Modules/OmniChannel/Jobs/SalesOrderSyncSingleJob.php",
+  "SalesOrderExportJob": "Modules/OmniChannel/Jobs/SalesOrderExportJob.php",
+  "UnassignWaveExportExcelJob": "Modules/OmniChannel/Jobs/UnassignWaveExportExcelJob.php",
+  "UnassignWaveLogExportJob": "Modules/OmniChannel/Jobs/UnassignWaveLogExportJob.php",
+  "ProductPlatformExportJob": "Modules/OmniChannel/Jobs/ProductPlatformExportJob.php",
+  "SyncStockPlatformJob": "Modules/OmniChannel/Jobs/SyncStockPlatformJob.php",
+  "AutobindSingleJob": "Modules/OmniChannel/Jobs/AutobindSingleJob.php",
+  "SalesOrderSynchronizeUpdateCleanupJob": "Modules/OmniChannel/Jobs/SalesOrderSynchronizeUpdateCleanupJob.php",
+  "SkipProcessingJob": "Modules/OmniChannel/Jobs/SkipProcessingJob.php",
+  "SalesOrderGeneralExportJob": "Modules/OmniChannel/Jobs/SalesOrderGeneralExportJob.php",
+  "WarehouseSyncJob": "Modules/OmniChannel/Jobs/WarehouseSyncJob.php",
+  "SalesOrderGeneralExportExcelJob": "Modules/OmniChannel/Jobs/SalesOrderGeneralExportExcelJob.php",
+  "BrandJob": "Modules/OmniChannel/Jobs/BrandJob.php",
+  "ProcessSalesOrdersWithoutDetailsJob": "Modules/OmniChannel/Jobs/ProcessSalesOrdersWithoutDetailsJob.php",
+  "GeneratePicklistByWaveAndSOJob": "Modules/OmniChannel/Jobs/GeneratePicklistByWaveAndSOJob.php",
+  "SalesOrderImportFinalizeJob": "Modules/OmniChannel/Jobs/SalesOrderImportFinalizeJob.php",
+  "BatchValidateOrderPlatformStatusJob": "Modules/OmniChannel/Jobs/BatchValidateOrderPlatformStatusJob.php",
+  "ProcessSalesOrderDetailsJob": "Modules/OmniChannel/Jobs/ProcessSalesOrderDetailsJob.php",
+  "SalesOrderExportExcelJob": "Modules/OmniChannel/Jobs/SalesOrderExportExcelJob.php",
+  "BackfillSalesOrderCogsErrorJob": "Modules/OmniChannel/Jobs/BackfillSalesOrderCogsErrorJob.php",
+  "DeliveryOrExportJob": "Modules/OmniChannel/Jobs/DeliveryOrExportJob.php",
+  "DeleteOldSalesOrderSyncHistoryJob": "Modules/OmniChannel/Jobs/DeleteOldSalesOrderSyncHistoryJob.php",
+  "MergeExcelFilesJob": "Modules/OmniChannel/Jobs/MergeExcelFilesJob.php",
+  "SalesOrderPlatformCleanupTempFilesJob": "Modules/OmniChannel/Jobs/SalesOrderPlatformCleanupTempFilesJob.php",
+  "SalesOrderAutoApproveJob": "Modules/OmniChannel/Jobs/SalesOrderAutoApproveJob.php",
+  "SalesOrderImportDetailJob": "Modules/OmniChannel/Jobs/SalesOrderImportDetailJob.php",
+  "ShippingServiceSyncJob": "Modules/OmniChannel/Jobs/ShippingServiceSyncJob.php",
+  "PushStockBatchJob": "Modules/OmniChannel/Jobs/PushStockBatchJob.php",
+  "SalesOrderDraftAutoDeleteJob": "Modules/OmniChannel/Jobs/SalesOrderDraftAutoDeleteJob.php",
+  "SalesOrderErrorApproveJob": "Modules/OmniChannel/Jobs/SalesOrderErrorApproveJob.php",
+  "ProductPlatformRetrySyncJob": "Modules/OmniChannel/Jobs/ProductPlatformRetrySyncJob.php",
+  "GenerateSODetailRandomJob": "Modules/OmniChannel/Jobs/GenerateSODetailRandomJob.php",
+  "ProductPlatformSyncSingleJob": "Modules/OmniChannel/Jobs/ProductPlatformSyncSingleJob.php",
+  "SalesOrderImportJob": "Modules/OmniChannel/Jobs/SalesOrderImportJob.php",
+  "SalesReturnSynchronizeJob": "Modules/OmniChannel/Jobs/SalesReturnSynchronizeJob.php",
+  "SalesOrderInitiateImportJob": "Modules/OmniChannel/Jobs/SalesOrderInitiateImportJob.php",
+  "SalesReturnWebhookJob": "Modules/OmniChannel/Jobs/SalesReturnWebhookJob.php",
+  "UpdateSoBasedStockOnSoChangeJob": "Modules/OmniChannel/Jobs/UpdateSoBasedStockOnSoChangeJob.php",
+  "MoveBufferToWaveJob": "Modules/OmniChannel/Jobs/MoveBufferToWaveJob.php",
+  "SalesOrderPlatformMergeExcelFilesJob": "Modules/OmniChannel/Jobs/SalesOrderPlatformMergeExcelFilesJob.php",
+  "AutobindBatchJob": "Modules/OmniChannel/Jobs/AutobindBatchJob.php",
+  "SkipWaveProcessExportJob": "Modules/OmniChannel/Jobs/SkipWaveProcessExportJob.php",
+  "PushStockSingleJob": "Modules/OmniChannel/Jobs/PushStockSingleJob.php",
+  "GenerateExcelPartJob": "Modules/OmniChannel/Jobs/GenerateExcelPartJob.php",
+  "SalesOrderValidateImportOtherJob": "Modules/OmniChannel/Jobs/SalesOrderValidateImportOtherJob.php",
+  "SkipProcessingIndividualMenuJob": "Modules/OmniChannel/Jobs/SkipProcessingIndividualMenuJob.php",
+  "UpdateSOPlatformFields": "Modules/OmniChannel/Jobs/UpdateSOPlatformFields.php",
+  "SalesOrderPlatformGenerateSingleExcelFileJob": "Modules/OmniChannel/Jobs/SalesOrderPlatformGenerateSingleExcelFileJob.php",
+  "AutobindBatchCleanupJob": "Modules/OmniChannel/Jobs/AutobindBatchCleanupJob.php",
+  "RefreshAvailabilityStockJob": "Modules/OmniChannel/Jobs/RefreshAvailabilityStockJob.php",
+  "SQLImportJob": "Modules/Gate/Jobs/SQLImportJob.php",
+  "ScreeningQueryExportJob": "Modules/Gate/Jobs/ScreeningQueryExportJob.php",
+  "RedisQueueHeartbeatJob": "Modules/Gate/Jobs/RedisQueueHeartbeatJob.php",
+  "CopyCOA": "Modules/GeneralSetting/Jobs/CopyCOA.php",
+  "ImportCoaDevJob": "Modules/GeneralSetting/Jobs/ImportCoaDevJob.php",
+  "GenerateSOGeneralDetailJob": "Modules/GeneralSetting/Jobs/GenerateSOGeneralDetailJob.php",
+  "PayrollJob": "Modules/HumanResources/Jobs/PayrollJob.php",
+  "SyncAttendanceData": "Modules/HumanResources/Jobs/SyncAttendanceData.php",
+  "AttendanceCalculatedJob": "Modules/HumanResources/Jobs/AttendanceCalculatedJob.php",
+  "AllSalesOrderExportExcelJob": "Modules/BusinessDevelopment/Jobs/AllSalesOrderExportExcelJob.php",
+  "AllSalesOrderMergeExcelFilesJob": "Modules/BusinessDevelopment/Jobs/AllSalesOrderMergeExcelFilesJob.php",
+  "AllSalesOrderExportExcel2Job": "Modules/BusinessDevelopment/Jobs/AllSalesOrderExportExcel2Job.php",
+  "AllSalesOrderDetailExportExcelJob": "Modules/BusinessDevelopment/Jobs/AllSalesOrderDetailExportExcelJob.php",
+  "AllSalesOrderGenerateSingleExcelFileJob": "Modules/BusinessDevelopment/Jobs/AllSalesOrderGenerateSingleExcelFileJob.php",
+  "PricelistExportJob": "Modules/BusinessDevelopment/Jobs/PricelistExportJob.php",
+  "AllSalesOrderCleanupTempFilesJob": "Modules/BusinessDevelopment/Jobs/AllSalesOrderCleanupTempFilesJob.php",
+  "PricelistTempJob": "Modules/BusinessDevelopment/Jobs/PricelistTempJob.php"
+ }
+}</script>
+<script>
+(function(){
+  var DATA = JSON.parse(document.getElementById('data').textContent);
+  var graph = DATA.graph, jtypes = DATA.job_types;
+
+  // menus already documented (with reference artifacts)
+  var DOCUMENTED = {
+    "SupplyChain::SkipWaveProcessController":{
+      label:"Skip Wave Process",
+      links:[
+        {t:"① Flow end-to-end job Skip Wave Process", u:"https://claude.ai/artifact/M58zF2JXjuVMgHxP8sTSe4"},
+        {t:"② Turunan job setelah proses selesai", u:"https://claude.ai/artifact/EQRpX3Pwvj2BRSF9wPzpk6"}
+      ]
+    },
+    "Accounting::SettlementUploadController":{
+      label:"Settlement Upload",
+      links:[
+        {t:"Alur job end-to-end Settlement Upload (7 tahap + observer)", u:"https://claude.ai/artifact/X8Lz3madDjKjuQdv7taUzh"}
+      ]
+    },
+    "OmniChannel::SalesOrderController":{
+      label:"Sales Order",
+      links:[
+        {t:"Alur job Sales Order (approve→wave + katalog alur + queue)", u:"https://claude.ai/artifact/1EU2utNEMhgBkj7mvU2CfC"}
+      ]
+    }
+  };
+
+  var TYPE_VARS = {
+    "Export":"export","Import":"import","Sync":"sync","Wave/Fulfillment":"wave",
+    "Approval":"approval","Settlement":"settlement","Processing":"processing",
+    "Merge/Cleanup":"merge","File":"file","Notification":"notif","Other":"other"
+  };
+  function badge(type){
+    var v=TYPE_VARS[type]||"other";
+    return '<span class="badge" style="color:var(--t-'+v+');background:var(--t-'+v+'-bg)">'+type+'</span>';
+  }
+
+  // ---- stats
+  var totalJobs=DATA.total_jobs, menuCount=0, moduleCount=0, doneCount=0;
+  Object.keys(DATA.modules).forEach(function(m){moduleCount++;menuCount+=DATA.modules[m].length;});
+  Object.keys(DOCUMENTED).forEach(function(){doneCount++;});
+  var stats=[[totalJobs,"Job class"],[menuCount,"Menu / proses"],[moduleCount,"Modul"],[doneCount,"Terdokumentasi"]];
+  document.getElementById('stats').innerHTML=stats.map(function(s){
+    return '<div class="stat"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>';}).join('');
+
+  // ---- type filter chips
+  var allTypes={};
+  Object.values(DATA.modules).forEach(function(list){list.forEach(function(mc){
+    mc.entry_jobs.forEach(function(j){allTypes[j.type]=(allTypes[j.type]||0)+1;});});});
+  var activeType=null, query="";
+  var chipsEl=document.getElementById('typeChips');
+  var chipHtml='<span class="chip" data-type="__all" aria-pressed="true">Semua tipe</span>';
+  Object.keys(allTypes).sort(function(a,b){return allTypes[b]-allTypes[a];}).forEach(function(t){
+    chipHtml+='<span class="chip" data-type="'+t+'" aria-pressed="false">'+t+' <span style="opacity:.6">'+allTypes[t]+'</span></span>';
+  });
+  chipsEl.innerHTML=chipHtml;
+  chipsEl.addEventListener('click',function(e){
+    var c=e.target.closest('.chip'); if(!c)return;
+    activeType = c.dataset.type==="__all"?null:c.dataset.type;
+    Array.prototype.forEach.call(chipsEl.children,function(ch){
+      ch.setAttribute('aria-pressed', ch.dataset.type===c.dataset.type ? "true":"false");});
+    render();
+  });
+
+  // ---- recursive chain tree
+  function chainTree(name, seen){
+    seen=seen||{};
+    var kids=(graph[name]||[]);
+    if(!kids.length) return '';
+    var html='<div class="tchildren">';
+    kids.forEach(function(k){
+      if(k.indexOf("Bus::")===0){
+        html+='<div class="tnode"><div class="tline"><span class="tconn">└─</span><span class="bus">'+k+' → batch/chain</span></div></div>';
+        return;
+      }
+      if(seen[k]){
+        html+='<div class="tnode"><div class="tline"><span class="tconn">└─</span><span class="tname">'+k+'</span> <span class="chain-n">↺ sudah muncul</span></div></div>';
+        return;
+      }
+      var seen2=Object.assign({},seen); seen2[k]=1;
+      html+='<div class="tnode"><div class="tline"><span class="tconn">└─</span>'
+          + badge(jtypes[k]||"Other")+' <span class="tname">'+k+'</span></div>'
+          + chainTree(k,seen2)+'</div>';
+    });
+    html+='</div>';
+    return html;
+  }
+
+  function jobMatches(j){
+    if(activeType && j.type!==activeType) return false;
+    if(query){
+      var hay=(j.name+' '+j.type).toLowerCase();
+      return hay.indexOf(query)>-1;
+    }
+    return true;
+  }
+
+  function render(){
+    var host=document.getElementById('modules');
+    host.innerHTML='';
+    var anyShown=false;
+
+    Object.keys(DATA.modules).sort().forEach(function(mod){
+      var cards=DATA.modules[mod].map(function(mc){
+        // filter by menu name OR any job
+        var jobs=mc.entry_jobs.filter(jobMatches);
+        var menuHit = query ? (mc.menu.toLowerCase().indexOf(query)>-1) : false;
+        if(menuHit && !activeType) jobs=mc.entry_jobs; // show all jobs when menu name matches
+        if(!jobs.length) return null;
+        return {mc:mc,jobs:jobs};
+      }).filter(Boolean);
+
+      if(!cards.length) return;
+      anyShown=true;
+
+      var sec=document.createElement('section');
+      sec.className='module';
+      var totalJ=cards.reduce(function(a,c){return a+c.jobs.length;},0);
+      sec.innerHTML='<div class="module-h"><h2>'+mod+'</h2>'
+        +'<span class="count">'+cards.length+' menu · '+totalJ+' entry job</span>'
+        +'<span class="caret">▾</span></div><div class="grid"></div>';
+      var grid=sec.querySelector('.grid');
+
+      cards.forEach(function(c){
+        var mc=c.mc;
+        var key=mod+"::"+mc.menu;
+        var doc=DOCUMENTED[key];
+        var card=document.createElement('div');
+        card.className='card'+(doc?' done':'');
+        var pretty=doc?doc.label:mc.menu.replace(/Controller$/,'').replace(/([a-z])([A-Z])/g,'$1 $2');
+        var h='<div class="card-h"><div><div class="name">'+pretty+'</div>'
+            +'<div class="menuname">'+mc.menu+'</div></div>'
+            +'<span class="status-pill '+(doc?'done':'todo')+'">'+(doc?'✓ done':'belum')+'</span></div>';
+        h+='<div class="jobs-list">';
+        c.jobs.forEach(function(j){
+          var hasChain=(graph[j.name]||[]).length>0;
+          h+='<div class="job'+(hasChain?'':' leaf')+'">'
+            +'<div class="job-row'+(hasChain?'':' noexpand')+'">'
+            + (hasChain?'<span class="exp-caret">▸</span>':'<span class="exp-caret" style="opacity:.25">·</span>')
+            + badge(j.type)
+            + '<span class="jname">'+j.name+'</span>'
+            + (j.chain>0?'<span class="chain-n">⛓ '+j.chain+'</span>':'')
+            + '</div>';
+          if(hasChain){
+            h+='<div class="tree"><div class="leaf-note">memicu:</div>'+chainTree(j.name,{})+'</div>';
+          }
+          h+='</div>';
+        });
+        h+='</div>';
+        if(doc){
+          h+='<div class="refs">';
+          doc.links.forEach(function(l){
+            h+='<a class="ref-link" href="'+l.u+'" target="_blank" rel="noopener">🔗 '+l.t+'</a>';
+          });
+          h+='</div>';
+        }
+        card.innerHTML=h;
+        grid.appendChild(card);
+      });
+
+      host.appendChild(sec);
+    });
+
+    document.getElementById('empty').hidden = anyShown;
+  }
+
+  // events
+  document.getElementById('q').addEventListener('input',function(e){
+    query=e.target.value.trim().toLowerCase(); render();
+  });
+  document.getElementById('modules').addEventListener('click',function(e){
+    var jr=e.target.closest('.job-row');
+    if(jr && !jr.classList.contains('noexpand')){ jr.parentElement.classList.toggle('open'); return; }
+    var mh=e.target.closest('.module-h');
+    if(mh){ mh.parentElement.classList.toggle('collapsed'); }
+  });
+
+  // theme toggle (per-viewer convenience)
+  var root=document.documentElement;
+  try{ var t=localStorage.getItem('hz-theme'); if(t) root.setAttribute('data-theme',t); }catch(e){}
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var next = cur==='dark'?'light':(cur==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('hz-theme',next);}catch(e){}
+  });
+
+  document.getElementById('genline').textContent='Total '+totalJobs+' job class terdeteksi di '+moduleCount+' modul · '+menuCount+' menu men-dispatch job.';
+  render();
+})();
+</script>
