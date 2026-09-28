@@ -105,6 +105,13 @@ Origin Card: [ETM-15893](https://erpintegration.atlassian.net/browse/ETM-15893)
 | `TC-SOP-ORDLSC-11` | Penanganan Selisih Pembayaran (Under/Overpayment) dengan Penyesuaian Adjustment dan Debit/Credit Note pada Card AR | [`TC-SOP-ORDLSC-11.md`](./TC-SOP-ORDLSC-11.md) | FAILED 🔴 |
 | `TC-SOP-ORDLSC-12` | Breakdown Rincian Nilai Sales Invoice (Line Items + Other Cost - Other Discount = Total Invoice) | [`TC-SOP-ORDLSC-12.md`](./TC-SOP-ORDLSC-12.md) | FAILED 🔴 |
 
+### ETM-16030 — [Sales Platform] - Order Lifecycle slideover xl, data real, timeline link
 
+Origin Card: [ETM-16030](https://erpintegration.atlassian.net/browse/ETM-16030)
 
-
+| TC Code | Judul Test Case | File | Status |
+|---|---|---|---|
+| `TC-SOP-16030-01` | T01: Verifikasi Order Lifecycle Slideover XL pada Order Normal Fulfilled & Invoiced (Delivered) | [`TC-SOP-16030-01.md`](./TC-SOP-16030-01.md) | DRAFT ⚪ |
+| `TC-SOP-16030-02` | T02: Verifikasi Order Lifecycle Slideover XL pada Order dengan Failed Ship | [`TC-SOP-16030-02.md`](./TC-SOP-16030-02.md) | DRAFT ⚪ |
+| `TC-SOP-16030-03` | T03: Verifikasi Order Lifecycle Slideover XL pada Order dengan Sales Return | [`TC-SOP-16030-03.md`](./TC-SOP-16030-03.md) | DRAFT ⚪ |
+| `TC-SOP-16030-04` | T04: Verifikasi Order Lifecycle Slideover XL pada Order Status Awal (Draft / Open) | [`TC-SOP-16030-04.md`](./TC-SOP-16030-04.md) | DRAFT ⚪ |
