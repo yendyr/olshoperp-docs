@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.2
-last_updated: 2026-09-08
+version: 1.3
+last_updated: 2026-09-28
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.2
+source_version: 1.4
 owner: QA - Yemima
 status: review
 ---
@@ -77,7 +77,7 @@ Pastikan ini sudah siap:
 - Shipping service sudah ter-bind jika dibutuhkan.
 - Store punya **gudang proses**.
 - Stok di gudang proses cukup untuk qty order **pada tanggal processing** yang kamu set.
-- **Processing Order Date** sudah sesuai hari proses (default = hari ini jam 23:59:59). Untuk order lama yang stoknya baru ready belakangan, ubah tanggal ke hari stok ready.
+- **Processing Date** sudah sesuai hari proses. Kalau dikosongkan, sistem memakai **waktu sekarang** (tanggal + jam saat Send). Untuk order lama yang stoknya baru ready belakangan, ubah tanggal ke hari stok ready.
 - Cek stok & icon **Unavailable Stock** memakai tanggal yang sama — bukan otomatis “hari ini” jika tanggal processing sudah diisi.
 - Untuk order **General**: setting proses ke wave masih aktif (kalau dimatikan, order General tidak muncul di sini).
 
@@ -107,7 +107,7 @@ Ada jalur shortcut **Skip Wave Process** yang bisa memproses banyak order sekali
 
 ## 5. Yang Perlu Diperhatikan
 
-- Set **Processing Order Date** dulu sebelum Send — tanggal ini dipakai semua order yang kamu kirim (single/bulk) **dan** untuk cek stok Error Flag / Refresh, bukan tanggal masing-masing order.
+- Set **Processing Date** dulu sebelum Send — tanggal ini dipakai semua order yang kamu kirim (single/bulk) **dan** untuk cek stok Error Flag / Refresh, bukan tanggal masing-masing order. Field kosong = waktu sekarang.
 - Hover Error Flag **Unavailable Stock**: pesan FIFO memakai tanggal processing. **Last Checked** seharusnya menampilkan tanggal evaluasi itu (atau waktu sekarang jika tanggal processing kosong).
 - Tanggal yang sama dipakai di **Skip Wave Process** (satu company). Perubahan di salah satu menu ikut ke menu lain.
 - Tidak bisa menyimpan tanggal di periode akuntansi yang sudah ditutup — pilih tanggal di periode terbuka.
@@ -125,7 +125,7 @@ Ada jalur shortcut **Skip Wave Process** yang bisa memproses banyak order sekali
 ## 6. Langkah-Langkah (Step by Step)
 
 1. Buka **Omni → Unassign Wave**.
-2. Cek / set **Processing Order Date** (kiri tombol Refresh Availability Stock).
+2. Cek / set **Processing Date** (kiri tombol Refresh Availability Stock).
 3. Cek list order. Pakai pencarian / advanced filter bila perlu.
 4. (Opsional) Aktifkan pill **Failed Process** untuk fokus ke order bermasalah.
 5. Hover kolom **Error Flag** — perbaiki data sesuai jenis tanda.

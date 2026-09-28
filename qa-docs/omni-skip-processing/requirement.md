@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-skip-processing
 menu_name: "Skip Processing"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.2
+last_updated: 2026-09-28
 owner: QA - Yemima
-status: draft
-aliases: [skip processing, bulk skip processing, skip picking packing, skip processing log]
+status: review
+aliases: [skip processing, bulk skip processing, skip picking packing, skip processing log, processing date]
 ---
 
 # Skip Processing — Requirement Documentation
@@ -17,12 +17,15 @@ aliases: [skip processing, bulk skip processing, skip picking packing, skip proc
 **UI route:** `/omni/skip-processing`  
 **SoT:** `omni-skip-processing-sot.md` v1.0 (19 Jul 2026)
 
+Related: [Unassign Wave](../omni-unassign-wave/requirement.md) · [Skip Wave Process](../omni-skip-wave-process/requirement.md) · [Horizon Jobs — Skip Wave pipeline](../horizon-jobs/pipelines/skip-wave-process.md)
+
 ---
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-09-28 | QA - Yemima | Promote review; §6.5 trx date = Processing Date / `now()` (bukan SO+10m); Processing Date readonly di UI; cross-ref optim Sep 2026 |
 | 1.0 | 2026-07-20 | QA - Yemima | Initial 5-file dari SoT v1.0 + verifikasi ProcessingService / jobs / locks |
 
 ---
@@ -105,16 +108,17 @@ SO yang sebagian sudah dikerjakan manual tetap bisa di-skip — sistem **resume*
 | Action Skip Processing | Ya | Disabled / Not Authorized jika Shipped atau bukan company login |
 | Kolom lain ≈ Order Process | — | Baseline belum lengkap — GAP-SP-03 |
 
-**Fitur:** Bulk toolbar Skip Processing · Advanced Filter (default Data Owner = company login) · Export khusus Skip · Log Data (Skip Processing Logs) · Kartu status All/Pick/Check/Pack/Outbound/Shipping Ready/Complete (Complete placeholder) · **Tanpa** Broken Products / Log Get Resi.
+**Fitur:** Bulk toolbar Skip Processing · Advanced Filter (default Data Owner = company login) · Export khusus Skip · Log Data (Skip Processing Logs) · Kartu status All/Pick/Check/Pack/Outbound/Shipping Ready/Complete (Complete placeholder) · **Processing Date** (readonly — shared setting Unassign Wave / Skip Wave; lihat §5) · **Tanpa** Broken Products / Log Get Resi.
 
 ---
 
 ## 5. Form & Field
 
-Tidak ada form create/edit.
+Tidak ada form create/edit transaksi.
 
 | Elemen | Catatan |
 |--------|---------|
+| **Processing Date** | Readonly di toolbar — nilai company dari Unassign Wave / Skip Wave. Dipakai jalur skip untuk tanggal dokumen/stok bila tidak ada snapshot batch Skip Wave |
 | Advanced Filter — Data Owner | Default company login; bisa reset; skip tetap ditolak untuk company lain (V3) |
 | Konfirmasi bulk | Tidak ada field tambahan; batch code `SP-{timestamp}-{urutan}` |
 
@@ -160,9 +164,16 @@ Detail: Success (SO, DO link, stage, waktu) · Failed (messages, Retry) · All �
 
 Icon warna §4 · Skip Progress % realtime · 100% → auto-refresh icon hijau.
 
-### 6.5 Trx date transfer
+### 6.5 Tanggal processing (trx date dokumen)
 
-Trx date dokumen = tanggal transaksi SO + 10 menit, lalu +10 detik antar dokumen berurutan.
+| Sumber jalur | Basis tanggal dokumen skip |
+|--------------|----------------------------|
+| Dari **Skip Wave Process** | Snapshot `processing_date` batch Skip Wave |
+| Dari menu **Skip Processing** (bulk list) | `ScmSetting.sales_order_processing_date`; jika **NULL**/kosong → **`now()`** |
+
+Cascade antar dokumen berurutan dalam rantai skip: **+10 detik** (bukan SO trx + 10 menit — aturan lama superseded, sama seperti Skip Wave §6.4).
+
+Docs lama yang menyebut “tanggal transaksi SO + 10 menit” **tidak berlaku** untuk path `is_skip_process`.
 
 ### 6.6 Proteksi klik ganda
 
@@ -242,6 +253,7 @@ flowchart TB
 **Q: Processed tapi bukan Success/Failed?** Seharusnya tidak — laporkan bug.  
 **Q: Gagal padahal kelihatan OK?** Cek Messages di Failed log (in progress manual, DO multi-SO, 3PL binding).  
 **Q: Beda Skip Wave Process?** Skip Wave = pintu upload/batch ke pipeline sama; menu ini = pilih SO yang sudah di Default Wave.  
+**Q: Processing Date di menu ini?** Readonly — ubah di Unassign Wave atau Skip Wave Process.  
 **Q: Warna icon?** Abu draft · kuning in progress · hijau approved.  
 **Q: Retry?** Ya dari detail Failed — lanjut dari tahap terakhir sukses.
 
@@ -251,4 +263,5 @@ flowchart TB
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-09-28 | Promote review; Processing Date / `now()` untuk trx skip; readonly UI; supersede SO+10m |
 | 1.0 | 2026-07-20 | Dari SoT v1.0 ke qa-docs-standard |

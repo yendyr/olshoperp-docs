@@ -2,11 +2,11 @@
 doc_type: technical
 menu: omni-skip-processing
 menu_name: "Skip Processing"
-version: 1.1
-last_updated: 2026-09-25
+version: 1.2
+last_updated: 2026-09-28
 owner: QA - Yemima
-status: draft
-aliases: [skip processing API, SkipProcessingJob, ProcessingService skip]
+status: review
+aliases: [skip processing API, SkipProcessingJob, ProcessingService skip, processing date]
 ---
 
 # Skip Processing — Technical Documentation
@@ -14,7 +14,7 @@ aliases: [skip processing API, SkipProcessingJob, ProcessingService skip]
 **API hub:** `omnichannel/transfer-summary` (`mode=skip_processing`)  
 **Module:** `Modules/OmniChannel` (+ entity log di SupplyChain)  
 **UI:** `/omni/skip-processing` · FE `@Omni/Processing/SkipProcessing/`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.0  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.2  
 **Batch prefix:** `SP-{YmdHisv}-{XX}`
 
 ---
@@ -44,6 +44,7 @@ aliases: [skip processing API, SkipProcessingJob, ProcessingService skip]
 | Path | Role |
 |------|------|
 | `olshoperp-frontend/src/pages/Omni/Processing/SkipProcessing/DataList.vue` | List + Echo progress |
+| `SalesOrderProcessingDate.vue` (readonly) | Shared Processing Date display |
 | `SkipProcessingLogTable.vue` | Log slideover |
 | `DataTablesV3.vue` | `bulkSkipProcessing` |
 
@@ -138,6 +139,16 @@ AS-IS (Sep 2026): jalur skip **tidak** memakai approve transfer UI biasa. Per st
 
 Cross-ref: [omni-skip-wave-process/technical.md](../omni-skip-wave-process/technical.md) §5b.
 
+### 4c. Processing date pada path skip
+
+`SkipProcessTrait::skipPicking` → `PicklistService::generatePicklist(..., is_skip_process: true, stock_date: $skip_wave?->processing_date)`.
+
+| Case | `trx_date` / stock |
+|------|-------------------|
+| Batch dari Skip Wave (`SkipWaveProcess` resolve by batch codes) | Snapshot `processing_date` batch |
+| Menu Skip Processing (no SkipWave row) | `ScmSetting.sales_order_processing_date` else **`now()`** |
+| Cascade tahap berikutnya | `+10 detik` dari dokumen sebelumnya |
+
 ---
 
 ## 5. Invariants
@@ -217,5 +228,6 @@ Cross-ref: [omni-skip-wave-process/technical.md](../omni-skip-wave-process/techn
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-09-28 | Promote review; §4c Processing Date / `now()`; FE readonly picker; supersede SO+10m docs |
 | 1.1 | 2026-09-25 | Optimized skip flow (`*ListLogic` + `approveSkipTransfer`); DO idempotency/deadlock guards (ETM-16006, 15988, 15999, 16037) |
 | 1.0 | 2026-07-20 | Initial dari SoT + ProcessingService map |

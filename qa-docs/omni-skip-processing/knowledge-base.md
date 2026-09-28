@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: omni-skip-processing
 menu_name: "Skip Processing"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.2
+last_updated: 2026-09-28
 owner: QA - Yemima
-status: draft
-aliases: [skip processing, bulk skip, skip picking, skip processing log, retry skip]
+status: review
+aliases: [skip processing, bulk skip, skip picking, skip processing log, retry skip, processing date]
 audience: operator
 ---
 
@@ -51,6 +51,7 @@ flowchart TD
 **Keterangan langkah:**
 
 - **Pilih order** lewat checkbox (satu atau banyak). Tidak ada form tambahan.
+- **Processing Date** di toolbar **readonly** — ubah di Unassign Wave / Skip Wave Process. Kalau kosong di sana, skip memakai waktu sekarang.
 - **Progress bar** di kolom Skip Progress — realtime; 100% → icon status jadi hijau.
 - **Icon Pick/Check/Pack/Collect:** abu-abu = belum/draft · kuning/oranye = sedang dikerjakan · hijau = selesai.
 - **Log Data:** lihat batch (berapa sukses/gagal) dan detail per order; Retry hanya untuk yang gagal.

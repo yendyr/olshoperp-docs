@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.2
-last_updated: 2026-09-08
+version: 1.4
+last_updated: 2026-09-28
 owner: QA - Yemima
 status: review
-aliases: [unassign wave, send to default waves, default wave queue, send wave logs, failed process wave, processing order date, unavailable stock, last checked]
+aliases: [unassign wave, send to default waves, default wave queue, send wave logs, failed process wave, processing order date, processing date, unavailable stock, last checked]
 audience: operator
 ---
 
@@ -53,7 +53,7 @@ flowchart TD
 
 **Keterangan langkah:**
 
-- **Processing Order Date:** tanggal yang dipakai sistem untuk memproses order (cek stok & dokumen gudang). Default = hari ini jam 23:59:59. Kalau order lama baru bisa diproses hari ini karena stok baru ada, **ubah tanggal ke hari proses** dulu. Nilai ini sama dengan yang di menu Skip Wave Process (satu company).
+- **Processing Date:** tanggal & jam yang dipakai sistem untuk memproses order (cek stok & dokumen gudang). **Kalau dikosongkan**, sistem memakai **waktu sekarang** (tanggal + jam — bukan 23:59:59). Kalau order lama baru bisa diproses karena stok baru ada, **ubah tanggal ke hari proses** dulu. Nilai ini sama dengan menu Skip Wave Process (satu company).
 - **Cek list:** pastikan order yang dimaksud muncul. Kalau tidak, cek status approval dan apakah sudah pernah sukses dikirim.
 - **Error Flag:** hover icon untuk tahu jenis masalah (produk belum terhubung, stok kurang, shipping, dll).
 - **Refresh Availability Stock:** khusus setelah stok digudang sudah ditambah — membersihkan tanda “stok tidak cukup”.
@@ -63,18 +63,17 @@ flowchart TD
 
 ---
 
-## 4. Processing Order Date
+## 4. Processing Date
 
-Field date-time di **kiri** tombol **Refresh Availability Stock**.
+Field date-time di **kiri** tombol **Refresh Availability Stock** (nama docs lama: Processing Order Date).
 
 | Aturan | Artinya untuk operator |
 |--------|------------------------|
 | Satu tanggal untuk semua order yang kamu kirim **dan** cek stok | Tidak perlu set tanggal per order |
 | Shared dengan Skip Wave Process | Ubah di sini = ikut di menu itu (company yang sama) |
-| Default pertama | Hari ini, jam 23:59:59 |
-| Setelah kamu ubah | Sistem mengingat pilihan terakhir |
-| Setting kosong (NULL) | Sistem memakai **waktu sekarang** untuk proses & cek stok |
-| Tidak bisa simpan | Kalau tanggal jatuh di periode akuntansi yang sudah ditutup — pilih tanggal di periode terbuka |
+| Field kosong | Sistem memakai **waktu sekarang** (tanggal + jam) — bukan jam 23:59:59 |
+| Setelah kamu ubah & simpan | Sistem mengingat pilihan terakhir |
+| Tidak bisa simpan | Tanggal di masa depan, atau periode akuntansi sudah ditutup |
 
 **Contoh:** Order masuk 27 Juli, stok baru ready 28 Juli → set tanggal processing ke **28 Juli** baru klik Send / Refresh.
 

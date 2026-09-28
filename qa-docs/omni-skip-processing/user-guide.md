@@ -2,12 +2,12 @@
 doc_type: user-guide
 menu: omni-skip-processing
 menu_name: "Skip Processing"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.1
+last_updated: 2026-09-28
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.0
+source_version: 1.2
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Skip Processing — Panduan Pengguna
@@ -64,6 +64,7 @@ Kalau order sudah dikerjakan sebagian secara manual, skip **melanjutkan** dari t
 Pastikan:
 
 - Order sudah **Send to Default Wave**.
+- **Processing Date** company sudah sesuai (lihat Unassign Wave / Skip Wave — di menu ini hanya tampil readonly). Field kosong = sistem pakai waktu sekarang.
 - Struktur lokasi proses gudang (pick/check/pack/ship/3PL) sudah lengkap.
 - Shipper sudah terikat gudang 3PL.
 - Tidak ada picking/checking/packing manual yang masih berjalan untuk order yang sama.

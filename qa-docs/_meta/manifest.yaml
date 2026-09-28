@@ -2113,16 +2113,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       - omni-skip-processing-sot.md
     code_globs:
@@ -2138,6 +2138,7 @@ menus:
         - Modules/SupplyChain/Entities/SkipProcessingLog.php
       frontend:
         - olshoperp-frontend/src/pages/Omni/Processing/SkipProcessing/**/*
+        - olshoperp-frontend/src/pages/SCM/Setting/components/SalesOrderProcessingDate.vue
 
   omni-skip-wave-process:
     menu_name: "Skip Wave Process"
@@ -2209,6 +2210,7 @@ menus:
         - Modules/OmniChannel/Entities/UnassignWaveLog.php
       frontend:
         - olshoperp-frontend/src/pages/Omni/UnassignWave/**/*
+        - olshoperp-frontend/src/pages/SCM/Setting/components/SalesOrderProcessingDate.vue
 
   omni-waves-management:
     menu_name: "Waves Management"

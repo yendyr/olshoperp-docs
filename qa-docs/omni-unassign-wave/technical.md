@@ -2,11 +2,11 @@
 doc_type: technical
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.3
-last_updated: 2026-09-25
+version: 1.4
+last_updated: 2026-09-28
 owner: QA - Yemima
 status: review
-aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processing order date, FIFO stock date, Last Checked]
+aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processing order date, processing date, FIFO stock date, Last Checked]
 ---
 
 # Unassign Wave — Technical Documentation
@@ -42,7 +42,8 @@ aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processi
 | Export jobs | `UnassignWaveExportExcelJob`, `UnassignWaveLogExportJob` |
 | Setting gate | `Modules/GeneralSetting/Entities/OrderProcessSetting.php` (`process_to_wave`) |
 | Processing date | `Modules/SupplyChain/Entities/ScmSetting.php` (`sales_order_processing_date`) |
-| **TO-BE setting (legacy note)** | Docs lama menyebut OmniSetting — **AS-IS verified:** `ScmSetting.sales_order_processing_date` (UI Processing Order Date) |
+| **TO-BE setting (legacy note)** | Docs lama menyebut OmniSetting — **AS-IS verified:** `ScmSetting.sales_order_processing_date` (UI Processing Date) |
+| Shared FE picker | `olshoperp-frontend/.../SalesOrderProcessingDate.vue` (UW + Skip Wave + SP readonly) |
 | **TO-BE fiscal** | `validate_fiscal_period()` di `app/Helpers/MainHelper.php` |
 
 ### Frontend
@@ -90,8 +91,8 @@ Prefix: `/api/omnichannel/` · middleware `auth:sanctum` + `auth_verified`
 
 | Method | Path | Action |
 |--------|------|--------|
-| GET | `omnichannel/processing-order-date` (atau via OmniSetting) | Resolve stored / default `today 23:59:59` |
-| PUT | same | Persist + `validate_fiscal_period` + `OmniSetting::refreshCache` |
+| GET/PATCH | `supplychain/settings` | Field `sales_order_processing_date`; NULL/empty → runtime `now()` (FE placeholder *Default to current time*; **bukan** `today 23:59:59`) |
+| PATCH value rules | same | Reject future; `validate_fiscal_period`; `ScmSetting::refreshCache` |
 
 Query list: `failed_process=true`, `on_process_queue=true`.
 
@@ -112,8 +113,8 @@ Query list: `failed_process=true`, `on_process_queue=true`.
 
 | Column | Notes |
 |--------|-------|
-| `processing_order_date` | `datetime` nullable; `NULL` = belum di-set → API kembalikan default computed |
-| `owned_by` | Company scope + cache key existing OmniSetting |
+| `sales_order_processing_date` | `datetime` nullable di `scm_settings`; `NULL` = belum di-set → Send/FIFO memakai `now()` |
+| `owned_by` | Company scope + cache key `ScmSetting` |
 
 ### `omni_unassign_wave_logs`
 
@@ -258,7 +259,7 @@ sequenceDiagram
 | `unassign_wave_status` | Set `not in queue` saat approve | → `in queue` → `processed` | Guard Waves / Picking / Checking / Packing |
 | Error flags SO | Shared dengan Failed Process SO Platform/General | Ditulis saat gagal send; dihapus saat sukses | Muncul di SO list Failed Process |
 | Send Wave Logs | Trigger UW atau Skip Wave | Tulis `omni_unassign_wave_logs` | Dibaca kedua menu |
-| `processing_order_date` | OmniSetting company | Sumber tanggal Send / shared Skip Wave | TF wave + (Skip) PL cascade |
+| `sales_order_processing_date` | `scm_settings` (company) | Sumber tanggal Send / shared Skip Wave + Skip Processing readonly | TF wave + (Skip) PL cascade |
 
 ---
 
@@ -286,6 +287,7 @@ sequenceDiagram
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-09-28 | Processing Date AS-IS: `supplychain/settings` + NULL→`now()` (bukan 23:59:59); FE shared tooltip |
 | 1.3 | 2026-09-25 | Document `error_retriable` on wave logs + link Skip Wave redispatch (ETM-16032) |
 | 1.2 | 2026-09-08 | GAP-UW-04 Decided (`getStockDate`); GAP-UW-06 Last Checked; file map ScmSetting / CheckOrderFlags / RefreshAvailabilityStock |
 | 1.1 | 2026-07-28 | Processing Order Date (OmniSetting + resolver + FE picker); INV-UW-09/10 |
