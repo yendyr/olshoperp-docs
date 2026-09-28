@@ -76,3 +76,13 @@ Prefix folder: `ASO`.
 | `TC-ASO-ADVF-004` | [Audit Kepatuhan Faktur Pajak: Order General B2B > 1 Juta Tanpa PPN/VAT](./TC-ASO-ADVF-DRAFT-20260916131104.md) | [`TC-ASO-ADVF-DRAFT-20260916131104.md`](./TC-ASO-ADVF-DRAFT-20260916131104.md) | DRAFT 🟡 | 2026-09-16 |
 | `TC-ASO-ADVF-005` | [Proteksi Margin: Pesanan Terindikasi Jual Rugi (Below Benchmark COGS) yang Belum Di-Invoice](./TC-ASO-ADVF-DRAFT-20260916131105.md) | [`TC-ASO-ADVF-DRAFT-20260916131105.md`](./TC-ASO-ADVF-DRAFT-20260916131105.md) | DRAFT 🟡 | 2026-09-16 |
 
+### ETM-15887 — [Dev - Sales Order] Informasi Total Detail Lines (Termasuk Komponen Bundle) pada Form Sales Order
+
+Origin Card: [ETM-15887](https://erpintegration.atlassian.net/browse/ETM-15887)
+
+| TC Code | Judul Test Case | Tipe | File | Status | Last Updated |
+|---|---|:---:|---|:---:|:---:|
+| `TC-ASO-15887-01` | [Visibilitas Counter Informasi Total Detail Lines (Termasuk Komponen Bundle) pada Form Sales Order](./TC-ASO-15887-01.md) | `happy` | [`TC-ASO-15887-01.md`](./TC-ASO-15887-01.md) | DRAFT 🟡 | 2026-09-25 |
+| `TC-ASO-15887-02` | [Warning Visual dan Indikasi saat Total Detail Lines Melebihi Batas Maksimal 100 Baris](./TC-ASO-15887-02.md) | `regression` | [`TC-ASO-15887-02.md`](./TC-ASO-15887-02.md) | DRAFT 🟡 | 2026-09-25 |
+
+

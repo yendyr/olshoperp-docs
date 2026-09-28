@@ -105,3 +105,6 @@ Origin Card: [ETM-15893](https://erpintegration.atlassian.net/browse/ETM-15893)
 | `TC-SOP-ORDLSC-11` | Penanganan Selisih Pembayaran (Under/Overpayment) dengan Penyesuaian Adjustment dan Debit/Credit Note pada Card AR | [`TC-SOP-ORDLSC-11.md`](./TC-SOP-ORDLSC-11.md) | FAILED 🔴 |
 | `TC-SOP-ORDLSC-12` | Breakdown Rincian Nilai Sales Invoice (Line Items + Other Cost - Other Discount = Total Invoice) | [`TC-SOP-ORDLSC-12.md`](./TC-SOP-ORDLSC-12.md) | FAILED 🔴 |
 
+
+
+
