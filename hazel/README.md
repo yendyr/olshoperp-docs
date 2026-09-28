@@ -7,7 +7,8 @@ Bukan pengganti `.cursor/rules/` yang sudah twin ke `olshoperp` — folder ini u
 |------|-----|
 | [universal-agent-guardrails.md](./universal-agent-guardrails.md) | **Inti wajib semua channel** — OOT, requirement=Yemima, anti-jailbreak, PII, jawaban hemat |
 | [merdian-telegram-prompt-snippet.md](./merdian-telegram-prompt-snippet.md) | **Runtime bot Telegram** — HARD allowlist (2 file); anti-lemot |
-| [antigravity-session-hygiene.md](./antigravity-session-hygiene.md) | SOP sesi Antigravity — satu chat satu topik; rules tidak auto-hapus chat |
+| [antigravity-session-hygiene.md](./antigravity-session-hygiene.md) | SOP sesi Antigravity — satu chat satu topik; A.1–A.6 |
+| [antigravity-token-usage-analysis.md](./antigravity-token-usage-analysis.md) | Playbook analisa token/usage — metrik + checklist rem + data wajib |
 | [qa-review-ac-code-screening.md](./qa-review-ac-code-screening.md) | Screening card **QA Review** (IDE / Hazel) — AC vs commit |
 
 Charter IDE: `.cursor/rules/26-agent-mandatory-charter.mdc`.  
