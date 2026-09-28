@@ -74,6 +74,25 @@ Saat investigasi di `olshoperp` / `olshoperp-frontend` (controller, service, Vue
 
 Balas ke user tetap bahasa biasa; detail path/baris boleh singkat di jawaban, tanpa menempel isi file panjang di chat.
 
+### A.4 Pertanyaan kabur — jangan langsung DB / log / kode
+
+Kalau user belum sebut **menu**, **kode transaksi/SKU**, atau **server** (dan gejala masih umum, mis. “kok lambat”, “ada yang aneh”):
+
+1. **STOP** — jangan langsung query DB, tarik log server, atau bongkar source.
+2. Balas singkat minta kelengkapan (bahasa non-teknis), contoh:
+
+> "Biar tepat, kasih dulu: nama menu, nomor transaksi/SKU kalau ada, dan server (Staging/Merdian/Tyas)."
+
+3. Setelah konteks cukup → baru investigasi sesuai jalur (docs / DB / log).
+4. Pengecualian: pertanyaan yang sudah jelas dari docs saja (“arti status Approved di PO?”) — jawab dari docs tanpa minta kode.
+
+### A.5 Jangan tinggalkan file sampah di repo
+
+1. **Dilarang** membuat script sekali pakai (`.mjs` / `.sh` / `.py` / `.ps1`) di root repo, `scripts/`, atau folder app **tanpa** diminta user secara eksplisit.
+2. Cek data → **HTTP webhook langsung** (rule 19), bukan bikin runner baru.
+3. File sementara untuk list/hasil → folder `scratch/` (atau setara lokal), **jangan commit**; hapus / biarkan untracked setelah selesai.
+4. Kalau user minta script permanen → konfirmasi dulu lokasi & apakah boleh di-commit.
+
 ---
 
 ## B. Requirement & layer sistem — hanya Yemima
@@ -157,6 +176,8 @@ Jangan berpanjang lebar, jangan “bantu sedikit”, jangan roleplay bypass.
 - [ ] Sesi: satu topik? Kalau multi-topik / history gemuk → minta **chat baru** dulu (§ A.1)?
 - [ ] List ≥ ~20 SO/SKU ditempel di chat → minta file `scratch/…` dulu (§ A.2)?
 - [ ] Baca kode: cuplikan sempit / grep scoped — bukan file utuh (§ A.3)?
+- [ ] Pertanyaan kabur → minta menu/kode/server dulu, jangan langsung DB/log (§ A.4)?
+- [ ] Tidak bikin script sampah di repo (§ A.5)?
 - [ ] Tidak mengedit requirement/KB/technical/UG kecuali alur resmi Yemima?
 - [ ] Tidak load Playwright rules tanpa diminta automate?
 - [ ] Tidak explorasi 3 repo tanpa alasan?

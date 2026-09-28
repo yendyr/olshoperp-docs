@@ -2,35 +2,40 @@
 title: Antigravity / Cursor — session hygiene (token)
 audience: qa-team
 status: active
-version: 1.2
+version: 1.3
 last_updated: 2026-09-28
 owner: QA - Yemima
-source: .cursor/rules/26-agent-mandatory-charter.mdc § A.1–A.3
+source: .cursor/rules/26-agent-mandatory-charter.mdc § A.1–A.5
 ---
 
-# Session hygiene — kenapa dikunci di rules, bukan di Settings Antigravity
+# Session hygiene — kontrol saat tim pakai Antigravity
 
-## Batas teknis
+## Sudah dikunci di rules (charter § A)
 
-| Yang diinginkan | Bisa lewat rules? | Bisa lewat Settings Antigravity? |
-|-----------------|-------------------|----------------------------------|
-| Auto-hapus chat >24 jam | **Tidak** | **Belum ada** fitur native |
-| Agent tolak lanjut di sesi gemuk / multi-topik | **Ya** — charter § A.1 | — |
-| Tolak paste daftar SO/SKU panjang di chat | **Ya** — charter § A.2 | — |
-| Baca kode cuplikan sempit, bukan file utuh | **Ya** — charter § A.3 | — |
-| Satu chat = satu investigasi | **Ya** (SOP + agent remind) | Manual: New chat + trash |
+| § | Aturan | Yang dirasakan tim |
+|---|--------|-------------------|
+| A (umum) | Jangan buka 3 repo “jaga-jaga” | Agent fokus 1 tempat dulu |
+| A.1 | Chat gemuk / ganti topik | Diminta **buka chat baru** |
+| A.2 | List SO/SKU ≥ ±20 | Diminta **simpan ke file** dulu |
+| A.3 | Baca kode | Hanya cuplikan kecil, bukan file utuh |
+| A.4 | Pertanyaan masih kabur | Diminta **menu / nomor / server** dulu — belum DB/log |
+| A.5 | File sampah | Agent tidak bikin script sekali pakai di repo tanpa diminta |
+| — | Hasil data banyak | Ringkasan + 3–5 contoh (rule 19) |
 
-Rules mengunci **perilaku agent**. Hapus file chat di `~/.gemini/antigravity-ide/` tetap manual / script terpisah.
+## Yang tidak dikunci otomatis dari Settings Antigravity
 
-## SOP tim (wajib)
+- Hapus chat >24 jam (belum ada fitur native)
+- Batas “maksimal N langkah tool per jawaban” — lihat catatan § C di bawah (opsional, belum dipasang angka kaku)
 
-1. Topik baru → **New chat** (jangan numpuk 1 thread berhari-hari).
-2. Chat sudah panjang / ganti topik → agent akan minta chat baru (rule 26 § A.1).
-3. **Daftar banyak SO/SKU** (≥ ±20) → file `scratch/daftar-so.txt`, bukan paste chat (rule 26 § A.2).
-4. **Cek data banyak baris** → ringkasan angka + beberapa contoh saja (rule 19 / `agent-db/README`).
-5. **Investigasi kode** → agent cari dulu, baca cuplikan kecil saja — bukan buka file beribu baris sekaligus (rule 26 § A.3).
-6. Hapus chat lama lewat trash di sidebar Agent kalau sudah selesai.
+## Catatan soal “batas langkah” (opsi C)
 
-## Kalau tetap lemot / overload API
+Artinya: dalam **satu** pertanyaan, agent jangan jalan terus puluhan kali (baca file, query, cari) tanpa kepastian.  
+Belum dipasang angka tetap (mis. “maks 15”) karena kadang investigasi memang butuh beberapa langkah.  
+Kalau mau dikunci angka nanti: agent wajib **berhenti & tanya** setelah N langkah tanpa jawaban jelas.
 
-Biasanya: mega-session, paste list raksasa, atau agent baca source terlalu lebar. Chat baru + file list + minta “jelasin singkat tanpa buka file utuh”.
+## SOP singkat tim
+
+1. Satu topik = satu chat baru  
+2. Daftar panjang → file `scratch/`  
+3. Sebut menu + kode + server biar agent tidak “mengembara”  
+4. Jangan minta agent “bikin script dulu” untuk cek data biasa  
