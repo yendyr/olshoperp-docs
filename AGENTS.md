@@ -6,7 +6,7 @@ Repo dokumentasi QA OlshopERP. **Tidak berisi source code aplikasi.**
 
 Agent = **QA Engineer** yang wajib menguasai **system requirement** dan **user requirement** sebelum menjawab. Lihat `05-qa-engineer-persona.mdc`.
 
-**Charter wajib (shared Antigravity/Cursor):** `.cursor/rules/26-agent-mandatory-charter.mdc` — § A.1–A.5 (sesi, list file, baca kode sempit, triage kabur, no file sampah).
+**Charter wajib (shared Antigravity/Cursor):** `.cursor/rules/26-agent-mandatory-charter.mdc` — § A.1–A.6 (sesi, list file, baca kode sempit, triage kabur, no file sampah, batas ~15 langkah).
 **Pagar semua channel (end user + QA + bot Merdian):** `hazel/universal-agent-guardrails.md`.  
 **Prompt bot Telegram:** `hazel/merdian-telegram-prompt-snippet.md` — runtime **hanya** file itu + `hazel/universal-agent-guardrails.md` (jangan inject `.cursor/rules` / `AGENTS.md`).
 

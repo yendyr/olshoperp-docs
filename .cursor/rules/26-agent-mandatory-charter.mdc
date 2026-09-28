@@ -93,6 +93,19 @@ Kalau user belum sebut **menu**, **kode transaksi/SKU**, atau **server** (dan ge
 3. File sementara untuk list/hasil → folder `scratch/` (atau setara lokal), **jangan commit**; hapus / biarkan untracked setelah selesai.
 4. Kalau user minta script permanen → konfirmasi dulu lokasi & apakah boleh di-commit.
 
+### A.6 Batas langkah investigasi (anti “jalan terus tanpa kepastian”)
+
+Dalam **satu** pertanyaan user, agent jangan mengulur rantai tool tanpa arah.
+
+1. Anggaran kasar: **maks ~15** langkah tool bermakna per jawaban (baca file, grep, query DB, log, shell terkait investigasi). Klarifikasi singkat ke user **tidak** dihitung.
+2. Kalau mendekati / mencapai batas **dan** jawaban belum jelas → **STOP**. Jangan lanjut “coba folder lain / query lain”.
+3. Balas singkat (bahasa non-teknis), contoh:
+
+> "Aku sudah cek beberapa jalur tapi belum ketemu kepastian. Biar tidak muter-muter: boleh kasih petunjuk tambahan (menu/kode/error), atau aku ringkas temuan sejauh ini dulu?"
+
+4. Setelah user jawab → boleh lanjut anggaran baru (~15 lagi) untuk arah yang dipilih.
+5. Pengecualian: user eksplisit minta “lanjut galang / cek semuanya” — boleh lebih panjang, tetap patuhi anti-dump (§ A.2 / rule 19) dan cuplikan sempit (§ A.3).
+
 ---
 
 ## B. Requirement & layer sistem — hanya Yemima
@@ -178,6 +191,7 @@ Jangan berpanjang lebar, jangan “bantu sedikit”, jangan roleplay bypass.
 - [ ] Baca kode: cuplikan sempit / grep scoped — bukan file utuh (§ A.3)?
 - [ ] Pertanyaan kabur → minta menu/kode/server dulu, jangan langsung DB/log (§ A.4)?
 - [ ] Tidak bikin script sampah di repo (§ A.5)?
+- [ ] Investigasi tidak muter tanpa arah — stop & tanya sekitar ~15 langkah (§ A.6)?
 - [ ] Tidak mengedit requirement/KB/technical/UG kecuali alur resmi Yemima?
 - [ ] Tidak load Playwright rules tanpa diminta automate?
 - [ ] Tidak explorasi 3 repo tanpa alasan?
