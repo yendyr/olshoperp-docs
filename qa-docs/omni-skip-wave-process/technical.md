@@ -2,11 +2,11 @@
 doc_type: technical
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.3
-last_updated: 2026-09-25
+version: 1.4
+last_updated: 2026-09-28
 owner: QA - Yemima
-status: draft
-aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing order date, skip wave horizon jobs]
+status: review
+aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing order date, processing date, skip wave horizon jobs]
 ---
 
 # Skip Wave Process — Technical Documentation
@@ -14,7 +14,7 @@ aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing o
 **API prefix:** `omnichannel/transfer-summary/skip-wave-process`  
 **Module:** `Modules/OmniChannel`  
 **UI:** `/omni/skip-wave-process` · FE `@Omni/Processing/SkipWaveProcess/`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.1  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.4  
 **Batch codes:** `SW-` import · `WV-` wave · `SP-` processing
 
 ---
@@ -28,6 +28,7 @@ aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing o
 | Controller | `Modules/OmniChannel/Http/Controllers/SkipWaveProcessController.php` |
 | Import class | `Modules/OmniChannel/Import/SkipWaveProcessImport.php` |
 | Import job | `Modules/OmniChannel/Jobs/SkipWaveProcessImportJob.php` |
+| Export | `Modules/OmniChannel/Exports/SkipWaveProcessExport.php` + `SkipWaveProcessExportJob` |
 | Wave job | `Modules/OmniChannel/Jobs/SkipWaveProcessJob.php` |
 | Orchestrator | `Modules/OmniChannel/Logics/SkipWave/SkipWaveLogic.php` |
 | Processing | `Modules/OmniChannel/Services/ProcessingService.php` (+ Skip/DO traits) |
@@ -36,21 +37,21 @@ aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing o
 | Dispatch cron | `app/Console/Commands/SalesOrder/SkipWaveDispatchCommand.php` (`skip-wave:dispatch`) |
 | Shared wave | `Modules/OmniChannel/Jobs/SOApproveToWave.php` |
 | Shared skip | `Modules/OmniChannel/Jobs/SkipProcessingJob.php` (+ DO jobs, RetryJob) |
-| PL dates | `Modules/OmniChannel/Services/PicklistService.php` (`is_skip_process` trx date) |
+| PL / stock date | `Modules/OmniChannel/Services/PicklistService.php`; `SalesOrderValidationLogic::getStockDate()` |
 | Entities | `SkipWaveProcess`, `SkipWaveProcessUploadLog`, `SkipWaveProcessUploadLogDetail` |
 | Wave log flag | `omni_unassign_wave_logs.error_retriable` — filter retry wave (ETM-15963 / redispatch) |
-| **TO-BE setting** | `OmniSetting.processing_order_date` + shared GET/PUT + `validate_fiscal_period` |
-| **TO-BE resolver** | Helper company processing date — wire WaveService FIFO + PicklistService PL |
+| **Processing Date setting** | `ScmSetting.sales_order_processing_date` · `ScmSettingController@update` · `validate_fiscal_period` |
+| **Batch snapshot** | `omni_skip_wave_process.processing_date` diisi saat upload dari setting atau `now()` |
 
 ### Frontend
 
 | Path | Role |
 |------|------|
-| `…/SkipWaveProcess/DataList.vue` | Main list + Echo ETA + **TO-BE** date picker kiri atas |
-| `SkipWaveProcessLogTable.vue` | Import logs + detail modal |
+| `…/SkipWaveProcess/DataList.vue` | Main list + Echo ETA + Processing Date picker |
+| `SkipWaveProcessLogTable.vue` | Import logs + detail modal + Audit Log |
 | `SkipProcessingTransferLogTable.vue` / `SkipProcessingDoLogTable.vue` | Stage / DO drilldown |
+| Shared date picker | `pages/SCM/Setting/components/SalesOrderProcessingDate.vue` (juga Unassign Wave + Skip Processing readonly) |
 | Reuse | `UnassignWave/LogTables.vue`, `SkipProcessing/SkipProcessingLogTable.vue` |
-| **TO-BE** | Shared composable `useProcessingOrderDate` dengan Unassign Wave |
 
 ---
 
@@ -183,18 +184,43 @@ Fan-out Horizon: [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/p
 
 ## 7. Validation Highlights
 
-- Controller sync: file mime, header, empty rows.  
-- Import: R1–R5 eligibility; all-or-nothing.  
-- Lock conflict → release acquired locks, `is_eligible=false`, completed.  
-- Stage 2: shared Skip Processing validations.
+### Upload (controller sync)
+
+| Check | Rule |
+|-------|------|
+| MIME | `required\|mimes:xlsx,xls,csv` — **no** `max:` file size in FormRequest |
+| Header | First column / header must resolve to **Order No** |
+| Rows | ≥1 data row; Import class hard cap **1000** data rows |
+| Processing Date snapshot | `ScmSetting.sales_order_processing_date` → parse; if empty/`null` → **`now()`** (full datetime) stored on batch |
+
+### Import screening (R1–R5 · all-or-nothing)
+
+- Order found by `code` **or** `platform_order_id`
+- No duplicate Order No in file
+- Same company as uploader
+- Tx status Approved or Processed
+- Wave status not already processed (Must be Unassigned / in queue)
+- Lock conflict → release locks, `is_eligible=false`, completed
+
+**Summary messages (job):** `Import Success: …` · `Import Failed: Validation complete. {ok} valid, {fail} issues…` · lock / incomplete variants.
+
+### Wave phase (not Import)
+
+`SOApproveToWave`: if batch/setting processing date is set and `sales_order.transaction_date > processing_date` → `WarningException`: *The Processing Date must be on or after the Sales Order transaction date.*  
+ETM-16032: error ini **tidak** `error_retriable` (hindari auto-retry sia-sia).
+
+### Stage 2
+
+Shared Skip Processing validations.
 
 ---
 
 ## 8. Frontend Behaviors
 
-- Echo `ProcessStatus` + toast refresh.  
-- Main list filter `is_eligible=1` — failed import hanya di Log Data.  
+- Echo `ProcessStatus` + toast refresh.
+- Main list filter `is_eligible=1` — failed import hanya di Log Data.
 - File download tooltip 24h.
+- `SalesOrderProcessingDate.vue` tooltip (EN): whole-process date; empty → current date & time; order trx must be on or before date (else cannot process to wave). Shared with Unassign Wave / Skip Processing readonly.
 
 ---
 
@@ -202,9 +228,10 @@ Fan-out Horizon: [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/p
 
 | Mode | Behavior |
 |------|----------|
-| Baris invalid | Entire batch completed; no stage 2 (GAP-SW-01) |
+| Baris invalid (Import) | Entire batch completed; no stage 2 (GAP-SW-01) |
 | Lock conflict | Release all; completed |
 | Import exception | completed + generic Import Failed message |
+| SO trx date > Processing Date | Import may succeed; **Wave** fails that SO (POD3) — not Import Failed |
 | Wave/processing/DO retry | Auto max 5, delay 5/10/15s; patterns savepoint/deadlock/lock/… — hanya log `error_retriable=true` |
 | Stuck &gt;60 menit | UI **Redispatch** → `SkipWaveLogic::redispatch` (bukan re-upload file) |
 | SO sudah punya DO | Skip Processing job **no-op** untuk SO itu (ETM-15999) |
@@ -216,19 +243,20 @@ Fan-out Horizon: [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/p
 | Data | Hulu | Skip Wave | Hilir |
 |------|------|-----------|-------|
 | Upload details | File | Eligibility gate | — |
+| `processing_date` batch | `ScmSetting` or `now()` at upload | Snapshot for Wave + skip stages | Audit |
 | `unassign_wave_status` | Wave job | Wave Progress | Skip Processing eligibility |
 | Skip logs / DO | ProcessingService | Skip Processing column | Failed Ship / CI |
-| Transfer trx dates | Skip generate | **TO-BE:** PL = company Processing Order Date; cascade +10s; GAP-SW-05 superseded | Audit/report |
-| `processing_order_date` | OmniSetting | Shared UW + SW | Wave FIFO + PL |
+| Transfer trx dates | Skip generate | PL / stock = batch processing date; cascade +10s; GAP-SW-05 superseded | Audit/report |
+| `sales_order_processing_date` | `scm_settings` | Shared UW + SW + SP readonly | Wave FIFO + stock date |
 
 ---
 
 ## 11. Tests & QA Notes
 
-- Cover: all-or-nothing, lock conflict, cron gate global, 1000 cap, progress aggs, Echo ETA.  
-- Cover Processing Order Date: default, persist, fiscal reject, company isolation, late-stock SO.  
-- Regresi GAP-SW-01/02; GAP-SW-05 superseded.  
-- Related docs Unassign/Skip Processing harus tetap konsisten saat ubah shared jobs.
+- Cover: all-or-nothing, lock conflict, cron gate global, 1000 cap, progress aggs, Echo ETA.
+- Cover Processing Date: empty→`now()`, persist, fiscal/future reject, company isolation, late-stock SO, **POD3** (Import OK / Wave fail).
+- Regresi GAP-SW-01/02; GAP-SW-05 superseded.
+- Related docs Unassign/Skip Processing harus tetap konsisten saat ubah shared jobs / shared date component.
 
 ---
 
@@ -238,7 +266,7 @@ Fan-out Horizon: [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/p
 |-----|----------------|
 | GAP-SW-01 | ImportJob sets `is_eligible=false` if any failed row |
 | GAP-SW-02 | `SkipWaveDispatchCommand` `exists()` tanpa filter company |
-| GAP-SW-05 | **Superseded** — implement Processing Order Date; wire `PicklistService` + `WaveService` |
+| GAP-SW-05 | **Superseded** — batch `processing_date` + `ScmSetting` |
 | — | ImportJob imports `SkipWaveProcessJob` but does not dispatch it |
 | — | `runBatchFinally` early-return: Create/Approve DO jobs dead code; DO di `skipShipping` |
 | — | Job turunan (audit/ending stock/sync) — lihat horizon-jobs pipeline § Derived |
@@ -249,6 +277,7 @@ Fan-out Horizon: [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/p
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-09-28 | AS-IS Processing Date (`ScmSetting` + batch snapshot `now()`); POD3 Wave fail; export headings; mime without max size; FE tooltip note |
 | 1.3 | 2026-09-25 | Perf datalist (defer + cache agg ETM-15972/15985); reliability: redispatch, DO guard, retry idempotency, optimized skip flow, deadlock (ETM-15963…16037) |
 | 1.2 | 2026-09-20 | Link kanonik Horizon jobs pipeline; tabel fan-out; dead-code DO path |
 | 1.1 | 2026-07-28 | Processing Order Date; GAP-SW-05 superseded; PicklistService wire note |

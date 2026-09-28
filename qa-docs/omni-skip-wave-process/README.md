@@ -4,21 +4,22 @@ Menu **Skip Wave Process** (SupplyChain / OmniChannel).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
-| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 
 **SoT:** `skip-wave-process-sot.md` v1.0 (20 Jul 2026)  
-**User-guide:** v1.2 · `source_version` 1.2  
-**Version (3 layer):** technical **1.3** · requirement/KB 1.2 · **Last updated:** 2026-09-25  
+**User-guide:** v1.3 · `source_version` 1.4  
+**Version (3 layer):** **1.4** · **Last updated:** 2026-09-28  
 **Horizon jobs (kanonik):** [../horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/pipelines/skip-wave-process.md)  
-**Implementer brief:** `~/Downloads/processing-order-date-unassign-skip-wave-implementer-brief.md`
+**Help Center overview:** belum di-update (sengaja di luar scope 2026-09-28)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-09-28 11:00 | Processing Date AS-IS: arti proses batch, default kosong = waktu sekarang, order lebih baru gagal di Wave (bukan Import); kolom Export; ukuran file mengikuti limit server; promote 4 layer ke review |
 | 1.3 | 2026-09-25 12:59 | Technical: perf datalist + reliability Sep 2026 (ETM-15972…16037) — defer/cache agg, redispatch, DO guards, optimized skip flow |
 | ug-1.2 | 2026-09-20 21:39 | Sync user-guide: Redispatch, completed vs pekerjaan latar, link Horizon Jobs |
 | 1.2 | 2026-09-20 21:13 | Dokumentasi pergerakan Horizon jobs (primary + derived); link ke horizon-jobs pipeline |
@@ -32,7 +33,7 @@ Menu **Skip Wave Process** (SupplyChain / OmniChannel).
 | Menu | Link |
 |------|------|
 | Horizon Jobs | [../horizon-jobs/](../horizon-jobs/) — pipeline queue / job turunan (lintas menu) |
-| Unassign Wave | [../omni-unassign-wave/](../omni-unassign-wave/) — reuse `SOApproveToWave` + Send Wave Logs; **shared Processing Order Date** |
+| Unassign Wave | [../omni-unassign-wave/](../omni-unassign-wave/) — reuse `SOApproveToWave` + Send Wave Logs; **shared Processing Date** |
 | Skip Processing | [../omni-skip-processing/](../omni-skip-processing/) — reuse jobs + logs sampai Shipped |
 | Order Process | [../omni-process-summary/](../omni-process-summary/) — pantau/PL/resi (bukan upload skip wave) |
 

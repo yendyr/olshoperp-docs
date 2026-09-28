@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.2
-last_updated: 2026-09-20
+version: 1.4
+last_updated: 2026-09-28
 owner: QA - Yemima
-status: draft
-aliases: [skip wave process, skip wave, upload skip wave, SW batch, processing order date, skip wave jobs]
+status: review
+aliases: [skip wave process, skip wave, upload skip wave, SW batch, processing order date, processing date, skip wave jobs]
 ---
 
 # Skip Wave Process — Requirement Documentation
@@ -25,6 +25,7 @@ Related: [Unassign Wave](../omni-unassign-wave/requirement.md) · [Skip Processi
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.4 | 2026-09-28 | QA - Yemima | Processing Date AS-IS: arti trx/stock, default kosong=`now()`, order trx > date = gagal Wave (bukan Import); export columns; file size = limit server |
 | 1.2 | 2026-09-20 | QA - Yemima | Rujuk Horizon jobs pipeline; status macet / Redispatch; DO inline; kurangi nama class di How It Works |
 | 1.1 | 2026-07-28 | QA - Yemima | TO-BE Processing Order Date per company (shared Unassign Wave); supersede GAP-SW-05 order+10m |
 | 1.0 | 2026-07-20 | QA - Yemima | Initial 5-file dari SoT v1.0 + verifikasi ImportJob/cron/gaps SW-01…05 |
@@ -113,22 +114,27 @@ Status per-order di upload detail (Success/Failed) = label hasil, bukan FSM batc
 
 | Fitur | Perilaku |
 |-------|----------|
-| **Processing Order Date** | Date-time picker di **pojok kiri atas** (posisi Create). Shared per company dengan Unassign Wave. Default awal = today 23:59:59; setelah simpan = nilai terakhir. Semua order di import batch memakai tanggal ini. Tolak simpan jika fiscal period closed/locked. Lihat §5.1 |
-| Global Search · Column Show/Hide · Export | Standar |
-| **Import** | Download template + upload |
+| **Processing Date** | Date-time picker di **pojok kiri atas**. Shared per company dengan Unassign Wave (dan tampil readonly di Skip Processing). Lihat §5.1 |
+| Global Search · Column Show/Hide | Standar |
+| **Export** | Export baris datalist eligible. Kolom Excel: `BATCH CODE` · `TOTAL ORDERS` · `ORDERS` · `WAVE PROGRESS (%)` · `PROCESSING PROGRESS (%)` · `PICKED` + ref · `CHECKED` + ref · `PACKED` + ref · `COLLECTED` + ref · `SHIPPED` + ref · `TOTAL DO` · `DO NUMBERS` · `CREATED BY` · `CREATED AT` |
+| **Import** | Download template (1 kolom **Order No**) + upload `xlsx` / `xls` / `csv`. **Tidak ada** batas ukuran file di validasi menu — mengikuti limit server/PHP. Maks **1.000** baris data |
 
 ### 4.3 Log Data — Import Logs
 
 | Kolom | Keterangan |
 |-------|------------|
-| Batch Code | `SW-…` |
-| Total Order Processed | `{actual}/{expected}` klikable → modal detail |
-| Status | Failed jika ada detail failed; Success jika semua sukses |
-| Message | Ringkasan import |
-| File Name | Download max 24 jam |
-| Uploaded By / At | — |
+| Batch Code | `SW-…` — dipakai fase berikutnya jika screening sukses |
+| Total Order Processed | `{actual}/{expected}` klikable → modal detail per Order No |
+| Status | **Failed** jika ≥1 baris gagal screening; **Success** jika semua valid |
+| Message | Ringkasan grouping: Success / Failed partial count + arahkan ke detail; lock conflict; incomplete count |
+| File Name | Re-download max **24 jam** sejak upload |
+| Uploaded By / At | User & waktu upload |
+
+**All-or-nothing:** jika screening gagal, batch **tidak** muncul di datalist utama (`is_eligible=false`) — revisi file lalu upload ulang.
 
 **Modal detail:** judul `Skip Wave Process Details (…): {batch}` · kartu Total/Success/Failed · kolom Order No \| Trx Date · Status · Message. Search + Export di slideover.
+
+**Tab Audit Log:** riwayat perubahan (termasuk ubah Processing Date company).
 
 ---
 
@@ -138,23 +144,25 @@ Bukan form transaksi order — upload + setting tanggal processing.
 
 | Field | Wajib? | Validasi | Catatan |
 |-------|--------|----------|---------|
-| **Processing Order Date** | Ya (selalu ada nilai) | Date-time valid; fiscal period open | Per company; shared Unassign Wave — §5.1 |
-| File Import | Ya | xlsx/xls/csv; header Order No; ≥1 data; ≤1000 baris | Template 1 kolom |
+| **Processing Date** | Opsional di UI (boleh clear) | Date-time valid; tidak future; fiscal period open | Per company; shared Unassign Wave — §5.1. Kosong saat upload → sistem pakai **`now()`** (tanggal **dan** jam saat itu) |
+| File Import | Ya | xlsx/xls/csv; header Order No; ≥1 data; ≤1000 baris | Ukuran file: **tidak** dibatasi di validasi menu |
 | Order No (isi file) | Ya | Found, unik, company, approved/processed, wave unassigned | Banyak baris |
 
-### 5.1 Processing Order Date (TO-BE)
+### 5.1 Processing Date (AS-IS)
 
 | Aturan | Detail |
 |--------|--------|
-| Scope | Per company; sync dengan Unassign Wave |
-| UI | Pojok kiri atas list Skip Wave Process |
-| Default awal | Today **23:59:59** jika belum pernah di-set |
-| Persist | Setelah user simpan → nilai terakhir |
-| Pemakaian | **Semua** order di batch Skip Wave (fase wave + skip sampai Shipped) memakai tanggal ini — **bukan** tanggal order individual |
-| Validasi stok/tanggal | Logic tetap; hanya sumber tanggal berubah |
-| Fiscal | Tolak simpan jika period closed/locked |
+| Scope | Per company; **satu nilai** untuk Skip Wave Process, Unassign Wave, dan tampilan readonly Skip Processing |
+| UI | Pojok kiri atas list; placeholder *Default to current time*; boleh clear |
+| Jika kosong / belum di-set | Saat upload batch, `processing_date` batch = **`now()`** — **tanggal dan jam saat ini**, bukan jam 23:59:59 |
+| Persist | Setelah user simpan nilai → dipakai upload berikutnya sampai diubah/di-clear lagi |
+| Pemakaian | **Semua** order di batch memakai tanggal batch ini untuk kirim wave + pick/check/pack/collect/ship (termasuk pergerakan stok) — **bukan** tanggal order individual di Excel |
+| Order trx **lebih baru** dari Processing Date | **Bukan** ditolak di Import Logs. Order bisa Import Success & masuk datalist, lalu **gagal di fase Wave** dengan pesan: *The Processing Date must be on or after the Sales Order transaction date.* (lihat Wave Progress / log `WV-`) |
+| Fiscal | Tolak simpan setting jika period closed/locked |
 
-**Contoh:** Order trx 27 Jul, stok ready 28 Jul → set Processing Order Date = 28 Jul → upload Skip Wave → batch bisa lanjut sampai shipped.
+**Contoh (stok terlambat):** Order trx 27 Jul, stok ready 28 Jul → set Processing Date = 28 Jul (atau setelahnya) → upload → batch bisa lanjut.
+
+**Contoh (order lebih baru dari Processing Date):** Processing Date = 20 Sep 10:00, Order No dengan trx 28 Sep → Import bisa Success → Wave Failed untuk order itu (bukan Import Failed).
 
 ---
 
@@ -188,13 +196,13 @@ Detail fan-out Horizon (primary ≈ 1.102 job / 1.000 order, job turunan, path D
 
 Jika progress Wave / Skip Processing sudah hampir penuh tetapi status batch tetap `processing` lama, gerbang (§6.2) menahan seluruh antrean. AS-IS: tombol **Redispatch** tersedia bila batch diam lebih dari **60 menit** (lanjut fase yang belum selesai). Penutup normal bergantung callback antrean grup — lihat pipeline Horizon § Failure / Observasi.
 
-### 6.4 Trx date transfer / tanggal processing
+### 6.4 Tanggal processing (Processing Date)
 
 | Era | Perilaku |
 |-----|----------|
-| AS-IS (sebelum improvement) | Sebagian path basis eksekusi / `now`; PL skip process memakai `SO.transaction_date + 10 menit`; cascade dokumen berikutnya `+10 detik` |
-| TO-BE lama (GAP-SW-05) | Basis order + 10 menit — **digantikan** |
-| **TO-BE sekarang** | Basis = **Processing Order Date** company (§5.1). Interval **+10 detik** antar dokumen transfer dalam rantai skip **tetap**. Validasi stok memakai tanggal yang sama |
+| Lama (sebelum improvement) | Sebagian path basis eksekusi / `now`; PL skip process memakai `SO.transaction_date + 10 menit`; cascade dokumen berikutnya `+10 detik` |
+| GAP-SW-05 (superseded) | Basis order + 10 menit — **digantikan** |
+| **AS-IS sekarang** | Basis = **Processing Date** batch (dari setting company saat upload, atau **`now()`** jika setting kosong). Interval **+10 detik** antar dokumen transfer dalam rantai skip **tetap**. Order trx > Processing Date → gagal di **Wave** (POD3), bukan Import |
 
 ---
 
@@ -220,12 +228,13 @@ Ada batch aktif → baru tetap `in_queue`. Tidak ada → tertua eligible mulai.
 
 WH virtual kurang · shipper tanpa 3PL · PL/CL/Packing in progress · Void — ikut aturan Skip Processing. Tanggal processing = company Processing Order Date.
 
-### 7.6 Processing Order Date (POD1–POD2)
+### 7.6 Processing Date (POD1–POD3)
 
 | # | Kondisi | Behavior |
 |---|---------|----------|
-| POD1 | Simpan tanggal di fiscal closed/locked | Tolak; nilai lama tetap |
-| POD2 | Stage 2 send/skip | Semua SO batch pakai POD company, bukan trx date SO |
+| POD1 | Simpan tanggal di fiscal closed/locked / future | Tolak; nilai lama tetap |
+| POD2 | Stage 2 send/skip | Semua SO batch pakai `processing_date` batch (dari setting atau `now()` saat upload) |
+| POD3 | SO `transaction_date` > Processing Date batch | Import tetap bisa Success; **gagal di Wave** (bukan status Import Failed) |
 
 ---
 
@@ -275,8 +284,10 @@ flowchart TB
 **Q: Progress penuh tapi status masih Processing?** Kemungkinan penutup batch tidak jalan — coba **Redispatch** jika diam lebih dari 60 menit; detail di [horizon-jobs pipeline](../horizon-jobs/pipelines/skip-wave-process.md).  
 **Q: Completed di layar tapi server masih sibuk?** Job turunan (stok/audit/sync) bisa masih mengantre setelah status completed.  
 **Q: Shipped bermasalah?** Lanjut Failed Ship.  
-**Q: Processing Order Date ikut Unassign Wave?** Ya — satu setting per company.  
-**Q: Order stok terlambat dari tanggal order?** Set Processing Order Date ke tanggal stok ready, lalu upload.
+**Q: Processing Date ikut Unassign Wave?** Ya — satu setting per company.  
+**Q: Field Processing Date kosong?** Saat upload, sistem pakai **waktu sekarang** (`now()`), termasuk jam — bukan 23:59:59.  
+**Q: Order stok terlambat dari tanggal order?** Set Processing Date ke tanggal stok ready, lalu upload.  
+**Q: Order trx lebih baru dari Processing Date — kenapa Import Success tapi Wave Failed?** Rule tanggal dicek di fase Wave, bukan screening Import. Naikkan Processing Date lalu upload ulang / redispatch sesuai prosedur.
 
 ---
 
@@ -284,6 +295,7 @@ flowchart TB
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-09-28 | Processing Date AS-IS (`now()`, Wave fail POD3); export columns; file size server-limit |
 | 1.2 | 2026-09-20 | Link Horizon jobs; DO inline; Redispatch / status macet; How It Works tanpa nama class |
 | 1.1 | 2026-07-28 | Processing Order Date; GAP-SW-05 superseded |
 | 1.0 | 2026-07-20 | Dari SoT v1.0 ke qa-docs-standard |

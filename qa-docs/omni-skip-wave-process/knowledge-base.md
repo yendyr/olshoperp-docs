@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.2
-last_updated: 2026-09-20
+version: 1.4
+last_updated: 2026-09-28
 owner: QA - Yemima
-status: draft
-aliases: [skip wave process, skip wave upload, upload order to wave and ship, processing order date]
+status: review
+aliases: [skip wave process, skip wave upload, upload order to wave and ship, processing order date, processing date]
 audience: operator
 ---
 
@@ -33,7 +33,7 @@ Tanpa bolak-balik menu Unassign Wave dan Skip Processing.
 | ✅ Pakai jika | ❌ Jangan harapkan jika |
 |---------------|-------------------------|
 | Banyak order approved yang belum masuk Default Wave | Order sudah di-wave / sudah shipped |
-| Mau proses sampai shipped dalam satu batch | Ada 1 baris salah di file — **seluruh file gagal** (harus diperbaiki dulu) |
+| Mau proses sampai shipped dalam satu batch | Ada 1 baris salah di file — **seluruh file gagal** di Import (harus diperbaiki dulu) |
 | Siap menunggu antrian jika ada batch lain yang sedang jalan | Mau pilih order dari list (menu ini khusus upload) |
 
 ---
@@ -42,7 +42,7 @@ Tanpa bolak-balik menu Unassign Wave dan Skip Processing.
 
 ```mermaid
 flowchart TD
-    A["Set Processing Order Date"] --> B["Download template Order No"]
+    A["Set Processing Date"] --> B["Download template Order No"]
     B --> C["Isi Order No di Excel"]
     C --> D["Upload di Skip Wave Process"]
     D --> E{"Validasi file OK?"}
@@ -54,19 +54,19 @@ flowchart TD
 
 **Keterangan langkah:**
 
-- **Processing Order Date:** tanggal yang dipakai sistem untuk memproses seluruh order di file (dari kirim wave sampai shipped). Ada di pojok kiri atas. Default = hari ini jam 23:59:59. Nilai sama dengan menu Unassign Wave (satu company). Kalau order lama baru bisa diproses karena stok baru ada, **set tanggal ke hari stok ready** dulu.
+- **Processing Date:** tanggal & jam yang dipakai sistem untuk **seluruh** proses batch (kirim wave → pick → check → pack → collect → ship, termasuk pergerakan stok). Ada di pojok kiri atas. **Kalau dikosongkan**, sistem memakai **waktu sekarang** (tanggal + jam saat upload — bukan jam 23:59:59). Nilai sama dengan menu Unassign Wave (satu company).
 - **Template:** hanya 1 kolom — **Order No** (boleh kode internal atau kode platform).
-- **Maksimal 1.000 order** per file.
-- **All-or-nothing:** satu baris gagal = seluruh file tidak diproses. Perbaiki lalu upload ulang **seluruh** file.
+- **File:** `xlsx` / `xls` / `csv`. Ukuran file mengikuti limit server (tidak ada batas khusus di menu). Maksimal **1.000 order** per file.
+- **All-or-nothing (Import):** satu baris gagal screening = seluruh file tidak diproses ke datalist. Perbaiki lalu upload ulang **seluruh** file.
 - **Antrian:** boleh upload banyak file; sistem proses **satu batch** sampai selesai baru batch berikutnya.
 - **Progress:** Wave Progress = sudah masuk Default Wave; Skip Processing = sudah sampai Shipped.
-- **Tidak ada tombol Retry** untuk batch gagal validasi — perbaikan = upload ulang (retry otomatis hanya di belakang layar untuk error teknis sementara).
-- **Redispatch:** kalau progress sudah hampir selesai tetapi status batch masih “Processing” lama (diam lebih dari 60 menit), gunakan **Redispatch** agar antrian batch lain bisa lanjut.
-- **Setelah Completed:** sistem masih bisa sibuk menghitung stok / sync marketplace di belakang layar — itu normal; jangan langsung upload batch besar beruntun tanpa pantau.
+- **Tidak ada tombol Retry** untuk batch gagal validasi import — perbaikan = upload ulang.
+- **Redispatch:** kalau progress sudah hampir selesai tetapi status batch masih “Processing” lama (diam lebih dari 60 menit), gunakan **Redispatch**.
+- **Setelah Completed:** sistem masih bisa sibuk menghitung stok / sync marketplace di belakang layar — itu normal.
 
 ---
 
-## 4. Processing Order Date
+## 4. Processing Date
 
 Field date-time di **pojok kiri atas** halaman Skip Wave Process.
 
@@ -74,9 +74,10 @@ Field date-time di **pojok kiri atas** halaman Skip Wave Process.
 |--------|------------------------|
 | Satu tanggal untuk seluruh order di upload | Tidak set per Order No di Excel |
 | Shared dengan Unassign Wave | Ubah di sini = ikut di menu itu |
-| Default pertama | Hari ini, jam 23:59:59 |
-| Setelah diubah | Sistem mengingat pilihan terakhir |
-| Tidak bisa simpan | Periode akuntansi tanggal itu sudah ditutup |
+| Field kosong | Saat upload, sistem pakai **waktu sekarang** (tanggal + jam) |
+| Setelah diisi & disimpan | Sistem mengingat pilihan terakhir |
+| Order lebih baru dari Processing Date | Import bisa **sukses**, tetapi order **gagal di Wave** — naikkan Processing Date lalu upload ulang |
+| Tidak bisa simpan | Periode akuntansi tanggal itu sudah ditutup / tanggal di masa depan |
 
 ---
 
@@ -84,22 +85,31 @@ Field date-time di **pojok kiri atas** halaman Skip Wave Process.
 
 | Istilah | Arti awam |
 |---------|-----------|
-| All-or-nothing | Satu data salah → semua di file ikut gagal |
+| All-or-nothing | Satu data salah di Import → semua di file ikut gagal screening |
 | In Queue / Pending / Processing / Completed | Menunggu · dipilih sistem · sedang jalan · selesai |
 | Batch Code | Kode satu kali upload (`SW-…`) |
 | Wave Progress | Berapa order sudah masuk Default Wave |
 | Skip Processing (kolom) | Berapa order sudah sampai Shipped |
+| Import Failed vs Wave Failed | Screening file gagal vs order gagal saat kirim ke wave (bisa beda penyebab) |
 | Lock | Sistem menahan agar order sama tidak diproses dua batch sekaligus |
 
 ---
 
 ## 6. Log Data
 
-Toolbar **Log Data** membuka riwayat import:
+Toolbar **Log Data** membuka riwayat:
+
+### Import Logs
 
 - **Total Order Processed** `{sudah divalidasi}/{total file}` — klik untuk lihat per Order No (Success/Failed + pesan).
+- **Status Success** = semua baris lolos screening → batch muncul di list utama.
+- **Status Failed** = ada baris bermasalah → batch **tidak** muncul di list utama; perbaiki file.
 - **File Name** bisa didownload **maks 24 jam** sejak upload.
-- Batch yang gagal validasi biasanya **tidak** muncul di list utama — cek di Log Data.
+- Contoh pesan screening: Order not found · Duplicate · different company · Invalid transaction status · Invalid wave status · lock batch lain.
+
+### Audit Log
+
+Riwayat perubahan data user (termasuk ubah Processing Date).
 
 ---
 
@@ -107,15 +117,15 @@ Toolbar **Log Data** membuka riwayat import:
 
 | Gejala | Penyebab umum | Solusi |
 |--------|---------------|--------|
-| Seluruh batch gagal padahal cuma 1 salah | All-or-nothing | Buka modal detail, perbaiki baris Failed, upload ulang seluruh file |
+| Seluruh batch gagal padahal cuma 1 salah | All-or-nothing Import | Buka modal detail, perbaiki baris Failed, upload ulang seluruh file |
+| Import Success tapi Wave Failed (pesan Processing Date) | Trx date order lebih baru dari Processing Date | Naikkan Processing Date ≥ trx date order, lalu upload ulang |
 | Total Processed < total file | Validasi masih jalan | Tunggu sampai angka sama |
-| Lama di Pending | Ada batch lain masih Processing | Tunggu batch aktif selesai (bisa dari company lain) |
-| Progress hampir penuh, status masih Processing lama | Penutup otomatis batch tidak jalan | Tunggu diam lebih dari 60 menit → **Redispatch**; jika gagal, eskalasi ke Support/DevOps |
-| Layar Completed tapi sistem masih lambat | Pekerjaan hitung stok / sync masih mengantre | Jeda upload batch besar berikutnya; pantau bersama Support |
+| Lama di Pending / In Queue | Ada batch lain masih Processing | Tunggu batch aktif selesai (bisa dari company lain) |
+| Progress hampir penuh, status masih Processing lama | Penutup otomatis batch tidak jalan | Diam > 60 menit → **Redispatch**; jika gagal, eskalasi Support/DevOps |
+| Layar Completed tapi sistem masih lambat | Pekerjaan hitung stok / sync masih mengantre | Jeda upload batch besar berikutnya |
 | File tidak bisa didownload | Lewat 24 jam | Simpan salinan file sendiri sejak awal |
-| Order tidak muncul di batch aktif | Sudah lanjut / sudah Shipped | Cek progress Shipped / Failed Ship |
-| Tidak bisa ubah Processing Order Date | Periode akuntansi tertutup | Pilih tanggal di periode terbuka |
-| Order lama gagal padahal stok baru ada | Tanggal processing masih di tanggal order lama | Set **Processing Order Date** ke tanggal stok ready lalu upload ulang |
+| Tidak bisa ubah Processing Date | Periode akuntansi tertutup / tanggal future | Pilih tanggal di periode terbuka, tidak di masa depan |
+| Order lama gagal padahal stok baru ada | Tanggal processing masih sebelum stok ready | Set **Processing Date** ke tanggal stok ready lalu upload ulang |
 
 ---
 
@@ -125,16 +135,19 @@ Toolbar **Log Data** membuka riwayat import:
 A: Skip Processing = pilih order yang **sudah** di Default Wave dari list. Skip Wave Process = **upload** order yang belum di-wave, lalu otomatis sampai shipped.
 
 **Q: Beda dengan Unassign Wave?**  
-A: Unassign Wave hanya sampai Default Wave. Menu ini lanjut otomatis ke skip sampai shipped. Keduanya share **Processing Order Date**.
+A: Unassign Wave hanya sampai Default Wave. Menu ini lanjut otomatis ke skip sampai shipped. Keduanya share **Processing Date**.
 
 **Q: Waves Management ikut?**  
-A: Tidak — setelah masuk Default Wave langsung lanjut skip processing (bypass distribusi wave khusus).
+A: Tidak — setelah masuk Default Wave langsung lanjut skip processing.
 
-**Q: Processing Order Date diubah kolega — kenapa ikut berubah?**  
+**Q: Processing Date diubah kolega — kenapa ikut berubah?**  
 A: Nilai per company, bukan per user.
 
+**Q: Field Processing Date kosong — jamnya jadi apa?**  
+A: Sistem pakai **waktu sekarang** saat upload (tanggal + jam), bukan 23:59:59.
+
 **Q: Progress penuh tapi status batch tidak Completed?**  
-A: Coba **Redispatch** setelah batch diam lebih dari 60 menit. Kalau banyak file lain ikut menunggu, satu batch macet bisa menahan semuanya.
+A: Coba **Redispatch** setelah batch diam lebih dari 60 menit.
 
 **Q: Ada panduan antrean job untuk Support/DevOps?**  
-A: Ya — lihat dokumentasi [Horizon Jobs — Skip Wave pipeline](../horizon-jobs/pipelines/skip-wave-process.md) (teknis) atau [Horizon Jobs KB](../horizon-jobs/knowledge-base.md).
+A: Ya — lihat dokumentasi [Horizon Jobs — Skip Wave pipeline](../horizon-jobs/pipelines/skip-wave-process.md) atau [Horizon Jobs KB](../horizon-jobs/knowledge-base.md).

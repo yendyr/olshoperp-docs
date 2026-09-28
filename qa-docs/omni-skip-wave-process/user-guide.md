@@ -2,12 +2,12 @@
 doc_type: user-guide
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.2
-last_updated: 2026-09-20
+version: 1.3
+last_updated: 2026-09-28
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.2
+source_version: 1.4
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Skip Wave Process — Panduan Pengguna
@@ -40,10 +40,11 @@ flowchart LR
 **Versi teks:**
 
 1. Siapkan file berisi daftar **Order No**.
-2. Upload di Skip Wave Process.
-3. Sistem memvalidasi semua baris.
-4. Jika lolos, batch masuk antrian → kirim ke Default Wave → skip sampai shipped.
-5. Pantau progress di list sampai status **Completed**.
+2. Cek / set **Processing Date** (pojok kiri atas).
+3. Upload di Skip Wave Process.
+4. Sistem memvalidasi semua baris.
+5. Jika lolos, batch masuk antrian → kirim ke Default Wave → skip sampai shipped.
+6. Pantau progress di list sampai status **Completed**.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -62,12 +63,12 @@ flowchart LR
 
 Pastikan:
 
-- **Processing Order Date** sudah sesuai hari proses (default hari ini 23:59:59). Order lama dengan stok baru ready → set ke tanggal stok ready.
+- **Processing Date** sesuai hari proses. Kalau dikosongkan, sistem memakai **waktu sekarang** (tanggal + jam saat upload). Order lama dengan stok baru ready → set ke tanggal stok ready. Order yang tanggalnya lebih baru dari Processing Date akan gagal di tahap Wave (bukan saat Import).
 - Order **approved** (atau processed) dan **belum** masuk Default Wave.
 - Order milik **company** yang sedang kamu login.
 - Order No **tidak duplikat** dalam satu file.
 - Setup gudang (lokasi tahap + binding shipper 3PL) sudah siap.
-- File pakai template: header **Order No**, maksimal **1.000** baris.
+- File pakai template: header **Order No**, format `xlsx` / `xls` / `csv`, maksimal **1.000** baris.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -77,8 +78,9 @@ Pastikan:
 
 - Batch **Completed** → cek Wave Progress & angka Shipped.
 - Kalau ada masalah pengiriman setelah shipped → menu **Failed Ship**.
-- Batch gagal validasi → buka **Log Data**, perbaiki file, **upload ulang seluruh file**.
-- Progress hampir penuh tetapi status masih **Processing** lama (diam lebih dari 60 menit) → coba **Redispatch** agar antrian file lain bisa lanjut.
+- Batch gagal validasi Import → buka **Log Data**, perbaiki file, **upload ulang seluruh file**.
+- Import sukses tapi Wave Failed karena Processing Date → naikkan Processing Date, lalu upload ulang.
+- Progress hampir penuh tetapi status masih **Processing** lama (diam lebih dari 60 menit) → coba **Redispatch**.
 - Setelah status Completed, sistem masih bisa sibuk di belakang layar (hitung stok / sync marketplace). Wajar — jangan langsung upload batch besar beruntun tanpa jeda.
 
 🎬 [Interactive demo akan ditambahkan di sini]
@@ -87,9 +89,10 @@ Pastikan:
 
 ## 5. Yang Perlu Diperhatikan
 
-- **Processing Order Date** di pojok kiri atas dipakai **seluruh** order dalam file — sama dengan Unassign Wave (satu company).
-- Tidak bisa simpan tanggal di periode akuntansi yang sudah ditutup.
-- Kalau **satu** Order No salah / tidak ketemu / duplikat, **seluruh file gagal** diproses — tidak ada yang lanjut.
+- **Processing Date** di pojok kiri atas dipakai **seluruh** order dalam file — sama dengan Unassign Wave (satu company).
+- Field kosong = sistem pakai waktu sekarang saat upload (bukan jam 23:59:59).
+- Tidak bisa simpan tanggal di periode akuntansi yang sudah ditutup atau di masa depan.
+- Kalau **satu** Order No salah / tidak ketemu / duplikat, **seluruh file gagal** di Import — tidak ada yang lanjut.
 - Boleh upload banyak file, tapi sistem proses **satu per satu** sampai selesai.
 - Progress Wave = sudah di Default Wave; kolom Skip Processing = sudah sampai Shipped.
 - File di Log Data hanya bisa didownload **24 jam**.
@@ -102,13 +105,14 @@ Pastikan:
 ## 6. Langkah-Langkah (Step by Step)
 
 1. Buka **Omni → Skip Wave Process**.
-2. Cek / set **Processing Order Date** (pojok kiri atas).
+2. Cek / set **Processing Date** (pojok kiri atas). Hover tooltip untuk ringkasan aturan.
 3. Klik **Import** → download template.
 4. Isi kolom **Order No** (satu order per baris).
 5. Upload file.
 6. Cek toast / **Log Data** — pastikan import sukses.
 7. Di list utama, pantau **Wave Progress** dan **Skip Processing** sampai Completed.
-8. Jika gagal: klik **Total Order Processed** di Log Data → baca pesan per baris → perbaiki → upload ulang.
+8. Jika gagal Import: klik **Total Order Processed** di Log Data → baca pesan per baris → perbaiki → upload ulang.
+9. Jika gagal Wave karena tanggal: sesuaikan Processing Date → upload ulang.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -116,12 +120,13 @@ Pastikan:
 
 ## 7. Tips & Hal yang Sering Bikin Bingung
 
-- **Semua gagal padahal cuma 1 salah** — memang begitu (all-or-nothing).
+- **Semua gagal padahal cuma 1 salah** — memang begitu di Import (all-or-nothing).
+- **Import Success tapi Wave Failed (Processing Date)** — tanggal order lebih baru dari Processing Date; naikkan tanggalnya.
 - **Angka Processed masih naik** — validasi masih berjalan di background.
-- **Lama Pending** — tunggu batch aktif lain selesai.
+- **Lama Pending / In Queue** — tunggu batch aktif lain selesai.
 - **Progress penuh tapi status belum Completed** — setelah diam lebih dari 60 menit, coba **Redispatch**.
 - **Completed tapi sistem masih lambat** — pekerjaan hitung stok / sync masih mengantre; jeda dulu sebelum upload besar berikutnya.
-- **Order stok terlambat** — set Processing Order Date ke tanggal stok ready.
+- **Order stok terlambat** — set Processing Date ke tanggal stok ready.
 - **Beda Skip Processing menu** — itu untuk order yang sudah di wave, dipilih dari list.
 - **Beda Unassign Wave** — itu hanya sampai Default Wave, tidak auto sampai shipped; tanggal processing-nya sama.
 - **Waves Management** — tidak dipakai di jalur ini (langsung skip setelah Default Wave).

@@ -2150,16 +2150,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: draft
+        status: review
     legacy_sources:
       - skip-wave-process-sot.md
     code_globs:
@@ -2173,6 +2173,7 @@ menus:
         - app/Console/Commands/SalesOrder/SkipWaveDispatchCommand.php
       frontend:
         - olshoperp-frontend/src/pages/Omni/Processing/SkipWaveProcess/**/*
+        - olshoperp-frontend/src/pages/SCM/Setting/components/SalesOrderProcessingDate.vue
 
   omni-unassign-wave:
     menu_name: "Unassign Wave"
