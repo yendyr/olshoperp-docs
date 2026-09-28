@@ -67,7 +67,7 @@ Hanya **baca/aktifkan** saat konteks cocok:
 | `24-plain-language-team-comms.mdc` | Tulis card/comment/Telegram ke tim QA |
 | `25-improvement-request-screening.mdc` | Screening Improvement ber-Request ID |
 | `26-requirement-docs-reminder.mdc` | Reminder backlog requirement docs |
-| `26-agent-mandatory-charter.mdc` | **Always** — overlay IDE; inti universal di `hazel/universal-agent-guardrails.md` |
+| `27-antigravity-token-usage-analysis.mdc` | Analisa token/usage Antigravity — `hazel/antigravity-token-usage-analysis.md` |
 
 Always-on tipis: `01` behavior · `02` repo · `03` immutable · `05` persona · `07` uncertainty · `10` anti-hallucination · `26` charter.
 
@@ -118,6 +118,7 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `25-improvement-request-screening.mdc` | **Requestable** — screening Improvement + Request ID |
 | `26-requirement-docs-reminder.mdc` | **Requestable** — reminder backlog requirement docs |
 | `26-agent-mandatory-charter.mdc` | **Always** — overlay IDE; inti universal di `hazel/universal-agent-guardrails.md` |
+| `27-antigravity-token-usage-analysis.mdc` | **Requestable** — analisa token/usage Antigravity (checklist A.1–A.6) |
 
 ## Telegram Bot & Agent Guardrails (Anti-Prompt Injection & Strict OOT Defense)
 
