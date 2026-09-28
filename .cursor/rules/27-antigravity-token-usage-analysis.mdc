@@ -2,7 +2,8 @@
 description: >-
   Analisa token/usage sesi Antigravity (transcript/log). Aktifkan saat user minta
   analisa token, usage, pemborosan sesi, atau banding sebelum/sesudah rules hygiene.
-  Ikuti hazel/antigravity-token-usage-analysis.md — minta Blok A dulu, verdict + checklist A.1–A.6.
+  Ikuti hazel/antigravity-token-usage-analysis.md — minta Blok A dulu, verdict + checklist A.1–A.6;
+  tulis hasil ke file lokal Downloads, minta tim kirim file ke grup Telegram QA.
 alwaysApply: false
 ---
 
@@ -13,5 +14,7 @@ Saat user meminta analisa token / usage / pemborosan sesi Antigravity:
 1. Baca dan ikuti **`hazel/antigravity-token-usage-analysis.md`** (wajib).
 2. Tanpa **Blok A** (conversation ID + transcript/laporan + rentang + apakah sesi post-hygiene) → **jangan** spekulasi; kirim template minta data di playbook §4.
 3. Output wajib: tabel metrik + checklist rem **A.1–A.6** + **satu verdict** (`HEMAT_CUKUP` / `CAMPUR` / `MASIH_BOROS` / `DATA_KURANG`).
-4. Bahasa ke Lead QA boleh ringkas; kalau hasilnya buat diteruskan ke tim → plain language (twin plain-language bila perlu).
-5. Jangan dump log mentah ke chat — rekap saja (anti-dump).
+4. **Tulis laporan lengkap** ke file lokal di mesin orang itu:  
+   `~/Downloads/ANALISA_TOKEN_USAGE_{nama}_{YYYY-MM-DD}.md` (playbook §3.1). Di chat cukup path + ringkas verdict.
+5. **Minta mereka kirim file tersebut ke grup Telegram tim QA** (playbook §3.2) — agent tidak post sendiri kecuali diminta + ada akses.
+6. Bahasa ke tim: non-teknis. Jangan dump log mentah ke chat.

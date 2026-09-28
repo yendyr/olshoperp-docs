@@ -2,7 +2,7 @@
 title: Antigravity — analisa token usage (on-point)
 audience: qa-lead / agent
 status: active
-version: 1.0
+version: 1.1
 last_updated: 2026-09-28
 owner: QA - Yemima
 related:
@@ -111,9 +111,36 @@ Sertakan **1–3 rekomendasi tindakan** ke Lead QA (bahasa non-teknis ke tim kal
 2. Hitung / ekstrak metrik §2 dari log atau laporan yang dilampirkan.
 3. Isi checklist rem A.1–A.6 + anti-dump.
 4. Verdict + banding baseline (jika Blok B ada).
-5. **Jangan** usulkan rewrite besar rules kecuali ada pelanggaran berulang yang belum tertutup rem.
+5. **Tulis hasil lengkap ke file lokal** di mesin anggota tim (§3.1) — jangan hanya di bubble chat.
+6. **Minta mereka kirim file itu ke grup Telegram** tim QA (§3.2).
+7. **Jangan** usulkan rewrite besar rules kecuali ada pelanggaran berulang yang belum tertutup rem.
 
-Hemat token saat menganalisa: jangan `VIEW_FILE` seluruh `transcript_full.jsonl` utuh berkali-kali — pakai script ringkas / sampling turn terberat; stdout analisa = **rekap**, detail ke `scratch/` bila perlu.
+Hemat token saat menganalisa: jangan `VIEW_FILE` seluruh `transcript_full.jsonl` utuh berkali-kali — pakai script ringkas / sampling turn terberat; stdout analisa = **rekap singkat di chat** + **file lengkap di lokal**.
+
+### 3.1 File lokal hasil analisa (wajib)
+
+Simpan markdown di mesin orang yang dimintai analisa (bukan commit ke repo olshoperp-docs):
+
+```text
+~/Downloads/ANALISA_TOKEN_USAGE_{nama-atau-initial}_{YYYY-MM-DD}.md
+```
+
+Contoh: `~/Downloads/ANALISA_TOKEN_USAGE_rina_2026-09-30.md`
+
+Isi file = laporan lengkap (metrik + checklist rem + verdict + rekomendasi singkat).  
+Di chat Antigravity cukup bilang path file + 2–3 kalimat ringkas (verdict).
+
+Kalau folder `Downloads` tidak ada / beda OS → pakai `~/Documents/` dengan nama file yang sama.
+
+### 3.2 Kirim ke grup Telegram (wajib diingatkan ke tim)
+
+Setelah file tertulis, agent **wajib** minta anggota tim (bahasa biasa):
+
+> "Hasil analisanya sudah aku simpan di:  
+> `{path file}`  
+> Tolong **kirim file itu ke grup Telegram tim QA** ya (boleh sekalian tulis singkat verdict-nya, mis. HEMAT_CUKUP / CAMPUR / MASIH_BOROS)."
+
+Nama grup: ikut yang dipakai tim sehari-hari (Lead QA tentukan). Agent tidak perlu post sendiri ke Telegram kecuali diminta eksplisit + ada akses bot.
 
 ---
 
@@ -127,10 +154,13 @@ Untuk analisa token yang on-point, tolong kirim:
 3. Rentang tanggal sesi
 4. Apakah chat ini dibuat setelah sync rules hygiene (A.1–A.6)? ya/tidak
 5. Workspace path yang dipakai
+6. Nama / initial kamu (buat nama file hasil di Downloads)
 
 Opsional tapi penting untuk banding:
-6. Laporan analisa sebelumnya (baseline)
-7. 2–3 conversation ID chat BARU (bukan thread lama multi-hari)
+7. Laporan analisa sebelumnya (baseline)
+8. 2–3 conversation ID chat BARU (bukan thread lama multi-hari)
+
+Nanti hasilnya aku simpan ke file lokal, lalu kamu kirim file itu ke grup Telegram tim QA.
 ```
 
 ---
@@ -140,5 +170,5 @@ Opsional tapi penting untuk banding:
 | File | Peran |
 |------|--------|
 | Charter § A.1–A.6 | Rem perilaku saat **pakai** agent |
-| Playbook ini | Rem saat **minta analisa usage** |
+| Playbook ini | Rem saat **minta analisa usage** + delivery file + Telegram |
 | `hazel/antigravity-session-hygiene.md` | SOP singkat untuk tim |

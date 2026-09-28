@@ -34,3 +34,4 @@ source: .cursor/rules/26-agent-mandatory-charter.mdc § A.1–A.6
 3. Sebut menu + kode + server biar agent tidak “mengembara”  
 4. Jangan minta agent “bikin script dulu” untuk cek data biasa  
 5. Kalau agent berhenti & tanya → jawab petunjuk, atau minta ringkas temuan dulu  
+6. **Analisa token:** hasilnya ada di file `Downloads/ANALISA_TOKEN_USAGE_…md` → **kirim file itu ke grup Telegram tim QA**  
