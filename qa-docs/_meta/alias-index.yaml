@@ -3,11 +3,11 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-09-29T07:44:59Z'
+generated: '2026-09-29T09:11:13Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
 menu_count: 129
-alias_count: 763
+alias_count: 766
 ambiguous_count: 27
 aliases:
   account payable report: accounting-account-payable-report
@@ -552,6 +552,7 @@ aliases:
   p and l: accounting-profit-loss
   p l: accounting-profit-loss
   p&l: accounting-profit-loss
+  pack list: omni-packing-list
   packing list: omni-packing-list
   packing process: omni-packing-process
   pallet: supplychain-colli-type
@@ -738,6 +739,7 @@ aliases:
       system-product: SupplyChain = System Product (/supplychain/product)
   setelan akun produk: accounting-product-coa-group
   settlement mapping: accounting-settlement-mapping
+  shipping handoff: omni-packing-list
   shipping service: omni-shipping-service
   shipping service platform: omni-shipping-service-platform
   shopee booking: omni-sales-platform
@@ -974,6 +976,7 @@ aliases:
     by_slug:
       omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
       all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  void packing outrack: omni-packing-list
   void recreate:
     slugs:
     - omni-sales-platform

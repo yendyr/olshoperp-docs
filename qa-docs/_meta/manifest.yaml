@@ -2018,7 +2018,7 @@ menus:
 
   omni-packing-list:
     menu_name: "Packing List"
-    short_description: "Review packing lists prepared for marketplace order fulfillment."
+    short_description: "Pack after checking — pack/bundle, complete to collecting, shipping handoff (shipper/AWB)."
     path: omni-packing-list
     module: SupplyChain
     menu_links:
@@ -2027,21 +2027,25 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - "**/PackingList*"
+        - "**/packing-list*"
+      frontend:
+        - "**/Omni/Processing/PackingList/**"
+        - "**/omni/packing-list*"
 
   omni-picking-list:
     menu_name: "Picking List"
