@@ -3,12 +3,12 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-09-20T14:15:59Z'
+generated: '2026-09-29T06:13:54Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
 menu_count: 129
-alias_count: 754
-ambiguous_count: 26
+alias_count: 760
+ambiguous_count: 27
 aliases:
   account payable report: accounting-account-payable-report
   account payment: accounting-supplier-payment
@@ -271,6 +271,7 @@ aliases:
   etm 15726: accounting-purchase-return
   etm 15728: accounting-account-payable-report
   etm 15729: accounting-purchase-report
+  etm 16011: accounting-purchase-report
   extract bundle:
     slugs:
     - omni-sales-platform
@@ -384,6 +385,7 @@ aliases:
   import so general: sales-order-general
   inbound lama: supplychain-mutation-inbound
   income statement: accounting-profit-loss
+  incomplete so picklist: omni-picking-list
   instant settlement: accounting-settlement-upload
   internal company: generalsetting-internal-company
   inventory detail: supplychain-inventory-detail
@@ -579,6 +581,7 @@ aliases:
   picking list scm: supplychain-manual-picking-list
   picking process: omni-picking-process
   piutang: accounting-customer-invoice
+  pl: omni-picking-list
   pl manual: supplychain-manual-picking-list
   platform account labelling: accounting-platform-account-labels
   platform account mapping: accounting-platform-account-mapping
@@ -605,6 +608,17 @@ aliases:
   print awb: omni-process-summary
   print awb technical: omni-process-summary
   process summary: omni-process-summary
+  processing date:
+    slugs:
+    - omni-skip-processing
+    - omni-skip-wave-process
+    - omni-unassign-wave
+    hint: SupplyChain = Skip Processing (/omni/skip-processing). SupplyChain = Skip Wave Process (/omni/skip-wave-process).
+      SupplyChain = Unassign Wave (/omni/unassign-wave).
+    by_slug:
+      omni-skip-processing: SupplyChain = Skip Processing (/omni/skip-processing)
+      omni-skip-wave-process: SupplyChain = Skip Wave Process (/omni/skip-wave-process)
+      omni-unassign-wave: SupplyChain = Unassign Wave (/omni/unassign-wave)
   processing order date:
     slugs:
     - omni-skip-wave-process
@@ -655,6 +669,7 @@ aliases:
   purchase report: accounting-purchase-report
   purchase requisition: supplychain-purchase-requisition
   purchase return: accounting-purchase-return
+  purchase return report: accounting-purchase-report
   py: accounting-supplier-payment
   qc procedure: supplychain-qc-procedure
   queue connection salesorder: horizon-jobs
@@ -705,6 +720,7 @@ aliases:
   sales return scm: supplychain-sales-returns
   sales-order-general: sales-order-general
   salesorderimportsheet2: sales-order-general
+  scm picking list: omni-picking-list
   select multiple products: supplychain-purchase-order
   select outstanding pr products: supplychain-purchase-order
   send to default waves: omni-unassign-wave

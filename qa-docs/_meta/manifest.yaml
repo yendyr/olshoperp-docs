@@ -2041,7 +2041,7 @@ menus:
 
   omni-picking-list:
     menu_name: "Picking List"
-    short_description: "Review picking lists prepared for marketplace order fulfillment."
+    short_description: "Datalist and process picking lists (PL) generated from Wave/SO for warehouse fulfillment."
     path: omni-picking-list
     module: SupplyChain
     menu_links:
@@ -2050,21 +2050,25 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - "**/PickingList*"
+        - "**/picking-list*"
+      frontend:
+        - "**/Omni/Processing/PickingList/**"
+        - "**/omni/picking-list*"
 
   omni-process-summary:
     menu_name: "Order Process"
