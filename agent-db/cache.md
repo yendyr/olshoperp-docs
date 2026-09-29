@@ -36,8 +36,10 @@ AND is_return_process = 0
 | Menu | Tebakan | Table | Catatan |
 |------|---------|-------|---------|
 | Manage Platform Product | platform product | `omni_products` | ≠ System Product (`scm_products`) |
-| Sales Order / All Sales Order | SO / sales_orders | `omni_sales_orders` | large; banyak kolom `*status*` → DESCRIBE wajib |
-| Store Binding | stores / toko | `omni_stores` | |
+| Sales Order / All Sales Order | SO / sales_orders | `omni_sales_orders` | large; banyak kolom `*status*` → DESCRIBE wajib; key: `code`, `platform_order_id`, `platform_order_status`, `store_id`, `transaction_status`, `process_status` (bukan `order_no`) |
+| Sales Order Booking | booking / booking_sn | `omni_sales_order_bookings` | FK `sales_order_id`; `booking_number`, `booking_status`, `match_status` (MATCH_SUCCESSFUL), `is_converted_to_real_order` |
+| Platform Order JSON | platform order payload | `omni_platform_order_json` | FK `sales_order_id`; `code`, `response` longtext |
+| Store Binding | stores / toko | `omni_stores` | key: `store_name` (bukan `name`), `platform_id`, `store_platform_name` |
 | Waves Management | waves | `omni_waves` | |
 | Sales Return (Omni) | platform return | `omni_sales_returns` | detail `omni_sales_return_details`; `code LIKE 'SRP-%'` |
 
