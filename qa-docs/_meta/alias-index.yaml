@@ -3,11 +3,11 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-09-29T06:13:54Z'
+generated: '2026-09-29T07:44:59Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
 menu_count: 129
-alias_count: 760
+alias_count: 763
 ambiguous_count: 27
 aliases:
   account payable report: accounting-account-payable-report
@@ -199,6 +199,7 @@ aliases:
   chart-of-account: accounting-chart-of-account
   checking list: omni-checking-list
   checking process: omni-checking-process
+  cl: omni-checking-list
   closing period: accounting-fiscal-period
   cn: accounting-credit-note
   cn technical: accounting-credit-note
@@ -685,6 +686,7 @@ aliases:
   rekening kas bank: accounting-company-detail-bank
   rekonsiliasi bank: accounting-cash-bank-reconcile
   remapping stok: accounting-stock-remapping
+  replace defective: omni-checking-list
   restock lost scrap: supplychain-failed-ship
   retry skip: omni-skip-processing
   retur beli: accounting-purchase-return
@@ -913,6 +915,7 @@ aliases:
   template vat: accounting-default-vat
   tf ext: supplychain-mutation-transfer-external
   tf inbound: supplychain-transfer-inbound
+  tf scrap: omni-checking-list
   tfi: supplychain-mutation-transfer-internal
   tipe wadah: supplychain-colli-type
   total price return: accounting-purchase-return

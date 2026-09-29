@@ -1987,7 +1987,7 @@ menus:
 
   omni-checking-list:
     menu_name: "Checking List"
-    short_description: "Review checking lists prepared for marketplace order fulfillment."
+    short_description: "QC checking lists after picking — check, replace defective (scrap/replace TF), complete to packing."
     path: omni-checking-list
     module: SupplyChain
     menu_links:
@@ -1996,21 +1996,25 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - "**/CheckingList*"
+        - "**/checking-list*"
+      frontend:
+        - "**/Omni/Processing/CheckingList/**"
+        - "**/omni/checking-list*"
 
   omni-packing-list:
     menu_name: "Packing List"
