@@ -6,9 +6,9 @@ menu_name: "Dev - Sales Platform"
 test_type: happy
 title: "Fungsionalitas Print Order Lifecycle dan Keselarasan Data Cetak"
 summary: "Memastikan tombol Print pada panel Order Lifecycle berhasil membuka halaman/tampilan cetak dengan format rapi dan data yang identik 100% dengan tampilan di layar Slideover."
-status: draft
+status: ready
 owner: "QA - Yemima"
-last_updated: 2026-09-24
+last_updated: 2026-09-30
 requirement_ref: "qa-docs/omni-sales-platform/requirement.md"
 automated: false
 automated_spec: null
@@ -21,9 +21,9 @@ related_menus:
   - all-sales-order
 test_data:
   - field: "Sales Order Test"
-    value: "SO-5TBW8NFJ"
+    value: "SO-5TBW8NFJ / SO-5UJF5WID"
 steps:
-  - "1. Buka form Edit dokumen Sales Platform SO-5TBW8NFJ"
+  - "1. Buka form Edit dokumen Sales Platform SO-5TBW8NFJ / SO-5UJF5WID"
   - "2. Buka panel Order Lifecycle"
   - "3. Klik tombol 'Print' di bagian atas panel Slideover"
   - "4. Periksa dialog/halaman cetak yang muncul"
@@ -34,35 +34,37 @@ expected_result: |
   3. Seluruh nilai pada tabel dan strip ringkasan (Qty, nominal uang, status) identik 100% dengan tampilan di UI Slideover.
   4. Tata letak cetak rapi dan siap untuk dicetak fisik maupun disimpan sebagai PDF.
 test_result:
-  status: failed
-  started_at: "2026-09-24T14:00:00+07:00"
-  finished_at: "2026-09-24T14:25:00+07:00"
+  status: passed
+  started_at: "2026-09-30T10:00:00+07:00"
+  finished_at: "2026-09-30T10:15:00+07:00"
   executed_by: "OlshopERP (resty)"
   environment: staging
-  log_summary: "FAILED: Fitur Print Summary terbuka tanpa error 500 namun mengalami multiple defect layout & rendering: (1) Tidak membuka di tab baru melainkan me-replace tab aktif, (2) Konten cetak terpotong dan terduplikasi menjadi 2 halaman dengan informasi yang sama terpotong, (3) Broken UI pada section 'Money -' di mana teks/komponen nilai keluar dari batas card (overflow), dan (4) Layout print terlalu sempit dan rata kanan dengan banyak whitespace kosong di sebelah kiri (tidak responsif pada Chrome print preview)."
-  report_url: "https://app.betterbugs.io/session/6ab4d3b1587953ccdcfdb2be"
+  log_summary: "PASSED: Tombol Print Summary membuka tab baru (tidak me-replace tab aktif), layout cetak proporsional (tidak sempit rata kanan di Chrome), data tidak terduplikasi 2 halaman dan teks angka pada section Money tidak overflow keluar card (memenuhi AC-03)."
+  report_url: "https://drive.google.com/file/d/1J_n7MK3HOd68ulTzR69GbqG7jbpc_dgU/view?usp=drive_link"
 test_data_used:
-  - trx_code: "SO-5TBW8NFJ"
-    actual_defects:
-      - "Tab navigasi: Tidak membuka di tab baru (_blank), tetap di tab aktif form edit."
-      - "Data terpotong: Hanya menampilkan Header, Quantity, dan Order Lifecycle Timeline (terpotong pula), terduplikasi ke halaman 2 dengan data terpotong yang sama."
-      - "Broken UI: Pada section 'Money -', komponen teks kartu (order amount, invoiceable value, sales invoice, dll) overflow/keluar dari batas space card."
-      - "Print stylesheet alignment: Tampilan print preview Chrome terlalu sempit dan rata kanan, menyisakan space kosong besar di sebelah kiri."
-    expected: "Printout membuka di tab baru, data lengkap 100% tanpa kepotong (memenuhi AC-3), layout rapi proporsional, dan tidak ada komponen overflow."
+  - trx_code_platform: "SO-5TBW8NFJ"
+    evidence_url: "https://drive.google.com/file/d/1J_n7MK3HOd68ulTzR69GbqG7jbpc_dgU/view?usp=drive_link"
+  - trx_code_general: "SO-5UJF5WID"
+    evidence_url: "https://drive.google.com/file/d/1oNP_USwQj3HVEsoylaX0Y9zFb_Eg_wW0/view?usp=drive_link"
 run_history:
   - run_at: "2026-09-24T14:25:00+07:00"
     status: failed
     via: "manual:OlshopERP"
     jira: "ETM-15893"
     note: "Defect AC-3 (Print Layout): Konten terpotong & duplikat 2 halaman, broken UI text overflow section Money, print styling rata kanan sempit, tidak buka di tab baru."
+  - run_at: "2026-09-30T10:15:00+07:00"
+    status: passed
+    via: "manual:OlshopERP"
+    jira: "ETM-16098"
+    note: "Retest PASSED (AC-03): Print Summary buka tab baru, layout proporsional, data utuh tanpa duplikasi, tidak ada text overflow."
 first_execution:
   at: "2026-09-24T14:25:00+07:00"
   via: "manual:OlshopERP"
   jira: "ETM-15893"
 last_execution:
-  at: "2026-09-24T14:25:00+07:00"
-  jira: "ETM-15893"
-  status: failed
+  at: "2026-09-30T10:15:00+07:00"
+  jira: "ETM-16098"
+  status: passed
   via: "manual:OlshopERP"
 ---
 
@@ -72,24 +74,17 @@ last_execution:
 Menguji fungsionalitas cetak dokumen *Order Lifecycle* melalui tombol Print pada Slideover, memastikan tata letak cetak rapi dan data angka yang tercetak sinkron dengan antarmuka web.
 
 ## Catatan QA & Bukti Pengujian (Evidence)
-Mengacu pada card **ETM-15893** ([Order Lifecycle panel](https://erpintegration.atlassian.net/browse/ETM-15893)).
-- Dokumen Uji: `SO-5TBW8NFJ` (Sales Platform).
+Mengacu pada card **ETM-15893** dan retest pada **ETM-16098** ([Order Lifecycle panel](https://erpintegration.atlassian.net/browse/ETM-16098)).
+- Dokumen Uji & Evidence Retest:
+  1. SO Platform `SO-5TBW8NFJ`: https://drive.google.com/file/d/1J_n7MK3HOd68ulTzR69GbqG7jbpc_dgU/view?usp=drive_link
+  2. SO General `SO-5UJF5WID`: https://drive.google.com/file/d/1oNP_USwQj3HVEsoylaX0Y9zFb_Eg_wW0/view?usp=drive_link
 
-### Temuan Defect Hasil Pengujian:
-1. **Navigasi Tab:**
-   - *Actual:* Halaman cetak terbuka di tab yang sama (tidak membuka tab baru `_blank`), mengganggu alur kerja pengguna pada form edit yang sedang dibuka ❌.
-   - *Expected:* Tombol print seharusnya membuka window/tab baru atau memicu `window.print()` tanpa me-replace tab form aktif.
-2. **Data Terpotong & Duplikasi Halaman:**
-   - *Actual:* Konten pada print preview terpotong parah, hanya memuat Header, Quantity, dan Order Lifecycle Timeline (yang juga terpotong). Print preview menghasilkan 2 halaman dengan data terpotong yang sama secara berulang ❌.
-   - *Expected:* Sesuai kriteria AC-3, seluruh section panel (Header, Quantity, Timeline, Related Transactions, Marketplace Connection, Money Trail, dan What Held This Order Up) harus tercetak utuh dan berkesinambungan.
-3. **Broken UI Komponen (Section Money):**
-   - *Actual:* Pada section *Money -*, komponen teks di dalam kartu (seperti `order amount`, `invoiceable value`, `sales invoice`, dsb) mengalami *overflow* dan keluar dari batasan kotak kartu ❌.
-   - *Expected:* Komponen kartu memiliki *print stylesheet* yang aman dan teks menyesuaikan lebar kartu tanpa meluap keluar batas (*overflow*).
-4. **Layout Print View Terlalu Sempit & Rata Kanan:**
-   - *Actual:* Pada Chrome print preview, seluruh dokumen menciut sempit dan condong rata kanan (*right-aligned*), menyisakan area kosong putih (*whitespace*) yang sangat luas di sisi kiri ❌.
-   - *Expected:* Layout cetak responsif dan proporsional memanfaatkan lebar kertas cetak (A4/Portrait atau Landscape) secara seimbang (*centered / full width*).
+### Hasil Pengujian Retest (ETM-16098):
+1. **Navigasi Tab:** Tombol Print Summary membuka tab browser baru (`_blank`) secara mandiri dan tidak lagi me-replace tab aktif ✅.
+2. **Kelengkapan & Tampilan Layout:** Layout cetak tampil proporsional, memanfaatkan lebar kertas secara seimbang, tidak lagi condong sempit rata kanan di Chrome preview, dan data tercetak lengkap tanpa terduplikasi 2 halaman ✅.
+3. **Komponen UI & Styling Money:** Teks angka pada section Money tertata rapi di dalam kotak card dan tidak mengalami *text overflow* ✅.
 
 ### Kesimpulan:
-**FAILED ❌ (Defect AC-3 — Print Layout & CSS Print Media broken).**  
-Fitur cetak ringkasan belum siap digunakan karena layout cetak terpotong, styling kartu uang meluap (*broken UI*), serta alignment media cetak belum proporsional.
+**PASSED 🟢 (AC-03 Terpenuhi).**  
+Fitur Print Order Lifecycle telah diperbaiki dan memenuhi standar tampilan cetak dokumen.
 

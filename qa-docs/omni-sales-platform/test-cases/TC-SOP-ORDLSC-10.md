@@ -8,7 +8,7 @@ title: "Penanganan Retur Pasca-Settlement dan Pembentukan Credit Note (CN) pada 
 summary: "Memastikan order yang memiliki pengembalian barang (Sales Return) setelah penyelesaian pembayaran (Settlement) mencatat dokumen Credit Note (CN) dan pemotongan nilai Refund pada Money Trail dengan Qty Retur <= Outbound Qty."
 status: draft
 owner: "QA - Yemima"
-last_updated: 2026-09-24
+last_updated: 2026-09-30
 requirement_ref: "qa-docs/omni-sales-platform/requirement.md"
 automated: false
 automated_spec: null
@@ -36,31 +36,38 @@ expected_result: |
   4. Money Trail merefleksikan pemotongan refund dari saldo Received in Bank.
 test_result:
   status: failed
-  started_at: "2026-09-24T21:40:00+07:00"
-  finished_at: "2026-09-24T21:48:00+07:00"
+  started_at: "2026-09-30T10:00:00+07:00"
+  finished_at: "2026-09-30T10:15:00+07:00"
   executed_by: "OlshopERP (resty)"
   environment: staging
-  log_summary: "FAILED (CRITICAL ERROR 500): Saat membuka panel Order Lifecycle pada order ber-Sales Return SO-5T35VYJO (dokumen SR-5T35ZFS4), slideover gagal memuat data dengan pesan 'failed to load lifecycle data. please try again later'. Hasil inspect jaringan menunjukkan endpoint backend /lifecycle menghasilkan HTTP 500 Internal Server Error (Tercatat di Laravel log-viewer index 5248). Fitur Order Lifecycle crash saat memproses pesanan yang memiliki retur penjualan (melanggar AC-13)."
-  report_url: "https://app.betterbugs.io/session/6ab538159a0216b8a623a471"
+  log_summary: "FAILED (DESINKRONISASI STATUS & DATA RETUR): Endpoint /lifecycle sudah tidak lagi error 500 saat order berelasi dengan Sales Return. Namun ditemukan defect baru: (1) Header invoice status terbaca 'UNPAID' dan Customer & Terms '0 of 333.000 already paid' padahal sales invoice sudah dibayar lunas, (2) Section Returns menampilkan 'None' padahal ada riwayat retur, (3) Related Transactions kurang informasi qty retur, dan (4) Timeline order lifecycle hanya mengambil 'restock qty' bukannya 'total return qty' (melanggar AC-13)."
+  report_url: "https://jam.dev/c/5f54355a-ea98-4151-b3c2-688c631c3e06"
 test_data_used:
   - trx_code: "SO-5T35VYJO"
     sr_code: "SR-5T35ZFS4"
-    sr_details: "SO Qty = 6, Restock Qty = 4, Broken Items = 2, Total Return Qty = 6"
-    actual_behavior: "Slideover menampilkan 'failed to load lifecycle data. please try again later', endpoint /lifecycle crash dengan status HTTP 500."
-    log_viewer: "https://api.staging.olshoperp.com/log-viewer?file=097fd301-laravel-2026-09-24.log&query=log-index%3A5248"
+    actual_defects:
+      - "Invoice & Payment Term status: Header invoice status 'UNPAID' dan Payment Term '0 of 333.000 already paid' padahal SI sudah lunas."
+      - "Returns section: Menampilkan 'None. A return would be capped at the 6 pcs already delivered.' padahal ada riwayat return."
+      - "Related Transactions - Exception: Kode SR-5T35ZFS4 bisa diklik tapi belum memuat informasi total return quantity."
+      - "Timeline return quantity: Mengambil 'restock qty' bukannya 'total return qty'."
 run_history:
   - run_at: "2026-09-24T21:48:00+07:00"
     status: failed
     via: "manual:OlshopERP"
     jira: "ETM-15893"
     note: "Critical Defect AC-13: Endpoint backend /lifecycle crash Error 500 pada order dengan dokumen Sales Return."
+  - run_at: "2026-09-30T10:15:00+07:00"
+    status: failed
+    via: "manual:OlshopERP"
+    jira: "ETM-16098"
+    note: "Retest FAILED (AC-13): Error 500 resolved, namun status invoice terbaca UNPAID, section Returns terbaca None, dan timeline salah ambil restock qty bukan total return qty."
 first_execution:
   at: "2026-09-24T21:48:00+07:00"
   via: "manual:OlshopERP"
   jira: "ETM-15893"
 last_execution:
-  at: "2026-09-24T21:48:00+07:00"
-  jira: "ETM-15893"
+  at: "2026-09-30T10:15:00+07:00"
+  jira: "ETM-16098"
   status: failed
   via: "manual:OlshopERP"
 ---
@@ -71,18 +78,23 @@ last_execution:
 Menguji integritas data pencatatan pengembalian barang pasca-penyelesaian transaksi (*Sales Return post-settlement*) dan verifikasi pembentukan Credit Note pada jejak audit keuangan (*Money Trail*) sesuai AC-13.
 
 ## Catatan QA & Bukti Pengujian (Evidence)
-Mengacu pada card **ETM-15893** ([Order Lifecycle panel](https://erpintegration.atlassian.net/browse/ETM-15893)).
+Mengacu pada card **ETM-15893** dan retest pada **ETM-16098** ([Order Lifecycle panel](https://erpintegration.atlassian.net/browse/ETM-16098)).
 - Dokumen Uji: `SO-5T35VYJO`
 - Dokumen Sales Return: `SR-5T35ZFS4` (SO Qty: 6, Restock: 4, Broken: 2, Total Return: 6).
-- Evidence Session: [BetterBugs Session 6ab53815](https://app.betterbugs.io/session/6ab538159a0216b8a623a471)
-- Log Viewer Error: [Laravel Log Index 5248](https://api.staging.olshoperp.com/log-viewer?file=097fd301-laravel-2026-09-24.log&query=log-index%3A5248)
+- Evidence Retest: https://jam.dev/c/5f54355a-ea98-4151-b3c2-688c631c3e06
 
-### Hasil Pengujian (Actual vs Expected):
-1. **Pemuatan Panel Order Lifecycle pada Order dengan Sales Return:**
-   - *Actual:* Slideover gagal memuat data dan menampilkan pesan *"failed to load lifecycle data. please try again later"*. Pemeriksaan tab Network menunjukkan request endpoint backend `.../lifecycle` mengalami crash dengan response **HTTP 500 Internal Server Error** ❌.
-   - *Expected:* Mengacu pada kriteria AC-13, panel Order Lifecycle seharusnya mampu memproses dan menampilkan data alur pesanan yang memiliki dokumen Sales Return tanpa terjadi crash / error 500.
+### Hasil Pengujian Retest (ETM-16098):
+1. **Endpoint Lifecycle:** Request endpoint `/lifecycle` tidak lagi crash (HTTP 500 teratasi) ✅.
+2. **Desinkronisasi Status Pembayaran Invoice:**
+   - *Actual:* Header menampilkan invoice status **'UNPAID'** dan card Customer & Terms menampilkan **'Cash upon receipt 0 of 333.000 already paid'**, padahal faktur penjualan (Sales Invoice) sudah berstatus approved dan dibayar lunas sebelum sales return dibuat ❌.
+   - *Expected:* Status pelunasan faktur penjualan harus tetap mencerminkan status pembayaran riil (**PAID**), sedangkan retur diproses melalui Credit Note / refund di Money Trail.
+3. **Pencatatan Section Returns:**
+   - *Actual:* Section Returns mencatat *"None. A return would be capped at the 6 pcs already delivered."* padahal pesanan memiliki riwayat Sales Return ❌.
+4. **Kuantitas Retur di Related Transactions & Timeline:**
+   - *Actual:* Pada Related Transactions (Exception) tautan kode SR berhasil dibuka namun belum memuat informasi kuantitasnya. Pada Order Lifecycle Timeline, jumlah yang diambil hanya *restock qty* (4 pcs) ❌.
+   - *Expected:* Kuantitas retur pada timeline dan related transaction wajib mengacu pada **Total Return Qty** (6 pcs = Restock 4 + Broken 2).
 
 ### Kesimpulan:
-**FAILED ❌ (Critical Blocker Defect AC-13 — Backend 500 Internal Server Error on Sales Return).**  
-Endpoint backend Order Lifecycle crash (HTTP 500) ketika mengakses pesanan yang memiliki keterkaitan dengan dokumen Sales Return, sehingga seluruh panel gagal dimuat.
+**FAILED ❌ (Defect AC-13 — Payment Status Desynchronization & Incomplete Return Quantities).**  
+Error 500 telah berhasil diperbaiki, namun status pembayaran ter-reset menjadi UNPAID pada pesanan yang sudah lunas, section Returns belum mendeteksi dokumen retur yang ada, serta timeline salah menghitung kuantitas retur menggunakan restock qty bukan total return qty.
 

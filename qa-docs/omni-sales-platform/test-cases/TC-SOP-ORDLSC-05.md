@@ -6,9 +6,9 @@ menu_name: "Dev - Sales Platform"
 test_type: happy
 title: "Kartu Dokumen Transaksi Terkait (Related Transactions) dan Validasi Hyperlink"
 summary: "Memastikan seluruh dokumen turunan yang sudah terbentuk (Delivery Order, Outbound, Sales Invoice, Retur, Settlement) tampil lengkap di section Related Transactions dengan hyperlink navigasi yang valid."
-status: draft
+status: ready
 owner: "QA - Yemima"
-last_updated: 2026-09-24
+last_updated: 2026-09-30
 requirement_ref: "qa-docs/omni-sales-platform/requirement.md"
 automated: false
 automated_spec: null
@@ -36,31 +36,36 @@ expected_result: |
   3. Dokumen dapat dibuka tanpa memicu error 404 atau link mati.
   4. Jika user tidak memiliki izin akses (permission) ke menu dokumen tertentu, kode ditampilkan sebagai teks biasa (plain text), bukan link rusak/403.
 test_result:
-  status: failed
-  started_at: "2026-09-24T13:35:00+07:00"
-  finished_at: "2026-09-24T21:36:00+07:00"
+  status: passed
+  started_at: "2026-09-30T10:00:00+07:00"
+  finished_at: "2026-09-30T10:15:00+07:00"
   executed_by: "OlshopERP (resty)"
   environment: staging
-  log_summary: "FAILED: Dokumen turunan tampil lengkap pada section Related Transactions dan memiliki hyperlink. Namun saat diklik, beberapa tautan dokumen mengalami salah rute (wrong route) sehingga memicu halaman error 404 'We couldn't find the page you were looking for.', yaitu pada dokumen Shipping (SL-xxx), Shipping DO (TFI-xxx), dan Sales Invoice (SI-xxx) yang salah path (melanggar AC-4)."
-  report_url: "https://app.betterbugs.io/session/6ab4d2fa587953ccdcfdb298"
+  log_summary: "PASSED (NAVIGATION FIXED): Tautan kode dokumen Shipping (SL-xxx) dan Shipping DO (TFI-xxx) di Related Transactions sudah mengarah ke rute detail yang valid dan tidak lagi menghasilkan error 404. Catatan QA: Terdapat temuan terpisah pada agregat Delivery Order item bundle yang menampilkan '2 of 5 pcs'."
+  report_url: "https://jam.dev/c/450418cc-c552-4385-bc91-cda80770d106"
 test_data_used:
   - trx_code_platform: "SO-5TBW8NFJ"
-    actual_related_transactions: "Dokumen turunan lengkap terdaftar (DO, Outbound, SI, Shipping, TFI). Namun tautan dokumen Shipping (SL-xxx), Shipping DO (TFI-xxx), dan Sales Invoice (SI-xxx) salah route dan menghasilkan error 404."
-    expected: "Kode dokumen memiliki hyperlink aktif yang membuka URL valid tanpa memicu 404 (AC-4)."
+    actual_related_transactions: "Dokumen turunan lengkap terdaftar (DO, Outbound, SI, Shipping, TFI). Seluruh tautan dokumen Shipping (SL-xxx) dan Shipping DO (TFI-xxx) berhasil membuka halaman detail yang valid."
+    bundle_aggregate_note: "Keterangan pada DO tertulis '2 of 5 pcs' pada item 1 bundle (isi 2 komponen)."
 run_history:
   - run_at: "2026-09-24T21:36:00+07:00"
     status: failed
     via: "manual:OlshopERP"
     jira: "ETM-15893"
     note: "Defect AC-4: Multiple dokumen turunan (SL-xxx, TFI-xxx, SI-xxx) salah rute URL dan memicu error 404 Page Not Found."
+  - run_at: "2026-09-30T10:15:00+07:00"
+    status: passed
+    via: "manual:OlshopERP"
+    jira: "ETM-16098"
+    note: "Retest PASSED (AC-04): Hyperlink Shipping (SL-xxx) dan Shipping DO (TFI-xxx) valid tanpa error 404. Catatan terpisah: agregat DO bundle terbaca '2 of 5 pcs'."
 first_execution:
   at: "2026-09-24T14:38:00+07:00"
   via: "manual:OlshopERP"
   jira: "ETM-15893"
 last_execution:
-  at: "2026-09-24T21:36:00+07:00"
-  jira: "ETM-15893"
-  status: failed
+  at: "2026-09-30T10:15:00+07:00"
+  jira: "ETM-16098"
+  status: passed
   via: "manual:OlshopERP"
 ---
 
@@ -70,25 +75,19 @@ last_execution:
 Menguji kelengkapan pemetaan dokumen turunan (*Related Transactions*) pada alur pemrosesan pesanan dan memastikan fungsionalitas navigasi tautan (*hyperlink*) bekerja dengan tepat.
 
 ## Catatan QA & Bukti Pengujian (Evidence)
-Mengacu pada card **ETM-15893** ([Order Lifecycle panel](https://erpintegration.atlassian.net/browse/ETM-15893)).
+Mengacu pada card **ETM-15893** dan retest pada **ETM-16098** ([Order Lifecycle panel](https://erpintegration.atlassian.net/browse/ETM-16098)).
 - Dokumen Uji: `SO-5TBW8NFJ` (Sales Platform berdokumen lengkap).
-- Evidence Session: 
-  - Hyperlink Presentation: [BetterBugs Session 6ab4d2fa](https://app.betterbugs.io/session/6ab4d2fa587953ccdcfdb298)
-  - Broken Route 404 Evidence: [BetterBugs Session 6ab533f7](https://app.betterbugs.io/session/6ab533f79a0216b8a623a429) & [BetterBugs Session 6ab53465](https://app.betterbugs.io/session/6ab534659a0216b8a623a433)
+- Evidence Retest: https://jam.dev/c/450418cc-c552-4385-bc91-cda80770d106
 
-### Hasil Pengujian (Actual vs Expected):
-1. **Kelengkapan Dokumen:**
-   - *Actual:* Dokumen turunan yang terbentuk terdaftar lengkap di card *Related Transactions* (Delivery Order, Outbound, Sales Invoice, Shipping, dsb) ✅.
-2. **Fungsionalitas Hyperlink (AC-4):**
-   - *Actual:* Tautan kode dokumen aktif, namun saat diklik mengarah ke rute yang salah (*wrong route*) dan memicu halaman error 404 *"We couldn't find the page you were looking for"*, terjadi pada:
-     - Dokumen Shipping (`SL-xxx`) ❌
-     - Dokumen Shipping DO (`TFI-xxx`) ❌
-     - Dokumen Sales Invoice (`SI-xxx`) $\rightarrow$ mengarah ke `/finance/sales-invoice/edit/{id}` bukan `/accounting/customer-invoice/{id}` ❌.
-   - *Expected:* Mengacu pada spesifikasi AC-4 (`Kode dokumen → URL benar; tanpa permission → plain text`), dokumen seharusnya memiliki tautan navigasi aktif ke URL halaman dokumen yang tepat tanpa error 404.
+### Hasil Pengujian Retest (ETM-16098):
+1. **Kelengkapan Dokumen & Fungsionalitas Hyperlink (AC-4):**
+   - *Actual:* Tautan kode dokumen Shipping (`SL-xxx`) dan Shipping DO (`TFI-xxx`) pada section Related Transactions mengarah ke rute detail yang valid dan tidak lagi memicu error 404 ✅.
+2. **Catatan Temuan QA (Agregat Delivery Order pada Item Bundle):**
+   - Keterangan pada kartu Delivery Order tercatat `2 of 5 pcs` padahal total detail item Sales Order hanya 2 pcs (1 bundle isi 2 komponen). Sistem terindikasi salah menjumlahkan denominator komponen bundle secara ganda.
 
 ### Kesimpulan:
-**FAILED ❌ (Defect AC-4 — Multiple Broken Routes 404 on Related Transactions Hyperlinks).**  
-Tautan kode dokumen turunan pada card *Related Transactions* mengalami *broken route* (404 Page Not Found) untuk dokumen Shipping (`SL-xxx`), Shipping DO (`TFI-xxx`), dan Sales Invoice (`SI-xxx`).
+**PASSED 🟢 (AC-04 Terpenuhi untuk Navigasi Related Transactions).**  
+Navigasi rute dokumen Shipping dan Shipping DO telah diperbaiki. Isu tampilan agregat quantity bundle pada kartu DO dicatat sebagai temuan tindak lanjut.
 
 
 
