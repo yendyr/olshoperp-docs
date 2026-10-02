@@ -2,8 +2,8 @@
 doc_type: technical
 menu: system-product
 menu_name: "System Product"
-version: 2.4
-last_updated: 2026-09-01
+version: 2.5
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,6 +13,7 @@ related_docs:
 
 # System Product — Technical Documentation
 
+> **2.5 (2026-10-02):** Bundle breakdown + random → Retail Price (TO-BE ETM-16216); AS-IS `pickBundleChildren` masih `benchmarkPrice` untuk `$is_random` — [requirement §11.6–§11.7](./requirement.md#116-random-sku-di-breakdown-bundle--retail-price-to-be--etm-16216).  
 > **2.4 (2026-09-01):** AS-IS **Product Image Sync** — `SyncProductImageJob`, `ExternalProductController@sync`, `scm_settings`, `is_synced` — [requirement §13.2](./requirement.md#132-product-image-sync-as-is--api-pull).
 
 ## 1. Architecture Overview
@@ -332,8 +333,21 @@ Distribusi harga bundle di **Sales Order** (bukan di System Product form):
 | Topic | Location |
 |-------|----------|
 | Requirement §11 | [requirement.md §11](./requirement.md#11-bundle-pricing-distribution-sales-order--to-be) |
-| SO requirement §10 | [../sales-order-general/requirement.md §10](../sales-order-general/requirement.md#10-product-bundle--proporsi-harga-price-before-vat) |
+| Random + Retail vs Benchmark | [requirement §11.6–§11.7](./requirement.md#116-random-sku-di-breakdown-bundle--retail-price-to-be--etm-16216) · [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216) |
+| Reprice in-place (no delete) | [omni-sales-platform requirement](../omni-sales-platform/requirement.md) · [ETM-16212](https://erpintegration.atlassian.net/browse/ETM-16212) |
 | Canonical BE | `SalesOrderDetailController::pickBundleChildren()` (OmniChannel) |
+
+**AS-IS `pickBundleChildren` (gap):**
+
+```php
+if ($is_random) {
+    $detail_price = $child_product->benchmarkPrice?->benchmark_price ?: 0; // ❌ jangan untuk proporsi jual
+} else {
+    $detail_price = $child_product->price; // retail
+}
+```
+
+**TO-BE:** child random juga `$child_product->price` (Retail Price), lalu jalur Price Before VAT yang sama. Benchmark COGS tetap dipakai path validasi margin saja (`updateAutoApproveFlagForSalesOrder` / snapshot line).
 
 Parent bundle: **no tax config** in SP UI when bundle toggle ON — tax resolved per BoM child at SO time.
 

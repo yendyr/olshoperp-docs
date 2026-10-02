@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.11
-last_updated: 2026-09-09
+version: 1.12
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package, Pending Orders, Unmatched Bookings, Void, Void & Recreate, Recreate]
@@ -24,6 +24,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.12 | 2026-10-02 | QA - Yemima | §6.10 reprice booking/sync = update in-place (no delete-reinsert) — ETM-16212; §6.11 breakdown Retail + before/after processing / late booking price — ETM-16216 |
 | 1.11 | 2026-09-09 | QA - Yemima | TO-BE §5.8 / §6.9: **Void** vs **Void & Recreate** vs **Recreate**; sync anti auto-create; prefix `void-`/`void2-` — ETM-15859 (GAP-SPD-01 Decided) |
 | 1.10 | 2026-09-04 | QA - Yemima | TO-BE Log Data §5.3.1: tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798; kanonik ASO §5.7) |
 | 1.9 | 2026-09-04 | QA - Yemima | Booking Shopee dual-path: masuk by booking_sn dulu; tahan create order_id tanpa booking; merge di **MATCHED** + contoh kasus nyata (§3b, §5.6, FAQ) |
@@ -491,6 +492,53 @@ Edit detail apa pun → `prevent_auto_approve = 1` (keluar auto-approve; approve
 
 Kartu: [ETM-15859](https://erpintegration.atlassian.net/browse/ETM-15859) · Request ID `recvuGCojORk9E`.
 
+### 6.10 Sync / convert booking — update harga in-place (TO-BE · ETM-16212)
+
+**Kartu:** [ETM-16212](https://erpintegration.atlassian.net/browse/ETM-16212) · Relates [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216) (breakdown Retail).
+
+Saat sync/platform **update harga** (termasuk convert booking Shopee → real order + escrow reprice):
+
+| Aturan | Perilaku |
+|--------|----------|
+| Update harga / tax pada detail yang **sudah ada** | **Edit in-place** saja |
+| Delete lalu insert ulang baris detail (child bundle) | **Dilarang** — putus referensi PL/CL/PK/SL / Shipping DO / Instant Settlement |
+| ID `sales_order_detail` | **Harus tetap** setelah reprice |
+
+**Kapan boleh delete + recreate detail bundle**
+
+| Aksi | Syarat |
+|------|--------|
+| **Extract Bundle** (edit SO) | Order **belum** masuk proses gudang (belum Send to Default Waves / pick / check / pack / ship / Shipping DO) + syarat §6.7 (price > 0, dll.) |
+| Sync / convert / reprice | **Tidak** boleh delete-reinsert — selalu in-place |
+| Setelah sudah processing | Extract Bundle / sync **tidak** boleh hapus detail yang sudah punya referensi fulfillment |
+
+**Contoh kasus (Merdian):** SO-5UGMAEZY (`1174888`) — diproses 21 Sept, convert+reprice 26 Sept soft-delete child lama → Instant Settlement / fulfillment FK rusak. URL: `https://merdian.olshoperp.com/omni/sales-order/edit/1174888`.
+
+| ID | Rule | Efek |
+|----|------|------|
+| V-RP-01 | Convert/reprice → update harga in-place | ID detail tidak berubah |
+| V-RP-02 | Convert/reprice → delete+insert child | **Dilarang** |
+| V-RP-03 | Extract Bundle setelah wave/pick–ship | **Ditolak** |
+
+### 6.11 Breakdown harga bundle + Random SKU (TO-BE · ETM-16216)
+
+Kanonik rumus umum: [System Product §11](../system-product/requirement.md#11-bundle-pricing-distribution-sales-order--to-be) · §11.6–§11.7. Kartu: [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216).
+
+| Aturan | Perilaku |
+|--------|----------|
+| Basis proporsi child (termasuk **random**) | **Retail Price** komponen → Price Before VAT |
+| Benchmark COGS | **Bukan** input proporsi jual; hanya validasi margin (random → sibling tertinggi) |
+| Single platform (non-bundle) bind random | Harga baris = **dari platform**; retail hanya default di order internal |
+| Sudah breakdown sejak awal (header price ada) | Pecahan detail **konsisten** sampai invoicing/settlement |
+| Booking: harga header datang **setelah** processing | Reprice ke detail **final** (SKU asli pasca-wave), bukan template BOM random |
+| Sudah Send to Default Waves / pick | Child random sudah jadi SKU asli — jangan `pickBundleChildren` ulang dari random |
+
+| ID | Rule | Efek |
+|----|------|------|
+| V-BD-01 | Proporsi random = retail random | Bukan benchmark |
+| V-BD-02 | Reprice post-wave | Update in-place pada SKU asli |
+| V-BD-03 | Late booking price | Alokasi ke detail final existing |
+
 ---
 
 ## 7. Relasi Menu Lain
@@ -563,6 +611,8 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 | **GAP-SPD-01** | Void vs Void & Recreate vs Recreate + sync anti auto-create — [§5.8](#58-duplicate-void--recreate-to-be--etm-15859) / [§6.9](#69-void--void--recreate--recreate--sync-gate-to-be--etm-15859) · ETM-15859 · ASO GAP-ASO-08 | Duplikat SO setelah void | **Decided** (TO-BE; Open until impl) |
 | **GAP-BOOK-01** | Approve booking amount 0 — risiko jurnal 0 via **Instant Settlement** hampir tertutup (null `platform_order_id` tidak match; approve SP tidak buat SI). Residual: SI manual amount 0 | Accounting | **Accepted residual** (verified 2026-07-15) |
 | **GAP-BOOK-02** | Dual-path: Order ID (advance package) sering tanpa `booking_sn` sebelum **MATCHED** — wajib skip create SO kedua; merge di MATCHED. Contoh: `260831AASC74GOWV7FM` ↔ `2609031XP6RKDK`. Pelanggaran = 2 SO 1 order (fatal UPFOS) | Ops/fulfillment | **Design guard** (documented 2026-09-04) |
+| **GAP-SP-RP-01** | Convert booking / sync reprice **delete-reinsert** child bundle setelah processing — putus FK fulfillment/IS — [§6.10](#610-sync--convert-booking--update-harga-in-place-to-be--etm-16212) · [ETM-16212](https://erpintegration.atlassian.net/browse/ETM-16212) | SO-5UGMAEZY Meridian | **Open** (TO-BE) |
+| **GAP-SP-BD-01** | Breakdown bundle child random AS-IS pakai Benchmark COGS; TO-BE Retail Price + before/after processing — [§6.11](#611-breakdown-harga-bundle--random-sku-to-be--etm-16216) · [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216) · [System Product §11.6](../system-product/requirement.md#116-random-sku-di-breakdown-bundle--retail-price-to-be--etm-16216) | Dev proporsi | **Open** (TO-BE) |
 | **GAP-SYN-01** | Optimasi skip-sync Shopee (cancel/complete, dll.) belum diimplementasi | API waste | Open |
 | **GAP-SPR-01** | Escrow gagal / `line_item_id` tidak match → unit price 0; order historis yang sync sebelum rule escrow tetap understated hingga re-sync/backfill | Nilai jual & benchmark/auto-approve salah | Open |
 | **GAP-BM-13** | Error Flag `cogs-error` → **Below Benchmark COGS** (icon/tooltip/filter/detail SKU/FX primary) — kanonik di [Benchmark COGS](../accounting-product-benchmark-price/requirement.md#65-error-flag-below-benchmark-cogs-to-be--improve-cogs-error) | Ops sulit filter & bedakan under-COGS di list | Open (TO-BE) |

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.11
-last_updated: 2026-09-09
+version: 1.12
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog **1.12 (2026-10-02):** Reprice in-place (ETM-16212 / §6.10); bundle breakdown Retail + post-wave (ETM-16216 / §6.11). Touchpoints: `OmniShopeeService` `$converting_booking` path — **jangan** delete children + `pickBundleChildren` recreate; `SalesOrderDetailController::pickBundleChildren` — random harus `product->price` bukan `benchmarkPrice`.  
 > Changelog **1.11 (2026-09-09):** Void / Void & Recreate / Recreate + sync gate — [requirement §5.8 / §6.9](./requirement.md); ETM-15859; GAP-SPD-01 Decided. Touchpoints: `SalesOrderApprovalController` void, rename Void & Clone → Void & Recreate, show Recreate, platform sync services (Shopee/TikTok/Lazada/…) skip create on void+exact ID, order lock.  
 > Changelog 1.10 (2026-09-04): Log Data tab **Pending Orders** + pill **Unmatched Bookings** — [requirement §5.3.1](./requirement.md) · [ASO §5.7](../all-sales-order/requirement.md) · ETM-15798.  
 > Changelog 1.9 (2026-09-04): Booking dual-path anti-dupe — `ManagesShopeeBooking` + `OmniShopeeService::storeSalesOrder` skip `advance_package` sebelum link/MATCHED; invariant 1 SO per pesanan — [requirement §3b / §5.6](./requirement.md).  
@@ -120,8 +121,9 @@ related_docs:
 |--------|----------------|
 | `getAccountingInfo($order_sn, $store_id)` | `POST/GET` path `/api/v2/payment/get_escrow_detail` |
 | Create SO (store path) | Always call escrow; set `each_price`, `each_price_before_discount_before_vat`, bundle `origin_price` |
-| `updateSalesOrder` | Reprice from escrow **only** when converting booking → real order (`converting_booking`) |
+| `updateSalesOrder` | Reprice from escrow **only** when converting booking → real order (`converting_booking`). **TO-BE (ETM-16212):** update harga/tax **in-place** pada detail existing — **jangan** soft-delete child + `pickBundleChildren` recreate. Guard: block delete/recreate jika sudah wave/pick–ship. |
 | Fallback if escrow empty / no match | `$price = 0` (GAP-SPR-01) |
+| `pickBundleChildren` | **AS-IS gap:** `$is_random` → `benchmarkPrice`. **TO-BE (ETM-16216):** `$is_random` → `product->price` (Retail). Post-wave reprice: allocate ke child SKU asli existing, bukan BOM random. Kanonik: [System Product §11.6](../system-product/requirement.md#116-random-sku-di-breakdown-bundle--retail-price-to-be--etm-16216) |
 | Legacy | Commented `model_discounted_price` / `model_original_price` — remove after **2026-09-04** |
 
 `processAccountMapping` tetap memakai payload escrow untuk additional cost/disc mapping (terpisah dari unit price line).
@@ -281,3 +283,5 @@ sequenceDiagram
 | GAP-SYN-01 | No Shopee skip-sync optimization |
 | GAP-BM-05 / GAP-BM-13 | Auto-approve + Error Flag Below Benchmark COGS — formula FX primary + UX icon/filter/detail; kanonik di Benchmark COGS docs |
 | GAP-SPR-01 | Escrow miss → price 0; historical SO understated until backfill/re-sync; legacy seeders `FixShopee*` still use `model_discounted_price` |
+| GAP-SP-RP-01 | Convert booking delete-reinsert children — ETM-16212 / requirement §6.10 |
+| GAP-SP-BD-01 | Random proportion uses benchmark AS-IS — ETM-16216 / requirement §6.11 · System Product §11.6 |

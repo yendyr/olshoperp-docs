@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.4b
-last_updated: 2026-09-23
+version: 2.5
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 audience: operator
@@ -171,7 +171,7 @@ Saat order terkirim, stok yang berkurang = **isi paket**, bukan header bundle.
 | Ganti Primary Unit | Tidak bisa jika sudah transaksi |
 | Inactive | Total stok **0** di semua gudang |
 | Bundle inbound | **Tidak** — inbound komponen masing-masing |
-| Bundle di SO | Bisa; harga detail dipecah otomatis berdasarkan **Price Before VAT** komponen |
+| Bundle di SO | Bisa; harga detail dipecah dari harga header berdasarkan **Retail Price** tiap komponen → **Price Before VAT** (termasuk retail **random**). Bukan Benchmark COGS |
 
 ---
 
@@ -250,7 +250,8 @@ Fitur **terpisah** dari Import Product Images dan upload manual. Dipakai saat co
 | Platform sync dimensi salah | Platform Default belum di-set | Set Platform Default di D&W profil yang benar |
 | Video upload gagal | Format mkv | Konversi ke **mp4** |
 | Parent tidak muncul di PO | Parent non-transactable | Pilih **child variant** |
-| Harga bundle aneh di SO | Proporsi pakai Price Before VAT, bukan retail gross | Cek pajak komponen (Include/Exclude/Coefficient); lihat Modal Detail Bundle di SO |
+| Harga bundle aneh di SO | Proporsi salah acuan atau pajak komponen | Cek **Retail Price** tiap isi (termasuk random); proporsi pakai Price Before VAT. **Jangan** samakan dengan Benchmark COGS. Modal Detail Bundle di SO |
+| Isi bundle random pecahannya aneh | AS-IS sempat pakai Benchmark COGS untuk random | TO-BE: pakai **Retail Price** random di master (ETM-16216). Setelah order masuk gudang, pecahan harus ikut **SKU asli** yang sudah dipilih |
 | Import Product Images gagal — Drive | File Drive belum publik | Share → **Anyone with the link** (Viewer), lalu re-import |
 | Import Product Images — SKU skipped | SKU muncul berkali-kali di file | Sisakan **satu baris per SKU** |
 | Import Product Images — size | File gambar terlalu besar | Kompres di bawah **20 MB** |
@@ -294,7 +295,10 @@ A: Bundle = paket jual di SO (`is_bom=0`). BOM = resep produksi Assembly (`is_bo
 A: **Unit Configuration** → Edit unit → profil D&W. Bukan di Shipping.
 
 **Q: Random SKU di bundle?**  
-A: Header random tidak dipilih manual di transaksi; sistem pick saat proses kirim. Lihat [Random SKU](../random-sku/knowledge-base.md).
+A: Boleh jadi isi paket. Saat pecah harga header ke isi, pakai **Retail Price** yang diisi di variant random (bukan Benchmark COGS). Setelah order masuk Send to Default Waves / gudang, random diganti **SKU asli** — pecahan harga berikutnya harus ikut SKU asli itu. Detail: [requirement §11.6–§11.7](./requirement.md#116-random-sku-di-breakdown-bundle--retail-price-to-be--etm-16216) · [Random SKU](../random-sku/knowledge-base.md).
+
+**Q: Kenapa Benchmark COGS tidak dipakai buat pecah harga bundle?**  
+A: Benchmark = patokan HPP (untuk random: ambil dari sibling tertinggi). Pecah harga bundle = bagi harga **jual** paket berdasarkan retail eceran — sumber & tujuannya beda.
 
 **Q: Dampak ke Instant Settlement?**  
 A: Produk harus **Active**, stok cukup, COA Group terisi. Lihat [Instant Settlement](../accounting-settlement-upload/knowledge-base.md).

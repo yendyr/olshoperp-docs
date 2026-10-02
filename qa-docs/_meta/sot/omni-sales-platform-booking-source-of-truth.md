@@ -105,6 +105,7 @@ Scheduler auto sync memanggil `get_order_list` (existing) dan `get_booking_list`
 - Webhook **booking** (status / match / tracking): dedup by `booking_number` atau `platform_order_id` = `order_sn`. Found → UPDATE; not found → INSERT (booking path only).
 - Webhook / sync **order** dengan `advance_package` (sering **tanpa** `booking_sn`): **jangan INSERT** SO baru sebelum pairing MATCHED — return accepted skip (bukan Failed Sync). Implementasi referensi: `OmniShopeeService::storeSalesOrder` gate `advance_package`.
 - Saat **MATCHED**: cari row `booking_number`, isi `platform_order_id` dengan `order_sn`, trigger detail/escrow untuk harga & buyer. Update kolom terkait, jangan overwrite kolom lain tanpa alasan.
+- **TO-BE reprice (ETM-16212 / ETM-16216):** update harga escrow = **in-place** pada detail yang sudah ada (jangan delete-reinsert child). Jika order sudah Send to Default Waves / processing (random sudah jadi SKU asli), alokasi pecahan bundle ke **detail final** itu — bukan rebuild dari BOM random. Kalau harga header sudah di-breakdown sejak awal, jaga konsistensi sampai invoicing.
 
 ### 6c. Manual sync per order (tombol Sync)
 

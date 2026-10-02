@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.11
-last_updated: 2026-09-09
+version: 1.12
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 audience: operator
@@ -184,6 +184,8 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 | Settlement: *Unable to find order* pada booking | Platform Order ID masih kosong (belum **MATCHED**) | Tunggu MATCHED → pastikan Order ID terisi di baris booking, baru upload settlement |
 | Dua baris order dengan Order ID sama (satu ada booking) | Order ID sempat di-create terpisah sebelum MATCHED | Eskalasi ke tech/QA — seharusnya tidak terjadi; lihat §4 contoh `260831AASC74GOWV7FM` |
 | **Extract** bundle gagal / *price must be greater than zero* | Price baris bundle masih **0** (booking belum punya harga) | Tunggu convert / harga terisi (> 0), lalu Extract lagi — [requirement §6.7](./requirement.md) |
+| Detail order hilang / diganti ID setelah sync harga | Sync convert booking sempat **hapus+buat ulang** baris | **TO-BE:** sync hanya **edit harga** di baris yang sama (ETM-16212). Extract Bundle hanya sebelum masuk gudang |
+| Pecahan harga bundle random aneh / berubah setelah wave | Proporsi sempat pakai Benchmark / rebuild dari random | **TO-BE:** pecah pakai **Retail Price** random; setelah wave pakai **SKU asli** yang sudah dipilih (ETM-16216) |
 | Create membuka form lain | By design | Gunakan Sales Order internal untuk order manual |
 
 ---
@@ -194,7 +196,9 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 **Apa beda Log Data dan API Data Log?** Log Data = batch sync toko; API Data Log = payload/detail di form order (mis. escrow Shopee).  
 **Kenapa Net Sales beda dengan invoice?** Biaya/diskon tambahan di SP tidak masuk Sales Invoice.  
 **Approve booking amount 0 apakah langsung jurnal 0?** Tidak. Settlement baru jalan setelah ada Platform Order ID (setelah **MATCHED**); biasanya amount sudah dari order yang sudah match.  
-**Boleh Extract bundle booking yang Price masih 0?** Tidak. Sistem menolak sampai Price > 0 (sering setelah MATCHED / harga platform masuk).  
+**Boleh Extract bundle booking yang Price masih 0?** Tidak. Sistem menolak sampai Price > 0 (sering setelah MATCHED / harga platform masuk).
+**Setelah order sudah pick/ship, sync harga boleh hapus baris detail?** Tidak. Sync hanya **ubah angka harga** di baris yang sama supaya dokumen gudang & Instant Settlement tidak putus (ETM-16212).
+**Harga header bundle booking baru masuk setelah order sudah di gudang — pecahannya pakai apa?** Pakai **detail final** yang sudah ada (SKU asli setelah Send to Default Waves), bukan seolah masih random. Pecah harga berbasis **Retail Price** komponen (bukan Benchmark COGS) — ETM-16216.
 **Kenapa Order ID sudah ada di Shopee tapi di OlshopERP masih `-` / belum nempel?** Sering Order ID datang dulu tanpa Booking Number. Sistem menahan create baris baru sampai webhook **MATCHED** menggabungkan keduanya — supaya tidak dobel. Contoh: booking `260831AASC74GOWV7FM` digabung ke `2609031XP6RKDK` baru saat MATCHED. **TO-BE:** pantau Order ID yang di-hold di **Log Data → Pending Orders**; booking tanpa Order ID lewat pill **Unmatched Bookings** (ETM-15798).
 
 **Apa beda Log Data dan API Data Log?** Log Data = batch sync toko (+ TO-BE Pending Orders); API Data Log = payload/detail di form order (mis. escrow Shopee).

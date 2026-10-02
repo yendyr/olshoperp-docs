@@ -12,7 +12,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 | Capability cards | [capabilities/](./capabilities/) | Semua | draft |
 
 **Help Center:** [`_meta/docs-hub/menus/system-product/`](../_meta/docs-hub/menus/system-product/)  
-**3 layer:** v2.4b · **User Guide:** v1.2 (`source_version` 2.4) · **Feature Map:** v1.0  
+**3 layer:** v2.5 · **User Guide:** v1.2 (`source_version` 2.4) · **Feature Map:** v1.0  
 **Maintenance owner:** QA — Yemima
 
 ---
@@ -21,6 +21,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-10-02 | 2.5 | Bundle breakdown + Random: Retail Price (bukan Benchmark); before/after processing — ETM-16216; cross-ref reprice in-place ETM-16212 |
 | 2026-09-23 11:10 | 2.4b | Cross-ref **Manage Platform Product** binding: sanitize SKU saat match (GAP-MPP-01 / ETM-16016) — tidak ubah storage SKU System Product |
 | 2026-09-01 11:17 | 2.4 | Dokumentasi AS-IS **Product Image Sync** (API pull path by SKU, `is_synced`, setting Application Form, tombol datalist) — requirement §13.2, KB, technical §17, user-guide |
 | 2026-08-12 | 2.3b | Cross-ref MV: create+Default ON skips `random` inject (MV v1.2) |

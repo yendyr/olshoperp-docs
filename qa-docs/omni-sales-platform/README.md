@@ -10,12 +10,13 @@ Menu **Dev - Sales Platform** (SO marketplace hasil sync). Route: `/omni/sales-o
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **SoT (6 file):** datalist · order-detail · sync-ingestion · sync-price-mapping · **booking v1.1** · approval-automation  
-**Version:** 1.11 · **User-guide:** v1.5 · `source_version` 1.11 · **Last updated:** 2026-09-09 10:45
+**Version:** 1.12 · **User-guide:** v1.5 · `source_version` 1.11 · **Last updated:** 2026-10-02
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.12 | 2026-10-02 | Reprice booking/sync in-place (ETM-16212); breakdown bundle Retail + before/after processing / late price (ETM-16216) |
 | 1.11 | 2026-09-09 10:45 | Void vs Void & Recreate vs Recreate + anti auto-create sync (ETM-15859); GAP-SPD-01 Decided |
 | 1.10 | 2026-09-04 14:20 | Log Data tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798; kanonik ASO) |
 | 1.9 | 2026-09-04 11:50 | Booking Shopee dual-path: masuk by Booking Number dulu; tahan Order ID tanpa booking; merge di MATCHED + contoh nyata (anti-duplikat) |

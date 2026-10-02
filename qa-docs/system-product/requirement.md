@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.4b
-last_updated: 2026-09-23
+version: 2.5
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant]
@@ -21,7 +21,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 **PM sources:** User requirement (chat) · D&W artifact v1.0 (7 Mei 2026)
 
-> **Changelog 2.4b (2026-09-23):** Cross-ref binding SKU sanitize di Manage Platform Product (GAP-MPP-01 / ETM-16016) — compare-only; storage SKU System Product tidak diubah.
+> **Changelog 2.5 (2026-10-02):** §11.6–§11.7 — breakdown bundle + Random SKU wajib pakai **Retail Price** (bukan Benchmark COGS); sebelum vs sesudah processing; beda tujuan vs Benchmark COGS. Jira [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216). Cross-ref reprice in-place [ETM-16212](https://erpintegration.atlassian.net/browse/ETM-16212) / Sales Platform.
 
 ---
 
@@ -29,6 +29,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.5 | 2026-10-02 | QA - Yemima | §11.6–§11.7 Retail Price untuk random di breakdown bundle; before/after processing; vs Benchmark COGS — ETM-16216 |
 | 1.0–1.2 | 2026-01–07 | QA - Yemima | Initial draft from legacy + partial PM |
 | 2.0 | 2026-07-05 | QA - Yemima | Full rewrite: codebase AS-IS, D&W per unit canonical, bundle/random/import detail, gaps §19–§21 |
 | 2.1 | 2026-07-05 | QA - Yemima | §6.4 tax hide bundle parent · §11 proporsi harga bundle TO-BE (Price Before VAT, coefficient) · GAP-SP-12/P-SP-02 resolved |
@@ -37,6 +38,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 | 2.3 | 2026-08-12 | QA - Yemima | §6.3.1–§6.3.2 Default create/import + expand soft-delete/leftover (`GAP-SP-17`/`GAP-SP-18`); parent `-(PARENT)`; no auto-rename |
 | 2.3b | 2026-08-12 | QA - Yemima | Cross-ref MV major: create+Default ON skips `random` inject (MV v1.2 / GAP-VAR-01) |
 | 2.4 | 2026-09-01 | QA - Yemima | §2.3 tombol **Sync Product Images** · §13.2 **Product Image Sync** (pull path via API eksternal, `is_synced`) · AC #14 |
+| 2.4b | 2026-09-23 | QA - Yemima | Cross-ref binding SKU sanitize MPP (GAP-MPP-01 / ETM-16016) |
 
 ---
 
@@ -489,6 +491,44 @@ Detail kolom DPP/VAT/Total per scenario → [sales-order-general §10.3](../sale
 | BP-03 | Exclude VAT → VAT di atas alokasi; total komponen boleh > Bundle Price |
 | BP-04 | Parent bundle **tanpa** tax setting di System Product (§6.4) |
 | BP-05 | Modal Detail Bundle + snapshot + HPP validation → [sales-order-general §10](../sales-order-general/requirement.md#10-product-bundle--proporsi-harga-price-before-vat) |
+| BP-06 | Child **random** memakai **Retail Price** variant random (bukan Benchmark COGS) — §11.6 |
+| BP-07 | Setelah Send to Default Waves / processing: reprice memakai detail **SKU asli**, bukan rebuild dari BOM random — §11.7 |
+
+### 11.6 Random SKU di breakdown bundle — Retail Price (TO-BE · ETM-16216)
+
+Variant **random** di System Product **punya field Retail Price** (sama seperti variant lain). Order internal: add single SKU random → default Price = retail random itu.
+
+**TO-BE proporsi bundle (konsisten bundle & non-bundle):**
+
+| Komponen child | Basis angka untuk % proporsi |
+|----------------|------------------------------|
+| Single / variant biasa | **Retail Price** produk → Price Before VAT (§11.2) |
+| **Random** | **Retail Price SKU random itu sendiri** → Price Before VAT — **bukan** Benchmark COGS |
+
+**AS-IS gap:** `pickBundleChildren()` memakai `benchmarkPrice` jika `$is_random` — **salah tujuan**. Harus diganti ke `product->price` (retail), sama dengan child non-random. Jira: [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216).
+
+#### Breakdown harga jual ≠ Benchmark COGS
+
+| | Breakdown harga bundle | Benchmark COGS |
+|--|------------------------|----------------|
+| **Tujuan** | Bagi harga **jual** header paket ke isi agar ketahuan porsi naik/turun vs retail eceran | Patokan **HPP** / cek margin (prevent auto-approve) |
+| **Sumber angka** | Retail Price master (termasuk retail random) | Level transactional; random → **COGS sibling tertinggi** |
+| **Boleh dicampur?** | **Tidak** — jangan pakai Benchmark sebagai input proporsi jual | Logic sibling tertinggi **tetap** untuk HPP saja |
+
+Order **platform single** (bukan bundle): harga baris **wajib dari platform** — retail master tidak dipakai sebagai harga jual (binding hanya menyambung SKU).
+
+### 11.7 Sebelum vs sesudah processing (reprice / late price)
+
+Saat **Send to Default Waves** / fulfillment: child random diganti **SKU asli** (sibling stok tertinggi) — lihat [random-sku](../random-sku/requirement.md).
+
+| Kondisi order | Isi detail child | Saat harga header sudah ada / baru datang |
+|---------------|------------------|-------------------------------------------|
+| **Belum processing** | Masih bisa SKU **random** | Breakdown pakai **retail price random** (+ retail child lain). Update harga = **edit in-place** pada baris yang sama — [ETM-16212](https://erpintegration.atlassian.net/browse/ETM-16212) / [Sales Platform](../omni-sales-platform/requirement.md) |
+| **Sudah processing** | Random sudah diganti **SKU asli** | Reprice **wajib** memakai detail **final** di order (SKU asli). **Jangan** recreate dari template BOM random |
+
+**Konsistensi sampai invoicing:** kalau dari awal header sudah dapat harga dan sudah di-breakdown → pecahan detail harus **tetap konsisten** sampai invoice/settlement (jangan berubah karena rebuild / ganti basis).
+
+**Booking Shopee (harga header sering belakangan):** saat escrow/harga platform akhirnya masuk **setelah** order sudah di processing → alokasi ke detail **final** yang sudah ada (SKU asli pasca-wave), bukan seolah child masih random. Detail: [omni-sales-platform](../omni-sales-platform/requirement.md).
 
 ---
 

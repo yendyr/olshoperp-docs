@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: random-sku
 menu_name: "Random SKU"
-version: 1.0
-last_updated: 2026-07-09
+version: 1.1
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 cross_menu: true
@@ -16,11 +16,15 @@ cross_menu: true
 **Tipe:** Cross-menu concept (bukan satu halaman UI)  
 **Aliases:** Random SKU, Barang Random, Variant Random, Order Random
 
+> **Changelog 1.1 (2026-10-02):** A-14/A-15 — Retail Price untuk breakdown bundle (bukan Benchmark); sebelum vs sesudah processing. [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216) · [System Product §11.6](../system-product/requirement.md#116-random-sku-di-breakdown-bundle--retail-price-to-be--etm-16216).
+
 ---
 
 ## 1. Ringkasan
 
 Virtual SKU (non-stockable) auto-generated saat opsi `random` dipilih di variant type System Product. Berfungsi sebagai **trigger logic** untuk auto-pick sibling variant dengan stock tertinggi saat fulfillment — bukan barang fisik.
+
+Di System Product, variant random **punya input Retail Price** (seperti variant lain). Order internal: add single random → default Price = retail itu. Order platform single: harga baris tetap **dari platform**.
 
 ---
 
@@ -38,9 +42,11 @@ Virtual SKU (non-stockable) auto-generated saat opsi `random` dipilih di variant
 | A-08 | Random SKU bisa di-bind ke Platform Product |
 | A-09 | Random SKU **tidak** boleh Header/Detail BOM |
 | A-10 | Random SKU **tidak** bisa PR/PO/inbound |
-| A-11 | Benchmark COGS di SO line random — master inherit parent; validasi auto-approve khusus (lihat [Benchmark COGS](../accounting-product-benchmark-price/requirement.md) · [KB](../accounting-product-benchmark-price/knowledge-base.md)) |
+| A-11 | Benchmark COGS di SO line random — master inherit parent / sibling tertinggi untuk **validasi margin**; **bukan** acuan pecah harga jual bundle (lihat A-14) |
 | A-12 | Availability random SKU selalu 0 |
 | A-13 | Random SKU **diblok** di [Stock Remapping](../accounting-stock-remapping/requirement.md) — tidak boleh Origin maupun Remapped To |
+| A-14 | **TO-BE:** Proporsi breakdown harga header bundle → child random memakai **Retail Price** SKU random (lalu Price Before VAT) — sama seperti child non-random. **Bukan** Benchmark COGS. [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216) |
+| A-15 | Setelah **Send to Default Waves** / processing, detail child sudah **SKU asli** — reprice / late booking price mengalokasi ke detail final itu (in-place), bukan rebuild dari template BOM random. [ETM-16212](https://erpintegration.atlassian.net/browse/ETM-16212) · [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216) |
 
 ---
 
@@ -63,10 +69,10 @@ Virtual SKU (non-stockable) auto-generated saat opsi `random` dipilih di variant
 |------|---------|----------|
 | Master Variant | Setup | Auto-add `random` option per type (**AS-IS**). **TO-BE:** create + **Set as Default System Product ON** + 1 option → **skip** inject `random` — [Master Variant §6.2](../supplychain-variant/requirement.md#62-eligibility--option-count--create-inject) |
 | System Product (Variant) | ✅ Generate | `BTLMINUM-random` |
-| Bundle Single/Variant | ✅ | Pick highest stock sibling/header |
+| Bundle Single/Variant | ✅ | Pick highest stock sibling/header; **breakdown harga** pakai Retail Price random (A-14), bukan Benchmark |
 | Bill of Material | ❌ | Stockable only |
 | Platform Product Binding | ✅ | With random rules |
-| Sales Order (General/Platform) | ✅ | Line or `SalesOrderDetailRandom` |
+| Sales Order (General/Platform) | ✅ | Line or `SalesOrderDetailRandom`; post-wave → SKU asli (A-15) |
 | Send to Default Waves | ✅ | Primary trigger for auto-pick |
 | PR / PO / Inbound | ❌ | Non-stockable |
 | Benchmark COGS (master) | ✅ | Random variant **inherits parent MAX** via `ProductBenchmarkPriceJob` |

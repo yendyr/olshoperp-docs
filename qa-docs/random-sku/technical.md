@@ -2,8 +2,8 @@
 doc_type: technical
 menu: random-sku
 menu_name: "Random SKU"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: draft
 cross_menu: true
@@ -13,6 +13,8 @@ related_docs:
 ---
 
 # Random SKU — Technical Documentation
+
+> **1.1 (2026-10-02):** Bundle proportion TO-BE = Retail Price (`product->price`), bukan `benchmarkPrice` — ETM-16216. Reprice post-wave in-place — ETM-16212. Canonical: [System Product technical §16](../system-product/technical.md#16-bundle-pricing-cross-module).
 
 ## 1. Data Model
 

@@ -112,7 +112,11 @@ Validasi HPP membandingkan **Price Before VAT** versus **Benchmark COGS** yang s
 
 ### 6f. Proporsi bundle berbasis Price Before VAT
 
-Proporsi harga item dalam bundle memakai basis Price Before VAT (bukan Retail gross). Langkah: ambil Retail Price tiap item, konversi ke Price Before VAT (include: retail dibagi 1 tambah tax rate; exclude/no tax: retail apa adanya), hitung proporsi tiap item terhadap total Price Before VAT, distribusikan Bundle Price sesuai proporsi. Untuk item Coefficient Tax (tax include 12% efektif 11%): Price Before VAT = price dibagi 1,11; DPP = nilai PPN dibagi 12 persen; VAT = selisih Total Price dan Price Before VAT.
+Proporsi harga item dalam bundle memakai basis Price Before VAT (bukan Retail gross). Langkah: ambil **Retail Price** tiap item (termasuk child **random** — field retail di System Product), konversi ke Price Before VAT (include: retail dibagi 1 tambah tax rate; exclude/no tax: retail apa adanya), hitung proporsi tiap item terhadap total Price Before VAT, distribusikan Bundle Price sesuai proporsi. Untuk item Coefficient Tax (tax include 12% efektif 11%): Price Before VAT = price dibagi 1,11; DPP = nilai PPN dibagi 12 persen; VAT = selisih Total Price dan Price Before VAT.
+
+**TO-BE (ETM-16216):** child random **tidak** memakai Benchmark COGS sebagai basis proporsi. Benchmark COGS tetap hanya untuk validasi margin (random → sibling tertinggi). AS-IS `pickBundleChildren` yang memakai `benchmarkPrice` untuk `$is_random` = gap.
+
+**Sebelum vs sesudah processing:** sebelum Send to Default Waves, child boleh masih random → proporsi dari retail random. Setelah wave/processing, child sudah SKU asli → reprice/late booking price mengalokasi ke detail final itu (in-place; lihat juga ETM-16212 no delete-reinsert). Kalau header sudah di-breakdown sejak awal, nilai pecahan harus konsisten sampai invoicing.
 
 Contoh ringkas (Bundle Price 49.999, dua item): setelah konversi Price Before VAT, item A proporsi 81,83 persen dan item B 18,17 persen, sehingga alokasi 40.916 dan 9.083. Detail simulasi lengkap termasuk case Exclude VAT (yang membuat total melebihi Bundle Price) ada di spreadsheet logic mapping. Nilai bundle untuk SO platform di-capture saat order terbentuk/binding.
 
