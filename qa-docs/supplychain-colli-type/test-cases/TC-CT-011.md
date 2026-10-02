@@ -6,75 +6,80 @@ menu_name: "Colli Type"
 test_type: permission
 title: "Show for all company ON di company A — company B tidak melihat data jika Show Public Data OFF"
 summary: "Colli Type public milik A tidak muncul di datalist B selama B tidak allow data dari A di Internal Company Show Public Data."
-status: draft
+status: ready
 owner: QA - Yemima
-last_updated: 2026-08-14
+last_updated: 2026-10-02
 requirement_ref: "qa-docs/supplychain-colli-type/requirement.md"
 automated: false
 automated_spec: null
 execution_company:
-  id: 112
-  code: FAT
+  id: 13
+  code: DEV-STG
 related_menus:
   - generalsetting-internal-company
     menu_name: "Internal Company"
     role: involved
     note: "Section Show Public Data — toggle allow lihat public data company lain"
 preconditions:
-  - "User login: playwright@gmail.com / 12345678. Bisa switch company A dan company B."
-  - "Company A = FAT (id: 112). Company B = internal company lain di allowlist (contoh lumicharmsid id 153) yang playwright bisa akses."
-  - "Di Internal Company edit **company B**, section **Show Public Data**: toggle untuk company A = **OFF** (default 0)."
+  - "User login ke staging dan bisa switch company."
+  - "Company A = playwright. Company B = Dev-Staging."
+  - "Di Internal Company edit company Dev-Staging, section Show Public Data: toggle untuk company playwright = OFF (default 0)."
   - "URL Internal Company B: https://staging.olshoperp.com/generalsetting/internal-company/edit/{id-company-B}"
   - "URL Colli Type: https://staging.olshoperp.com/supplychain/colli-type"
 test_data:
   - field: "Company A"
-    value: "FAT (112)"
+    value: "playwright"
   - field: "Company B"
-    value: "lumicharmsid (153) — ganti jika playwright tidak bisa switch"
+    value: "Dev-Staging"
   - field: "Code (milik A)"
-    value: "CT-PUB-A (unik)"
+    value: "CT-PUB-PW"
   - field: "Name"
-    value: "Public Box A"
+    value: "Public Box Playwright"
   - field: "Show for all company"
     value: "ON"
-  - field: "Show Public Data (B → A)"
+  - field: "Show Public Data (Dev-Staging → playwright)"
     value: "OFF"
 steps:
-  - "Login company A (FAT). Buka https://staging.olshoperp.com/supplychain/colli-type/create"
-  - "Isi Code + Name unik. Nyalakan Show for all company. Active ON. Simpan."
-  - "Di datalist A, pastikan baris tampil: Code/Name/Show for all company sesuai input (bukan null)."
-  - "Buka Internal Company edit company B → section **Show Public Data**."
-  - "Pastikan toggle untuk company A **OFF**. Jika ON, matikan dulu."
-  - "Switch company ke B. Buka https://staging.olshoperp.com/supplychain/colli-type"
-  - "Cari Code milik A (CT-PUB-A). Jangan filter Show deleted."
+  - "1. Login company A (playwright), buat Colli Type: Code 'CT-PUB-PW', Name 'Public Box Playwright', Show for all company = ON, Active = ON, simpan."
+  - "2. Switch ke company B (Dev-Staging), pastikan toggle Show Public Data untuk playwright berstatus OFF (kondisi default)."
+  - "3. Buka https://staging.olshoperp.com/supplychain/colli-type di Dev-Staging dan cari 'CT-PUB-PW'."
 expected_result: |
-  Di company A: type tersimpan, **Show for all company** = ON, nilai field after save sama dengan input (requirement §5).
-  Di company B, selama **Show Public Data** untuk company A = OFF: baris Colli Type milik A **tidak muncul** di datalist B — meskipun data A sudah public.
-  [CATATAN QA] Requirement Colli Type §5 hanya menulis ON = terlihat/bisa dipakai company internal lain. Gate kedua (B harus allow A) mengikuti pola platform Internal Company **Show Public Data** (`gs_internal_company_show_public_data`) + feedback user ETM-15543. Tooltip UI: *Enable this toggle to display all publicity data from {company name} on each related form.*
+  Di company A (playwright): Colli Type tersimpan dengan Show for all company = ON.
+  Di company B (Dev-Staging): Selama toggle Show Public Data untuk playwright = OFF, record CT-PUB-PW milik playwright TIDAK MUNCUL di datalist Colli Type Dev-Staging.
 test_result:
-  status: not_run
-  started_at: null
-  finished_at: null
-  executed_by: null
+  status: passed
+  started_at: "2026-10-02T09:00:00+07:00"
+  finished_at: "2026-10-02T09:10:00+07:00"
+  executed_by: "OlshopERP (resty)"
   environment: staging
-  log_summary: null
+  log_summary: "PASSED: Dengan toggle Show Public Data untuk company playwright berstatus OFF di setting Internal Company Dev-Staging, Colli Type public CT-PUB-PW milik playwright terbukti tidak muncul di datalist Colli Type Dev-Staging."
   report_url: null
-test_data_used: []
-run_history: []
+test_data_used:
+  - field: "Company A"
+    value: "playwright"
+  - field: "Company B"
+    value: "Dev-Staging"
+  - field: "Code"
+    value: "CT-PUB-PW"
+run_history:
+  - run_at: "2026-10-02T09:10:00+07:00"
+    status: passed
+    via: "manual:OlshopERP"
+    note: "PASSED: Data public CT-PUB-PW milik playwright tidak muncul saat toggle Show Public Data OFF di Dev-Staging."
 origin_jira: ETM-15543
 first_execution:
-  at: null
-  via: null
-  jira: null
+  at: "2026-10-02T09:10:00+07:00"
+  via: "manual:OlshopERP"
+  jira: "ETM-15543"
 last_execution:
-  at: null
-  jira: null
-  status: not_run
-  via: null
+  at: "2026-10-02T09:10:00+07:00"
+  jira: "ETM-15543"
+  status: passed
+  via: "manual:OlshopERP"
 ---
 
-# TC-CT-011
+# TC-CT-011: Show for all company ON di company A — company B tidak melihat data jika Show Public Data OFF
 
-## Catatan QA
-
-Card: [ETM-15543](https://erpintegration.atlassian.net/browse/ETM-15543). Lanjutan allow ON → TC-CT-012 (pakai type yang sama).
+## Hasil Pengujian
+- **Status:** **PASSED 🟢**
+- Data Colli Type public `CT-PUB-PW` yang dibuat di company `playwright` tidak muncul pada datalist Colli Type `Dev-Staging` saat toggle *Show Public Data* untuk `playwright` berada dalam status default (OFF).

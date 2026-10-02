@@ -29,7 +29,7 @@ steps:
   - "Inspeksi baris SKU Bundle -> pastikan tombol Extract muncul dan aktif"
 expected_result: |
   1. Tombol "Extract this bundle" TIDAK MUNCUL pada baris SKU Non-Bundle.
-2. Tombol "Extract this bundle" MUNCUL dan aktif hanya pada baris SKU ter-flagging BUNDLE.
+  2. Tombol "Extract this bundle" MUNCUL dan aktif hanya pada baris SKU ter-flagging BUNDLE.
 test_result:
   status: not_run
   started_at: null
