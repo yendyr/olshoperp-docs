@@ -11,7 +11,7 @@ Menu **Manage Platform Product** (OmniChannel) — sync, binding, dan push stock
 | Feature Map | [feature-map.md](./feature-map.md) | Ops, QA, Docs Page | review |
 | Capability Lingo | [capabilities/](./capabilities/) | Modal in-app / Docs Page | review (7 cards) |
 
-**PM source / 3 layer version:** requirement & technical 1.3 · knowledge-base 1.2 · **User-guide:** 1.1 (`source_version` 1.3) · **Feature Map:** 1.0  
+**PM source / 3 layer version:** requirement, technical & knowledge-base 1.4 · **User-guide:** 1.1 (`source_version` 1.4) · **Feature Map:** 1.0  
 **Maintenance owner:** QA — Yemima
 
 **UI route:** `/omni/platform-product`
@@ -40,6 +40,7 @@ Konten sudah di-merge sebagian ke doc canonical di atas. File asli:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-10-02 17:14 | V-15: qty push minus dikirim 0 (AS-IS `PushStockBatchJob`, termasuk saat Minimum Stock kosong); KB troubleshooting Push Stock; technical §9 + koreksi unique key; UG `source_version` 1.4 tanpa perubahan konten |
 | 1.3 | 2026-09-23 11:10 | Binding: dokumentasi **sanitize SKU saat match** (trim / lowercase / newline / HTML) tanpa ubah SKU platform tersimpan — GAP-MPP-01 / ETM-16016; FAQ & Auto/Bulk Lingo |
 | FM 1.0 | 2026-07-31 | Feature Map + 7 Capability Lingo cards (Filter Store, Pull, Push, Manual/Auto/Bulk Binding, Stock Management) |
 | UG 1.0 | 2026-07-31 | User-guide baru (8 seksi) dari 3 layer `review`; README + manifest sync |

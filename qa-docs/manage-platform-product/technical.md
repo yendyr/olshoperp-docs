@@ -2,8 +2,8 @@
 doc_type: technical
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
-version: 1.3
-last_updated: 2026-09-23
+version: 1.4
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 related_docs:
@@ -21,6 +21,7 @@ related_docs:
 | 1.1 | 2026-06-19 | QA - Yemima | Merge sync pipeline design spec (§8.2) |
 | 1.2 | 2026-06-22 | QA - Yemima | Onboarding sequencing sync (§3.9) |
 | 1.3 | 2026-09-23 | QA - Yemima | GAP-MPP-01: SKU sanitize on binding match (ETM-16016) — §7.5 |
+| 1.4 | 2026-10-02 | QA - Yemima | §9: clamp qty minus → 0 di `PushStockBatchJob`; koreksi catatan unique key `PushStockBatchJob` (hanya push toko penuh) |
 
 **Stack:** Laravel 13 API · Vue 3 SPA · Horizon queues · MariaDB  
 **Primary module:** `Modules/OmniChannel`  
@@ -483,7 +484,7 @@ AutobindBatchJob → CanAutoBind::bindExisting()
 ```
 ProductController::sync_stocks()
   → CanPushStock::pushStocks()
-  → PushStockBatchJob (unique per store)
+  → PushStockBatchJob (unique per store hanya jika product_ids kosong / push toko penuh)
   → getPushQuantity() per product
   → PushStockSingleJob → OmniService::pushStock()
 ```
@@ -1343,7 +1344,8 @@ Section ini berisi risiko-risiko yang muncul dari keputusan arsitektur di doc in
 1. If `fake_stock !== null` → return fake_stock  
 2. Else require `systemProduct` active  
 3. `ATS = floor(systemProduct->getATS(store.ats_warehouse_ids))`  
-4. Apply `stock_ratio` and `minimum_stock_qty` rules  
+4. Apply `stock_ratio` and `minimum_stock_qty` rules (minimum kosong = tanpa batas bawah; hasil bisa minus)  
+5. `PushStockBatchJob`: `quantity = floor(result)`; jika `quantity < 0` → `0` (stok minus tidak pernah dikirim ke marketplace)  
 
 **Parent product:** UI banner — parent stock ignored during sync (Shopee push uses variant/SINGLE rows).
 

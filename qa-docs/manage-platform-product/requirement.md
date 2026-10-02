@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
-version: 1.3
-last_updated: 2026-09-23
+version: 1.4
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 legacy_sources:
@@ -22,6 +22,7 @@ legacy_sources:
 | 1.1 | 2026-06-19 | QA - Yemima | Merge glossary §12 + bulk binding §13 from legacy |
 | 1.2 | 2026-06-22 | QA - Yemima | Onboarding sequencing sync produk (§14); update entry point store bind |
 | 1.3 | 2026-09-23 | QA - Yemima | GAP-MPP-01: sanitize SKU saat match binding (trim / lowercase / newline / HTML) — compare-only; ETM-16016 |
+| 1.4 | 2026-10-02 | QA - Yemima | V-15: hasil akhir qty push tidak pernah minus — qty < 0 dikirim 0 (AS-IS di `PushStockBatchJob`), termasuk saat Minimum Stock kosong; contoh ATS -340 → push 0. Ref ETM-16223 (cancelled: tidak perlu ubah kode) |
 
 ---
 
@@ -310,11 +311,11 @@ Menu ini berada **setelah** produk listed di marketplace & store connected, **se
 | Field | Detail |
 |---|---|
 | **Berlaku pada aksi** | A-08, A-12 |
-| **Trigger** | `CanPushStock::getPushQuantity` |
+| **Trigger** | `CanPushStock::getPushQuantity` → floor & clamp di `PushStockBatchJob` |
 | **Kondisi** | Bound product with ATS |
-| **Expected Behavior** | Priority: fake_stock → floor(ATS × ratio/100) with minimum_stock_qty threshold → 0 if below min |
+| **Expected Behavior** | Priority: fake_stock → floor(ATS × ratio/100) with minimum_stock_qty threshold → 0 if below min. **Hasil akhir tidak pernah minus:** qty < 0 dikirim **0**. Berlaku juga saat Minimum Stock kosong (Minimum Stock opsional, tanpa default) |
 | **Error Message** | Internal failed messages for threshold limits (scheduled push) |
-| **Acceptance Criteria** | ✅ Fake stock always wins ✅ Ratio/min applied correctly |
+| **Acceptance Criteria** | ✅ Fake stock always wins ✅ Ratio/min applied correctly ✅ ATS minus → push 0 (contoh: ATS -340, Minimum Stock & Stock Ratio kosong → push 0) |
 
 ---
 

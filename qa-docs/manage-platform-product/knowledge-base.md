@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
-version: 1.2
-last_updated: 2026-09-23
+version: 1.4
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 audience: operator
@@ -146,7 +146,7 @@ Tunggu sebentar lalu refresh — jangan klik berulang.
 | SKU tidak muncul setelah order masuk di marketplace | Produk belum di-pull ke OlshopERP | Pilih Store → **Pull Products** → cek Sync Log |
 | **Not Binded** tidak hilang setelah bind | System Product inactive, Fix Asset, atau SKU random tidak cocok | Cek System Product aktif & tipe SKU; coba bind manual dengan produk yang tepat |
 | **Auto Binding** "No product to be bound" | Semua sudah bind, atau SKU platform ≠ SKU system (termasuk beda spasi/Enter tersembunyi di ujung) | Cek di seller center / paste SKU ke editor teks; pakai bind manual / Bulk Binding jika SKU sengaja beda. TO-BE: sistem akan sanitize saat match (ETM-16016) |
-| **Push Stock** gagal / stok tetap 0 | Belum bind & tidak ada Fake Stock; ATS di bawah minimum | Bind dulu atau set Fake Stock; cek ATS di System Product |
+| **Push Stock** gagal / stok tetap 0 | Belum bind & tidak ada Fake Stock; ATS di bawah minimum; ATS minus (stok habis/oversold) — sistem selalu kirim 0, tidak pernah angka minus | Bind dulu atau set Fake Stock; cek ATS di System Product |
 | Tombol Pull/Push/Auto Binding disabled | Store belum dipilih atau job masih jalan | Pilih Store; tunggu 1–2 menit; refresh halaman |
 | Order marketplace stuck **unbinded product** | Platform Product belum bind saat order masuk | Bind SKU → error order hilang otomatis (tidak perlu re-sync order) |
 | Bulk Binding tidak meng-update semua toko | SKU di DB tidak sama (huruf/spasi/**newline**) | Samakan SKU di seller center atau bind manual per toko; AS-IS exact match — TO-BE sanitize (GAP-MPP-01) |

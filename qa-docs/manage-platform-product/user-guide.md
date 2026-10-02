@@ -3,14 +3,14 @@ doc_type: user-guide
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
 version: 1.1
-last_updated: 2026-09-23
+last_updated: 2026-10-02
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 1.3
+source_version: 1.4
 ---
 
 # Panduan Pengguna — Manage Platform Product

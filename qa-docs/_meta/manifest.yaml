@@ -38,6 +38,9 @@ menus:
         - Modules/OmniChannel/Routes/api.php
         - Modules/OmniChannel/Jobs/ProductPlatform*
         - Modules/OmniChannel/Observers/*Product*
+        - Modules/OmniChannel/Concerns/CanPushStock.php
+        - Modules/OmniChannel/Jobs/PushStock*
+        - Modules/OmniChannel/Jobs/SyncStockPlatformJob.php
         - app/Console/Commands/PlatformProduct/TriggerOnboardingCommand.php
         - Modules/OmniChannel/Entities/StoreOnboarding.php
         - olshoperp-frontend/src/pages/Omni/ProductPlatform/**/*
