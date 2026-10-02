@@ -26,9 +26,16 @@ Requirement: `qa-docs/supplychain-colli-type/requirement.md` (saat draft, sumber
 | TC-CT-014 | Delete Colli Type boleh setelah inbound dan Colli code dihapus — history DB tidak mengunci | draft | ❌ | 2026-08-14 |
 | TC-CT-015 | Audit Log mencatat create, update field, toggle Default/Active/Show for all company, dan soft delete | draft | ❌ | 2026-08-14 |
 | TC-CT-016 | Colli Type Active OFF tidak muncul pada pilihan New Colli di Purchase Inbound | draft | ❌ | 2026-08-26 |
+| [TC-CT-16186-01-16187](TC-CT-16186-01-16187.md) | [Colli Type] - Default BOX & PLT ter-generate per company dengan flag benar (happy) | draft | ❌ | 2026-10-01 |
+| [TC-CT-16186-02-16188](TC-CT-16186-02-16188.md) | [Colli Type] - Edit default BOX di Company A tidak mengubah Company B (negative) | draft | ❌ | 2026-10-01 |
+| [TC-CT-16186-03-16189](TC-CT-16186-03-16189.md) | [Colli Type] - Company baru/backfill otomatis dapat BOX & PLT milik company (edge) | draft | ❌ | 2026-10-01 |
+| [TC-CT-16186-04-16190](TC-CT-16186-04-16190.md) | [Colli Type] - Setelah switch company hanya default milik company aktif yang tampil (permission) | draft | ❌ | 2026-10-01 |
+| [TC-CT-16186-05-16191](TC-CT-16186-05-16191.md) | [Colli Type] - Setelah seeder, Colli Type custom existing tetap aman + BOX default ON (regression) | draft | ❌ | 2026-10-01 |
+| [TC-CT-16186-06-16192](TC-CT-16186-06-16192.md) | [Colli Type] - BOX & PLT company aktif tersedia di pemilih transaksi terkait (cross-menu) | draft | ❌ | 2026-10-01 |
 
 **Belum di-TC (sengaja):** requirement §6.4 kasus 8 — Active OFF tidak muncul di **New Colli** inbound — konsumen [ETM-15528](https://erpintegration.atlassian.net/browse/ETM-15528).
 
 Run staging 2026-08-14 (Playwright MCP, FAT 112): 001 pass, 002 blocked, 003–006 pass, 007–009 **fail**, 010 pass. Belum di-run: 011–015.
 
-Error cards (Faisal Bahari): [ETM-15546](https://erpintegration.atlassian.net/browse/ETM-15546) (TC-CT-008), [ETM-15547](https://erpintegration.atlassian.net/browse/ETM-15547) (TC-CT-009). Improvement [ETM-15543](https://erpintegration.atlassian.net/browse/ETM-15543) **RE-OPEN**.
+Error cards: [ETM-15546](https://erpintegration.atlassian.net/browse/ETM-15546) (TC-CT-008), [ETM-15547](https://erpintegration.atlassian.net/browse/ETM-15547) (TC-CT-009). Improvement [ETM-15543](https://erpintegration.atlassian.net/browse/ETM-15543) **RE-OPEN**.
+Bug card: [ETM-16186](https://erpintegration.atlassian.net/browse/ETM-16186) — Default Master Data BOX dan PLT belum ter-generate per company (TC-CT-16186-01 s/d 06, ref Jira ETM-16187 s/d ETM-16192).
