@@ -24,7 +24,7 @@ test_data:
     value: "SO-FIXTURE-001"
 steps:
   - "Buka detail Sales Order"
-  - "Klik tombol "Extract this bundle" pada SKU Bundle Variant RANDOM"
+  - "Klik tombol 'Extract this bundle' pada SKU Bundle Variant RANDOM"
   - "Jika muncul modal pemilih Variant / alokasi random, pilih opsi yang valid"
   - "Verifikasi hasil penguraian bundle di detail order"
   - "Simpan Sales Order"

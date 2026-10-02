@@ -25,7 +25,7 @@ test_data:
 steps:
   - "Buka detail Sales Order"
   - "Temukan baris SKU Bundle (Variant components)"
-  - "Klik tombol "Extract this bundle""
+  - "Klik tombol 'Extract this bundle'"
   - "Verifikasi komponen Variant yang muncul di detail order"
   - "Klik Save All"
 expected_result: |

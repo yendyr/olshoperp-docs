@@ -31,7 +31,7 @@ steps:
   - "Selesaikan proses binding SKU dan kembali ke halaman Platform Sales Order"
   - "Verifikasi snapshot benchmark_cogs terisi dari master produk"
   - "Verifikasi icon dollar (cogs-error) otomatis muncul di kolom Error Flag"
-  - "Verifikasi counter badge pada pill "Net Sales < COGS" bertambah dan order tersebut kini muncul di hasil filter"
+  - "Verifikasi counter badge pada pill 'Net Sales < COGS' bertambah dan order tersebut kini muncul di hasil filter"
 expected_result: |
   Sistem secara realtime mengupdate snapshot benchmark_cogs, memicu icon dollar (cogs-error), dan memasukkan order ke dalam filter Net Sales < COGS pasca binding SKU berhasil dilakukan.
 test_result:

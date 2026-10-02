@@ -28,7 +28,7 @@ steps:
   - "Identifikasi SO platform dengan kondisi Net Sales == Total COGS (impas)"
   - "Identifikasi SO platform dengan kondisi Net Sales > Total COGS (profit/normal)"
   - "Identifikasi SO platform dengan produk tanpa master COGS (Benchmark COGS = 0)"
-  - "Aktifkan tombol pill "Net Sales < COGS""
+  - "Aktifkan tombol pill 'Net Sales < COGS'"
   - "Verifikasi bahwa ketiga tipe SO di atas tidak muncul pada tabel datalist"
 expected_result: |
   Sales Order platform dengan Net Sales == COGS, Net Sales > COGS, ataupun yang memiliki Total COGS = 0 diexclude secara presisi dari hasil filter Net Sales < COGS.

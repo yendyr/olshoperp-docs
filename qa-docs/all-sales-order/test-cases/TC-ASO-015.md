@@ -24,14 +24,14 @@ test_data:
     value: "SO-FIXTURE-001"
 steps:
   - "Buka detail Sales Order (100 rows detail)"
-  - "Jalankan fitur "Extract this bundle" pada SKU Bundle"
+  - "Jalankan fitur 'Extract this bundle' pada SKU Bundle"
   - "Verifikasi jumlah total baris detail meningkat menjadi > 100 rows"
   - "Lakukan navigasi pagination / scroll pada tabel detail"
   - "Klik Save All"
 expected_result: |
   1. Total baris detail bertambah melebihi 100 rows tanpa freeze/crash.
-2. Pagination dan render tabel detail berjalan normal.
-3. Dokumen Sales Order dengan > 100 rows detail berhasil disimpan (Save All).
+  2. Pagination dan render tabel detail berjalan normal.
+  3. Dokumen Sales Order dengan > 100 rows detail berhasil disimpan (Save All).
 test_result:
   status: not_run
   started_at: null

@@ -25,7 +25,7 @@ test_data:
 steps:
   - "Buka detail Sales Order"
   - "Temukan baris SKU Bundle (Single components)"
-  - "Klik tombol "Extract this bundle""
+  - "Klik tombol 'Extract this bundle'"
   - "Verifikasi perubahan baris detail SKU dan simpan Sales Order"
 expected_result: |
   SKU Bundle ter-extract menjadi komponen SKU Single penyusunnya dengan qty dan harga unit yang sesuai, serta dapat disimpan tanpa error.

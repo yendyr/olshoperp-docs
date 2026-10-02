@@ -25,7 +25,7 @@ test_data:
     value: "Net Sales < COGS"
 steps:
   - "Buka menu Omnichannel -> Platform Sales Order (/omnichannel/sales-order)"
-  - "Klik tombol pill "Net Sales < COGS""
+  - "Klik tombol pill 'Net Sales < COGS'"
   - "Periksa network inspect memastikan query param type=platform&net_sales_below_cogs=true dikirimkan ke endpoint datalist"
   - "Ambil sampel dokumen Sales Order platform yang muncul di tabel"
   - "Hitung manual Total Net Sales dan Total COGS per SO"

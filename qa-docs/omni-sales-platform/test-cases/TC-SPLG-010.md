@@ -27,7 +27,7 @@ steps:
   - "Buka menu Omnichannel -> Platform Sales Order (/omnichannel/sales-order)"
   - "Cari order yang memiliki SKU unbound (memiliki error flag product-not-bound di list Failed Process)"
   - "Periksa nilai snapshot benchmark_cogs pada detail item (bernilai 0)"
-  - "Aktifkan tombol pill "Net Sales < COGS""
+  - "Aktifkan tombol pill 'Net Sales < COGS'"
   - "Verifikasi bahwa order dengan SKU unbound ini TIDAK masuk ke hasil filter Net Sales < COGS"
 expected_result: |
   Transaksi dengan SKU platform yang belum terbinding memiliki benchmark_cogs = 0 dan tidak memicu false positive pada filter Net Sales < COGS.

@@ -26,7 +26,7 @@ test_data:
 steps:
   - "Buka menu Omnichannel -> Platform Sales Order (/omnichannel/sales-order)"
   - "Terapkan filter store/tanggal tanpa data under-COGS"
-  - "Aktifkan tombol pill "Net Sales < COGS""
+  - "Aktifkan tombol pill 'Net Sales < COGS'"
   - "Amati respon UI pada tabel datalist"
 expected_result: |
   Tabel datalist menampilkan pesan empty state informatif ("No data available in table") dengan bersih tanpa error console ataupun tampilan blank.

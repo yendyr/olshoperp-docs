@@ -35,9 +35,9 @@ test_data:
 steps:
   - "Masuk ke menu Transfer Inbound"
   - "Search by trx code Transfer External TFE-5TU41QH5"
-  - "Klik action \"show\" untuk melihat detail dokumen"
-  - "Pada SKU \"AUTO-SKU002\" inputkan di field broken items = 2"
-  - "Pada SKU \"AUTO-SKU001\" inputkan di field lost items = 1"
+  - "Klik action 'show' untuk melihat detail dokumen"
+  - "Pada SKU 'AUTO-SKU002' inputkan di field broken items = 2"
+  - "Pada SKU 'AUTO-SKU001' inputkan di field lost items = 1"
   - "Klik button Approve — dokumen Transfer Inbound sudah berhasil terbuat"
 expected_result: |
   Broken/Lost tersimpan; setelah Approve inbound dokumen berhasil diterima

@@ -27,7 +27,7 @@ test_data:
 steps:
   - "Buka menu Omnichannel -> Platform Sales Order (/omnichannel/sales-order)"
   - "Periksa jajaran PillButtons di atas tabel datalist"
-  - "Verifikasi tombol pill berlabel "Net Sales < COGS" berada di urutan ke-4"
+  - "Verifikasi tombol pill berlabel 'Net Sales < COGS' berada di urutan ke-4"
   - "Verifikasi warna tombol bertipe warning (kuning/oranye)"
   - "Periksa badge counter pada pill dan bandingkan dengan respon API /omnichannel/sales-order/pill-count?type=platform"
 expected_result: |

@@ -25,8 +25,8 @@ test_data:
     value: "Net Sales < COGS"
 steps:
   - "Buka menu Omnichannel -> Platform Sales Order (/omnichannel/sales-order)"
-  - "Aktifkan pill "Net Sales < COGS" hingga tabel terfilter"
-  - "Klik kembali tombol pill "Net Sales < COGS" untuk menonaktifkannya"
+  - "Aktifkan pill 'Net Sales < COGS' hingga tabel terfilter"
+  - "Klik kembali tombol pill 'Net Sales < COGS' untuk menonaktifkannya"
   - "Periksa request datalist memastikan query param net_sales_below_cogs telah dihapus"
   - "Verifikasi tabel datalist memuat kembali seluruh Sales Platform secara utuh"
 expected_result: |

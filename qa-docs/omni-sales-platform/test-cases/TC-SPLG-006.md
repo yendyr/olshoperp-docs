@@ -25,10 +25,10 @@ test_data:
     value: "Net Sales < COGS"
 steps:
   - "Buka menu Omnichannel -> Platform Sales Order (/omnichannel/sales-order)"
-  - "Klik tombol pill "Failed Process" -> amati filter failed_process=true aktif"
-  - "Langsung klik tombol pill "Net Sales < COGS" tanpa mematikan pill sebelumnya"
-  - "Verifikasi pill "Failed Process" otomatis nonaktif dan "Net Sales < COGS" menjadi aktif"
-  - "Klik tombol pill "Ready to Process" -> verifikasi "Net Sales < COGS" otomatis nonaktif"
+  - "Klik tombol pill 'Failed Process' -> amati filter failed_process=true aktif"
+  - "Langsung klik tombol pill 'Net Sales < COGS' tanpa mematikan pill sebelumnya"
+  - "Verifikasi pill 'Failed Process' otomatis nonaktif dan 'Net Sales < COGS' menjadi aktif"
+  - "Klik tombol pill 'Ready to Process' -> verifikasi 'Net Sales < COGS' otomatis nonaktif"
 expected_result: |
   Pill buttons di Platform Sales Order bekerja secara single-active toggle tanpa tumpang tindih parameter filter.
 test_result:
