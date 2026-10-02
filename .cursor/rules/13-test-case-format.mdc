@@ -96,6 +96,39 @@ last_execution:                   # skema TETAP — diperbarui tiap run; label U
 ---
 ```
 
+### Aturan Sintaks YAML Frontmatter (Anti-Parse Error Server)
+
+> [!CAUTION]
+> **Frontmatter diparse langsung oleh PHP Symfony YAML parser di server backend (`E2eTestCaseDocService.php`).** Kesalahan kecil pada indentasi atau tanda kutip akan menyebabkan HTTP 500 dan error log di server!
+
+1. **Blok Multiline (`expected_result: |`):**
+   * **SETIAP BARIS** di bawah `expected_result: |` **WAJIB MENJOROK MASUK (INDENT 2 SPASI)**.
+   * Dilarang keras menulis nomor list `2. ...` atau teks baris berikutnya rata kiri (0 spasi).
+   ```yaml
+   # ✅ BENAR (2 spasi di tiap baris)
+   expected_result: |
+     1. Tombol extract tidak muncul pada non-bundle.
+     2. Tombol extract muncul pada bundle.
+
+   # ❌ SALAH (baris ke-2 tanpa indentasi — parser PHP akan CRASH)
+   expected_result: |
+     1. Tombol extract tidak muncul pada non-bundle.
+   2. Tombol extract muncul pada bundle.
+   ```
+
+2. **Kutipan Bersarang (Nested Quotes):**
+   * Di dalam list `steps:` atau `preconditions:`, jika ingin mengutip label tombol/teks UI, **gunakan single quote `'...'` di dalam double quote `"..."`**:
+   ```yaml
+   # ✅ BENAR
+   steps:
+     - "Klik tombol 'Extract this bundle'"
+     - "Pilih opsi 'Ready to Process'"
+
+   # ❌ SALAH (double quote di dalam double quote tanpa escape)
+   steps:
+     - "Klik tombol "Extract this bundle""
+   ```
+
 ### `first_execution` — kapan TC pertama kali diuji
 
 > [!IMPORTANT]
