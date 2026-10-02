@@ -42,6 +42,7 @@ AND is_return_process = 0
 | Store Binding | stores / toko | `omni_stores` | key: `store_name` (bukan `name`), `platform_id`, `store_platform_name` |
 | Waves Management | waves | `omni_waves` | |
 | Sales Return (Omni) | platform return | `omni_sales_returns` | detail `omni_sales_return_details`; `code LIKE 'SRP-%'` |
+| Product Binding (System↔Platform) | binding pivot | `omni_product_binding_pivots` | FK `product_system_id`→`scm_products`, `product_omni_id`→`omni_products`, `store_id`→`omni_stores`; soft delete (`deleted_at`); 1 row = 1 platform product terbind. Distribusi store/produk = acuan fan-out push stock |
 
 ## Accounting
 
