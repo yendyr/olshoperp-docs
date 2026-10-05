@@ -3,128 +3,91 @@ doc_type: knowledge-base
 menu: supplychain-delivery-order
 menu_name: "Delivery Order"
 version: 1.0
-last_updated: 2026-06-23
+last_updated: 2026-10-05
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
+aliases: [delivery order, DO, collecting, SL]
 ---
 
 # Delivery Order — Knowledge Base
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+**UI:** `/supplychain/delivery-order` · **SoT:** `_meta/sot/supplychain-delivery-order-source-of-truth.md` v1.0
 
-## Ringkasan
+---
 
-**Delivery Order (DO)** adalah dokumen pengiriman barang ke customer. DO menggabungkan referensi dari **Sales Order**, **Inventory Out (Outbound)**, atau **Transfer Internal**, lalu saat disetujui memicu transfer shipping di gudang.
+## Apa ini?
 
-| Item | Nilai |
-|------|-------|
-| Menu | Supply Chain → Delivery Order |
-| Route UI | `/supplychain/delivery-order` |
-| Kode dokumen | `DO` |
-| Tabel utama | `omni_delivery_orders` |
+Delivery Order (DO) = daftar order yang diserahkan ke **shipper / gudang 3PL**. Dipakai untuk:
 
-> Entity DO disimpan di modul OmniChannel (`omni_delivery_orders`), tetapi diakses dari menu SCM. Class SCM `Modules\SupplyChain\Entities\DeliveryOrder` extends entity OmniChannel.
+1. **Order internal** — pengiriman & tracking company sendiri  
+2. **Order platform** — shipper dari marketplace  
 
-## Kapan dipakai
+Live: masukkan order **per transaksi order**, bukan per SKU.
 
-- Mengirim barang untuk **Sales Order** (general atau platform) yang sudah melewati proses collecting/shipping.
-- Mengirim berdasarkan **Inventory Out** yang outstanding.
-- Mengirim berdasarkan **Transfer Internal** outstanding.
-- Membuat dokumen resmi pengiriman beserta shipper, AWB, dan alamat.
+---
 
-## Langkah operasional
+## Kapan barang “sudah di 3PL”?
 
-### 1. Buat DO
+**Saat DO di-approve**, bukan saat order baru dimasukkan ke detail.
 
-1. Buka **Delivery Order** → **Create**.
-2. Isi header: tanggal, shipper (wajib), AWB, alamat, kendaraan.
-3. Simpan — status awal **`draft`**.
-4. Ubah ke **`open`** jika siap isi detail.
+Alur singkat:
 
-### 2. Tambah detail
+```mermaid
+flowchart LR
+  Pack[Packing selesai] --> SL[Collecting SL Open]
+  SL --> Masuk[Masukkan ke DO]
+  Masuk --> Prep[Collecting Approved + Prepared]
+  Prep --> Appr[Approve DO]
+  Appr --> TPL[Masuk gudang 3PL + Shipped]
+```
 
-Pilih salah satu sumber (bisa kombinasi per dokumen):
+Collecting (`SL-*`) lahir dari **approve packing** (masih Open). Baru **Approved** ketika order masuk detail DO.
 
-| Sumber | Panel di form | Prasyarat |
-|--------|---------------|-----------|
-| **Sales Order** | Available Sales Order | SO sudah punya collecting list (`PROCESS_TYPE_SHIPPING`); tanggal DO ≥ tanggal SO & collecting |
-| **Inventory Out** | Available Inventory Out | Outbound outstanding |
-| **Transfer Internal** | Available Transfer Internal | Transfer internal outstanding |
+---
 
-Gunakan **Bulk Use** untuk menambah grup referensi sekaligus.
+## Syarat order bisa masuk DO
 
-### 3. Approve DO
+- Sudah melewati pick → check → pack → **Collecting**  
+- Shipper di header DO sudah terikat gudang 3PL  
+- Tanggal order / Collecting tidak lebih baru dari tanggal DO  
 
-1. Pastikan minimal **1 baris detail**.
-2. Klik **Approve**.
-3. Sistem:
-   - Update qty processed di SO detail & outbound detail
-   - Generate **Shipping DO transfer** (`PROCESS_TYPE_SHIPPING_DO`)
-   - Auto-approve transfer shipping tersebut
+---
 
-### 4. Setelah approve
+## Available to Delivery Order
 
-- DO tidak bisa diedit sembarangan.
-- Lanjutkan proses outbound/settlement sesuai alur SO (lihat dokumentasi Sales Order General).
+| Cara | Yang tampil |
+|------|-------------|
+| By order | Order yang punya Collecting dan masih sisa qty |
+| By Transfer Internal | Dokumen Collecting **SL-*** (Open **dan** Approved) |
 
-## Status dokumen
+- Pilih SL **Open** → Collecting otomatis Approved, lalu masuk detail.  
+- Pilih SL **sudah Approved** → status tidak berubah; boleh dimasukkan lagi jika masih ada sisa.
 
-| Status | Arti untuk operator |
-|--------|---------------------|
-| `draft` | Baru dibuat; header bisa diisi |
-| `open` | Siap tambah detail / approve |
-| `approved` | Disetujui; transfer shipping DO terbuat |
-| `rejected` | Ditolak approver |
-| `void` | Dibatalkan |
+Satu DO boleh campur banyak order (internal + platform) asal **shipper sama**.
 
-## Panel penting di form
+Di detail: **Trx Code** = nomor SL Collecting; **Trx Ref** = nomor order; **Status** = status SL.
 
-| Panel | Fungsi |
-|-------|--------|
-| Header Basic Information | Tanggal, shipper, AWB, alamat |
-| Available Sales Order | Pilih SO outstanding untuk DO |
-| Available Inventory Out | Pilih outbound outstanding |
-| Available Transfer Internal | Pilih transfer internal outstanding |
-| Datalist Detail | Baris DO yang sudah ditambahkan |
-| Approval Eligibility / Log | Workflow approval |
+---
+
+## Ganti kurir di platform (A ke B)
+
+- **Belum** masuk DO → biasanya aman; order ikut shipper terbaru saat dicari.  
+- **Sudah** masuk detail DO, lalu kurir berubah → sistem **belum** otomatis pindah. Approve DO masih bisa mengirim ke gudang 3PL **shipper lama**. Ini **risiko bug** yang sudah diketahui — laporkan ke QA/dev, jangan anggap sudah beres.
+
+---
 
 ## Troubleshooting
 
-| Gejala | Kemungkinan penyebab | Tindakan |
-|--------|---------------------|----------|
-| SO tidak bisa dipakai di DO | Collecting list belum ada atau tanggal DO lebih awal | Cek Transfer Collected; sesuaikan tanggal DO |
-| "SO has later transaction date" | Tanggal DO < tanggal SO | Naikkan tanggal DO |
-| Approve gagal — no detail | Belum ada baris | Tambah detail dari salah satu sumber |
-| Approval sedang berjalan | Cache lock 15 detik | Tunggu lalu coba lagi |
-| DO sudah approved | Status final untuk edit | Tidak bisa ubah header/detail |
+| Gejala | Cek |
+|--------|-----|
+| Order tidak muncul | Packing sudah complete? Ada SL? Qty sudah prepared penuh? |
+| Gagal approve: shipper doesn’t have a 3PL warehouse | Binding shipper ↔ gudang 3PL |
+| Tidak bisa add SO / cek Transfer Collected | Tanggal DO vs SO vs Collecting |
+| Kolom Deadline di daftar | Masih ada di tabel; bisa di-hide Column show/hide |
 
-## Relasi menu
+---
 
-| Menu terkait | Route | Hubungan |
-|--------------|-------|----------|
-| Sales Order General | `businessdevelopment/sales-order-general` | Sumber detail DO (SO internal) |
-| Sales Order Platform | `omni/sales-order` | Sumber detail DO (marketplace) |
-| Inventory Out | `supplychain/mutation-outbound` | Sumber detail outbound |
-| Transfer Internal | `supplychain/mutation-transfer-internal` | Sumber detail transfer |
-| Collecting / Shipping | Transfer Summary SCM | Prasyarat SO — `PROCESS_TYPE_SHIPPING` |
-| [Instant Settlement](../accounting-settlement-upload/README.md) | Butuh DO approved → Shipped WH 3PL sebelum upload |
+## Instant Settlement
 
-## Relasi Instant Settlement (operator)
-
-Order harus **Shipped WH 3PL** sebelum bisa di-settle. Status itu tercapai setelah rantai gudang termasuk **Collecting** dan **Delivery Order approved**.
-
-| Gejala settlement | Cek di DO |
-|-------------------|-----------|
-| SO Failed — belum Shipped | Apakah DO sudah approve? Collecting list ada? |
-| Tanggal tidak valid | Tanggal DO ≥ tanggal SO; collecting date ≤ DO |
-
-Detail: [Instant Settlement](../accounting-settlement-upload/requirement.md)
-
-## Istilah
-
-| Istilah | Arti |
-|---------|------|
-| AWB | Air Waybill / nomor resi pengiriman |
-| Collecting List | Transfer shipping sebelum DO — virtual WH `shipping` |
-| Shipping DO | Transfer otomatis saat DO di-approve (`PROCESS_TYPE_SHIPPING_DO`) |
+DO belum approved / order belum Shipped → settlement marketplace bisa gagal.

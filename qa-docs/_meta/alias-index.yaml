@@ -3,13 +3,14 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-09-29T09:11:13Z'
+generated: '2026-10-05T06:23:53Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
 menu_count: 129
-alias_count: 766
+alias_count: 770
 ambiguous_count: 27
 aliases:
+  3pl: supplychain-delivery-order
   account payable report: accounting-account-payable-report
   account payment: accounting-supplier-payment
   account payment docs: accounting-supplier-payment
@@ -211,6 +212,7 @@ aliases:
   cogs benchmark menu: accounting-product-benchmark-price
   cogs error: sales-order-general
   cogs-error: sales-order-general
+  collecting: supplychain-delivery-order
   colli: supplychain-new-purchase-inbound
   colli type: supplychain-colli-type
   colli v2: supplychain-new-purchase-inbound
@@ -262,6 +264,7 @@ aliases:
   dev stock monitoring: supplychain-stock-monitoring
   dimension and weight label: supplychain-dimension-and-weight-label
   dn: accounting-debit-note
+  do: supplychain-delivery-order
   edit detail before approve: omni-sales-platform
   edit platform detail: all-sales-order
   ending balance per warehouse: supplychain-product-mutation-stock
@@ -773,6 +776,7 @@ aliases:
   skipwaveprocessjob: omni-skip-wave-process
   sku (parent): system-product
   sku-(parent): system-product
+  sl: supplychain-delivery-order
   so general: sales-order-general
   so general technical: sales-order-general
   so internal: sales-order-general

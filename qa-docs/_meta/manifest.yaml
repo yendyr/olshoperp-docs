@@ -2593,7 +2593,7 @@ menus:
 
   supplychain-delivery-order:
     menu_name: "Delivery Order"
-    short_description: "Create delivery orders to ship goods to customers."
+    short_description: "Handover collected orders to shipper 3PL — insert by order, stock moves to 3PL on approve."
     path: supplychain-delivery-order
     module: SupplyChain
     menu_links:
@@ -2602,21 +2602,25 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - "**/DeliveryOrder*"
+        - "**/TransferShipping*"
+      frontend:
+        - "**/SCM/DeliveryOrder/**"
+        - "**/delivery-order*"
 
   supplychain-dimension-and-weight-label:
     menu_name: "Dimension and Weight Label"
