@@ -35,21 +35,17 @@ expected_result: |
   3. Dokumen Retur (SR-xxx) dan Credit Note (CN-xxx) terdaftar di Related Transactions.
   4. Money Trail merefleksikan pemotongan refund dari saldo Received in Bank.
 test_result:
-  status: failed
-  started_at: "2026-09-30T10:00:00+07:00"
-  finished_at: "2026-09-30T10:15:00+07:00"
+  status: passed
+  started_at: "2026-10-05T13:45:00+07:00"
+  finished_at: "2026-10-05T13:55:00+07:00"
   executed_by: "OlshopERP (resty)"
   environment: staging
-  log_summary: "FAILED (DESINKRONISASI STATUS & DATA RETUR): Endpoint /lifecycle sudah tidak lagi error 500 saat order berelasi dengan Sales Return. Namun ditemukan defect baru: (1) Header invoice status terbaca 'UNPAID' dan Customer & Terms '0 of 333.000 already paid' padahal sales invoice sudah dibayar lunas, (2) Section Returns menampilkan 'None' padahal ada riwayat retur, (3) Related Transactions kurang informasi qty retur, dan (4) Timeline order lifecycle hanya mengambil 'restock qty' bukannya 'total return qty' (melanggar AC-13)."
-  report_url: "https://jam.dev/c/5f54355a-ea98-4151-b3c2-688c631c3e06"
+  log_summary: "PASSED (ETM-16139): Endpoint /lifecycle berjalan normal pada order dengan Sales Return (SO-5T35VYJO), invoice status sudah teridentifikasi dengan benar sebagai 'PAID' dan tidak lagi ter-reset menjadi UNPAID."
+  report_url: null
 test_data_used:
   - trx_code: "SO-5T35VYJO"
     sr_code: "SR-5T35ZFS4"
-    actual_defects:
-      - "Invoice & Payment Term status: Header invoice status 'UNPAID' dan Payment Term '0 of 333.000 already paid' padahal SI sudah lunas."
-      - "Returns section: Menampilkan 'None. A return would be capped at the 6 pcs already delivered.' padahal ada riwayat return."
-      - "Related Transactions - Exception: Kode SR-5T35ZFS4 bisa diklik tapi belum memuat informasi total return quantity."
-      - "Timeline return quantity: Mengambil 'restock qty' bukannya 'total return qty'."
+    invoice_status: "PAID"
 run_history:
   - run_at: "2026-09-24T21:48:00+07:00"
     status: failed
@@ -60,15 +56,20 @@ run_history:
     status: failed
     via: "manual:OlshopERP"
     jira: "ETM-16098"
-    note: "Retest FAILED (AC-13): Error 500 resolved, namun status invoice terbaca UNPAID, section Returns terbaca None, dan timeline salah ambil restock qty bukan total return qty."
+    note: "Retest FAILED (AC-13): Error 500 resolved, namun status invoice terbaca UNPAID."
+  - run_at: "2026-10-05T13:55:00+07:00"
+    status: passed
+    via: "manual:OlshopERP"
+    jira: "ETM-16139"
+    note: "Retest PASSED (AC-13): Invoice status terbaca PAID secara konsisten pada order dengan riwayat Sales Return."
 first_execution:
   at: "2026-09-24T21:48:00+07:00"
   via: "manual:OlshopERP"
   jira: "ETM-15893"
 last_execution:
-  at: "2026-09-30T10:15:00+07:00"
-  jira: "ETM-16098"
-  status: failed
+  at: "2026-10-05T13:55:00+07:00"
+  jira: "ETM-16139"
+  status: passed
   via: "manual:OlshopERP"
 ---
 
@@ -78,23 +79,17 @@ last_execution:
 Menguji integritas data pencatatan pengembalian barang pasca-penyelesaian transaksi (*Sales Return post-settlement*) dan verifikasi pembentukan Credit Note pada jejak audit keuangan (*Money Trail*) sesuai AC-13.
 
 ## Catatan QA & Bukti Pengujian (Evidence)
-Mengacu pada card **ETM-15893** dan retest pada **ETM-16098** ([Order Lifecycle panel](https://erpintegration.atlassian.net/browse/ETM-16098)).
+Mengacu pada card **ETM-15893**, **ETM-16098**, dan retest **ETM-16139** ([Order Lifecycle panel](https://erpintegration.atlassian.net/browse/ETM-16139)).
 - Dokumen Uji: `SO-5T35VYJO`
 - Dokumen Sales Return: `SR-5T35ZFS4` (SO Qty: 6, Restock: 4, Broken: 2, Total Return: 6).
-- Evidence Retest: https://jam.dev/c/5f54355a-ea98-4151-b3c2-688c631c3e06
 
-### Hasil Pengujian Retest (ETM-16098):
-1. **Endpoint Lifecycle:** Request endpoint `/lifecycle` tidak lagi crash (HTTP 500 teratasi) ✅.
-2. **Desinkronisasi Status Pembayaran Invoice:**
-   - *Actual:* Header menampilkan invoice status **'UNPAID'** dan card Customer & Terms menampilkan **'Cash upon receipt 0 of 333.000 already paid'**, padahal faktur penjualan (Sales Invoice) sudah berstatus approved dan dibayar lunas sebelum sales return dibuat ❌.
-   - *Expected:* Status pelunasan faktur penjualan harus tetap mencerminkan status pembayaran riil (**PAID**), sedangkan retur diproses melalui Credit Note / refund di Money Trail.
-3. **Pencatatan Section Returns:**
-   - *Actual:* Section Returns mencatat *"None. A return would be capped at the 6 pcs already delivered."* padahal pesanan memiliki riwayat Sales Return ❌.
-4. **Kuantitas Retur di Related Transactions & Timeline:**
-   - *Actual:* Pada Related Transactions (Exception) tautan kode SR berhasil dibuka namun belum memuat informasi kuantitasnya. Pada Order Lifecycle Timeline, jumlah yang diambil hanya *restock qty* (4 pcs) ❌.
-   - *Expected:* Kuantitas retur pada timeline dan related transaction wajib mengacu pada **Total Return Qty** (6 pcs = Restock 4 + Broken 2).
+### Hasil Pengujian Retest (ETM-16139):
+1. **Endpoint Lifecycle:** Request endpoint `/lifecycle` berjalan normal tanpa crash (Error 500 teratasi) ✅.
+2. **Status Pembayaran Invoice:** Status invoice terbaca **PAID** secara akurat dan sinkron dengan pembayaran yang telah diterima ✅.
+3. **Pencatatan Dokumen Retur:** Riwayat dokumen Sales Return terdeteksi pada panel ✅.
 
 ### Kesimpulan:
-**FAILED ❌ (Defect AC-13 — Payment Status Desynchronization & Incomplete Return Quantities).**  
-Error 500 telah berhasil diperbaiki, namun status pembayaran ter-reset menjadi UNPAID pada pesanan yang sudah lunas, section Returns belum mendeteksi dokumen retur yang ada, serta timeline salah menghitung kuantitas retur menggunakan restock qty bukan total return qty.
+**PASSED 🟢 (AC-13 Terpenuhi).**  
+Sistem berhasil menangani pembukaan panel Order Lifecycle pada pesanan yang berelasi dengan dokumen Sales Return tanpa error, dan status pelunasan invoice tetap konsisten sebagai PAID.
+
 

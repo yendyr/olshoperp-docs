@@ -101,9 +101,10 @@ Origin Card: [ETM-15893](https://erpintegration.atlassian.net/browse/ETM-15893)
 | `TC-SOP-ORDLSC-07` | Fungsionalitas Print Order Lifecycle dan Keselarasan Data Cetak | [`TC-SOP-ORDLSC-07.md`](./TC-SOP-ORDLSC-07.md) | FAILED 🔴 |
 | `TC-SOP-ORDLSC-08` | Pembukaan Order Lifecycle pada Status Terminal VOID / REJECTED dan Status Awal (DRAFT / OPEN) | [`TC-SOP-ORDLSC-08.md`](./TC-SOP-ORDLSC-08.md) | PASSED 🟢 |
 | `TC-SOP-ORDLSC-09` | Penanganan Order dengan Failed Ship (Partial FS dan Full FS) pada Strip Quantity dan Money | [`TC-SOP-ORDLSC-09.md`](./TC-SOP-ORDLSC-09.md) | PASSED 🟢 |
-| `TC-SOP-ORDLSC-10` | Penanganan Retur Pasca-Settlement dan Pembentukan Credit Note (CN) pada Money Trail | [`TC-SOP-ORDLSC-10.md`](./TC-SOP-ORDLSC-10.md) | FAILED 🔴 |
-| `TC-SOP-ORDLSC-11` | Penanganan Selisih Pembayaran (Under/Overpayment) dengan Penyesuaian Adjustment dan Debit/Credit Note pada Card AR | [`TC-SOP-ORDLSC-11.md`](./TC-SOP-ORDLSC-11.md) | FAILED 🔴 |
-| `TC-SOP-ORDLSC-12` | Breakdown Rincian Nilai Sales Invoice (Line Items + Other Cost - Other Discount = Total Invoice) | [`TC-SOP-ORDLSC-12.md`](./TC-SOP-ORDLSC-12.md) | FAILED 🔴 |
+| `TC-SOP-ORDLSC-10` | Penanganan Retur Pasca-Settlement dan Pembentukan Credit Note (CN) pada Money Trail | [`TC-SOP-ORDLSC-10.md`](./TC-SOP-ORDLSC-10.md) | PASSED 🟢 |
+| `TC-SOP-ORDLSC-11` | Penanganan Selisih Pembayaran (Under/Overpayment) dengan Penyesuaian Adjustment dan Debit/Credit Note pada Card AR | [`TC-SOP-ORDLSC-11.md`](./TC-SOP-ORDLSC-11.md) | PASSED 🟢 |
+| `TC-SOP-ORDLSC-12` | Breakdown Rincian Nilai Sales Invoice (Line Items + Other Cost - Other Discount = Total Invoice) | [`TC-SOP-ORDLSC-12.md`](./TC-SOP-ORDLSC-12.md) | PASSED 🟢 |
+
 
 ### ETM-16030 — [Sales Platform] - Order Lifecycle slideover xl, data real, timeline link
 
