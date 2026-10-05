@@ -36,6 +36,7 @@ Menu operasional **picking list** gudang: datalist PL + halaman process (start â
 | Technical | [technical.md](./technical.md) | draft | Developer |
 | User Guide | [user-guide.md](./user-guide.md) | draft | End user |
 | Feature Map | [feature-map.md](./feature-map.md) | draft | Lingo / Help Center |
+| Test Cases | [test-cases/README.md](./test-cases/README.md) | draft | QA |
 
 ## Related
 
