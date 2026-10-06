@@ -77,7 +77,7 @@ test_data_used:
  - field: "Company"
    value: "lumicharmsid (id 153)"
  - field: "Run command"
-   value: "npm run test:system-product:qa:tc -- \"SKU-WENTER\""
+   value: "npm run test:system-product:qa:tc -- 'SKU-WENTER'"
  - field: "Expected SKU rows"
    value: "SKU-WENTER, SKU-WENTER-black, SKU-WENTER-blue, SKU-WENTER-maroon, SKU-WENTER-navy, SKU-WENTER-yellow, SKU-WENTER-purple"
 run_history:

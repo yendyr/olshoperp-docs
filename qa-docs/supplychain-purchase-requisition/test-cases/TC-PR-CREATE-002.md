@@ -66,7 +66,7 @@ run_history:
   - run_at: 2026-07-08T15:10:00+07:00
     status: passed
     executor: "Cursor Agent (Playwright)"
-    notes: "Run scoped: npm run test:purchase-requisition:tc -- \"@TC-PR-DRAFT\"; result 1 passed. Section detail aktif; status Open tervalidasi di datalist."
+    notes: "Run scoped: npm run test:purchase-requisition:tc -- '@TC-PR-DRAFT'; result 1 passed. Section detail aktif; status Open tervalidasi di datalist."
 first_execution:
   at: "2026-07-08"
   via: "legacy:test_result"

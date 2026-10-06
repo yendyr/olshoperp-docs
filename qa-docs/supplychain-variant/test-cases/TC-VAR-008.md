@@ -46,7 +46,7 @@ test_data_used:
   - field: "URL edit"
     value: "https://staging.olshoperp.com/supplychain/variant/edit/2965"
   - field: "PUT payload option"
-    value: "[\"Red\"]"
+    value: "['Red']"
   - field: "GET options after save"
     value: "random, Red"
 run_history:

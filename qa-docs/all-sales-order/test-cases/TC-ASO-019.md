@@ -1,7 +1,7 @@
 ---
 owner: QA - Jenni
 tc_code: TC-ASO-019
-title: "Eksekusi "Extract this bundle" pada SKU Bundle tipe VARIANT 'RANDOM'"
+title: "Eksekusi 'Extract this bundle' pada SKU Bundle tipe VARIANT 'RANDOM'"
 module: BusinessDevelopment
 menu: all-sales-order
 menu_slug: all-sales-order

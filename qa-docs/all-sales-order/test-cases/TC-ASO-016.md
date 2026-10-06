@@ -1,7 +1,7 @@
 ---
 owner: QA - Jenni
 tc_code: TC-ASO-016
-title: "UI Visibility tombol "Extract this bundle" hanya muncul pada SKU yang ter-flagging sebagai BUNDLE"
+title: "UI Visibility tombol 'Extract this bundle' hanya muncul pada SKU yang ter-flagging sebagai BUNDLE"
 module: BusinessDevelopment
 menu: all-sales-order
 menu_slug: all-sales-order

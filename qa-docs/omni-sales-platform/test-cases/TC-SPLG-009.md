@@ -25,7 +25,7 @@ test_data:
     value: "Net Sales < COGS"
 steps:
   - "Buka menu Omnichannel -> Platform Sales Order (/omnichannel/sales-order)"
-  - "Aktifkan pill "Failed Process" untuk memunculkan kolom "Error Flag""
+  - "Aktifkan pill 'Failed Process' untuk memunculkan kolom 'Error Flag'"
   - "Cari dokumen Sales Order yang memiliki item under benchmark COGS"
   - "Verifikasi bahwa pada kolom Error Flag di header order muncul icon dollar (cogs-error) dengan tooltip 'Below Benchmark COGS. Manual approval required.'"
   - "Klik baris Sales Order tersebut untuk membuka halaman Detail Order"

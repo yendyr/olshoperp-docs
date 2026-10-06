@@ -45,7 +45,7 @@ test_result:
   finished_at: "2026-09-17T14:50:00+07:00"
   executed_by: "QA - Yemima"
   environment: staging
-  log_summary: "Belum bisa dilanjutkan (blocked) karena aksi Recreate pada TC-03 mengalami error 500 ('Attempt to read property \"data_owner_id\" on null') sehingga pembentukan dokumen hasil Recreate tertahan."
+  log_summary: "Belum bisa dilanjutkan (blocked) karena aksi Recreate pada TC-03 mengalami error 500 ('Attempt to read property 'data_owner_id' on null') sehingga pembentukan dokumen hasil Recreate tertahan."
   report_url: null
 test_data_used:
   - field: "Dependency"

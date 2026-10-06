@@ -1,7 +1,7 @@
 ---
 owner: QA - Jenni
 tc_code: TC-ASO-017
-title: "Eksekusi "Extract this bundle" pada SKU Bundle tipe Single"
+title: "Eksekusi 'Extract this bundle' pada SKU Bundle tipe Single"
 module: BusinessDevelopment
 menu: all-sales-order
 menu_slug: all-sales-order
