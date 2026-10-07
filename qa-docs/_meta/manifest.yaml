@@ -4,7 +4,7 @@
 # Field `status` must match frontmatter `status` in each doc file.
 
 version: 1
-last_updated: 2026-08-12
+last_updated: 2026-10-07
 
 menus:
   manage-platform-product:
@@ -4390,6 +4390,99 @@ menus:
         - Modules/GeneralSetting/Entities/OrderProcessSetting.php
         - Modules/GeneralSetting/Routes/api.php
         - olshoperp-frontend/src/pages/master/Application/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+
+  businessdevelopment-variable-price:
+    menu_name: "Variable Price"
+    short_description: "Master margin bands by Amount or by Weight for Category Price multi-tier."
+    path: businessdevelopment-variable-price
+    module: BusinessDevelopment
+    menu_links:
+      - businessdevelopment/variable-price
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/BusinessDevelopment/Http/Controllers/PricelistCategoryController.php
+        - Modules/BusinessDevelopment/Entities/PricelistCategoryMarginPrice.php
+        - olshoperp-frontend/src/pages/BusinessDevelopment/PricelistCategory/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  businessdevelopment-category-price:
+    menu_name: "Category Price"
+    short_description: "Price category with multi-tier Variable Price snapshots and update to Pricelist."
+    path: businessdevelopment-category-price
+    module: BusinessDevelopment
+    menu_links:
+      - businessdevelopment/pricelist-category
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/BusinessDevelopment/Http/Controllers/PricelistCategoryController.php
+        - Modules/BusinessDevelopment/Entities/PricelistCategory.php
+        - Modules/BusinessDevelopment/Entities/PricelistCategoryMarginPrice.php
+        - olshoperp-frontend/src/pages/BusinessDevelopment/PricelistCategory/**/*
+        - olshoperp-frontend/src/router/index.ts
+      frontend: []
+
+  businessdevelopment-pricelist-product:
+    menu_name: "Pricelist Product"
+    short_description: "Per-SKU sell price and multi-tier margin with weight column and override audit."
+    path: businessdevelopment-pricelist-product
+    module: BusinessDevelopment
+    menu_links:
+      - businessdevelopment/pricelist
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/BusinessDevelopment/Http/Controllers/PricelistController.php
+        - Modules/BusinessDevelopment/Entities/Pricelist.php
+        - Modules/SupplyChain/Entities/Product.php
+        - olshoperp-frontend/src/pages/BusinessDevelopment/Pricelist/**/*
         - olshoperp-frontend/src/router/index.ts
       frontend: []
 
