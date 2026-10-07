@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.7
-last_updated: 2026-09-09
+version: 2.8
+last_updated: 2026-10-05
 owner: QA - Yemima
 status: review
 legacy_sources:
@@ -32,6 +32,7 @@ legacy_sources:
 | 2.5 | 2026-07-23 | QA - Yemima | Tambah user-guide v1.0; sync README 5-file + KB compliance |
 | 2.6 | 2026-07-23 | QA - Yemima | TO-BE Import Failed Ship (template, partial SO success, log, queue, G-05 approve) |
 | 2.7 | 2026-09-09 | QA - Yemima | **TO-BE Completion Summary** pasca-approve (§5.4, A-32) — slideover ringkas stok 3 arah + timeline + dampak Instant Settlement |
+| 2.8 | 2026-10-05 | QA - Yemima | **TO-BE Extract Bundle @ FS** (§5.7, A-33) — finalize komponen untuk Restock/Lost/Scrap + invoice; [ETM-16255](https://erpintegration.atlassian.net/browse/ETM-16255) |
 
 ---
 
@@ -125,6 +126,12 @@ legacy_sources:
 | ID | Kriteria (TO-BE) | AS-IS | Status |
 |----|------------------|-------|--------|
 | A-32 | Tombol **Completion Summary** di Order Details (edit) saat status `approved` / `closed`; slideover read-only: header, kartu Restock/Lost/Broken + Remaining/Total FS/Total Order, Order Movement timeline, Auto-Generated Documents, Breakdown by SKU, Impact + Instant Settlement (2 kondisi); Print Summary | ❌ Belum ada di `FailedShip/` (pola acuan: Manual Picking List `CompletionSummary.vue`) | **TO-BE** — §5.4 |
+
+### 2.8 Extract Bundle @ Failed Ship
+
+| ID | Kriteria (TO-BE) | AS-IS | Status |
+|----|------------------|-------|--------|
+| A-33 | Aksi **Extract Bundle** di detail FS **Open** pada baris header bundle: pecah ke komponen dari jejak fulfillment/3PL (bukan BOM master); price > 0 + alokasi harga = AS-IS Extract SO; tidak ganti SKU komponen; tidak undo / tidak tersedia setelah FS Approved; order sudah extract di SO → tidak ada aksi lagi; setelah extract: Restock/Lost/Scrap + Instant Settlement / SI memakai **sisa komponen** (bukan tampilan bundle); processing sampai 3PL tidak di-rebuild | ❌ Tidak ada extract di FS; Extract SO hanya `PENDING` / sebelum gudang ([omni-sales-platform §6.7](../omni-sales-platform/requirement.md#67-extract-sku-bundle--price--0-asis--etm-15733)) | **TO-BE** — §5.7 · [ETM-16255](https://erpintegration.atlassian.net/browse/ETM-16255) |
 
 ---
 
@@ -413,6 +420,7 @@ Kolom utama index: SO Code, FS Code/Date, Order Date, Store/Buyer, Shipper/Track
 | **Pause** | Pause durasi + `pause_reason` wajib |
 | **Resume** | Lanjut durasi |
 | **Inline edit** | Restock/Lost/Broken via `failed-ship-middle-detail/{id}/inline-edit` |
+| **Extract Bundle** (TO-BE) | Lihat §5.7 — hanya FS `open` + baris header bundle belum di-extract |
 | **Approve** | POST `failed-ship/{id}/approve` |
 | **Completion Summary** (TO-BE) | Lihat §5.4 — hanya `approved` / `closed` |
 
@@ -466,6 +474,69 @@ Aturan lain tetap: FS `open` memblokir upload settlement; settlement date > FS d
 Invariant angka: Restock + Lost + Broken = Total FS Qty; Total Order Qty konsisten dengan sum Order Qty per SKU di tabel.
 
 Fitur ini **tidak ada di requirement bisnis** — dokumentasi AS-IS tambahan (lihat §8).
+
+### 5.7 Extract Bundle @ Failed Ship — TO-BE
+
+> **Kartu:** [ETM-16255](https://erpintegration.atlassian.net/browse/ETM-16255) · **Requestor evidence:** deskripsi card (Request Data From User) — jangan dihapus.  
+> **Bukan** reuse mentah API Extract SO (`PENDING` saja) — lihat [omni-sales-platform §6.7](../omni-sales-platform/requirement.md#67-extract-sku-bundle--price--0-asis--etm-15733).
+
+**Tujuan:** Extract di FS = **finalize list detail order** untuk hilir (Restock/Lost/Scrap + Instant Settlement / Sales Invoice per komponen). Rantai processing sampai 3PL **tidak diubah** / tidak di-rebuild.
+
+#### AS-IS vs TO-BE
+
+| Aspek | AS-IS | TO-BE (ETM-16255) |
+|-------|-------|-------------------|
+| Lokasi aksi | Hanya detail SO platform (unapproved / sebelum gudang) | Detail FS status **Open** pada baris header bundle |
+| Eligibility status | SO `PENDING`; ditolak setelah wave/pick–ship | FS **Open** saja; setelah FS **Approved** → tidak ada extract, tidak ada undo |
+| Sumber komponen | BOM / tree saat extract di SO | **Jejak fulfillment / processing sampai 3PL** order itu — **bukan** BOM master product saat klik extract |
+| Ganti SKU komponen | SO extract boleh rebuild child (konteks SO) | **Tidak** boleh ganti SKU komponen di aksi extract FS |
+| Harga | `each_price` header > 0; alokasi ke komponen per implementasi SO | **Sama AS-IS SO Extract** (validasi + alokasi); pesan tolak price ≤ 0 sama |
+| Sudah extract di SO | Baris sudah komponen | Di FS **tidak** ada aksi extract lagi |
+| Invoice / SI | Bisa masih tampil header bundle | Setelah extract FS: SI menampilkan **sisa komponen** (bukan product bundle) setelah net FS |
+
+#### Business rules
+
+1. Extract **hanya** saat FS status **Open**. Setelah Approved: **tidak** bisa extract, **tidak** bisa undo.
+2. Pecah **hanya** header bundle → baris komponen; **tidak** boleh ganti SKU komponen.
+3. Sumber komponen = jejak fulfillment / processing sampai 3PL yang sama dengan order — **bukan** BOM master terkini (master bundle bisa berubah).
+4. Validasi harga **sama AS-IS SO Extract**: header bundle `each_price` ≤ 0 → tolak (`Unable to extract this bundle, the price must be greater than zero.`).
+5. **Alokasi harga** ke komponen = **sama AS-IS** Extract di detail SO — tidak ada rumus baru.
+6. Jika order **sudah** extract di SO sebelum ship → di FS sudah komponen; **tidak** ada aksi extract lagi.
+7. Setelah extract di FS: list komponen = **final** untuk invoice. SI menampilkan **sisa komponen** setelah net Failed Ship.
+8. Outbound/settlement tetap pakai **sisa** per komponen (partial OK: mis. Restock full A, Lost partial B → SI hanya sisa relevan).
+
+#### UI / UX
+
+| Elemen | Perilaku |
+|--------|----------|
+| Tombol / aksi **Extract** | Tooltip selaras SO: *Extract Bundle Details*; pada baris bundle di detail FS Open |
+| Setelah extract | Tampil baris komponen untuk isi Restock / Lost / Scrap |
+| FS Approved / Closed | Aksi tidak dirender (bukan disabled) |
+
+#### Out of scope
+
+- Memanggil API SO extract apa adanya tanpa gate FS Open / konteks Shipped
+- Mengubah history TF pick–check–pack–DO / stok 3PL yang sudah jalan
+- Extract atau undo setelah FS Approved
+- Mengganti SKU komponen saat extract
+
+#### Contoh kasus
+
+| Case | Hasil |
+|------|-------|
+| Bundle price `0` di FS Open | Extract ditolak — pesan price > 0 (sama SO) |
+| Bundle price `> 0`, FS Open, belum extract SO | Extract → baris komponen dari fulfillment; isi Restock/Lost/Scrap per komponen |
+| Sudah extract di SO | Tidak ada tombol Extract di FS |
+| FS sudah Approved | Tidak ada Extract; tidak ada undo |
+| Restock full komponen A, Lost partial B | SI / outbound = sisa komponen relevan (bukan header bundle) |
+
+#### Endpoint TO-BE (kontrak)
+
+| Method | Path (usulan) | Fungsi |
+|--------|---------------|--------|
+| POST | `supplychain/failed-ship/{id}/detail/{detailId}/extract-bundle` | Extract header bundle → komponen; gate FS Open + price > 0 + belum komponen |
+
+Pola harga/alokasi: referensi `SalesOrderDetailController::extractBundleDetails` — **bukan** eligibility status SO Pending.
 
 ### 5.6 Export — Format & Opsi
 
@@ -655,6 +726,7 @@ Detail operasional SP: [omni-sales-platform §7.1](../omni-sales-platform/requir
 | G-07 | Import Failed Ship | **TO-BE §5.5** — kontrak lengkap; belum diimplementasi |
 | G-08 | Pesan error void | Insert: order void dapat pesan "not approved" bukan "voided" eksplisit. |
 | G-09 | Completion Summary | **TO-BE §5.4 / A-32** — slideover pasca-approve belum ada di UI aktif |
+| G-10 | Extract Bundle @ FS | **TO-BE §5.7 / A-33** — belum ada aksi/API di FS; Extract SO tidak berlaku pasca-ship ([ETM-16255](https://erpintegration.atlassian.net/browse/ETM-16255)) |
 
 ### 8.2 Fitur codebase tambahan (tidak di dokumen bisnis awal)
 
@@ -712,6 +784,12 @@ Detail operasional SP: [omni-sales-platform §7.1](../omni-sales-platform/requir
 - [ ] CS: lost = 0 → tidak ada kartu SD / kode SD; Impact catat "tidak digenerate"
 - [ ] CS: unapprove → tombol hilang; Print Summary angka identik panel
 - [ ] CS: timeline kronologis + prefix kode PL/CL/PK/SL/TFI/FS/SD/TFS
+- [ ] **Extract Bundle (A-33):** FS Open + baris bundle → Extract tampil; Approved → tidak ada; tidak ada undo
+- [ ] Extract: komponen dari fulfillment/3PL, bukan BOM master; SKU komponen tidak bisa diganti
+- [ ] Extract: price ≤ 0 → ditolak pesan sama SO; price > 0 + alokasi = AS-IS Extract SO
+- [ ] Order sudah extract di SO → tidak ada Extract di FS
+- [ ] Setelah extract: Restock/Lost/Scrap per komponen; partial per komponen OK
+- [ ] Instant Settlement / SI: detail = sisa komponen (bukan bundle); processing 3PL tidak di-rebuild
 
 ---
 

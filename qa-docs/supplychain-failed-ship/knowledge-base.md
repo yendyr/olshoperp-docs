@@ -2,12 +2,12 @@
 doc_type: knowledge-base
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.7
-last_updated: 2026-09-09
+version: 2.8
+last_updated: 2026-10-05
 owner: QA - Yemima
 status: review
 audience: operator
-aliases: [failed ship, FS, gagal kirim, COD failed, restock lost scrap]
+aliases: [failed ship, FS, gagal kirim, COD failed, restock lost scrap, extract bundle]
 ---
 
 # Failed Ship — Knowledge Base
@@ -126,6 +126,7 @@ Jika form meminta lokasi CCTV:
 
 | Tombol / Kolom | Fungsi |
 |----------------|--------|
+| **Extract Bundle** (TO-BE) | Pecah baris product bundle → komponen agar Restock/Lost/Scrap & invoice per komponen — hanya FS **Open**; lihat §4.7 |
 | **Restock Qty** (inline) | Qty yang akan dikembalikan ke Location |
 | **Lost Items** (inline) | Qty hilang — stok berkurang (Return Expense) |
 | **Defect/Broken Items** (inline) | Qty rusak — pindah ke gudang scrap |
@@ -157,6 +158,20 @@ Jika form meminta lokasi CCTV:
 
 **Contoh baca angka:** Order 20 → Restock 10 + Lost 5 + Broken 3 = FS 18 → sisa **2** pcs masih bisa outbound+SI di Instant Settlement. Kalau sisa 0 → settlement hanya SI (Other Cost/Disc), tanpa outbound produk.
 
+### 4.7 Extract Bundle (TO-BE — saat FS Open)
+
+Kadang order masih tampil sebagai **satu baris product bundle**, padahal di gudang/3PL yang dikirim sudah **komponen**. Untuk isi Restock/Lost/Scrap **per komponen** (partial return bundle) dan agar **invoice** menampilkan sisa komponen (bukan bundle), pakai aksi **Extract** di detail FS.
+
+| Boleh | Tidak boleh |
+|-------|-------------|
+| FS status **Open**, baris masih header bundle | Setelah FS **Approved** — tidak ada Extract, tidak ada undo |
+| Komponen mengikuti yang sudah lewat fulfillment/3PL | Mengganti SKU komponen saat extract |
+| Harga header bundle **> 0** (sama aturan Extract di Sales Order) | Extract lagi jika order **sudah** di-extract di Sales Order sebelum ship |
+
+**Contoh:** Bundle berisi A + B. Restock full A, Lost sebagian B → setelah Extract, isi qty per komponen; Instant Settlement / SI menampilkan **sisa komponen**, bukan product bundle.
+
+Detail aturan: [requirement §5.7](./requirement.md#57-extract-bundle--failed-ship--to-be) · kartu [ETM-16255](https://erpintegration.atlassian.net/browse/ETM-16255).
+
 ---
 
 ## 5. Validasi yang Sering Ditemui
@@ -171,6 +186,7 @@ Jika form meminta lokasi CCTV:
 | Quantity cannot be greater than sales order quantity | Total FS lebih dari Product Qty | Kurangi Restock/Lost/Scrap |
 | Cannot settle - failed shipment status | Upload settlement saat FS masih **open** | Approve atau hapus FS dulu |
 | Shipper field required | Header belum pilih 3PL | Pilih Shipper Name |
+| Unable to extract this bundle, the price must be greater than zero | Harga header bundle ≤ 0 | Samakan dengan Extract di Sales Order — pastikan harga > 0 dulu |
 
 ---
 
@@ -227,6 +243,8 @@ Di detail Sales Order, kolom **Failed Ship Status** menampilkan **Prepared** / *
 | Export stuck | Job masih jalan / timeout | Tunggu atau cek progress export |
 | Scrap tidak ter-generate saat approve | Scrap WH belum dikonfigurasi | Cek Warehouse Setting parent Location |
 | Dua tampilan form berbeda | Ada 2 versi UI | UI aktif: index scan + form checking; layout section ada di V1 |
+| Tidak bisa Extract bundle di FS | Fitur TO-BE (ETM-16255) atau order sudah komponen / FS sudah Approved | Cek status FS Open + baris masih header bundle; detail §4.7 |
+| Extract ditolak price must be greater than zero | Harga header bundle ≤ 0 | Pastikan harga bundle > 0 (sama Extract Sales Order) |
 
 ---
 
@@ -238,6 +256,7 @@ Di detail Sales Order, kolom **Failed Ship Status** menampilkan **Prepared** / *
 - Isi Shipper untuk memudahkan filter datalist
 - Cek Total FS Qty sebelum approve
 - Proses FS **sebelum** settlement jika order gagal kirim
+- Kalau butuh Restock/Lost/Scrap **per komponen** bundle — **Extract** dulu saat FS masih Open (§4.7)
 
 ### Don't
 
@@ -245,6 +264,7 @@ Di detail Sales Order, kolom **Failed Ship Status** menampilkan **Prepared** / *
 - Jangan FS order void / belum Shipped
 - Jangan upload settlement saat masih ada FS **open**
 - Jangan asumsikan Lost/Scrap asalnya bukan dari 3PL — semua dari shipper
+- Jangan mengira Extract di FS mengubah history pick–ship di 3PL — Extract hanya finalize detail untuk invoice / qty FS
 
 ---
 

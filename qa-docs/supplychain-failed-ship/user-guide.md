@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 1.2
-last_updated: 2026-09-09
+version: 1.3
+last_updated: 2026-10-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.7
+source_version: 2.8
 owner: QA - Yemima
 status: review
 ---
@@ -123,6 +123,7 @@ Ditulis dari sudut pandang yang kamu alami di layar:
 
 - **Kalau kamu scan order yang sudah punya invoice atau outbound** (termasuk draft/open), sistem menolak dan minta pakai menu return.
 - **Kalau order belum Shipped**, sistem menolak — selesaikan fulfillment dulu sampai DO approved dan stok di 3PL.
+- **Kalau order masih tampil sebagai product bundle** dan kamu perlu Restock/Lost/Scrap **per komponen** (atau agar invoice menampilkan sisa komponen): pakai **Extract Bundle** saat FS masih **Open**. Setelah Approved, Extract tidak bisa. Harga header harus **> 0** (sama Extract di Sales Order). Extract tidak mengubah history pick–ship di 3PL.
 - **Kalau Total Restock + Lost + Scrap lebih dari qty produk**, sistem menolak — turunkan salah satu qty.
 - **Kalau Location belum punya setup scrap**, approve bisa gagal saat ada qty Broken — atur Warehouse Scrap & Void dulu.
 - **Kalau tanggal Failed Ship lebih awal dari tanggal DO**, sistem menolak — sesuaikan tanggal transaksi.
@@ -142,7 +143,7 @@ Ditulis dari sudut pandang yang kamu alami di layar:
 2. Pilih **Warehouse Location** (tujuan restock) dan **CCTV Location** bila diminta.
 3. Scan / ketik **Platform Order ID** atau **kode Sales Order** → **Use** (atau scan langsung).
 4. Sistem membuat dokumen Failed Ship dan mengisi semua produk order.
-5. Di form, isi per produk:
+5. Di form, isi per produk (kalau masih baris **bundle** dan perlu pecah ke komponen: klik **Extract** dulu — TO-BE):
    - **Restock Qty** — barang kembali ke Location
    - **Lost Items** — barang hilang
    - **Defect / Broken Items** — barang rusak
@@ -202,6 +203,7 @@ Di index ada pill **Sales Platform Returns**: daftar return dari API marketplace
 - **Export stuck?** Tunggu job selesai atau cek progress export; timeout bisa reset status.
 - **Dua tampilan form?** UI aktif utama = scan di index + form checking-style; layout section lengkap ada di versi lama (V1).
 - **Mau void Failed Ship yang sudah approved?** Belum tersedia sehari-hari — koordinasi manual / support.
+- **Extract Bundle** — untuk partial Restock/Lost/Scrap per komponen + invoice sisa komponen. Hanya saat FS Open; tidak tersedia setelah Approved. Kalau sudah extract di Sales Order sebelum ship, di FS tidak ada Extract lagi.
 
 ---
 

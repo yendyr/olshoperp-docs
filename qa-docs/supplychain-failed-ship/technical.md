@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.7
-last_updated: 2026-09-09
+version: 2.8
+last_updated: 2026-10-05
 owner: QA - Yemima
 status: review
 related_docs:
@@ -168,6 +168,7 @@ flowchart TB
 | GET | `failed-ship/{id}/audit` | `audit` | Audit log |
 | GET | `failed-ship/{id}/completion-summary` | **TO-BE** | Payload panel Completion Summary (A-32 / requirement §5.4) |
 | GET | `failed-ship/{id}/print-completion-summary` | **TO-BE** | HTML print summary |
+| POST | `failed-ship/{id}/detail/{detailId}/extract-bundle` | **TO-BE** | Extract Bundle @ FS Open (A-33 / requirement §5.7 · ETM-16255) |
 | POST | `failed-ship/export-excel` | `exportAllExcel` | Start async export |
 | GET | `failed-ship/export-file` | `exportFile` | List export files |
 | GET | `failed-ship/export-progress` | `exportProgress` | Progress flag |
@@ -387,6 +388,7 @@ sequenceDiagram
 | Platform returns count vs list | `without_outbound`: count cek `prepared_to_out`, list tidak |
 | **G-07** | Import FS belum diimplementasi — lihat §12 |
 | **G-09** | Completion Summary belum ada — `GET …/completion-summary` + FE Slideover (requirement §5.4 / A-32) |
+| **G-10** | Extract Bundle @ FS belum ada — `POST …/extract-bundle` + aksi FE di detail Open (requirement §5.7 / A-33 · ETM-16255) |
 
 ---
 
@@ -402,6 +404,20 @@ sequenceDiagram
 | Invariant | `restock + lost + broken = total_fs`; kartu bucket qty 0 tidak dikirim / tidak dirender |
 
 Payload contoh & mapping field: requirement §5.4 + brief implementer.
+
+## 10b. Extract Bundle @ Failed Ship — TO-BE (API & FE)
+
+> **Kartu:** [ETM-16255](https://erpintegration.atlassian.net/browse/ETM-16255) · **Requirement:** §5.7 / A-33
+
+| Layer | Detail |
+|-------|--------|
+| BE | `POST supplychain/failed-ship/{id}/detail/{detailId}/extract-bundle` — gate FS `open`; header bundle; `each_price` > 0; komponen dari **jejak fulfillment/3PL** (bukan BOM master); alokasi harga = pola `SalesOrderDetailController::extractBundleDetails` |
+| FE | Aksi Extract (tooltip *Extract Bundle Details*) di baris bundle detail FS Open; setelah sukses refresh detail → baris komponen |
+| Gate tampil | FS `transaction_status = open` + baris masih header bundle (belum komponen / belum extract di SO) |
+| Setelah Approved | Endpoint reject; UI tidak render aksi; **no undo** |
+| Out of scope | Rebuild TF pick–check–pack–DO; call SO extract tanpa gate FS; ganti SKU komponen |
+
+**Catatan implementasi:** jangan reuse eligibility SO `PENDING` — order FS sudah Shipped. Reuse hanya validasi harga + rumus alokasi harga ke komponen.
 
 ---
 
