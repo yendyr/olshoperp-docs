@@ -17,3 +17,10 @@ Urutan tabel mengikuti **urutan pertama → terakhir dijalankan**.
 | 9 | `TC-PR-004.md` / TC-PR-004 | Urutan print screen tidak sama dengan UI setelah sorting dinonaktifkan (kembali ke default) | draft | ❌ | 2026-08-26 |
 | 10 | `TC-PR-005.md` / TC-PR-005 | Fitur sorting kolom PO Status tidak berfungsi dan urutan print screen tidak sinkron | draft | ❌ | 2026-08-26 |
 | 11 | `TC-PR-006.md` / TC-PR-006 | Fitur sorting kolom Receiving Status tidak berfungsi dan urutan print screen tidak sinkron | draft | ❌ | 2026-08-26 |
+| 12 | `TC-PR-16256-01.md` / TC-PR-16256-01 | Edit unit ke Alt Unit '1KOLI5600PCS' (setting System Product) status PR tetap Open | **pass** | ❌ | 2026-10-06 |
+| 13 | `TC-PR-16256-02.md` / TC-PR-16256-02 | Edit unit ke Alt Unit '1Koli5600Pieces' (setting Master Unit rate) status PR tetap Open | **pass** | ❌ | 2026-10-06 |
+| 14 | `TC-PR-16256-03.md` / TC-PR-16256-03 | Multi-item gabungan Base Unit dan kedua Alt Unit konversi besar dalam 1 dokumen PR | **pass** | ❌ | 2026-10-06 |
+| 15 | `TC-PR-16256-04.md` / TC-PR-16256-04 | Tarik PR satuan Pieces ke PO lalu ubah ke Alternative Unit 1KOLI5600PCS secara penuh | **pass** | ❌ | 2026-10-06 |
+| 16 | `TC-PR-16256-05.md` / TC-PR-16256-05 | Tarik PR parsial dengan konversi Alternative Unit di PO dan verifikasi sisa Outstanding PR | **pass** | ❌ | 2026-10-06 |
+
+
