@@ -1499,21 +1499,26 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/SettlementMappingController.php
+        - Modules/Accounting/Entities/SettlementMapping.php
+        - Modules/Accounting/Entities/SettlementMappingImportLog.php
+        - Modules/Accounting/Routes/api.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Settlement/Mapping/**/*
 
   accounting-settlement-upload:
     menu_name: "Instant Settlement"

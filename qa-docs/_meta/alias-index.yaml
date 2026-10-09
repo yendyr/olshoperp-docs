@@ -3,11 +3,11 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-10-05T06:23:53Z'
+generated: '2026-10-09T04:33:43Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
-menu_count: 129
-alias_count: 770
+menu_count: 132
+alias_count: 802
 ambiguous_count: 27
 aliases:
   3pl: supplychain-delivery-order
@@ -97,6 +97,7 @@ aliases:
   accounting-supplier-payment: accounting-supplier-payment
   accounting-tax: accounting-tax
   accounting-trial-balance: accounting-trial-balance
+  accounting_settlement_mappings: accounting-settlement-mapping
   ad hoc picking: supplychain-manual-picking-list
   ad-hoc picking: supplychain-manual-picking-list
   advance package: omni-sales-platform
@@ -112,6 +113,8 @@ aliases:
   approval penambahan stok: accounting-adjustment-inbound
   approval pengurangan stok: accounting-adjustment-outbound
   approval stock opname: accounting-stock-opname-approval
+  approve checking: omni-checking-process
+  approve packing: omni-packing-process
   ar invoice: accounting-customer-invoice
   ar payment: accounting-customer-payment
   aso: all-sales-order
@@ -186,6 +189,12 @@ aliases:
   bundle sum: accounting-product-benchmark-price
   bus batch finally: horizon-jobs
   bus::batch finally: horizon-jobs
+  businessdevelopment category price: businessdevelopment-category-price
+  businessdevelopment pricelist product: businessdevelopment-pricelist-product
+  businessdevelopment variable price: businessdevelopment-variable-price
+  businessdevelopment-category-price: businessdevelopment-category-price
+  businessdevelopment-pricelist-product: businessdevelopment-pricelist-product
+  businessdevelopment-variable-price: businessdevelopment-variable-price
   cancelled order: supplychain-cancelled-order
   cash bank account: accounting-company-detail-bank
   cash bank reconcile: accounting-cash-bank-reconcile
@@ -193,6 +202,7 @@ aliases:
   cash reconcile: accounting-cash-bank-reconcile
   cash/bank account: accounting-company-detail-bank
   cash/bank reconcile: accounting-cash-bank-reconcile
+  category price: businessdevelopment-category-price
   cbr: accounting-cash-bank-reconcile
   cbr api: accounting-cash-bank-reconcile
   chart of account: accounting-chart-of-account
@@ -280,11 +290,13 @@ aliases:
     slugs:
     - omni-sales-platform
     - all-sales-order
+    - supplychain-failed-ship
     hint: OmniChannel = Dev - Sales Platform (/omni/sales-order). BusinessDevelopment = All Sales Order
-      (/businessdevelopment/all-sales-order).
+      (/businessdevelopment/all-sales-order). SupplyChain = Failed Ship (/supplychain/failed-ship).
     by_slug:
       omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
       all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+      supplychain-failed-ship: SupplyChain = Failed Ship (/supplychain/failed-ship)
   extract bundle details:
     slugs:
     - omni-sales-platform
@@ -299,6 +311,7 @@ aliases:
   failed ship: supplychain-failed-ship
   faktur beli: accounting-supplier-invoice
   faktur jual: accounting-customer-invoice
+  fee marketplace mapping: accounting-settlement-mapping
   fifo invalid: omni-unassign-wave
   fifo stock date: omni-unassign-wave
   fiscal period: accounting-fiscal-period
@@ -350,6 +363,7 @@ aliases:
   google drive product image: system-product
   grn: supplychain-new-purchase-inbound
   grn requirement: supplychain-new-purchase-inbound
+  harga jual sku: businessdevelopment-pricelist-product
   highest bundle variant: accounting-product-benchmark-price
   horizon jobs: horizon-jobs
   horizon jobs requirement: horizon-jobs
@@ -387,6 +401,7 @@ aliases:
   import product images: system-product
   import so: sales-order-general
   import so general: sales-order-general
+  importsettlementjob mapping: accounting-settlement-mapping
   inbound lama: supplychain-mutation-inbound
   income statement: accounting-profit-loss
   incomplete so picklist: omni-picking-list
@@ -408,6 +423,7 @@ aliases:
   journalprocess: journal
   jurnal: journal
   jurnal akuntansi: journal
+  kategori harga: businessdevelopment-category-price
   kb store monitor: kb-store-monitor
   kb-store-monitor: kb-store-monitor
   klaim supplier: accounting-debit-note
@@ -432,6 +448,7 @@ aliases:
     by_slug:
       all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
       omni-unassign-wave: SupplyChain = Unassign Wave (/omni/unassign-wave)
+  lazada settlement mapping: accounting-settlement-mapping
   ledger account: accounting-chart-of-account
   leftover variant: system-product
   legacy profit loss: accounting-profit-loss-v1
@@ -457,11 +474,16 @@ aliases:
   manual cogs expiry: accounting-product-benchmark-price
   manual journal: journal
   manual picking list: supplychain-manual-picking-list
+  map kolom settlement: accounting-settlement-mapping
+  mapping settlement: accounting-settlement-mapping
+  margin by amount: businessdevelopment-variable-price
+  margin by weight: businessdevelopment-variable-price
   marketplace sales order: omni-sales-platform
   master brand: supplychain-master-brand
   master coa: accounting-chart-of-account
   master country: generalsetting-country
   master currency: generalsetting-currency
+  master margin: businessdevelopment-variable-price
   master region: generalsetting-region
   master shipping service: omni-shipping-service
   master tax: accounting-tax
@@ -609,6 +631,8 @@ aliases:
       accounting-purchase-return: Purchase Return — retur beli / PR billed
   pr billed: accounting-purchase-return
   price before vat bundle: system-product
+  pricelist category: businessdevelopment-category-price
+  pricelist product: businessdevelopment-pricelist-product
   primary vs derived jobs: horizon-jobs
   print awb: omni-process-summary
   print awb technical: omni-process-summary
@@ -645,6 +669,7 @@ aliases:
   product interchange: supplychain-item-interchange
   product inventory configuration: supplychain-product-inventory-configuration
   product mutation history: supplychain-product-mutation
+  product pricelist: businessdevelopment-pricelist-product
   product profit loss: accounting-product-profit-loss
   product transaction history: supplychain-product-transaction-history
   product_sync_url: system-product
@@ -742,10 +767,12 @@ aliases:
       system-product: SupplyChain = System Product (/supplychain/product)
   setelan akun produk: accounting-product-coa-group
   settlement mapping: accounting-settlement-mapping
+  settlement mapping api: accounting-settlement-mapping
   shipping handoff: omni-packing-list
   shipping service: omni-shipping-service
   shipping service platform: omni-shipping-service-platform
   shopee booking: omni-sales-platform
+  shopee settlement mapping: accounting-settlement-mapping
   si: accounting-customer-invoice
   si technical: accounting-customer-invoice
   sidebar menu: sidebar-menu
@@ -923,12 +950,16 @@ aliases:
   tf inbound: supplychain-transfer-inbound
   tf scrap: omni-checking-list
   tfi: supplychain-mutation-transfer-internal
+  tier breakdown: businessdevelopment-pricelist-product
+  tiktok settlement mapping: accounting-settlement-mapping
   tipe wadah: supplychain-colli-type
   total price return: accounting-purchase-return
   transfer broken: supplychain-mutation-transfer-scrap
+  transfer checking: omni-checking-process
   transfer external: supplychain-mutation-transfer-external
   transfer inbound: supplychain-transfer-inbound
   transfer internal: supplychain-mutation-transfer-internal
+  transfer packing: omni-packing-process
   transfer summary: omni-process-summary
   transfer void: supplychain-mutation-transfer-void
   trial balance: accounting-trial-balance
@@ -958,6 +989,8 @@ aliases:
   upload order to wave and ship: omni-skip-wave-process
   upload skip wave: omni-skip-wave-process
   user (gate): gate-user
+  variable price: businessdevelopment-variable-price
+  variable price tiers: businessdevelopment-category-price
   variant group: supplychain-variant
   variant type: supplychain-variant
   vat: accounting-tax
@@ -991,6 +1024,7 @@ aliases:
       omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
       all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
   void transfer: supplychain-mutation-transfer-void
+  vp: businessdevelopment-variable-price
   warehouse binding: omni-warehouse-binding
   warehouse layout: supplychain-warehouse-layout
   warehouse level: supplychain-warehouse-type
