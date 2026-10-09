@@ -2,38 +2,71 @@
 doc_type: technical
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 0.1
-last_updated: 2026-10-07
+version: 1.0
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
+related_docs:
+  - ./requirement.md
+  - ../businessdevelopment-variable-price/technical.md
+  - ../businessdevelopment-pricelist-product/technical.md
 ---
 
 # Category Price — Technical
 
-## File Map (AS-IS)
+**FE AS-IS:** `src/pages/BusinessDevelopment/PricelistCategory/**`  
+**BE AS-IS:** `PricelistCategoryController` · `PricelistCategory` · `PricelistCategoryMarginPrice` (`bd_pricelist_category_margin_prices`)  
+**TO-BE:** ganti section margin tunggal → multi tier snapshot dari Variable Price (ETM-16313).
 
-| Layer | Path |
-|-------|------|
-| BE controller | `Modules/BusinessDevelopment/Http/Controllers/PricelistCategoryController.php` |
-| Entity | `Modules/BusinessDevelopment/Entities/PricelistCategory.php` |
-| Margin entity | `Modules/BusinessDevelopment/Entities/PricelistCategoryMarginPrice.php` |
-| Table | `bd_pricelist_category_margin_prices` |
-| FE form | `olshoperp-frontend/src/pages/BusinessDevelopment/PricelistCategory/Form.vue` |
-| FE list | `.../PricelistCategory/DataList.vue` |
-| Router title | `Category Price` — path `pricelist-category` |
+---
 
-## TO-BE (ETM-16313)
+## 1. AS-IS vs TO-BE
 
-- Pivot/link Category ↔ Variable Price + snapshot band rows (replace or shadow `bd_pricelist_category_margin_prices`).
-- Endpoints: attach/detach, Update from Master (bulk/row), Update to Pricelist.
-- Audit log Category: actor, source Variable Price id(s), timestamp.
+| Area | AS-IS | TO-BE |
+|------|-------|-------|
+| Margin UI | Satu set band di Form | Accordion tiers + Select Variable Price |
+| Storage | `bd_pricelist_category_margin_prices` per category | Per-tier snapshot (+ pivot ke Variable Price id) |
+| Update | N/A | Update from Master · Update to Pricelist |
 
-## Invariants
+Basic Information & DataList Category: **tidak berubah**.
 
-- Edit band di Category tidak menulis master Variable Price.
-- Update from Master overwrite snapshot termasuk local edits setelah konfirmasi.
+---
 
-## Known Issues / Gaps
+## 2. API (kontrak TO-BE)
 
-- Lihat GAP-CP-* di requirement.
-- Product observer kalkulasi margin AS-IS hanya path limited (`originalPrice == 0`) — TO-BE Update to Pricelist harus jadi jalur utama apply multi tier.
+| Method | Path (usulan) | Fungsi |
+|--------|---------------|--------|
+| POST | `…/pricelist-category/{id}/attach-variable-price` | Attach + copy bands snapshot |
+| DELETE | `…/pricelist-category/{id}/tiers/{tierId}` | Remove tier |
+| PATCH | `…/tiers/{tierId}/bands` | Edit lokal band |
+| POST | `…/pricelist-category/{id}/update-from-master` | Overwrite semua tier dari master |
+| POST | `…/pricelist-category/{id}/update-to-pricelist` | Recalc semua Pricelist rows category |
+
+Audit log Category: attach/remove/edit tier, Update from Master, Update to Pricelist.
+
+---
+
+## 3. FE
+
+| Komponen | Catatan |
+|----------|---------|
+| Select Variable Price | Pola `PurchaseOrder/DatalistDetail` Select Product |
+| Tier accordion | Badge type; snapshot datetime; orange info jika dirty vs master |
+| Update to Pricelist | Tombol merah; checkbox gate sebelum enable |
+
+---
+
+## 4. Debt / gap
+
+| ID | Item |
+|----|------|
+| G-01 | Pivot + snapshot schema belum ada |
+| G-02 | Migrasi/bersih data band AS-IS |
+| G-03 | Mass Update from Master datalist (opsional) |
+| G-04 | Dirty detection tier vs master untuk icon oranye |
+
+---
+
+## Related
+
+[requirement.md](./requirement.md) · [Variable Price technical](../businessdevelopment-variable-price/technical.md)

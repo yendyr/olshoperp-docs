@@ -2,41 +2,50 @@
 doc_type: knowledge-base
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 0.1
-last_updated: 2026-10-07
+version: 1.0
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
-aliases: [Pricelist Product, product pricelist, harga jual SKU]
+status: review
+aliases: [Pricelist Product, product pricelist, harga jual SKU, tier breakdown]
 ---
 
 # Pricelist Product — Knowledge Base
 
 ## Apa itu
 
-Daftar harga jual per produk untuk setiap **Category Price**. Angka margin bisa datang dari beberapa aturan (harga + berat) yang dijumlahkan.
+Daftar harga jual per produk per **Category Price**. Margin bisa dari **beberapa aturan** (harga + berat) yang dijumlahkan.
 
-## Alur kerja
+## Alur
 
 ```mermaid
 flowchart TD
-    A[Pastikan Category sudah punya Variable Price] --> B[Update to Pricelist dari Category]
-    B --> C[Cek final price & margin di Pricelist]
-    C --> D{Perlu ubah manual?}
-    D -->|Ya| E[Edit margin — tercatat di log sebagai ubahan user]
+    A[Category punya Variable Price tiers] --> B[Update to Pricelist dari Category]
+    B --> C[Cek Weight, margin, final]
+    C --> D{Ubah margin manual?}
+    D -->|Ya| E[Klik angka margin — jadi oranye]
     D -->|Tidak| F[Selesai]
 ```
 
-## Contoh
+## Kolom Weight
 
-Produk harga 16.000, berat primary 1.500 gram, tiga aturan margin → harga jual 24.500. Arahkan mouse ke angka margin 8.500 untuk melihat pecahan 3.000 + 2.000 + 3.500.
+Setelah SKU. Ambil dari Dimension & Weight **primary** (gram). Kosong → **"No weight"** — aturan berdasarkan berat di-skip; aturan harga tetap jalan.
 
-## Weight kosong
+## Hover margin
 
-Jika produk belum punya berat primary, muncul peringatan. Aturan berdasarkan berat **tidak dihitung**; aturan berdasarkan harga tetap jalan.
+Tampilkan pecahan per tier + **range band** yang dipakai + total. Kalau margin diedit manual: tetap tampil hasil hitung asli, siapa yang edit, dan nilai sekarang.
+
+## Tips
+
+- Contoh: harga 16.000 + berat 1.500 g → margin **8.500** → final **24.500**.
+- Margin oranye = diubah user. Update to Pricelist dari Category menimpa lagi ke hasil hitung.
+- Edit di Pricelist **tidak** mengubah Category / Variable Price.
 
 ## Troubleshooting
 
 | Gejala | Solusi |
 |--------|--------|
-| Margin tidak pecah di hover | Baris sudah diubah manual — bukan hasil hitung multi tier |
-| Setelah ubah Category, angka Pricelist lama | Jalankan lagi Update to Pricelist (akan menimpa termasuk ubahan manual) |
+| Angka lama setelah ubah Variable Price | Belum Update to Category / Update to Pricelist |
+| Margin Weight = 0 / skipped | Isi weight primary di System Product, lalu Update to Pricelist |
+| Override hilang | Normal setelah Update to Pricelist |
+
+Detail: [requirement.md](./requirement.md)

@@ -2,53 +2,51 @@
 doc_type: knowledge-base
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 0.1
-last_updated: 2026-10-07
+version: 1.0
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
-aliases: [Category Price, pricelist category, kategori harga]
+status: review
+aliases: [Category Price, pricelist category, kategori harga, Variable Price Tiers]
 ---
 
 # Category Price — Knowledge Base
 
 ## Apa itu
 
-**Category Price** adalah kategori harga yang dipakai channel/store. Di dalamnya ada aturan margin. Ke depan, aturan itu diambil dari master **Variable Price** (bisa lebih dari satu), supaya margin bisa bertingkat: berdasarkan harga dan/atau berat produk.
+Kategori harga untuk channel/store. **TO-BE:** aturan margin diambil dari satu atau lebih **Variable Price** (tier). Hasil semua tier dijumlahkan saat Update ke Pricelist.
 
-## Kapan dipakai
-
-- Menyiapkan kategori harga sebelum bind ke store.
-- Mengatur multi tier margin sebelum menghitung harga di **Pricelist Product**.
-
-## Alur kerja standar (TO-BE)
+## Alur standar
 
 ```mermaid
 flowchart TD
-    A[Buat Variable Price di master] --> B[Buka edit Category Price]
-    B --> C[Add satu atau lebih Variable Price]
-    C --> D[Cek / edit band di Category bila perlu]
-    D --> E[Update to Pricelist jika harga jual perlu dihitung ulang]
+    A[Siapkan Variable Price] --> B[Edit Category → Select Variable Price]
+    B --> C{Edit band lokal?}
+    C -->|Opsional| D[Icon oranye = beda dari master]
+    C --> E[Update to Pricelist jika siap]
+    D --> E
 ```
 
-**Keterangan langkah:**
+## Tombol penting
 
-- Ubah master Variable Price **tidak** langsung mengubah Category — tekan Update dari master dulu (konfirmasi).
-- Edit angka di Category **tidak** mengubah master.
-- Harga di Pricelist baru berubah setelah Update to Pricelist (konfirmasi — menimpa semua termasuk yang pernah diubah manual di Pricelist).
+| Aksi | Efek |
+|------|------|
+| **Select Variable Price** | Pasang tier (snapshot). Hanya Active yang belum dipasang. |
+| **Update from Master** | Timpa semua tier dari master terkini (edit lokal hilang). |
+| **Update to Pricelist** (merah) | Hitung ulang margin semua produk category itu — termasuk yang pernah diedit manual di Pricelist. Wajib centang persetujuan. |
 
-## Contoh
+## Tips
 
-SKU harga default 16.000, berat primary 1.500 gram, Category pakai 3 aturan (harga + berat + harga lagi) → setelah Update ke Pricelist: harga jual 24.500, margin 8.500.
+- Edit band di Category **tidak** mengubah Variable Price master.
+- Ubah master → Update to Category dari Variable Price, atau Update from Master di sini.
+- Harga jual baru berubah setelah **Update to Pricelist**.
+- Contoh: harga 16.000 + berat 1.500 g + 3 tier → margin 8.500 → final 24.500.
 
 ## Troubleshooting
 
-| Gejala | Penyebab | Solusi |
-|--------|----------|--------|
-| Ubah master, Category masih angka lama | Belum Update dari master | Jalankan Update to Category / Update from Master |
-| Category sudah di-update, harga jual belum berubah | Belum Update ke Pricelist | Jalankan Update to Pricelist |
-| Ingin Amount + Weight | Satu master hanya satu type | Buat dua Variable Price, attach keduanya |
+| Gejala | Solusi |
+|--------|--------|
+| Select kosong | Semua Active sudah dipasang, atau belum ada Variable Price Active |
+| Icon oranye di tier | Band sudah diedit lokal — Update from Master untuk samakan master |
+| Pricelist belum berubah | Belum Update to Pricelist / belum centang konfirmasi |
 
-## FAQ
-
-**Q: Apakah data margin lama otomatis pindah ke Variable Price?**  
-A: Tidak. Data lama sedikit / belum aktif — biasanya dibersihkan lalu setup ulang lewat master.
+Detail: [requirement.md](./requirement.md) · Wireframe: https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89

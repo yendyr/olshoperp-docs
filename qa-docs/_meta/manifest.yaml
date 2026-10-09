@@ -4393,7 +4393,6 @@ menus:
         - olshoperp-frontend/src/router/index.ts
       frontend: []
 
-
   businessdevelopment-variable-price:
     menu_name: "Variable Price"
     short_description: "Master margin bands by Amount or by Weight for Category Price multi-tier."
@@ -4405,16 +4404,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources: []
     code_globs:
       backend:
@@ -4435,16 +4434,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources: []
     code_globs:
       backend:
@@ -4466,16 +4465,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources: []
     code_globs:
       backend:

@@ -1,27 +1,30 @@
-# Variable Price — Dokumentasi
+# Variable Price — Dokumentasi QA
 
-Menu **Variable Price** (Business Development) — master band margin by Amount atau by Weight; sumber snapshot Category Price.
+Menu **Variable Price** (Business Development) — master band margin by Amount atau by Weight.
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator BD | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA, Dev | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
-| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | pending |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) (v1.0) | Operator BD | review |
+| Requirement | [requirement.md](./requirement.md) (v1.0) | PM, QA, Dev | review |
+| Technical | [technical.md](./technical.md) (v1.0) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) (v1.0) | Publish | review |
 
-**PM source:** [SoT v1.0](../_meta/sot/businessdevelopment-variable-price-source-of-truth.md) · ETM-16312  
-**3 layer version:** 0.1  
-**Maintenance owner:** QA — Yemima
-
-**UI route (target):** `/businessdevelopment/variable-price` (sidebar di atas Category Price)
-
-## Related menus
-
-- [Category Price](../businessdevelopment-category-price/README.md)
-- [Pricelist Product](../businessdevelopment-pricelist-product/README.md)
+**Jira:** [ETM-16312](https://erpintegration.atlassian.net/browse/ETM-16312)  
+**Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89  
+**Final E2E:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) · SoT [v1.1](../_meta/sot/businessdevelopment-variable-price-source-of-truth.md)  
+**3 layer:** 1.0 · **Last updated:** 2026-10-09  
+**Route target:** `/businessdevelopment/variable-price`
 
 ## Changelog
 
-| Date | Version | Changes |
-|------|---------|---------|
-| 2026-10-07 | 0.1 | Draft dari SoT v1.0 (ETM-16312); 1 type per master |
+| Version | Date | Changes |
+|---------|------|---------|
+| 0.1 | 2026-10-07 | Draft stub dari SoT |
+| 1.0 | 2026-10-09 | Full dari final requirement + wireframe; status review |
+
+## Related
+
+- [Category Price](../businessdevelopment-category-price/README.md) — ETM-16313
+- [Pricelist Product](../businessdevelopment-pricelist-product/README.md) — ETM-16314
+
+**Maintenance owner:** QA — Yemima
