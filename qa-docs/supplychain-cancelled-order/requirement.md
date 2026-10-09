@@ -3,14 +3,17 @@ doc_type: requirement
 menu: supplychain-cancelled-order
 menu_name: "Cancelled Order"
 version: 1.0
-last_updated: 2026-06-19
+last_updated: 2026-10-09
 owner: QA - Yemima
 status: draft
+# end_user_used: false — skip SOT / review upgrade
 ---
 
 # Cancelled Order — Requirement Detail
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+> **UNUSED BY END USERS** (2026-10-09) — Menu **tidak dipakai** operasional. **Skip** SOT / upgrade docs / Help Center (`end_user_used: false`, `docs_priority: skip`). Stub di bawah hanya arsip analisis codebase lama — **bukan** sumber canonical untuk QA testing end-user.
+
+> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Tidak diprioritaskan untuk review.
 
 **Modul:** SupplyChain (view) + OmniChannel (data) · **Status:** AS-IS
 

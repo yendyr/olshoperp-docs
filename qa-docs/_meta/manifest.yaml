@@ -2535,12 +2535,14 @@ menus:
 
   supplychain-cancelled-order:
     menu_name: "Cancelled Order"
-    short_description: "Review cancelled marketplace orders and related warehouse impact."
+    short_description: "UNUSED by end users — do not prioritize docs / SOT / Help Center. Route may still exist in codebase."
     path: supplychain-cancelled-order
     module: SupplyChain
     menu_links:
       - supplychain/cancelled-order
     owner: QA - Yemima
+    end_user_used: false
+    docs_priority: skip
     docs:
       knowledge-base:
         file: knowledge-base.md

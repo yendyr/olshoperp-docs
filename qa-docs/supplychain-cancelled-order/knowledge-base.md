@@ -3,15 +3,18 @@ doc_type: knowledge-base
 menu: supplychain-cancelled-order
 menu_name: "Cancelled Order"
 version: 1.0
-last_updated: 2026-06-19
+last_updated: 2026-10-09
 owner: QA - Yemima
 status: draft
 audience: operator
+# end_user_used: false — skip SOT / review upgrade
 ---
 
 # Cancelled Order — Knowledge Base
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+> **UNUSED BY END USERS** (2026-10-09) — Menu **tidak dipakai** operasional. Jangan rujuk sebagai panduan operator. Stub di bawah hanya arsip — skip upgrade.
+
+> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Tidak diprioritaskan untuk review.
 
 ## 1. Apa itu Cancelled Order?
 

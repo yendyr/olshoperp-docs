@@ -3,9 +3,10 @@ doc_type: technical
 menu: supplychain-cancelled-order
 menu_name: "Cancelled Order"
 version: 1.0
-last_updated: 2026-06-19
+last_updated: 2026-10-09
 owner: QA - Yemima
 status: draft
+# end_user_used: false — skip SOT / review upgrade
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
@@ -13,7 +14,9 @@ related_docs:
 
 # Cancelled Order — Technical Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+> **UNUSED BY END USERS** (2026-10-09) — Menu **tidak dipakai** operasional. Skip SOT / docs upgrade. Stub di bawah hanya arsip analisis codebase lama.
+
+> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Tidak diprioritaskan untuk review.
 
 **Menu slug:** `supplychain-cancelled-order`  
 **UI route:** `/supplychain/cancelled-order`  
