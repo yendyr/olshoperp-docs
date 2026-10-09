@@ -9,6 +9,7 @@ Route: `/businessdevelopment/sales-order-general`
 | Requirement | [requirement.md](./requirement.md) | PM, QA | review |
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
+| Test Cases (ETM-5428 Print VOIDED) | [ETM-5428/test-cases/](./ETM-5428/test-cases/) | QA | draft (3 DRAFT) |
 
 **SoT:** busdev SO General v1.0 + Fulfillment Mode TO-BE  
 **User-guide:** v1.4 · `source_version` 3.5  
