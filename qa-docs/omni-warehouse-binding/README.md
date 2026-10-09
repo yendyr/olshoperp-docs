@@ -1,25 +1,26 @@
 # Warehouse Binding — Dokumentasi
 
-Menu **Warehouse Binding** (Omni Channel) — mapping gudang platform marketplace ke gudang sistem internal (Process, Stock, Return).
+Menu **Warehouse Binding** (Omni Channel) — mapping gudang platform → gudang sistem (Process, Stock, Return).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA, Dev | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA, Dev | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish | review |
 
-**Maintenance owner:** QA — Yemima
+**Last updated:** 2026-10-09 · **Maintenance:** QA — Yemima
 
 ## Route & code
 
-- **FE route:** `/omni/warehouse-binding` → `olshoperp-frontend/src/pages/Omni/master/WarehouseBinding/`
-- **BE controller:** `Modules/OmniChannel/Http/Controllers/WarehouseBindingController.php`
-- **Primary table:** `omni_warehouse_binding_pivot`
+- **FE:** `/omni/warehouse-binding`
+- **BE:** `WarehouseBindingController`
+- **Table:** `omni_warehouse_binding_pivot`
 
-## Related menus
+## Related
 
 | Menu | Relasi |
 |------|--------|
-| [Store](../omni-store-binding/README.md) | Sumber WH platform via sync warehouse |
+| [Store](../omni-store-binding/README.md) | Sync WH platform |
 | [Waves Management](../omni-waves-management/README.md) | `createTransferWave` saat bind Process |
-| [Picking Process](../omni-picking-process/README.md) | Transfer internal ke virtual WH wave |
+| [Picking Process](../omni-picking-process/README.md) | Transfer ke virtual WH wave |

@@ -3,9 +3,9 @@ doc_type: technical
 menu: bill-of-material
 menu_name: "Bill of Material"
 version: 1.1
-last_updated: 2026-07-04
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md

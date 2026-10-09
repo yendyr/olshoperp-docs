@@ -3,9 +3,9 @@ doc_type: knowledge-base
 menu: omni-other-cost
 menu_name: "Other Cost"
 version: 1.6
-last_updated: 2026-08-04
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Other Cost — Knowledge Base

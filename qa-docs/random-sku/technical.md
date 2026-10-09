@@ -3,9 +3,9 @@ doc_type: technical
 menu: random-sku
 menu_name: "Random SKU"
 version: 1.1
-last_updated: 2026-10-02
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 cross_menu: true
 related_docs:
   - ./knowledge-base.md

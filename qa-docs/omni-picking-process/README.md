@@ -1,27 +1,27 @@
 # Picking Process — Dokumentasi
 
-Menu **Picking Process** (Omni Channel) — operasi scan QR / approve transfer internal dari WH proses ke virtual WH wave (`sequence = 1`). **Bukan** menu Picking List.
+Menu **Picking Process** (Omni Channel) — approve transfer internal ke virtual WH wave (`sequence = 1`). **Bukan** Picking List.
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator gudang | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA, Dev | draft |
-| Technical | [technical.md](./technical.md) | Developer | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator gudang | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA, Dev | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish | review |
 
-**Maintenance owner:** QA — Yemima
-
-**Relasi Failed Ship:** tahap #1 rantai fulfillment (PL) — [requirement §Relasi FS](./requirement.md#relasi-failed-ship) · [Failed Ship](../supplychain-failed-ship/README.md)
+**Last updated:** 2026-10-09 · **Maintenance:** QA — Yemima
 
 ## Route & code
 
-- **FE route:** `/omni/picking-process` → `olshoperp-frontend/src/pages/Omni/PickingProcess/`
-- **BE controller:** `Modules/OmniChannel/Http/Controllers/TransferPickingController.php`
-- **Underlying:** `StockMutationTransferController` (Supply Chain)
-- **Entity scope:** Transfer ke destination `warehouse.sequence = 1` (virtual WH)
+- **FE:** `/omni/picking-process`
+- **BE:** `TransferPickingController` → `StockMutationTransferController`
+- **Scope:** destination `warehouse.sequence = 1`
 
-## Bukan menu ini
+## Bukan menu ini / pasangan List
 
 | Menu | Perbedaan |
 |------|-----------|
-| [Picking List](../omni-picking-list/README.md) | Daftar/registrasi picking list operasional — modul SupplyChain |
-| [Waves Management](../omni-waves-management/README.md) | Konfigurasi wave & distribusi SO |
+| [Picking List](../omni-picking-list/README.md) | Dokumen picklist operasional (scan item, pause, complete) — TO-BE review |
+| [Waves Management](../omni-waves-management/README.md) | Konfigurasi wave |
+
+**Relasi Failed Ship:** tahap #1 (PL) — [requirement](./requirement.md)

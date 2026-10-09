@@ -3,9 +3,9 @@ doc_type: knowledge-base
 menu: omni-other-discount
 menu_name: "Other Discount"
 version: 1.3
-last_updated: 2026-08-04
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Other Discount — Knowledge Base

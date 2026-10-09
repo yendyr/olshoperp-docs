@@ -3,14 +3,13 @@ doc_type: requirement
 menu: omni-packing-process
 menu_name: "Packing Process"
 version: 1.1
-last_updated: 2026-06-26
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Packing Process — Requirement Documentation
 
-> **DRAFT** — Cross-reference Instant Settlement (Fase 3). Konten requirement penuh menu ini masih disusun.
 
 **Modul:** OmniChannel  
 **UI route:** `/omni/packing-process`  

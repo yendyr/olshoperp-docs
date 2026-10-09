@@ -3,9 +3,9 @@ doc_type: source-of-truth
 menu: order-processing-trace
 menu_name: "Order Processing Trace"
 version: 1.4
-last_updated: 2026-09-03
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 sources:
   - "User requirement — reporting referensi proses fulfillment dari POV Sales Order (platform + general), 2026-09-02"
   - "Keputusan 2026-09-03 — entry sidebar SupplyChain → Report saja (bukan dual Omni)"

@@ -3,9 +3,9 @@ doc_type: requirement
 menu: order-processing-trace
 menu_name: "Order Processing Trace"
 version: 1.1
-last_updated: 2026-09-03
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [Order Processing Trace, sales order processing trace, ETM-15713]
 ---
 

@@ -2,34 +2,41 @@
 doc_type: knowledge-base
 menu: omni-checking-process
 menu_name: "Checking Process"
-version: 1.0
-last_updated: 2026-06-23
+version: 1.1
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
+aliases: [Checking Process, transfer checking, approve checking]
 ---
 
 # Checking Process — Knowledge Base
 
-> **DRAFT** — Ringkasan operator + relasi Instant Settlement. Konten lengkap menu masih disusun.
+## Apa itu
 
-## Ringkasan
+Approve **transfer internal** tahap checking (virtual WH `sequence = 2`) setelah picking. Operator scan QR / kode TF / SO / platform order.
 
-Menu **Checking Process** dipakai operator gudang untuk **approve transfer QC** (scan QR / kode TF / SO) setelah picking selesai.
+**Bukan** [Checking List](../omni-checking-list/README.md) — List = QC operasional (check, replace defective, scrap/replace TF). Process = approve dokumen TF stage.
 
-| Item | Nilai |
-|------|-------|
-| Menu | Omni → Checking Process |
-| Route UI | `/omni/checking-process` |
+## Alur
 
-## Relasi Instant Settlement (operator)
+```mermaid
+flowchart LR
+  P[Picking Process approved] --> C[Checking Process approve]
+  C --> PK[Packing Process / Packing List]
+```
 
-Checking adalah langkah setelah **Picking** dan sebelum **Packing**. Order harus menyelesaikan seluruh rantai gudang sampai **Shipped WH 3PL** sebelum bisa di-settle.
+## Tips
 
-**Detail:** [Instant Settlement](../accounting-settlement-upload/requirement.md) · [requirement.md](./requirement.md)
+- Picking harus sudah approved sebelum checking eligible.
+- Settlement butuh rantai sampai **Shipped 3PL** — checking sendiri tidak memicu accounting.
+- Relasi Failed Ship: tahap #2 (CL) di rantai fulfillment.
 
-## Status dokumentasi
+## Troubleshooting
 
-- Knowledge Base: **draft** (cross-ref Fase 3)
-- Requirement: [requirement.md](./requirement.md) — **draft**
-- Technical: **pending**
+| Gejala | Solusi |
+|--------|--------|
+| Transfer not found | Bukan destination sequence 2 / belum picking |
+| Scanned previously | Sudah APPROVED — jangan scan ulang |
+
+Detail: [requirement.md](./requirement.md) · [Checking List TO-BE](../omni-checking-list/requirement.md)

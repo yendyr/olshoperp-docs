@@ -3,14 +3,13 @@ doc_type: requirement
 menu: omni-picking-process
 menu_name: "Picking Process"
 version: 1.2
-last_updated: 2026-06-26
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Picking Process — Requirement Documentation
 
-> **Status: DRAFT** — Dokumentasi AS-IS pertama (2026-06-19). Belum melalui review QA/PM.
 
 ## 0. Metadata & Changelog
 

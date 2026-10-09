@@ -3,14 +3,13 @@ doc_type: requirement
 menu: omni-checking-process
 menu_name: "Checking Process"
 version: 1.1
-last_updated: 2026-06-26
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Checking Process — Requirement Documentation
 
-> **DRAFT** — Cross-reference Instant Settlement (Fase 3). Konten requirement penuh menu ini masih disusun.
 
 **Modul:** OmniChannel  
 **UI route:** `/omni/checking-process`  

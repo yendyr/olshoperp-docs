@@ -4,9 +4,10 @@ Menu **Purchase Inbound** — UI legacy. **Backend & requirement GRN canonical**
 
 | Layer | File | Status |
 |-------|------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | draft |
-| Requirement | [requirement.md](./requirement.md) | draft |
-| Technical | [technical.md](./technical.md) | draft |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | review |
+| Requirement | [requirement.md](./requirement.md) | review |
+| Technical | [technical.md](./technical.md) | review |
+| User Guide | [user-guide.md](./user-guide.md) | review |
 
 **Route:** `supplychain/mutation-inbound` · **Module:** SupplyChain  
 **SoT Colli v2:** [`_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md`](../_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md)

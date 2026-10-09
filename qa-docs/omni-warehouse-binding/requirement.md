@@ -3,14 +3,13 @@ doc_type: requirement
 menu: omni-warehouse-binding
 menu_name: "Warehouse Binding"
 version: 1.0
-last_updated: 2026-06-19
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Warehouse Binding — Requirement Documentation
 
-> **Status: DRAFT** — Dokumentasi AS-IS pertama (2026-06-19). Belum melalui review QA/PM.
 
 ## 0. Metadata & Changelog
 

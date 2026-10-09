@@ -3,15 +3,14 @@ doc_type: knowledge-base
 menu: omni-warehouse-binding
 menu_name: "Warehouse Binding"
 version: 1.0
-last_updated: 2026-06-19
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 ---
 
 # Warehouse Binding — Knowledge Base
 
-> **Status: DRAFT** — Dokumentasi AS-IS pertama (2026-06-19). Belum melalui review QA/PM.
 
 ## 1. Apa itu Warehouse Binding?
 

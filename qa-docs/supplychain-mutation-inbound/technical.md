@@ -3,9 +3,9 @@ doc_type: technical
 menu: supplychain-mutation-inbound
 menu_name: "Purchase Inbound"
 version: 1.1
-last_updated: 2026-08-14
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
@@ -13,7 +13,6 @@ related_docs:
 
 # Purchase Inbound — Technical Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
 
 
 ## 1. Architecture Overview

@@ -3,14 +3,13 @@ doc_type: requirement
 menu: supplychain-mutation-inbound
 menu_name: "Purchase Inbound"
 version: 1.2
-last_updated: 2026-08-14
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Purchase Inbound — Requirement Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
 
 
 > **Canonical GRN + Colli v2:** [BETA - New Purchase Inbound requirement](../supplychain-new-purchase-inbound/requirement.md) v2.4. Folder ini = UI legacy + **parity note** — jangan duplikasi AC penuh.

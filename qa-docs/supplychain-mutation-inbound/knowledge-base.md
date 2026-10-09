@@ -3,15 +3,14 @@ doc_type: knowledge-base
 menu: supplychain-mutation-inbound
 menu_name: "Purchase Inbound"
 version: 1.1
-last_updated: 2026-08-14
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 ---
 
 # Purchase Inbound — Knowledge Base
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
 
 
 ## 1. Apa itu Purchase Inbound?

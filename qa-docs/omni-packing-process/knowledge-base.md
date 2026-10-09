@@ -2,34 +2,42 @@
 doc_type: knowledge-base
 menu: omni-packing-process
 menu_name: "Packing Process"
-version: 1.0
-last_updated: 2026-06-23
+version: 1.1
+last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
+aliases: [Packing Process, transfer packing, approve packing]
 ---
 
 # Packing Process — Knowledge Base
 
-> **DRAFT** — Ringkasan operator + relasi Instant Settlement. Konten lengkap menu masih disusun.
+## Apa itu
 
-## Ringkasan
+Approve **transfer internal** tahap packing (virtual WH `sequence = 3`) setelah checking. Setelah approve, sistem siapkan **Collecting / Shipping List** untuk Delivery Order.
 
-Menu **Packing Process** dipakai untuk **approve transfer packing** setelah checking — lanjut ke collecting/shipping list dan Delivery Order.
+**Bukan** [Packing List](../omni-packing-list/README.md) — List = pack/bundle/shipping-handoff. Process = approve TF stage.
 
-| Item | Nilai |
-|------|-------|
-| Menu | Omni → Packing Process |
-| Route UI | `/omni/packing-process` |
+## Alur
 
-## Relasi Instant Settlement (operator)
+```mermaid
+flowchart LR
+  C[Checking approved] --> P[Packing Process approve]
+  P --> SL[Collecting SL Open]
+  SL --> DO[Delivery Order → 3PL]
+```
 
-Packing harus selesai agar collecting & DO bisa jalan. Settlement **tidak** otomatis saat packing — outbound muncul dari proses settlement setelah order **Shipped**.
+## Tips
 
-**Detail:** [Instant Settlement](../accounting-settlement-upload/requirement.md) · [requirement.md](./requirement.md)
+- Auto-outbound saat packing **sudah dimatikan** — outbound dari settlement setelah Shipped.
+- Order macet di packing → belum bisa Shipped → Instant Settlement gagal.
+- Relasi Failed Ship: tahap #3 (PK) + trigger Collecting.
 
-## Status dokumentasi
+## Troubleshooting
 
-- Knowledge Base: **draft** (cross-ref Fase 3)
-- Requirement: [requirement.md](./requirement.md) — **draft**
-- Technical: **pending**
+| Gejala | Solusi |
+|--------|--------|
+| Tidak ada transfer packing | Checking belum approved / salah sequence |
+| Settlement gagal | Cek sampai DO Shipped 3PL |
+
+Detail: [requirement.md](./requirement.md) · [Packing List TO-BE](../omni-packing-list/requirement.md) · [Delivery Order](../supplychain-delivery-order/README.md)

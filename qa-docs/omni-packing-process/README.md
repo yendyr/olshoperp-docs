@@ -1,15 +1,15 @@
 # Packing Process — Dokumentasi
 
-Menu **Packing Process** (Omni Channel).
+Menu **Packing Process** (Omni Channel) — approve TF packing (`sequence = 3`) → Collecting SL. **Bukan** Packing List.
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | draft |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | draft |
-| Technical | technical.md | Developer | pending |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator | review |
+| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
+| Technical | [technical.md](./technical.md) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) | Publish | review |
 
-**Menu terkait:** [Instant Settlement](../accounting-settlement-upload/README.md) · [Delivery Order](../supplychain-delivery-order/README.md) · [Failed Ship](../supplychain-failed-ship/README.md)
+**Last updated:** 2026-10-09 · **Maintenance:** QA — Yemima
 
-**Relasi Failed Ship:** tahap #3 (PK) + trigger Collecting — [requirement §Relasi FS](./requirement.md#relasi-failed-ship)
-
-**Maintenance owner:** QA — Yemima
+**Pasangan List (TO-BE pack/handoff):** [Packing List](../omni-packing-list/README.md)  
+**Downstream:** [Delivery Order](../supplychain-delivery-order/README.md) · [Failed Ship](../supplychain-failed-ship/README.md)
