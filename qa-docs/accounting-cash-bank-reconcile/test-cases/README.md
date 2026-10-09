@@ -130,11 +130,53 @@ Reuse precondition: [TC-CBR-001.md](./TC-CBR-001.md). Jalankan dulu `TC-CBR-004`
 
 Nomor urut final via `#renumber-tc accounting-cash-bank-reconcile`.
 
+## ETM-15856 — Matching Slideover 2 Arah (Bank↔GL) + Quick Journal
+
+**Card:** [ETM-15856](https://erpintegration.atlassian.net/browse/ETM-15856) — Matching Slideover 2 arah (Bank↔GL) + Quick Journal  
+**Menu:** Cash/Bank Reconcile (`accounting-cash-bank-reconcile`)  
+**UI Route:** `/accounting/cash-bank-reconcile/edit/{id}` $\rightarrow$ Tab **Reconcile Process** $\rightarrow$ *See more / See Other……*  
+**Request ID:** `recvtRTKlaj9VS`  
+**Status:** In Progress / Testing Progress  
+
+### Ringkasan & Solusi Produk
+1. **Modal Dialog $\rightarrow$ Slideover:** Mengganti modal kecil tengah dengan panel Slideover di sisi kanan agar area kerja lebih leluasa dan halaman reconcile utama di latar belakang tetap terlihat.
+2. **Matching Dua Arah (POV A & POV B):**
+   - **POV A (Default):** Anchor = 1 Bank Statement $\rightarrow$ Multi-select GL Not Reconciled $\rightarrow$ Tersedia tombol `+ Create Quick Journal`.
+   - **POV B:** Anchor = 1 GL Journal Detail $\rightarrow$ Multi-select Bank Statements Not Reconciled (*import-only*, tanpa opsi create bank statement).
+3. **Difference Bar:** Menghitung `Anchor Amount - Selected Amount = Difference`. Tombol **Match** hanya aktif (*enabled*) jika selisih tepat **0**.
+4. **Quick Journal Modal:** Form ringkas di atas slideover (tanpa redirect) tanpa field *store*, *attachment*, *transaction reference*, atau *rate*. Baris Kas/Bank berada di atas dengan amount read-only ($\Sigma$ offset).
+5. **Decisions Locked:**
+   - **D1:** Match tetap manual (setelah Save & Approve, GL baru hanya auto-selected, tombol Match tidak auto-klik).
+   - **D2:** Bank Statement import-only (tidak ada create bank statement dari panel).
+   - **D3:** Quick Journal ringkas tanpa field pelengkap.
+   - **D4:** Change Anchor via picker menampilkan notice footer dan otomatis membersihkan centangan seleksi sebelumnya.
+   - **D5:** Amount Kas/Bank di Quick Journal bersifat read-only (mengikuti total offset).
+
+---
+
+### Acceptance Criteria (AC-1 s/d AC-13)
+
+| Kode AC | Kategori | Kriteria Penerimaan (Acceptance Criteria) |
+| :---: | :--- | :--- |
+| **AC-1** | UI / Slideover | Tombol *See Other / See more* membuka panel **Slideover** di sisi kanan; halaman reconcile utama di belakangnya tetap terlihat. |
+| **AC-2** | POV Switch | Terdapat switch **POV A** dan **POV B**. Tombol *Create Quick Journal* hanya muncul pada **POV A**. |
+| **AC-3** | Validation | Terdapat **Difference Bar** interaktif; tombol **Match** hanya *enabled* jika nilai selisih tepat `0` (*exact match*). |
+| **AC-4** | Workflow | Setelah *Save & Approve* jurnal, baris GL baru otomatis terpilih (*auto-checked*), tetapi **tidak otomatis melakukan Match** (user wajib klik manual tombol Match). |
+| **AC-5** | Bank Statement | Bank Statement bersifat **import-only** (tidak ada opsi/tombol create bank statement dari panel). |
+| **AC-6** | Anchor Picker | Mengganti anchor via picker menampilkan notice *"Switching the line/transaction clears the current selection below"* dan otomatis mengosongkan seleksi sebelumnya. |
+| **AC-7** | Quick Journal Form | Modal Quick Journal berbentuk form ringkas (tanpa field *attachment*, *store*, *transaction reference*, dan *rate*). |
+| **AC-8** | Form Fields | Pada form Quick Journal, nilai Amount Kas/Bank bersifat *read-only* mengikuti total offset ($\Sigma$ offset); hanya field *Description* yang bisa diedit; COA Kas/Bank yang sedang direconcile tidak boleh dipilih sebagai offset account. |
+| **AC-9** | Draft Warning | Memilih *Save as draft* memunculkan konfirmasi/warning bahwa jurnal draft tidak akan masuk ke daftar matching. |
+| **AC-10** | Approval Flow | Memilih *Save & Approve* menampilkan popup rekap/konfirmasi posting, dan setelah sukses baris GL baru langsung tercentang dengan selisih 0. |
+| **AC-11** | Permission | User tanpa permission *approve journal* hanya melihat opsi *Save as draft*. |
+| **AC-12** | Document State | Jika dokumen Cash/Bank Reconcile induk sudah berstatus *Approved*, tombol *Create Quick Journal* dan *Match* dinonaktifkan/tidak tersedia. |
+| **AC-13** | POV B Match | Pada **POV B**, pencocokan 1 baris GL dengan banyak baris Bank Statement (import) dapat dilakukan selama total nominalnya sama persis (selisih 0). |
+
+---
+
 ## Catatan
 
-
-
 - Expected result mengacu pada skenario sumber ETM-15298 + scope MVP di atas; requirement CBR masih `draft` — flag gap jika behavior staging beda.
-
 - **TC-CBRAM-011** dan **TC-CBRAM-014** bergantung pada hasil **TC-CBRAM-001** (happy path AR).
+
 
