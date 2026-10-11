@@ -28,6 +28,14 @@ Dokumen **handover pengiriman** setelah collecting: internal & platform, insert 
 | User Guide | [user-guide.md](./user-guide.md) | review |
 | Feature Map | [feature-map.md](./feature-map.md) | review |
 
+**Help Center overview:** [overview.id.md](../_meta/docs-hub/menus/supplychain-delivery-order/overview.id.md) · [overview.en.md](../_meta/docs-hub/menus/supplychain-delivery-order/overview.en.md) (`authored` dari file user)
+
+## Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| hc-1.0 | 2026-10-11 20:23 | Help Center overview ID + EN: handover ke 3PL, stok pindah saat approve, Prepared vs Shipped, shipper binding, Available to DO |
+
 ## Related
 
 - [Packing List](../omni-packing-list/README.md) · [Skip Processing](../omni-skip-processing/README.md)
