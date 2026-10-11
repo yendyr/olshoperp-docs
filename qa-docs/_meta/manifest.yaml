@@ -2947,7 +2947,7 @@ menus:
 
   supplychain-mutation-outbound:
     menu_name: "Outbound External"
-    short_description: "Send stock out to an external destination and reduce inventory."
+    short_description: "Send stock out of the warehouse (Sales Order 3PL or Other) and post inventory journal on approve."
     path: supplychain-mutation-outbound
     module: SupplyChain
     menu_links:
@@ -2956,16 +2956,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
@@ -2973,10 +2973,12 @@ menus:
         - Modules/SupplyChain/Http/Controllers/StockMutationOutboundController.php
         - Modules/SupplyChain/Http/Controllers/StockMutationOutboundDetailController.php
         - Modules/SupplyChain/Entities/StockMutationOutbound.php
+        - Modules/SupplyChain/Import/StockMutationOutboundImport.php
         - Modules/SupplyChain/Routes/api.php
         - app/Helpers/SupplyChain/ItemStockMutation.php
+        - app/Helpers/Accounting/JournalProcess.php
+      frontend:
         - olshoperp-frontend/src/pages/SCM/StockMutation/InventoryOut/**/*
-      frontend: []
 
   supplychain-mutation-transfer-external:
     menu_name: "Transfer External"

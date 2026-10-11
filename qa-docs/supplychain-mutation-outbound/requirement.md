@@ -2,20 +2,20 @@
 doc_type: requirement
 menu: supplychain-mutation-outbound
 menu_name: "Outbound External"
-version: 1.2
-last_updated: 2026-07-04
+version: 2.0
+last_updated: 2026-10-11
 owner: QA - Yemima
-status: draft
+status: review
+aliases: [outbound external, inventory out, OT outbound, mutation outbound]
 ---
 
 # Outbound External — Requirement Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
-
-
-**Modul:** SupplyChain  
-**Audience:** PM, Operations, QA, Support, Developer  
-**Status:** Sesuai perilaku sistem saat ini (AS-IS)
+**Modul:** Supply Chain  
+**UI route:** `/supplychain/mutation-outbound`  
+**Kode:** prefix `OT`  
+**Audience:** PM, Operations, QA  
+**SoT:** `supplychain-mutation-outbound-source-of-truth.md` v1.0 (11 Oct 2026)
 
 ---
 
@@ -23,142 +23,217 @@ status: draft
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
-| 1.1 | 2026-06-23 | QA - Yemima | Cross-reference Relasi Instant Settlement (Fase 1) |
-| 1.2 | 2026-07-04 | QA - Yemima | Cross-reference Relasi Assembly + Master Unit |
+| 1.0–1.2 | 2026-06 ~ 07 | QA - Yemima | Draft auto + cross-ref Settlement / Assembly / Unit |
+| 2.0 | 2026-10-11 | QA - Yemima | Rewrite dari SoT v1.0; type SO/Other; FIFO/manual; journal; gaps DO & approve |
+
+---
 
 ## 1. Ringkasan Eksekutif
 
-Dokumen pengeluaran stok keluar gudang (bukan transfer antar gudang). Subclass `StockMutationOutbound` dengan `warehouse_origin` terisi, `warehouse_destination` null, `is_inventory_adjustment = 0`. Kode transaksi prefix **`OT`**. Filter datalist: `warehouse_destination` null · `warehouse_origin` not null · `is_inventory_adjustment = 0` · `is_return_process = 0`.
+**Outbound External** mencatat pengeluaran barang dari gudang dan menggerakkan stok serta jurnal saat approve. Dua tipe UI: **Sales Order** (dari WH **3PL**) dan **Other** (pemakaian operasional; origin **bukan** 3PL).
 
-## 2. Acceptance Criteria (AS-IS)
+Dokumen bisa auto-generate + auto-approve dari Instant Settlement atau Assembly (read-only di menu ini).
 
-| ID | Kriteria | Validasi | Fitur |
-|----|----------|----------|-------|
-| A-01 | User dengan permission `viewAny` melihat datalist | Policy `StockMutationOutbound` | List |
-| A-02 | User dengan permission `create` membuat header | store validation | Create |
-| A-03 | Kode unik per company | unique rule `scm_stock_mutations.code` | Create |
-| A-04 | Tanggal transaksi tidak di masa depan | Custom validation | Create/Update |
-| A-05 | Fiscal period valid | `validate_fiscal_period()` | Create/Approve |
-| A-06 | Detail wajib sebelum approve | count details > 0 | Approve |
-| A-07 | Setelah approve, `can_update = false` | Model accessor | Post-approve |
-| A-08 | Approval tercatat | `StockMutationApproval` | Approve |
-| A-09 | Item stock berubah setelah approve | `ItemStockMutation` | Approve |
+| Kebutuhan | Jawaban |
+|-----------|---------|
+| Keluarkan stok order dari 3PL | Type Sales Order |
+| Pemakaian internal tanpa SO | Type Other |
+| Pembukuan stok turun | Auto journal saat approve |
+| Generate massal marketplace | Instant Settlement → OT |
 
-## 3. Validasi & Rules
-
-| ID | Rule | Trigger | Pesan error (contoh) |
-|----|------|---------|----------------------|
-| V-01 | `transaction_date` required, not future | store/update | Transaction date cannot be greater than today |
-| V-02 | `description` max 150 | store/update | validation max |
-| V-03 | `transaction_status` in open,draft | store | Rule::in validation |
-| V-04 | File attachment extension | store/update | validationExtensionFile |
-| V-05 | Import in progress blocks approve | approve | Updating process is in progress |
-| V-06 | No detail blocks approve | approve | doesn't have any detail data |
-| V-07 | Reject sets `transaction_status = rejected` | approve rejection | The data successfully rejected |
-| V-08 | Approve cache lock 60s | approve | Approval process is in progress |
-
-### Catatan approve spesifik menu
-
-Tidak bisa approve jika terhubung langsung ke Sales Order header. Validasi struktur gudang origin. Import detail harus selesai.
-
-**Alur approve:** POST `mutation-outbound/{id}/approve` → `ItemStockMutation::approveOutbound()` — kurangi item stock FIFO, optional auto journal COGS.
-
-## 4. Fitur & Behavior
-
-| ID | Fitur | Trigger | Expected result |
-|----|-------|---------|-----------------|
-| F-01 | Datalist + filter SearchBuilder | GET `mutation-outbound` | JSON paginated rows |
-| F-02 | Create header | POST `mutation-outbound` | Row `scm_stock_mutations`, code `OT` |
-| F-03 | Update header | PUT `mutation-outbound/{id}` | Header updated if `can_update` |
-| F-04 | Soft delete | DELETE `mutation-outbound/{id}` | `deleted_at` set if allowed |
-| F-05 | Detail CRUD | nested resource | Rows di tabel detail |
-| F-06 | Import Excel detail | POST upload routes | Async job + import log |
-| F-07 | Export Excel | export-excel routes | Download / async export file |
-| F-08 | Audit trail | GET `.../audit` | Audit log JSON |
-| F-09 | Approval log | GET `.../log/approve` | Last approvals |
-| F-10 | Approval eligibility | GET `.../approval-eligibility` | `can_approve` flags |
-| F-11 | Print | GET `.../print` | PDF/print view |
-| F-12 | Approve | POST `.../approve` | Stock mutation + item stock |
-
-## 5. Permission & Dependencies
-
-| Permission (Gate) | Aksi |
-|-------------------|------|
-| `viewAny` | Lihat datalist |
-| `view` | Lihat detail form |
-| `create` | Buat header |
-| `update` | Edit header/detail |
-| `delete` | Hapus (jika belum approved) |
-| `approval` | Approve / reject |
-
-**Dependencies:** Master Warehouse, Product, Unit; Fiscal Period; untuk inbound: Supplier/PO; untuk outbound: Sales Order (opsional); untuk adjustment: Accounting approval menus.
-
-## 6. Relasi Menu
-
-Menu terkait: **sales-order-general, supplychain-delivery-order, accounting-customer-invoice**.
-
-## Relasi Instant Settlement
-
-**Dampak ke menu ini:** Instant Settlement **generate Outbound External** otomatis per order yang lolos validasi (potong stok WH 3PL). Dokumen OB hasil settlement punya referensi ke SO platform; jurnal COGS/HPP diposting saat OB di-approve (job settlement). Warning `zero_prevention` (nilai persediaan 0) tercatat di counter **Out Journal** settlement — bukan hard error import.
-
-**Prasyarat dari menu ini agar settlement lolos:** SO harus sudah **Shipped WH 3PL** dengan stok available pada tanggal settle (`checkShipping`, `checkInboundDate`). Outbound manual untuk SO yang sama **tidak** menggantikan generate settlement — keduanya independen; hindari dobel outbound untuk qty yang sama.
-
-**Independensi:** OB manual di menu ini tetap bisa dibuat tanpa settlement. Delete settlement **revert stok** dari OB hasil generate, tetapi **tidak** mengubah status wave/pick/pack. OB approved manual tidak otomatis terhubung ke batch settlement.
-
-**Detail alur bulk:** [Instant Settlement](../accounting-settlement-upload/requirement.md) — § validasi stok, Out Journal warnings, delete chain.
-
-Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/requirement.md#10-relasi-menu--integrasi).
+```mermaid
+flowchart LR
+  Create[Create / autosave] --> Detail[SKU FIFO atau manual]
+  Detail --> Open[Open]
+  Open --> Apr[Approve]
+  Apr --> Stok[Stok turun]
+  Apr --> Jrn[Journal]
+  Gen[Settlement / Assembly] -->|auto OT| Apr
+```
 
 ---
 
-## Relasi Assembly
+## 2. Prasyarat
 
-**Dampak ke menu ini:** Saat Assembly **Approve** (`WorkOrderApprovalJob`), sistem auto-create + auto-approve **Outbound** dengan:
-
-| Aspek | Nilai |
-|-------|-------|
-| `type_so` | **`other`** (bukan linked ke Sales Order) |
-| Origin | WIP warehouse (dari Warehouse Setting) |
-| Destination | `null` |
-| Referensi | `transaction_reference_class = WorkOrder` |
-| Detail | Komponen BoM snapshot × assembly qty |
-| Jurnal | Dr WIP, Cr Inventory per komponen (`JournalProcess::stockOutboundAutoJournal`) |
-
-**Prasyarat dari menu ini agar Assembly lolos:** Stok komponen sudah ada di WIP (via TFI approved). COA WIP + Inventory valid per produk (Product COA Group).
-
-**Independensi:** Outbound manual `type_so=other` di menu ini **independen** dari Assembly — tidak auto-link ke Work Order.
-
-**Detail alur:** [Assembly requirement §5–§6](../supplychain-assembly/requirement.md) — Approve job step 3 (Outbound WIP).
+| Prasyarat | Sumber | Catatan |
+|-----------|--------|---------|
+| Privilege create / update / delete / approval | Gate | |
+| Fiscal period terbuka | Fiscal Period | |
+| Warehouse sesuai tipe | Master Warehouse | SO → 3PL; Other → non-3PL (UI) |
+| Stok available | Item Stock | |
+| Product COA Group | Inventory + COGS / OpEx / WIP | Sebelum approve |
+| Type SO: order eligible | Sales Order | Shipping 3PL |
 
 ---
 
-## Relasi Master Unit
+## 3. Siklus Status
 
-**Dampak ke menu ini:** Detail outbound punya `outbound_quantity_unit_id`; konversi ke base unit saat save/approve via observer.
+Void belum ada. Unapprove bukan fitur produksi (§6.7).
 
-**Prasyarat:** Unit **Active** di Master Unit; rate locked jika sudah `haveRelations()`.
+```mermaid
+stateDiagram-v2
+    [*] --> draft: Create
+    [*] --> open: Create Open
+    draft --> open: Set Open
+    open --> approved: Approve
+    open --> rejected: Reject
+    rejected --> open: Edit lalu Open
+    approved --> [*]
+```
 
-**Detail:** [Master Unit requirement](../supplychain-unit/requirement.md).
+| Status | Editable? | Delete? | Approve? |
+|--------|-----------|---------|----------|
+| Draft | Ya | Ya | Tidak |
+| Open | Ya | Ya | Ya |
+| Rejected | Ya | Ya* | Tidak sampai Open |
+| Approved | Tidak | Tidak | — |
 
-## 7. QA Test Notes
+Generate Settlement/Assembly → langsung Approved.
 
-- [ ] Create header — validasi tanggal, gudang wajib, kode auto `OT`
-- [ ] Tambah detail — qty, unit, product select2
-- [ ] Edit header sebelum approve — attachment, description
-- [ ] Blok edit setelah approve
-- [ ] Approve happy path — cek item stock before/after
-- [ ] Reject — status `rejected`, tidak ubah stock
-- [ ] Import Excel — progress, error log, approve setelah selesai
-- [ ] Export list dan detail
-- [ ] Permission denied untuk role tanpa akses
-- [ ] Cross-company scoping (`owned_by` dari token)
+---
 
-## 8. Known Gaps / Open Questions
+## 4. Datalist
 
-- SCM Stock Deduction: route approve tidak terdaftar di SupplyChain Routes — approve hanya via Accounting.
-- SCM Stock Addition: tombol approve disembunyikan di `menu=scm`; verifikasi E2E dengan Accounting.
-- Middle detail (inbound/outbound/transfer): behavior async approve perlu test terpisah.
+Create (autosave last trx bila ada), Show deleted, column show/hide, Export **with / without details**, Global Search, Advanced Filter.
+
+| Kolom | Isi |
+|-------|-----|
+| Trx Code \| Date | `OT…` |
+| Building Origin | Other / 3PL sesuai tipe |
+| Description | Free text / teks generate |
+| Qty | Akumulasi detail |
+| Trx Ref | Multi SO atau Assembly |
+| DO Status | **AS-IS:** Prepared / Processed / `-`. **Intended:** nomor DO multi — GAP-OB-01 |
+| Trx Status | draft / open / rejected / approved |
+| Action | Show/Edit + Print selalu; Approve jika Open; Delete Draft/Open. Platform/POS: approve/delete/print disembunyikan |
+
+**Advanced Filter fields:** Trx Date, Code, Product, Building Origin, Description, Qty, Trx Ref, DO Status, Trx Status, Created/Updated By/At.  
+**Operators:** text (equals, contains, …); date/number (equals, between, …).
+
+---
+
+## 5. Form & Field
+
+| Field | Wajib | Aturan |
+|-------|-------|--------|
+| Code | Auto | OT |
+| Date | Ya | Tidak future; fiscal period |
+| Type | Ya | Sales Order (`sales order general`) \| Other — lock setelah ada detail |
+| Origin | Ya | SO: 3PL; Other: non-3PL |
+| Description | Opsional | |
+
+Detail Other: Select Product (FIFO), Modal Use/Bulk Use (manual stock id), Import (FIFO), Group/Detail View.  
+Detail SO: outstanding SO di 3PL origin; multi SO per OT.
+
+**Contoh pensil:** inbound 1.500 + 500 → outbound 1.700 → Group: 1.700; Detail: 1.500 + 200.
+
+---
+
+## 6. How It Works
+
+### 6.1 Autosave create
+
+Ada last OT → default warehouse + type → POST → edit. Belum pernah → isi required manual.
+
+### 6.2 FIFO vs manual
+
+| Input | Is FIFO |
+|-------|---------|
+| Select Product / Import / fulfill | Ya |
+| Modal Use / Bulk Use | Tidak |
+
+### 6.3 Approve — stok & jurnal
+
+Cr **Inventory**. Dr: Other → **Operational Expense**; Sales Order → **COGS**; Assembly ref → **WIP**.  
+Conditional auto Sales Invoice jika detail ref SO Detail tanpa invoice qty.
+
+### 6.4 Generate lain
+
+| Sumber | Description AS-IS |
+|--------|-------------------|
+| Assembly | `Auto generated from Assembly {code}` |
+| Settlement | `Auto Generated From Transfer {code}` |
+
+### 6.5 Approve block (pending discussion)
+
+Other manual & general/internal (tanpa header ref blocking) bisa approve. Header ref Sales Order + authorized → error related SO. Platform/POS: tombol approve disembunyikan. Settlement job bypass. → GAP-OB-03.
+
+### 6.6 Unapprove
+
+Staging/production: **tidak boleh**. Endpoint hanya `local`/`development`. Delete Instant Settlement boleh revert OT generate.
+
+### 6.7 DO Status
+
+AS-IS status qty; intended nomor DO multi header + per SKU detail → GAP-OB-01.
+
+---
+
+## 7. Validasi
+
+| ID | Kondisi | Behavior |
+|----|---------|----------|
+| V-OB-01 | Tanggal future | Transaction date cannot be greater than today |
+| V-OB-02 | Approve tanpa detail | doesn't have any detail data |
+| V-OB-03 | Import jalan | Updating process is in progress… |
+| V-OB-04 | Approve related SO | Can't approve… related with Sales Order |
+| V-OB-05 | Delete related SO | Can't delete… related with Sales Order |
+| V-OB-06 | Unapprove non-local | Cannot do such action… |
+| V-OB-07–09 | Import format / row | Template 4 kolom; `Row N:` SKU/qty/unit/stock… |
+
+Import kolom: Product ID \| System Product SKU \| Qty/Outbound Qty \| Unit.
+
+---
+
+## 8. Relasi Menu Lain
+
+```mermaid
+flowchart TB
+  OB[Outbound External]
+  SO[Sales Order]
+  DO[Delivery Order]
+  IS[Instant Settlement]
+  ASM[Assembly]
+  SI[Sales Invoice]
+  JR[Journal]
+  IS --> OB
+  ASM --> OB
+  OB --> SO
+  OB --> SI
+  OB --> JR
+  DO -.-> OB
+```
+
+| Menu | Relasi |
+|------|--------|
+| Instant Settlement | Generate/approve OT; delete revert |
+| Assembly | OT Other dari WIP |
+| Sales Order / DO | Ref & qty |
+| Sales Invoice | Auto conditional |
+| Product COA / Journal | Jurnal approve |
+
+---
+
+## 9. Gaps
+
+| ID | Deskripsi | Status |
+|----|-----------|--------|
+| GAP-OB-01 | DO nomor multi intended vs Prepared/Processed AS-IS | Pending Decision |
+| GAP-OB-02 | 3PL filter UI-only | Open |
+| GAP-OB-03 | Approve platform vs general — need discussion | Pending Discussion |
+| GAP-OB-04 | Unapprove non-prod only | Resolved |
+| GAP-OB-05 | Radio hanya sales order general | Open |
+
+---
+
+## 10. FAQ
+
+**Q: Other vs Sales Order?** Other = internal tanpa order; SO = stok order dari 3PL.  
+**Q: Create langsung edit?** Autosave last trx.  
+**Q: Group vs Detail?** Agregat SKU vs pecahan stock id (contoh pensil).  
+**Q: Edit OT Settlement?** Tidak — auto-approved.  
+**Q: Unapprove?** Tidak di staging/prod; hapus via delete settlement bila OT dari settlement.
+
+---
 
 ## Related Documents
 
@@ -166,6 +241,6 @@ Diagram integrasi: [Instant Settlement §10](../accounting-settlement-upload/req
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
-| Assembly | [../supplychain-assembly/requirement.md](../supplychain-assembly/requirement.md) |
-| Master Unit | [../supplychain-unit/requirement.md](../supplychain-unit/requirement.md) |
-| Manifest | [../_meta/manifest.yaml](../_meta/manifest.yaml) |
+| User Guide | [user-guide.md](./user-guide.md) |
+| Instant Settlement | [../accounting-settlement-upload/](../accounting-settlement-upload/) |
+| Assembly | [../supplychain-assembly/](../supplychain-assembly/) |

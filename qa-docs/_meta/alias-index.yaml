@@ -3,11 +3,11 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-10-09T04:33:43Z'
+generated: '2026-10-11T11:52:04Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
 menu_count: 132
-alias_count: 802
+alias_count: 812
 ambiguous_count: 27
 aliases:
   3pl: supplychain-delivery-order
@@ -408,6 +408,8 @@ aliases:
   instant settlement: accounting-settlement-upload
   internal company: generalsetting-internal-company
   inventory detail: supplychain-inventory-detail
+  inventory out: supplychain-mutation-outbound
+  inventoryout: supplychain-mutation-outbound
   is_default: supplychain-variant
   item category: supplychain-item-category
   item coa: accounting-item
@@ -426,6 +428,7 @@ aliases:
   kategori harga: businessdevelopment-category-price
   kb store monitor: kb-store-monitor
   kb-store-monitor: kb-store-monitor
+  keluarkan stok: supplychain-mutation-outbound
   klaim supplier: accounting-debit-note
   laba rugi:
     slugs:
@@ -494,6 +497,7 @@ aliases:
   mpl: supplychain-manual-picking-list
   mss: omni-shipping-service
   mutation inbound: supplychain-mutation-inbound
+  mutation outbound: supplychain-mutation-outbound
   mutation stock: supplychain-product-mutation-stock
   mutation transfer external: supplychain-mutation-transfer-external
   mutation transfer internal: supplychain-mutation-transfer-internal
@@ -501,6 +505,7 @@ aliases:
   mutation-transfer-internal: supplychain-mutation-transfer-internal
   neraca: accounting-balance-sheet
   new purchase inbound: supplychain-new-purchase-inbound
+  night schedule stagger: horizon-jobs
   nota debit: accounting-debit-note
   nota kredit: accounting-credit-note
   omni channel settings: omni-global-settings
@@ -559,12 +564,15 @@ aliases:
   order-processing-trace: order-processing-trace
   os: accounting-opening-stock
   os technical: accounting-opening-stock
+  ot: supplychain-mutation-outbound
+  ot outbound: supplychain-mutation-outbound
   other cost: omni-other-cost
   other cost disc: sales-order-general
   other cost/disc code: sales-order-general
   other discount: omni-other-discount
   other inbound: supplychain-other-inbound
   outbound external: supplychain-mutation-outbound
+  outbound external api: supplychain-mutation-outbound
   outstanding pr:
     slugs:
     - supplychain-purchase-order
@@ -751,6 +759,7 @@ aliases:
   sales return scm: supplychain-sales-returns
   sales-order-general: sales-order-general
   salesorderimportsheet2: sales-order-general
+  scheduler dump window: horizon-jobs
   scm picking list: omni-picking-list
   select multiple products: supplychain-purchase-order
   select outstanding pr products: supplychain-purchase-order
@@ -839,6 +848,7 @@ aliases:
   stock opname gudang: supplychain-stock-opname
   stock remapping: accounting-stock-remapping
   stock take: supplychain-stock-opname
+  stockmutationoutbound: supplychain-mutation-outbound
   store: omni-store-binding
   supplier deposit: accounting-debit-note
   supplier invoice: accounting-supplier-invoice

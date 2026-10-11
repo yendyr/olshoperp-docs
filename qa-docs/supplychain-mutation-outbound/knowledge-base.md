@@ -2,111 +2,114 @@
 doc_type: knowledge-base
 menu: supplychain-mutation-outbound
 menu_name: "Outbound External"
-version: 1.0
-last_updated: 2026-06-23
+version: 2.0
+last_updated: 2026-10-11
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
+aliases: [outbound external, inventory out, keluarkan stok, OT]
 ---
 
-# Outbound External — Knowledge Base
+# Outbound External — Knowledge Base (Operator)
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+**Audience:** Warehouse, ops, finance support  
+**Menu:** Supply Chain → Outbound External  
+**Route:** `/supplychain/mutation-outbound`  
+**Kode:** `OT-…`
 
+---
 
 ## 1. Apa itu Outbound External?
 
-Dokumen pengeluaran stok keluar gudang (bukan transfer antar gudang). Subclass `StockMutationOutbound` dengan `warehouse_origin` terisi, `warehouse_destination` null, `is_inventory_adjustment = 0`.
+Menu untuk **mengeluarkan barang dari gudang** supaya stok berkurang dan pembukuan ikut (jurnal saat approve).
 
-| Item | Nilai |
-|------|-------|
-| Menu | Supply Chain → Outbound External |
-| Route UI | `/supplychain/mutation-outbound` |
-| Kode dokumen | `OT` |
-| Tabel header | `scm_stock_mutations` |
-| Tabel detail | `scm_outbound_mutation_details` (`OutboundMutationDetail`) + optional middle details |
+Dua tipe:
 
-**Tujuan:** Mengeluarkan stok untuk sales order general/platform/other/POS, work order, atau kebutuhan outbound manual.
+| Type | Kapan dipakai | Gudang asal |
+|------|---------------|-------------|
+| **Sales Order** | Order general/internal keluar dari **3PL** | Hanya 3PL |
+| **Other** | Pemakaian operasional **tanpa** nomor order (contoh: HRD ambil ATK/buku dari stok) | Bebas, **bukan** 3PL |
 
-## 2. Glosarium
+OT dari **Instant Settlement** atau **Assembly** dibuat otomatis & langsung approved — **jangan diedit** di sini.
 
-| Istilah | Arti |
-|---------|------|
-| Stock Mutation | Transaksi pergerakan stok di `scm_stock_mutations` |
-| Item Stock | Batch/lot stok fisik per produk di gudang (`scm_item_stocks`) |
-| Transaction status | `open`, `draft`, `approved`, `rejected`, `void`, dll. |
-| Approval log | Riwayat approve di `scm_stock_mutation_approvals` |
-| Fiscal period | Periode akuntansi — transaksi harus dalam periode terbuka |
+---
 
-## 3. Yang Bisa / Tidak Bisa Dilakukan
+## 2. Kapan buat OT?
 
-### Bisa
-- Buat header transaksi (status `open` / `draft`)
-- Tambah/edit/hapus detail selama belum approved (`can_update`)
-- Import Excel detail (jika menu mendukung)
-- Approve dengan permission `approval` (lihat catatan approve per menu)
-- Export list dan detail, print label (jika tersedia)
-- Lihat audit log dan approval eligibility
+| ✅ Buat | ❌ Jangan |
+|---------|-----------|
+| Mau kurangi stok manual (Other) atau dari order di 3PL (Sales Order) | Coba edit OT yang sudah dari Settlement/Assembly |
+| Fiscal period & COA produk sudah siap | Approve tanpa detail / stok tidak cukup |
 
-### Tidak Bisa
-- Ubah header/detail setelah approved (`can_update = false`)
-- Tanggal transaksi lebih besar dari hari ini
-- Approve tanpa detail
-- Approve saat import detail sedang berjalan (cache lock)
-- Transaksi di luar fiscal period terbuka
-- Hapus dokumen auto-generated (opname, in-transit) — baca error message spesifik
+---
 
-## 4. Cara Pakai (How-To)
+## 3. Cara pakai singkat
 
-### Skenario umum
-1. Buka menu **Outbound External** → **Create**.
-2. Isi header: tanggal transaksi, gudang (origin/destination sesuai tipe), deskripsi, lampiran opsional.
-3. Simpan → tambah detail produk (manual, bulk, atau import).
-4. Review **Approval Eligibility** di panel form.
-5. **Approve** — ikuti alur di bagian approve (SCM langsung atau via Accounting).
-6. Verifikasi stok di **Real Time Stock** / **Stock History**.
+1. **Create** — sering langsung ke edit (mengikuti gudang + tipe transaksi terakhir). Belum pernah ada OT → isi tanggal, tipe, gudang dulu.
+2. Pilih tipe **Sales Order** atau **Other**.
+3. Tambah barang: Select Product, modal Available Products (Use / Bulk Use), atau Import.
+4. Pastikan status **Open** → **Approve**.
+5. Cek stok & jurnal.
 
-```mermaid
-flowchart LR
-    A["Create Outbound"] --> B["OutboundMutationDetail"]
-    B --> C["POST approve"]
-    C --> D["ItemStockMutation
-approveOutbound"]
-    D --> E["Stock minus"]
-```
+🎬 [Interactive demo akan ditambahkan di sini]
 
-## 5. Troubleshooting
+---
 
-| Gejala | Penyebab | Solusi |
-|--------|----------|--------|
-| Approve gagal "doesn't have any detail" | Belum ada baris detail | Tambah minimal 1 detail |
-| "Updating process is in progress" | Import Excel masih jalan | Tunggu selesai, cek import log |
-| "Transaction date cannot be greater than today" | Tanggal lebih besar dari hari ini | Koreksi tanggal transaksi |
-| Fiscal period error | Periode tutup | Buka periode di Accounting atau ubah tanggal |
-| Tidak bisa ubah gudang | Sudah ada detail terikat gudang | Hapus detail dulu atau buat dokumen baru |
-| Tombol Approve tidak muncul | Permission / menu SCM adjustment | Cek role; untuk Addition/Deduction approve di Accounting |
+## 4. Group View vs Detail View (contoh)
 
-## 6. FAQ
+SKU-PENSIL datang 2 kali: 1.500 pcs lalu 500 pcs. Outbound **1.700** pcs:
 
-**Q: Apa beda menu ini dengan Stock Adjustment?**  
-A: Menu mutation (`mutation-inbound/outbound/transfer`) untuk alur operasional normal. Menu `adjustment-addition/deduction` khusus `is_inventory_adjustment = 1` dengan approval finance terpisah.
+- **Group View:** satu baris SKU-PENSIL **1.700**
+- **Detail View:** **1.500** + **200** (pecahan stock id)
 
-**Q: Dokumen terkait menu lain?**  
-A: Lihat: sales-order-general, supplychain-delivery-order, accounting-customer-invoice.
+**Is FIFO = ya** → sistem pilih batch (Select Product / Import).  
+**Is FIFO = tidak** → kamu pilih stock id di modal Use / Bulk Use; qty max = stock id itu.
 
-**Q: Bagaimana cara approve?**  
-A: POST `mutation-outbound/{id}/approve` → `ItemStockMutation::approveOutbound()` — kurangi item stock FIFO, optional auto journal COGS.
+---
 
-## 7. Relasi Instant Settlement (operator)
+## 5. Setelah approve
 
-Outbound bisa muncul dari **Instant Settlement** (otomatis) atau dari menu ini (manual).
+- Stok berkurang.
+- Jurnal: persediaan kredit; debit biaya operasional (Other), HPP/COGS (Sales Order), atau WIP (dari Assembly).
+- Order terkait bisa memicu Sales Invoice otomatis (kondisional).
+- **Tidak ada unapprove** di staging/production. OT dari settlement dihapus lewat **delete Instant Settlement**.
 
-| Situasi | Yang terjadi |
-|---------|--------------|
-| Upload settlement sukses | Sistem buat OB per order — cek counter **Out** di grid settlement |
-| Jurnal OB warning | Buka panel **Out Journal** di settlement → tab **Warnings** (bukan selalu error di menu OB) |
-| Hapus settlement | OB hasil generate ikut terhapus + stok revert; OB manual tidak otomatis terhapus |
+---
 
-Prasyarat: order harus **Shipped WH 3PL** dan stok cukup sebelum upload.
+## 6. Troubleshooting
 
-**Detail:** [Instant Settlement](../accounting-settlement-upload/requirement.md)
+| Gejala | Cek |
+|--------|-----|
+| Gudang 3PL tidak muncul (Other) / sebaliknya | Tipe radio salah |
+| Stok SKU kosong di select | WH origin & availability |
+| Approve gagal “related with Sales Order” | OT terikat header SO / jalur platform — diskusikan dengan QA (aturan campur) |
+| DO Status hanya Prepared / `-` | AS-IS belum nomor DO — improvement terpisah |
+| Import gagal | Format 4 kolom; baca import log `Row N` |
+| Create tidak autosave | Belum pernah ada OT di company |
+
+---
+
+## 7. FAQ
+
+**Q: Beda Other dan Sales Order?**  
+Other = tanpa order (ATK, pemakaian dept). Sales Order = keluar untuk order dari gudang 3PL saja.
+
+**Q: Satu OT banyak order?**  
+Ya, selama origin/store selaras (type Sales Order).
+
+**Q: Export daftar?**  
+Bisa with details atau without details.
+
+**Q: Print / Show di Approved?**  
+Tetap bisa; edit/delete tidak.
+
+---
+
+## Related Documents
+
+| Doc | Path |
+|-----|------|
+| Requirement | [requirement.md](./requirement.md) |
+| Technical | [technical.md](./technical.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
+| Instant Settlement | [../accounting-settlement-upload/knowledge-base.md](../accounting-settlement-upload/knowledge-base.md) |

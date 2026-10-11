@@ -2,138 +2,125 @@
 doc_type: technical
 menu: supplychain-mutation-outbound
 menu_name: "Outbound External"
-version: 1.0
-last_updated: 2026-06-19
+version: 2.0
+last_updated: 2026-10-11
 owner: QA - Yemima
-status: draft
-related_docs:
-  - ./knowledge-base.md
-  - ./requirement.md
+status: review
+aliases: [outbound external API, StockMutationOutbound, InventoryOut]
 ---
 
 # Outbound External — Technical Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+**API prefix:** `supplychain/mutation-outbound`  
+**Behavior:** [requirement.md](./requirement.md) v2.0  
+**Code prefix:** `OT-%` — `StockMutationOutbound` (destination null, non-adjustment, non-return)
 
+---
 
-## 1. Architecture Overview
+## 1. File Map
 
-Semua menu stock mutation berbagi tabel header **`scm_stock_mutations`** (model `StockMutation`) dengan global scope `ignore_opname` (`is_opname != 1`). Menu ini memakai subclass **`StockMutationOutbound`** dengan filter query spesifik di controller index.
+### Backend
 
-```mermaid
-flowchart TB
-    subgraph Frontend
-        FE["Vue pages"]
-    end
-    subgraph API
-        CTL["StockMutationOutboundController"]
-        API["supplychain/mutation-outbound"]
-    end
-    subgraph Domain
-        ENT["StockMutationOutbound"]
-        ISM["ItemStockMutation"]
-    end
-    subgraph Data
-        DB[("scm_stock_mutations")]
-        STK[("scm_item_stocks")]
-    end
-    FE --> API --> CTL --> ENT
-    CTL --> ISM --> STK
-    ENT --> DB
-```
+| Layer | Path |
+|-------|------|
+| Controller | `Modules/SupplyChain/Http/Controllers/StockMutationOutboundController.php` |
+| Detail | `StockMutationOutboundDetailController.php` |
+| Entity | `Modules/SupplyChain/Entities/StockMutationOutbound.php` |
+| Import | `Modules/SupplyChain/Import/StockMutationOutboundImport.php` |
+| Approve stok | `app/Helpers/SupplyChain/ItemStockMutation.php` → `approveOutbound` |
+| Journal | `app/Helpers/Accounting/JournalProcess.php` → `stockOutboundAutoJournal` |
+| Assembly | `Modules/SupplyChain/Jobs/WorkOrderApprovalJob.php` |
+| Settlement | `Modules/Accounting/Entities/Settlement.php`; `DeleteSettlementJob::deleteOutbound` |
 
-**Approve flow:** POST `mutation-outbound/{id}/approve` → `ItemStockMutation::approveOutbound()` — kurangi item stock FIFO, optional auto journal COGS.
+### Frontend
 
-## 2. Frontend File Map
+| Layer | Path |
+|-------|------|
+| Pages | `olshoperp-frontend/src/pages/SCM/StockMutation/InventoryOut/` |
+| | `DataList.vue`, `Form.vue`, `AvailableWarehouse.vue` |
+| | `DatalistDetail.vue`, `DatalistDetailGroup.vue`, `DatalistDetailBySO.vue` |
+| Route | `/supplychain/mutation-outbound` (+ create/edit) |
 
-**Root:** `olshoperp-frontend/src/pages/SCM/StockMutation/InventoryOut/`
+---
 
-| File | Role | Key API |
-|------|------|---------|
-| `DataList.vue` | Index datalist | `GET supplychain/mutation-outbound` |
-| `Form.vue` | Create/edit header + tabs detail | `POST/PUT supplychain/mutation-outbound` |
-| `DatalistDetail.vue` | Grid detail PrimeVue | nested detail resource |
-| `DatalistLogApproval.vue` | Approval history | `GET .../log/approve` |
-| `ApprovalEligibility.vue` | Pre-approve checks | `GET .../approval-eligibility` |
+## 2. API (utama)
 
-**Router:** `olshoperp-frontend/src/router/index.ts` — path `mutation-outbound` under `/supplychain`.
+| Method | Path | Action |
+|--------|------|--------|
+| GET | `mutation-outbound` | Index + SearchBuilder |
+| POST | `mutation-outbound` | Store header |
+| PUT/GET | `mutation-outbound/{id}` | Update / show |
+| DELETE | `mutation-outbound/{id}` | Soft delete |
+| POST | `…/{id}/approve` | Approve / reject |
+| POST | `…/{id}/un-approve` | **Hanya local/development** |
+| GET | `…/default-values` | Last `warehouse_origin`, `type_so` |
+| GET/POST | export / import detail | With/without details; detail upload |
 
-## 3. Backend File Map
+---
 
-| File | Role |
-|------|------|
-| `Modules/SupplyChain/Http/Controllers/StockMutationOutboundController.php` | Header CRUD, approve, export |
-| `Modules/SupplyChain/Entities/StockMutationOutbound.php` | Eloquent subclass `StockMutation` |
-| `Modules/SupplyChain/Entities/StockMutation.php` | Base model, type constants |
-| `Modules/SupplyChain/Entities/StockMutationApproval.php` | Approval log rows |
-| `app/Helpers/SupplyChain/ItemStockMutation.php` | Core approve inbound/outbound/transfer |
-| `Modules/SupplyChain/Policies/StockMutationOutboundPolicy.php` | Gate authorization |
-| `Modules/SupplyChain/Routes/api.php` | Route group `mutation-outbound` |
+## 3. Database
 
-Controllers terkait: StockMutationOutboundController, StockMutationOutboundDetailController.
+Header: `scm_stock_mutations` (`StockMutationOutbound`).  
+Detail: `scm_outbound_mutation_details` (+ middle-detail untuk group view).
 
-## 4. API Routes (utama)
+| Field penting | Notes |
+|---------------|-------|
+| `type_so` | `sales order general` \| `other` (juga platform/POS di data generate) |
+| `warehouse_origin` | 3PL filter UI for SO |
+| `is_fifo` on detail | 1 fulfill/FIFO; 0 manual stock id |
+| `prepared_to_do_quantity` / `processed_to_do_quantity` | DO Status column AS-IS |
+| `generator_class` | Settlement / assembly chain |
 
-| Method | Path | Controller@method |
-|--------|------|-------------------|
-| GET | `supplychain/mutation-outbound` | index |
-| POST | `supplychain/mutation-outbound` | store |
-| GET | `supplychain/mutation-outbound/{id}` | show |
-| PUT | `supplychain/mutation-outbound/{id}` | update |
-| DELETE | `supplychain/mutation-outbound/{id}` | destroy |
-| POST | `supplychain/mutation-outbound/{id}/approve` | approve |
-| GET | `supplychain/mutation-outbound/{id}/audit` | audit |
-| GET | `supplychain/mutation-outbound/{id}/log/approve` | approval log |
-| GET | `supplychain/mutation-outbound/approval-eligibility/{id}` | eligibility |
-| GET | `supplychain/mutation-outbound/export-excel` | export all |
+---
 
-Detail nested: `supplychain/mutation-outbound/{id}/...-detail` — lihat `Modules/SupplyChain/Routes/api.php` untuk route lengkap.
+## 4. Invariants
 
-## 5. Database Schema
+| ID | Rule |
+|----|------|
+| INV-OB-01 | UI: SO → `is_3pl=true`; Other → `is_3pl=false` (store API does not enforce) |
+| INV-OB-02 | Approve → Cr Inventory; Dr OpEx / COGS / WIP by type/ref |
+| INV-OB-03 | Production unapprove rejected; settlement delete may revert OT |
+| INV-OB-04 | Import without `item_stock_id` → fulfill/`is_fifo=1` |
+| INV-OB-05 | Modal/bulk use with `item_stock_id` → manual/`is_fifo=0` |
 
-### Header: `scm_stock_mutations`
+---
 
-| Column | Relevansi menu ini |
-|--------|-------------------|
-| `code` | Prefix `OT` via `generateCode()` |
-| `transaction_date` | Tanggal transaksi |
-| `warehouse_origin` / `warehouse_destination` | Sesuai tipe in/out/transfer |
-| `type` | `in` / `out` / `tf internal` / `tf external` |
-| `type_so` | Outbound: sales order type |
-| `transit_status` | External: `in transit` / `delivered` |
-| `transaction_status` | `open`, `approved`, `rejected`, ... |
-| `is_inventory_adjustment` | 0 mutation / 1 adjustment |
-| `process_type` | scrap, from void, picking, dll. |
-| `supplier_id` | Inbound PO only |
-| `transaction_reference_*` | Polymorphic link |
+## 5. Journal mapping (approve)
 
-### Detail
+| Condition | Debit COA (Product COA Group) |
+|-----------|-------------------------------|
+| `transaction_reference_class` WorkOrder | Work In Progress |
+| `type_so` sales order* or ref SalesOrder | Cogs |
+| Else (Other) | Operational Expense |
 
-`scm_outbound_mutation_details` (`OutboundMutationDetail`) + optional middle details
+Credit: Inventory. Missing COA → validation exception.
 
-### Approval
+---
 
-`scm_stock_mutation_approvals` — `scm_stock_mutations_id`, `approval_status`, `description`, `created_by`.
+## 6. Approve / generate notes
 
-## 6. Jobs / Observers / Events
+- `authorized=true` + header ref SalesOrder/SalesOrderGeneral → block approve message.
+- Settlement/jobs call approve with bypass.
+- `from_platform` / POS: datalist hides approve/delete/print.
+- Auto SI: SO detail without prepared/processed invoice qty → `CustomerInvoiceHelper::autoGenerateFromSalesOrder`.
+- Descriptions: Assembly `Auto generated from Assembly {code}`; Settlement `Auto Generated From Transfer {code}`.
 
-| Job / Service | Dipakai untuk |
-|---------------|---------------|
-| Export jobs (`StockMutation*ExportJob`) | Async export list/detail |
-| Import jobs (`InboundDetailImportJob`, dll.) | Excel import detail |
-| `ItemStockMutation` | Sync stock update on approve |
-| `TransferExternalApproveMutationJob` | External transfer approve (jika transit) |
+---
 
-## 7. Index query filter (AS-IS)
+## 7. Gaps (tech refs)
 
-```
-`warehouse_destination` null · `warehouse_origin` not null · `is_inventory_adjustment = 0` · `is_return_process = 0`
-```
+| ID | Note |
+|----|------|
+| GAP-OB-01 | DO column = Prepared/Processed; intended DO codes |
+| GAP-OB-02 | No BE type↔3PL validation on store |
+| GAP-OB-03 | Approve block rules — pending discussion |
+| GAP-OB-04 | `unApprove` env-gated |
+
+---
 
 ## Related Documents
 
 | Doc | Path |
 |-----|------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Requirement | [requirement.md](./requirement.md) |
-| Mermaid style | [../_meta/MERMAID_STYLE_GUIDE.md](../_meta/MERMAID_STYLE_GUIDE.md) |
+| Instant Settlement technical | [../accounting-settlement-upload/technical.md](../accounting-settlement-upload/technical.md) |
