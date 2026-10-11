@@ -2,8 +2,8 @@
 doc_type: technical
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
-version: 1.4
-last_updated: 2026-10-02
+version: 1.5
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
 related_docs:
@@ -17,6 +17,7 @@ related_docs:
 
 | Version | Date | Author | Changes |
 |---|---|---|---|
+| 1.5 | 2026-10-11 | Dev | §3.7 schedule: `product-platform:sync` hourlyAt(35) + skip dump 22:30–01:30; `push-stocks` dailyAt 21:30 Asia/Jakarta |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial AS-IS technical inventory |
 | 1.1 | 2026-06-19 | QA - Yemima | Merge sync pipeline design spec (§8.2) |
 | 1.2 | 2026-06-22 | QA - Yemima | Onboarding sequencing sync (§3.9) |
@@ -251,9 +252,10 @@ Middleware: routes under `api/*` use `auth:sanctum` + company context via token.
 
 | Command | Signature | Role |
 |---|---|---|
-| `SyncOmniProductCommand` | `product-platform:sync {--store_ids=}` | Hourly cron sync; incremental unless hour % 6 == 0 |
+| `SyncOmniProductCommand` | `product-platform:sync {--store_ids=}` | `hourlyAt(35)` Asia/Jakarta · `unlessBetween('22:30','01:30')`; incremental unless hour % 6 == 0 |
 | `TriggerOnboardingCommand` | `platform-product:onboarding` | Tiap menit — dispatch sync onboarding terkontrol per platform |
 | `SyncProgressMonitorCommand` | `platform-product:sync-progress-monitor` | Retry sync stuck >30 menit |
+| `PushStockOmniProductCommand` | `product-platform:push-stocks` | `dailyAt('21:30')` Asia/Jakarta — sebelum jendela dump MariaDB |
 
 Registered in `app/Console/Kernel.php` → `platformProductSchedules()`.
 

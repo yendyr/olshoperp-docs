@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.4
-last_updated: 2026-09-01
+version: 1.5
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
 aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product benchmark price, daily COGS, Manual COGS, Manual COGS Expiry, Bundle Sum, Highest Bundle Variant, Product Bundle COGS]
@@ -25,6 +25,7 @@ aliases: [Benchmark COGS, COGS Benchmark, HPP Acuan, benchmark cogs, product ben
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.5 | 2026-10-11 | Dev | AS-IS schedule: `product-benchmark-price:calculate` **daily 03:00 WIB** (selaras `Kernel.php`; koreksi klaim 00:00) |
 | 1.4 | 2026-09-01 | QA - Yemima | TO-BE **Product Bundle**: Bundle Sum / Highest Bundle Variant; qty × B.COGS; Manual override; Bundle ≠ BOM/rakitan; job order; GAP-BM-15; AC BM-22…; ETM-15688 |
 | 1.3 | 2026-08-11 | QA - Yemima | TO-BE **Manual COGS** + **Manual COGS Expiry** + import + audit (§2.3, §3.5, §4.2–§4.4, AC/TC, GAP-BM-14) |
 | 1.2 | 2026-08-11 | QA - Yemima | TO-BE Error Flag **Below Benchmark COGS** (`cogs-error`): icon, tooltip, filter, FX→primary, capture; §6.4–§6.5; GAP-BM-05 clarify + GAP-BM-13 |
@@ -193,7 +194,7 @@ scm_stock_mutations (approved)
 
 **Parent ProductTree** (termasuk parent yang punya child bundle): tetap **MAX** variant exclude random — nilai child yang sudah Bundle Sum ikut masuk MAX. Bukan rumus Bundle Sum tersendiri di baris Parent.
 
-**Scheduled job:** `product-benchmark-price:calculate` setiap **00:00 WIB** → dispatch `ProductBenchmarkPriceJob` (urutan v1.4: lihat §3.6).
+**Scheduled job:** `product-benchmark-price:calculate` setiap **03:00 WIB** → dispatch `ProductBenchmarkPriceJob` (urutan v1.4: lihat §3.6).
 
 **Manual Calculate:** icon sync per baris → hitung parent + variant terkait (partial scope); untuk bundle pastikan komponen sudah ter-hitung.
 
@@ -547,7 +548,7 @@ Detail: [accounting-opening-stock](../accounting-opening-stock/knowledge-base.md
 
 | ID | Kriteria | Expected |
 |----|----------|----------|
-| BM-01 | Scheduled 00:00 WIB | Job `product-benchmark-price:calculate` jalan |
+| BM-01 | Scheduled 03:00 WIB | Job `product-benchmark-price:calculate` jalan |
 | BM-02 | Highest Price 30 hari | SKU dengan transaksi valid ≤30 hari → MAX price before VAT (semua sumber v1.1) |
 | BM-03 | Last Inbound fallback | Tidak ada 30 hari → harga transaksi lampau terakhir |
 | BM-04 | No Inbound | Tidak ada transaksi valid → COGS **0**, desc `No Inbound` |

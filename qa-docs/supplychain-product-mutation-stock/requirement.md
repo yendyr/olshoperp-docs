@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-product-mutation-stock
 menu_name: "Stock History"
-version: 2.0
-last_updated: 2026-07-17
+version: 2.2
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
 aliases: [stock history, stock history v2, stock history docs, riwayat stok, mutation stock]
@@ -23,6 +23,7 @@ aliases: [stock history, stock history v2, stock history docs, riwayat stok, mut
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.2 | 2026-10-11 | Dev | AS-IS schedule: `stock:calculate-ending-balance` `hourlyAt(5)` Asia/Jakarta, skip dump **22:30–01:30 WIB** — §6.4 |
 | 1.0 | 2026-06-19 | QA - Yemima | Draft awal analisis otomatis |
 | 2.0 | 2026-07-17 | QA - Yemima | Rewrite dari SoT v2.0 + AS-IS codebase: filter, datalist, formula, TF external, job hourly, gap SH-01..05 |
 
@@ -32,7 +33,7 @@ aliases: [stock history, stock history v2, stock history docs, riwayat stok, mut
 
 Stock History adalah report **read-only** yang mencatat pergerakan stock (in/out) per product, dikelompokkan per building/warehouse, dengan ending balance berjalan seperti saldo rekening. Data masuk hanya setelah dokumen stock mutation di-approve.
 
-Ending balance dihitung dua fase: **snapshot** saat approve, lalu **recalculate async** jika ada backdate/koreksi. Recalculate dijadwalkan **hourly** (`stock:calculate-ending-balance`, timezone Asia/Jakarta) dan juga bisa dipicu manual dari Product Mutation History.
+Ending balance dihitung dua fase: **snapshot** saat approve, lalu **recalculate async** jika ada backdate/koreksi. Recalculate dijadwalkan **tiap jam di menit :05** (`stock:calculate-ending-balance`, timezone Asia/Jakarta), **kecuali 22:30–01:30 WIB** (jendela dump MariaDB), dan juga bisa dipicu manual dari Product Mutation History.
 
 | Kebutuhan bisnis | Jawaban Stock History |
 |------------------|------------------------|
@@ -178,7 +179,7 @@ Urut `transaction_date` ASC lalu `id` ASC (saat store/recalc). Tampilan qty dala
 
 | Aspek | AS-IS |
 |-------|-------|
-| Schedule | `stock:calculate-ending-balance` **hourly** Asia/Jakarta |
+| Schedule | `stock:calculate-ending-balance` **hourlyAt(5)** Asia/Jakarta · `unlessBetween('22:30','01:30')` |
 | Manual trigger | Product Mutation History → Calculate → artisan yang sama |
 | Scope job | Global + per warehouse + per building (todo terpisah, paralel) |
 | Chunk | 10 product per job |
@@ -277,7 +278,7 @@ A: Saat ini setelah Apply selalu tampil (lihat GAP-SH-04).
 | Kolom Date, Trx, Desc, Receiving, In, Out, EB | Implemented |
 | Formula ending balance | Implemented |
 | TF External Receiving Process | Implemented |
-| Schedule hourly recalculate | Implemented (`Kernel` hourly) |
+| Schedule hourly recalculate | Implemented (`Kernel` hourlyAt(5) + skip dump 22:30–01:30) |
 | Latest Calculation + Status | Implemented |
 | Info SKU di datatable | Implemented (`SKU \|\| name`) |
 | Export with/without detail | Implemented |

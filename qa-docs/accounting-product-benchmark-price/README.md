@@ -20,6 +20,7 @@ Menu **Benchmark COGS** (Finance Accounting → Report) — nilai acuan HPP per 
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-10-11 | 1.5 | AS-IS schedule daily **03:00 WIB** (selaras Kernel); UG 1.2 |
 | 2026-09-01 12:28 | HC-EN 1.0 | Help Center Benchmark COGS English translation ditambahkan (derived dari overview ID) |
 | 2026-09-01 11:49 | HC-ID 1.0 | Help Center Benchmark COGS versi Indonesia dari konten user — rumus 3-tier, integrasi SO/Opname, Bundle Sum, troubleshooting |
 | 2026-09-01 09:16 | 1.4 | TO-BE **Product Bundle** COGS: Bundle Sum / Highest Bundle Variant; qty × komponen; Manual override; Bundle ≠ BOM; job order — ETM-15688 |
@@ -40,7 +41,7 @@ Menu **Benchmark COGS** (Finance Accounting → Report) — nilai acuan HPP per 
 | API | `accounting/product-benchmark-price` |
 | BE controller | `Modules/Accounting/Http/Controllers/ProductBenchmarkPriceController.php` |
 | Calculation job | `Modules/Accounting/Jobs/ProductBenchmarkPriceJob.php` |
-| Schedule | `product-benchmark-price:calculate` — daily 00:00 Asia/Jakarta |
+| Schedule | `product-benchmark-price:calculate` — daily 03:00 Asia/Jakarta |
 | FE datalist | `olshoperp-frontend/src/pages/Accounting/Report/ProductBenchmarkPrice/Datalist.vue` |
 
 ---

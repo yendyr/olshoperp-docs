@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.4
-last_updated: 2026-09-01
+version: 1.5
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
 related_docs:
@@ -17,6 +17,7 @@ related_docs:
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.5 | 2026-10-11 | Dev | Schedule AS-IS: dailyAt **03:00** Asia/Jakarta (selaras Kernel; koreksi 00:00) |
 | 1.4 | 2026-09-01 | QA - Yemima | TO-BE Product Bundle: job phases Bundle Sum / Highest Bundle Variant; gate ≠ BOM; GAP-BM-15 · ETM-15688 |
 | 1.3 | 2026-08-11 | QA - Yemima | TO-BE Manual COGS: schema, effective COGS, import/inline, job respects override (§3.4, §4.4, §5); GAP-BM-14 |
 | 1.2 | 2026-08-11 | QA - Yemima | AS-IS auto-approve uses without-VAT accessors; TO-BE Error Flag Below Benchmark COGS + FX primary (§6.5–§6.6); GAP-BM-13 |
@@ -40,7 +41,7 @@ flowchart TB
     end
 
     subgraph Master["Benchmark COGS Menu"]
-        CMD["Artisan product-benchmark-price:calculate\n00:00 Asia/Jakarta"]
+        CMD["Artisan product-benchmark-price:calculate\n03:00 Asia/Jakarta"]
         MAN["Manual Calculate per row"]
         MANUAL["Manual COGS inline / import\n(TO-BE v1.3)"]
         JOB["ProductBenchmarkPriceJob"]
@@ -169,10 +170,10 @@ Also on `omni_sales_order_detail_randoms` and export temp `sales_order_data_temp
 
 | Trigger | Caller | Args |
 |---------|--------|------|
-| Daily 00:00 WIB | `App\Console\Commands\ProductBenchmarkPriceCalculate` | `manualCalculate(null, false)` — all products chunked 100 |
+| Daily 03:00 WIB | `App\Console\Commands\ProductBenchmarkPriceCalculate` | `manualCalculate(null, false)` — all products chunked 100 |
 | Manual row | `ProductBenchmarkPriceController@manualCalculate` | `$product_id`, `all_data: false`, scope list parent+variants |
 
-**Schedule:** `app/Console/Kernel.php` — `daily()->at('00:00')->timezone('Asia/Jakarta')`
+**Schedule:** `app/Console/Kernel.php` — `daily()->at('03:00')->timezone('Asia/Jakarta')`
 
 ### 4.2 `processProduct($product_id, ...)` — AS-IS
 

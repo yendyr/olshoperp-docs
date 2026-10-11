@@ -10,8 +10,8 @@ Menu **Store** (Omni Channel) — registrasi toko marketplace/offline, OAuth aut
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
 
 **Maintenance owner:** QA — Yemima  
-**Versi dokumen (3 layer):** 2.4 (2026-08-31) — AS-IS Auto Sync Order schedule + pecah job per hari/half-day; TO-BE VAT 2.3 tetap  
-**User-guide:** v1.2 · `source_version` 2.3
+**Versi dokumen (3 layer):** 2.5 (2026-10-11) — AS-IS schedule skip dump 22:30–01:30 WIB + stagger; push-stocks 21:30; TO-BE VAT 2.3 tetap  
+**User-guide:** v1.2 · `source_version` 2.5 (jadwal detail di requirement/technical; UG tanpa jam cron)
 
 **UI route:** `/omni/store-binding`
 
@@ -21,6 +21,7 @@ Menu **Store** (Omni Channel) — registrasi toko marketplace/offline, OAuth aut
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.5 | 2026-10-11 | AS-IS: skip dump MariaDB 22:30–01:30 WIB; product sync `:35`; night SO update `:50`; push-stocks **21:30** — requirement §4.5 / technical §9.3 |
 | 2.4 | 2026-08-31 17:00 | AS-IS: jadwal sync order (update tiap ±1 jam siang, lookback default 10 hari, pecah job per hari + half-day) — requirement §4.5 / technical §9.3 |
 | 2.3 | 2026-08-11 | TO-BE: **Auto Add VAT (Platform Orders)** + pecah Ownership/Fulfillment vs Accounting & Tax; `GAP-ST-VAT-01`; user-guide v1.2 |
 | 2.0 | 2026-06-25 | Konsolidasi requirement bisnis + verifikasi codebase AS-IS |

@@ -5,7 +5,7 @@ menu_name: "Stock History"
 version: 1.0
 last_updated: 2026-08-12
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.0
+source_version: 2.2
 owner: QA - Yemima
 status: review
 ---

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
-version: 1.4
-last_updated: 2026-10-02
+version: 1.5
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
 audience: operator
@@ -178,7 +178,7 @@ A: Angka stok tetap yang selalu di-push ke marketplace. Dipakai jika belum bind,
 A: Hanya **SINGLE** (dan PARENT tanpa anak) yang bisa dihapus manual. VARIANT tidak bisa dihapus satu per satu.
 
 **Q: Pull Products vs sync otomatis — mana yang dipakai?**  
-A: Keduanya mengisi data yang sama. Pull = manual segera; otomatis = background ~ hourly. Auto Binding sering jalan setelah sync otomatis selesai.
+A: Keduanya mengisi data yang sama. Pull = manual segera; otomatis = background ~ tiap jam (pause ~22:30–01:30 WIB saat maintenance database). Auto Binding sering jalan setelah sync otomatis selesai.
 
 **Q: Stok PARENT di marketplace diabaikan?**  
 A: Ya — banner kuning di halaman mengingatkan: stok parent diabaikan saat sync stok; yang relevan varian/SINGLE yang sudah bind.

@@ -2,20 +2,21 @@
 doc_type: requirement
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.4
-last_updated: 2026-08-31
+version: 2.5
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
 ---
 
 # Store — Requirement Documentation
 
-> **Status: REVIEW** — v2.4 AS-IS: jadwal **Auto Sync Order** (interval update + pecah job per hari / half-day). v2.3 TO-BE Auto Add VAT (`GAP-ST-VAT-01`) & gap sebelumnya tetap berlaku.
+> **Status: REVIEW** — v2.5 AS-IS: jadwal sync skip jendela dump MariaDB **22:30–01:30 WIB** + stagger menit; push-stocks **21:30**. v2.3 TO-BE Auto Add VAT (`GAP-ST-VAT-01`) & gap sebelumnya tetap berlaku.
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.5 | 2026-10-11 | Dev | AS-IS schedule: skip dump **22:30–01:30 WIB**; product sync `hourlyAt(35)`; night order/booking update `hourlyAt(50)` + skip dump; push-stocks **21:30** Asia/Jakarta — §4.5 |
 | 2.4 | 2026-08-31 | QA - Yemima | AS-IS sync order: update siang = `work_hours_interval` (default **60 mnt**, tanpa `--subhour`); lookback `max_backward` default **10** hari (cap 14); pecah job **per hari** + **half-day** untuk hari lampau — §4.5 |
 | 2.3 | 2026-08-11 | QA - Yemima | TO-BE: split **Ownership & Fulfillment** / **Accounting & Tax**; field **Auto Add VAT (Platform Orders)**; Others disabled+note; konsumen Sales Platform; `GAP-ST-VAT-01` |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial AS-IS draft |
@@ -185,11 +186,11 @@ Timezone scheduler: **Asia/Jakarta**.
 | `booking:sync-create` | Setiap 5 menit | 06:00–17:59 | Booking orders |
 | `sales-order:sync-update` | Cron dari `work_hours_interval` (default **60** → praktis **tiap 1 jam**) | 06:00–17:59 | Flag CLI `--subhour` **masih ada di signature** tapi **tidak dipakai** scheduler lagi; lookback = `max_backward` |
 | `booking:sync-update` | Sama seperti update SO | 06:00–17:59 | Sama |
-| `sales-order:sync-update` | **Hourly** | 18:00–05:59 | Lookback sama (`max_backward`) |
-| `booking:sync-update` | **Hourly** | 18:00–05:59 | Sama |
-| `product-platform:sync` | **Hourly** | 24/7 | — |
+| `sales-order:sync-update` | **Hourly at :50** | 18:00–05:59, **kecuali 22:30–01:30** | Lookback sama (`max_backward`); skip jendela dump MariaDB |
+| `booking:sync-update` | **Hourly at :50** | 18:00–05:59, **kecuali 22:30–01:30** | Sama |
+| `product-platform:sync` | **Hourly at :35** | 24/7, **kecuali 22:30–01:30** | Skip jendela dump MariaDB |
 | `platform-product:onboarding` | Every minute | 24/7 | Hanya store **authorized** |
-| `product-platform:push-stocks` | Daily 22:00 | — | Hanya **authorized** stores |
+| `product-platform:push-stocks` | Daily **21:30** | — | Hanya **authorized** stores; sebelum dump MariaDB |
 
 > Requirement bisnis “interval 10–15 menit” **tidak match** AS-IS. Yang relevan ke operator: **order baru** siang ≈ tiap 5 menit; **refresh/update status order lama** ≈ tiap **1 jam** (siang & malam), bukan tiap 30 menit.
 

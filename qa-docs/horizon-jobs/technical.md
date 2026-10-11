@@ -2,18 +2,18 @@
 doc_type: technical
 menu: horizon-jobs
 menu_name: "Horizon Jobs"
-version: 1.3
-last_updated: 2026-09-28
+version: 1.4
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
-aliases: [horizon jobs technical, Bus::batch finally, queue connection salesorder]
+aliases: [horizon jobs technical, Bus::batch finally, queue connection salesorder, scheduler dump window, night schedule stagger]
 ---
 
 # Horizon Jobs — Technical
 
 **Audience:** Developer, QA automation  
 **Index:** [README](./README.md) · Skip Wave: [pipelines/skip-wave-process.md](./pipelines/skip-wave-process.md) · Job-flow visual: [`../_meta/horizon-jobs/`](../_meta/horizon-jobs/)  
-**Aturan QA:** [requirement.md](./requirement.md) v1.3 (HJ-01…HJ-08, PROP-HJ-01)
+**Aturan QA:** [requirement.md](./requirement.md) v1.3 (HJ-01…HJ-08, PROP-HJ-01) · Night schedule: [§9](#9-night-schedule--mariadb-dump-window)
 
 ---
 
@@ -114,10 +114,35 @@ sequenceDiagram
 
 ---
 
-## 8. Changelog
+## 9. Night schedule / MariaDB dump window
+
+**Source of truth:** `app/Console/Kernel.php` (timezone **Asia/Jakarta**).
+
+| Window | Policy |
+|--------|--------|
+| **22:30–01:30** | MariaDB full dump — heavy scheduled commands **skip** via `unlessBetween('22:30','01:30')` |
+| **21:30** | `product-platform:push-stocks` (sebelum dump) |
+| **02:05–02:50** | Post-dump stagger: `horizon:terminate` → storage/settlement cleanup → `queue:flush` / prune-batches → SO detail cleanup → status check; hourly jobs resume with minute offsets |
+| **03:00–04:35** | Benchmark COGS, sync-log cleanup, P/L snapshot cleanup, import cleanup, screening, file cleanups |
+
+### Hourly offsets (hindari pile-up 02:00)
+
+| Command | Schedule |
+|---------|----------|
+| `stock:calculate-ending-balance` | `hourlyAt(5)` + skip dump |
+| `ending-stock:manual-calculate` | `hourlyAt(20)` + skip dump |
+| `product-platform:sync` | `hourlyAt(35)` + skip dump |
+| `sales-order:sync-update` / `booking:sync-update` (malam) | `hourlyAt(50)` · `between('18:00','05:59')` + skip dump |
+
+Menu-level narrative: [omni-store-binding §4.5](../omni-store-binding/requirement.md) · [Stock History §6.4](../supplychain-product-mutation-stock/requirement.md) · [MPP technical §3.7](../manage-platform-product/technical.md).
+
+---
+
+## 10. Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-10-11 | §9 Night schedule / dump window 22:30–01:30 + stagger table (selaras Kernel) |
 | 1.3 | 2026-09-28 | Index Settlement Upload + Sales Order + peta `_meta`; rujuk requirement v1.3 |
 | 1.2 | 2026-09-28 | Promote ke **review**; index tetap 1 pipeline (Skip Wave) |
 | 1.1 | 2026-09-20 | Rujuk HJ-01…08 + PROP-HJ-01 dari requirement v1.1 |

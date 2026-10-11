@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-product-mutation-stock
 menu_name: "Stock History"
-version: 2.0
-last_updated: 2026-07-17
+version: 2.2
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
 audience: operator

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-product-profit-loss
 menu_name: "Product Profit Loss"
-version: 1.5
-last_updated: 2026-09-09
+version: 1.6
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: draft
 audience: operator
@@ -278,7 +278,7 @@ Data laporan otomatis terbentuk dari transaksi yang **sudah ada** di sistem.
 | SKU random tidak muncul | Belum Send to Default Waves | Proses wave dulu |
 | Order Approved tidak muncul sama sekali | `wh_process_id` masih kosong | Assign Warehouse Process di SO atau Send to Default Waves |
 | Period error 3 bulan | Range terlalu panjang | Perpendek periode |
-| Data hilang setelah ±1 jam | Scheduler hapus snapshot lama | Buka menu lagi atau Refresh Data |
+| Data hilang setelah cleanup harian (~03:40 WIB) | Scheduler hapus snapshot sementara | Buka menu lagi atau Refresh Data |
 | Advanced Filter tidak ada | Belum diimplementasi UI | Pakai global search + column filter |
 | Angka tidak termasuk retur | Sales Return belum di kalkulasi | **Next MVP** — lihat requirement §7.3 |
 

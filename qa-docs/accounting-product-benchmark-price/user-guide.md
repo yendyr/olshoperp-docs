@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.1
-last_updated: 2026-09-01
+version: 1.2
+last_updated: 2026-10-11
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.4
+source_version: 1.5
 owner: QA - Yemima
 status: review
 ---
@@ -36,7 +36,7 @@ Untuk **paket Product Bundle** (tidak punya stok sendiri), acuan COGS digabung d
 
 ```mermaid
 flowchart LR
-    SRC[Transaksi masuk stok approved] --> JOB[Hitung harian 00:00 WIB]
+    SRC[Transaksi masuk stok approved] --> JOB[Hitung harian 03:00 WIB]
     COMP[COGS komponen] --> BND[Bundle Sum paket]
     JOB --> MENU[Menu Benchmark COGS]
     BND --> MENU
@@ -48,7 +48,7 @@ flowchart LR
 **Versi teks:**
 
 1. Barang masuk lewat PO inbound, Stock Addition, Opname surplus, atau Opening Stock (yang sudah disetujui).  
-2. Setiap hari jam **00:00 WIB** sistem menghitung ulang acuan COGS (SKU biasa dulu, lalu paket Bundle dari komponen).  
+2. Setiap hari jam **03:00 WIB** sistem menghitung ulang acuan COGS (SKU biasa dulu, lalu paket Bundle dari komponen).  
 3. Kamu bisa trigger **Calculate** per baris, atau (setelah fitur live) set **Manual COGS** / import Excel.  
 4. Nilai di menu dipakai Opname (default surplus) dan tersimpan sebagai snapshot di detail Sales Order saat order dibuat.
 

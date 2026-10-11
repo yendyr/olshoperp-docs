@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-product-profit-loss
 menu_name: "Product Profit Loss"
-version: 1.5
-last_updated: 2026-09-09
+version: 1.6
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: draft
 ---
@@ -22,6 +22,7 @@ status: draft
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.6 | 2026-10-11 | Dev | AS-IS: cleanup scheduler `clean-product-profit-loss` **daily 03:40 WIB** (bukan hourly); force-delete seluruh snapshot sementara |
 | 1.5 | 2026-09-09 | QA - Yemima | TO-BE **Qty Sold** + **Gross Sales** inline Outbound Detail (qty outbound × SOD Before VAT); G-14 / ETM-15857
 | 1.4 | 2026-08-11 | QA - Yemima | TO-BE **Gross Sales** = Price Before VAT (setelah disc line); tooltip revisi; GAP **G-13**; turunan Net/Margin/Avg ikut |
 | 1.0 | 2026-06-23 | QA - Yemima | Requirement bisnis awal (sumber: diskusi Finance) |
@@ -37,7 +38,7 @@ status: draft
 
 **Product Profit Loss** adalah menu **reporting read-only** yang menampilkan analisis profit & loss **per Product (SKU)** — qty terjual, gross sales, COGS (HPP), net profit, dan margin — untuk periode tertentu.
 
-Data diagregasi dari **Sales Order** (General & Platform) dan **Outbound** (approved, ber-referensi order detail). Hasil perhitungan disimpan sementara di tabel snapshot `accounting_product_profit_losses`, di-generate **on-demand** saat user membuka menu / mengubah periode, lalu dibersihkan oleh scheduler **hourly** (bukan job refresh otomatis setiap jam).
+Data diagregasi dari **Sales Order** (General & Platform) dan **Outbound** (approved, ber-referensi order detail). Hasil perhitungan disimpan sementara di tabel snapshot `accounting_product_profit_losses`, di-generate **on-demand** saat user membuka menu / mengubah periode, lalu dibersihkan oleh scheduler **harian 03:40 WIB** (`clean-product-profit-loss` — hapus seluruh snapshot sementara; bukan job refresh otomatis).
 
 **Tidak ada fitur import file** (Excel/CSV per marketplace) di menu ini — lihat [§8 Import](#8-import--tidak-berlaku-n-a).
 
@@ -79,7 +80,7 @@ Mata uang tampilan: **IDR** (primary currency via `CurrencyProcess::getPrimaryCu
 | A-11 | COGS = 0 jika belum Outbound Approved | Req §7.2 |
 | A-12 | Bundle → value ke komponen | Req §8 |
 | A-13 | SKU Random tidak muncul sampai Send to Default Waves | Req §9 |
-| A-14 | Snapshot refresh otomatis tiap 1 jam | Req §10 |
+| A-14 | Snapshot cleanup harian 03:40 WIB + lazy regenerate | Req §10 |
 
 ### 3.2 AS-IS (Codebase — status implementasi)
 
@@ -98,7 +99,7 @@ Mata uang tampilan: **IDR** (primary currency via `CurrencyProcess::getPrimaryCu
 | A-11 | COGS = 0 tanpa Outbound | ✅ | `generateDailyData()` |
 | A-12 | Bundle → komponen | ✅ | `applySalesDetailRowFilter()` exclude bundle parent |
 | A-13 | SKU Random | ✅ | Exclude variant `like '%random%'` + random child rows saat generate |
-| A-14 | Refresh tiap 1 jam | ⚠️ | **AS-IS by design** — cleanup hourly + lazy regenerate; lihat [§7.1](#71-keputusan-desain-as-is) |
+| A-14 | Refresh otomatis berkala | ⚠️ | **AS-IS by design** — cleanup **daily 03:40 WIB** + lazy regenerate; lihat [§7.1](#71-keputusan-desain-as-is) |
 
 **Aturan AS-IS (dokumentasi resmi):**
 
@@ -450,7 +451,7 @@ Requirement end user **tidak membahas** topik berikut. Perilaku codebase **diper
 
 | Item | Keputusan | Dokumentasi |
 |------|-----------|-------------|
-| **G-03** Snapshot refresh | **Bukan** auto-regenerate tiap jam. Scheduler `clean-product-profit-loss` **hourly** menghapus snapshot >1 jam; data di-generate **lazy** saat buka menu / **Refresh Data** | [technical.md §7](./technical.md) |
+| **G-03** Snapshot refresh | **Bukan** auto-regenerate berkala. Scheduler `clean-product-profit-loss` **daily 03:40 WIB** menghapus seluruh snapshot sementara; data di-generate **lazy** saat buka menu / **Refresh Data** | [technical.md §7](./technical.md) |
 | **G-06** Summary / daily chart | FE siap (`handleDataFetched`); BE belum kirim `summary` | [Next MVP §8.3](#83-next-mvp-planned) |
 | **G-11** Sales Return / Failed Ship / Settlement | Tidak di query; bukan scope requirement end user | [Next MVP §8.3](#83-next-mvp-planned) |
 | **G-10** `wh_process_id` wajib | **Bukan gap** — filter fulfillment; lihat [§5.2](#52-aturan-wh_process_id-warehouse-process) | — |
@@ -518,7 +519,7 @@ Jika requirement masa depan menambah import, buat section terpisah di menu sumbe
 | T-11 | Tax exclude Before VAT 100 | Gross **100** (bukan 110) |
 | T-12 | Tooltip Gross Sales | Tidak lagi “including VAT”; menyebut Price Before VAT |
 | T-13 | Header additional disc | Gross tidak berkurang |
-| T-10 | Tunggu >1 jam tanpa refresh | Snapshot lama terhapus scheduler → buka menu trigger generate lagi |
+| T-10 | Tunggu melewati cleanup harian (~03:40 WIB) tanpa refresh | Snapshot terhapus scheduler → buka menu trigger generate lagi |
 
 ---
 

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-product-mutation-stock
 menu_name: "Stock History"
-version: 2.1
-last_updated: 2026-09-25
+version: 2.2
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
 aliases: [stock history technical, stock history API, ending balance per warehouse]
@@ -13,7 +13,7 @@ aliases: [stock history technical, stock history API, ending balance per warehou
 
 **API prefix:** `supplychain/stock-history` (V2 aktif), legacy `product-mutation-stock`  
 **Module:** `Modules/SupplyChain`  
-**Behavior:** [requirement.md](./requirement.md) v2.0
+**Behavior:** [requirement.md](./requirement.md) v2.2
 
 ---
 
@@ -31,7 +31,7 @@ aliases: [stock history technical, stock history API, ending balance per warehou
 | Prev balance | `app/Helpers/SupplyChain/StockEndingBalanceHelper.php` |
 | Approve callers | `app/Helpers/SupplyChain/ItemStockMutation.php`; inbound/TF jobs & services |
 | Command | `app/Console/Commands/CalculateStockEndingBalance.php` (`stock:calculate-ending-balance`) |
-| Schedule | `app/Console/Kernel.php` → hourly Asia/Jakarta |
+| Schedule | `app/Console/Kernel.php` → `hourlyAt(5)` Asia/Jakarta · `unlessBetween('22:30','01:30')` |
 | Jobs | `CalculateEndingBalance`, `CalculateEndingBalancePerWarehouse`, `CalculateEndingBalancePerBuilding` |
 | Export jobs | `MutationSummaryPerWhTempJob`, `MutationSummaryPerWhExportJob` |
 | Config | `config/warehouse.php` (`building_level` = 19) |
@@ -114,7 +114,7 @@ Command baca todo `status=1` → batch:
 
 Chunk 10 products/job. Set `is_calculating_ending_balance` 1→0. `finally` set todo `status=0`, `calculated_date=now()`.
 
-Schedule: hourly; manual via Product Mutation calculation endpoint.
+Schedule: `hourlyAt(5)` Asia/Jakarta, skip 22:30–01:30 WIB; manual via Product Mutation calculation endpoint.
 
 ### 4.3 Ending balance job optim (ETM-15967 · ETM-15984)
 
@@ -146,7 +146,7 @@ sequenceDiagram
     participant API as ProductMutationController
     participant MS as MutationSummary / EB tables
     participant H as StockAfterApproveHandler
-    participant SCH as Kernel hourly
+    participant SCH as Kernel hourlyAt5
     participant J as CalculateEndingBalance* jobs
 
     Note over H,MS: On approve transaksi stock

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: manage-platform-product
 menu_name: "Manage Platform Product"
-version: 1.4
-last_updated: 2026-10-02
+version: 1.5
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
 legacy_sources:
@@ -18,6 +18,7 @@ legacy_sources:
 
 | Version | Date | Author | Changes |
 |---|---|---|---|
+| 1.5 | 2026-10-11 | Dev | Schedule AS-IS: product sync hourlyAt(35) skip dump 22:30–01:30; scheduled Push Stock daily **21:30** WIB |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial AS-IS documentation |
 | 1.1 | 2026-06-19 | QA - Yemima | Merge glossary §12 + bulk binding §13 from legacy |
 | 1.2 | 2026-06-22 | QA - Yemima | Onboarding sequencing sync produk (§14); update entry point store bind |
@@ -452,7 +453,8 @@ flowchart TB
 
 | Entry | Trigger | Sync Type ID | Auto-bind after? |
 |---|---|---|---|
-| Cron hourly | `product-platform:sync` | Auto (2) | Yes (observer) |
+| Cron hourlyAt(35), skip 22:30–01:30 WIB | `product-platform:sync` | Auto (2) | Yes (observer) |
+| Cron daily 21:30 WIB | `product-platform:push-stocks` | — | Authorized stores |
 | Pull Products button | User + store filter | Manual (4) | Yes (via sync completion) |
 | Store bind (re-auth, initial sync sudah complete) | OAuth callback | Store Bind (3) | Yes |
 | Store authorize (first-time onboarding) | Scheduler `platform-product:onboarding` | Store Bind (3) | Yes (setelah sync selesai) |

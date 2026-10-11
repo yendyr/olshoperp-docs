@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-product-profit-loss
 menu_name: "Product Profit Loss"
-version: 1.5
-last_updated: 2026-09-09
+version: 1.6
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: draft
 related_docs:
@@ -19,6 +19,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.6 | 2026-10-11 | §7: `clean-product-profit-loss` = dailyAt 03:40 Asia/Jakarta; command force-delete all snapshot rows |
 | 1.5 | 2026-09-09 | TO-BE Gross/Qty from outbound×SOD price (G-14 / ETM-15857); `generateDailyData` merge path |
 | 1.4 | 2026-08-11 | TO-BE Gross Sales = Price Before VAT; FE tooltip; §6.1 / §9 |
 | 1.3 | 2026-06-29 | Related menus & AS-IS docs |
@@ -31,7 +32,7 @@ Read-only reporting menu. Data flow:
 2. `generateData()` cek batch aktif; jika perlu, queue `GenerateProductProfitLossDataJob` per **tanggal** dalam periode
 3. Job menulis baris granular (per `sales_order_id` + `product_id` + `transaction_date`) ke `accounting_product_profit_losses`
 4. `reportQuery()` agregasi per `product_id` untuk DataTables
-5. Scheduler `clean-product-profit-loss` **hourly** menghapus snapshot `created_at` > 1 jam
+5. Scheduler `clean-product-profit-loss` **daily 03:40 WIB** menghapus seluruh snapshot sementara
 
 ```mermaid
 flowchart TB
@@ -77,7 +78,7 @@ flowchart TB
 **Bukan** real-time query penuh setiap request. Mekanisme AS-IS (by design):
 
 1. **Lazy generate** — snapshot dibuat saat user buka menu / ubah periode / klik Refresh Data
-2. **Hourly cleanup** — `clean-product-profit-loss` menghapus baris `created_at` > 1 jam (bukan auto-regenerate)
+2. **Daily cleanup (03:40 WIB)** — `clean-product-profit-loss` force-delete seluruh baris snapshot (bukan auto-regenerate)
 
 Lihat [requirement.md §7.1](./requirement.md) untuk keputusan desain.
 
@@ -138,7 +139,7 @@ Lihat [requirement.md §7.1](./requirement.md) untuk keputusan desain.
 | `Modules/Accounting/Policies/ProductProfitLossPolicy.php` | Authorization |
 | `Modules/Accounting/Broadcasting/ProductProfitLossChannel.php` | WebSocket channel (broadcast di-comment) |
 | `Modules/Accounting/Constants/WebSocketChannel.php` | `PRODUCT_PROFIT_LOSS` |
-| `app/Console/Commands/CleanProductProfitLoss.php` | Hapus snapshot >1 jam |
+| `app/Console/Commands/CleanProductProfitLoss.php` | Daily 03:40 WIB — force-delete seluruh snapshot |
 | `Modules/Gate/Database/Seeders/ModuleMenu/AccountingMenuSeeder.php` | `menu_text`, `menu_link`, `menu_class` |
 
 ---
@@ -205,7 +206,7 @@ Migration: `2026_05_08_102507_create_product_profit_losses_table.php`
 
 **Index:** `(owned_by, transaction_date)`
 
-**Lifecycle:** Row di-`forceDelete` saat refresh manual, regenerate per date, atau `clean-product-profit-loss` (>1 jam).
+**Lifecycle:** Row di-`forceDelete` saat refresh manual, regenerate per date, atau `clean-product-profit-loss` (daily 03:40 WIB — semua row).
 
 ### 5.2 `accounting_product_profit_loss_export_files`
 
@@ -294,7 +295,7 @@ Setelah snapshot ada, filter `variant_status`:
 | `GenerateProductProfitLossDataJob` | Queue: `platformproduct`; timeout 900s; tries 2; batchable |
 | Batch name | `ProductProfitLossData:{companyId}` |
 | Queue trigger | Tanggal dalam periode belum punya snapshot, atau `refresh=1` |
-| `clean-product-profit-loss` | `Kernel.php` → **hourly**; delete `created_at < now()-1hour` |
+| `clean-product-profit-loss` | `Kernel.php` → **dailyAt('03:40')** Asia/Jakarta; `forceDelete()` seluruh snapshot |
 | `GenerateProductProfitLossExportJob` | Queue: `import`; disk S3 (prod) / public (local) |
 
 **WebSocket:** `broadcastStatus()` ada tetapi pemanggilan di batch `finally` di-comment.

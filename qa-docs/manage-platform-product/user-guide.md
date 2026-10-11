@@ -10,7 +10,7 @@ source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 1.4
+source_version: 1.5
 ---
 
 # Panduan Pengguna — Manage Platform Product

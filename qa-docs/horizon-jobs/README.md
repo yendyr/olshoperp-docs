@@ -31,7 +31,7 @@ Keduanya **melengkapi** `qa-docs/{menu-slug}/` (requirement bisnis tetap di ruma
 
 **Peta zoom-out (banyak menu):** [`_meta/horizon-jobs/index.html`](../_meta/horizon-jobs/index.html)
 
-**Version (3 layer):** **1.3** · pipeline Skip Wave **1.1** · **Last updated:** 2026-09-28  
+**Version (3 layer):** technical **1.4** (night schedule) · KB/requirement **1.3** · pipeline Skip Wave **1.1** · **Last updated:** 2026-10-11  
 **User-guide:** v1.0 · `source_version` 1.3  
 **Feature Map / Lingo:** v1.0 (2026-09-28)  
 **Help Center overview:** belum  
@@ -41,6 +41,7 @@ Keduanya **melengkapi** `qa-docs/{menu-slug}/` (requirement bisnis tetap di ruma
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-10-11 | Technical §9: night schedule / MariaDB dump window 22:30–01:30 + stagger (Kernel) |
 | fm-1.0 | 2026-09-28 16:20 | Feature Map + 4 kartu Lingo (primary/derived, gerbang batch, redispatch, katalog `/docs/horizon-jobs`) |
 | 1.3 | 2026-09-28 14:13 | Link silang hub ↔ `_meta/horizon-jobs`; indeks Settlement Upload + Sales Order; klarifikasi dua lapisan docs |
 | 1.2 | 2026-09-28 12:42 | Promote KB/requirement/technical/UG + pipeline Skip Wave ke **review**; PROP-HJ-01 tetap proposal; pipeline menu lain masih TBD |

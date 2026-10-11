@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-product-benchmark-price
 menu_name: "Benchmark COGS"
-version: 1.4
-last_updated: 2026-09-01
+version: 1.5
+last_updated: 2026-10-11
 owner: QA - Yemima
 status: review
 audience: operator
@@ -21,7 +21,7 @@ Menu **Finance Accounting → Report → Benchmark COGS** menampilkan **nilai ac
 | Item | Nilai |
 |------|-------|
 | Route | `/accounting/product-benchmark-price` |
-| Update otomatis | Setiap hari **00:00 WIB** |
+| Update otomatis | Setiap hari **03:00 WIB** |
 | COGS dari rumus | Highest Price (30 hari) → Last Inbound → 0 · **paket Bundle** → jumlah komponen (TO-BE) |
 | Override manual (TO-BE) | Kolom **Manual COGS** + **Manual COGS Expiry** — lihat §3 |
 

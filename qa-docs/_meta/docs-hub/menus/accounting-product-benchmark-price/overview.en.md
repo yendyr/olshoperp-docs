@@ -14,7 +14,7 @@ notes: English translation of user-authored ID overview. Help Center landing (Do
 
 ### 📦 Module/Feature: Benchmark COGS
 
-**Benchmark COGS** displays the effective **COGS (Cost of Goods Sold)** reference value per **System Product**. This menu does not show accounting journal stock; instead, it provides an operational calculation reference that is updated automatically every day at **00:00 WIB (Asia/Jakarta)** or triggered manually.
+**Benchmark COGS** displays the effective **COGS (Cost of Goods Sold)** reference value per **System Product**. This menu does not show accounting journal stock; instead, it provides an operational calculation reference that is updated automatically every day at **03:00 WIB (Asia/Jakarta)** or triggered manually.
 
 ---
 
@@ -75,7 +75,7 @@ flowchart LR
 **Step notes:**
 
 1. Physical goods addition transactions (*Purchase Inbound PO*, *Stock Addition*, *Opname IN*, or *Opening Stock*) reach *approved* status from the logistics department.
-2. The *backend* system executes the 3-tier formula calculation at 00:00 WIB, or the user forces an immediate *async* calculation using the manual *Calculate* button.
+2. The *backend* system executes the 3-tier formula calculation at 03:00 WIB, or the user forces an immediate *async* calculation using the manual *Calculate* button.
 3. The Benchmark COGS module records and publishes the latest operational COGS figure based on the formula or *Manual COGS* value intervention.
 4. The updated COGS value is then supplied as the default fallback price for *Stock Opname* surplus, and encapsulated as a reference price *snapshot* when issuing a *Sales Order*.
 
@@ -152,7 +152,7 @@ The *TO-BE* system enhancement introduces a feature to manually *override* refer
 * **Expiry Logic:** If the *Expiry* field is left completely empty, the manual price is set to apply **permanently**. However, if a specific date is set in (DD-MM-YYYY) format, the *override* value automatically expires at **23:59:59 WIB** on that calendar day, returning control to the mechanical system formula.
 * **Return to Formula:** To forcibly stop intervention before *expiry*, simply *clear* the Manual COGS field contents, and the price immediately reverts to pure 3-Tier Formula data.
 * **Zero Flexibility:** Setting the value to 0 is valid manually, but the system completely rejects negative values.
-* **Sync Job Protection:** The daily automatic background price update job (00:00) is absolutely forbidden from overwriting effective COGS for commodities where this manual intervention column is still active and valid.
+* **Sync Job Protection:** The daily automatic background price update job (03:00) is absolutely forbidden from overwriting effective COGS for commodities where this manual intervention column is still active and valid.
 * **Bulk Import Facility:** Allows download and execution of a special *Excel spreadsheet* with three variables: SKU Code | Manual COGS | Manual COGS Expiry. Leaving manual column cells empty during import will *clear override* previous settings.
 
 ---

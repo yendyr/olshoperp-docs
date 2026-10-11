@@ -10,13 +10,14 @@ Menu **Stock History** (Supply Chain / Report).
 | User Guide | [user-guide.md](./user-guide.md) | End-user onboarding | review |
 
 **SoT:** `supplychain-stock-history-source-of-truth.md` v2.0 (17 Jul 2026)  
-**Version:** technical **2.1** · **Last updated:** 2026-09-25  
+**Version:** **2.2** · **Last updated:** 2026-10-11  
 **UI route:** `/supplychain/product-mutation-stock` (alias `/supplychain/stock-history`)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.2 | 2026-10-11 | Schedule: `stock:calculate-ending-balance` hourlyAt(5) + skip dump 22:30–01:30 WIB |
 | 2.1 | 2026-09-25 12:59 | Technical: CalculateEndingBalance* optim — timeout 480, flush+deadlock retry, indexes (ETM-15967, ETM-15984) |
 | 1.0 | 2026-06-19 | Draft awal analisis otomatis |
 | 2.0 | 2026-07-17 | Rewrite SoT v2.0 + AS-IS: filter/datalist, formula EB, TF Receiving Process, job hourly, gap SH-01..05, matrix implementasi |

@@ -14,7 +14,7 @@ notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/t
 
 ### 📦 Modul/Fitur: Benchmark COGS
 
-**Benchmark COGS** menampilkan nilai acuan **HPP (Harga Pokok Penjualan)** efektif per **System Product**. Menu ini tidak menunjukkan stok jurnal *accounting*, melainkan referensi perhitungan operasional harian yang diperbarui secara otomatis setiap hari pada pukul **00:00 WIB (Asia/Jakarta)** atau dipicu secara manual.
+**Benchmark COGS** menampilkan nilai acuan **HPP (Harga Pokok Penjualan)** efektif per **System Product**. Menu ini tidak menunjukkan stok jurnal *accounting*, melainkan referensi perhitungan operasional harian yang diperbarui secara otomatis setiap hari pada pukul **03:00 WIB (Asia/Jakarta)** atau dipicu secara manual.
 
 ---
 
@@ -75,7 +75,7 @@ flowchart LR
 **Keterangan langkah:**
 
 1. Transaksi penambahan fisik barang (*Purchase Inbound PO*, *Stock Addition*, *Opname IN*, atau *Opening Stock*) mencapai status *approved* dari departemen logistik.
-2. Sistem *backend* mengeksekusi perhitungan rumus 3-tier pada pukul 00:00 WIB, atau pengguna memaksa kalkulasi *async* seketika menggunakan tombol *Calculate* manual.
+2. Sistem *backend* mengeksekusi perhitungan rumus 3-tier pada pukul 03:00 WIB, atau pengguna memaksa kalkulasi *async* seketika menggunakan tombol *Calculate* manual.
 3. Modul Benchmark COGS merekam dan menerbitkan angka HPP operasional terbaru berdasarkan rumus atau intervensi nilai *Manual COGS*.
 4. Nilai COGS mutakhir tersebut kemudian disuplai sebagai harga bawaan (*default fallback*) saat stok *Stock Opname* surplus, dan dienkapsulasi sebagai *snapshot* harga referensi saat menerbitkan *Sales Order*.
 
@@ -152,7 +152,7 @@ Peningkatan sistem *TO-BE* menghadirkan fitur untuk menimpa intervensi manual (*
 * **Logika Kedaluwarsa Expiry:** Apabila bidang *Expiry* dikosongkan secara total, harga manual ditetapkan berlaku secara **permanen**. Namun jika ditetapkan tanggal tertentu berformat (DD-MM-YYYY), nilai *override* itu akan otomatis meluruh terhapus tepat pada pukul **23:59:59 WIB** di hari kalender tersebut, mengembalikan kembali estafet kontrol kepada rumus mekanis sistem.
 * **Kembali ke Rumus:** Untuk menghentikan paksa intervensi sebelum *expiry* terjadi, cukup bersihkan (*clear*) isi bidang Manual COGS tersebut, maka harga kembali murni menyerap data Rumus 3-tier secara seketika.
 * **Fleksibilitas Nol:** Pengaturan angka 0 sah dieksekusi secara manual, tetapi sistem menolak total penggunaan nilai angka negatif.
-* **Perlindungan Job Sync:** Pekerjaan pembaruan harga sistem otomatis harian (00:00) yang dilakukan latar belakang dilarang mutlak menimpa COGS efektif komoditas apabila kolom status intervensi manual ini masih berlaku dan aktif.
+* **Perlindungan Job Sync:** Pekerjaan pembaruan harga sistem otomatis harian (03:00) yang dilakukan latar belakang dilarang mutlak menimpa COGS efektif komoditas apabila kolom status intervensi manual ini masih berlaku dan aktif.
 * **Fasilitas Impor Massal:** Mengizinkan pengunduhan dan eksekusi pembacaan *spreadsheet Excel* khusus tiga variabel: SKU Code | Manual COGS | Manual COGS Expiry. Pembiaran kekosongan isian pada kolom manual saat aktivitas import akan membersihkan (*clear override*) pengaturan sebelumnya.
 
 ---

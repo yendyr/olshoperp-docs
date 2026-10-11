@@ -5,7 +5,7 @@ menu_name: "Store"
 version: 1.2
 last_updated: 2026-08-11
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.3
+source_version: 2.5
 owner: QA - Yemima
 status: review
 ---
