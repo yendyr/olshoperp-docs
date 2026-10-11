@@ -15,12 +15,13 @@ Menu **Skip Processing** (SupplyChain / OmniChannel).
 **User-guide:** v1.1 · `source_version` 1.2  
 **Version (3 layer):** **1.2** · **Last updated:** 2026-09-28  
 **Feature Map / Lingo:** v1.0 (2026-09-28)  
-**Help Center overview:** belum (user akan tambah terpisah / Skip Wave dulu)
+**Help Center overview:** [overview.id.md](../_meta/docs-hub/menus/omni-skip-processing/overview.id.md) · [overview.en.md](../_meta/docs-hub/menus/omni-skip-processing/overview.en.md) (`authored` dari file user)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| hc-1.0 | 2026-10-11 19:17 | Help Center overview ID + EN: bulk skip dari daftar, resume/retry, Success=Shipped, lock klik ganda, Processing Date readonly |
 | fm-1.0 | 2026-09-28 16:20 | Feature Map + 4 kartu Lingo (aksi Skip, Progress, Log+Retry, Processing Date readonly) |
 | 1.2 | 2026-09-28 11:08 | Promote 4 layer ke **review**; Processing Date / `now()` untuk trx skip; readonly UI; supersede SO+10m |
 | 1.1 | 2026-09-25 12:59 | Technical: optimized skip flow + DO idempotency/deadlock (ETM-16006, 15988, 15999, 16037) |
