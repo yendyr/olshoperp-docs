@@ -3167,7 +3167,7 @@ menus:
 
   supplychain-other-inbound:
     menu_name: "Other Inbound"
-    short_description: "Receive stock from non-purchase sources into the warehouse."
+    short_description: "View-only list of non-PO inbounds (currently from Assembly); changes only at origin."
     path: supplychain-other-inbound
     module: SupplyChain
     menu_links:
@@ -3176,16 +3176,16 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: draft
+        status: review
       requirement:
         file: requirement.md
-        status: draft
+        status: review
       technical:
         file: technical.md
-        status: draft
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
