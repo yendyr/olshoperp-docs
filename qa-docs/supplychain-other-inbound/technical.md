@@ -2,187 +2,75 @@
 doc_type: technical
 menu: supplychain-other-inbound
 menu_name: "Other Inbound"
-version: 1.0
-last_updated: 2026-06-19
+version: 2.0
+last_updated: 2026-10-11
 owner: QA - Yemima
-status: draft
-related_docs:
-  - ./knowledge-base.md
-  - ./requirement.md
+status: review
+aliases: [other inbound API, OtherInboundController]
 ---
 
 # Other Inbound — Technical Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
-
-**Stack:** Laravel 13 API · Vue 3 SPA  
-**Primary module:** `Modules/SupplyChain`  
-**Menu slug:** `supplychain-other-inbound`  
-**UI route:** `/supplychain/other-inbound`  
-**API datalist:** `{VITE_API_URL}supplychain/other-inbound`  
-**API mutations:** `{VITE_API_URL}supplychain/mutation-inbound*`
+**API prefix:** `supplychain/other-inbound`  
+**Behavior:** [requirement.md](./requirement.md) v2.0  
+**Jira:** ETM-16440 · ETM-16441
 
 ---
 
-## 1. Architecture Overview
+## 1. File Map
 
-```mermaid
-flowchart TB
-    subgraph Frontend["olshoperp-frontend/StockMutation/InventoryOther"]
-        DL[DataList.vue]
-        FM[Form.vue]
-        DD[DatalistDetail.vue]
-        AL[DatalistLogApproval.vue]
-    end
-
-    subgraph API_List["OtherInboundController"]
-        OIC_INDEX[index]
-        OIC_SHOW[show]
-        OIC_EXP[export]
-    end
-
-    subgraph API_Core["StockMutationInboundController"]
-        SIC_STORE["store\nother=true"]
-        SIC_APPROVE[approve]
-        SID[StockMutationInboundDetailController]
-    end
-
-    subgraph Jobs["Background"]
-        WOJ[WorkOrderApprovalJob]
-        OEJ[OtherInboundExportJob]
-    end
-
-    DL --> OIC_INDEX
-    FM --> OIC_SHOW
-    DD --> SID
-    AL --> SIC_APPROVE
-    WOJ --> SIC_STORE
-    OIC_EXP --> OEJ
-```
+| Layer | Path |
+|-------|------|
+| Controller | `Modules/SupplyChain/Http/Controllers/OtherInboundController.php` — index/show/export only |
+| Shared index | `StockMutationInboundController::index(..., other: true)` → `whereNull(supplier_id)` |
+| Generator | `Modules/SupplyChain/Jobs/WorkOrderApprovalJob.php` |
+| Export | `OtherInboundExportJob`, `OtherInboundExportExcelJob` |
+| FE | `olshoperp-frontend/src/pages/SCM/StockMutation/InventoryOther/` |
 
 ---
 
-## 2. Frontend File Map
+## 2. API
 
-**Root:** `olshoperp-frontend/src/pages/SCM/StockMutation/InventoryOther/`
+| Method | Path | Notes |
+|--------|------|-------|
+| GET | `other-inbound` | List other |
+| GET | `other-inbound/{id}` | Show |
+| GET | `other-inbound/export-file` / `export-excel` / `export-progress` | Export other-only |
+| — | store/update/destroy/approve/print | **Tidak** di OtherInboundController; print TO-BE ETM-16441 |
 
-| File | Role | Key API |
-|------|------|---------|
-| `DataList.vue` | Datalist + export | `GET other-inbound` |
-| `Form.vue` | Edit header (read-only fields) | `GET other-inbound/{id}` |
-| `DatalistDetail.vue` | Detail CRUD | `mutation-inbound/{id}/mutation-inbound-detail` |
-| `DatalistLogApproval.vue` | Approve/reject | `POST mutation-inbound/{id}/approve` |
-| `ApprovalEligibility.vue` | Approvers | `mutation-inbound/approval-eligibility/{id}` |
-
-### Router
-
-| Route | Component |
-|-------|-----------|
-| `supplychain/other-inbound` | `DataList.vue` |
-| `supplychain/other-inbound/create` | `Form.vue` |
-| `supplychain/other-inbound/edit/:id` | `Form.vue` |
-
-### API split (important)
-
-| Operation | API module used by FE |
-|-----------|----------------------|
-| List / show / export | `other-inbound` |
-| Detail CRUD | `mutation-inbound` |
-| Approve / audit / approval log | `mutation-inbound` |
-| Warehouse select2 | `mutation-inbound/select2/warehouse-destination` |
+Shared writes still reachable from FE leftovers: `mutation-inbound/*` (GAP-OI-01/03).
 
 ---
 
-## 3. Backend File Map
+## 3. List filter
 
-| Class | Responsibility |
-|-------|----------------|
-| `OtherInboundController` | Index (delegate), show, exportFile/Progress/Excel |
-| `StockMutationInboundController` | Store with `other=true`, approve, shared inbound logic |
-| `StockMutationInboundDetailController` | Detail store; `generateDetailOther()` when `$other=true` |
-| `WorkOrderApprovalJob` | Auto-create other inbound from assembly |
-
-### Export pipeline
-
-| Class | Table temp |
-|-------|------------|
-| `OtherInboundExportJob` | Chunk → `StockMutationOtherInboundExportTemp` |
-| `OtherInboundExportExcelJob` | Merge → Excel file |
-| `StockMutationOtherInboundExportAll` | Excel export class |
+`other: true`: warehouse_origin null, type null, non-adjustment, non-return, **`supplier_id` null**.  
+Purchase Inbound: `supplier_id` not null.
 
 ---
 
-## 4. API Routes
+## 4. Invariants
 
-| Method | Path | Controller |
-|--------|------|------------|
-| GET | `other-inbound` | `OtherInboundController@index` → `StockMutationInboundController@index(other:true)` |
-| GET | `other-inbound/{id}` | `OtherInboundController@show` |
-| GET | `other-inbound/export-excel` | `OtherInboundController@exportExcel` |
-| GET | `other-inbound/export-file` | `OtherInboundController@exportFile` |
-| GET | `other-inbound/export-progress` | `OtherInboundController@exportProgress` |
-| POST | `mutation-inbound` | `StockMutationInboundController@store` (programmatic other=true) |
-| POST | `mutation-inbound/{id}/mutation-inbound-detail` | Detail create |
-| POST | `mutation-inbound/{id}/approve` | Approve |
+| ID | Rule |
+|----|------|
+| INV-OI-01 | Export Other ⊆ supplier_id null |
+| INV-OI-02 | PI ∩ Other = ∅ on supplier_id |
+| INV-OI-03 | Intended: no mutate from this menu (enforce incomplete — ETM-16440) |
 
 ---
 
-## 5. Database
+## 5. Assembly generate
 
-### 5.1 Scope query (other inbound)
-
-Same table `scm_stock_mutations` as purchase inbound, filtered by:
-
-| Condition | Value |
-|-----------|-------|
-| `supplier_id` | NULL |
-| `warehouse_origin` | NULL |
-| `warehouse_destination` | NOT NULL |
-| `is_inventory_adjustment` | 0 |
-| `is_return_process` | 0 |
-| `type` | NULL |
-
-### 5.2 Detail differences
-
-| Field | Purchase inbound | Other inbound |
-|-------|------------------|---------------|
-| `purchase_order_detail_id` | FK PO | NULL |
-| `each_price_before_vat` | From PO | Manual / WO calculated |
-| `middle_detail_id` | Usually set | Usually NULL |
-
-### 5.3 Work order auto-create sequence
-
-```mermaid
-sequenceDiagram
-    participant WO as "WorkOrderApprovalJob"
-    participant SIC as "StockMutationInboundController"
-    participant SID as "InboundDetailController"
-    participant DB as "scm_stock_mutations"
-
-    WO->>SIC: store(other=true, supplier_id=null)
-    SIC->>DB: create IN header + WO reference
-    WO->>SID: create detail + each_price
-    WO->>SIC: approve (optional chain)
-```
+`WorkOrderApprovalJob`: store inbound `other:true`, `supplier_id` null, ref WorkOrder, desc `Auto generated from Assembly {code}`, detail FG, approve system.
 
 ---
 
-## 6. Key Integration Points
+## 6. Gaps
 
-| Sistem | Mekanisme |
-|--------|-----------|
-| Work Order / Assembly | `transaction_reference_class = WorkOrder::class`; full chain TFI → Outbound → Other Inbound — [Assembly technical §7](../supplychain-assembly/technical.md) |
-| Accounting Journal | `JournalProcess::stockInboundAutoJournal` when ref = WorkOrder; Dr Inventory FG, Cr WIP |
-| Product Mutation History | Link formatting to other-inbound edit |
-| Item Stock | `approveInbound()` same as purchase inbound |
-| Master Unit | `inbound_quantity_unit_id` on detail; base unit conversion via observer |
-
----
-
-## 7. Permissions
-
-Shared `StockMutationInboundPolicy` for detail/approve operations.  
-Menu seeder: `supplychain/other-inbound`.
+| ID | Jira |
+|----|------|
+| GAP-OI-01 / 03 | ETM-16440 |
+| GAP-OI-02 | ETM-16441 |
 
 ---
 
@@ -191,17 +79,4 @@ Menu seeder: `supplychain/other-inbound`.
 | Doc | Path |
 |-----|------|
 | Requirement | [requirement.md](./requirement.md) |
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
-| Assembly | [../supplychain-assembly/technical.md](../supplychain-assembly/technical.md) |
-| Master Unit | [../supplychain-unit/technical.md](../supplychain-unit/technical.md) |
-| Outbound External | [../supplychain-mutation-outbound/technical.md](../supplychain-mutation-outbound/technical.md) |
-| Transfer Internal | [../supplychain-mutation-transfer-internal/technical.md](../supplychain-mutation-transfer-internal/technical.md) |
-
----
-
-## 8. Code globs (reference)
-
-| Layer | Paths |
-|-------|-------|
-| Backend | `Modules/SupplyChain/Http/Controllers/OtherInboundController.php`, `StockMutationInbound*.php`, `Jobs/OtherInbound*.php`, `Jobs/WorkOrderApprovalJob.php` |
-| Frontend | `olshoperp-frontend/src/pages/SCM/StockMutation/InventoryOther/**` |
+| Assembly technical | [../supplychain-assembly/technical.md](../supplychain-assembly/technical.md) |

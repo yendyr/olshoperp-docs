@@ -3,11 +3,11 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-10-11T11:52:04Z'
+generated: '2026-10-11T13:58:40Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
 menu_count: 132
-alias_count: 812
+alias_count: 818
 ambiguous_count: 27
 aliases:
   3pl: supplychain-delivery-order
@@ -402,6 +402,8 @@ aliases:
   import so: sales-order-general
   import so general: sales-order-general
   importsettlementjob mapping: accounting-settlement-mapping
+  inbound assembly: supplychain-other-inbound
+  inbound dari assembly: supplychain-other-inbound
   inbound lama: supplychain-mutation-inbound
   income statement: accounting-profit-loss
   incomplete so picklist: omni-picking-list
@@ -506,6 +508,8 @@ aliases:
   neraca: accounting-balance-sheet
   new purchase inbound: supplychain-new-purchase-inbound
   night schedule stagger: horizon-jobs
+  non po inbound: supplychain-other-inbound
+  non-po inbound: supplychain-other-inbound
   nota debit: accounting-debit-note
   nota kredit: accounting-credit-note
   omni channel settings: omni-global-settings
@@ -571,6 +575,8 @@ aliases:
   other cost/disc code: sales-order-general
   other discount: omni-other-discount
   other inbound: supplychain-other-inbound
+  other inbound api: supplychain-other-inbound
+  otherinboundcontroller: supplychain-other-inbound
   outbound external: supplychain-mutation-outbound
   outbound external api: supplychain-mutation-outbound
   outstanding pr:

@@ -2,19 +2,20 @@
 doc_type: requirement
 menu: supplychain-other-inbound
 menu_name: "Other Inbound"
-version: 1.1
-last_updated: 2026-07-04
+version: 2.0
+last_updated: 2026-10-11
 owner: QA - Yemima
-status: draft
+status: review
+aliases: [other inbound, inbound assembly, non-PO inbound]
 ---
 
-# Other Inbound — Requirement Detail
+# Other Inbound — Requirement Documentation
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
-
-**Modul:** SupplyChain  
-**Audience:** PM, Operations, QA, Support, Developer  
-**Status:** AS-IS
+**Modul:** Supply Chain  
+**UI route:** `/supplychain/other-inbound`  
+**Audience:** PM, Operations, QA  
+**SoT:** `supplychain-other-inbound-source-of-truth.md` v1.0 (11 Oct 2026)  
+**Jira gaps:** [ETM-16440](https://erpintegration.atlassian.net/browse/ETM-16440) · [ETM-16441](https://erpintegration.atlassian.net/browse/ETM-16441)
 
 ---
 
@@ -22,187 +23,116 @@ status: draft
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
-| 1.1 | 2026-07-04 | QA - Yemima | Expand Relasi Assembly (full stock chain + journal) |
+| 1.x | 2026-06 | QA - Yemima | Draft auto |
+| 2.0 | 2026-10-11 | QA - Yemima | Rewrite dari SoT: view-only, Assembly-only generator, gaps bulk/print |
 
 ---
 
-## 1. Fungsi & Tujuan
+## 1. Ringkasan Eksekutif
 
-**Other Inbound** adalah subset `StockMutationInbound` tanpa supplier dan tanpa PO. Scope datalist:
+**Other Inbound** menampilkan inbound **non-PO** (AS-IS: `supplier_id` null). Saat ini hanya hasil **Assembly** (auto-create + auto-approve FG). Tidak muncul di Purchase Inbound.
 
-```text
-warehouse_origin IS NULL
-warehouse_destination IS NOT NULL
-supplier_id IS NULL
-is_inventory_adjustment = 0
-is_return_process = 0
-type IS NULL
-```
-
-`OtherInboundController` hanya handle **index, show, export**. Create/update/approve/detail memakai **`StockMutationInboundController`** dan **`StockMutationInboundDetailController`** dengan parameter internal `other=true` (programmatic) atau detail path tanpa PO (UI).
-
----
-
-## 2. How It Works — Alur Kerja
-
-### 2.1 Inbound types comparison
+Menu **view/monitoring only** — ubah data di **Assembly**.
 
 ```mermaid
-flowchart TB
-    subgraph Purchase["Purchase Inbound"]
-        PI["supplier_id NOT NULL"]
-        PO["Outstanding PO detail"]
-    end
-    subgraph Other["Other Inbound"]
-        OI["supplier_id NULL"]
-        PRD["Product direct +\neach_price_before_vat"]
-    end
-    subgraph Adjustment["Adjustment Addition"]
-        AI["is_inventory_adjustment=1\ncode AI"]
-    end
-
-    PI --> PO
-    OI --> PRD
+flowchart LR
+  ASM[Assembly Approve] -->|auto inbound| OI[Other Inbound]
+  OI --> View[View / Export / Print TO-BE]
 ```
 
-### 2.2 Auto-generate from Work Order
+---
 
-`WorkOrderApprovalJob` (Assembly):
+## 2. Prasyarat
 
-1. Cari inbound open dengan `transaction_reference_class = WorkOrder`, `supplier_id = null`.
-2. Jika tidak ada → `StockMutationInboundController@store($request, with_auth: false, other: true)`.
-3. Create detail via inbound detail store dengan harga dari outbound component cost.
-4. Link ke Work Order detail via `stock_mutation_ids`.
-
-### 2.3 Manual detail (UI)
-
-`InventoryOther/DatalistDetail.vue`:
-
-- `POST mutation-inbound/{id}/mutation-inbound-detail` tanpa `purchase_order_detail_id`.
-- Backend: path `generateDetail()` (bukan `generateDetailOther` kecuali `$other=true` internal).
-- Input harga manual di form detail other inbound.
-
-### 2.4 Approval
-
-Identik purchase inbound: `POST mutation-inbound/{id}/approve` → `ItemStockMutation::approveInbound()`.
-
-Tidak ada update PO qty.
+| Prasyarat | Sumber |
+|-----------|--------|
+| Privilege view | Gate |
+| Assembly approve (happy path) | Assembly |
+| WH finish good | Warehouse Setting |
 
 ---
 
-## 3. Validasi yang Berjalan
+## 3. Siklus Status
 
-### 3.1 Header (store with other=true)
-
-| Field | Rule |
-|-------|------|
-| `warehouse_destination` | Required |
-| `transaction_date` | Required; ≤ today |
-| `supplier_id` | NULL (other scope) |
-| `is_inventory_adjustment` | 0 (when other=true + no customer) |
-| Code | Prefix `IN` |
-| Fiscal period | When with_auth |
-
-### 3.2 Detail (non-PO path)
-
-| Field | Rule |
-|-------|------|
-| `product_id` | Required (no PO/outbound ref) |
-| `quantity` | Required numeric; whole number |
-| `quantity_unit_id` | Required |
-| `each_price_before_vat` | Set on other path (`generateDetailOther`) |
-| `batch_number` / `expired_date` | Per product config |
-| Bundle check | Skipped when other=true on product path |
-
-### 3.3 Datalist scope
-
-`OtherInboundController@index` → delegates to `StockMutationInboundController@index(other: true)`:
-
-- Adds `whereNull(supplier_id)` filter
-- Link formatting → `/supplychain/other-inbound/edit/{id}`
-
-### 3.4 Export
-
-| Endpoint | Behavior |
-|----------|----------|
-| `GET other-inbound/export-excel` | Batch export via `OtherInboundExportJob` |
-| Filter types | With details / Without details / Active page |
-
----
-
-## 4. Relasi Menu Lain
+Happy path: Open → Approved (sistem). Edge gagal generate: boleh tetap **Open** untuk tracing — **tidak** boleh edit/approve/delete dari menu ini.
 
 ```mermaid
-flowchart TB
-    WO["Assembly / Work Order"]
-    TFI["Transfer Internal"]
-    OUT["Outbound Other\nWIP consume"]
-    OI["Other Inbound\nFG receive"]
-    JR["Journal"]
-    ST["ItemStock"]
-
-    WO -->|"Open"| TFI
-    WO -->|"Approve job"| OUT
-    WO -->|"Approve job"| OI
-    OUT --> JR
-    OI --> JR
-    OI -->|"approveInbound"| ST
+stateDiagram-v2
+    [*] --> open: Assembly create
+    open --> approved: Auto approve
+    open --> open: Edge tracing
+    approved --> [*]
 ```
+
+---
+
+## 4. Datalist
+
+Tanpa kolom Supplier / Item Stock Status (beda PI). Trx Ref = **Assembly**.
+
+| Kontrol | Intended | AS-IS |
+|---------|----------|-------|
+| Create | Tidak ada | Route leftover |
+| Export with/without details | Hanya Other Inbound | MATCH |
+| Bulk Delete / Approve | Tidak ada | Masih ada — GAP-OI-01 / ETM-16440 |
+| Print dokumen | Standar seperti PI | Belum — GAP-OI-02 / ETM-16441 |
+| Row delete/approve/print | Off | MATCH BE |
+
+---
+
+## 5. Form / Show
+
+Header disabled. Detail: Assembly Reference, SKU, qty, COLLI. Tidak ada Save operasional. Ubah di Assembly.
+
+GAP-OI-03: Open detail masih writable via shared API.
+
+---
+
+## 6. How It Works
+
+1. Assembly approve → inbound supplier null + description `Auto generated from Assembly {code}` → auto-approve.  
+2. List Other Inbound = supplier null; PI = supplier not null — tidak overlap.  
+3. Export scoped other-only.  
+4. Print TO-BE setara PI.
+
+---
+
+## 7. Validasi (intended)
+
+| ID | Behavior |
+|----|----------|
+| V-OI-01 | Tidak bulk approve/delete |
+| V-OI-02 | Tidak edit/approve/delete dari menu ini |
+| V-OI-03 | Export hanya Other Inbound |
+
+---
+
+## 8. Relasi
 
 | Menu | Relasi |
 |------|--------|
-| [Assembly](../supplychain-assembly/) | Auto-create + approve other inbound per FG detail |
-| [Transfer Internal](../supplychain-mutation-transfer-internal/) | Pre-step: komponen Building→WIP |
-| [Outbound External](../supplychain-mutation-outbound/) | Pre-step: konsumsi komponen di WIP (`type_so=other`) |
-| [Warehouse Setting](../supplychain-setting/) | Finish Good warehouse = destination |
-| [Product COA Group](../accounting-product-coa-group/) | COA Inventory FG + WIP untuk jurnal |
-| [Master Unit](../supplychain-unit/) | Qty unit per detail FG |
-| Purchase Inbound | Shared `mutation-inbound` API, beda scope (`supplier_id` NOT NULL) |
-| Journal (Accounting) | `JournalProcess::stockInboundAutoJournal` when ref = WorkOrder |
+| Assembly | Origin generate |
+| Purchase Inbound | Sibling; data tidak overlap |
 
 ---
 
-## Relasi Assembly
+## 9. Gaps
 
-**Dampak ke menu ini:** `WorkOrderApprovalJob` (Assembly Approve) auto-create **Other Inbound** per FG line jika belum ada inbound open dengan ref WorkOrder:
-
-| Step | Action |
-|------|--------|
-| 1 | Cari inbound open: `transaction_reference_class = WorkOrder`, `supplier_id = null` |
-| 2 | Jika tidak ada → `StockMutationInboundController@store(other: true)` |
-| 3 | Create detail FG + `each_price_before_vat` dari rollup cost komponen outbound |
-| 4 | Link ke WO detail via `stock_mutation_ids` |
-| 5 | Auto-approve inbound → stok FG masuk Finish Good warehouse |
-
-**Jurnal saat approve:** Dr Inventory (FG), Cr WIP — aggregated per FG line.
-
-**Prasyarat dari menu ini agar Assembly lolos:** Finish Good warehouse configured di Warehouse Setting; COA Inventory + WIP valid untuk SKU FG.
-
-**Independensi:** Other Inbound manual (non-Assembly) tetap bisa dibuat — tidak require Work Order reference.
-
-**Detail alur:** [Assembly requirement §5–§6](../supplychain-assembly/requirement.md) · [Assembly technical §7–§8](../supplychain-assembly/technical.md).
+| ID | Deskripsi | Status |
+|----|-----------|--------|
+| GAP-OI-01 | Bulk delete/approve + API mutate | Open — ETM-16440 |
+| GAP-OI-02 | Print standar PI | Open — ETM-16441 |
+| GAP-OI-03 | Detail Open writable | Open — scope ETM-16440 |
+| GAP-OI-04 | Route create leftover | Open |
 
 ---
 
-## Relasi Master Unit
+## 10. FAQ
 
-**Dampak ke menu ini:** Detail other inbound punya `inbound_quantity_unit_id` — biasanya primary/alternate unit FG dari System Product.
-
-**Prasyarat:** Unit Active; konversi ke base unit saat approve via observer.
-
-**Detail:** [Master Unit requirement](../supplychain-unit/requirement.md).
-
----
-
-## 5. Known Gaps / Open Questions
-
-| ID | Gap |
-|----|-----|
-| G-01 | `OtherInboundController` resource route declares CRUD but **store/update/destroy not implemented** in controller — UI uses `mutation-inbound` for mutations |
-| G-02 | `InventoryOther/Form.vue` — header fields disabled; **no `submit()` method** in script (create flow perlu verifikasi QA manual) |
-| G-03 | Detail store from UI does not pass `$other=true` — uses `generateDetail()` without PO (works but different code path vs `generateDetailOther`) |
-| G-04 | `routes.md` lists `OtherInboundController@store` — may be stale vs actual controller |
+**Q: Kenapa tidak Create?** Auto dari Assembly.  
+**Q: Beda PI?** PI dari PO + supplier.  
+**Q: Status Open?** Tracing saja; tetap view-only.  
+**Q: Export ikut PI?** Tidak.
 
 ---
 
@@ -212,6 +142,5 @@ flowchart TB
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
-| New Purchase Inbound | [../supplychain-new-purchase-inbound/requirement.md](../supplychain-new-purchase-inbound/requirement.md) |
-| Assembly | [../supplychain-assembly/requirement.md](../supplychain-assembly/requirement.md) |
-| Master Unit | [../supplychain-unit/requirement.md](../supplychain-unit/requirement.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
+| Assembly | [../supplychain-assembly/](../supplychain-assembly/) |

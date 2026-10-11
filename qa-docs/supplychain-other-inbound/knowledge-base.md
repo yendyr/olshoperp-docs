@@ -2,109 +2,83 @@
 doc_type: knowledge-base
 menu: supplychain-other-inbound
 menu_name: "Other Inbound"
-version: 1.1
-last_updated: 2026-07-04
+version: 2.0
+last_updated: 2026-10-11
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
+aliases: [other inbound, inbound dari assembly]
 ---
 
-# Other Inbound — Knowledge Base
+# Other Inbound — Knowledge Base (Operator)
 
-> **DRAFT** — Dokumen ini adalah draft awal hasil analisis codebase otomatis per 2026-06-19. Perlu direview PM/QA sebelum final.
+**Menu:** Supply Chain → Other Inbound  
+**Route:** `/supplychain/other-inbound`
 
-## Ringkasan
+---
 
-**Other Inbound** adalah penerimaan stok **tanpa Purchase Order / supplier**. Dipakai untuk barang masuk non-pembelian, misalnya hasil **Assembly (Work Order)**, adjustment operasional, atau sumber non-PO lain.
+## 1. Apa itu?
 
-| Item | Nilai |
-|------|-------|
-| Menu | Supply Chain → Other Inbound |
-| Route UI | `/supplychain/other-inbound` |
-| Datalist API | `GET supplychain/other-inbound` |
-| Detail/approve API | `supplychain/mutation-inbound*` (shared) |
-| Scope DB | `supplier_id IS NULL`, `is_inventory_adjustment = 0` |
-| Kode dokumen | Prefix `IN` |
+Daftar **barang masuk gudang yang bukan dari Purchase Order**. Saat ini isinya hasil otomatis dari **Assembly** (finish goods). Tidak muncul di menu Purchase Inbound.
 
-## Kapan dipakai
+Halaman ini untuk **melihat / export** (dan print setelah tersedia). **Jangan** mengubah data di sini — ubah di **Assembly**.
 
-- Stok masuk bukan dari pembelian supplier (tanpa PO).
-- Hasil produksi/assembly perlu masuk finish-good warehouse.
-- Penerimaan manual produk + harga (`each_price_before_vat`) tanpa referensi PO.
+---
 
-## Langkah operasional
+## 2. Kapan muncul data?
 
-### 1. Lihat / buka other inbound
+| Situasi | Hasil |
+|---------|--------|
+| Assembly approve sukses | Baris inbound Approved, Trx Ref = Assembly |
+| Generate Assembly bermasalah | Bisa ada status Open (untuk tracing) — tetap jangan diedit di sini |
 
-1. Buka **Other Inbound** — datalist dari `OtherInboundController@index` (filter tanpa supplier).
-2. Banyak dokumen **auto-generated** dari Work Order/Assembly (deskripsi: "Auto generated from Assembly …").
-3. Klik kode → edit form (`/supplychain/other-inbound/edit/{id}`).
+---
 
-### 2. Tambah detail produk
+## 3. Cara pakai
 
-1. Di panel detail, tambah produk langsung (tanpa outstanding PO).
-2. Isi qty, unit, harga per unit (`each_price_before_vat`), batch/expired jika wajib.
-3. API: `POST mutation-inbound/{id}/mutation-inbound-detail`.
-4. Tidak memakai middle-detail layer (skip FIFO middle untuk other path).
+1. Buka Other Inbound.  
+2. Cari / filter / buka dokumen (view).  
+3. Export with atau without details bila perlu.  
+4. Perlu koreksi qty/SKU → buka **Assembly** di Trx Ref.
 
-### 3. Approve
+🎬 [Interactive demo akan ditambahkan di sini]
 
-1. `POST mutation-inbound/{id}/approve` — sama dengan purchase inbound.
-2. Stok naik di warehouse destination.
-3. Tidak update PO qty (karena tidak ada `purchase_order_detail_id`).
+---
 
-## Perbedaan dengan Purchase Inbound
+## 4. Beda dengan Purchase Inbound
 
-| Aspek | Purchase Inbound | Other Inbound |
-|-------|------------------|---------------|
-| Supplier | Wajib | Tidak ada |
-| Sumber detail | Outstanding PO | Produk langsung |
-| Middle detail FIFO | Ya (default) | Tidak |
-| Harga | Dari PO | Input manual `each_price_before_vat` |
-| Datalist API | `mutation-inbound` + supplier filter | `other-inbound` |
+| | Other Inbound | Purchase Inbound |
+|--|---------------|------------------|
+| Sumber | Assembly (non-PO) | Purchase Order |
+| Supplier | Tidak ada | Ada |
+| Create manual | Tidak | Ya |
 
-## Status dokumen
+---
 
-| Status | Arti |
-|--------|------|
-| `open` | Bisa edit & tambah detail |
-| `approved` | Stok sudah posted |
-| `rejected` | Ditolak approver |
+## 5. Troubleshooting
 
-## Troubleshooting
+| Gejala | Cek |
+|--------|-----|
+| Data tidak muncul | Assembly sudah approve? WH FG benar? |
+| Mau ubah qty | Ke Assembly, bukan menu ini |
+| Bulk Delete/Approve masih ada | Known bug — jangan dipakai; [ETM-16440](https://erpintegration.atlassian.net/browse/ETM-16440) |
+| Print belum jalan | Known gap — [ETM-16441](https://erpintegration.atlassian.net/browse/ETM-16441) |
 
-| Gejala | Penyebab | Tindakan |
-|--------|----------|----------|
-| Dokumen tidak punya supplier | Expected — other inbound scope | Normal |
-| Link dari Work Order | Auto-generated saat WO approve | Buka dari Assembly reference |
-| Header form read-only | Field disabled di Form.vue saat edit | Perilaku UI saat ini |
-| Create manual | Header create via `mutation-inbound` store dengan `other=true` (programmatic) | UI create route ada; form perlu verifikasi QA |
+---
 
-## Relasi menu
+## 6. FAQ
 
-| Menu | Route | Hubungan |
-|------|-------|----------|
-| [Assembly](../supplychain-assembly/) | `supplychain/assembly` | Auto-generate + approve other inbound saat Approve job |
-| [Transfer Internal](../supplychain-mutation-transfer-internal/) | `supplychain/mutation-transfer-internal` | Pre-step: komponen Building→WIP |
-| [Outbound](../supplychain-mutation-outbound/) | `supplychain/mutation-outbound` | Pre-step: konsumsi komponen di WIP |
-| [Warehouse Setting](../supplychain-setting/) | `supplychain/setting` | Finish Good warehouse = destination |
-| Purchase Inbound | `supplychain/new-purchase-inbound` | Same backend, beda scope (`supplier_id` NOT NULL) |
-| Adjustment Addition | `supplychain/adjustment-addition` | Beda flag `is_inventory_adjustment=1` |
-| Real Time Stock | `supplychain/real-stock` | Stok naik setelah approve |
+**Q: Bisa buat inbound di sini?** Tidak — hanya hasil sistem.  
+**Q: Kenapa ada di Other bukan Purchase Inbound?** Tidak punya supplier / bukan dari PO.  
+**Q: Export aman dari campur PI?** Ya — hanya data Other Inbound.
 
-### Alur Assembly → Other Inbound (operator view)
+---
 
-1. Operator **Approve** Assembly (status Open)
-2. Job async: approve TFI → outbound WIP → **create + approve Other Inbound** ke Finish Good warehouse
-3. Dokumen muncul di datalist Other Inbound dengan deskripsi auto-generated
-4. Stok FG naik; jurnal Dr Inventory, Cr WIP
+## Related Documents
 
-Detail teknis: [Other Inbound requirement §Relasi Assembly](./requirement.md) · [Assembly knowledge-base](../supplychain-assembly/knowledge-base.md).
-
-## Istilah
-
-| Istilah | Arti |
-|---------|------|
-| Other inbound | GRN non-PO / non-supplier |
-| `generateDetailOther()` | Backend path create detail tanpa PO |
-| Work Order inbound | Other inbound auto dari assembly approval job |
+| Doc | Path |
+|-----|------|
+| Requirement | [requirement.md](./requirement.md) |
+| Technical | [technical.md](./technical.md) |
+| User Guide | [user-guide.md](./user-guide.md) |
+| Assembly | [../supplychain-assembly/knowledge-base.md](../supplychain-assembly/knowledge-base.md) |
