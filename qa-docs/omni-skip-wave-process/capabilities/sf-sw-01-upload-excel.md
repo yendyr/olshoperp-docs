@@ -7,8 +7,8 @@ aliases: [upload skip wave, template order no, download template]
 scope: menu
 summary: >-
   Download template satu kolom Order No, isi Excel, lalu upload agar sistem mengirim order ke Default Wave dan memproses sampai Shipped.
-version: 1.0
-last_updated: 2026-09-28
+version: 1.1
+last_updated: 2026-10-12
 status: review
 ---
 
@@ -23,6 +23,7 @@ Cara utama memakai Skip Wave Process: unduh **template**, isi **Order No**, lalu
 - Banyak order approved yang belum masuk Default Wave.
 - Mau satu batch sampai Shipped.
 - Siap menunggu antrian jika ada batch lain yang sedang jalan.
+- (TO-BE ETM-16443) Masih ada slot kuota aktif (&lt; 9 In Queue dan total aktif &lt; 10).
 
 ## Cara pakai
 
@@ -37,6 +38,7 @@ Cara utama memakai Skip Wave Process: unduh **template**, isi **Order No**, lalu
 - Ukuran file mengikuti limit server (tidak ada batas khusus di menu).
 - Menu ini **khusus upload** — tidak memilih order dari list.
 - Validasi Import bersifat all-or-nothing → lihat [All-or-nothing Import](#sf-lingo:SF-SW-03).
+- **TO-BE ([ETM-16443](https://erpintegration.atlassian.net/browse/ETM-16443)):** maks 10 file aktif global (9 In Queue + 1 Pending/Processing). Saat penuh, tombol Import **disabled**; hover → tooltip EN: *Maximum 10 active files allowed: up to 9 In Queue and 1 Pending/Processing (all companies). Please wait until a file finishes before uploading again.*
 
 ## Contoh
 
@@ -44,10 +46,11 @@ Cara utama memakai Skip Wave Process: unduh **template**, isi **Order No**, lalu
 |-------|------|--------|
 | 50 Order No valid | Upload | Batch masuk antrian / processing |
 | 49 valid + 1 kosong | Upload | Seluruh file gagal Import — perbaiki lalu upload ulang |
+| 9 In Queue + 1 Processing (TO-BE) | Coba Import | Tombol disabled + tooltip EN |
 
 ## Lihat juga
 
 - [Processing Date](#sf-lingo:SF-SW-02)
 - [All-or-nothing Import](#sf-lingo:SF-SW-03)
-- Requirement: [§5 Form & Field](../requirement.md)
+- Requirement: [§5 Form & Field](../requirement.md) · [§6.2 Antrian](../requirement.md)
 

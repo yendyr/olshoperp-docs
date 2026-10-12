@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.4
-last_updated: 2026-09-28
+version: 1.5
+last_updated: 2026-10-12
 owner: QA - Yemima
 status: review
 aliases: [skip wave process, skip wave, upload skip wave, SW batch, processing order date, processing date, skip wave jobs]
@@ -25,6 +25,7 @@ Related: [Unassign Wave](../omni-unassign-wave/requirement.md) · [Skip Processi
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.5 | 2026-10-12 | QA - Yemima | **TO-BE** [ETM-16443](https://erpintegration.atlassian.net/browse/ETM-16443): kuota aktif global maks 10 (9 `in_queue` + 1 pending/processing); Import disabled + tooltip EN |
 | 1.4 | 2026-09-28 | QA - Yemima | Processing Date AS-IS: arti trx/stock, default kosong=`now()`, order trx > date = gagal Wave (bukan Import); export columns; file size = limit server |
 | 1.2 | 2026-09-20 | QA - Yemima | Rujuk Horizon jobs pipeline; status macet / Redispatch; DO inline; kurangi nama class di How It Works |
 | 1.1 | 2026-07-28 | QA - Yemima | TO-BE Processing Order Date per company (shared Unassign Wave); supersede GAP-SW-05 order+10m |
@@ -66,7 +67,8 @@ flowchart LR
 | Milik company login | Sales Order | — |
 | Order No unik dalam file | File | Duplikat ditolak |
 | WH virtual tree lengkap + shipper↔3PL | Master / Binding | Prasyarat fase Skip Processing |
-| Tidak ada batch SW lain `pending`/`processing` | Skip Wave Process | Batch baru menunggu — GAP-SW-02 scope global |
+| Tidak ada batch SW lain `pending`/`processing` | Skip Wave Process | Slot proses maks 1 — GAP-SW-02 scope global |
+| Kuota aktif &lt; 10 (TO-BE ETM-16443) | Skip Wave Process | Maks 9 `in_queue` + 1 pending/processing (global); Import disabled jika penuh |
 
 ---
 
@@ -178,7 +180,26 @@ Validasi bisnis Unassign Wave (bundle, stock, binding, COA, harga) jalan di **fa
 
 ### 6.2 Antrian batch
 
-Upload banyak file OK; eksekusi **1 batch aktif** (`pending`/`processing`) pada satu waktu. Berikutnya mulai setelah completed. Scope AS-IS **global** lintas company — GAP-SW-02.
+**AS-IS (sebelum ETM-16443):** Upload banyak file OK; eksekusi **1** batch `pending`/`processing` pada satu waktu; `in_queue` tanpa batas jumlah. Scope **global** lintas company — GAP-SW-02.
+
+**TO-BE ([ETM-16443](https://erpintegration.atlassian.net/browse/ETM-16443)) — anti-spike server:**
+
+| Slot | Status yang dihitung | Maks (global, semua company) |
+|------|----------------------|------------------------------|
+| Antrean | `in_queue` (eligible) | **9** |
+| Proses | `pending` **atau** `processing` | **1** |
+| Total aktif | `in_queue` + `pending` + `processing` | **10** |
+
+Tidak dihitung: `completed`, `failed`, screening gagal / non-eligible.
+
+Saat kuota penuh (`in_queue` ≥ 9 **atau** total aktif ≥ 10):
+
+- Tombol **Upload/Import** **disabled**.
+- Tooltip (English, wajib):
+
+> Maximum 10 active files allowed: up to 9 In Queue and 1 Pending/Processing (all companies). Please wait until a file finishes before uploading again.
+
+- API upload juga menolak (bukan hanya disable UI).
 
 Scheduler tiap menit memicu **orkestrator wave** untuk batch `in_queue` + eligible. Job import **tidak** langsung memicu wave.
 
@@ -267,7 +288,8 @@ flowchart TB
 | ID | Deskripsi | Status |
 |----|-----------|--------|
 | GAP-SW-01 | Bisnis harap partial continue; AS-IS all-or-nothing | Open |
-| GAP-SW-02 | Antrian global lintas company | Open |
+| GAP-SW-02 | Antrian / gerbang global lintas company | Open — diperkuat kuota 10 aktif (ETM-16443 TO-BE) |
+| GAP-SW-06 | Cap 9 `in_queue` + 1 proses; Import disabled + tooltip EN | TO-BE — [ETM-16443](https://erpintegration.atlassian.net/browse/ETM-16443) |
 | GAP-SW-03 | Sequencing batch sudah ada | Resolved |
 | GAP-SW-04 | Completed At + ETA sudah ada | Resolved |
 | GAP-SW-05 | Trx date transfer order+10m | **Superseded** oleh Processing Order Date (§5.1 / §6.4) |
@@ -277,10 +299,10 @@ flowchart TB
 ## 10. FAQ
 
 **Q: 1 Order No salah = seluruh gagal?** Ya — all-or-nothing; perbaiki + upload ulang.  
-**Q: Upload banyak file?** Boleh; diproses berurutan.  
-**Q: Total Order Processed < total file?** Validasi background masih jalan.  
-**Q: Download file?** Max 24 jam.  
-**Q: Lama pending?** Ada batch aktif lain (mungkin company lain — GAP-SW-02).  
+**Q: Upload banyak file?** AS-IS boleh tanpa batas In Queue. **TO-BE (ETM-16443):** maks **10 aktif** global (9 In Queue + 1 Pending/Processing); Import disabled + tooltip jika penuh.
+**Q: Total Order Processed < total file?** Validasi background masih jalan.
+**Q: Download file?** Max 24 jam.
+**Q: Lama pending?** Ada batch aktif lain (mungkin company lain — GAP-SW-02).
 **Q: Progress penuh tapi status masih Processing?** Kemungkinan penutup batch tidak jalan — coba **Redispatch** jika diam lebih dari 60 menit; detail di [horizon-jobs pipeline](../horizon-jobs/pipelines/skip-wave-process.md).  
 **Q: Completed di layar tapi server masih sibuk?** Job turunan (stok/audit/sync) bisa masih mengantre setelah status completed.  
 **Q: Shipped bermasalah?** Lanjut Failed Ship.  
@@ -295,6 +317,7 @@ flowchart TB
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5 | 2026-10-12 | TO-BE ETM-16443 kuota aktif 10 (9 in_queue + 1 pending/processing) global; Import disabled + tooltip EN |
 | 1.4 | 2026-09-28 | Processing Date AS-IS (`now()`, Wave fail POD3); export columns; file size server-limit |
 | 1.2 | 2026-09-20 | Link Horizon jobs; DO inline; Redispatch / status macet; How It Works tanpa nama class |
 | 1.1 | 2026-07-28 | Processing Order Date; GAP-SW-05 superseded |

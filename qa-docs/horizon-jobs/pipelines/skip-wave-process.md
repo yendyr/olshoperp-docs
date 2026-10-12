@@ -83,6 +83,8 @@ File: `app/Console/Commands/SalesOrder/SkipWaveDispatchCommand.php` · schedule 
 2. Ambil satu `in_queue` + `is_eligible=true`.
 3. Set konteks user/company; status → `pending`; dispatch `SkipWaveProcessJob`.
 
+**TO-BE upload gate ([ETM-16443](https://erpintegration.atlassian.net/browse/ETM-16443)):** selain gerbang 1 proses di atas, upload/Import menolak jika global `in_queue` (eligible) ≥ 9 **atau** total aktif (`in_queue`+`pending`+`processing`) ≥ 10. Cron dispatch tetap 1 slot proses; cap In Queue dienforce di upload (FE disable + BE reject).
+
 ### 2.4 SkipWaveProcessJob → SOApproveToWave
 
 - Filter `process_to_wave` / tipe platform; `validateBundleComponents()`.
@@ -158,6 +160,7 @@ Job turunan yang sudah di-dispatch **tetap** mengantre — bisa bentrok worker d
 |----|-----------|
 | INV-SWJ-01 | ImportJob tidak dispatch `SkipWaveProcessJob`. |
 | INV-SWJ-02 | Maks 1 batch `pending`/`processing` global sebelum dispatch baru. |
+| INV-SWJ-02b | **TO-BE ETM-16443:** maks 9 `in_queue` eligible + total aktif ≤ 10 sebelum upload baru diterima. |
 | INV-SWJ-03 | Primary processing chunk = 10 SO / `SkipProcessingJob`. |
 | INV-SWJ-04 | `runBatchFinally` tidak men-dispatch Create/Approve DO jobs (dead path). |
 | INV-SWJ-05 | Retry transient max 5; delay `min(15, (retry+1)*5)` detik di wave logic. |

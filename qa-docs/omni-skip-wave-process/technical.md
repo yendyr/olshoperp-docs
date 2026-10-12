@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.4
-last_updated: 2026-09-28
+version: 1.5
+last_updated: 2026-10-12
 owner: QA - Yemima
 status: review
 aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing order date, processing date, skip wave horizon jobs]
@@ -14,8 +14,9 @@ aliases: [skip wave process API, SkipWaveProcessJob, SkipWaveLogic, processing o
 **API prefix:** `omnichannel/transfer-summary/skip-wave-process`  
 **Module:** `Modules/OmniChannel`  
 **UI:** `/omni/skip-wave-process` · FE `@Omni/Processing/SkipWaveProcess/`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.4  
-**Batch codes:** `SW-` import · `WV-` wave · `SP-` processing
+**Behavior SoT:** [requirement.md](./requirement.md) v1.5  
+**Batch codes:** `SW-` import · `WV-` wave · `SP-` processing  
+**CR antrian:** [ETM-16443](https://erpintegration.atlassian.net/browse/ETM-16443) (TO-BE — belum enforce di kode sampai deploy)
 
 ---
 
@@ -175,6 +176,7 @@ Fan-out Horizon: [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/p
 | ID | Assertion |
 |----|-----------|
 | INV-SW-01 | Max 1 batch `pending`/`processing` at a time (AS-IS global — GAP-SW-02) |
+| INV-SW-01b | **TO-BE ETM-16443:** max 9 `in_queue` (eligible) + 1 pending/processing; total aktif ≤ 10; scope **global** |
 | INV-SW-02 | `is_eligible=true` hanya jika semua baris valid **dan** semua SO locked |
 | INV-SW-03 | Terminal `completed`/`failed` tidak kembali ke pending/processing |
 | INV-SW-04 | ≤1000 data rows per file |
@@ -192,6 +194,7 @@ Fan-out Horizon: [horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/p
 | Header | First column / header must resolve to **Order No** |
 | Rows | ≥1 data row; Import class hard cap **1000** data rows |
 | Processing Date snapshot | `ScmSetting.sales_order_processing_date` → parse; if empty/`null` → **`now()`** (full datetime) stored on batch |
+| **Active queue cap (TO-BE ETM-16443)** | Reject upload if global count: `in_queue` (eligible) ≥ 9 **or** (`in_queue` + `pending` + `processing`) ≥ 10. Exclude `completed`/`failed`/non-eligible. Error message aligned with FE tooltip EN |
 
 ### Import screening (R1–R5 · all-or-nothing)
 
@@ -221,6 +224,9 @@ Shared Skip Processing validations.
 - Main list filter `is_eligible=1` — failed import hanya di Log Data.
 - File download tooltip 24h.
 - `SalesOrderProcessingDate.vue` tooltip (EN): whole-process date; empty → current date & time; order trx must be on or before date (else cannot process to wave). Shared with Unassign Wave / Skip Processing readonly.
+- **TO-BE ETM-16443:** disable Upload/Import when queue full; hover tooltip (EN, exact):
+
+  > Maximum 10 active files allowed: up to 9 In Queue and 1 Pending/Processing (all companies). Please wait until a file finishes before uploading again.
 
 ---
 
@@ -256,6 +262,7 @@ Shared Skip Processing validations.
 - Cover: all-or-nothing, lock conflict, cron gate global, 1000 cap, progress aggs, Echo ETA.
 - Cover Processing Date: empty→`now()`, persist, fiscal/future reject, company isolation, late-stock SO, **POD3** (Import OK / Wave fail).
 - Regresi GAP-SW-01/02; GAP-SW-05 superseded.
+- **TO-BE ETM-16443:** upload rejected at 9 `in_queue` / total 10 aktif; FE disabled + tooltip; Completed/Failed tidak mengunci; setelah slot kosong Import aktif lagi.
 - Related docs Unassign/Skip Processing harus tetap konsisten saat ubah shared jobs / shared date component.
 
 ---
@@ -266,6 +273,7 @@ Shared Skip Processing validations.
 |-----|----------------|
 | GAP-SW-01 | ImportJob sets `is_eligible=false` if any failed row |
 | GAP-SW-02 | `SkipWaveDispatchCommand` `exists()` tanpa filter company |
+| GAP-SW-06 | **TO-BE ETM-16443** — enforce cap 9 `in_queue` + 1 proses di upload (BE) + disable Import (FE); shared helper count global |
 | GAP-SW-05 | **Superseded** — batch `processing_date` + `ScmSetting` |
 | — | ImportJob imports `SkipWaveProcessJob` but does not dispatch it |
 | — | `runBatchFinally` early-return: Create/Approve DO jobs dead code; DO di `skipShipping` |
@@ -277,6 +285,7 @@ Shared Skip Processing validations.
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5 | 2026-10-12 | TO-BE ETM-16443: INV-SW-01b, upload reject + FE disable/tooltip EN; GAP-SW-06 |
 | 1.4 | 2026-09-28 | AS-IS Processing Date (`ScmSetting` + batch snapshot `now()`); POD3 Wave fail; export headings; mime without max size; FE tooltip note |
 | 1.3 | 2026-09-25 | Perf datalist (defer + cache agg ETM-15972/15985); reliability: redispatch, DO guard, retry idempotency, optimized skip flow, deadlock (ETM-15963…16037) |
 | 1.2 | 2026-09-20 | Link kanonik Horizon jobs pipeline; tabel fan-out; dead-code DO path |

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.4
-last_updated: 2026-09-28
+version: 1.5
+last_updated: 2026-10-12
 owner: QA - Yemima
 status: review
 aliases: [skip wave process, skip wave upload, upload order to wave and ship, processing order date, processing date]
@@ -35,6 +35,7 @@ Tanpa bolak-balik menu Unassign Wave dan Skip Processing.
 | Banyak order approved yang belum masuk Default Wave | Order sudah di-wave / sudah shipped |
 | Mau proses sampai shipped dalam satu batch | Ada 1 baris salah di file — **seluruh file gagal** di Import (harus diperbaiki dulu) |
 | Siap menunggu antrian jika ada batch lain yang sedang jalan | Mau pilih order dari list (menu ini khusus upload) |
+| (TO-BE ETM-16443) Kuota aktif masih ada slot | Tombol Import disabled karena sudah 9 In Queue / 10 aktif |
 
 ---
 
@@ -58,7 +59,8 @@ flowchart TD
 - **Template:** hanya 1 kolom — **Order No** (boleh kode internal atau kode platform).
 - **File:** `xlsx` / `xls` / `csv`. Ukuran file mengikuti limit server (tidak ada batas khusus di menu). Maksimal **1.000 order** per file.
 - **All-or-nothing (Import):** satu baris gagal screening = seluruh file tidak diproses ke datalist. Perbaiki lalu upload ulang **seluruh** file.
-- **Antrian:** boleh upload banyak file; sistem proses **satu batch** sampai selesai baru batch berikutnya.
+- **Antrian (AS-IS):** boleh upload banyak file; sistem proses **satu batch** sampai selesai baru batch berikutnya (global lintas company).
+- **Antrian (TO-BE [ETM-16443](https://erpintegration.atlassian.net/browse/ETM-16443)):** maks **10 file aktif** global — **9** In Queue + **1** Pending/Processing. Completed/Failed tidak dihitung. Saat penuh, tombol **Import disabled**; hover → tooltip (EN): *Maximum 10 active files allowed: up to 9 In Queue and 1 Pending/Processing (all companies). Please wait until a file finishes before uploading again.*
 - **Progress:** Wave Progress = sudah masuk Default Wave; Skip Processing = sudah sampai Shipped.
 - **Tidak ada tombol Retry** untuk batch gagal validasi import — perbaikan = upload ulang.
 - **Redispatch:** kalau progress sudah hampir selesai tetapi status batch masih “Processing” lama (diam lebih dari 60 menit), gunakan **Redispatch**.
@@ -121,6 +123,7 @@ Riwayat perubahan data user (termasuk ubah Processing Date).
 | Import Success tapi Wave Failed (pesan Processing Date) | Trx date order lebih baru dari Processing Date | Naikkan Processing Date ≥ trx date order, lalu upload ulang |
 | Total Processed < total file | Validasi masih jalan | Tunggu sampai angka sama |
 | Lama di Pending / In Queue | Ada batch lain masih Processing | Tunggu batch aktif selesai (bisa dari company lain) |
+| Tombol Import disabled (TO-BE ETM-16443) | Kuota aktif penuh (9 In Queue dan/atau total 10 aktif, global) | Tunggu sampai ada file Completed/Failed; hover tombol untuk tooltip EN |
 | Progress hampir penuh, status masih Processing lama | Penutup otomatis batch tidak jalan | Diam > 60 menit → **Redispatch**; jika gagal, eskalasi Support/DevOps |
 | Layar Completed tapi sistem masih lambat | Pekerjaan hitung stok / sync masih mengantre | Jeda upload batch besar berikutnya |
 | File tidak bisa didownload | Lewat 24 jam | Simpan salinan file sendiri sejak awal |
@@ -151,3 +154,6 @@ A: Coba **Redispatch** setelah batch diam lebih dari 60 menit.
 
 **Q: Ada panduan antrean job untuk Support/DevOps?**  
 A: Ya — lihat dokumentasi [Horizon Jobs — Skip Wave pipeline](../horizon-jobs/pipelines/skip-wave-process.md) atau [Horizon Jobs KB](../horizon-jobs/knowledge-base.md).
+
+**Q: Kenapa Import tidak bisa diklik / disabled? (TO-BE ETM-16443)**  
+A: Kuota file aktif penuh — maks 9 In Queue + 1 Pending/Processing (semua company). Hover tombol untuk penjelasan. File Completed/Failed tidak mengunci kuota.

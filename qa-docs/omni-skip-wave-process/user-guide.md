@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: omni-skip-wave-process
 menu_name: "Skip Wave Process"
-version: 1.3
-last_updated: 2026-09-28
+version: 1.4
+last_updated: 2026-10-12
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.4
+source_version: 1.5
 owner: QA - Yemima
 status: review
 ---
@@ -94,6 +94,7 @@ Pastikan:
 - Tidak bisa simpan tanggal di periode akuntansi yang sudah ditutup atau di masa depan.
 - Kalau **satu** Order No salah / tidak ketemu / duplikat, **seluruh file gagal** di Import — tidak ada yang lanjut.
 - Boleh upload banyak file, tapi sistem proses **satu per satu** sampai selesai.
+- **TO-BE (setelah ETM-16443):** maks **10 file aktif** sekaligus (semua company) — **9** In Queue + **1** Pending/Processing. Saat penuh, tombol Import **disabled**; hover menampilkan tooltip English yang menjelaskan batasnya. File Completed/Failed tidak dihitung.
 - Progress Wave = sudah di Default Wave; kolom Skip Processing = sudah sampai Shipped.
 - File di Log Data hanya bisa didownload **24 jam**.
 - Tidak ada tombol “lanjutkan hanya yang sukses” — perbaikan = upload ulang.
@@ -124,6 +125,7 @@ Pastikan:
 - **Import Success tapi Wave Failed (Processing Date)** — tanggal order lebih baru dari Processing Date; naikkan tanggalnya.
 - **Angka Processed masih naik** — validasi masih berjalan di background.
 - **Lama Pending / In Queue** — tunggu batch aktif lain selesai.
+- **Import disabled / tidak bisa upload (TO-BE)** — kuota 10 aktif penuh; tunggu file selesai; hover tombol untuk teks penjelasan (English).
 - **Progress penuh tapi status belum Completed** — setelah diam lebih dari 60 menit, coba **Redispatch**.
 - **Completed tapi sistem masih lambat** — pekerjaan hitung stok / sync masih mengantre; jeda dulu sebelum upload besar berikutnya.
 - **Order stok terlambat** — set Processing Date ke tanggal stok ready.
