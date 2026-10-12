@@ -36,9 +36,10 @@ AND is_return_process = 0
 | Menu | Tebakan | Table | Catatan |
 |------|---------|-------|---------|
 | Manage Platform Product | platform product | `omni_products` | ≠ System Product (`scm_products`) |
-| Sales Order / All Sales Order | SO / sales_orders | `omni_sales_orders` | large; banyak kolom `*status*` → DESCRIBE wajib; key: `code`, `platform_order_id`, `platform_order_status`, `store_id`, `transaction_status`, `process_status` (bukan `order_no`) |
+| Sales Order / All Sales Order | SO / sales_orders | `omni_sales_orders` | large; banyak kolom `*status*` → DESCRIBE wajib; key: `code`, `platform_order_id`, `platform_order_status`, `store_id`, `transaction_status`, `process_status`, `platform_logistic`, `sales_order_process_status_id` (bukan `order_no`). **Unique DB** `so_plat_order_plat_logist_stat` = `(platform_order_id, platform_logistic, sales_order_process_status_id, status)` — **bukan** unique murni per platform_order_id → boleh 2 SO bila logistic beda (contoh Hemat Kargo vs SPX Hemat) |
 | Sales Order Booking | booking / booking_sn | `omni_sales_order_bookings` | FK `sales_order_id`; `booking_number`, `booking_status`, `match_status` (MATCH_SUCCESSFUL), `is_converted_to_real_order` |
 | Platform Order JSON | platform order payload | `omni_platform_order_json` | FK `sales_order_id`; `code`, `response` longtext |
+| SO Sync Log (Log Data) | order sync log | `omni_sales_order_synchronize_logs` | per store batch: `sync_started`/`ended`, `order_created`/`updated`/`failed`/`skipped`, `type`; Meridian retention ~from 2026-09-28 (older purged) |
 | Store Binding | stores / toko | `omni_stores` | key: `store_name` (bukan `name`), `platform_id`, `store_platform_name` |
 | Waves Management | waves | `omni_waves` | |
 | Sales Return (Omni) | platform return | `omni_sales_returns` | detail `omni_sales_return_details`; `code LIKE 'SRP-%'` |
