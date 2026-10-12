@@ -2,11 +2,11 @@
 doc_type: technical
 menu: horizon-jobs
 menu_name: "Horizon Jobs"
-version: 1.4
-last_updated: 2026-10-11
+version: 1.5
+last_updated: 2026-10-12
 owner: QA - Yemima
 status: review
-aliases: [horizon jobs technical, Bus::batch finally, queue connection salesorder, scheduler dump window, night schedule stagger]
+aliases: [horizon jobs technical, Bus::batch finally, queue connection salesorder, scheduler dump window, night schedule stagger, sunday reboot, server reboot schedule]
 ---
 
 # Horizon Jobs — Technical
@@ -116,14 +116,30 @@ sequenceDiagram
 
 ## 9. Night schedule / MariaDB dump window
 
-**Source of truth:** `app/Console/Kernel.php` (timezone **Asia/Jakarta**).
+**Source of truth:** `app/Console/Kernel.php` (timezone **Asia/Jakarta**).  
+Infra inventory (VPS): [`docs/infra/production-servers.md`](../../../infra/production-servers.md).
 
 | Window | Policy |
 |--------|--------|
-| **22:30–01:30** | MariaDB full dump — heavy scheduled commands **skip** via `unlessBetween('22:30','01:30')` |
 | **21:30** | `product-platform:push-stocks` (sebelum dump) |
-| **02:05–02:50** | Post-dump stagger: `horizon:terminate` → storage/settlement cleanup → `queue:flush` / prune-batches → SO detail cleanup → status check; hourly jobs resume with minute offsets |
+| **22:30–01:30** | MariaDB full dump — heavy scheduled commands **skip** via `unlessBetween('22:30','01:30')` |
+| **Minggu 01:00** | **Server reboot** (cron OS) — durasi tipikal **~15 menit** → siap ≈ **01:15** |
+| **02:05–02:50** | Post-dump / post-reboot stagger: `horizon:terminate` → storage/settlement cleanup → `queue:flush` / prune-batches → SO detail cleanup → status check; hourly jobs resume with minute offsets |
 | **03:00–04:35** | Benchmark COGS, sync-log cleanup, P/L snapshot cleanup, import cleanup, screening, file cleanups |
+
+### 9.1 Sunday reboot vs Laravel schedule
+
+| Fakta | Nilai |
+|-------|-------|
+| Jadwal reboot | **Setiap Minggu 01:00 WIB** (cron server) |
+| Durasi tipikal | **~15 menit** (server siap ≈ 01:15) |
+| Job berat pertama setelah reboot | `horizon:terminate` **02:05** |
+| Buffer | ≈ **50 menit** dari siap (01:15) ke job berat pertama (02:05) |
+| Verdict | **Aman** — reboot jatuh di dalam jendela dump yang sudah dikosongkan dari job berat |
+
+**Syarat operasional (tetap wajib):** setelah reboot, MariaDB, Redis, Horizon (systemd/supervisor), dan cron `* * * * * php artisan schedule:run` harus hidup lagi sebelum **02:05**. Job `everyMinute` / `everyFiveMinutes` yang terputus mid-flight di ~01:00 akan dijalankan ulang setelah scheduler & worker up (mutex `withoutOverlapping`).
+
+**Hindari** memindahkan reboot ke **02:00–04:40** (tabrok cluster post-dump). Opsi longgar: Minggu **01:15** (setelah dump lebih tenang).
 
 ### Hourly offsets (hindari pile-up 02:00)
 
@@ -142,6 +158,7 @@ Menu-level narrative: [omni-store-binding §4.5](../omni-store-binding/requireme
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5 | 2026-10-12 | §9.1 Sunday reboot 01:00 WIB (~15 mnt) + buffer ke 02:05; link infra |
 | 1.4 | 2026-10-11 | §9 Night schedule / dump window 22:30–01:30 + stagger table (selaras Kernel) |
 | 1.3 | 2026-09-28 | Index Settlement Upload + Sales Order + peta `_meta`; rujuk requirement v1.3 |
 | 1.2 | 2026-09-28 | Promote ke **review**; index tetap 1 pipeline (Skip Wave) |
