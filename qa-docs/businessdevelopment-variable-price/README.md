@@ -8,6 +8,7 @@ Menu **Variable Price** (Business Development) — master band margin by Amount 
 | Requirement | [requirement.md](./requirement.md) (v1.1) | PM, QA, Dev | review |
 | Technical | [technical.md](./technical.md) (v1.1) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) (v1.1) | Publish | review |
+| Test Cases | [test-cases/](./test-cases/) | QA | draft (crawl plan) |
 
 **Jira:** [ETM-16312](https://erpintegration.atlassian.net/browse/ETM-16312) (RE-OPEN)  
 **Follow-up:** [ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569) · [ETM-16566](https://erpintegration.atlassian.net/browse/ETM-16566) · [ETM-16567](https://erpintegration.atlassian.net/browse/ETM-16567) · [ETM-16568](https://erpintegration.atlassian.net/browse/ETM-16568) · [ETM-16562](https://erpintegration.atlassian.net/browse/ETM-16562) · [ETM-16565](https://erpintegration.atlassian.net/browse/ETM-16565)  
