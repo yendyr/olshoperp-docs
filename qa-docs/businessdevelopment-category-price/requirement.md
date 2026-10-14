@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.0
-last_updated: 2026-10-09
+version: 1.1
+last_updated: 2026-10-14
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16313](https://erpintegration.atlassian.net/browse/ETM-16313)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar D)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §4, §6–9  
-**Relates:** ETM-16312 · ETM-16314
+**Relates:** ETM-16312 · ETM-16314 · mirror validasi Percentage [ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569)
 
 ---
 
@@ -23,6 +23,7 @@ status: review
 |---------|------|---------|
 | 0.1 | 2026-10-07 | Draft AS-IS + TO-BE multi tier |
 | 1.0 | 2026-10-09 | Full dari final: Variable Price Tiers, Select VP, Update from Master / to Pricelist |
+| 1.1 | 2026-10-14 | Mirror Variable Price: Value Percentage band lokal ±9.999 + truncate 4dp (konsistensi ETM-16569 / 16562) |
 
 ---
 
@@ -52,6 +53,7 @@ flowchart LR
 | A-05 | Update from Master overwrite semua tier + konfirmasi sederhana + log | **TO-BE** |
 | A-06 | Update to Pricelist: dialog keras + checkbox acknowledge; tombol merah disabled sampai dicentang | **TO-BE** |
 | A-07 | Satu VP tidak bisa dipasang dua kali; hanya Active; by Weight pakai satuan `g` | **TO-BE** |
+| A-08 | Edit band lokal Type **Percentage**: Value -9.999 … 9.999; ≥10.000 / ≤-10.000 ditolak; desimal truncate 4dp (sama master VP) | **TO-BE** |
 
 ---
 
@@ -91,7 +93,9 @@ Dialog keras: N baris Pricelist category akan dihitung ulang; manual override te
 
 - Beberapa VP by Amount dan/atau by Weight OK.
 - Category tanpa tier diperbolehkan; Update to Pricelist → margin 0 (**GAP-CP-01** — konfirmasi dialog "no tiers").
-- Validasi band lokal = AS-IS (range + Unlimited).
+- Validasi band lokal = AS-IS (range + Unlimited) **plus** mirror master Variable Price:
+  - Type Percentage: Value **-9.999 … 9.999** (tolak di luar); Amount tidak kena batas.
+  - Percentage desimal: truncate **4 dp**.
 - Tidak migrasi otomatis data margin lama.
 
 ---

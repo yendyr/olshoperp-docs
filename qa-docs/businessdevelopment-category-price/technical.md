@@ -2,8 +2,8 @@
 doc_type: technical
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.0
-last_updated: 2026-10-09
+version: 1.1
+last_updated: 2026-10-14
 owner: QA - Yemima
 status: review
 related_docs:
@@ -53,6 +53,7 @@ Audit log Category: attach/remove/edit tier, Update from Master, Update to Price
 | Select Variable Price | Pola `PurchaseOrder/DatalistDetail` Select Product |
 | Tier accordion | Badge type; snapshot datetime; orange info jika dirty vs master |
 | Update to Pricelist | Tombol merah; checkbox gate sebelum enable |
+| Band lokal Percentage | Validasi Value `-9999…9999` + truncate 4dp (mirror Variable Price / ETM-16569, 16562) |
 
 ---
 
@@ -64,6 +65,7 @@ Audit log Category: attach/remove/edit tier, Update from Master, Update to Price
 | G-02 | Migrasi/bersih data band AS-IS |
 | G-03 | Mass Update from Master datalist (opsional) |
 | G-04 | Dirty detection tier vs master untuk icon oranye |
+| G-05 | Share FormRequest/helper validasi Percentage dengan Variable Price |
 
 ---
 

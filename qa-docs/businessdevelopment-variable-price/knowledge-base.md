@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: businessdevelopment-variable-price
 menu_name: "Variable Price"
-version: 1.0
-last_updated: 2026-10-09
+version: 1.1
+last_updated: 2026-10-14
 owner: QA - Yemima
 status: review
 aliases: [Variable Price, master margin, margin by weight, margin by amount, VP]
@@ -49,7 +49,8 @@ flowchart TD
 ## Tips
 
 - Value boleh **minus** (mengurangi harga jual).
-- Type bisa diganti selama belum dipakai Category; setelah dipakai terkunci.
+- Kalau Type band **Percentage**, Value hanya boleh antara **-9.999** dan **9.999** (persen). Angka 10.000 ke atas / -10.000 ke bawah ditolak saat simpan.
+- Type bisa diganti selama belum dipakai Category (akan ada konfirmasi dan baris band dikosongkan); setelah dipakai terkunci — hover icon info untuk penjelasan.
 - Hover **Used in Categories** untuk lihat Category mana yang memakai master.
 - Setelah Update to Category, harga jual di Pricelist baru berubah kalau Category menjalankan **Update to Pricelist**.
 
@@ -57,8 +58,13 @@ flowchart TD
 
 | Gejala | Solusi |
 |--------|--------|
-| Update to Category nonaktif | Master belum dipasang di Category mana pun |
+| Update to Category nonaktif | Master belum dipasang di Category mana pun — pasang dulu di Category Price |
 | Type tidak bisa diganti | Sudah dipakai Category — buat master baru jika butuh type lain |
+| Tooltip Type tidak muncul | Laporkan bug (ETM-16566) — seharusnya muncul saat hover icon info/gembok |
+| Ganti Type Amount↔Weight tanpa konfirmasi / angka band aneh | Tidak boleh — harus konfirmasi + band kosong (ETM-16568) |
+| Simpan Percentage 10.000+ ditolak | Normal — batas ±9.999% (ETM-16569) |
+| Desimal Percentage jadi angka aneh / hilang setelah Save | Bug pemisah desimal (ETM-16562) — seharusnya truncate 4 digit |
+| Audit Log Start/End/Margin tampil `-` padahal 0/Unlimited | Bug Audit Log tier (ETM-16565) |
 | Pricelist tidak berubah setelah Update to Category | Normal — lanjut Update to Pricelist di Category |
 
 ## Do / Don't

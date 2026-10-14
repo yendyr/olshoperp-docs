@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.0
-last_updated: 2026-10-09
+version: 1.1
+last_updated: 2026-10-14
 owner: QA - Yemima
 status: review
 aliases: [Category Price, pricelist category, kategori harga, Variable Price Tiers]
@@ -38,6 +38,7 @@ flowchart TD
 
 - Edit band di Category **tidak** mengubah Variable Price master.
 - Ubah master → Update to Category dari Variable Price, atau Update from Master di sini.
+- Edit Value Type **Percentage** di tier lokal: batas **-9.999 … 9.999** (sama Variable Price); desimal dipotong 4 digit.
 - Harga jual baru berubah setelah **Update to Pricelist**.
 - Contoh: harga 16.000 + berat 1.500 g + 3 tier → margin 8.500 → final 24.500.
 

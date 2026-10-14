@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.0
-last_updated: 2026-10-09
+version: 1.1
+last_updated: 2026-10-14
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.0"
+source_version: "1.1"
 owner: QA - Yemima
 status: review
 ---
@@ -47,6 +47,7 @@ Harga jual di Pricelist **hanya** berubah setelah Update to Pricelist.
 ## 4. Tips
 
 - Hapus tier → master Variable Price tetap ada; bisa dipasang lagi nanti.
+- Edit Value **Percentage** di tier: maksimal ±9.999 (sama Variable Price).
 - Contoh cek: produk 16.000 + berat 1.500 g → margin 8.500 → final 24.500 (setelah Update to Pricelist).
 
 Referensi: [knowledge-base.md](./knowledge-base.md) · [Variable Price](../businessdevelopment-variable-price/user-guide.md)

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-variable-price
 menu_name: "Variable Price"
-version: 1.0
-last_updated: 2026-10-09
+version: 1.1
+last_updated: 2026-10-14
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.0"
+source_version: "1.1"
 owner: QA - Yemima
 status: review
 ---
@@ -37,7 +37,10 @@ Kalau butuh aturan harga **dan** berat, buat **dua** Variable Price, lalu pasang
 ## 3. Yang perlu diperhatikan
 
 - Value boleh **minus** (mengurangi harga).
-- Type terkunci setelah Variable Price sudah dipakai Category.
+- Kalau Type band **Percentage**, Value hanya **-9.999 sampai 9.999**. Angka 10.000 / -10.000 ke atas/bawah ditolak saat simpan.
+- Desimal Percentage (mis. `2,56789`) tersimpan dipotong 4 digit di belakang koma (`2,5678`).
+- Type terkunci setelah Variable Price sudah dipakai Category. Sebelum dipakai, ganti Type akan minta konfirmasi dan mengosongkan tabel band.
+- **Update to Category** nonaktif kalau master belum dipasang di Category mana pun.
 - Update to Category menimpa edit lokal di Category — cek daftar Category di section **Used in Category Price**.
 - Pricelist tidak ikut Update to Category.
 
@@ -56,6 +59,5 @@ Kalau butuh aturan harga **dan** berat, buat **dua** Variable Price, lalu pasang
 ## 5. Tips
 
 - Hover kolom **Used in Categories** untuk lihat Category pemakai.
+- Hover icon info/gembok di field Type untuk penjelasan (satu type per master / kenapa terkunci).
 - Mass Update: centang beberapa baris → icon Update to Category di bar atas (nonaktif jika ada yang belum dipakai Category).
-
-Referensi: [knowledge-base.md](./knowledge-base.md) · [requirement.md](./requirement.md)

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: businessdevelopment-variable-price
 menu_name: "Variable Price"
-version: 1.0
-last_updated: 2026-10-09
+version: 1.1
+last_updated: 2026-10-14
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,8 +15,8 @@ related_docs:
 
 # Variable Price — Technical
 
-**Status kode:** menu **belum ada** (ETM-16312). Dokumen = kontrak TO-BE.  
-**FE target:** `src/pages/BusinessDevelopment/VariablePrice/**` · router di atas `pricelist-category`  
+**Status kode:** FE skeleton ada (`VariablePrice/DataList.vue`, `Form.vue`); ETM-16312 **RE-OPEN** — behavior & validasi masih gap vs requirement (lihat Error ETM-16566/16567/16568 + Improvement ETM-16569).  
+**FE:** `src/pages/BusinessDevelopment/VariablePrice/**` · router di atas `pricelist-category`  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89
 
 ---
@@ -58,7 +58,11 @@ related_docs:
 | POST | `…/variable-price/bulk-update-to-category` | Massal dari datalist |
 
 Validasi band: End > Start; wajib satu Unlimited; Value boleh minus.  
-Audit: create/update + setiap Update to Category (user, waktu, N category).
+**Percentage Value:** `-9999 <= value <= 9999` (UI + FormRequest/API); Amount tidak kena rule ini ([ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569)).  
+**Percentage desimal:** parse pemisah desimal benar; truncate **4 dp** (bukan round-half-up) ([ETM-16562](https://erpintegration.atlassian.net/browse/ETM-16562)).  
+Type change (unused only): confirm → clear bands; reject type change if linked Category.  
+Audit: create/update + setiap Update to Category (user, waktu, N category).  
+**Audit Log tier:** Start `0`, End `Unlimited`, Margin `0` harus tercatat sebagai nilai (bukan `-`); Old Value lengkap saat shift baris; UI slideover ([ETM-16565](https://erpintegration.atlassian.net/browse/ETM-16565)).
 
 ---
 
@@ -66,8 +70,9 @@ Audit: create/update + setiap Update to Category (user, waktu, N category).
 
 | Layar | Detail |
 |-------|--------|
-| DataList | Kolom Used in Categories + hover list; icon Update to Category disabled jika unused in selection |
-| Form | Type info tooltip; lock Type + padlock jika used; section Used in Category Price; sidebar Update |
+| DataList | Kolom Used in Categories + hover list; icon Update to Category **disabled** jika ada unused in selection (ETM-16567) |
+| Form | Type info/lock tooltip **harus** appear on hover (ETM-16566); lock Type + padlock jika used; section Used in Category Price; sidebar Update disabled jika unused |
+| Type switch | Dialog confirm + clear bands (ETM-16568) |
 | Toast | Sukses Update — bukan halaman sukses terpisah |
 
 ---
@@ -76,10 +81,11 @@ Audit: create/update + setiap Update to Category (user, waktu, N category).
 
 | ID | Item |
 |----|------|
-| G-01 | Implementasi BE/FE belum ada |
+| G-01 | RE-OPEN ETM-16312 — Error 16566/16567/16568/16562/16565 + Improvement 16569 |
 | G-02 | Uniqueness code per company — verify di FormRequest |
 | G-03 | Partial failure bulk Update — tentukan rollback vs per-category log |
 | G-04 | Final §9 open decisions (weight unit convert, job queue Pricelist, dll.) |
+| G-05 | Mirror validasi Percentage ±9999 (+ 4dp) ke band lokal Category Price |
 
 ---
 

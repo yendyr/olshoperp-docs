@@ -1,10 +1,10 @@
 ---
 doc_type: requirement-end-to-end
 title: "Multi-tier Margin: Variable Price → Category Price → Pricelist Product"
-status: final-draft (siap dibawa ke qa-docs; poin di Bagian 9 masih butuh keputusan)
-last_updated: 2026-10-09
+status: final-draft (siap dibawa ke qa-docs; poin di Bagian 9 sebagian resolved 2026-10-14)
+last_updated: 2026-10-14
 owner: QA - Yemima
-related_jira: [ETM-16312, ETM-16313, ETM-16314]
+related_jira: [ETM-16312, ETM-16313, ETM-16314, ETM-16569, ETM-16566, ETM-16567, ETM-16568, ETM-16562, ETM-16565]
 wireframe: https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89
 related_sot: olshoperp/docs/qa-docs/_meta/sot/businessdevelopment-variable-price-source-of-truth.md
 ---
@@ -174,7 +174,7 @@ Sidebar kanan: daftar lompat-section (centang hijau untuk section yang sudah ter
 - **Belum dipakai category mana pun** → Type boleh diubah kapan saja.
 - **Sudah dipakai di Category Price** → Type **tetap tampil tapi disabled** (icon gembok). Tooltip menambahkan: *"Type is locked because this Variable Price is already used in a Category Price."*
 - Untuk dev: field jangan disembunyikan, cukup disabled. Penolakan juga harus dilakukan di sisi server, bukan hanya di tampilan.
-- Saat Type diubah (belum dipakai), satuan band berubah (Rp ke gram). Usulan perilaku: band dikosongkan dengan konfirmasi. Lihat Bagian 9.
+- Saat Type diubah (belum dipakai), satuan band berubah (Rp ke gram). **Resolved (2026-10-14):** band dikosongkan dengan dialog konfirmasi (lihat ETM-16568 — AS-IS tanpa konfirmasi = bug).
 
 ### 3.6 Margin Price Configuration
 
@@ -199,8 +199,12 @@ Sama polanya dengan section Margin Price Configuration di Category Price sekaran
 | Type kosong | Tolak simpan. |
 | End lebih kecil atau sama dengan Start (band biasa) | Tolak simpan, sama seperti Category Price sekarang. |
 | Baris Unlimited tidak ada | Tolak simpan. Wajib ada satu baris Unlimited di akhir, mengikuti pola Category Price sekarang. |
-| Value minus | Diizinkan. |
+| Value minus | Diizinkan (dalam batas Percentage jika Type Percentage). |
+| Value Type **Percentage** di luar -9.999 … 9.999 | Tolak simpan (UI + server). Contoh OK: `15`, `-5.000`, `9.999`. Contoh tolak: `10.000`, `-10.000`, `50.000`. Amount tidak kena batas. ([ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569)) |
+| Value Type **Percentage** desimal | Parse pemisah desimal benar; truncate ke **4 digit desimal** (bukan round). ([ETM-16562](https://erpintegration.atlassian.net/browse/ETM-16562)) |
 | Code sudah dipakai di company yang sama | Tolak simpan. |
+
+**Catatan:** Validasi Percentage ±9.999 dan 4dp **juga berlaku** untuk edit band lokal di Category Price (konsistensi).
 
 ### 3.7 Used in Category Price
 
@@ -556,7 +560,7 @@ Poin 1 dan 2 adalah temuan dari pengecekan kode hari ini. Sisanya dari analisis 
 |---|---|---|---|
 | 1 | **Apa yang terjadi di Pricelist ketika default price produk berubah?** Saat ini, margin hanya dihitung dari band saat harga produk **pertama kali** diisi (harga sebelumnya 0). Kalau harga berubah belakangan, margin lama dipertahankan dan hanya final yang bergeser (final = harga baru + margin lama). | Dengan multi tier, margin berbasis harga bisa jadi tidak lagi sesuai band setelah harga berubah. Tidak ada update otomatis, jadi user harus menjalankan Update to Pricelist. | Pertahankan perilaku sekarang selama fase trial, dan tulis jelas di docs bahwa harga baru baru "dihitung ulang" lewat Update to Pricelist. |
 | 2 | **Produk baru atau Pricelist baru: margin awalnya dari mana?** Saat ini produk yang baru diberi harga mendapat margin dari band Category. Di sisi lain weight bisa baru diisi belakangan. | Tanpa keputusan, margin awal produk baru bisa hanya dari tier by Amount, lalu berubah setelah Update to Pricelist. | Margin awal dihitung dari semua tier yang datanya sudah ada (weight kosong = tier Weight dilewati). |
-| 3 | Saat Type diubah (master belum dipakai), apa yang terjadi pada band? | Satuan band berubah dari Rp ke gram. | Band dikosongkan dengan dialog konfirmasi. |
+| 3 | ~~Saat Type diubah (master belum dipakai), apa yang terjadi pada band?~~ | ~~Satuan band berubah dari Rp ke gram.~~ | **Resolved 2026-10-14:** band dikosongkan dengan dialog konfirmasi (ETM-16568). |
 | 4 | Satuan weight: kolom weight di Dimension & Weight punya satuan sendiri. Apakah sistem harus mengonversi ke gram sebelum dicocokkan? | Weight 1,5 kg kalau dibaca 1,5 akan salah band. | Konversi ke gram sebelum dicocokkan. Perlu dicek dulu bagaimana satuan disimpan. |
 | 5 | Weight pecahan atau di bawah 1 g: band by Weight dimulai dari 1. | Weight 0,5 g tidak cocok band mana pun. | Terima apa adanya (kontribusi 0), atau baris pertama dimulai dari 0. |
 | 6 | Category tanpa tier: Update to Pricelist menghasilkan margin 0. Perlu dipastikan itu yang diinginkan. | Menimpa margin lama semua Pricelist category itu menjadi 0. | Boleh, tapi dialog konfirmasi menyebut "no tiers". |
@@ -583,9 +587,10 @@ Poin 1 dan 2 adalah temuan dari pengecekan kode hari ini. Sisanya dari analisis 
 | Item | Lokasi |
 |---|---|
 | Wireframe final (layar A–G dan alur E2E) | https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 |
-| Jira Variable Price | https://erpintegration.atlassian.net/browse/ETM-16312 |
+| Jira Variable Price | https://erpintegration.atlassian.net/browse/ETM-16312 (RE-OPEN) |
 | Jira Category Price | https://erpintegration.atlassian.net/browse/ETM-16313 |
 | Jira Pricelist Product | https://erpintegration.atlassian.net/browse/ETM-16314 |
-| SOT Variable Price | `olshoperp/docs/qa-docs/_meta/sot/businessdevelopment-variable-price-source-of-truth.md` (aturan Type di SOT masih "immutable setelah save pertama" dan perlu disesuaikan dengan Bagian 3.5) |
+| Follow-up Percentage / QA Error | ETM-16569 · ETM-16566 · ETM-16567 · ETM-16568 · ETM-16562 · ETM-16565 |
+| SOT Variable Price | `olshoperp/docs/qa-docs/_meta/sot/businessdevelopment-variable-price-source-of-truth.md` (v1.2) |
 | Docs menu terkait | `docs/qa-docs/businessdevelopment-category-price/`, `docs/qa-docs/businessdevelopment-pricelist-product/` |
 | Komponen UI yang diacu | Category Price `Form.vue` dan `DataList.vue`, Pricelist `DataList.vue`, pola "Select Product" di `SCM/PurchaseOrder/DatalistDetail.vue` |
