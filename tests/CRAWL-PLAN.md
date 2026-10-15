@@ -47,3 +47,18 @@ Ikuti rule `13`. Parser-nya PHP Symfony YAML (`E2eTestCaseDocService.php`). Yang
 Jangan menyalin password, token, atau email login ke dokumen ini.
 
 Expected bisnis tetap dari `requirement.md` menu itu. Kalau kartu Jira menambah batas yang belum ada di requirement, tulis sebagai kartu, jangan sebagai aturan requirement.
+
+## Datalist standard checklist (pakai ulang untuk tiap menu)
+
+Acuan perilaku: shared capabilities backend `yendyr/olshoperp` branch `dev` `docs/qa-docs/_meta/shared-capabilities/` (SF-DL-01 search/filter, SF-DL-03 show-deleted, SF-DL-04 column show/hide, SF-DL-05 export) + `requirement.md` § DataList menu. Tampilan: `tests/UX-STANDARD.md` §2.10. Seed data `QA-AUTO-{MENU}DL-NN` cukup untuk >1 halaman (page size 10), hapus semua di akhir.
+
+| # | Fitur | Langkah | Lulus jika |
+|---|-------|---------|------------|
+| 1 | Show deleted data | Hapus 1–2 data QA-AUTO, centang **Show deleted data**, lalu lepas | ON: baris terhapus muncul dengan penanda `Deleted`, tanpa aksi edit/hapus (bukan restore, SF-DL-03). OFF: baris hilang lagi, total kembali. Hubungkan ke TC delete. |
+| 2 | Columns Show/Hide | Toggle tiap kolom satu per satu; sembunyikan 1 kolom lalu reload; **Reset to Default** | Header tabel ikut berubah; pilihan bertahan setelah reload; reset mengembalikan default. Label di panel = label header. |
+| 3 | Export | Export dengan filter + kolom tersembunyi + data >1 halaman; buka xlsx (openpyxl) | Header file = header layar (kolom gabungan boleh dipecah). Mengikuti filter & kolom tersembunyi. Semua baris hasil filter ikut (bukan hanya halaman aktif) kecuali requirement bilang lain. Kolom angka bertipe numerik (`data_type` `n`, bukan `@`/teks), tanggal bertipe tanggal. |
+| 4 | Bulk action | Pilih baris via checkbox kiri; daftar semua ikon di bar atas; hover (tooltip) dan klik satu per satu | Tiap ikon outline primary, punya tooltip, disabled sesuai requirement (tooltip alasan), konfirmasi + toast + hasil benar. |
+| 5 | Global search | Cari kode penuh, potongan di tengah, beda huruf besar/kecil, nama, kolom lain, kata acak | Cocok sebagian (contains) dan tidak peka huruf; kolom yang dicakup sesuai requirement; tanpa hasil = `No matching records found` + `Showing 0 to 0 of 0 entries (filtered from N total entries)`. |
+| 6 | Pagination | Page size 10, data > 10; next/prev/nomor/first/last; ganti page size | `Showing x to y of N entries` benar di tiap halaman; tombol disabled di ujung; ganti size mengubah jumlah baris. |
+| 7 | Sort | Untuk **setiap** header yang punya ikon sort: klik asc, desc, klik ketiga (reset bila ada); kumpulkan nilai dari semua halaman | Urutan benar sesuai tipe data (teks alfabet tidak peka huruf, angka numerik, tanggal kronologis) lintas halaman; indikator (`dt-ordering-asc/desc`) berubah; **isi baris tidak berubah** karena sort (kode, pembuat, status tetap sama). Kolom dengan nilai seragam ditandai "tidak teruji". |
+| 8 | Tampilan | Lihat UX-STANDARD §2.10 | Status primary bold, sel kode link ke edit, tanpa underline titik-titik, breadcrumb konsisten, jamak benar. |

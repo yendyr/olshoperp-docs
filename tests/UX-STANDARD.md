@@ -98,6 +98,18 @@ Kalau sel kode (Code / Trx. Code) di tabel sudah bisa diklik dan membuka dokumen
 
 Contoh gagal (15-10-2026): Variable Price edit, accordion **Used in Category Price**. Sel Code `GRS05` adalah link `target=_blank` ke `/businessdevelopment/pricelist-category/edit/27`; kolom paling kanan `Open` + ikon membuka URL yang sama.
 
+### 2.10 Datalist: status, breadcrumb, sel kode, garis bawah
+
+Keputusan Rachy 15-10-2026.
+
+| Aturan | Wajib | Terukur baseline (getComputedStyle, 15-10-2026) |
+|--------|-------|----------------------------------|
+| Gaya status | Semua menu memakai gaya status primary: teks `rgb(16, 78, 100)`, `font-weight: 700`, rata tengah. Bukan teks hijau/merah tipis. | PO `Trx. Status`: `<strong class="text-primary">`, `rgb(16, 78, 100)`, 700, 13.6px, center. Variable Price: `text-success` `rgb(0, 150, 137)` / Inactive `rgb(193, 0, 7)`, 400, kiri = gagal. |
+| Breadcrumb | Satu nama grup yang sama di daftar, create, dan edit, mengikuti sidebar. | Variable Price daftar `Busdev > Master Data Busdev > Variable Price`, form `Busdev > Price > …` = gagal. |
+| Sel kode | Sel Code/SKU/Trx. Code di datalist wajib link ke halaman edit, gaya `text-primary font-bold` (`rgb(16, 78, 100)`, 700). | Master System Product: SKU `<a class="text-primary font-bold" href="/supplychain/product/edit/{id}" target="_blank">`. PO: Trx. Code link bold primary. Variable Price: teks biasa `rgb(71, 85, 105)`, 400, tidak bisa diklik = gagal. |
+| Garis bawah | Tidak ada garis bawah titik-titik (`underline decoration-dotted`) pada sel datalist. Tooltip boleh tanpa garis. | Variable Price `Used In Categories`: `underline dotted` = gagal. Tidak ada di menu lain. |
+| Kata hitungan | Bentuk jamak benar: `0 categories`, `1 category`, `2 categories`. | Variable Price `0 category` = gagal. |
+
 ## 3. Fakta baseline Purchase Order
 
 Dipakai ulang saat mengukur. Jangan diganti diam-diam oleh kesan crawl menu lain.
@@ -212,6 +224,14 @@ Company crawl UI mengikuti allowlist menu itu. Baseline PO diukur di lumicharmsi
 ### Pilar tabel / aksi redundan
 
 1. Untuk tiap tabel (datalist dan tabel di dalam form): kalau sel kode berupa link, cek tidak ada kolom/tombol lain (`Open`, ikon external link) dengan `href` yang sama. Ada = gagal (§2.9).
+
+### Pilar datalist tampilan
+
+1. Status: computed color `rgb(16, 78, 100)`, weight 700, rata tengah (§2.10).
+2. Sel kode: `<a>` ke `/edit/{id}`, primary bold.
+3. Tidak ada `text-decoration-line: underline` + `dotted` di sel tabel.
+4. Breadcrumb daftar = create = edit = grup sidebar.
+5. Teks hitungan memakai bentuk jamak benar.
 
 ### Pilar audit
 
