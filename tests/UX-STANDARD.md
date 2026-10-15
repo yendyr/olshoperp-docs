@@ -92,6 +92,12 @@ Panel pilihan tidak boleh menumpuk di atas field lain secara salah, terpotong co
 
 Yang benar: panel mengikuti field, atau tertutup saat scroll. Gagal jika panel tetap di posisi viewport lama sementara field sudah pindah, terpotong `overflow`, atau menutup field pemicunya.
 
+### 2.9 Kolom aksi redundan
+
+Kalau sel kode (Code / Trx. Code) di tabel sudah bisa diklik dan membuka dokumen (di tab yang sama atau tab baru), tabel itu **tidak boleh** punya kolom atau tombol terpisah (mis. teks `Open` + ikon) yang membuka tujuan yang sama. Satu tujuan, satu pemicu: sel kode.
+
+Contoh gagal (15-10-2026): Variable Price edit, accordion **Used in Category Price**. Sel Code `GRS05` adalah link `target=_blank` ke `/businessdevelopment/pricelist-category/edit/27`; kolom paling kanan `Open` + ikon membuka URL yang sama.
+
 ## 3. Fakta baseline Purchase Order
 
 Dipakai ulang saat mengukur. Jangan diganti diam-diam oleh kesan crawl menu lain.
@@ -202,6 +208,10 @@ Company crawl UI mengikuti allowlist menu itu. Baseline PO diukur di lumicharmsi
 1. Catat teks breadcrumb daftar dan form.
 2. Samakan dengan jalur sidebar menu itu (grup dan nama menu).
 3. Daftar dan form memakai segmen modul/menu yang sama. Form menambah segmen Create atau Edit.
+
+### Pilar tabel / aksi redundan
+
+1. Untuk tiap tabel (datalist dan tabel di dalam form): kalau sel kode berupa link, cek tidak ada kolom/tombol lain (`Open`, ikon external link) dengan `href` yang sama. Ada = gagal (§2.9).
 
 ### Pilar audit
 
