@@ -26,11 +26,12 @@ Data uji crawl itu sudah dihapus (PO-6ACFA887, Variable Price `QA-AUTO-VPUX-*`).
 
 | Jenis layar | Aturan |
 |-------------|--------|
-| Form **master** (header, field di accordion/section) | Tidak ada autosave. Tersimpan hanya lewat **Save All**. Blur, pindah section, atau scroll tidak boleh mengirim simpan. |
+| Form **master**, field biasa (header, field di accordion/section) | Tidak ada autosave. Tersimpan hanya lewat **Save All**. Blur, pindah section, atau scroll tidak boleh mengirim simpan. |
 | Level **transaksional** | Autosave boleh. Contoh: baris line item Purchase Order. Ubah qty lalu pindah field → tersimpan, ada toast sukses atau toast error. |
-| **Inline edit di datatable** | Berlaku untuk master dan transaksional. Edit langsung di sel tabel wajib tersimpan tanpa klik Save All. |
+| **Inline edit** (sel datatable, atau text box di section grid/konfigurasi yang bisa langsung diketik, mis. Margin Price Configuration di Variable Price) | Berlaku untuk master dan transaksional. Selesai edit (blur/Tab/Enter) wajib tersimpan tanpa klik Save All, seperti header SO/PO. |
+| Header transaksi (SO/PO) selama detail masih kosong | Autosave. Ganti Transaction Date lalu blur langsung mengirim simpan header dan bertahan setelah reload (terukur 15-10-2026). |
 
-Klasifikasi sebelum assert: field di form ikut baris pertama; sel yang diedit di tempat pada datatable ikut baris ketiga; baris detail transaksi (seperti detail PO) ikut baris kedua.
+Klasifikasi sebelum assert: field form biasa ikut baris pertama; baris detail transaksi (seperti detail PO) ikut baris kedua; sel datatable atau text box section konfigurasi yang diketik langsung di tempat ikut baris ketiga. Keputusan Rachy 15-10-2026: input Margin Price Configuration Variable Price = inline edit, jadi wajib autosave.
 
 ### 2.2 Label tombol simpan
 
@@ -46,9 +47,9 @@ Bukan section/accordion inline di badan form. Link di sidebar membuka drawer, bu
 
 Isi drawer yang jadi acuan PO: pencarian, Columns Show/Hide, Export, kolom Date | Source | Old Value | New Value | Action | User, urutan terbaru di atas, pagination 20.
 
-### 2.4 Inline edit datatable
+### 2.4 Inline edit
 
-Edit langsung di sel datatable tersimpan saat edit selesai (blur atau setara), tanpa Save All. Berlaku menu master dan menu transaksi. Toast sukses atau error tetap muncul.
+Edit langsung di sel datatable atau di text box section grid/konfigurasi tersimpan saat edit selesai (blur atau setara), tanpa Save All. Berlaku menu master dan menu transaksi. Toast sukses atau error tetap muncul.
 
 ### 2.5 Wording toast sukses
 
@@ -70,12 +71,12 @@ Crawl 14 Oktober 2026 masih melihat kalimat lama. Itu temuan, bukan acuan baru:
 
 | Peran | Warna | Dipakai untuk |
 |-------|--------|----------------|
-| Primary solid | `rgb(16, 78, 100)` (#104E64), teks putih | Hanya aksi utama: **Create** di daftar, **Save All** di form. Satu tombol solid primary per area. |
+| Primary solid | `rgb(16, 78, 100)` (#104E64), teks putih | Aksi utama: **Create** di daftar, **Save All** di form. Satu tombol solid primary per area. Tombol **Delete** juga primary, bukan merah (keputusan Rachy 15-10-2026, konsisten di semua menu). |
 | Outline | Outline dan teks warna primary yang sama, latar transparan | Aksi baris di datatable detail, aksi bulk, dan aksi sekunder (Export, Import, Columns, Advanced Filter, Edit, Approve, Print). |
-| Danger solid | `rgb(193, 0, 7)`, teks putih | Hanya tombol konfirmasi **Delete** di dialog. |
+| Konfirmasi Delete di modal | `rgb(193, 0, 7)` (merah), teks putih. Terukur sama di PO, SO General, Variable Price (15-10-2026) | Diterima untuk sementara (keputusan Rachy 15-10-2026), **asal konsisten merah di semua menu**. Menu yang modal Delete-nya beda warna = gagal. |
 | Pengecualian outline | Warning atau danger | Hanya tombol spesial yang jarang dipakai atau memang harus menarik perhatian. Bukan aksi rutin. |
 
-Ikon hapus di baris tetap outline primary. Hover danger (`hover:bg-danger/10`) boleh, seperti PO. Merah solid tidak dipakai di baris.
+Semua tombol outline ikon-saja (termasuk hapus di baris dan hapus bulk) wajib outline primary `rgb(16, 78, 100)` (terukur sama di PO, SO General, Variable Price). Hover danger (`hover:bg-danger/10`) boleh, seperti PO. Merah tidak dipakai untuk tombol Delete.
 
 Crawl PO juga melihat ikon kecil `rgb(27, 142, 253)` di samping Save All. Tujuan tombol itu belum terdokumentasi. Kalau fungsinya aksi rutin, outline-nya harus primary. Warna lain hanya lolos jika tombol itu masuk pengecualian spesial/warning/danger.
 
@@ -135,7 +136,7 @@ Tidak ada ilustrasi atau tombol ajakan di kosong itu.
 - Aksi baris: ikon outline, tooltip (Edit, Approve, Print, Closed, Delete).
 - **Save All** di sidebar kanan form. PO menempel di bawah radio Draft/Open. Menu tanpa radio status tetap menaruh Save All di sidebar, labelnya tetap Save All.
 - Section form: accordion, header abu-abu, chevron.
-- Dialog hapus daftar: judul `Are you sure?`, badan `Do you really want to delete these records? This process cannot be undone.`, satu tombol Delete merah. Tutup dengan Esc atau klik luar. Komponen yang sama terlihat di PO dan Variable Price.
+- Dialog hapus daftar: judul `Are you sure?`, badan `Do you really want to delete these records? This process cannot be undone.`, satu tombol Delete merah `rgb(193, 0, 7)` (diterima, harus konsisten). Tutup dengan Esc atau klik luar. Komponen yang sama terlihat di PO dan Variable Price.
 
 ### Simpan yang teramati di PO (ilustrasi §2, bukan kalimat toast acuan)
 
@@ -153,7 +154,7 @@ Dicatat agar crawl master tidak mengulang riset. Assert tetap §2, bukan “sama
 | Breadcrumb | Daftar `Busdev > Master Data Busdev > Variable Price`. Create/Edit `Busdev > Price > Variable Price > …`. Menu di sidebar ada di grup **Price**. | Gagal. Daftar dan form harus sama-sama mengikuti sidebar. |
 | Label simpan | Create = `Save`, Edit = `Save All` | Gagal. Keduanya `Save All`. |
 | Warna tombol utama | Save/Save All primary `rgb(16, 78, 100)`; Update to Category dan tambah band outline primary; Create primary | Lulus warna. |
-| Autosave band | Ubah Value lalu blur = 0 request. Semua lewat Save All. | Field form master memang Save All. Jika band diedit sebagai sel datatable, itu inline edit dan harus langsung tersimpan (§2.4). |
+| Autosave Margin Price Configuration | Recheck 15-10-2026: Value diubah 0 → 7 lalu Tab = 0 request, setelah reload kembali 0. | **Gagal.** Input section ini inline edit (§2.1, §2.4), wajib tersimpan tanpa Save All. |
 | Audit Log | Accordion inline di bawah form. Link sidebar menggulir ke section. Tanpa kotak cari. | Gagal wadah. Harus slide-over. Isi nilai (enum mentah, old/new) tetap di pilar audit crawl menu. |
 | Bintang wajib | red-600, sedikit lebih gelap dari red-500 PO | Catat selisih. Bukan pemblokir warna tombol. |
 | Validasi & dialog hapus | Toast, pola `(and N more error)`; dialog “Are you sure?” sama | Lulus pola. Kalimat sukses create masih kalimat lama (§2.5). |
@@ -164,7 +165,7 @@ Dicatat agar crawl master tidak mengulang riset. Assert tetap §2, bukan “sama
 Jangan dijadikan gagal/lulus.
 
 1. Alur create: PO membuka `/create` lalu langsung membuat draft dan pindah ke Edit. Variable Price punya halaman create, lalu kembali ke daftar. Keduanya masih terbuka.
-2. Hapus baris detail PO tanpa konfirmasi. Kitab hanya mengunci merah solid untuk konfirmasi hapus **jika** dialog itu ada.
+2. Hapus baris detail PO tanpa konfirmasi.
 
 ## 6. Checklist crawl (untuk spec Playwright)
 
@@ -179,13 +180,15 @@ Company crawl UI mengikuti allowlist menu itu. Baseline PO diukur di lumicharmsi
 3. Label create dan edit sama persis: `Save All`.
 4. Aksi baris datatable dan aksi bulk: outline + teks primary, bukan solid, bukan warna lain.
 5. Tombol outline berwarna lain hanya jika aksi itu spesial, warning, atau danger. Catat label tombolnya.
-6. Dialog hapus: satu tombol Delete `rgb(193, 0, 7)`. Ikon hapus di baris bukan solid danger.
+6. Semua tombol outline ikon-saja (termasuk hapus baris dan hapus bulk): outline primary `rgb(16, 78, 100)`, bukan merah.
+7. Modal `Are you sure?`: tombol Delete tetap merah `rgb(193, 0, 7)`, teks putih, sama di semua menu. Beda warna dari menu lain = gagal.
 
 ### Pilar simpan
 
-1. Form master: isi atau blur satu field header. Tidak ada request simpan. Baru ada setelah Save All.
+1. Form master, field biasa: isi atau blur satu field header. Tidak ada request simpan. Baru ada setelah Save All.
 2. Menu transaksi: ubah satu line item lalu pindah field. Ada request simpan baris itu, plus toast.
-3. Jika ada inline edit di datatable (master atau transaksi): selesai edit tanpa Save All, data tetap ada setelah reload.
+3. Jika ada inline edit (sel datatable atau text box section konfigurasi, master atau transaksi): selesai edit tanpa Save All, ada request simpan, data tetap ada setelah reload.
+5. Menu transaksi dengan detail kosong: ganti Transaction Date header lalu blur. Ada request simpan header, nilai bertahan setelah reload (baseline PO `POST /api/supplychain/purchase-order/{id}`, SO General `POST /api/omnichannel/sales-order/{id}`).
 4. Tinggalkan halaman dengan perubahan form master yang belum di-Save All. Catat apakah ada peringatan. Kitab tidak mewajibkan teks peringatan tertentu.
 
 ### Pilar toast

@@ -37,7 +37,7 @@ Ikuti rule `13`. Parser-nya PHP Symfony YAML (`E2eTestCaseDocService.php`). Yang
 
 1. Scope, route aplikasi, URL Docs Hub, company yang boleh (code + id) dan company yang dipakai run terakhir.
 2. Kontrak data: master yang di-lookup, data yang dibuat (prefix `QA-AUTO-`), langkah bersihkan.
-3. Checklist yang disepakati menu itu (untuk Variable Price: input vs tampil, UI/UX, audit log, kasus negatif). Pilar UI/UX mengikuti kitab `tests/UX-STANDARD.md`, bukan kesan dari satu menu sejenis.
+3. Checklist yang disepakati menu itu (untuk Variable Price: input vs tampil, UI/UX, audit log, kasus negatif). Pilar UI/UX mengikuti kitab `tests/UX-STANDARD.md`, bukan kesan dari satu menu sejenis. Sebelum assert simpan, klasifikasikan tiap input: field form biasa (Save All), baris detail transaksi (autosave), atau inline edit (sel datatable atau text box section konfigurasi yang diketik di tempat, wajib autosave). Tombol outline ikon-saja (termasuk Delete baris dan bulk) wajib primary; tombol Delete di modal konfirmasi tetap merah `rgb(193, 0, 7)` dan harus konsisten di semua menu.
 4. Menu hulu/hilir dan bagian crawl mana yang diulang kalau menu itu berubah.
 5. Peta kartu Jira, plus status pada tanggal plan ditulis.
 6. Baseline pesan UI: pisahkan yang **teramati** pada run terakhir dan yang masih **target**.
