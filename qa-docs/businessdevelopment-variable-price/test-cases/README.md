@@ -8,6 +8,6 @@ Prefix folder: `VP`.
 
 | TC Code | Title | Status | Automated | Last Updated |
 |---------|-------|--------|-----------|-------------|
-| PENDING-20261014161000 | Crawl plan Variable Price — checklist regresi 4 pilar dan kontrak data QA-AUTO | draft | ❌ | 2026-10-14 |
+| PENDING-20261014161000 | Crawl plan Variable Price — checklist regresi 4 pilar dan kontrak data QA-AUTO | draft | ❌ | 2026-10-15 |
 
 Crawl plan ini yang dibaca sebelum regresi Playwright. Format menu lain: `tests/CRAWL-PLAN.md`.
