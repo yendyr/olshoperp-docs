@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: omni-skip-wave-process
 menu_name: Skip Wave Process
 lang: id
-version: 1.0
-last_updated: 2026-09-28
+version: 1.1
+last_updated: 2026-10-15
 status: review
 audience: help-center
 source_type: authored
 source_ref: "user-provided (skip-wave-process-content-structure-gemini-brief.md)"
-notes: Help Center landing (Docs Page). Disusun dari Part 2 fakta brief Gemini + struktur Part 1. Terpisah dari layer QA (KB/requirement/technical/user-guide).
+notes: Help Center landing (Docs Page). v1.1 — ETM-16582 delay 10 menit antar file; cap ETM-16443 dormant.
 ---
 
 ### 🚀 Skip Wave Process
@@ -60,7 +60,7 @@ notes: Help Center landing (Docs Page). Disusun dari Part 2 fakta brief Gemini +
 | Order milik perusahaan yang sedang login | — |
 | Nomor order tidak duplikat dalam satu file | Duplikat akan ditolak |
 | Struktur gudang & hubungan kurir-3PL sudah lengkap | Prasyarat untuk tahap Skip Processing (setelah masuk wave) |
-| Tidak ada batch Skip Wave Process lain yang masih menunggu/berjalan | Batch baru akan menunggu giliran — lihat bagian antrean global |
+| Tidak ada batch Skip Wave Process lain yang masih Pending/Processing | Slot proses hanya satu — batch baru menunggu di In Queue (lihat antrean global + jeda 10 menit) |
 
 ---
 
@@ -182,7 +182,9 @@ stateDiagram-v2
 | Kalau kamu … | maka sistem … |
 | :---- | :---- |
 | Mengunggah saat ada batch lain (dari perusahaan manapun) yang masih Pending atau Processing | Menempatkan batch baru di **In Queue** sampai giliran tiba |
-| Mengunggah saat tidak ada batch lain yang aktif | Memproses batch yang paling lama menunggu (dan sudah lolos validasi) |
+| Mengunggah saat tidak ada batch lain yang aktif | Memproses batch yang paling lama menunggu (dan sudah lolos validasi), **setelah** jeda antrean terpenuhi |
+| Batch sebelumnya baru saja Completed/Failed (TO-BE ETM-16582) | Menunggu **10 menit** baru memulai file In Queue berikutnya |
+| (AS-IS ETM-16443 · diganti) Sudah 9 In Queue / 10 file aktif | Import disabled + tooltip — diganti pendekatan delay; fungsi lama dikomentari di kode |
 
 #### Validasi Processing Date
 
@@ -213,6 +215,13 @@ stateDiagram-v2
 Ini **bukan** berarti ada yang salah dengan upload kamu. Cukup tunggu sampai giliran tiba.
 
 Kamu **boleh** mengunggah banyak file sekaligus — sistem akan memprosesnya **satu per satu secara berurutan**, bukan bersamaan.
+
+#### Jeda 10 menit antar file (TO-BE — ETM-16582)
+
+Setelah satu file **Completed** atau **Failed**, sistem **tidak** langsung memulai file In Queue berikutnya. Ada jeda **10 menit** dulu — supaya beban server sempat “istirahat” dan tidak spike beruntun.
+
+- **Tidak ada** lagi batasan jumlah file aktif (cap 10 dari ETM-16443 diganti pendekatan ini; kode lama tetap ada tapi dinonaktifkan/dikomentari).
+- Kalau file berikutnya masih In Queue setelah Completed, tunggu hingga jeda 10 menit selesai — itu perilaku normal.
 
 ---
 
@@ -314,7 +323,7 @@ flowchart TB
 | Seluruh batch gagal padahal cuma satu Order No yang salah | Perilaku all-or-nothing | Buka Log Data, perbaiki baris bermasalah, unggah ulang seluruh file |
 | Import sukses tapi ada order gagal di Wave dengan pesan soal tanggal | Tanggal transaksi order lebih baru dari Processing Date batch | Naikkan Processing Date supaya sama dengan atau setelah tanggal order, lalu unggah ulang |
 | Angka Total Order Processed masih lebih kecil dari total file | Proses validasi masih berjalan | Tunggu sampai angkanya sama dengan total file |
-| Batch lama sekali di status In Queue atau Pending | Ada batch lain (mungkin dari perusahaan lain) yang masih diproses | Tunggu batch aktif tersebut selesai |
+| Batch lama sekali di status In Queue atau Pending | Ada batch lain (mungkin dari perusahaan lain) yang masih diproses, **atau** sedang dalam jeda 10 menit setelah batch sebelumnya selesai | Tunggu batch aktif selesai + jeda 10 menit (normal) |
 | Progres hampir penuh tapi status masih Processing dalam waktu lama | Proses penutupan batch otomatis tidak berjalan | Kalau sudah diam lebih dari 60 menit, gunakan **Redispatch**; kalau masih gagal, eskalasi ke Support/DevOps |
 | Status sudah Completed tapi sistem terasa lambat | Pekerjaan latar belakang (hitung stok/sinkronisasi) masih berjalan | Beri jeda sebelum mengunggah batch besar berikutnya |
 | File tidak bisa diunduh lagi dari Log Data | Sudah lewat 24 jam sejak diunggah | Simpan salinan file sendiri sejak awal |
@@ -347,7 +356,7 @@ Coba **Redispatch** setelah batch diam lebih dari 60 menit.
 Tidak — seluruh file dianggap gagal (all-or-nothing).
 
 **Bisa mengunggah banyak file sekaligus?**  
-Boleh, tapi sistem memprosesnya satu per satu secara berurutan.
+Boleh (tanpa limit jumlah file aktif — TO-BE ETM-16582). Sistem memproses satu per satu; setelah satu selesai ada jeda **10 menit** sebelum file berikutnya mulai.
 
 **Ada dokumentasi soal antrean job untuk tim Support/DevOps?**  
 Ada dokumentasi teknis terpisah (**Horizon Jobs**) — tidak diperlukan untuk pemakaian sehari-hari menu ini.

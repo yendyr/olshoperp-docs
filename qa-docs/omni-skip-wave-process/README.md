@@ -12,18 +12,21 @@ Menu **Skip Wave Process** (SupplyChain / OmniChannel).
 | Capability Lingo | [capabilities/](./capabilities/) | Operator (modal cards) | review |
 
 **SoT:** `skip-wave-process-sot.md` v1.0 (20 Jul 2026)  
-**User-guide:** v1.4 · `source_version` 1.5  
-**Version (3 layer):** **1.5** · **Last updated:** 2026-10-12  
+**User-guide:** v1.5 · `source_version` 1.6  
+**Version (3 layer):** **1.6** · **Last updated:** 2026-10-15  
 **Feature Map / Lingo:** v1.0 (2026-09-28)  
 **Horizon jobs (kanonik):** [../horizon-jobs/pipelines/skip-wave-process.md](../horizon-jobs/pipelines/skip-wave-process.md)  
-**Help Center overview:** [overview.id.md](../_meta/docs-hub/menus/omni-skip-wave-process/overview.id.md) · [overview.en.md](../_meta/docs-hub/menus/omni-skip-wave-process/overview.en.md) (`authored` dari Gemini brief Part 2)  
-**Open CR:** [ETM-16443](https://erpintegration.atlassian.net/browse/ETM-16443) — kuota aktif 10 (9 In Queue + 1 proses) global; Import disabled + tooltip EN
+**Help Center overview:** [overview.id.md](../_meta/docs-hub/menus/omni-skip-wave-process/overview.id.md) · [overview.en.md](../_meta/docs-hub/menus/omni-skip-wave-process/overview.en.md)  
+**Docs Page:** https://staging.olshoperp.com/docs/omni/omni-skip-wave-process/overview  
+**Open CR:** [ETM-16582](https://erpintegration.atlassian.net/browse/ETM-16582) — no file cap; delay 10 menit antar complete → start next In Queue (cap ETM-16443 dikomentari)  
+**Related Done:** [ETM-16443](https://erpintegration.atlassian.net/browse/ETM-16443) — kuota 10 aktif (AS-IS → dormant)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.5 | 2026-10-12 | TO-BE ETM-16443: cap 9 `in_queue` + 1 pending/processing (global 10 aktif); Import disabled + tooltip EN; GAP-SW-06 |
+| 1.6 | 2026-10-15 | TO-BE ETM-16582: tanpa limit file; delay 10 menit complete/failed → next in_queue; ETM-16443 gate commented; Help Center overview sync |
+| 1.5 | 2026-10-12 | AS-IS ETM-16443: cap 9 `in_queue` + 1 pending/processing (global 10 aktif); Import disabled + tooltip EN; GAP-SW-06 |
 | fm-1.0 | 2026-09-28 16:20 | Feature Map + 6 kartu Lingo (Upload, Processing Date, All-or-nothing, Progress, Redispatch, Log Data) |
 | hc-1.0 | 2026-09-28 14:21 | Help Center overview ID + EN: upload massal, all-or-nothing, antrean global, Processing Date snapshot & gagal belakangan di Wave, Redispatch |
 | 1.4 | 2026-09-28 11:00 | Processing Date AS-IS: arti proses batch, default kosong = waktu sekarang, order lebih baru gagal di Wave (bukan Import); kolom Export; ukuran file mengikuti limit server; promote 4 layer ke review |

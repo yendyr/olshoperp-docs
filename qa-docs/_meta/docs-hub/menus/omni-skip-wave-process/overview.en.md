@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: omni-skip-wave-process
 menu_name: Skip Wave Process
 lang: en
-version: 1.0
-last_updated: 2026-09-28
+version: 1.1
+last_updated: 2026-10-15
 status: review
 audience: help-center
 source_type: derived
 source_ref: "docs/qa-docs/_meta/docs-hub/menus/omni-skip-wave-process/overview.id.md"
-notes: English translation of user-authored ID overview (from Gemini brief Part 2). Help Center landing (Docs Page).
+notes: English translation of ID overview. v1.1 — ETM-16582 10-minute inter-file delay; ETM-16443 cap dormant.
 ---
 
 ### 🚀 Skip Wave Process
@@ -60,7 +60,7 @@ notes: English translation of user-authored ID overview (from Gemini brief Part 
 | Order belongs to the logged-in company | — |
 | Order numbers are not duplicated in the same file | Duplicates are rejected |
 | Warehouse structure & courier-3PL links are complete | Prerequisite for Skip Processing stage (after entering wave) |
-| No other Skip Wave Process batch still waiting/running | New batch will wait its turn — see global queue section |
+| No other Skip Wave Process batch still Pending/Processing | Only one process slot — new batch waits in In Queue (see global queue + 10-minute cool-down) |
 
 ---
 
@@ -182,7 +182,9 @@ stateDiagram-v2
 | If you … | then the system … |
 | :---- | :---- |
 | Upload while another batch (any company) is still Pending or Processing | Places the new batch in **In Queue** until its turn |
-| Upload when no other batch is active | Processes the oldest waiting batch that already passed validation |
+| Upload when no other batch is active | Processes the oldest waiting eligible batch **after** the cool-down has elapsed |
+| Previous batch just Completed/Failed (TO-BE ETM-16582) | Waits **10 minutes** before starting the next In Queue file |
+| (AS-IS ETM-16443 · replaced) Already 9 In Queue / 10 active files | Import disabled + tooltip — replaced by delay approach; old gate kept commented in code |
 
 #### Processing Date validation
 
@@ -213,6 +215,13 @@ stateDiagram-v2
 This does **not** mean your upload is wrong. Wait until your turn arrives.
 
 You **may** upload many files at once — the system processes them **one after another**, not in parallel.
+
+#### 10-minute cool-down between files (TO-BE — ETM-16582)
+
+After a file reaches **Completed** or **Failed**, the system does **not** start the next In Queue file immediately. There is a **10-minute** cool-down first — so the server can “rest” and avoid back-to-back load spikes.
+
+- There is **no** longer an active-file count limit (the ETM-16443 cap of 10 is replaced by this approach; the old code stays but is commented/disabled).
+- If the next file stays In Queue after Completed, wait for the 10-minute cool-down — that is expected behavior.
 
 ---
 
@@ -314,7 +323,7 @@ flowchart TB
 | Entire batch fails though only one Order No is wrong | All-or-nothing behavior | Open Log Data, fix bad rows, re-upload entire file |
 | Import succeeds but some orders fail at Wave with a date message | Order transaction date newer than batch Processing Date | Raise Processing Date to on or after that order date, then re-upload |
 | Total Order Processed still less than file total | Validation still running | Wait until the count matches file total |
-| Batch stuck long in In Queue or Pending | Another batch (possibly another company) still running | Wait for the active batch to finish |
+| Batch stuck long in In Queue or Pending | Another batch (possibly another company) still running, **or** the 10-minute cool-down after the previous batch finished | Wait for the active batch to finish + the 10-minute cool-down (normal) |
 | Progress nearly full but status stays Processing for a long time | Automatic batch close did not run | After 60+ minutes idle, use **Redispatch**; if still stuck, escalate to Support/DevOps |
 | Status Completed but system feels slow | Background work (stock calc/sync) still running | Pause before uploading the next large batch |
 | File can no longer be downloaded from Log Data | More than 24 hours since upload | Keep your own file copy from the start |
@@ -347,7 +356,7 @@ Try **Redispatch** after the batch has been idle more than 60 minutes.
 No — the entire file fails (all-or-nothing).
 
 **Can I upload many files at once?**  
-Yes, but the system processes them one after another.
+Yes (no active-file count limit — TO-BE ETM-16582). The system processes them one after another; after one finishes there is a **10-minute** cool-down before the next file starts.
 
 **Is there queue/job documentation for Support/DevOps?**  
 Yes — separate technical docs (**Horizon Jobs**). Not required for day-to-day use of this menu.
