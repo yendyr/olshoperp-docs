@@ -110,6 +110,14 @@ Keputusan Rachy 15-10-2026.
 | Garis bawah | Tidak ada garis bawah titik-titik (`underline decoration-dotted`) pada sel datalist. Tooltip boleh tanpa garis. | Variable Price `Used In Categories`: `underline dotted` = gagal. Tidak ada di menu lain. |
 | Kata hitungan | Bentuk jamak benar: `0 categories`, `1 category`, `2 categories`. | Variable Price `0 category` = gagal. |
 
+### 2.11 Datalist fungsional (keputusan Rachy 15-10-2026)
+
+| Fitur | Aturan |
+|-------|--------|
+| Global search | Menu tanpa Advanced Filter: pencarian wajib *contains* di semua kolom tampil (termasuk Type, Status), tidak peka huruf. Prefix-only = gagal → card Error. Menu dengan Advanced Filter: prefix ditoleransi. |
+| Export | Export halaman aktif saja diterima. Header file harus sama dengan header datalist. Tipe sel numerik wajib hanya untuk kolom murni angka; kolom campuran teks (mis. `0 category`) boleh General. |
+| Show deleted data | Lulus jika baris terhapus tampil dengan teks merah `Deleted` di kolom Action. Status `Active` pada baris terhapus tidak dihitung temuan. |
+
 ## 3. Fakta baseline Purchase Order
 
 Dipakai ulang saat mengukur. Jangan diganti diam-diam oleh kesan crawl menu lain.
