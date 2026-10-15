@@ -300,6 +300,18 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 
 ---
 
+## Data uji: simpan, jangan hapus (berlaku 15-10-2026)
+
+Keputusan Rachy 15-10-2026. Data uji hasil crawl/eksekusi TC di staging **tidak dihapus** setelah run.
+
+1. Kode tetap prefix `QA-AUTO-` (mis. `QA-AUTO-VPDEC-266983`).
+2. **Name** atau **Description** wajib menyebut jejaknya, berisi key TC/card dan tanggal run. Contoh Description: `QA-AUTO ETM-16502 langkah 3, 15-10-2026`. Kalau form tidak punya Description, pakai Name.
+3. Draft yang otomatis terbentuk saat buka halaman create PO/SO juga dibiarkan, dengan jejak yang sama bila bisa diedit.
+4. Pengecualian: hapus data hanya kalau langkah TC itu sendiri menguji hapus (delete / show deleted).
+5. Laporan run dan Actual Result Jira menyebut kode data yang dibuat, supaya bisa dipakai ulang atau dicari.
+
+Catatan transisi: run ETM-16502 (15-10-2026 13:20 WIB) masih menghapus `QA-AUTO-VPDEC-266983` dan `QA-AUTO-VPDECW-266983` sebelum aturan ini berlaku.
+
 ## Kalau test FAIL
 
 1. Baca error + `error-context.md` di `test-results/{...}/` (ada page snapshot — sering langsung ketahuan).

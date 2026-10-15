@@ -36,7 +36,7 @@ Ikuti rule `13`. Parser-nya PHP Symfony YAML (`E2eTestCaseDocService.php`). Yang
 ## Isi badan (bahasa Indonesia, untuk QA)
 
 1. Scope, route aplikasi, URL Docs Hub, company yang boleh (code + id) dan company yang dipakai run terakhir.
-2. Kontrak data: master yang di-lookup, data yang dibuat (prefix `QA-AUTO-`), langkah bersihkan.
+2. Kontrak data: master yang di-lookup, data yang dibuat (prefix `QA-AUTO-`), dan label jejaknya. **Data uji tidak dihapus** (aturan 15-10-2026, lihat `AGENT-RUNBOOK.md` § Data uji: simpan, jangan hapus).
 3. Checklist yang disepakati menu itu (untuk Variable Price: input vs tampil, UI/UX, audit log, kasus negatif). Pilar UI/UX mengikuti kitab `tests/UX-STANDARD.md`, bukan kesan dari satu menu sejenis. Sebelum assert simpan, klasifikasikan tiap input: field form biasa (Save All), baris detail transaksi (autosave), atau inline edit (sel datatable atau text box section konfigurasi yang diketik di tempat, wajib autosave). Tombol outline ikon-saja (termasuk Delete baris dan bulk) wajib primary; tombol Delete di modal konfirmasi tetap merah `rgb(193, 0, 7)` dan harus konsisten di semua menu.
 4. Menu hulu/hilir dan bagian crawl mana yang diulang kalau menu itu berubah.
 5. Peta kartu Jira, plus status pada tanggal plan ditulis.
@@ -50,7 +50,7 @@ Expected bisnis tetap dari `requirement.md` menu itu. Kalau kartu Jira menambah 
 
 ## Datalist standard checklist (pakai ulang untuk tiap menu)
 
-Acuan perilaku: shared capabilities backend `yendyr/olshoperp` branch `dev` `docs/qa-docs/_meta/shared-capabilities/` (SF-DL-01 search/filter, SF-DL-03 show-deleted, SF-DL-04 column show/hide, SF-DL-05 export) + `requirement.md` § DataList menu. Tampilan: `tests/UX-STANDARD.md` §2.10. Seed data `QA-AUTO-{MENU}DL-NN` cukup untuk >1 halaman (page size 10), hapus semua di akhir.
+Acuan perilaku: shared capabilities backend `yendyr/olshoperp` branch `dev` `docs/qa-docs/_meta/shared-capabilities/` (SF-DL-01 search/filter, SF-DL-03 show-deleted, SF-DL-04 column show/hide, SF-DL-05 export) + `requirement.md` § DataList menu. Tampilan: `tests/UX-STANDARD.md` §2.10. Seed data `QA-AUTO-{MENU}DL-NN` cukup untuk >1 halaman (page size 10). Seed tidak dihapus di akhir; beri jejak TC/card + tanggal di Name/Description. Uji Show deleted (item 1) tetap boleh menghapus 1–2 seed karena hapus adalah objek uji itu.
 
 | # | Fitur | Langkah | Lulus jika |
 |---|-------|---------|------------|
