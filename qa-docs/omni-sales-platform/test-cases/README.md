@@ -118,3 +118,8 @@ Origin Card: [ETM-16030](https://erpintegration.atlassian.net/browse/ETM-16030)
 | `TC-SOP-16030-04` | T04: Verifikasi Order Lifecycle Slideover XL pada Order Status Awal (Draft / Open) | [`TC-SOP-16030-04.md`](./TC-SOP-16030-04.md) | DRAFT ⚪ |
 
 - TC-OSP-CODEEQ-001 (ETM-16382) — Filter Trx. Code equals paste 50
+- TC-OSP-TRXCONT-001 (ETM-16384) — Filter Trx. Code Contains potongan pendek/panjang dan paste 500 kode — PASSED 🟢
+- TC-OSP-TRXCOND-001 (ETM-16386) — Kondisi filter Trx. Code lain dan logika OR sama seperti sebelum optimasi — FAILED 🔴
+- TC-OSP-POIDCOND-001 (ETM-16358) — Kondisi filter Platform Order Id lain dan logika OR sama seperti sebelum optimasi — FAILED 🔴
+- TC-OSP-POIDCONT-001 (ETM-16356) — Filter Platform Order Id Contains potongan pendek/panjang dan paste 500 ID — FAILED 🔴
+- TC-OSP-POIDEQ-001 (ETM-16354) — Filter Platform Order Id = (equals) paste 50/100 ID cepat dan lengkap — PASSED 🟢
