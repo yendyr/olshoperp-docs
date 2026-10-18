@@ -42,6 +42,16 @@ test_result:
   log_summary: "Langkah 2–6 OK; langkah 7 OR Customer → 586.096 (semua SO), expected 11"
   report_url: "https://drive.google.com/drive/folders/1OGtM_kvkeWxoDkOHzWlPVaWpTBKt3LvZ"
 origin_jira: ETM-16386
+first_execution:
+  at: "2026-10-16"
+  via: "manual:Bugsy"
+  jira: ETM-16386
+last_execution:
+  at: "2026-10-16"
+  jira: ETM-16386
+  status: failed
+  via: "manual:Bugsy"
+  notes: "Staging, company FAT (112), 16-10-2026, dijalankan Bugsy. Yang diuji: Kondisi filter Trx. Code lain dan logika OR sama seperti sebelum optimasi. Yang teramati: Langkah 2–6 OK; langkah 7 OR Customer → 586.096 (semua SO), expected 11. Bukti lengkap di folder Drive https://drive.google.com/drive/folders/1OGtM_kvkeWxoDkOHzWlPVaWpTBKt3LvZ"
 ---
 
 # TC-OSP-TRXCOND-001 — Kondisi filter Trx. Code lain dan logika OR sama seperti sebelum optimasi ([ETM-16386](https://erpintegration.atlassian.net/browse/ETM-16386))

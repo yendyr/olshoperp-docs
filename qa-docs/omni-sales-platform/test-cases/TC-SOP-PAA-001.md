@@ -59,11 +59,8 @@ last_execution:
   at: "2026-10-16"
   jira: "ETM-16115"
   status: passed
-notes: |
-  - Card fixture menyebut company FAT; eksekusi user: Lumi Charms.id (153). SO OPEN setara dipakai.
-  - Edit detail di UI Sales Platform bersifat inline (Tab/blur) — tombol Save header tidak selalu ada; yang ada Approve.
-  - Kedua SO uji platform_order_status=CANCELLED tetapi transaction_status=open dan can_update=true; valid untuk TC flag.
-  - Data uji tidak dihapus.
+  via: "manual:Bugsy"
+  notes: "A: SO-5TIG7RSL Price 3500→3501, prevent 0→1, audit old/new OK. B: SO-5THPVOVY SKU -→GLTAR-100ML, prevent 0→1, audit OK."
 ---
 
 # TC-SOP-PAA-001 — Prevent Auto Approve on OPEN detail edit
@@ -77,3 +74,9 @@ notes: |
 Folder: https://drive.google.com/drive/folders/15b1U7kas9USdR9gFE0ZOkFskTVrTFUec
 
 Jira: https://erpintegration.atlassian.net/browse/ETM-16115
+
+## Catatan QA
+- Card fixture menyebut company FAT; eksekusi user: Lumi Charms.id (153). SO OPEN setara dipakai.
+- Edit detail di UI Sales Platform bersifat inline (Tab/blur) — tombol Save header tidak selalu ada; yang ada Approve.
+- Kedua SO uji platform_order_status=CANCELLED tetapi transaction_status=open dan can_update=true; valid untuk TC flag.
+- Data uji tidak dihapus.

@@ -40,6 +40,16 @@ test_result:
   log_summary: "Contains OK; paste 500 → hanya 100 (cap 100), expected semua 500"
   report_url: "https://drive.google.com/drive/folders/1YF9gOz2N3ZyUZI8vf5q2YtORVs4K29T_"
 origin_jira: ETM-16356
+first_execution:
+  at: "2026-10-16"
+  via: "manual:Bugsy"
+  jira: ETM-16356
+last_execution:
+  at: "2026-10-16"
+  jira: ETM-16356
+  status: failed
+  via: "manual:Bugsy"
+  notes: "Staging, company FAT (112), 16-10-2026, dijalankan Bugsy. Yang diuji: Filter Platform Order Id Contains potongan pendek/panjang dan paste 500 ID. Yang teramati: Contains OK; paste 500 → hanya 100 (cap 100), expected semua 500. Bukti lengkap di folder Drive https://drive.google.com/drive/folders/1YF9gOz2N3ZyUZI8vf5q2YtORVs4K29T_"
 ---
 
 # TC-OSP-POIDCONT-001 — Filter Platform Order Id Contains potongan pendek/panjang dan paste 500 ID ([ETM-16356](https://erpintegration.atlassian.net/browse/ETM-16356))

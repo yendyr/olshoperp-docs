@@ -33,46 +33,46 @@ Prefix folder: `SPLG`.
 `TC-SPLG-012` s/d `TC-SPLG-017` — Dibuat untuk validasi Price > 0 pada tombol Extract Bundle di menu Dev - Sales Platform pada card origin [ETM-15733](https://erpintegration.atlassian.net/browse/ETM-15733).
 ### ETM-15717 — [Sales Platform] Order hasil cloned dari proses void seharusnya tetap bertipe Sales Platform, bukan berubah menjadi Sales Order Internal/General
 
-| Kode Draf | Judul Test Case | File | Status |
+| TC Code | Judul Test Case | File | Status |
 |---|---|---|---|
-| `PENDING-JENNI-2026090701` | Void & Clone Order Sales Platform — Tipe Order Baru Tetap Sales Platform & Mempertahankan Platform Order ID | [`TC-SPO-JENNI-DRAFT-2026090701.md`](./TC-SPO-JENNI-DRAFT-2026090701.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026090702` | Verifikasi Halaman Datalist & Detail Sales Platform untuk Order Hasil Void & Clone | [`TC-SPO-JENNI-DRAFT-2026090702.md`](./TC-SPO-JENNI-DRAFT-2026090702.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026090703` | Fitur Re-sync Marketplace pada Order Sales Platform Hasil Void & Clone | [`TC-SPO-JENNI-DRAFT-2026090703.md`](./TC-SPO-JENNI-DRAFT-2026090703.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026090704` | Regresi Pemrosesan Void & Clone untuk Sales Order Internal / General (Non-Platform) | [`TC-SPO-JENNI-DRAFT-2026090704.md`](./TC-SPO-JENNI-DRAFT-2026090704.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026090705` | End-to-End Processing Order Sales Platform Hasil Void & Clone (Send to Default Waves hingga Shipped) | [`TC-SPO-JENNI-DRAFT-2026090705.md`](./TC-SPO-JENNI-DRAFT-2026090705.md) | DRAFT 🟡 |
+| `TC-SPLG-025` | Void & Clone Order Sales Platform — Tipe Order Baru Tetap Sales Platform & Mempertahankan Platform Order ID | [`TC-SPLG-025.md`](./TC-SPLG-025.md) | DRAFT 🟡 |
+| `TC-SPLG-026` | Verifikasi Halaman Datalist & Detail Sales Platform untuk Order Hasil Void & Clone | [`TC-SPLG-026.md`](./TC-SPLG-026.md) | DRAFT 🟡 |
+| `TC-SPLG-027` | Fitur Re-sync Marketplace pada Order Sales Platform Hasil Void & Clone | [`TC-SPLG-027.md`](./TC-SPLG-027.md) | DRAFT 🟡 |
+| `TC-SPLG-028` | Regresi Pemrosesan Void & Clone untuk Sales Order Internal / General (Non-Platform) | [`TC-SPLG-028.md`](./TC-SPLG-028.md) | DRAFT 🟡 |
+| `TC-SPLG-029` | End-to-End Processing Order Sales Platform Hasil Void & Clone (Send to Default Waves hingga Shipped) | [`TC-SPLG-029.md`](./TC-SPLG-029.md) | DRAFT 🟡 |
 
 ### ETM-15749 — [Dev - Sales Platform] Edit detail sebelum approve (add/replace SKU, price, VAT; no delete)
 
-| Kode Draf | Judul Test Case | File | Status |
+| TC Code | Judul Test Case | File | Status |
 |---|---|---|---|
-| `PENDING-20260909103201` | Edit Detail Sales Order Platform pada Status DRAFT | [`TC-SPO-DRAFT-20260909103201.md`](./TC-SPO-DRAFT-20260909103201.md) | DRAFT 🟡 |
-| `PENDING-20260909103202` | Edit Detail Sales Order Platform pada Status OPEN | [`TC-SPO-DRAFT-20260909103202.md`](./TC-SPO-DRAFT-20260909103202.md) | DRAFT 🟡 |
-| `PENDING-20260909103203` | Guard Read-Only Detail Sales Order Platform pada Status APPROVED | [`TC-SPO-DRAFT-20260909103203.md`](./TC-SPO-DRAFT-20260909103203.md) | DRAFT 🟡 |
-| `PENDING-20260909103204` | Add Product via Select Product Modal pada Sales Order Platform | [`TC-SPO-DRAFT-20260909103204.md`](./TC-SPO-DRAFT-20260909103204.md) | DRAFT 🟡 |
-| `PENDING-20260909103205` | Validasi Produk Non-Aktif pada Select Product Modal | [`TC-SPO-DRAFT-20260909103205.md`](./TC-SPO-DRAFT-20260909103205.md) | DRAFT 🟡 |
-| `PENDING-20260909103206` | Tambah Produk Bundle & Random SKU via Select Product Modal | [`TC-SPO-DRAFT-20260909103206.md`](./TC-SPO-DRAFT-20260909103206.md) | DRAFT 🟡 |
-| `PENDING-20260909103207` | Validasi Batas Maksimal 100 Line Detail pada Sales Order Platform | [`TC-SPO-DRAFT-20260909103207.md`](./TC-SPO-DRAFT-20260909103207.md) | DRAFT 🟡 |
-| `PENDING-20260909103208` | Replace SKU Produk pada Detail Sales Order Platform | [`TC-SPO-DRAFT-20260909103208.md`](./TC-SPO-DRAFT-20260909103208.md) | DRAFT 🟡 |
-| `PENDING-20260909103209` | Edit Valid Qty (>0) dan Recalculation Detail SO Platform | [`TC-SPO-DRAFT-20260909103209.md`](./TC-SPO-DRAFT-20260909103209.md) | DRAFT 🟡 |
-| `PENDING-20260909103210` | Validasi Penolakan Edit Qty <= 0 pada SO Platform | [`TC-SPO-DRAFT-20260909103210.md`](./TC-SPO-DRAFT-20260909103210.md) | DRAFT 🟡 |
-| `PENDING-20260909103211` | Edit Unit Price & Discount beserta Recalculation DPP dan Total | [`TC-SPO-DRAFT-20260909103211.md`](./TC-SPO-DRAFT-20260909103211.md) | DRAFT 🟡 |
-| `PENDING-20260909103212` | Edit VAT Rate berdasarkan System Product dan Store Auto Add VAT | [`TC-SPO-DRAFT-20260909103212.md`](./TC-SPO-DRAFT-20260909103212.md) | DRAFT 🟡 |
-| `PENDING-20260909103213` | No Row Delete Guard pada Detail Sales Order Platform | [`TC-SPO-DRAFT-20260909103213.md`](./TC-SPO-DRAFT-20260909103213.md) | DRAFT 🟡 |
-| `PENDING-20260909103214` | Exception Extract Bundle pada Detail Sales Order Platform | [`TC-SPO-DRAFT-20260909103214.md`](./TC-SPO-DRAFT-20260909103214.md) | DRAFT 🟡 |
-| `PENDING-20260909103215` | Sync Marketplace Refresh Field yang Belum Di-edit User | [`TC-SPO-DRAFT-20260909103215.md`](./TC-SPO-DRAFT-20260909103215.md) | DRAFT 🟡 |
-| `PENDING-20260909103216` | Sync Lock Matrix - Proteksi Field Detail yang Sudah Di-save User | [`TC-SPO-DRAFT-20260909103216.md`](./TC-SPO-DRAFT-20260909103216.md) | DRAFT 🟡 |
-| `PENDING-20260909103217` | Sync Lock Matrix - Booking Order dengan Price = 0 | [`TC-SPO-DRAFT-20260909103217.md`](./TC-SPO-DRAFT-20260909103217.md) | DRAFT 🟡 |
-| `PENDING-20260909103218` | Sync Lock Matrix - Booking Order dengan Price > 0 | [`TC-SPO-DRAFT-20260909103218.md`](./TC-SPO-DRAFT-20260909103218.md) | DRAFT 🟡 |
-| `PENDING-20260909103219` | Sync Lock Matrix - Perlindungan Baris Detail Manual Murni System | [`TC-SPO-DRAFT-20260909103219.md`](./TC-SPO-DRAFT-20260909103219.md) | DRAFT 🟡 |
-| `PENDING-20260909103220` | Set Flag prevent_auto_approve = 1 Saat Detail SO Di-edit | [`TC-SPO-DRAFT-20260909103220.md`](./TC-SPO-DRAFT-20260909103220.md) | DRAFT 🟡 |
-| `PENDING-20260909103221` | Pencatatan Audit Log Perubahan Detail Sales Order Platform | [`TC-SPO-DRAFT-20260909103221.md`](./TC-SPO-DRAFT-20260909103221.md) | DRAFT 🟡 |
-| `PENDING-20260909103222` | Paritas Perilaku Edit SO Platform via All Sales Order (ASO) | [`TC-SPO-DRAFT-20260909103222.md`](./TC-SPO-DRAFT-20260909103222.md) | DRAFT 🟡 |
-| PENDING-20260916153701 | Pembentukan Komponen Bundle & Detail Tree Saat Binding Platform Product via Single Binding | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
-| PENDING-20260916153702 | Pembentukan Komponen Bundle & Detail Tree Saat Binding Platform Product via Bulk Binding | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
-| PENDING-20260916153703 | Pembentukan Komponen Bundle & Detail Tree Saat Binding Platform Product via Scheduler Auto Binding Hourly | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
-| PENDING-20260916153704 | Pembentukan Komponen Bundle & Detail Tree Saat Auto Binding pada Proses Pull Product Platform | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
-| PENDING-20260916153705 | Verifikasi Regresi Binding Platform Product ke Master System Product Non-Bundle | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
-| PENDING-20260916153706 | Verifikasi Remediasi Data Fix untuk Order Platform Existing Terdampak di Server Merdian | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| `TC-SPLG-030` | Edit Detail Sales Order Platform pada Status DRAFT | [`TC-SPLG-030.md`](./TC-SPLG-030.md) | DRAFT 🟡 |
+| `TC-SPLG-031` | Edit Detail Sales Order Platform pada Status OPEN | [`TC-SPLG-031.md`](./TC-SPLG-031.md) | DRAFT 🟡 |
+| `TC-SPLG-032` | Guard Read-Only Detail Sales Order Platform pada Status APPROVED | [`TC-SPLG-032.md`](./TC-SPLG-032.md) | DRAFT 🟡 |
+| `TC-SPLG-033` | Add Product via Select Product Modal pada Sales Order Platform | [`TC-SPLG-033.md`](./TC-SPLG-033.md) | DRAFT 🟡 |
+| `TC-SPLG-034` | Validasi Produk Non-Aktif pada Select Product Modal | [`TC-SPLG-034.md`](./TC-SPLG-034.md) | DRAFT 🟡 |
+| `TC-SPLG-035` | Tambah Produk Bundle & Random SKU via Select Product Modal | [`TC-SPLG-035.md`](./TC-SPLG-035.md) | DRAFT 🟡 |
+| `TC-SPLG-036` | Validasi Batas Maksimal 100 Line Detail pada Sales Order Platform | [`TC-SPLG-036.md`](./TC-SPLG-036.md) | DRAFT 🟡 |
+| `TC-SPLG-037` | Replace SKU Produk pada Detail Sales Order Platform | [`TC-SPLG-037.md`](./TC-SPLG-037.md) | DRAFT 🟡 |
+| `TC-SPLG-038` | Edit Valid Qty (>0) dan Recalculation Detail SO Platform | [`TC-SPLG-038.md`](./TC-SPLG-038.md) | DRAFT 🟡 |
+| `TC-SPLG-039` | Validasi Penolakan Edit Qty <= 0 pada SO Platform | [`TC-SPLG-039.md`](./TC-SPLG-039.md) | DRAFT 🟡 |
+| `TC-SPLG-040` | Edit Unit Price & Discount beserta Recalculation DPP dan Total | [`TC-SPLG-040.md`](./TC-SPLG-040.md) | DRAFT 🟡 |
+| `TC-SPLG-041` | Edit VAT Rate berdasarkan System Product dan Store Auto Add VAT | [`TC-SPLG-041.md`](./TC-SPLG-041.md) | DRAFT 🟡 |
+| `TC-SPLG-042` | No Row Delete Guard pada Detail Sales Order Platform | [`TC-SPLG-042.md`](./TC-SPLG-042.md) | DRAFT 🟡 |
+| `TC-SPLG-043` | Exception Extract Bundle pada Detail Sales Order Platform | [`TC-SPLG-043.md`](./TC-SPLG-043.md) | DRAFT 🟡 |
+| `TC-SPLG-044` | Sync Marketplace Refresh Field yang Belum Di-edit User | [`TC-SPLG-044.md`](./TC-SPLG-044.md) | DRAFT 🟡 |
+| `TC-SPLG-045` | Sync Lock Matrix - Proteksi Field Detail yang Sudah Di-save User | [`TC-SPLG-045.md`](./TC-SPLG-045.md) | DRAFT 🟡 |
+| `TC-SPLG-046` | Sync Lock Matrix - Booking Order dengan Price = 0 | [`TC-SPLG-046.md`](./TC-SPLG-046.md) | DRAFT 🟡 |
+| `TC-SPLG-047` | Sync Lock Matrix - Booking Order dengan Price > 0 | [`TC-SPLG-047.md`](./TC-SPLG-047.md) | DRAFT 🟡 |
+| `TC-SPLG-048` | Sync Lock Matrix - Perlindungan Baris Detail Manual Murni System | [`TC-SPLG-048.md`](./TC-SPLG-048.md) | DRAFT 🟡 |
+| `TC-SPLG-049` | Set Flag prevent_auto_approve = 1 Saat Detail SO Di-edit | [`TC-SPLG-049.md`](./TC-SPLG-049.md) | DRAFT 🟡 |
+| `TC-SPLG-050` | Pencatatan Audit Log Perubahan Detail Sales Order Platform | [`TC-SPLG-050.md`](./TC-SPLG-050.md) | DRAFT 🟡 |
+| `TC-SPLG-051` | Paritas Perilaku Edit SO Platform via All Sales Order (ASO) | [`TC-SPLG-051.md`](./TC-SPLG-051.md) | DRAFT 🟡 |
+| TC-SPLG-052 | Pembentukan Komponen Bundle & Detail Tree Saat Binding Platform Product via Single Binding | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| TC-SPLG-053 | Pembentukan Komponen Bundle & Detail Tree Saat Binding Platform Product via Bulk Binding | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| TC-SPLG-054 | Pembentukan Komponen Bundle & Detail Tree Saat Binding Platform Product via Scheduler Auto Binding Hourly | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| TC-SPLG-055 | Pembentukan Komponen Bundle & Detail Tree Saat Auto Binding pada Proses Pull Product Platform | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| TC-SPLG-056 | Verifikasi Regresi Binding Platform Product ke Master System Product Non-Bundle | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
+| TC-SPLG-057 | Verifikasi Remediasi Data Fix untuk Order Platform Existing Terdampak di Server Merdian | draft | [ETM-15945](https://erpintegration.atlassian.net/browse/ETM-15945) | Alvin | ❌ | 2026-09-16 |
 
 ### ETM-15859 / ETM-15798 / ETM-15971 — Void vs Void & Recreate platform orders (anti auto re-create)
 
@@ -117,9 +117,31 @@ Origin Card: [ETM-16030](https://erpintegration.atlassian.net/browse/ETM-16030)
 | `TC-SOP-16030-03` | T03: Verifikasi Order Lifecycle Slideover XL pada Order dengan Sales Return | [`TC-SOP-16030-03.md`](./TC-SOP-16030-03.md) | DRAFT ⚪ |
 | `TC-SOP-16030-04` | T04: Verifikasi Order Lifecycle Slideover XL pada Order Status Awal (Draft / Open) | [`TC-SOP-16030-04.md`](./TC-SOP-16030-04.md) | DRAFT ⚪ |
 
-- TC-OSP-CODEEQ-001 (ETM-16382) — Filter Trx. Code equals paste 50
-- TC-OSP-TRXCONT-001 (ETM-16384) — Filter Trx. Code Contains potongan pendek/panjang dan paste 500 kode — PASSED 🟢
-- TC-OSP-TRXCOND-001 (ETM-16386) — Kondisi filter Trx. Code lain dan logika OR sama seperti sebelum optimasi — FAILED 🔴
-- TC-OSP-POIDCOND-001 (ETM-16358) — Kondisi filter Platform Order Id lain dan logika OR sama seperti sebelum optimasi — FAILED 🔴
-- TC-OSP-POIDCONT-001 (ETM-16356) — Filter Platform Order Id Contains potongan pendek/panjang dan paste 500 ID — FAILED 🔴
-- TC-OSP-POIDEQ-001 (ETM-16354) — Filter Platform Order Id = (equals) paste 50/100 ID cepat dan lengkap — PASSED 🟢
+### ETM-16274 — [Sales Order] - Optimize slow query pencarian multi-value Code (LIKE) di datalist
+
+Origin Card: [ETM-16274](https://erpintegration.atlassian.net/browse/ETM-16274) · TC per card turunan (ETM-16382, 16384, 16386, 16358, 16356, 16354)
+
+| TC Code | Judul Test Case | File | Status |
+|---|---|---|---|
+| `TC-OSP-CODEEQ-001` | Filter Trx. Code = (equals) paste 50 kode SO tampil cepat dan lengkap ([ETM-16382](https://erpintegration.atlassian.net/browse/ETM-16382)) | [`TC-OSP-CODEEQ-001.md`](./TC-OSP-CODEEQ-001.md) | FAILED 🔴 |
+| `TC-OSP-TRXCONT-001` | Filter Trx. Code Contains potongan pendek/panjang dan paste 500 kode ([ETM-16384](https://erpintegration.atlassian.net/browse/ETM-16384)) | [`TC-OSP-TRXCONT-001.md`](./TC-OSP-TRXCONT-001.md) | PASSED 🟢 |
+| `TC-OSP-TRXCOND-001` | Kondisi filter Trx. Code lain dan logika OR sama seperti sebelum optimasi ([ETM-16386](https://erpintegration.atlassian.net/browse/ETM-16386)) | [`TC-OSP-TRXCOND-001.md`](./TC-OSP-TRXCOND-001.md) | FAILED 🔴 |
+| `TC-OSP-POIDCOND-001` | Kondisi filter Platform Order Id lain dan logika OR sama seperti sebelum optimasi ([ETM-16358](https://erpintegration.atlassian.net/browse/ETM-16358)) | [`TC-OSP-POIDCOND-001.md`](./TC-OSP-POIDCOND-001.md) | FAILED 🔴 |
+| `TC-OSP-POIDCONT-001` | Filter Platform Order Id Contains potongan pendek/panjang dan paste 500 ID ([ETM-16356](https://erpintegration.atlassian.net/browse/ETM-16356)) | [`TC-OSP-POIDCONT-001.md`](./TC-OSP-POIDCONT-001.md) | FAILED 🔴 |
+| `TC-OSP-POIDEQ-001` | Filter Platform Order Id = (equals) paste 50/100 ID cepat dan lengkap ([ETM-16354](https://erpintegration.atlassian.net/browse/ETM-16354)) | [`TC-OSP-POIDEQ-001.md`](./TC-OSP-POIDEQ-001.md) | PASSED 🟢 |
+
+### ETM-16115 — [Sales Order Platform] - Prevent Auto Approve jadi YES saat detail OPEN diedit
+
+Origin Card: [ETM-16115](https://erpintegration.atlassian.net/browse/ETM-16115)
+
+| TC Code | Judul Test Case | File | Status |
+|---|---|---|---|
+| `TC-SOP-PAA-001` | Prevent Auto Approve jadi YES saat detail SO Platform OPEN diedit (Unit Price / System SKU) + Audit Log old/new | [`TC-SOP-PAA-001.md`](./TC-SOP-PAA-001.md) | PASSED 🟢 |
+
+### ETM-16429 — [Sales Order] Negative: Void/Closed tidak tersedia bila outbound sudah Approved
+
+Origin Card: [ETM-16429](https://erpintegration.atlassian.net/browse/ETM-16429) · card asal [ETM-16276](https://erpintegration.atlassian.net/browse/ETM-16276)
+
+| TC Code | Judul Test Case | File | Status |
+|---|---|---|---|
+| `TC-SPLG-058` | Negative: tombol Void/Closed tidak tersedia pada SO Platform yang sudah punya Mutation Outbound Approved | [`TC-SPLG-058.md`](./TC-SPLG-058.md) | DRAFT 🟡 (run manual 16-10-2026: PASSED 🟢) |

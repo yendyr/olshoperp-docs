@@ -35,6 +35,16 @@ test_result:
   log_summary: "50 → 50 (median network 1,24 dtk); 100 → 100 (median 1,34 dtk); 0 missing/extra"
   report_url: "https://drive.google.com/drive/folders/16WAk74qaflF1pxyMfCo9HFRYtB-Qc0Sc"
 origin_jira: ETM-16354
+first_execution:
+  at: "2026-10-16"
+  via: "manual:Bugsy"
+  jira: ETM-16354
+last_execution:
+  at: "2026-10-16"
+  jira: ETM-16354
+  status: passed
+  via: "manual:Bugsy"
+  notes: "Staging, company FAT (112), 16-10-2026, dijalankan Bugsy. Yang diuji: Filter Platform Order Id = (equals) paste 50/100 ID cepat dan lengkap. Yang teramati: 50 → 50 (median network 1,24 dtk); 100 → 100 (median 1,34 dtk); 0 missing/extra. Bukti lengkap di folder Drive https://drive.google.com/drive/folders/16WAk74qaflF1pxyMfCo9HFRYtB-Qc0Sc"
 ---
 
 # TC-OSP-POIDEQ-001 — Filter Platform Order Id = (equals) paste 50/100 ID cepat dan lengkap ([ETM-16354](https://erpintegration.atlassian.net/browse/ETM-16354))

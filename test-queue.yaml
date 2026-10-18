@@ -874,11 +874,11 @@ ETM-15717:
   status: in_overview
   reuse: []
   drafts:
-    - PENDING-JENNI-2026090701
-    - PENDING-JENNI-2026090702
-    - PENDING-JENNI-2026090703
-    - PENDING-JENNI-2026090704
-    - PENDING-JENNI-2026090705
+    - TC-SPLG-025
+    - TC-SPLG-026
+    - TC-SPLG-027
+    - TC-SPLG-028
+    - TC-SPLG-029
   ready_tcs: []
   jira_status: Done
   jira_type: Error
@@ -1097,12 +1097,12 @@ ETM-15945:
   status: in_overview
   reuse: []
   drafts:
-    - PENDING-20260916153701
-    - PENDING-20260916153702
-    - PENDING-20260916153703
-    - PENDING-20260916153704
-    - PENDING-20260916153705
-    - PENDING-20260916153706
+    - TC-SPLG-052
+    - TC-SPLG-053
+    - TC-SPLG-054
+    - TC-SPLG-055
+    - TC-SPLG-056
+    - TC-SPLG-057
   ready_tcs: []
   jira_status: To Do
   jira_type: Error

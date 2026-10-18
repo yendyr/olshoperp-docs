@@ -40,6 +40,16 @@ test_result:
   log_summary: "KZZSP → 1 (SO-GKZZSPOV); SO-GKZZS → 1; paste 500 → cap 100, 100/100 sesuai 100 kode pertama, network ~1,2 dtk"
   report_url: "https://drive.google.com/drive/folders/1DQmVMwPrcvubqee5UT34UF2vy0oUbd7D"
 origin_jira: ETM-16384
+first_execution:
+  at: "2026-10-16"
+  via: "manual:Bugsy"
+  jira: ETM-16384
+last_execution:
+  at: "2026-10-16"
+  jira: ETM-16384
+  status: passed
+  via: "manual:Bugsy"
+  notes: "Staging, company FAT (112), 16-10-2026, dijalankan Bugsy. Yang diuji: Filter Trx. Code Contains potongan pendek/panjang dan paste 500 kode. Yang teramati: KZZSP → 1 (SO-GKZZSPOV); SO-GKZZS → 1; paste 500 → cap 100, 100/100 sesuai 100 kode pertama, network ~1,2 dtk. Bukti lengkap di folder Drive https://drive.google.com/drive/folders/1DQmVMwPrcvubqee5UT34UF2vy0oUbd7D"
 ---
 
 # TC-OSP-TRXCONT-001 — Filter Trx. Code Contains potongan pendek/panjang dan paste 500 kode ([ETM-16384](https://erpintegration.atlassian.net/browse/ETM-16384))
