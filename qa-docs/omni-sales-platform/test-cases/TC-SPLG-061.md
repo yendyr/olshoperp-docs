@@ -42,7 +42,7 @@ expected_result: |
   3. Pada halaman edit SO yang sama, ikon Void Doc tidak tampil.
   4. Pembanding: akun dengan izin approval melihat tombol Void di datalist dan ikon Void Doc di halaman edit untuk SO yang sama, sehingga perbedaannya terbukti karena izin.
 
-  [CATATAN QA] requirement.md belum merinci gate izin Void pada Sales Platform; expected mengacu pada deskripsi card ETM-16431. Temuan di luar expected: tombol Unapprove tetap tampil di halaman edit SO Approved untuk user tanpa izin approve (can_unapprove=true); menurut kode SalesOrder::canUnapprove hanya mengecek status dan wave, tanpa izin, sementara server memeriksa izin saat aksi dijalankan (belum dibuktikan dengan klik). Konfirmasi ke QA lead apakah perlu card terpisah.
+  [CATATAN QA] requirement.md belum merinci gate izin Void pada Sales Platform; expected mengacu pada deskripsi card ETM-16431. Temuan di luar expected: tombol Unapprove tetap tampil di halaman edit SO Approved untuk user tanpa izin approve (can_unapprove=true); menurut kode SalesOrder::canUnapprove hanya mengecek status dan wave, tanpa izin, sementara server memeriksa izin saat aksi dijalankan (belum dibuktikan dengan klik). Atas keputusan Lead dibuatkan card ETM-16642 (Error, prioritas Highest, regression, assign Melly): user tanpa izin approve seharusnya tidak melihat maupun bisa Unapprove.
 test_result:
   status: passed
   started_at: "2026-10-19T16:08:17+07:00"
@@ -64,7 +64,7 @@ last_execution:
   jira: ETM-16431
   status: passed
   via: "manual:Bugsy"
-  notes: "Dijalankan oleh Claude (peran Bugsy) atas permintaan Yemima, 19-10-2026 16:08-16:13 WIB, staging, company FAT (112), login withoutvoid@olshoperp.com dengan pembanding playwright@gmail.com lewat UI crawl otomatis. Actual: user tanpa izin Void tidak melihat tombol Void di kolom Action maupun ikon Void Doc di halaman edit untuk SO-KKZ7DSRO, datalist tetap normal, sedangkan akun dengan izin melihat keduanya; SO tidak diubah, console tanpa error. Temuan sampingan: tombol Unapprove tetap tampil untuk user tanpa izin approve."
+  notes: "Dijalankan oleh Claude (peran Bugsy) atas permintaan Yemima, 19-10-2026 16:08-16:13 WIB, staging, company FAT (112), login withoutvoid@olshoperp.com dengan pembanding playwright@gmail.com lewat UI crawl otomatis. Actual: user tanpa izin Void tidak melihat tombol Void di kolom Action maupun ikon Void Doc di halaman edit untuk SO-KKZ7DSRO, datalist tetap normal, sedangkan akun dengan izin melihat keduanya; SO tidak diubah, console tanpa error. Temuan sampingan: tombol Unapprove tetap tampil untuk user tanpa izin approve, dibuatkan card ETM-16642."
 ---
 
 # TC-SPLG-061 — User tanpa izin Void tidak melihat tombol Void
@@ -94,7 +94,7 @@ Card: [ETM-16431](https://erpintegration.atlassian.net/browse/ETM-16431) (Test C
 | Toolbar halaman edit | Print Detail, Sync Sales Order, Duplicate | + Void Doc |
 
 ### Observasi
-- Tombol **Unapprove** (merah, kanan bawah halaman edit) tetap tampil untuk user tanpa izin approve pada SO Approved (respons `can_unapprove=true`). Belum dibuktikan apakah klik-nya ditolak server; belum dibuatkan card.
+- Tombol **Unapprove** (merah, kanan bawah halaman edit) tetap tampil untuk user tanpa izin approve pada SO Approved (respons `can_unapprove=true`). Belum dibuktikan apakah klik-nya ditolak server. Sudah dibuatkan card [ETM-16642](https://erpintegration.atlassian.net/browse/ETM-16642) (Error, Highest, regression, assign Melly).
 - Tombol Print tidak tampil di kolom Action untuk akun tanpa izin (printable=false); di luar cakupan card.
 - Pelajaran metode: cek ikon toolbar halaman edit lewat DOM/hover, bukan hanya teks halaman (lihat TC-SPLG-058).
 - Evidence (teks): https://drive.google.com/drive/folders/1A_7xgT5YlavL-wLGnPDWbNtjirqu7oaI
