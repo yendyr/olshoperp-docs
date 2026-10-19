@@ -144,4 +144,20 @@ Origin Card: [ETM-16429](https://erpintegration.atlassian.net/browse/ETM-16429) 
 
 | TC Code | Judul Test Case | File | Status |
 |---|---|---|---|
-| `TC-SPLG-058` | Negative: tombol Void/Closed tidak tersedia pada SO Platform yang sudah punya Mutation Outbound Approved | [`TC-SPLG-058.md`](./TC-SPLG-058.md) | DRAFT 🟡 (run manual 16-10-2026: PASSED 🟢) |
+| `TC-SPLG-058` | Negative: tombol Void/Closed tidak tersedia pada SO Platform yang sudah punya Mutation Outbound Approved | [`TC-SPLG-058.md`](./TC-SPLG-058.md) | PASSED 🟢 dengan catatan (run 16-10-2026, dikoreksi 19-10-2026) |
+
+### ETM-16428 — [Sales Order] - Happy: datalist cepat + Void masih tersedia untuk SO tanpa outbound approved
+
+Origin Card: [ETM-16428](https://erpintegration.atlassian.net/browse/ETM-16428) · card asal [ETM-16276](https://erpintegration.atlassian.net/browse/ETM-16276)
+
+| TC Code | Judul Test Case | File | Status |
+|---|---|---|---|
+| `TC-SPLG-059` | Happy: datalist Sales Order muat cepat dan tombol Void tetap tersedia untuk SO tanpa outbound Approved | [`TC-SPLG-059.md`](./TC-SPLG-059.md) | PASSED 🟢 dengan catatan (19-10-2026) |
+
+### ETM-16623 — [Sales Order] - Negative: Void/Closed di halaman edit diblokir validasi bila outbound sudah Approved
+
+Origin Card: [ETM-16623](https://erpintegration.atlassian.net/browse/ETM-16623) · turunan [ETM-16429](https://erpintegration.atlassian.net/browse/ETM-16429) · temuan [ETM-16625](https://erpintegration.atlassian.net/browse/ETM-16625), [ETM-16626](https://erpintegration.atlassian.net/browse/ETM-16626)
+
+| TC Code | Judul Test Case | File | Status |
+|---|---|---|---|
+| `TC-SPLG-060` | Negative: klik Void dan Closed di halaman edit SO yang sudah punya outbound Approved diblokir validasi dengan notifikasi | [`TC-SPLG-060.md`](./TC-SPLG-060.md) | PASSED 🟢 (19-10-2026) |
