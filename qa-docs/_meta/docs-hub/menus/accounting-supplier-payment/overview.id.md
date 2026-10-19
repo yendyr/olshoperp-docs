@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: accounting-supplier-payment
 menu_name: Account Payment
 lang: id
-version: 1.1
-last_updated: 2026-09-02
+version: 1.2
+last_updated: 2026-10-19
 status: draft
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/technical/user-guide). Update supplier code-only (ETM-15725).
+notes: Help Center landing (Docs Page). v1.2 — Summary TO-BE ETM-16643; supplier code-only ETM-15725.
 ---
 
 ## Modul/Fitur: Account Payment
@@ -72,7 +72,8 @@ flowchart LR
 2. **Tambah Payment Source** — Cash/Bank dan/atau Debit Note.  
 3. **Alokasi Outstanding PI** — Use / Bulk Use / Allocate Full (partial boleh).  
 4. **Adjustment opsional** — baris Debit/Credit COA manual.  
-5. **Balance** — Total Source = Total Detail → **Approve**.
+5. **Summary** (TO-BE ETM-16643) — ringkasan read-only setelah Adjustment: Utang · Cash/Bank · Debit Note · Adj · Total (currency header; Total orange jika ≠ 0).  
+6. **Balance** — Total Source = Total Detail → **Approve**.
 
 ## Status transaksi
 

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.3
-last_updated: 2026-09-02
+version: 2.4
+last_updated: 2026-10-19
 owner: QA - Yemima
 status: review
 aliases: [Account Payment docs, AP payment, pembayaran hutang, PY]
@@ -28,6 +28,7 @@ aliases: [Account Payment docs, AP payment, pembayaran hutang, PY]
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.4 | 2026-10-19 | QA - Yemima | **TO-BE** [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643): Section Summary read-only setelah Adjustment (header currency, tanda Debit+/Credit−, DN terpisah, Total orange jika ≠ 0) |
 | 2.0 | 2026-07-05 | QA - Yemima | Initial v2.0 — PI allocation, journal, gaps |
 | 2.1 | 2026-07-06 | QA - Yemima | Full PM merge: multi-source (Cash/Bank + DN), sections A–E, balancing, formulas, import AP, relasi DN/Cash-Bank/PI/PR, gaps §19–§21 |
 | 2.2 | 2026-07-17 | QA - Yemima | Compliance qa-docs-standard: stateDiagram, Validasi, FAQ; trim path/class; user-guide |
@@ -370,6 +371,56 @@ Requires: ≥1 payment_detail AND (funds OR deposits).
 
 ---
 
+## 9.5 Section F — Summary (TO-BE · ETM-16643)
+
+Section **Summary** read-only di form **Show** dan **Edit**, posisi **setelah** accordion **Adjustment** (sebelum Approval Log / Audit).
+
+**Card:** [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643) · sibling AR [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644)
+
+### Aturan konversi & tampilan
+
+| Rule | Nilai |
+|------|-------|
+| Currency & kurs | **Currency header** transaksi AP; rate = **header exchange rate** (bukan rate PI / DN sumber) |
+| DN ikut kurs | DN as source maupun DN yang terbentuk dari AP ini → nilai Summary memakai rate header |
+| Desimal | **2** digit (format uang UI) |
+| Editability | Read-only — tidak ada input / save tersendiri |
+| Validasi baru | **Tidak** — balancing tetap di Approve; Summary hanya informasi |
+
+### Baris & tanda (AP)
+
+**Aturan tanda AP:** posisi jurnal **Debit** = penambah (**+**); posisi jurnal **Credit** = pengurang (**−**).
+
+| Label | Sumber agregat | Tanda |
+|-------|----------------|-------|
+| **Utang** | Σ alokasi Detail Payment (PI) dikonversi ke currency header | **+** |
+| **Cash / Bank** | Σ Payment Source tipe Cash/Bank | **−** |
+| **Debit Note** | Σ DN sebagai Payment Source **+** DN yang terbentuk dari dokumen AP ini (pisah dari Cash/Bank) | Sesuai jurnal DN (umumnya Credit → **−**) |
+| **Adj Debit** | Σ Adjustment Debit | **+** |
+| **Adj Credit** | Σ Adjustment Credit | **−** |
+| **Total** | Jumlah baris di atas | Ideal **0.00**; jika ≠ 0 → label/nilai Total warna **warning orange** (tanpa block) |
+
+### UI reference
+
+```
+[ Adjustment ]
+
+┌─ Summary ──────────────────────────────┐
+│  Utang           {CCY}   10,000.00     │
+│  Cash / Bank     {CCY}   -5,405.41     │
+│  Debit Note      {CCY}   -x,xxx.xx     │
+│  Adj Debit       {CCY}      270.27     │
+│  Adj Credit      {CCY}   -4,864.86     │
+│  Total (bold)    {CCY}        0.00     │  ← orange if ≠ 0
+└────────────────────────────────────────┘
+
+[ Approval Log / Audit ]
+```
+
+Contoh (header USD @ 18.500): PI Utang IDR 185.000.000 → Utang USD 10.000,00; komponen lain ikut tanda di atas → Total 0,00.
+
+---
+
 ## 10. Penjurnalan saat Approve
 
 **Method:** `JournalProcess::supplierPaymentAutoJournal`
@@ -525,7 +576,8 @@ Cross-ref: [accounting-purchase-return/knowledge-base.md](../accounting-purchase
 2. **Account Payment Source** — Cash/Bank + DN modals  
 3. **Detail Account Payment** — grid + embedded Outstanding PI panel  
 4. **Adjustment** — manual journal lines  
-5. **Approval Log** · **Audit**
+5. **Summary** — **TO-BE ETM-16643** read-only totals (setelah Adjustment)  
+6. **Approval Log** · **Audit**
 
 ### 16.2 Tombol utama
 
@@ -603,6 +655,7 @@ flowchart LR
 | GAP-PAY-IMPORT-01 | Import AP PM draft | Pending PO confirmation | Code implemented — **verify all 17 validation rules QA** | **Verify QA** |
 | GAP-PAY-IMPORT-02 | Smart Settlement (AR parity) | PM open item #2 | Unknown on AP import | **Pending PM** |
 | GAP-PAY-03 | Block PI void when payment | — | Not on PI side | **Not implemented** |
+| GAP-PAY-SUMMARY-01 | Section Summary setelah Adjustment | Info total Utang / Cash-Bank / DN / Adj / Total (header CCY) | Belum ada di UI | **TO-BE** [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643) |
 
 ---
 
@@ -639,6 +692,9 @@ A: Ya — sisa PI bisa dibayar di payment berikutnya.
 
 **Q: Bulk DN clearing error?**  
 A: Bug FE URL (GAP-PAY-DN-CLEAR) — pakai single DN add.
+
+**Q: Apa section Summary? (TO-BE ETM-16643)**  
+A: Ringkasan read-only setelah Adjustment (Utang, Cash/Bank, Debit Note, Adj, Total) dalam currency header. Total ideal 0; jika ≠ 0 teks Total berwarna orange — tanpa validasi Save baru.
 
 ## Related Documents
 

@@ -24,10 +24,14 @@ Menu **Account Receive** (Accounting).
 | Route UI | `/accounting/customer-payment` |
 | Test Case Library | `/test-case-library?menu=accounting-customer-payment` |
 
+**Open CR:** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) — Summary section setelah Adjustment (sibling AP [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643))  
+**Layer version:** requirement/KB/technical **2.2** · user-guide **1.1** · **Last updated:** 2026-10-19
+
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.2 | 2026-10-19 | TO-BE ETM-16644: Section Summary (header CCY, CN terpisah, tanda Credit+/Debit−, Total orange jika ≠ 0) |
 | 2.1 | 2026-09-01 17:05 | Cross-ref Instant Settlement ETM-15701: AR date/time dari SI + guard same calendar date |
 | 2.0 | 2026-08-31 | Split dari SoT v1.0 — Import AR multi-sheet, validasi terverifikasi codebase, Gap Registry GAP-AR-01..09; technical.md & user-guide.md dibuat; 3 layer naik ke review |
 | 1.1 | 2026-06-26 | Test cases AR detail insert (single/bulk use, bulk select) |

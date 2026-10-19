@@ -2,13 +2,16 @@
 doc_type: technical
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.1
-last_updated: 2026-09-01
+version: 2.2
+last_updated: 2026-10-19
 owner: QA - Yemima
 status: review
 ---
 
 # Account Receive — Technical
+
+**Behavior SoT:** [requirement.md](./requirement.md) v2.2  
+**Summary UI (TO-BE):** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644)
 
 ## 1. File Map
 
@@ -141,13 +144,28 @@ sequenceDiagram
 | AR di-Reject atau Void | status berubah | Alokasi dilepas dari invoice |
 | Adjustment `CREDIT NOTE` | Credit Note baru status open | Tertaut ke dokumen AR lewat `transaction_reference_id` |
 
-## 10. Tests & QA Notes
+## 10. Summary panel (TO-BE · ETM-16644)
+
+FE read-only block after Adjustment accordion (Show + Edit). Mirror AP ETM-16643 with **inverted** journal sign rule.
+
+| Aggregate | Formula note |
+|-----------|--------------|
+| Piutang | Σ detail SI amounts → header CCY via **header** rate (**+**) |
+| Cash/Bank | Σ cash/bank receive (**−** if journal Dr) |
+| Credit Note | Σ CN used as source + CN spawned from this AR — **separate** from Cash/Bank; sign by journal side |
+| Adj Debit / Adj Credit | Σ adjustment (**−** / **+**) |
+| Total | Sum; **2** decimals; orange if ≠ 0 — **no** new save validation |
+
+Sign rule AR: journal **Cr → +**, **Dr → −**. See [requirement §6.5](./requirement.md).
+
+## 11. Tests & QA Notes
 
 - Test case aktif menu ini ada di `test-cases/` — mencakup bulk approve dan insert Sales Invoice, belum mencakup alur import multi-sheet (lihat GAP-AR-09).
 - Assertion pesan error wajib mengikuti string di §6 requirement, bukan string di raw requirement lama.
 - Fixture import sebaiknya memakai template hasil endpoint `import/template` supaya nama sheet dan heading selalu sinkron.
+- **TO-BE ETM-16644:** Summary after Adjustment; header CCY; CN split; Total orange when ≠ 0; signs opposite of AP.
 
-## 11. Known Issues
+## 12. Known Issues
 
 | GAP | Ringkas |
 |---|---|
@@ -160,5 +178,6 @@ sequenceDiagram
 | GAP-AR-07 | Cache lock dan pesan penolakan memakai penanda Account Payment |
 | GAP-AR-08 | Requirement raw §7 sebenarnya milik menu Instant Settlement |
 | GAP-AR-09 | Alur manual belum punya sumber requirement |
+| GAP-AR-SUMMARY-01 | Summary section TO-BE ETM-16644 |
 
 Detail lengkap: [requirement §8](./requirement.md).

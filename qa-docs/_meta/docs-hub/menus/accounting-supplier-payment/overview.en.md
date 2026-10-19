@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: accounting-supplier-payment
 menu_name: Account Payment
 lang: en
-version: 1.1
-last_updated: 2026-09-02
+version: 1.2
+last_updated: 2026-10-19
 status: draft
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/technical/user-guide). Updated for supplier code-only (ETM-15725).
+notes: Help Center landing (Docs Page). v1.2 — Summary TO-BE ETM-16643; supplier code-only ETM-15725.
 ---
 
 ## Module/Feature: Account Payment
@@ -72,7 +72,8 @@ flowchart LR
 2. **Add Payment Source** — Cash/Bank and/or Debit Note.  
 3. **Allocate Outstanding PI** — Use / Bulk Use / Allocate Full (partial allowed).  
 4. **Optional Adjustment** — manual Debit/Credit COA lines.  
-5. **Balance** — Total Source = Total Detail → **Approve**.
+5. **Summary** (TO-BE ETM-16643) — read-only totals after Adjustment: Payable · Cash/Bank · Debit Note · Adj · Total (header currency; Total orange if ≠ 0).  
+6. **Balance** — Total Source = Total Detail → **Approve**.
 
 ## Transaction states
 

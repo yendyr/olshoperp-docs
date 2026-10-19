@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.4
-last_updated: 2026-09-02
+version: 2.5
+last_updated: 2026-10-19
 owner: QA - Yemima
 status: review
 aliases: [Account Payment, AP payment, pembayaran hutang, PY, pelunasan supplier]
@@ -78,6 +78,7 @@ flowchart TD
 | **Outstanding Purchase Invoice** | Alokasi hutang PI (Use / Bulk Use / Allocate Full) |
 | **Detail Payment** | Baris alokasi + Exchange Diff / Cash Diff (tampil sistem) |
 | **Adjustment** | Debit/Credit COA manual (opsional) |
+| **Summary** (TO-BE ETM-16643) | Ringkasan read-only setelah Adjustment: Utang · Cash/Bank · Debit Note · Adj · Total (currency header; Total orange jika ≠ 0) |
 | **Import Log** | Import massal Excel → hasil **Open** untuk review |
 | **Already Prepared** | PI terkunci di payment draft/open lain |
 
@@ -116,6 +117,9 @@ A: Tidak — status **Open**; review lalu Approve.
 
 **Q: Mata uang sumber beda dari header?**  
 A: Ditolak — samakan currency.
+
+**Q: Apa section Summary? (TO-BE ETM-16643)**  
+A: Setelah Adjustment — ringkasan Utang, Cash/Bank, Debit Note (sumber + yang terbentuk), Adj Debit/Credit, Total dalam currency header. Total sebaiknya 0; kalau tidak, angka Total berwarna orange (peringatan visual saja).
 
 **Q: Kenapa supplier hanya kode?**  
 A: Kebijakan tampilan code-only (semua role). Cari tetap by nama/kode; nama hanya di **Print**; export tanpa nama.

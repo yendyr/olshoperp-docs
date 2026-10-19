@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.1
-last_updated: 2026-09-01
+version: 2.2
+last_updated: 2026-10-19
 owner: QA - Yemima
 status: review
 audience: operator
@@ -106,5 +106,7 @@ Dalam satu baris, isi **salah satu** saja — Debit atau Credit, tidak boleh dua
 **Boleh mencampur tagihan dari beberapa customer dalam satu transaksi bank?** Tidak boleh. Satu transaksi bank hanya untuk satu customer.
 
 **Sheet ketiga wajib diisi?** Tidak. Isi hanya kalau ada selisih antara uang masuk dan nilai tagihan.
+
+**Apa section Summary? (TO-BE ETM-16644)** Setelah Adjustment — ringkasan Piutang, Cash/Bank, Credit Note (sumber + yang terbentuk), Adj Debit/Credit, Total dalam currency header. Total sebaiknya 0; kalau tidak, angka Total berwarna orange (peringatan visual saja).
 
 **Detail lengkap ada di mana?** Lihat [requirement.md](./requirement.md) untuk aturan rinci dan [user-guide.md](./user-guide.md) untuk panduan langkah.

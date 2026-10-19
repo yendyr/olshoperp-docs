@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.3
-last_updated: 2026-09-02
+version: 2.4
+last_updated: 2026-10-19
 owner: QA - Yemima
 status: review
 ---
@@ -12,8 +12,9 @@ status: review
 
 **API prefix:** `accounting/supplier-payment`  
 **Type:** `Payment to Supplier` · **Code prefix:** `PY`  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.3  
-**Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15725](https://erpintegration.atlassian.net/browse/ETM-15725)
+**Behavior SoT:** [requirement.md](./requirement.md) v2.4  
+**Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15725](https://erpintegration.atlassian.net/browse/ETM-15725)  
+**Summary UI (TO-BE):** [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643)
 ---
 
 ## 1. File Map
@@ -210,7 +211,23 @@ Cash available: period journal balance − reserved payment funds on same COA.
 
 ---
 
-## 13. Tests & QA Notes
+## 13. Summary panel (TO-BE · ETM-16643)
+
+FE read-only block after Adjustment accordion (Show + Edit).
+
+| Aggregate | Formula note |
+|-----------|--------------|
+| Utang | Σ detail paid amounts → header CCY via **header** rate (**+**) |
+| Cash/Bank | Σ funds (**−**, journal Cr) |
+| Debit Note | Σ deposits used + DN spawned from this payment (**−** if Cr) — **separate** from Cash/Bank |
+| Adj Debit / Adj Credit | Σ adjustment rows (**+** / **−**) |
+| Total | Sum; display **2** decimals; orange warning class if `bccomp(total, 0) !== 0` — **no** new save validation |
+
+Sign rule AP: journal **Dr → +**, **Cr → −**. See [requirement §9.5](./requirement.md).
+
+---
+
+## 14. Tests & QA Notes
 
 1. Cash + PI → approve balanced → journal + PI processed↑  
 2. Unbalanced → error  
@@ -220,10 +237,11 @@ Cash available: period journal balance − reserved payment funds on same COA.
 6. Forex when rates differ  
 7. Import → OPEN then approve  
 8. Void UI → expect fail  
+9. **TO-BE ETM-16643:** Summary after Adjustment; header CCY; DN split; Total orange when ≠ 0  
 
 ---
 
-## 14. Known Issues
+## 15. Known Issues
 
 | ID | Issue |
 |----|-------|
@@ -231,6 +249,7 @@ Cash available: period journal balance − reserved payment funds on same COA.
 | GAP-PAY-DN-CLEAR | FE bulk DN wrong URL |
 | GAP-PAY-PR-OUT | PR return fields unused on PI outstanding |
 | GAP-PAY-01 | PI status not set processed on pay |
+| GAP-PAY-SUMMARY-01 | Summary section TO-BE ETM-16643 |
 | DEV-PAY-01…05 | Void UI, DN URL, PR wiring, PI processed, outstanding SQL |
 
 Full: [requirement §19–§21](./requirement.md).

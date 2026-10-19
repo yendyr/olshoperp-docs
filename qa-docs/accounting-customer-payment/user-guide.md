@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 1.0
-last_updated: 2026-08-31
+version: 1.1
+last_updated: 2026-10-19
 owner: QA - Yemima
 status: review
 source_docs:
   - requirement.md
   - knowledge-base.md
   - technical.md
-source_version: 2.1
+source_version: 2.2
 ---
 
 # Account Receive — User Guide
@@ -60,6 +60,7 @@ Pastikan hal-hal ini sudah siap:
 
 ## 5. Yang Perlu Diperhatikan
 
+- **Summary (TO-BE ETM-16644):** Setelah section Adjustment di form Show/Edit, ada panel ringkasan read-only (Piutang, Cash/Bank, Credit Note, Adj, Total) dalam mata uang header. Total sebaiknya 0,00; jika tidak, angka Total berwarna orange (peringatan visual saja).
 - **Satu transaksi bank, satu dokumen.** Kalau di rekening ada tiga transfer masuk, tulis tiga baris — meski banknya sama dan tanggalnya sama. Sistem tetap membuat tiga dokumen terpisah.
 - **Satu kesalahan membatalkan seluruh file.** Ini disengaja, supaya tidak ada file yang masuk separuh dan menyisakan pelunasan menggantung.
 - **Satu transaksi bank hanya untuk satu customer.** Tagihan milik beberapa customer tidak boleh digabung dalam satu baris uang masuk.

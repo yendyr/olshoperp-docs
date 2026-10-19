@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.1
-last_updated: 2026-09-01
+version: 2.2
+last_updated: 2026-10-19
 owner: QA - Yemima
 status: review
 ---
@@ -18,7 +18,9 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 2.1 | 2026-09-01 | QA - Yemima | Relasi Instant Settlement: AR date/time dari SI + guard same calendar date (ETM-15701) || 2.0 | 2026-08-31 | QA - Yemima | Split dari SoT v1.0 — Import AR multi-sheet, validasi terverifikasi codebase, Gap Registry |
+| 2.2 | 2026-10-19 | QA - Yemima | **TO-BE** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644): Section Summary read-only setelah Adjustment (header currency; Credit=+/Debit=−; CN terpisah; Total orange jika ≠ 0) |
+| 2.1 | 2026-09-01 | QA - Yemima | Relasi Instant Settlement: AR date/time dari SI + guard same calendar date (ETM-15701) |
+| 2.0 | 2026-08-31 | QA - Yemima | Split dari SoT v1.0 — Import AR multi-sheet, validasi terverifikasi codebase, Gap Registry |
 | 1.1 | 2026-06-26 | QA - Yemima | Test cases AR detail insert (single/bulk use, bulk select) — lihat test-cases/ |
 | 1.0 | 2026-06-23 | QA - Yemima | Cross-reference Relasi Instant Settlement (Fase 1) |
 
@@ -235,6 +237,54 @@ Format pesan: `Row {baris} at Sheet {nomor sheet}: {Kolom} {pesan}`. Nomor sheet
 | Amount tidak cocok | `Amount Mismatch: Total at Sheet 1 Row X ({nilai}) does not match total in Sheet 2 and Sheet 3 ({nilai}).` |
 | Import lain sedang berjalan | `Import Transaction for Account Receive is currently being processed by another session.` |
 
+## 6.5 Section Summary (TO-BE · ETM-16644)
+
+Section **Summary** read-only di form **Show** dan **Edit**, posisi **setelah** accordion **Adjustment** (sebelum Approval Log / Audit).
+
+**Card:** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) · sibling AP [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643)
+
+### Aturan konversi & tampilan
+
+| Rule | Nilai |
+|------|-------|
+| Currency & kurs | **Currency header** transaksi AR; rate = **header exchange rate** (bukan rate SI / CN sumber) |
+| CN ikut kurs | CN as source maupun CN yang terbentuk dari AR ini → nilai Summary memakai rate header |
+| Desimal | **2** digit |
+| Editability | Read-only |
+| Validasi baru | **Tidak** — balancing tetap di Approve |
+
+### Baris & tanda (AR)
+
+**Aturan tanda AR** (kebalikan AP untuk sisi jurnal): posisi jurnal **Credit** = penambah (**+**); posisi jurnal **Debit** = pengurang (**−**).
+
+| Label | Sumber agregat | Tanda |
+|-------|----------------|-------|
+| **Piutang** | Σ alokasi Detail (SI) dikonversi ke currency header | **+** |
+| **Cash / Bank** | Σ Payment Source / Receive tipe Cash/Bank | Biasanya Debit → **−** |
+| **Credit Note** | Σ CN sebagai Payment Source **+** CN yang terbentuk dari dokumen AR ini (pisah dari Cash/Bank) | Sesuai jurnal: CN as source biasanya Debit → **−**; CN issued (Credit) → **+** |
+| **Adj Debit** | Σ Adjustment Debit | **−** |
+| **Adj Credit** | Σ Adjustment Credit | **+** |
+| **Total** | Jumlah baris di atas | Ideal **0.00**; jika ≠ 0 → Total warna **warning orange** (tanpa block) |
+
+### UI reference
+
+```
+[ Adjustment ]
+
+┌─ Summary ──────────────────────────────┐
+│  Piutang         {CCY}   xx,xxx.xx     │
+│  Cash / Bank     {CCY}   -x,xxx.xx     │
+│  Credit Note     {CCY}   ±x,xxx.xx     │
+│  Adj Debit       {CCY}   -x,xxx.xx     │
+│  Adj Credit      {CCY}   +x,xxx.xx     │
+│  Total (bold)    {CCY}        0.00     │  ← orange if ≠ 0
+└────────────────────────────────────────┘
+
+[ Approval Log / Audit ]
+```
+
+---
+
 ## 7. Relasi Menu Lain
 
 ```mermaid
@@ -270,6 +320,7 @@ flowchart TB
 | GAP-AR-07 | Penguncian proses import di alur Account Receive memakai penanda milik Account Payment, dan tiga pesan penolakannya menyebut "Account Payment". | Missing Behavior | Import AR dan AP berpotensi saling mengunci; pesan ke user menyebut menu yang salah | Open |
 | GAP-AR-08 | Requirement raw §7 (Smart Settlement Adjustment, Failed Ship, Hard Delete Protection) sebenarnya menjelaskan perilaku menu Instant Settlement, bukan menu ini. | Unverified | Berisiko dobel dokumentasi dan salah rumah fakta | Open |
 | GAP-AR-09 | Alur manual (create dokumen AR, insert Sales Invoice lewat modal Available Sales Invoice, bulk approve) belum punya sumber requirement tertulis, padahal sudah punya 9 test case aktif. | Missing Behavior | 9 TC berdiri tanpa acuan requirement | Open |
+| GAP-AR-SUMMARY-01 | Section Summary setelah Adjustment | Info total Piutang / Cash-Bank / CN / Adj / Total (header CCY; tanda Credit+/Debit−) | Belum ada di UI | **TO-BE** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) |
 
 ## 9. FAQ
 
@@ -282,6 +333,8 @@ flowchart TB
 **Kenapa invoice yang kelihatan belum dibayar ditolak karena melebihi outstanding?** Kemungkinan ada dokumen AR lain berstatus Draft atau Open yang sudah memesan sebagian nilainya. Pesan error menyebut nilai yang tertahan itu.
 
 **Bisa bayar pakai deposit customer?** Bisa. Isi nomor Credit Note di kolom COA Bank Account, dengan syarat CN sudah Approved dan saldonya cukup.
+
+**Apa section Summary? (TO-BE ETM-16644)** Ringkasan read-only setelah Adjustment: Piutang, Cash/Bank, Credit Note, Adj Debit/Credit, Total — semua dalam currency header. Total ideal 0; jika ≠ 0 teks Total berwarna orange (info saja).
 
 ## Related Documents
 

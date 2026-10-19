@@ -2,8 +2,8 @@
 doc_type: user-guide
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 1.2
-last_updated: 2026-09-02
+version: 1.3
+last_updated: 2026-10-19
 source_docs: [requirement.md, knowledge-base.md, technical.md]
 source_version: 2.4
 owner: QA - Yemima
@@ -145,6 +145,10 @@ Setelah payment **di-approve**:
 ### Langkah 4 — Adjustment (opsional)
 
 Tambah baris [**Adjustment**](#sf-lingo:SF-ADJ-01) bila perlu (biaya admin, rounding).
+
+### Langkah 4b — Summary (TO-BE ETM-16643)
+
+Setelah Adjustment, cek panel **Summary** (read-only): Utang, Cash/Bank, Debit Note, Adj Debit/Credit, Total — semua dalam mata uang header. Total sebaiknya **0,00**; jika tidak, angka Total berwarna orange (peringatan visual; Approve tetap memakai aturan balancing yang sudah ada).
 
 ### Langkah 5 — Balance & Approve
 
