@@ -161,3 +161,11 @@ Origin Card: [ETM-16623](https://erpintegration.atlassian.net/browse/ETM-16623) 
 | TC Code | Judul Test Case | File | Status |
 |---|---|---|---|
 | `TC-SPLG-060` | Negative: klik Void dan Closed di halaman edit SO yang sudah punya outbound Approved diblokir validasi dengan notifikasi | [`TC-SPLG-060.md`](./TC-SPLG-060.md) | PASSED 🟢 (19-10-2026) |
+
+### ETM-16431 — [Sales Order] - Permission: tanpa izin Void tombol Void tidak muncul meski SO eligible
+
+Origin Card: [ETM-16431](https://erpintegration.atlassian.net/browse/ETM-16431) · card asal [ETM-16276](https://erpintegration.atlassian.net/browse/ETM-16276) · akun uji: lihat `tests/TEST-ACCOUNTS.md`
+
+| TC Code | Judul Test Case | File | Status |
+|---|---|---|---|
+| `TC-SPLG-061` | Permission: user tanpa izin Void dan Approve tidak melihat tombol Void di datalist maupun halaman edit meski SO eligible | [`TC-SPLG-061.md`](./TC-SPLG-061.md) | PASSED 🟢 (19-10-2026) |

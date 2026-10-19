@@ -335,6 +335,7 @@ Catatan transisi: run ETM-16502 (15-10-2026 13:20 WIB) masih menghapus `QA-AUTO-
 | Aturan flow cross-menu (recall, gate, fresh data) | rule `17-e2e-cross-menu-flow.mdc` |
 | Sync Jira Done → `last_execution` / `first_execution` | rule `18-sync-jira-done.mdc` |
 | Cek data DB (L1/L2/L3, env Tyas/Staging/Merdian) | `tests/DATA-VERIFICATION.md` · rule docs `19-database-data-verification.mdc` |
+| Akun uji khusus role/izin (mis. user tanpa izin Void/Approve — staging & tyas saja) | `tests/TEST-ACCOUNTS.md` |
 | Apa yang boleh ditulis di `qa-docs/` | rule `03-qa-docs-immutable.mdc` |
 
 ## Perintah lengkap
