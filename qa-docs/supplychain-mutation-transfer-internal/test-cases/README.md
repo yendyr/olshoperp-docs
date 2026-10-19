@@ -17,8 +17,17 @@
 | PENDING-20260910154008 | Pembersihan Colli Code saat Hapus Header Dokumen TFI Unapproved | draft | ❌ | 2026-09-14 |
 | PENDING-20260910154009 | Proteksi Merging Stock ID & Preservasi Colli Destination pada Modal Inline Update | draft | ❌ | 2026-09-14 |
 | PENDING-20260914104700 | Validasi Larangan Self-Assignment Colli Destination pada Partial Transfer (V-TFI-11) | draft | ❌ | 2026-09-14 |
+| PENDING-20261019172000 | Edit QTY langsung di tabel detail Transfer Internal tersimpan tanpa muat ulang seluruh tabel | draft | ❌ | 2026-10-19 |
 
 **Requirement ref:** [requirement.md v2.0](../requirement.md) · Colli BETA §7 · GAP-TFI-01/03/04
 
 
 **Re-test:** TC-MTIN-004 & 006 `last_execution: not_run` setelah align 2026-09-01 — chain 004→006.
+
+### ETM-16361 — [Transfer Internal] Edit QTY di tabel detail tanpa refresh seluruh tabel
+
+Origin Card: [ETM-16361](https://erpintegration.atlassian.net/browse/ETM-16361)
+
+| TC Code | Judul Test Case | File | Status |
+|---|---|---|---|
+| `PENDING-20261019172000` | Edit QTY langsung di tabel detail Transfer Internal tersimpan tanpa muat ulang seluruh tabel | [`TC-MTIN-DRAFT-20261019172000.md`](./TC-MTIN-DRAFT-20261019172000.md) | PASSED 🟢 (19-10-2026) |
