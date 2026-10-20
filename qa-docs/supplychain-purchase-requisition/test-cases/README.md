@@ -22,5 +22,4 @@ Urutan tabel mengikuti **urutan pertama → terakhir dijalankan**.
 | 14 | `TC-PR-16256-03.md` / TC-PR-16256-03 | Multi-item gabungan Base Unit dan kedua Alt Unit konversi besar dalam 1 dokumen PR | **pass** | ❌ | 2026-10-06 |
 | 15 | `TC-PR-16256-04.md` / TC-PR-16256-04 | Tarik PR satuan Pieces ke PO lalu ubah ke Alternative Unit 1KOLI5600PCS secara penuh | **pass** | ❌ | 2026-10-06 |
 | 16 | `TC-PR-16256-05.md` / TC-PR-16256-05 | Tarik PR parsial dengan konversi Alternative Unit di PO dan verifikasi sisa Outstanding PR | **pass** | ❌ | 2026-10-06 |
-
-
+| 17 | `TC-PR-DRAFT-20261020103000.md` / PENDING-20261020103000 | Negative: produk tanpa stok atau stok 0 tetap tampil '-' atau 0 di pop-up pilih produk dan detail PR (ETM-16557) | draft | ❌ | 2026-10-20 |
