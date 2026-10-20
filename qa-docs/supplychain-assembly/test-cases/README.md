@@ -33,6 +33,6 @@ Card terkait: [ETM-15519](https://erpintegration.atlassian.net/browse/ETM-15519)
 | TC-ASMBLY-007 | Regresi — Single Rack Fulfillment & FIFO: origin bukan Outrack / WIP (menu selain Assembly) | draft | ❌ | 2026-08-17 |
 | `TC-ASMBLY-011.md` / TC-ASMBLY-011 | Regresi Urutan Baris Detail Transaksi SCM (LIFO / Last-In-First-Row) - Assembly | draft | ✅ | 2026-08-27 |
 | `TC-ASMBLY-012.md` / TC-ASMBLY-012 | Implementasi COLLI V2 (Multi-SKU per Colli) pada Transaksi Assembly | draft | ❌ | 2026-09-02 |
+| `TC-ASMBLY-DRAFT-20261020131000.md` / PENDING-20261020131000 | Cross-menu: Outbound Code, Outbound Date, dan Total Qty Need di Export With Details Assembly cocok dengan Other Outbound dan BOM (ETM-16655) | draft | ❌ | 2026-10-20 |
 
 > Kartu Jira ETM-15525 (Max Qty / unit BOX) → `qa-docs/supplychain-assembly/ETM-15525/` 0b6acb1 (docs: reorganize JIRA testing folders and update QA test cases)
-
