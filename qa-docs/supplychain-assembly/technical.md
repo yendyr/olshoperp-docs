@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-assembly
 menu_name: "Assembly"
-version: 2.1
-last_updated: 2026-07-04
+version: 2.2
+last_updated: 2026-10-20
 owner: QA - Yemima
 status: review
 related_docs:
@@ -393,6 +393,19 @@ uploadFile (multipart)
 | Detail | `WorkOrderDetailExport` | .xlsx / .csv per WO |
 
 Export options (FE): `EXPORT_OPTIONS_WITH_AND_WITHOUT_DETAILS` — with details, without details, active page.
+
+### 10.1 Datalist Export All — With Details (TO-BE · ETM-16645)
+
+**Card:** [ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645)  
+**Contoh format:** [https://t.me/c/1931573603/3/50865](https://t.me/c/1931573603/3/50865)
+
+| Mode | Grain | Kolom |
+|------|-------|-------|
+| **AS-IS With Details** | 1 row / FG | 17 kolom (tanpa component/outbound) |
+| **TO-BE With Details** | 1 row / FG × BOM component | 23 kolom — tambah `System Product SKU Component`, `System Product SKU Name Component`, `Total Qty Need`, `Unit Component`, `Outbound Code`, `Outbound Date` (setelah Unit FG, sebelum Transaction Status) |
+| **Without Details** | Header / FG only | Tanpa kolom component/outbound |
+
+Implementasi: expand `ProcessWorkOrderDetailsJob` / export mapping agar With Details join komponen + outbound terkait; header names harus match Request Final di contoh Telegram.
 
 ---
 

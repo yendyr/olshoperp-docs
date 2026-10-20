@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: supplychain-assembly
 menu_name: Assembly
 lang: id
-version: 1.0
-last_updated: 2026-07-30
+version: 1.1
+last_updated: 2026-10-20
 status: draft
 audience: help-center
 source_type: authored
 source_ref: "user-provided (Help Center content authored by user)"
-notes: Help Center landing (Docs Page). Terpisah dari layer QA (KB/requirement/technical/user-guide).
+notes: Help Center landing (Docs Page). v1.1 — Export With Details TO-BE ETM-16645.
 ---
 
 ### 📦 Modul/Fitur: Assembly
@@ -281,7 +281,8 @@ Fungsi berikut **sengaja ditunda** oleh tim produk demi menjaga stabilitas siste
 
 ### 🖨️ Fitur Export & Cetak (Print)
 
-* **Export Data Kolektif:** Unduh ringkasan manifes data transaksi Assembly secara massal lewat tombol di halaman daftar utama ke format file eksternal.
+* **Export Data Kolektif:** Unduh ringkasan manifes data transaksi Assembly secara massal lewat tombol di halaman daftar utama ke format file eksternal (With Details / Without Details / Active Page).
+* **TO-BE Export With Details ([ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645)):** satu baris per finished good × komponen BOM, plus kolom Outbound Code/Date. Contoh format: [Telegram](https://t.me/c/1931573603/3/50865). Without Details tetap tanpa breakdown komponen.
 * **Cetak Label Spesifik:** Setelah dokumen **Approved**, tersedia tiga pilihan cetak label logistik fisik untuk identifikasi barang di gudang:
   1. **Label SKU** — kode identitas stok satuan produk jadi.
   2. **Label BOX** — label penanda kemasan kardus/wadah logistik.

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-assembly
 menu_name: "Assembly"
-version: 2.1
-last_updated: 2026-07-04
+version: 2.2
+last_updated: 2026-10-20
 owner: QA - Yemima
 status: review
 ---
@@ -23,6 +23,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.2 | 2026-10-20 | QA - Yemima | **TO-BE** [ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645): Export All With Details → 23 kolom FG×komponen + Outbound; contoh format [Telegram](https://t.me/c/1931573603/3/50865) |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
 | 2.0 | 2026-07-04 | QA - Yemima | Full rewrite: merge PM requirement, codebase verification, stock movement chain, import spec, UI/UX buttons, gap analysis |
 | 2.1 | 2026-07-04 | QA - Yemima | Clarify G-03 (integer input vs multi-unit auto-calc), G-04 (sequential sub-assembly by design), G-07 → pending development |
@@ -76,7 +77,7 @@ Assembly hanya bisa memakai SKU yang:
 | A-02 | Kolom: TRX Code/Date, Building, Type, Start Date, Progress, Description, TRX Status, Error flag, Generated Trx, Created/Updated By |
 | A-03 | Global search: Assembly Code, SKU Header BOM, SKU Detail BOM |
 | A-04 | Advanced filter + column show/hide tersedia |
-| A-05 | Export all: with details / without details / active page |
+| A-05 | Export all: with details / without details / active page — **TO-BE With Details** [ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645) |
 | A-06 | Bulk approve & bulk delete (Draft/Open) |
 | A-07 | Retry tersedia jika approved tapi progress ≠ 100% dan tidak generating |
 
@@ -381,6 +382,37 @@ Endpoint: `GET work-order/{id}/work-order-detail/export-excel?type=1|2` (.xlsx /
 | Transfer Code / Date | — | ✓ | ✓ |
 | Inbound Code / Date | — | — | ✓ |
 
+### 7.4a Export All (datalist) — With / Without Details
+
+**Card:** [ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645)  
+**Contoh format expected:** [https://t.me/c/1931573603/3/50865](https://t.me/c/1931573603/3/50865)
+
+#### AS-IS — With Details (17 kolom)
+
+Grain: **1 baris per finished good**. Belum ada kolom komponen / outbound.
+
+Trans. Code · Warehouse Name · Type · Transaction Date · Transaction Ref · Start Date · Progress Status · Description · System Product SKU · System Product Name · Qty · Unit · Transaction Status · Created At · Created By · Updated By · Updated At
+
+#### TO-BE — With Details (23 kolom)
+
+Grain: **1 baris per finished good × komponen BOM** (header & FG diulang per komponen).
+
+| # | Kolom | Catatan |
+|---|-------|---------|
+| 1–8 | Trans. Code … Description | Header dokumen |
+| 9–12 | System Product SKU / Name · Qty · Unit | Finished good |
+| 13 | **System Product SKU Component** | Baru |
+| 14 | **System Product SKU Name Component** | Baru |
+| 15 | **Total Qty Need** | Qty komponen dibutuhkan |
+| 16 | **Unit Component** | Baru |
+| 17 | **Outbound Code** | Kode Other Outbound / transfer keluar komponen |
+| 18 | **Outbound Date** | Baru |
+| 19–23 | Transaction Status · Created/Updated At/By | Audit |
+
+#### Without Details
+
+Tanpa breakdown komponen — kolom dasar header/FG + status/audit **tanpa** kolom 13–18 (Component / Outbound).
+
 ### 7.5 Import Monitoring
 
 | Fitur | Endpoint |
@@ -573,6 +605,7 @@ flowchart TB
 | G-08 | Approval table naming di doc lama | **`scm_work_orders_approvals`** (bukan `ppc_*`) | Doc corrected |
 | G-09 | Total Header SKU di datalist | Tidak ada kolom dedicated; Product column (hidden) + search | Enhancement jika diperlukan |
 | G-10 | Import Excel qty integer check | BE cek `is_numeric > 0` saja, belum explicit `integer` | UI sudah integer; harden BE jika perlu |
+| G-11 | Export All With Details | AS-IS 17 kolom (1 row/FG); **TO-BE** 23 kolom FG×komponen + Outbound ([ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645); contoh [Telegram](https://t.me/c/1931573603/3/50865)) | Open |
 
 ---
 
@@ -611,6 +644,9 @@ A: By design — Assembly child BOM harus diproses terlebih dahulu agar SKU chil
 
 **Q: Bisa input qty desimal?**  
 A: Tidak dari UI. Sistem bisa hitung desimal internal saat konversi multi-unit, lalu di-round ke integer.
+
+**Q: Export With Details berisi apa? (TO-BE ETM-16645)**  
+A: Satu baris per FG × komponen BOM: SKU/Name/Qty/Unit FG + komponen (SKU, Name, Total Qty Need, Unit) + Outbound Code/Date. Contoh format: [Telegram](https://t.me/c/1931573603/3/50865). Without Details tetap tanpa kolom komponen.
 
 ---
 

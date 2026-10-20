@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-assembly
 menu_name: "Assembly"
-version: 2.1
-last_updated: 2026-07-04
+version: 2.2
+last_updated: 2026-10-20
 owner: QA - Yemima
 status: review
 audience: operator
@@ -133,7 +133,7 @@ Sistem **tidak** auto-bongkar sub-assembly menjadi komponen level lebih dalam.
 | **Approve** (✓✓) | Approve Assembly status Open |
 | **Print** | Cetak header PDF |
 | **Retry** | Ulangi job approval jika progress < 100% |
-| **Export All** | Export with/without details / active page |
+| **Export All** | With / without details / active page. **TO-BE With Details** ([ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645)): baris FG×komponen + Outbound — contoh format [Telegram](https://t.me/c/1931573603/3/50865) |
 | **Bulk Approve / Delete** | Multi-select checkbox |
 
 ### Form — Basic Information

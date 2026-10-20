@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: supplychain-assembly
 menu_name: Assembly
 lang: en
-version: 1.0
-last_updated: 2026-07-30
+version: 1.1
+last_updated: 2026-10-20
 status: draft
 audience: help-center
 source_type: authored
 source_ref: "user-provided (Help Center content authored by user)"
-notes: Help Center landing (Docs Page). Separate from QA layers (KB/requirement/technical/user-guide).
+notes: Help Center landing (Docs Page). v1.1 — Export With Details TO-BE ETM-16645.
 ---
 
 ### 📦 Module/Feature: Assembly
@@ -281,7 +281,8 @@ The features below are **intentionally deferred** by the product team to keep th
 
 ### 🖨️ Export & Print
 
-* **Collective Data Export:** Download a summary of Assembly transaction data in bulk from the main list page to an external file format.
+* **Collective Data Export:** Download Assembly transaction data in bulk from the main list (With Details / Without Details / Active Page).
+* **TO-BE Export With Details ([ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645)):** one row per finished good × BOM component, plus Outbound Code/Date. Format example: [Telegram](https://t.me/c/1931573603/3/50865). Without Details stays without component breakdown.
 * **Specific Label Printing:** Once the document is **Approved**, three physical logistics label options become available for identifying goods in the warehouse:
   1. **SKU Label** — the stock identity code for a single finished-good unit.
   2. **BOX Label** — the packaging/carton marker label.

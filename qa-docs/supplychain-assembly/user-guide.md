@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: supplychain-assembly
 menu_name: "Assembly"
-version: 1.0
-last_updated: 2026-08-12
+version: 1.1
+last_updated: 2026-10-20
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 2.1
+source_version: 2.2
 ---
 
 # Panduan Pengguna — Assembly
@@ -98,6 +98,8 @@ Kalau progress macet di bawah 100% lebih dari 2 menit → **Retry** dari datalis
 ---
 
 ## 5. Yang Perlu Diperhatikan
+
+- **Export All (TO-BE ETM-16645):** opsi With Details akan berisi finished good + setiap komponen BOM + Outbound Code/Date (satu baris per FG×komponen). Contoh format: [Telegram](https://t.me/c/1931573603/3/50865). Without Details tetap ringkas tanpa komponen.
 
 - **Kalau kamu ketik qty desimal** (mis. 1,5), layar menolak. Qty Assembly **bulat saja**. Butuh pecahan? ganti unit (mis. Pack vs Pcs), tetap isi angka bulat.  
 - **Kalau komponen juga Header BOM lain** (sub-assembly), sistem **tidak** merakit otomatis ke dalam. Assembly dulu barang child, baru parent.  
