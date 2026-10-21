@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.5
-last_updated: 2026-10-02
+version: 2.6
+last_updated: 2026-10-21
 owner: QA - Yemima
 status: review
 audience: operator
@@ -110,6 +110,8 @@ Setiap satuan punya **profil D&W** (bisa lebih dari satu):
 **Penting:** Platform Default dan Trx Default **hanya satu** untuk seluruh produk — pilih di Box otomatis lepas di Pieces.
 
 **Shipping section:** hanya **asuransi pengiriman** (Required/Optional). D&W **tidak ada** di sana lagi.
+
+**TO-BE ETM-16668:** ubah weight pada profil DnW **default** (atau ganti radio default) → harga/margin Category by Weight di **Pricelist** ikut terhitung ulang otomatis + masuk Log Pricelist. Ubah DnW non-default saja → Pricelist tidak berubah. Detail: [Pricelist Product](../businessdevelopment-pricelist-product/knowledge-base.md).
 
 ---
 

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.5
-last_updated: 2026-10-02
+version: 2.6
+last_updated: 2026-10-21
 owner: QA - Yemima
 status: review
 aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant]
@@ -21,6 +21,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 **PM sources:** User requirement (chat) · D&W artifact v1.0 (7 Mei 2026)
 
+> **Changelog 2.6 (2026-10-21):** §5.4 — side effect TO-BE [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668): ubah DnW **default** → auto-recalc Pricelist/Category weight values + Log Pricelist.  
 > **Changelog 2.5 (2026-10-02):** §11.6–§11.7 — breakdown bundle + Random SKU wajib pakai **Retail Price** (bukan Benchmark COGS); sebelum vs sesudah processing; beda tujuan vs Benchmark COGS. Jira [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216). Cross-ref reprice in-place [ETM-16212](https://erpintegration.atlassian.net/browse/ETM-16212) / Sales Platform.
 
 ---
@@ -29,6 +30,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.6 | 2026-10-21 | QA - Yemima | §5.4 TO-BE ETM-16668: save/ganti default DnW → sync weight ke Pricelist/Category + log |
 | 2.5 | 2026-10-02 | QA - Yemima | §11.6–§11.7 Retail Price untuk random di breakdown bundle; before/after processing; vs Benchmark COGS — ETM-16216 |
 | 1.0–1.2 | 2026-01–07 | QA - Yemima | Initial draft from legacy + partial PM |
 | 2.0 | 2026-07-05 | QA - Yemima | Full rewrite: codebase AS-IS, D&W per unit canonical, bundle/random/import detail, gaps §19–§21 |
@@ -227,7 +229,19 @@ Variant child → mengikuti konfigurasi unit parent (tidak edit sendiri)
 
 **Backend:** `ProductDnWController` — fields `is_unit_default`, `is_platform_default`, `is_trx_default`. Default create: unit=1 jika unset; platform/trx=0.
 
-**Default values D&W baru:** L=W=H=Weight=**1**; label dari master yang `Set as Primary` ON (artifact AC6).
+**Default values D&W baru:** L=W=H=Weight=**1**; label dari master yang `Set as Primary` ON (artifact AC6). UI min weight **1** (0 hampir tidak terjadi); weight 0/kosong tetap = **No weight** di Pricelist (untuk TC).
+
+#### Side effect → Pricelist / Category Price (TO-BE · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668))
+
+Setelah **save** perubahan Dimensions & Weight:
+
+| Perubahan | Efek ke Pricelist / Category (nilai by Weight) |
+|-----------|--------------------------------------------------|
+| Edit baris DnW yang sedang **default** (sumber primary weight Pricelist) | Auto-recalc Weight + margin + final; **Log Pricelist** wajib |
+| Ganti radio **default** ke baris DnW lain | Pakai data DnW default baru → recalc + log |
+| Edit baris DnW **non-default** saja | **Tidak** memicu recalc |
+
+Hitung memakai **tier Category Price terkini**. Nilai Category / Pricelist yang diinput **manual** tidak tertimpa. Detail: [Pricelist §5.1](../businessdevelopment-pricelist-product/requirement.md).
 
 ### 5.5 Section artifact vs implementasi
 

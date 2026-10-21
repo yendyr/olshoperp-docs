@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.0
-last_updated: 2026-10-09
+version: 1.1
+last_updated: 2026-10-21
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16314](https://erpintegration.atlassian.net/browse/ETM-16314)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar F)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §5, §7–9  
-**Relates:** ETM-16312 · ETM-16313
+**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc dari weight System Product)
 
 ---
 
@@ -21,8 +21,9 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-10-21 | **TO-BE** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668): auto-recalc Weight/margin/final saat DnW default System Product berubah; log Pricelist; jangan override manual |
 | 0.1 | 2026-10-07 | Draft multi-tier margin + weight |
-| 1.0 | 2026-10-09 | Full: Weight column, tier breakdown + range, inline orange override |
+| 1.0 | 2026-10-09 | Full: Weight column, tier breakdown + override, inline orange override |
 
 ---
 
@@ -43,6 +44,9 @@ status: review
 | A-05 | Edit margin: klik angka inline (Enter/Esc); tanpa icon edit/label manual; oranye jika override | **TO-BE** |
 | A-06 | Tooltip override: Calculated / Edited by·when / Current | **TO-BE** |
 | A-07 | Log edit old→new + flag bukan calculated; Update to Pricelist overwrite + log (user + category) | **TO-BE** |
+| A-08 | Ubah weight DnW **default** di System Product → Weight + margin + final Category (by Weight) auto-update; **Log Pricelist** wajib | **TO-BE** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) |
+| A-09 | Ganti radio default DnW → ikut weight default baru + recalc; DnW non-default tanpa ganti default → **tidak** recalc | **TO-BE** ETM-16668 |
+| A-10 | Margin / nilai **manual** tidak tertimpa auto-recalc dari weight | **TO-BE** ETM-16668 |
 
 ---
 
@@ -87,6 +91,28 @@ Inline klik → Enter save / Esc cancel. Final ikut. Tidak ubah Category/VP. Ove
 
 Recalc semua baris category; overwrite override → calculated; konfirmasi keras di Category; log Pricelist (user + category sumber). Tidak auto saat master/category berubah.
 
+### 5.1 Auto-recalc dari System Product weight (TO-BE · ETM-16668)
+
+**AS-IS:** ubah weight di System Product → kolom Weight/margin/final di Pricelist **belum** ikut; butuh trigger **Update to Pricelist**.
+
+**TO-BE:** setelah perubahan di System Product → **Dimensions & Weight**:
+
+| Trigger | Recalc Pricelist? |
+|---------|-------------------|
+| Edit baris DnW yang sedang **default** (sumber primary weight) | **Ya** |
+| Ganti radio **default** ke baris DnW lain | **Ya** (pakai weight default baru) |
+| Edit baris DnW **non-default** saja | **Tidak** |
+
+**Yang dihitung ulang:** Weight column + margin + final pada kolom Category Price untuk SKU itu, untuk category yang punya perhitungan **by Weight**, memakai **tier Category Price terkini** saat weight berubah.
+
+**Jangan override:** margin/nilai yang diinput **manual** (override oranye / category value manual) tetap.
+
+**Log:** setiap auto-update angka Pricelist **wajib** masuk **Log Pricelist** (history price & margin).
+
+**No weight:** weight 0/kosong → skip tier Weight (existing; UI min 1, tetap untuk TC).
+
+**Category Price:** nilai/preview yang bergantung weight ikut relevan; input manual category tidak tertimpa.
+
 ---
 
 ## 6. Contoh uji (wajib)
@@ -107,10 +133,11 @@ Master & band lengkap + kasus batas (boundary inklusif, override, re-Update): fi
 
 | ID | Topik | Usulan |
 |----|-------|--------|
-| GAP-PL-01 | Default price berubah belakangan | Pertahankan AS-IS trial; recalc hanya via Update to Pricelist |
-| GAP-PL-02 | Produk baru / weight belakangan | Hitung dari tier yang datanya ada |
+| GAP-PL-01 | Default price berubah belakangan | Pertahankan AS-IS trial; recalc hanya via Update to Pricelist (bukan scope ETM-16668) |
+| GAP-PL-02 | Produk baru / weight belakangan | Hitung dari tier yang datanya ada — **ETM-16668** menutup path weight berubah setelah produk sudah di Pricelist |
 | GAP-PL-03 | Konversi satuan weight → gram | Convert sebelum match |
 | GAP-PL-04 | N rows besar | Job background + toast start/finish |
+| GAP-PL-05 | Auto-recalc weight dari System Product | **TO-BE** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) — DnW default only; log; preserve manual |
 
 ---
 

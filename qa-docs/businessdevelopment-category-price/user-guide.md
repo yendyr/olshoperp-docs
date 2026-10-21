@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.1
-last_updated: 2026-10-14
+version: 1.2
+last_updated: 2026-10-21
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.1"
+source_version: "1.2"
 owner: QA - Yemima
 status: review
 ---
@@ -40,7 +40,7 @@ Kalau band lokal sudah beda dari master, muncul icon info oranye di header tier.
 | **Update from Master** | Samakan semua tier dengan Variable Price terkini (edit lokal hilang). |
 | **Update to Pricelist** | Hitung ulang harga/margin semua produk category. Wajib centang “saya paham override manual tertimpa”. |
 
-Harga jual di Pricelist **hanya** berubah setelah Update to Pricelist.
+Harga jual di Pricelist biasanya berubah setelah **Update to Pricelist**. Pengecualian TO-BE: ubah weight DnW **default** di System Product → nilai by Weight ikut auto-update (ETM-16668); input manual Category tidak tertimpa.
 
 ---
 

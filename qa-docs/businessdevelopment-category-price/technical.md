@@ -2,8 +2,8 @@
 doc_type: technical
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.1
-last_updated: 2026-10-14
+version: 1.2
+last_updated: 2026-10-21
 owner: QA - Yemima
 status: review
 related_docs:
@@ -16,7 +16,8 @@ related_docs:
 
 **FE AS-IS:** `src/pages/BusinessDevelopment/PricelistCategory/**`  
 **BE AS-IS:** `PricelistCategoryController` · `PricelistCategory` · `PricelistCategoryMarginPrice` (`bd_pricelist_category_margin_prices`)  
-**TO-BE:** ganti section margin tunggal → multi tier snapshot dari Variable Price (ETM-16313).
+**TO-BE:** ganti section margin tunggal → multi tier snapshot dari Variable Price (ETM-16313).  
+**TO-BE weight sync:** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) — consumer dari System Product DnW default change (bukan endpoint Category baru).
 
 ---
 
@@ -27,6 +28,7 @@ related_docs:
 | Margin UI | Satu set band di Form | Accordion tiers + Select Variable Price |
 | Storage | `bd_pricelist_category_margin_prices` per category | Per-tier snapshot (+ pivot ke Variable Price id) |
 | Update | N/A | Update from Master · Update to Pricelist |
+| Weight sync | N/A | Auto dari DnW default (ETM-16668); skip manual category values |
 
 Basic Information & DataList Category: **tidak berubah**.
 
@@ -42,7 +44,8 @@ Basic Information & DataList Category: **tidak berubah**.
 | POST | `…/pricelist-category/{id}/update-from-master` | Overwrite semua tier dari master |
 | POST | `…/pricelist-category/{id}/update-to-pricelist` | Recalc semua Pricelist rows category |
 
-Audit log Category: attach/remove/edit tier, Update from Master, Update to Pricelist.
+Audit log Category: attach/remove/edit tier, Update from Master, Update to Pricelist.  
+Pricelist auto weight (ETM-16668): audit di **Log Pricelist**, bukan mengganti log Category.
 
 ---
 
@@ -66,6 +69,7 @@ Audit log Category: attach/remove/edit tier, Update from Master, Update to Price
 | G-03 | Mass Update from Master datalist (opsional) |
 | G-04 | Dirty detection tier vs master untuk icon oranye |
 | G-05 | Share FormRequest/helper validasi Percentage dengan Variable Price |
+| G-06 | **ETM-16668** — preserve manual category values saat weight sync |
 
 ---
 

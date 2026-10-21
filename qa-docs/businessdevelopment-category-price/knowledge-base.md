@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.1
-last_updated: 2026-10-14
+version: 1.2
+last_updated: 2026-10-21
 owner: QA - Yemima
 status: review
 aliases: [Category Price, pricelist category, kategori harga, Variable Price Tiers]
@@ -34,12 +34,16 @@ flowchart TD
 | **Update from Master** | Timpa semua tier dari master terkini (edit lokal hilang). |
 | **Update to Pricelist** (merah) | Hitung ulang margin semua produk category itu — termasuk yang pernah diedit manual di Pricelist. Wajib centang persetujuan. |
 
+## Weight berubah di System Product (TO-BE ETM-16668)
+
+Ubah weight DnW **default** di System Product → nilai Category/Pricelist yang **dihitung dari weight** ikut terhitung ulang (tier Category saat itu). Input **manual** di Category **tidak** tertimpa. Perubahan Pricelist masuk Log Pricelist.
+
 ## Tips
 
 - Edit band di Category **tidak** mengubah Variable Price master.
 - Ubah master → Update to Category dari Variable Price, atau Update from Master di sini.
 - Edit Value Type **Percentage** di tier lokal: batas **-9.999 … 9.999** (sama Variable Price); desimal dipotong 4 digit.
-- Harga jual baru berubah setelah **Update to Pricelist**.
+- Harga jual baru berubah setelah **Update to Pricelist** — kecuali path auto weight (ETM-16668) untuk nilai calculated by Weight.
 - Contoh: harga 16.000 + berat 1.500 g + 3 tier → margin 8.500 → final 24.500.
 
 ## Troubleshooting
@@ -48,6 +52,6 @@ flowchart TD
 |--------|--------|
 | Select kosong | Semua Active sudah dipasang, atau belum ada Variable Price Active |
 | Icon oranye di tier | Band sudah diedit lokal — Update from Master untuk samakan master |
-| Pricelist belum berubah | Belum Update to Pricelist / belum centang konfirmasi |
+| Pricelist belum berubah | Belum Update to Pricelist / belum centang konfirmasi (kecuali auto weight default DnW — ETM-16668) |
 
 Detail: [requirement.md](./requirement.md) · Wireframe: https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.0
-last_updated: 2026-10-09
+version: 1.1
+last_updated: 2026-10-21
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.0"
+source_version: "1.1"
 owner: QA - Yemima
 status: review
 ---
@@ -44,6 +44,12 @@ Contoh: 16.000 + berat 1.500 g → margin 8.500 → final 24.500.
 
 ## 4. Weight kosong
 
-Muncul peringatan **No weight**. Aturan berdasarkan berat di-skip. Isi weight di System Product lalu hitung ulang dari Category.
+Muncul peringatan **No weight**. Aturan berdasarkan berat di-skip. Isi weight di System Product (baris DnW **default**).
 
-Referensi: [knowledge-base.md](./knowledge-base.md) · [Category Price](../businessdevelopment-category-price/user-guide.md)
+---
+
+## 5. Weight berubah di System Product (TO-BE ETM-16668)
+
+Kalau weight diubah pada DnW **default** (atau radio default diganti) di System Product → Weight + margin + final Category di Pricelist ikut update otomatis. Perubahan masuk **Log Pricelist**. Margin oranye (manual) **tidak** berubah.
+
+Referensi: [knowledge-base.md](./knowledge-base.md) · [Category Price](../businessdevelopment-category-price/user-guide.md) · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)
