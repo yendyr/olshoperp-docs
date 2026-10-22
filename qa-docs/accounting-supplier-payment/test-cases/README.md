@@ -15,6 +15,14 @@ Prefix folder: `APAY`.
 | TC-APAY-SUM-003 | SUMMARY — Summary AP multi-currency & pembulatan (ETM-16682, Failed) | approved | ❌ | 2026-10-21 |
 | TC-APAY-SUM-004 | SUMMARY — Konversi full amount PI beda currency (ETM-16683, Failed) | approved | ❌ | 2026-10-21 |
 | TC-APAY-SUM-005 | SUMMARY — Summary & Debit Note terbit dari import AP (ETM-16684, Failed) | approved | ❌ | 2026-10-21 |
+| TC-APAY-SUM-006 | SUMMARY — Summary AP USD dengan edit Paid Amount live update (ETM-16707) | approved | ❌ | 2026-10-22 |
+| TC-APAY-SUM-007 | SUMMARY — Pembulatan Summary 0,01 & rate desimal (ETM-16708, Blocked) | approved | ❌ | 2026-10-22 |
+| TC-APAY-SUM-008 | SUMMARY — Lock header saat ada detail & format Utang desimal (ETM-16709, Failed) | approved | ❌ | 2026-10-22 |
+| TC-APAY-SUM-009 | SUMMARY — AP IDR bayar PI USD/EUR full amount pakai rate header (ETM-16710) | approved | ❌ | 2026-10-22 |
+| TC-APAY-SUM-010 | SUMMARY — Summary dengan beberapa adjustment debit/credit (ETM-16711) | approved | ❌ | 2026-10-22 |
+| TC-APAY-SUM-011 | SUMMARY — Debit Note USD sebagai source di Summary (ETM-16712) | approved | ❌ | 2026-10-22 |
+| TC-APAY-SUM-012 | SUMMARY — Summary pada create, AP approved lama, read-only (ETM-16713) | approved | ❌ | 2026-10-22 |
+| TC-APAY-SUM-013 | SUMMARY — Summary live update 10 aksi tambah/edit/hapus (ETM-16714) | approved | ❌ | 2026-10-22 |
 | TC-APAY-003 | Summary AP USD yang bayar PI USD (currency sama dengan header) tampil benar, Total 0.00 (happy) (ETM-16707) | draft | ❌ | 2026-10-22 |
 | TC-APAY-004 | Summary Total dibulatkan 2 desimal: selisih kecil tidak orange dan tanpa tanda minus nol, selisih 0,01 orange (edge) (ETM-16708) | draft | ❌ | 2026-10-22 |
 | TC-APAY-005 | Summary AP: Kurs header terkunci saat ada detail; setelah detail dikosongkan, Utang memakai kurs baru (edge) (ETM-16709) | draft | ❌ | 2026-10-22 |
