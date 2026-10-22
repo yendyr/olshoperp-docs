@@ -1,36 +1,179 @@
 # Referensi — olshoperp-testcase-authoring
 
-Tidak ada token/password di file ini. Kredensial hanya dari `.env` repo `olshoperp` (path bisa diatur lewat env `OLSHOP_ENV_FILE`).
+Dipakai bersama [SKILL.md](SKILL.md). Jangan diikuti sendirian tanpa skill.
 
-## A. Field card Test Case (Jira ETM, REST v3 ADF)
-| Field | Key | Isi |
-|---|---|---|
-| Issue type | `issuetype.id` | Test Case `10051` (Error `10033`, Improvement `10088`, Change Requirement `10048`) |
-| Summary | `summary` | `[Nama Menu] - deskripsi (tipe)` |
-| Description | `description` | ADF (tabel `table/tableRow/tableHeader/tableCell`, `orderedList` bersarang `bulletList` jalan) |
-| Menu / Notion Page | `customfield_10429` | nama menu persis di aplikasi |
-| Request ID | `customfield_10495` | salin dari card origin (atau `none`) |
-| Story Points | `customfield_10043` | 1 |
-| Labels | `labels` | `[ETM-origin, "test-case", "test-type-<tipe>"]` |
-| Priority | `priority.name` | High untuk alur utama/celah penting, selain itu Medium |
-| Assignee | `assignee.accountId` | akun Yemima `70121:4ae91cca-e288-40ee-aed0-32b6050a1bc1` |
-| Relasi | `POST issueLink` | tipe `Relates`, inwardIssue = TC baru, outwardIssue = origin |
+---
 
-Status awal otomatis "Not Execute". Jeda 2,5 detik antar create/update/link. Lampiran Jira dinonaktifkan di site ETM.
+## A. Field & konstanta Jira (ETM)
 
-## B. Alat (folder tools/)
-- `jira.sh` — curl Jira (`JV=2` untuk REST v2). Contoh: `tools/jira.sh GET "issue/ETM-1?fields=summary,status"`.
-- `qm.py` — DB baca-saja lewat webhook n8n: `from qm import show; show("judul","SELECT ...")`. Header `X-API-Key` dari env `DB_DEBUG_API_KEY` di `.env`. Hasil kosong = 0 baris; query join berat kadang kosong, ulangi lebih sederhana.
-- `tc_lib.py` — `python3 tc_lib.py file_data.py create|update`; membuat/memperbarui card dari struktur data dan menautkannya ke origin; kunci card disimpan di `file_data_keys.json`.
-- `example_tc_data.py` — contoh struktur (CFG + TCS).
+| Item | Nilai |
+|------|--------|
+| Site / cloudId | `erpintegration.atlassian.net` / `44cc9820-3372-4c12-884c-698b1397173c` |
+| Issuetype Test Case | `10051` |
+| Status awal | Not Execute |
+| Story Points | `1` |
+| Assignee (authoring) | Yemima — accountId di `tools/tc_lib.py` / konfirmasi lookup |
+| Request ID | Salin dari origin (`customfield_10495`); kosong → `none` |
+| Menu (Notion Page) | Nama menu persis di app (`customfield_10429`) |
+| Labels | `ETM-{origin}`, `test-case`, `test-type-{happy\|negative\|…}` |
+| Link | Relates → card origin |
+| Jeda create | ~2,5 detik antar card |
 
-## C. Struktur satu TC (ringkas)
-`n`, `ttype`, `priority`, `title`, `summary`, `req` (rujukan requirement), `menu_hint`, `pre` (prasyarat khusus TC), `data_tables` [(judul, header, baris)], `steps` [(teks, [cek…])], `expected` [..], `notes` [..]. `CFG`: `origin`, `request_id`, `menu_label`, `company_label`, `list_url`, `pre_common`, `cleanup`, `card_flow`.
+Jangan isi Testing Progress / Actual Result / Test Result dari skill authoring.
 
-## D. Tabel DB yang sering dipakai untuk data uji
-`accounting_payments` (AP/AR/DN/CN lewat `type`), `accounting_payment_details|detail_funds|detail_deposits|detail_adjustments`, `accounting_supplier_invoices`, `accounting_customer_invoices`, `gs_company_detail_banks`, `accounting_chart_of_accounts`, `gs_companies` (supplier/customer), `bd_pricelists` (`product_id` = `scm_products`). Cek reservasi: `transaction_status IN ('draft','open')` pada dokumen yang memakai invoice/note itu.
+---
 
-## E. Menu keuangan: pelajaran yang sudah terbukti
-- Isian "to be Paid Amount (kode)" di Account Payment/Receive selalu dalam mata uang header; kolom kanan hanya tampilan. Summary = angka yang diketik, kecuali lewat tombol Allocate Full Amount (Clearing): sisa invoice dikonversi (invoice valas × kurs invoice; header valas ÷ kurs header).
-- Header terkunci (kurs, currency, supplier/customer, tanggal) selama ada detail/source/adjustment: "Cannot edit Header when detail data exists. Please clear all details first."
-- AP header valas hanya memuat PI currency header atau IDR; AR tidak memfilter per currency.
+## B. Template description (ringkas)
+
+```text
+## Judul Card
+[Nama Menu] - short desc test case (tipe)
+
+## Description
+
+**Summary**
+[Ringkasan skenario + tujuan]
+
+**Environment**
+- Menu/Fitur: …
+- Environment: Staging
+- Company: … (urutan default 153 → 112 → 13 bila tidak disebut)
+- URL (retest): …
+
+**Precondition Data**
+[Company, akun/role bila perlu, kode data + URL atau cara buat + QA ETM-xxxxx]
+[Status/angka awal; untuk cross-menu: baseline di menu target]
+[JANGAN: "siapkan data yang sesuai" tanpa identitas]
+[JANGAN hapus data setelah uji kecuali skenario uji hapus]
+
+**Steps to Reproduce**
+1. …
+2. … (Cek: … angka eksak)
+
+**Expected Result**
+[Hanya dari requirement.md §… / AC yang sudah divalidasi ke requirement]
+
+**Catatan penguji**
+- Tandai data: QA ETM-… / QA-AUTO-…
+- Cantumkan kode data + URL edit di Actual Result
+- Jangan hapus data uji
+
+**Additional Context**
+Rujukan Expected: qa-docs/{menu}/requirement.md §… (status: review)
+[Catatan teknis opsional]
+```
+
+Tone: rule `12` / `24` — non-teknis di section utama.
+
+---
+
+## C. tools/tc_lib.py
+
+Lokasi: `.cursor/skills/olshoperp-testcase-authoring/tools/`.
+
+| Perintah | Fungsi |
+|----------|--------|
+| `python3 tools/tc_lib.py file_data.py create` | Buat card + Relates + keys JSON |
+| `python3 tools/tc_lib.py file_data.py update` | Perbarui description dari file yang sama |
+
+Contoh: salin `example_tc_data.py`. Field penting per TC:
+
+| Field | Wajib | Isi |
+|-------|-------|-----|
+| `req` | **Ya** | Path + § requirement (anti-ngarang) |
+| `title` / `summary` / `steps` / `expected` | Ya | Sesuai template |
+| `pre` / `data_tables` | Disarankan | Termasuk jejak data |
+| `notes` | Disarankan | “Jangan hapus…”, cara tandai QA ETM-… |
+| `ttype` | Ya | Satu tipe per card |
+| `cleanup` di CFG | — | **Bukan** instruksi hapus data. Pakai teks jejak + larangan hapus (lihat example) |
+
+---
+
+## D. Data uji — jejak cepat
+
+| Ada Jira? | Contoh jejak di Description/Name data |
+|-----------|----------------------------------------|
+| Ya | `QA ETM-15796` / `QA-AUTO-ETM-15796-sku-alt` |
+| Tidak | `QA-AUTO skenario: Net Sales < COGS filter, 22-10-2026` |
+
+Data **tidak dihapus** setelah uji (selaras skill card-testing).
+
+---
+
+## E. Batasan dokumen repo
+
+- **Jangan** create/edit `qa-docs/**/test-cases/TC-*.md` untuk SoT baru (kebijakan 22 Okt 2026).
+- File markdown TC lama boleh dibaca untuk konteks historis; SoT aktif = **Jira**.
+- Requirement/KB/technical tetap read-only kecuali alur Yemima.
+
+---
+
+## F. Serah ke skill testing
+
+Setelah card Not Execute + Relates OK → penguji / agent memakai **`olshoperp-card-testing`** untuk eksekusi, Actual, Test Result, Telegram, Failed→Error.
+
+---
+
+## G. `test_type` & relasi antar menu (ringkas)
+
+Sumber kanonik historis: rule `13-test-case-format.mdc` §3A / §5C. **Untuk authoring Jira, ikuti SKILL.md §2A–2B** (skill self-contained; rule 13 requestable untuk markdown TC lama / lint).
+
+### Minimal set (salin mental)
+
+- Transaksional → `happy` + `negative` (guard utama) + `edge` (batas) — dari requirement/AC, bukan karangan.
+- Ada side-effect docs → tambah card `cross-menu` terpisah.
+- Jangan melebur section validasi negatif ke Expected happy.
+
+### Checklist cepat `cross-menu`
+
+- [ ] Menu sumber + menu target disebut di Steps
+- [ ] Baseline angka/status di target **sebelum** aksi (Precondition atau langkah Cek awal)
+- [ ] Expected mengutip § requirement (sumber dan/atau target)
+- [ ] Satu dampak utama per card bila Failed harus mudah dilacak
+- [ ] Tanpa § requirement untuk dampak → defer/gap, bukan TC
+
+### Contoh arah relasi (hanya jika docs bilang)
+
+| Aksi | Arah cek tipikal |
+|------|------------------|
+| PO dari PR | Outstanding PR |
+| Receive / PI | Stok, outstanding PO |
+| Payment / approve hutang-piutang | Journal / saldo |
+| Void dokumen | Side-effect terbalik di dokumen terkait |
+
+Jangan perluas ke kombinasi combinatorial (semua warehouse × unit × role) tanpa AC.
+
+---
+
+## H. Contoh bentuk 1 set (ilustrasi — bukan TC nyata)
+
+Pola untuk origin yang menyentuh PR → PO (ganti menu/§ sesuai requirement asli). Satu card = satu tipe; angka & § diganti saat authoring nyata.
+
+### 1) `happy` — buat PO dari PR
+
+- **Precondition:** Company 153; PR `PR-QA-ETM-xxxxx` status Approved; outstanding line SKU A = 10; URL edit PR: …
+- **Steps:** Buka PO → pilih PR → isi qty 5 → Save. Cek: status PO = … ; qty tersimpan 5.
+- **Expected:** sesuai `requirement.md` §… (PO tercipta, linked ke PR).
+- **Rujukan:** `qa-docs/…/requirement.md` §… (review)
+
+### 2) `negative` — qty di atas outstanding
+
+- **Precondition:** PR yang sama; outstanding SKU A = 10.
+- **Steps:** Buat PO qty 11 dari PR. Cek: sistem menolak / pesan UI …
+- **Expected:** ditolak sesuai requirement §… (bentuk pesan boleh dari guard UI bila sudah diverifikasi).
+- **Jangan** menaruh assert ini di Expected card happy.
+
+### 3) `edge` — qty = outstanding persis
+
+- **Precondition:** outstanding SKU A = 10.
+- **Steps:** PO qty 10 → Save. Cek: berhasil; outstanding PR jadi 0.
+- **Expected:** requirement §… (batas outstanding).
+
+### 4) `cross-menu` — outstanding PR setelah PO
+
+- **Precondition:** baseline outstanding PR line = 10 (catat sebelum aksi). PO happy di atas sudah / akan dibuat qty 5.
+- **Steps:** Setelah PO tersimpan → buka menu PR → buka `PR-QA-ETM-xxxxx` → Cek outstanding line SKU A.
+- **Expected:** outstanding = 5 (requirement §… PR dan/atau PO).
+- **Bukan** hanya “PO berhasil disimpan” di menu PO.
+
+Soft cap: keempat tipe di atas = 4 card (aman). Kalau menambah permission/regression/void chain, rank High dulu; sisanya defer di laporan chat.

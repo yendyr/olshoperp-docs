@@ -94,8 +94,10 @@ Prompter / card sebut data konkret?
 ```
 
 - **Reuse data existing boleh** (staging/tyas sesuai izin). Hormati catatan “jangan dihapus”.
-- Di transaksi yang dipakai testing: sebut **nomor card** (`QA ETM-xxxxx`) di Description/Reference bila memungkinkan.
+- Ada card Jira: sebut **nomor card** (`QA ETM-xxxxx`) di Description/Reference bila buat/ubah data.
+- **Tanpa card Jira** (uji ad-hoc / permintaan chat): tetap jangan biarkan data anonymous — tulis jejak skenario di Name/Description, contoh `QA-AUTO skenario: filter Net Sales < COGS, 22-10-2026`. Di Actual/Telegram jelaskan skenario yang diuji.
 - Hitung angka kritis dengan hati-hati (pembulatan/kurs); jangan tebak.
+- Assert / Expected saat run: ikut description card; kalau Expected card mencurigakan (tidak nyambung requirement) → **STOP**, laporkan ke prompter/Yemima — jangan “perbaiki” Expected diam-diam saat run.
 - **Membuat master/data dari nol** secara massal = skill khusus nanti; tanpa izin/skill itu, kalau data tidak ada → laporkan saja.
 
 ### Data uji staging: simpan, jangan hapus (Rachy 15-10-2026)
@@ -103,9 +105,9 @@ Prompter / card sebut data konkret?
 Setelah run di **staging**, data yang dibuat untuk uji **tidak dihapus** (kecuali Expected card memang menguji hapus).
 
 1. Kode / SKU / nama: prefix **`QA-AUTO-`** bila memungkinkan (contoh `QA-AUTO-VPDEC-266983`).
-2. **Name** atau **Description** wajib jejak: key card + tanggal (contoh `QA-AUTO ETM-16502 langkah 3, 15-10-2026`). Form tanpa Description → pakai Name.
+2. **Name** atau **Description** wajib jejak: key card + tanggal (contoh `QA-AUTO ETM-16502 langkah 3, 15-10-2026`). Form tanpa Description → pakai Name. Tanpa Jira → teks skenario + tanggal (§ di atas).
 3. Draft otomatis saat buka create PO/SO juga dibiarkan, beri jejak yang sama bila bisa diedit.
-4. Actual Result Jira + Telegram menyebut **kode data** yang dipakai/dibuat.
+4. Actual Result Jira + Telegram menyebut **kode data** yang dipakai/dibuat (+ skenario bila tanpa card).
 5. Tyas/Merdian tetap **no create** (§6) — aturan simpan ini terutama untuk staging.
 
 ---

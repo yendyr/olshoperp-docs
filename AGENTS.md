@@ -85,7 +85,7 @@ Skill **repo ini** (`.cursor/skills/`):
 |-------|--------|
 | `caveman` | Mode jawaban ringkas — hemat token output (~65–75%). Default full. Matikan: `stop caveman` |
 | `olshoperp-card-testing` | **Buku lengkap** test card Jira ETM (UI/Playwright, data uji, DB, credential, Jira, Telegram, log). Task "test card ETM-…" → baca skill ini dulu (jangan load banyak rules). Detail ID/template: `reference.md` di folder skill |
-| `olshoperp-testcase-authoring` | Membuat card Jira Test Case untuk sebuah card (cek TC yang kurang, data uji dari awal sampai akhir, terbitkan + relasi). Jira saja, tanpa dokumen TC di repo. Alat: `tools/` di folder skill |
+| `olshoperp-testcase-authoring` | Membuat card Jira Test Case (cek gap vs AC, **minimal set per `test_type`** + relasi cross-menu, Expected hanya dari requirement, data uji `QA ETM-…` / skenario tanpa Jira, **jangan hapus** data, terbitkan + Relates). Jira saja — bukan `TC-*.md`. Alat: `tools/` di folder skill |
 
 Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit user.
 

@@ -85,9 +85,13 @@ def description(tc, cfg):
     c += [rule(), head("Steps to Reproduce"), ordered(tc["steps"]), rule()]
     c += [head("Expected Result"), bullets(tc["expected"]), rule()]
     c += [head("Catatan untuk penguji"), bullets(tc["notes"]), rule()]
-    c += [head("Pembersihan data (akhir tes)"), bullets(cfg["cleanup"]), rule()]
+    c += [head("Jejak & penanganan data uji"), bullets(cfg["cleanup"]), rule()]
     c += [head("Additional Context"),
-          bullets(["test_type: " + tc["ttype"] + " · origin " + cfg["origin"] + " · requirement: " + tc["req"], cfg["card_flow"]])]
+          bullets([
+              "test_type: " + tc["ttype"] + " · origin " + cfg["origin"],
+              "Rujukan Expected: " + tc["req"],
+              cfg["card_flow"],
+          ])]
     return {"type": "doc", "version": 1, "content": c}
 
 

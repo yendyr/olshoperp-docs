@@ -7,7 +7,11 @@ CFG = dict(
     company_label="Dev Staging (kode DEV-STG)",
     list_url="https://staging.olshoperp.com/modul/menu",
     pre_common=["Akun uji QA yang punya akses menu ...", "Company aktif harus ... (cara cek ...)"],
-    cleanup=["Tandai data uji buatanmu dengan nomor card ini (mis. 'QA ETM-xxxxx' di Description) sebagai bukti.", "Data yang menahan fixture bersama (PI/CN/DN/saldo) dihapus setelah angka dicatat di komentar Jira."],
+    cleanup=[
+        "Tandai SEMUA data uji buatan dengan nomor card ini (mis. 'QA ETM-xxxxx' di Description/Name). Prefiks QA-AUTO- bila memungkinkan.",
+        "Kalau uji tanpa card Jira: tulis jejak skenario di data (mis. 'QA-AUTO skenario: …, tanggal').",
+        "JANGAN hapus data uji setelah selesai (kecuali Expected memang menguji hapus). Cantumkan kode data + URL edit di Actual Result.",
+    ],
     card_flow="Urutan status card: Testing Progress → Actual Result → Test Result → Done.",
 )
 KEYS = {}   # diisi otomatis (file *_keys.json) setelah create
