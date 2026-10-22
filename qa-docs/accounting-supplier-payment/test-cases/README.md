@@ -16,7 +16,7 @@ Prefix folder: `APAY`.
 | TC-APAY-SUM-004 | SUMMARY — Konversi full amount PI beda currency (ETM-16683, Failed) | approved | ❌ | 2026-10-21 |
 | TC-APAY-SUM-005 | SUMMARY — Summary & Debit Note terbit dari import AP (ETM-16684, Failed) | approved | ❌ | 2026-10-21 |
 | TC-APAY-SUM-006 | SUMMARY — Summary AP USD dengan edit Paid Amount live update (ETM-16707) | approved | ❌ | 2026-10-22 |
-| TC-APAY-SUM-007 | SUMMARY — Pembulatan Summary 0,01 & rate desimal (ETM-16708, Blocked) | approved | ❌ | 2026-10-22 |
+| TC-APAY-SUM-007 | SUMMARY — Pembulatan Summary 0,01 & rate desimal (ETM-16708, Failed) | approved | ❌ | 2026-10-22 |
 | TC-APAY-SUM-008 | SUMMARY — Lock header saat ada detail & format Utang desimal (ETM-16709, Failed) | approved | ❌ | 2026-10-22 |
 | TC-APAY-SUM-009 | SUMMARY — AP IDR bayar PI USD/EUR full amount pakai rate header (ETM-16710) | approved | ❌ | 2026-10-22 |
 | TC-APAY-SUM-010 | SUMMARY — Summary dengan beberapa adjustment debit/credit (ETM-16711) | approved | ❌ | 2026-10-22 |
