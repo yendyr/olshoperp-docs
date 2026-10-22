@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: system-product
 menu_name: System Product
 lang: en
-version: 1.0
-last_updated: 2026-07-29
+version: 1.1
+last_updated: 2026-10-22
 status: draft
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing. Separate from QA layers. Derived from QA docs (no user-provided source file).
+notes: Help Center landing. Separate from QA layers. Derived from QA docs. ETM-16668 weight→Pricelist.
 ---
 
 ## Module/Feature: System Product
@@ -20,7 +20,7 @@ notes: Help Center landing. Separate from QA layers. Derived from QA docs (no us
 
 * **Single / Variant / Bundle:** Product types that control transactability and stock behavior.
 * **Primary / Alternate Unit:** Base unit plus converted units.
-* **D&W profile:** Dimension & weight configured **per unit**.
+* **D&W profile:** Dimension & weight configured **per unit**. Weight on the **default** profile (TO-BE) also drives Pricelist by-Weight recalculation.
 * **Availability / On Hand / ATS:** The three stock indicators shown per SKU.
 
 ## When to use

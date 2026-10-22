@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: system-product
 menu_name: System Product
 lang: id
-version: 1.0
-last_updated: 2026-07-29
+version: 1.1
+last_updated: 2026-10-22
 status: draft
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing. Terpisah dari layer QA. Disusun agent dari QA docs (belum ada file Help Center dari user).
+notes: Help Center landing. Terpisah dari layer QA. Disusun agent dari QA docs (belum ada file Help Center dari user). ETM-16668 weight→Pricelist.
 ---
 
 ## Modul/Fitur: System Product
@@ -20,7 +20,7 @@ notes: Help Center landing. Terpisah dari layer QA. Disusun agent dari QA docs (
 
 * **Single / Variant / Bundle:** Tipe produk yang menentukan transactability dan perilaku stok.
 * **Primary / Alternate Unit:** Satuan dasar plus satuan konversi.
-* **Profil D&W:** Dimensi & berat diatur **per satuan**.
+* **Profil D&W:** Dimensi & berat diatur **per satuan**. Weight pada profil **default** (TO-BE) ikut memicu update harga by Weight di Pricelist.
 * **Availability / On Hand / ATS:** Tiga indikator stok per SKU.
 
 ## Kapan dipakai

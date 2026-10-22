@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: system-product
 menu_name: "System Product"
-version: 1.2
-last_updated: 2026-09-01
+version: 1.3
+last_updated: 2026-10-22
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.4
+source_version: 2.6
 owner: QA - Yemima
 status: review
 ---
@@ -77,6 +77,7 @@ Setelah SKU tersimpan:
 2. Single/Child bisa dipilih di PR/PO/inbound/outbound.
 3. Bundle bisa dijual di Sales Order (stok dipotong per komponen).
 4. Platform Default D&W dipakai saat sync marketplace.
+5. **TO-BE ETM-16668:** ubah weight pada D&W **default** (atau ganti radio default) → nilai by Weight di **Pricelist / Category** ikut terhitung ulang + masuk Log Pricelist (input manual tidak tertimpa).
 
 ---
 
@@ -87,6 +88,7 @@ Setelah SKU tersimpan:
 - Kalau tidak bisa inactive, pastikan Availability & ATS = 0 di semua gudang.
 - Kalau primary unit terkunci, SKU sudah dipakai transaksi—buat SKU baru bila perlu ganti satuan.
 - Kalau dimensi salah di marketplace, cek **Platform Default** D&W.
+- Kalau ubah weight D&W **non-default**, Pricelist **tidak** berubah sampai baris itu jadi default (TO-BE ETM-16668).
 - Kalau video gagal upload, gunakan format **mp4** (BE terima mp4/mov).
 - Kalau section Accounting & Tax hilang, itu karena bundle aktif—pajak per komponen.
 - Kalau SKU duplicate saat create, cek Data Owner (scope create masih global — GAP-SP-01).
@@ -105,6 +107,7 @@ Setelah SKU tersimpan:
 1. Atur [Unit Configuration & D&W per unit](#sf-lingo:SF-SP-02).
 2. Tambah alternate unit + konversi bila perlu.
 3. Set **Platform Default** dan **Trx Default** (global) di profil yang benar.
+4. **TO-BE:** weight di baris D&W **default** mempengaruhi Pricelist by Weight otomatis setelah simpan (ETM-16668) — tidak perlu Update to Pricelist hanya untuk ganti weight.
 
 ### Langkah 3 — Tipe khusus (opsional)
 
@@ -135,6 +138,7 @@ Gambar hasil sync ditandai di backend sebagai sync otomatis; foto yang pernah di
 
 - **Bundle vs BOM:** Bundle = paket jual di SO; BOM = resep produksi di [Bill of Material](../bill-of-material/).
 - **D&W di mana:** di **Unit Configuration** (per satuan), bukan Shipping lagi.
+- **Weight → Pricelist (TO-BE ETM-16668):** hanya D&W **default**; cek Log Pricelist setelah ubah weight. Detail: [Pricelist Product](../businessdevelopment-pricelist-product/).
 - **Platform/Trx Default global:** pilih di satu unit otomatis lepas di unit lain.
 - **Stok bundle:** ikut komponen paling sedikit.
 - **Import massal:** hanya di menu full — kebanyakan tipe max 5000 baris; **Import Product Images** max **1000**.

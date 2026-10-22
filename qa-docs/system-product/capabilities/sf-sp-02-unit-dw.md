@@ -8,8 +8,8 @@ scope: menu
 summary: >-
   Atur primary + alternate unit dengan konversi, dan profil dimensi/berat (D&W)
   per satuan. Platform Default & Trx Default bersifat global lintas semua unit.
-version: 1.0
-last_updated: 2026-07-29
+version: 1.1
+last_updated: 2026-10-22
 status: draft
 ---
 
@@ -40,9 +40,11 @@ Konfigurasi satuan produk (primary + alternate) beserta profil **Dimensi & Berat
 - Alternate unit yang sudah dipakai transaksi: unit & konversi terkunci, tapi D&W masih bisa diedit.
 - D&W baru default 1×1×1×1 cm/g; qty conversion field FE selalu disabled (GAP-SP-14/15).
 - Section **All D&W table + summary cards** dari artifact belum ada di main form (GAP-SP-09).
+- **TO-BE [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668):** ubah weight pada profil D&W **default** (atau ganti radio default) → auto-recalc nilai by Weight di Pricelist/Category + Log Pricelist; edit non-default tidak memicu; input manual tidak tertimpa. Detail: [Pricelist Product](../../businessdevelopment-pricelist-product/).
 
 ## Lihat juga
 
 - [Product Type & transactability](#sf-lingo:SF-SP-01)
 - Master satuan: [Master Unit](../../supplychain-unit/)
 - Master label: [Dimension & Weight Label](../../supplychain-dimension-and-weight-label/)
+- [Pricelist Product](../../businessdevelopment-pricelist-product/) — weight sync ETM-16668

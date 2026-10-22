@@ -2,8 +2,8 @@
 doc_type: technical
 menu: system-product
 menu_name: "System Product"
-version: 2.5
-last_updated: 2026-10-02
+version: 2.6
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,6 +13,7 @@ related_docs:
 
 # System Product — Technical Documentation
 
+> **2.6 (2026-10-22):** TO-BE [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) — save/ganti DnW **default** → auto-recalc Pricelist/Category by Weight + Log Pricelist — [requirement §5.4](./requirement.md) · §7 di bawah.  
 > **2.5 (2026-10-02):** Bundle breakdown + random → Retail Price (TO-BE ETM-16216); AS-IS `pickBundleChildren` masih `benchmarkPrice` untuk `$is_random` — [requirement §11.6–§11.7](./requirement.md#116-random-sku-di-breakdown-bundle--retail-price-to-be--etm-16216).  
 > **2.4 (2026-09-01):** AS-IS **Product Image Sync** — `SyncProductImageJob`, `ExternalProductController@sync`, `scm_settings`, `is_synced` — [requirement §13.2](./requirement.md#132-product-image-sync-as-is--api-pull).
 
@@ -175,6 +176,18 @@ Index formats cache 1 minute:
 
 **Platform/Trx global exclusivity:** enforced in FE modal + BE on save.
 
+### Side effect → Pricelist (TO-BE · ETM-16668)
+
+Setelah save perubahan D&W di `ProductDnWController`:
+
+| Trigger | Efek |
+|---------|------|
+| Edit baris DnW yang **default** (sumber primary weight Pricelist) | Recalc Weight + margin + final Category by Weight; **wajib** Log Pricelist |
+| Ganti radio **default** ke baris lain | Pakai weight default baru → recalc + log |
+| Edit baris **non-default** saja | **Tidak** memicu recalc |
+
+Pakai tier Category terkini; skip baris Pricelist dengan override manual. Shared path dengan Update to Pricelist (weight-only / calculated rows). Detail: [Pricelist technical](../businessdevelopment-pricelist-product/technical.md) · [requirement §5.4](./requirement.md).
+
 ---
 
 ## 8. Variant Generation
@@ -321,6 +334,7 @@ Fields affected:
 | Bill of Material | [../bill-of-material/technical.md](../bill-of-material/technical.md) |
 | Random SKU | [../random-sku/technical.md](../random-sku/technical.md) |
 | D&W Label master | [../supplychain-dimension-and-weight-label/technical.md](../supplychain-dimension-and-weight-label/technical.md) |
+| Pricelist weight sync (ETM-16668) | [../businessdevelopment-pricelist-product/technical.md](../businessdevelopment-pricelist-product/technical.md) |
 | Sales Order bundle runtime | [../sales-order-general/technical.md §9](../sales-order-general/technical.md#9-product-bundle--proporsi-harga-file-map) |
 | DB schema | `docs/db-schema/supply_chain/scm_products.md` (if exists) |
 
