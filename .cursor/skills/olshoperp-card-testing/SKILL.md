@@ -1,10 +1,10 @@
 ---
 name: olshoperp-card-testing
 description: >-
-  Alur lengkap menguji card Jira ETM (Test Case, Error, Improvement) di staging lewat crawl/manual
-  (Playwright probe atau browser pane), mencatat hasil (Jira + Telegram ringkas, bukti = data bertanda nomor card), dan membuat
-  card Test Case baru. Pakai saat user bilang "test card ETM-xxxxx", "cek test case yang kurang",
-  "buatkan test case", "laporkan hasil test ke Telegram", atau minta Bugsy menjalankan test.
+  Alur menjalankan test card Jira ETM (Test Case, Error, Improvement) di staging lewat crawl/manual
+  (Playwright probe atau browser pane) dan mencatat hasilnya (Jira + Telegram ringkas, bukti = data bertanda
+  nomor card). Pakai saat user bilang "test card ETM-xxxxx", "jalankan test case ini", "laporkan hasil test",
+  atau minta Bugsy menguji. Untuk MEMBUAT card Test Case pakai skill olshoperp-testcase-authoring.
 ---
 
 # OlshopERP — Testing Card Jira (Bugsy)
@@ -19,7 +19,7 @@ Bahasa ke Yemima/tim: Indonesia sehari-hari, non-teknis, angka eksak (rule `24-p
 - Kerja massal (banyak TC/card) = satu file data + generator, bukan mengetik per card.
 - Probe Playwright: satu spec yang merekam semua kasus ke JSON, bukan satu run per kasus. Baca JSON, bukan seluruh log.
 - Balasan ke user: recap singkat + keputusan yang perlu dia ambil. Detail teknis ke komentar Jira/dokumen, bukan chat.
-- **Tingkat pelaporan** (default = Jira + Telegram ringkas). Drive tidak dipakai. Dokumen TC hanya bila Yemima meminta atau saat membuat TC baru. Lihat §6.
+- **Tingkat pelaporan** (default = Jira + Telegram ringkas). Drive dan dokumen TC di repo tidak dipakai. Lihat §6.
 
 ## 1. Tentukan jenis card
 `GET issue/{key}` lalu lihat `issuetype`, status, komentar terbaru (screening Hazel, tester lain), dan `changelog` ringkas (ada yang sedang menguji? status baru berubah?).
@@ -30,7 +30,7 @@ Bahasa ke Yemima/tim: Indonesia sehari-hari, non-teknis, angka eksak (rule `24-p
 1. **Geser ke TESTING PROGRESS SEBELUM tes** (bukan saat mencatat hasil).
 2. Tes sesuai Steps/Expected di card (data uji dari card; cek dulu di DB baca-saja bahwa datanya masih ada).
 3. Isi **Actual Result** (ADF: company, akun, data, hasil per Expected) → baca ulang → isi **Test Result** (Passed/Failed/Blocked) → komentar bukti → **Done**. Jangan isi Test Result sebelum Actual Result.
-4. Bukti dan laporan sesuai §6 (data uji bertanda nomor card, komentar Jira, Telegram ringkas). Dokumen TC hanya jika diminta.
+4. Bukti dan laporan sesuai §6 (data uji bertanda nomor card, komentar Jira, Telegram ringkas).
 5. **Failed → wajib card Error baru** (Relates ke TC + origin, assignee = assignee origin); origin → RE-OPEN. Ikuti rule `22-reopen-defect-flow`.
 
 ## 3. Alur card non-Test Case
@@ -63,11 +63,11 @@ Urutan: description card → komentar card (screening) → `qa-docs/{menu}/requi
   - Test satu card: pesan ringkas (hasil, 3–5 poin Expected, link Jira).
   - **Batch** (≥3 card/TC): SATU pesan ringkasan saja: judul batch, jumlah ✅/❌/⏸, satu baris per card (key + hasil + hal terpenting), card Error baru bila ada, "detail di komentar tiap card". Kirim juga hasil sementara; edit pesan yang sama saat final.
 - **Drive: tidak dipakai** kecuali Yemima menyuruh.
-- **Dokumen TC** (file di `qa-docs/{menu}/test-cases/`): jangan dibuat untuk setiap test. Buat hanya bila diminta, atau saat membuat TC baru yang akan dipakai ulang. Isi card Jira sudah memuat data yang sama.
+- **Dokumen TC di repo tidak dipakai lagi** (semua TC hidup di Jira; tanpa mirror dan tanpa renumber, keputusan Yemima 22 Okt 2026).
 - Setelah selesai, simpan pelajaran penting ke memory/dokumen agar sesi berikutnya tidak mengulang.
 
 ## 7. Membuat card Test Case baru
-Gap dulu: bandingkan AC card vs TC yang ada vs kode vs data; tanyakan hanya keputusan yang memang milik Yemima. Lalu tulis SATU file data (salin `tools/example_tc_data.py`) dan jalankan `python3 tools/tc_lib.py file_data.py create` (card Jira + link) dan, bila dokumen TC diminta, `... docs`. Field dan format di reference (§C). Jeda 2,5 dtk antar operasi Jira. Jangan kirim webhook `#testcase … ready` kecuali Yemima mengetik perintahnya.
+Bukan tugas skill ini. Pakai skill **`olshoperp-testcase-authoring`** (cek gap, data uji, terbitkan card dan relasi).
 
 ## 8. Jebakan yang sudah terjadi
 - Menggeser TC ke Testing Progress terlambat → ditegur.
@@ -78,4 +78,4 @@ Gap dulu: bandingkan AC card vs TC yang ada vs kode vs data; tanyakan hanya kepu
 - Satu query join besar ke DB baca-saja kadang kosong/timeout → ulangi dengan query lebih sederhana.
 
 ## Rujukan
-`olshoperp/.cursor/rules` 15, 16, 17, 18, 23 · `olshoperp-docs/.cursor/rules` 12, 13, 16, 22, 24 · `qa-docs/{menu}/requirement.md`.
+`olshoperp/.cursor/rules` 16, 17, 23 · `olshoperp-docs/.cursor/rules` 12, 22, 24 · `qa-docs/{menu}/requirement.md`.

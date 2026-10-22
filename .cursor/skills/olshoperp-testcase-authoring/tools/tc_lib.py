@@ -1,11 +1,9 @@
-"""Library umum: bangun card Jira Test Case (ADF) + dokumen TC DRAFT dari satu struktur data.
-Dipakai untuk Account Payment (ETM-16643) dan Account Receive (ETM-16644)."""
+"""Library: bangun card Jira Test Case (ADF) dari satu struktur data. Jira saja (tanpa dokumen TC di repo)."""
 import json, os, re, subprocess, time
 
 import tempfile
 S = os.path.dirname(os.path.abspath(__file__))  # folder tools (jira.sh ada di sini)
 TMP = os.environ.get("OLSHOP_TMP", tempfile.gettempdir())
-DOCS = os.environ.get("OLSHOP_DOCS_ROOT", os.path.normpath(os.path.join(S, "..", "..", "..", "..", "qa-docs")))
 YEMIMA = "70121:4ae91cca-e288-40ee-aed0-32b6050a1bc1"
 JIRA = "https://erpintegration.atlassian.net/browse/"
 URL_RE = re.compile(r"(https?://[^\s)]+)")
@@ -133,111 +131,8 @@ def update_card(key, tc, cfg):
     return jira("PUT", "issue/" + key, {"fields": fields}) or "ok"
 
 
-# ------------------------------------------------------------------ dokumen TC
-def q(s):
-    return s.replace("**", "").replace('"', "'").replace("\n", " ").replace("\\", "/")
-
-
-def ts(cfg, n):
-    return "20261021%06d" % (cfg["ts0"] + (n - 1) * 100) if cfg.get("day", "20261021") == "20261021" else cfg["day"] + "%06d" % (cfg["ts0"] + (n - 1) * 100)
-
-
-def flat_steps(tc):
-    out = []
-    for text, subs in tc["steps"]:
-        t = text
-        if subs:
-            t += " " + " ".join((s if s.startswith("Cek") else "Cek: " + s).rstrip(".") + "." for s in subs)
-        out.append(t)
-    return out
-
-
-def md_table(header, rows):
-    esc = lambda x: str(x).replace("|", "/")
-    lines = ["| " + " | ".join(esc(h) for h in header) + " |", "|" + "|".join("---" for _ in header) + "|"]
-    for r in rows:
-        lines.append("| " + " | ".join(esc(c) for c in r) + " |")
-    return "\n".join(lines)
-
-
-def doc(tc, cfg, key):
-    n = tc["n"]; t = ts(cfg, n)
-    title = tc["title"] if tc["title"].startswith("Summary") else cfg["doc_prefix"] + tc["title"]
-    fm = ["---", "doc_type: e2e-test-case", "tc_code: PENDING-" + t, "menu: " + cfg["slug"],
-          'menu_name: "' + cfg["menu_label"] + '"', "test_type: " + tc["ttype"],
-          'title: "' + q(title) + '"', 'summary: "' + q(tc["doc_summary"]) + '"',
-          "status: draft", "owner: QA - Yemima", "last_updated: " + cfg["date"],
-          'requirement_ref: "' + q("qa-docs/" + cfg["slug"] + "/" + tc["req"]) + '"',
-          "automated: false", "automated_spec: null", "execution_company:",
-          "  id: %d" % cfg["company_id"], "  code: " + cfg["company_code"], "related_menus:"]
-    for m in cfg["related_menus"]:
-        fm.append("  - " + m)
-    fm.append("preconditions:")
-    for p in cfg["pre_common"] + tc["pre"]:
-        fm.append('  - "' + q(p) + '"')
-    fm.append("test_data:")
-    for tt, header, rows in tc["data_tables"]:
-        for r in rows:
-            fm.append('  - field: "' + q(tt.split(" (")[0] + " / " + r[0]) + '"')
-            fm.append('    value: "' + q(" | ".join(x for x in r[1:] if x)) + '"')
-    fm.append("steps:")
-    for s in flat_steps(tc):
-        fm.append('  - "' + q(s) + '"')
-    fm.append("expected_result: |")
-    for i, e in enumerate(tc["expected"], 1):
-        fm.append("  %d. %s" % (i, e.replace("\n", " ")))
-    fm += ["test_result:", "  status: not_run", "  started_at: null", "  finished_at: null", "  executed_by: null",
-           "  environment: staging", "  log_summary: null", "  report_url: null",
-           "test_data_used: []", "run_history: []", "origin_jira: " + cfg["origin"],
-           "first_execution:", "  at: null", "  via: null", "  jira: null",
-           "last_execution:", "  at: null", "  jira: null", "  status: not_run", "  via: null", "---"]
-    body = ["", "# " + title, "",
-            "Card: [%s](%s%s) (Test Case, %s) · card asal: [%s](%s%s) · TC terkait lama: %s" % (key, JIRA, key, tc["ttype"], cfg["origin"], JIRA, cfg["origin"], cfg["old_tcs"]),
-            "", "## Retest cepat", ""]
-    for i, (text, subs) in enumerate(tc["steps"][1:4], 1):
-        body.append("%d. %s" % (i, text))
-    body += ["", "## Data uji dari awal sampai akhir", "", "Prasyarat umum:"]
-    for p in cfg["pre_common"] + tc["pre"]:
-        body.append("- " + p)
-    for tt, header, rows in tc["data_tables"]:
-        body += ["", "**" + tt + "**", "", md_table(header, rows)]
-    body += ["", "## Langkah dan hasil yang harus terlihat", ""]
-    for i, (text, subs) in enumerate(tc["steps"], 1):
-        body.append("%d. %s" % (i, text))
-        for s in subs:
-            body.append("   - " + s)
-    body += ["", "## Hasil yang diharapkan", ""]
-    for e in tc["expected"]:
-        body.append("- " + e)
-    body += ["", "## Catatan QA", ""]
-    for x in tc["notes"]:
-        body.append("- " + x)
-    body += ["- Dokumen ini DRAFT (belum dijalankan). Hasil run dicatat di card %s." % key, "", "## Pembersihan data (akhir tes)", ""]
-    for x in cfg["cleanup"]:
-        body.append("- " + x)
-    return "\n".join(fm + body) + "\n"
-
-
-def write_docs(tcs, cfg, keys):
-    folder = os.path.join(DOCS, cfg["slug"], "test-cases")
-    os.makedirs(folder, exist_ok=True)
-    rows = []
-    for tc in tcs:
-        fn = "TC-%s-DRAFT-%s.md" % (cfg["prefix"], ts(cfg, tc["n"]))
-        open(os.path.join(folder, fn), "w").write(doc(tc, cfg, keys[str(tc["n"])]))
-        rows.append("| PENDING-%s | %s (%s) | draft | ❌ | %s |" % (ts(cfg, tc["n"]), tc["title"] if tc["title"].startswith("Summary") else cfg["doc_prefix"] + tc["title"], keys[str(tc["n"])], cfg["date"]))
-    readme = os.path.join(folder, "README.md")
-    lines = open(readme).read().split("\n") if os.path.exists(readme) else ["# Test Cases — " + cfg["menu_label"], "", "| TC Code | Title | Status | Automated | Last Updated |", "|---------|-------|--------|-----------|-------------|"]
-    codes = ["PENDING-" + ts(cfg, tc["n"]) for tc in tcs]
-    lines = [l for l in lines if not any(l.startswith("| " + c) for c in codes)]
-    last = max(i for i, l in enumerate(lines) if l.startswith("|"))
-    lines[last + 1:last + 1] = rows
-    open(readme, "w").write("\n".join(lines))
-    return folder
-
-
 # ------------------------------------------------------------------ CLI
-# python3 tc_lib.py <file_data.py> create|update|docs
+# python3 tc_lib.py <file_data.py> create|update
 # file_data.py memuat CFG (dict), TCS (list), dan KEYS (dict n->key, diisi otomatis setelah create).
 if __name__ == "__main__":
     import importlib.util, sys
@@ -265,5 +160,3 @@ if __name__ == "__main__":
         for tc in D.TCS:
             print(tc["n"], keys[str(tc["n"])], update_card(keys[str(tc["n"])], tc, D.CFG)[:80])
             time.sleep(2.5)
-    elif cmd == "docs":
-        print(write_docs(D.TCS, D.CFG, keys))

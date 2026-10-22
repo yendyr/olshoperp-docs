@@ -19,9 +19,8 @@ Tidak ada token/password di file ini. Kredensial hanya dari `.env` repo `olshope
 - Tabel berguna: `accounting_payments` (AP/AR/DN/CN lewat kolom `type`), `accounting_payment_details|detail_funds|detail_deposits|detail_adjustments`, `accounting_supplier_invoices`, `accounting_customer_invoices`, `gs_company_detail_banks`, `accounting_chart_of_accounts`, `gs_companies` (supplier/customer), `bd_pricelists` (`product_id` = `scm_products`), `audits`.
 - Log Laravel: `node scripts/agent-log-fetch.mjs --server=merdian|tyas --file=laravel-YYYY-MM-DD.log --level=error` (file harian terpecah `_1`, `_2`).
 
-## C. Card + dokumen Test Case
-- Card TC: judul `[Nama Menu] - deskripsi (tipe)`; section Summary, Environment, Precondition Data (+ tabel data uji), Steps to Reproduce, Expected Result, Catatan untuk penguji, Pembersihan data, Additional Context; field di §A; labels `[origin, "test-case", "test-type-<happy|negative|edge|permission|regression|cross-menu>"]`; priority Medium/High; Story Points 1; assignee Yemima.
-- Dokumen: `qa-docs/{menu-slug}/test-cases/TC-{PREFIX}-DRAFT-{YYYYMMDDHHmmss}.md`, `tc_code: PENDING-{timestamp}`, `status: draft`, `origin_jira`, `last_execution` kosong; `expected_result: |` baris berikutnya indent 2 spasi; kutip ganda luar + kutip tunggal dalam; README folder wajib diperbarui; `npm run tc:lint` (filter folder menu; error lama repo bukan milikmu); mirror seluruh folder ke `olshoperp` `docs/qa-docs/...` lalu push `dev`; docs push `main` (tanpa PR, commit hanya file sendiri).
+## C. Membuat card Test Case
+Lihat skill `olshoperp-testcase-authoring`. TC hanya di Jira (tanpa dokumen repo).
 
 ## D. Playwright probe (repo olshoperp-docs)
 - Jalankan: `npx playwright test tests/specs/check-xxx.spec.ts --project=authenticated --reporter=line`.
@@ -47,4 +46,4 @@ Catatan: (hal tak sengaja, data awal tidak diketahui, versi build)
 ```
 
 ## H. Alat bawaan (folder tools/)
-`tools/jira.sh` (curl Jira; `JV=2` untuk REST v2; `OLSHOP_ENV_FILE` menunjuk `.env`), `tools/qm.py` (DB baca-saja: `from qm import show; show("judul","SQL")`), `tools/tc_lib.py` (+ CLI create/update/docs), `tools/example_tc_data.py` (contoh struktur data). Folder scratchpad agen bisa terhapus antar-hari; alat ini tinggal dipakai, jangan ditulis ulang.
+`tools/jira.sh` (curl Jira; `JV=2` untuk REST v2; `OLSHOP_ENV_FILE` menunjuk `.env`) dan `tools/qm.py` (DB baca-saja: `from qm import show; show("judul","SQL")`). Folder scratchpad agen bisa terhapus antar-hari; alat ini tinggal dipakai, jangan ditulis ulang.
