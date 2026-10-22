@@ -16,7 +16,7 @@ status: review
 
 **UI route:** `/accounting/sales-return`  
 **Canonical E2E doc:** [supplychain-sales-returns/requirement.md](../supplychain-sales-returns/requirement.md)  
-**Related:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — CN dari SR → Deposit of Sales Return
+**Related:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) — CN dari SR → Deposit of Sales Return
 
 ---
 
@@ -24,7 +24,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 2.1 | 2026-10-22 | Cross-ref TO-BE ETM-16761: CN dari billed Complete memakai Deposit of Sales Return; Account Receive ikut akun itu |
+| 2.1 | 2026-10-22 | Cross-ref TO-BE ETM-16764: CN dari billed Complete memakai Deposit of Sales Return; Account Receive ikut akun itu |
 | 2.0 | 2026-07-05 | Initial Finance layer — split from canonical SR v2.0 |
 
 ---
@@ -94,7 +94,7 @@ Body: `{ approval_status: 'approved', description?: string(max 150) }`
 
 Auto jika invoice `processed_to_payment_amount > 0` → `generateCreditNoteFromReturn`.
 
-**COA deposit (TO-BE [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)):** Approve CN dari SR billed → Credit **Deposit of Sales Return** (bukan Customer's Deposit). Saat CN dipakai di Account Receive, Debit harus ke akun **yang sama**.
+**COA deposit (TO-BE [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)):** Approve CN dari SR billed → Credit **Deposit of Sales Return** (bukan Customer's Deposit). Saat CN dipakai di Account Receive, Debit harus ke akun **yang sama**.
 
 Detail: [Credit Note §6.7–6.8.1](../accounting-credit-note/requirement.md).
 

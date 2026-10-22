@@ -14,7 +14,7 @@ aliases: [CN technical, credit note API, credit note code]
 **API prefix:** `accounting/credit-note`  
 **Module:** `Modules/Accounting`  
 **Behavior SoT:** [requirement.md](./requirement.md) v1.2  
-**TO-BE deposit COA:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)
+**TO-BE deposit COA:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)
 
 ---
 
@@ -100,7 +100,7 @@ Invoice tracking (return path): `prepared_to_amount_credit_note`, `processed_to_
 | Approve journal | `JournalProcess::creditNoteAutoJournal($cn, $with_auth, $invert_journal)` |
 | Invert | Sales Return billed platform → `invert_journal: true` |
 | Deposit COA (**AS-IS**) | Company: `company_coa_name("Customer's Deposit COA")`; Store: `deposit_coa_id` — semua asal CN |
-| Deposit COA (**TO-BE** ETM-16761) | Manual/overpay: Customer's Deposit / store `deposit_coa_id`; **Sales Return billed:** `company_coa_name("Deposit of Sales Return")`. Consume AR stamp COA yang sama (bukan re-resolve generic) |
+| Deposit COA (**TO-BE** ETM-16764) | Manual/overpay: Customer's Deposit / store `deposit_coa_id`; **Sales Return billed:** `company_coa_name("Deposit of Sales Return")`. Consume AR stamp COA yang sama (bukan re-resolve generic) |
 
 Default journal (non-invert): **Dr** fund COAs / **Cr** Deposit COA (balanced).
 

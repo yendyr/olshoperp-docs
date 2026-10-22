@@ -127,7 +127,7 @@ Customer, mata uang, kurs, dan tanggal transaksi **terkunci** begitu sudah ada b
 ## 8. FAQ
 
 **Q: Bedanya CN manual dengan yang dari Sales Return?**  
-A: Manual/import perlu kamu approve. Dari return **Billed**, sistem langsung approve + jurnal. **TO-BE ETM-16761:** CN dari Sales Return memakai akun **Deposit of Sales Return**; CN manual memakai **Customer's Deposit**. Saat dipakai di Account Receive, akun keluar harus sama dengan saat Approve.
+A: Manual/import perlu kamu approve. Dari return **Billed**, sistem langsung approve + jurnal. **TO-BE ETM-16764:** CN dari Sales Return memakai akun **Deposit of Sales Return**; CN manual memakai **Customer's Deposit**. Saat dipakai di Account Receive, akun keluar harus sama dengan saat Approve.
 
 **Q: Unbilled return kenapa tidak ada CN?**  
 A: Invoice belum dibayar — sistem menyesuaikan sales/AR, bukan membuat deposit customer.

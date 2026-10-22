@@ -77,7 +77,7 @@ flowchart TD
 
 - **Recognize As** menentukan peran mitra — boleh lebih dari satu sekaligus (mis. Customer + Supplier).
 - **Accounting Setting** wajib lengkap untuk role terkait; kalau belum, mitra tidak muncul di pilihan transaksi (penyebab tersering "company hilang").
-- **Deposit slots (ETM-16761):** Customer's Deposit vs Deposit of Sales Return (customer); Deposit to Supplier vs Deposit of Purchase Return (supplier). Setelah improvement, CN/DN dari return memakai slot return; pelunasan AP/AR harus ikut akun yang sama.
+- **Deposit slots:** Customer's Deposit vs Deposit of Sales Return (customer — [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)); Deposit to Supplier vs Deposit of Purchase Return (supplier — [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)). Setelah improvement, CN/DN dari return memakai slot return; pelunasan AP/AR harus ikut akun yang sama.
 - **Set as Default Customer/Shipper** opsional — dipakai autofill di Sales Order.
 
 ### 4.1 Buat partner baru

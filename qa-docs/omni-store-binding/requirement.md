@@ -16,7 +16,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 2.6 | 2026-10-22 | QA - Yemima | Cross-ref [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761): store hanya 1 `deposit_coa_id` (Customer's Deposit); CN dari Sales Return billed → Deposit of Sales Return **company owner** |
+| 2.6 | 2026-10-22 | QA - Yemima | Cross-ref [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764): store hanya 1 `deposit_coa_id` (Customer's Deposit); CN dari Sales Return billed → Deposit of Sales Return **company owner** |
 | 2.5 | 2026-10-11 | Dev | AS-IS schedule: skip dump **22:30–01:30 WIB**; product sync `hourlyAt(35)`; night order/booking update `hourlyAt(50)` + skip dump; push-stocks **21:30** Asia/Jakarta — §4.5 |
 | 2.4 | 2026-08-31 | QA - Yemima | AS-IS sync order: update siang = `work_hours_interval` (default **60 mnt**, tanpa `--subhour`); lookback `max_backward` default **10** hari (cap 14); pecah job **per hari** + **half-day** untuk hari lampau — §4.5 |
 | 2.3 | 2026-08-11 | QA - Yemima | TO-BE: split **Ownership & Fulfillment** / **Accounting & Tax**; field **Auto Add VAT (Platform Orders)**; Others disabled+note; konsumen Sales Platform; `GAP-ST-VAT-01` |
@@ -411,7 +411,7 @@ Cross-ref: [General Company §7.4–§7.5](../generalsetting-general-company/req
 
 > **AS-IS UI:** masih satu section **Sales Order Default Configuration** (tanpa Auto Add VAT). Setelah ship, dua section di atas menggantikan section lama.
 
-> **Deposit of Sales Return (ETM-16761):** Store **tidak** punya slot deposit kedua. CN dari Sales Return billed memakai **Deposit of Sales Return** di Accounting Setting **company owner** (bukan `deposit_coa_id` store). Detail: [Credit Note §6.7–6.8.1](../accounting-credit-note/requirement.md).
+> **Deposit of Sales Return (ETM-16764):** Store **tidak** punya slot deposit kedua. CN dari Sales Return billed memakai **Deposit of Sales Return** di Accounting Setting **company owner** (bukan `deposit_coa_id` store). Detail: [Credit Note §6.7–6.8.1](../accounting-credit-note/requirement.md).
 
 **Section: Synchronization** (`SyncSection.vue` — **hanya Platform**)
 

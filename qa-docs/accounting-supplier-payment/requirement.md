@@ -21,7 +21,7 @@ aliases: [Account Payment docs, AP payment, pembayaran hutang, PY]
 **PM source:** `account-payment-requirement.md` (29 Okt 2025 MVP) + Import AP Relational (Apr 2026)
 
 **Upstream:** [Purchase Invoice](../accounting-supplier-invoice/requirement.md)  
-**Related Improvement:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — COA deposit DN ikut asal transaksi
+**Related Improvement:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — COA deposit DN ikut asal transaksi · Relates AR: [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)
 
 ---
 

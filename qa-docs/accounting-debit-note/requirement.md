@@ -18,7 +18,7 @@ aliases: [DN, debit note, nota debit, supplier deposit, klaim supplier]
 **SoT:** `_meta/sot/accounting-debit-note-source-of-truth.md` v1.0 (12 Agustus 2026)
 
 Downstream: [Account Payment](../accounting-supplier-payment/requirement.md) · Upstream billed return: [Purchase Return](../accounting-purchase-return/) · Mirror AR: [Credit Note](../accounting-credit-note/requirement.md)  
-**Related Improvement:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — COA deposit saat DN dipakai di AP harus ikut asal DN
+**Related Improvement:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — COA deposit saat DN dipakai di AP harus ikut asal DN · Relates AR: [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)
 
 > AS-IS diverifikasi 12 Agu 2026 (`DebitNoteController`, `DebitNoteService`, AP import, FE `DebitNote/*`).
 

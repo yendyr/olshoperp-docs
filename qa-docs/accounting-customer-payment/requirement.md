@@ -14,13 +14,13 @@ status: review
 **UI route:** `/accounting/customer-payment`
 **Audience:** PM, Operations, QA, Support, Developer
 
-**Related Improvement:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — COA deposit Credit Note ikut asal transaksi
+**Related Improvement:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) — COA deposit Credit Note ikut asal transaksi · Relates AP: [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 2.3 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761): Payment Source CN stamp COA dari asal CN; GAP-AR-CN-COA |
+| 2.3 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764): Payment Source CN stamp COA dari asal CN; GAP-AR-CN-COA |
 | 2.2 | 2026-10-19 | QA - Yemima | **TO-BE** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644): Section Summary read-only setelah Adjustment (header currency; Credit=+/Debit=−; CN terpisah; Total orange jika ≠ 0) |
 | 2.1 | 2026-09-01 | QA - Yemima | Relasi Instant Settlement: AR date/time dari SI + guard same calendar date (ETM-15701) |
 | 2.0 | 2026-08-31 | QA - Yemima | Split dari SoT v1.0 — Import AR multi-sheet, validasi terverifikasi codebase, Gap Registry |
@@ -144,7 +144,7 @@ Kolom COA Bank Account menerima dua jenis input dan sistem mendeteksi sendiri ti
 
 Pembayaran via Credit Note menuntut CN sudah Approved, saldo outstanding CN mencukupi, tanggal pembayaran tidak lebih awal dari tanggal CN, currency CN primary, dan customer invoice sama dengan pemilik CN.
 
-**COA deposit CN (TO-BE [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)):**
+**COA deposit CN (TO-BE [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)):**
 
 | Aspek | AS-IS | TO-BE |
 |-------|-------|-------|
@@ -333,7 +333,7 @@ flowchart TB
 | GAP-AR-08 | Requirement raw §7 (Smart Settlement Adjustment, Failed Ship, Hard Delete Protection) sebenarnya menjelaskan perilaku menu Instant Settlement, bukan menu ini. | Unverified | Berisiko dobel dokumentasi dan salah rumah fakta | Open |
 | GAP-AR-09 | Alur manual (create dokumen AR, insert Sales Invoice lewat modal Available Sales Invoice, bulk approve) belum punya sumber requirement tertulis, padahal sudah punya 9 test case aktif. | Missing Behavior | 9 TC berdiri tanpa acuan requirement | Open |
 | GAP-AR-SUMMARY-01 | Section Summary setelah Adjustment | Info total Piutang / Cash-Bank / CN / Adj / Total (header CCY; tanda Credit+/Debit−) | Belum ada di UI | **TO-BE** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) |
-| GAP-AR-CN-COA | CN Payment Source COA = asal CN | Stamp COA dari journal/asal CN (SR → Deposit of Sales Return) | Hardcode Customer's Deposit / store deposit on add/import | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) |
+| GAP-AR-CN-COA | CN Payment Source COA = asal CN | Stamp COA dari journal/asal CN (SR → Deposit of Sales Return) | Hardcode Customer's Deposit / store deposit on add/import | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) |
 
 ## 9. FAQ
 
