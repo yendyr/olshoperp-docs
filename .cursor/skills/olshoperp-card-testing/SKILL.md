@@ -57,7 +57,14 @@ Perintah “test card ini” = izin uji + catat hasil. Tidak perlu minta izin ul
 2. Pastikan **data uji** (§5). Tidak ada data → **STOP**, bilang ke prompter; jangan ganti data diam-diam.
 3. Uji sesuai **Steps + Expected** di description card (sumber kebenaran = Jira, bukan markdown repo).
 4. Isi **Actual Result** (company, akun, data + URL, hasil per Expected, angka eksak) → baru **Test Result** (Passed / Failed / Blocked) → komentar bila perlu → **Done**.
-5. **Failed** → buat card **Error** baru (Relates ke TC + origin, assignee = assignee origin); origin terkait → RE-OPEN. Ringkas: jangan Done origin yang masih gagal.
+5. **Test Case tidak punya status RE-OPEN** — tetap Done; hasil ada di Test Result.
+6. **Failed / Blocked** → wajib card **Error** baru (bukan comment singkat saja):
+   - Relates ke **TC ini** + ke **origin** (Improvement/CR/Story yang dilink).
+   - Assignee Error = **assignee origin** (bukan tester).
+   - Origin Improvement/CR → **RE-OPEN tanpa clone**, lalu Error baru di atas.
+   - Jangan Done-kan origin yang masih gagal tanpa tindak lanjut ini.
+
+Site Jira: **hanya ETM** (`erpintegration.atlassian.net`). Jangan eduqat.
 
 ---
 
@@ -65,8 +72,12 @@ Perintah “test card ini” = izin uji + catat hasil. Tidak perlu minta izin ul
 
 1. Uji sesuai Expected di description. Bukti di **komentar Jira** (bukan field Actual/Test Result).
 2. **Lulus** → komentar bukti → transisi ke Done (lewat QA Review bila ada; cek transitions).
-3. **Gagal** → jangan Done. Error: RE-OPEN + clone bila perlu; Improvement: RE-OPEN + card Error baru. Ragu → tanya Yemima.
+3. **Gagal** → jangan Done. Ikuti jalur:
+   - **Error / Bug origin:** RE-OPEN origin → **Clone** origin → judul clone `RE-OPEN [Menu] - {desc}`. Copy Request ID / Menu / Story Points / labels. Assignee clone = assignee origin. Retest berikutnya = **clone**, bukan origin yang sudah RE-OPEN.
+   - **Improvement / Change Requirement / Story / Task:** RE-OPEN origin **tanpa** clone → buat card **Error baru** (format lengkap: Summary, Environment, Precondition, Steps, Expected, Actual, Additional Context) → Relates ke origin (+ TC penemu jika ada) → assignee = assignee origin.
 4. Expected bersyarat data → uji **kedua** kondisi (ada / tidak ada) dan sebut data per kondisi.
+5. Scope E2E / cross-menu sangat panjang & ragu: tanya Yemima dulu sebelum automasi RE-OPEN massal.
+6. Selalu `GET .../transitions` sebelum RE-OPEN/clone — nama/id bisa berubah.
 
 ---
 
@@ -84,9 +95,20 @@ Prompter / card sebut data konkret?
 
 - **Reuse data existing boleh** (staging/tyas sesuai izin). Hormati catatan “jangan dihapus”.
 - Di transaksi yang dipakai testing: sebut **nomor card** (`QA ETM-xxxxx`) di Description/Reference bila memungkinkan.
-- Data hasil uji di staging: **jangan hapus** setelah run (kecuali TC-nya memang uji hapus) — jejak `QA-AUTO-…` / teks card + tanggal.
 - Hitung angka kritis dengan hati-hati (pembulatan/kurs); jangan tebak.
 - **Membuat master/data dari nol** secara massal = skill khusus nanti; tanpa izin/skill itu, kalau data tidak ada → laporkan saja.
+
+### Data uji staging: simpan, jangan hapus (Rachy 15-10-2026)
+
+Setelah run di **staging**, data yang dibuat untuk uji **tidak dihapus** (kecuali Expected card memang menguji hapus).
+
+1. Kode / SKU / nama: prefix **`QA-AUTO-`** bila memungkinkan (contoh `QA-AUTO-VPDEC-266983`).
+2. **Name** atau **Description** wajib jejak: key card + tanggal (contoh `QA-AUTO ETM-16502 langkah 3, 15-10-2026`). Form tanpa Description → pakai Name.
+3. Draft otomatis saat buka create PO/SO juga dibiarkan, beri jejak yang sama bila bisa diedit.
+4. Actual Result Jira + Telegram menyebut **kode data** yang dipakai/dibuat.
+5. Tyas/Merdian tetap **no create** (§6) — aturan simpan ini terutama untuk staging.
+
+---
 
 ---
 
@@ -150,6 +172,18 @@ Coba / pakai berurutan: **153 (lumicharmsid)** → **112 (FAT)** → **13 (DEV-S
    Kontrak komponen (multiselect, dialog, numeric-mask, dll.): `tests/ui-components.md` — **jangan tulis selector dari nol**.
 3. Kalau UI berubah / helper gagal: catat di komentar Jira; perbaiki helper + `ui-components.md` bila sesi BUILD, jangan “tambal sekali jalan” tanpa jejak.
 4. Label tombol/field di langkah = **persis** teks di aplikasi.
+
+### Browser MCP vs Playwright CLI
+
+| | Browser MCP / pane | Playwright CLI (`npx playwright test`) |
+|---|-------------------|----------------------------------------|
+| Boleh | Eksplorasi UI, cek selector, reproduksi cepat | Jalur resmi jika pakai spec bertag / regresi |
+| **Dilarang** | Menandai Test Result **Passed** hanya dari MCP; jadi satu-satunya “bukti lulus” tanpa langkah Actual yang jujur | — |
+
+- Hasil resmi ke Jira = apa yang benar-benar diverifikasi di UI (crawl CLI atau manual + catatan). Observasi MCP saja = **catatan**, bukan Passed otomatis.
+- Headless default; headed hanya jika prompter minta demo.
+- Jangan spam login / retry tanpa batas saat debug selector — perbaiki helper, laporkan blocker.
+- Spec yang mengubah data: `retries=0`.
 
 ### Di mana file Playwright boleh hidup
 
@@ -250,6 +284,9 @@ Isi mengikuti ringkasan Bugsy:
 - Probe di `tests/scripts/` atau assert harga/bug tanpa ganti unit / tanpa `expect`.
 - Fallback diam-diam ke SKU di description card padahal prompter sudah kasih data lain.
 - Test / login Merdian tanpa kode approval `yemimamerdian` di pesan.
+- Hapus data `QA-AUTO-` staging setelah run “biar rapi”.
+- RE-OPEN pada card Test Case, atau clone Improvement (salah jalur).
+- Tandai Passed hanya karena MCP/screenshot tanpa cocokkan Expected.
 
 ---
 
@@ -257,7 +294,10 @@ Isi mengikuti ringkasan Bugsy:
 
 - [ ] Status Jira benar (Progress → Actual → Result → Done / atau komentar non-TC)
 - [ ] Expected di card tercakup di Actual (angka eksak)
-- [ ] Data jejak `QA ETM-…` bila buat/ubah
+- [ ] Data jejak `QA-AUTO-` / `QA ETM-…` bila buat di staging; **tidak dihapus**
+- [ ] Failed → Error + Relates + assignee origin (+ RE-OPEN jalur benar)
+- [ ] Passed bukan dari MCP-only
 - [ ] Telegram terkirim
 - [ ] Probe/scratch dibersihkan; tidak ada file di `tests/scripts/`
 - [ ] Tidak ada secret di chat/komentar
+- [ ] Merdian: ada kode `yemimamerdian` bila diuji di situ

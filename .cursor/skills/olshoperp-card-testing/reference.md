@@ -11,7 +11,8 @@ Akun uji khusus: `tests/TEST-ACCOUNTS.md` (di repo docs; tidak dimirror ke Help 
 
 ## A. Jira (site ETM saja)
 
-- Site: `https://erpintegration.atlassian.net` (bukan eduqat).
+- Site: `https://erpintegration.atlassian.net` — `cloudId` `44cc9820-3372-4c12-884c-698b1397173c` (bukan eduqat).
+- Failed TC / RE-OPEN detail operasional: **SKILL.md §3–§4** (ringkas dari rule reopen).
 - Auth: `JIRA_EMAIL` + `JIRA_API_TOKEN` (basic auth; `tools/jira.sh` pakai curl `-K -`).
 - Issue type id: Error `10033`, Test Case `10051`, Improvement `10088`, Change Requirement `10048`.
 - Field: Test Result `customfield_10202` `{"value":"Passed|Failed|Blocked"}`, Actual Result `customfield_10203` (ADF), Menu `customfield_10429`, Request ID `customfield_10495`, Story Points `customfield_10043`.
