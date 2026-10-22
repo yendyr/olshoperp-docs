@@ -15,7 +15,8 @@ Menu **Account Payment** (Accounting / Account Payable).
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-supplier-payment/`](../_meta/docs-hub/menus/accounting-supplier-payment/)  
 **PM source:** `account-payment-requirement.md` (29 Okt 2025) + Import AP (Apr 2026)  
 **Upstream:** [Purchase Invoice](../accounting-supplier-invoice/)  
-**3 layer version:** KB 2.5 · requirement/technical **2.4** · **User-guide:** v1.3 · `source_version` 2.4 · **Feature Map:** 1.0 · **Last updated:** 2026-10-19  
+**3 layer version:** KB 2.5 · requirement **2.5** · **User-guide:** v1.3 · `source_version` 2.4 · **Feature Map:** 1.0 · **Last updated:** 2026-10-22  
+**Related Jira:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) (COA deposit DN ikut asal)
 **Open CR:** [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643) — Summary section setelah Adjustment  
 **Docs Page:** https://staging.olshoperp.com/docs/accounting/accounting-supplier-payment/overview
 
@@ -23,6 +24,7 @@ Menu **Account Payment** (Accounting / Account Payable).
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.5 | 2026-10-22 | TO-BE ETM-16761: Payment Source DN stamp COA dari asal DN (bukan selalu Deposit to Supplier) |
 | 2.4 | 2026-10-19 | TO-BE ETM-16643: Section Summary (header CCY, DN terpisah, Total orange jika ≠ 0); Help Center overview sync |
 | 2.3–2.4 | 2026-09-02 ~16:30 | Supplier tampil **kode saja** di daftar/form/export (cari by nama+kode; nama boleh di Print). Parent ETM-15721 / ETM-15725 |
 | 2.3 | 2026-07-29 | Feature Map + 6 capability cards; KB rewrite operator; UG v1.1 (SF tags, review); Help Center overview en/id |

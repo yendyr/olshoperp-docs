@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-store-binding
 menu_name: "Store"
-version: 2.5
-last_updated: 2026-10-11
+version: 2.6
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 ---
@@ -16,6 +16,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.6 | 2026-10-22 | QA - Yemima | Cross-ref [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761): store hanya 1 `deposit_coa_id` (Customer's Deposit); CN dari Sales Return billed → Deposit of Sales Return **company owner** |
 | 2.5 | 2026-10-11 | Dev | AS-IS schedule: skip dump **22:30–01:30 WIB**; product sync `hourlyAt(35)`; night order/booking update `hourlyAt(50)` + skip dump; push-stocks **21:30** Asia/Jakarta — §4.5 |
 | 2.4 | 2026-08-31 | QA - Yemima | AS-IS sync order: update siang = `work_hours_interval` (default **60 mnt**, tanpa `--subhour`); lookback `max_backward` default **10** hari (cap 14); pecah job **per hari** + **half-day** untuk hari lampau — §4.5 |
 | 2.3 | 2026-08-11 | QA - Yemima | TO-BE: split **Ownership & Fulfillment** / **Accounting & Tax**; field **Auto Add VAT (Platform Orders)**; Others disabled+note; konsumen Sales Platform; `GAP-ST-VAT-01` |
@@ -405,10 +406,12 @@ Cross-ref: [General Company §7.4–§7.5](../generalsetting-general-company/req
 |-------|---------------|
 | Account Receivable COA | COA Class = Assets |
 | Cash/Bank Receiving | Company Detail Bank |
-| Customer's Deposit COA | Company accounting default |
+| Customer's Deposit COA | Maps ke `deposit_coa_id` — dipakai CN **non–Sales Return** (manual/overpay) untuk actor Store |
 | **Auto Add VAT (Platform Orders)** | `yes` / `no` / `default_by_product` — default **Default by Product**; lihat §4.9 |
 
 > **AS-IS UI:** masih satu section **Sales Order Default Configuration** (tanpa Auto Add VAT). Setelah ship, dua section di atas menggantikan section lama.
+
+> **Deposit of Sales Return (ETM-16761):** Store **tidak** punya slot deposit kedua. CN dari Sales Return billed memakai **Deposit of Sales Return** di Accounting Setting **company owner** (bukan `deposit_coa_id` store). Detail: [Credit Note §6.7–6.8.1](../accounting-credit-note/requirement.md).
 
 **Section: Synchronization** (`SyncSection.vue` — **hanya Platform**)
 

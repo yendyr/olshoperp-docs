@@ -2,16 +2,17 @@
 doc_type: technical
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.2
-last_updated: 2026-10-19
+version: 2.3
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 ---
 
 # Account Receive — Technical
 
-**Behavior SoT:** [requirement.md](./requirement.md) v2.2  
-**Summary UI (TO-BE):** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644)
+**Behavior SoT:** [requirement.md](./requirement.md) v2.3  
+**Summary UI (TO-BE):** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644)  
+**CN deposit COA (TO-BE):** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)
 
 ## 1. File Map
 
@@ -179,5 +180,6 @@ Sign rule AR: journal **Cr → +**, **Dr → −**. See [requirement §6.5](./re
 | GAP-AR-08 | Requirement raw §7 sebenarnya milik menu Instant Settlement |
 | GAP-AR-09 | Alur manual belum punya sumber requirement |
 | GAP-AR-SUMMARY-01 | Summary section TO-BE ETM-16644 |
+| GAP-AR-CN-COA | CN Payment Source stamp COA asal CN (SR → Deposit of Sales Return) — TO-BE ETM-16761; fix di `PaymentDetailFundController` + `ReceiveImportPerMutationJob::createFund` |
 
 Detail lengkap: [requirement §8](./requirement.md).

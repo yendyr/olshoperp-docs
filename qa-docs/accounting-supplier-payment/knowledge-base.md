@@ -50,7 +50,7 @@ flowchart TD
 **Keterangan langkah:**
 
 - **Create:** Supplier (**tampil kode**; cari by nama/kode OK), tanggal, mata uang, kurs; set **Open**. Nama supplier tidak di daftar/export — hanya di **Print**.
-- **Payment Source:** kas/bank (cek Balance) dan/atau Debit Note; amount ≤ sisa.
+- **Payment Source:** kas/bank (cek Balance) dan/atau Debit Note; amount ≤ sisa. **TO-BE ETM-16761:** GL Account Debit Note mengikuti asal DN (manual → Deposit to Supplier; dari Purchase Return → Deposit of Purchase Return).
 - **Outstanding PI:** Use (boleh sebagian), Allocate Full, atau Bulk Use.
 - **Balance:** Total Source harus sama Total Detail sebelum Approve.
 - **Approve:** jurnal AP berkurang; partial → sisa bisa dibayar di payment berikutnya.

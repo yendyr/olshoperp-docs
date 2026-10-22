@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.1
-last_updated: 2026-08-05
+version: 1.2
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, nota kredit, customer credit, deposit credit note]
@@ -127,7 +127,7 @@ Customer, mata uang, kurs, dan tanggal transaksi **terkunci** begitu sudah ada b
 ## 8. FAQ
 
 **Q: Bedanya CN manual dengan yang dari Sales Return?**  
-A: Manual/import perlu kamu approve. Dari return **Billed**, sistem langsung approve + jurnal.
+A: Manual/import perlu kamu approve. Dari return **Billed**, sistem langsung approve + jurnal. **TO-BE ETM-16761:** CN dari Sales Return memakai akun **Deposit of Sales Return**; CN manual memakai **Customer's Deposit**. Saat dipakai di Account Receive, akun keluar harus sama dengan saat Approve.
 
 **Q: Unbilled return kenapa tidak ada CN?**  
 A: Invoice belum dibayar — sistem menyesuaikan sales/AR, bukan membuat deposit customer.

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.1
-last_updated: 2026-09-02
+version: 1.2
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,8 +13,9 @@ related_docs:
 
 # Debit Note — Technical Documentation
 
-> **Review** — AS-IS 2026-08-12 + supplier display 2026-09-02. Behavior: [requirement v1.1](./requirement.md).  
-> **Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15727](https://erpintegration.atlassian.net/browse/ETM-15727)
+> **Review** — AS-IS 2026-08-12 + supplier display 2026-09-02. Behavior: [requirement v1.2](./requirement.md).  
+> **Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15727](https://erpintegration.atlassian.net/browse/ETM-15727)  
+> **TO-BE consume COA:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)
 
 ---
 
@@ -22,6 +23,7 @@ related_docs:
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-10-22 | QA - Yemima | TO-BE ETM-16761: AP consume DN stamp COA asal DN |
 | 1.0 | 2026-08-12 | QA - Yemima | DebitNoteController, export jobs, AP import, journal |
 | 1.1 | 2026-09-02 | QA - Yemima | Supplier display code-only via ETM-15721 helpers |
 
@@ -66,6 +68,12 @@ related_docs:
 | Purchase Return | Dr Deposit of Purchase Return · Cr Inventory COA produk |
 
 Post-approve: eligible sebagai deposit di `SupplierPayment` (same supplier/currency, DN date < AP date, outstanding > 0).
+
+### 3.1 Consume di Account Payment (TO-BE · ETM-16761)
+
+**AS-IS:** `PaymentDetailFundController` + AP import stamp `payment_detail_deposits.coa_id` = **Deposit to Supplier COA** untuk semua DN.
+
+**TO-BE:** stamp COA dari asal DN (derive `transaction_reference_class == PurchaseReturn` → Deposit of Purchase Return; else Deposit to Supplier) atau salin dari jurnal Approve DN. `supplierPaymentAutoJournal` sudah Credit `coa_id` tersimpan — fix di stamp path saja.
 
 ---
 

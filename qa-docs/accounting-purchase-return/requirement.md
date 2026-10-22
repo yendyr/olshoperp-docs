@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-purchase-return
 menu_name: "Purchase Return"
-version: 1.1
-last_updated: 2026-09-09
+version: 1.2
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: draft
 aliases: [Purchase Return, retur beli, PR billed, ETM-15726, Unit Price Before VAT, Total Price Return, Available Product]
@@ -16,7 +16,7 @@ aliases: [Purchase Return, retur beli, PR billed, ETM-15726, Unit Price Before V
 **Audience:** PM, QA  
 **Status:** **draft** — dokumentasi penuh menu masih pending; section di bawah mengunci kebijakan supplier display.
 
-**Jira:** [ETM-15726](https://erpintegration.atlassian.net/browse/ETM-15726) · parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · [ETM-15858](https://erpintegration.atlassian.net/browse/ETM-15858) (Unit Price / Total Price Return)
+**Jira:** [ETM-15726](https://erpintegration.atlassian.net/browse/ETM-15726) · parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · [ETM-15858](https://erpintegration.atlassian.net/browse/ETM-15858) (Unit Price / Total Price Return) · **[ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)** (COA deposit DN dari PR)
 
 ---
 
@@ -24,6 +24,7 @@ aliases: [Purchase Return, retur beli, PR billed, ETM-15726, Unit Price Before V
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE ETM-16761: DN dari PR billed → Deposit of Purchase Return harus ikut saat DN dipakai di Account Payment |
 | 1.1 | 2026-09-09 | QA - Yemima | TO-BE §2: **Unit Price (Before VAT)** + **Total Price Return** di detail edit/show + modal (ETM-15858)
 | 1.0 | 2026-09-02 | QA - Yemima | Stub + Supplier display **code-only** (ETM-15726) |
 
@@ -78,3 +79,5 @@ Kolom **read-only** untuk transparansi nilai retur.
 ## 3. Catatan scope docs
 
 Alur retur billed → Debit Note, validasi qty, dan state machine penuh: **belum** di-expand di file ini (status draft). Cross-ref sementara: [Purchase Invoice](../accounting-supplier-invoice/), [Debit Note](../accounting-debit-note/), [Account Payment](../accounting-supplier-payment/).
+
+**COA deposit (TO-BE [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)):** PR billed → spawn DN Open → Approve DN = Dr **Deposit of Purchase Return**. Saat DN itu dipakai di Account Payment, Credit harus ke akun **yang sama** (bukan Deposit to Supplier). Detail: [Debit Note §6.4.1](../accounting-debit-note/requirement.md) · [Account Payment §6.2](../accounting-supplier-payment/requirement.md).

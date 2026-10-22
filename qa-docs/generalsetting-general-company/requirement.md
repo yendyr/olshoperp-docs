@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: generalsetting-general-company
 menu_name: "General Company"
-version: 2.4
-last_updated: 2026-08-04
+version: 2.5
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 ---
@@ -14,7 +14,8 @@ status: review
 **Audience:** PM, QA, Developer  
 **Status:** Review — diverifikasi terhadap codebase per 2026-07-30; item **GAP** perlu keputusan PM/dev.
 
-> Sumber: konsolidasi `general_company_requirement_1.md` (23 Jun 2026) + **Source of Truth General Company v1.0** (30 Jul 2026) + audit AS-IS backend `GeneralCompanyController` & frontend `Form.vue` / `DataListGeneralCompany.vue` / `PaymentType.vue`.
+> Sumber: konsolidasi `general_company_requirement_1.md` (23 Jun 2026) + **Source of Truth General Company v1.0** (30 Jul 2026) + audit AS-IS backend `GeneralCompanyController` & frontend `Form.vue` / `DataListGeneralCompany.vue` / `PaymentType.vue`.  
+> **Related:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — pemakaian aktual Deposit of Sales Return / Deposit of Purchase Return di jalur DN/CN.
 
 ---
 
@@ -212,8 +213,8 @@ Default COA untuk auto-journal. Field yang tampil bergantung Recognize As aktif.
 |-------|-------------------|
 | Account Receivable COA | Sales Invoice, Receive (AR) |
 | Sales Discount COA | Sales Invoice |
-| Customer's Deposit COA | Credit Notes |
-| Deposit of Sales Return | Sales Return / deposit flow |
+| Customer's Deposit COA | Credit Note **manual / overpay** (Approve + pakai di Account Receive) |
+| Deposit of Sales Return | **TO-BE ETM-16761:** Credit Note dari **Sales Return billed** (Approve + pakai di Account Receive). **AS-IS:** slot wajib di master, belum dipakai jurnal |
 
 **As Supplier** (`company-as-supplier` tagging):
 
@@ -221,8 +222,8 @@ Default COA untuk auto-journal. Field yang tampil bergantung Recognize As aktif.
 |-------|-------------------|
 | Account Payable COA | Inbound, Payable (AP) |
 | Purchase Discount COA | Inbound |
-| Deposit to Supplier COA | Debit Notes |
-| Deposit of Purchase Return | Purchase Return deposit |
+| Deposit to Supplier COA | Debit Note **manual / AP import**; **AS-IS juga** dipakai saat Account Payment pakai DN apa pun (salah untuk DN dari PR) |
+| Deposit of Purchase Return | Debit Note dari **Purchase Return** (Approve). **TO-BE ETM-16761:** harus ikut saat DN itu dipakai di Account Payment |
 
 ### 7.3 Filter COA Class (AS-IS — `InternalCompanyController@select2Coa`)
 
@@ -713,6 +714,7 @@ ID kanonik memakai format `GAP-GC-NN` (selaras Source of Truth v1.0 & standar QA
 
 | Version | Date | Perubahan |
 |---------|------|-----------|
+| 2.5 | 2026-10-22 | §7.2: klarifikasi pemakaian Deposit of Sales Return / Deposit of Purchase Return vs Customer's Deposit / Deposit to Supplier — TO-BE [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) |
 | 2.3 | 2026-07-30 | Selaras Source of Truth v1.0: FE Import kini **wired** (resolve G-01) di datalist §2.2/§13.1 + route `progress`; §18 dijadikan **Gap Registry `GAP-GC-NN`** (mapping legacy G-0N) + GAP-GC-02 (asimetri guard Supplier OFF); catatan akurasi single-currency vs SoT; status → review |
 | 2.4 | 2026-08-04 | TO-BE: COA vs Cash/Bank exclusion untuk semua slot Accounting Setting — §7.7, §14, `GAP-GC-CB-01` |
 | 2.2 | 2026-06-24 | Implement G-02: Active OFF cek saldo; lock customer role jika sudah dipakai transaksi |

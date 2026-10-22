@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.1
-last_updated: 2026-08-05
+version: 1.2
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, credit note docs, nota kredit, customer deposit credit]
@@ -17,7 +17,8 @@ aliases: [CN, credit note, credit note docs, nota kredit, customer deposit credi
 **UI route:** `/accounting/credit-note`  
 **SoT:** `accounting-credit-note-source-of-truth.md` v1.0 (17 Jul 2026)
 
-Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · Upstream billed return: [Sales Return Approval](../accounting-sales-return/requirement.md)
+Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · Upstream billed return: [Sales Return Approval](../accounting-sales-return/requirement.md)  
+**Related Improvement:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — COA deposit CN ikut asal; aktifkan Deposit of Sales Return
 
 ---
 
@@ -25,6 +26,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761): CN dari Sales Return → Deposit of Sales Return; consume di AR ikut COA asal; GAP-CN-06 |
 | 1.1 | 2026-08-05 | QA - Yemima | **TO-BE:** Receiving Destination dual path Cash/Bank + free COA (locked D1–D14); GAP-CN-05; Sales Return fund type `COA` |
 | 1.0 | 2026-07-17 | QA - Yemima | Draft awal dari SoT v1.0 + analisa codebase (create/import/approve, auto dari Sales Return billed, pemakaian di AR) |
 
@@ -240,9 +242,12 @@ Dikelompokkan per invoice + per Sales COA produk → CN per invoice, fund per Sa
 | Sisi | COA | Nilai |
 |------|-----|-------|
 | Debit (default) | COA tiap fund | Amount fund |
-| Kredit (default) | Customer's Deposit COA | Total debit |
+| Kredit (**AS-IS**) | Customer's Deposit COA (Company) / store `deposit_coa_id` (Platform) — **semua** asal CN termasuk Sales Return | Total debit |
+| Kredit (**TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)) | Manual / AR import overpay → Customer's Deposit (atau store deposit); **dari Sales Return billed** → **Deposit of Sales Return** (company) | Total debit |
 
-Invert debit/kredit untuk CN return billed platform tertentu.
+Invert debit/kredit untuk CN return billed platform tertentu (docs AS-IS; wiring invert terpisah).
+
+**Catatan AS-IS:** slot General Company **Deposit of Sales Return** wajib diisi master, tetapi **belum** dipakai di jurnal CN.
 
 ### 6.8 Pemakaian di Account Receive
 
@@ -250,6 +255,21 @@ Invert debit/kredit untuk CN return billed platform tertentu.
 2. AR draft/open → mengurangi remaining (belum final).  
 3. AR approved → pemakaian final.  
 4. Muncul di Related Transaction.
+
+#### 6.8.1 COA deposit saat CN dipakai (TO-BE · ETM-16761)
+
+**AS-IS:** Account Receive stamp deposit dari setting actor saat ini (Customer's Deposit / store deposit) — tidak membaca jurnal/asal CN.
+
+**TO-BE:** GL Account & jurnal Debit deposit = **akun yang sama** dengan Credit saat CN Approve:
+
+| Asal CN | COA saat Approve (Cr) | COA saat dipakai di AR (Dr) |
+|---------|------------------------|----------------------------|
+| Manual / AR import overpay | Customer's Deposit / store deposit | Akun yang sama |
+| Sales Return billed | Deposit of Sales Return | Deposit of Sales Return |
+
+- Satu customer boleh punya sisa CN yang di GL tersebar di **2 akun**; outstanding CN tetap **per dokumen**.
+- Ganti setting COA setelah CN Approved → pemakaian tetap akun **historis** CN.
+- Mirror AP: [Debit Note §6.4.1](../accounting-debit-note/requirement.md) · [Account Receive](../accounting-customer-payment/requirement.md).
 
 ---
 
@@ -355,6 +375,7 @@ flowchart TB
 | GAP-CN-03 | Status Void/Closed ada di siklus Payment + FE; requirement mentah awal hanya Draft/Open/Reject/Approved | Perlu keputusan tampilan filter/kolom status final | Open |
 | GAP-CN-04 | Validasi hapus CN yang sudah dipakai sebagai deposit AR belum terdokumentasi pesan/rule jelas | Risiko remaining funds tidak konsisten | Open |
 | GAP-CN-05 | **TO-BE:** Free COA Receiving Destination + fund type `COA` + Sales Return type fix + reconcile D11 — belum production | Equity/modal awal tidak bisa jadi destinasi CN; Sales Return salah label `Cash/Bank` | Open (locked requirement) |
+| GAP-CN-06 | CN dari Sales Return & consume AR selalu Customer's Deposit; Deposit of Sales Return idle | SET SR → Deposit of Sales Return; USE = COA asal CN | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) |
 
 ---
 

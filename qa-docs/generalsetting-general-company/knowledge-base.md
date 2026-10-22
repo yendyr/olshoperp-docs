@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: generalsetting-general-company
 menu_name: "General Company"
-version: 2.4
-last_updated: 2026-08-04
+version: 2.5
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 audience: operator
@@ -77,6 +77,7 @@ flowchart TD
 
 - **Recognize As** menentukan peran mitra — boleh lebih dari satu sekaligus (mis. Customer + Supplier).
 - **Accounting Setting** wajib lengkap untuk role terkait; kalau belum, mitra tidak muncul di pilihan transaksi (penyebab tersering "company hilang").
+- **Deposit slots (ETM-16761):** Customer's Deposit vs Deposit of Sales Return (customer); Deposit to Supplier vs Deposit of Purchase Return (supplier). Setelah improvement, CN/DN dari return memakai slot return; pelunasan AP/AR harus ikut akun yang sama.
 - **Set as Default Customer/Shipper** opsional — dipakai autofill di Sales Order.
 
 ### 4.1 Buat partner baru

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.0
-last_updated: 2026-07-05
+version: 2.1
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 ---
@@ -15,7 +15,8 @@ status: review
 **Persona:** Team Finance — review harga/COGS, **Complete** approval, jurnal turunan
 
 **UI route:** `/accounting/sales-return`  
-**Canonical E2E doc:** [supplychain-sales-returns/requirement.md](../supplychain-sales-returns/requirement.md)
+**Canonical E2E doc:** [supplychain-sales-returns/requirement.md](../supplychain-sales-returns/requirement.md)  
+**Related:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — CN dari SR → Deposit of Sales Return
 
 ---
 
@@ -23,6 +24,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1 | 2026-10-22 | Cross-ref TO-BE ETM-16761: CN dari billed Complete memakai Deposit of Sales Return; Account Receive ikut akun itu |
 | 2.0 | 2026-07-05 | Initial Finance layer — split from canonical SR v2.0 |
 
 ---
@@ -92,7 +94,9 @@ Body: `{ approval_status: 'approved', description?: string(max 150) }`
 
 Auto jika invoice `processed_to_payment_amount > 0` → `generateCreditNoteFromReturn`.
 
-Detail: [Credit Note](../accounting-credit-note/README.md).
+**COA deposit (TO-BE [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)):** Approve CN dari SR billed → Credit **Deposit of Sales Return** (bukan Customer's Deposit). Saat CN dipakai di Account Receive, Debit harus ke akun **yang sama**.
+
+Detail: [Credit Note §6.7–6.8.1](../accounting-credit-note/requirement.md).
 
 ### 4.3 Completion Summary (PM)
 

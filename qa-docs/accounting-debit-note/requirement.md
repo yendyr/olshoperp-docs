@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.1
-last_updated: 2026-09-02
+version: 1.2
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 aliases: [DN, debit note, nota debit, supplier deposit, klaim supplier]
@@ -17,7 +17,8 @@ aliases: [DN, debit note, nota debit, supplier deposit, klaim supplier]
 **UI route:** `/accounting/debit-note`  
 **SoT:** `_meta/sot/accounting-debit-note-source-of-truth.md` v1.0 (12 Agustus 2026)
 
-Downstream: [Account Payment](../accounting-supplier-payment/requirement.md) · Upstream billed return: [Purchase Return](../accounting-purchase-return/) · Mirror AR: [Credit Note](../accounting-credit-note/requirement.md)
+Downstream: [Account Payment](../accounting-supplier-payment/requirement.md) · Upstream billed return: [Purchase Return](../accounting-purchase-return/) · Mirror AR: [Credit Note](../accounting-credit-note/requirement.md)  
+**Related Improvement:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — COA deposit saat DN dipakai di AP harus ikut asal DN
 
 > AS-IS diverifikasi 12 Agu 2026 (`DebitNoteController`, `DebitNoteService`, AP import, FE `DebitNote/*`).
 
@@ -27,6 +28,7 @@ Downstream: [Account Payment](../accounting-supplier-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761): consume DN di AP memakai COA deposit asal DN; GAP-DN-06 |
 | 1.0 | 2026-08-12 | QA - Yemima | Full 5-file dari SoT v1.0; Gap `GAP-DN-01..05`; relasi AP/PR/PI/CN |
 | 1.1 | 2026-09-02 | QA - Yemima | Supplier display **code-only** (ETM-15727 / parent ETM-15721) |
 
@@ -219,6 +221,21 @@ Standard slideover; sticky Draft/Open radio, Save All, Approve jika eligible.
 - PR: Dr Deposit of Purchase Return · Cr Inventory COA produk.  
 - Setelah approve: eligible deposit di AP (same supplier, same currency, DN date sebelum AP date, outstanding > 0).
 
+### 6.4.1 Consume di Account Payment — COA deposit (TO-BE · ETM-16761)
+
+**AS-IS:** Account Payment yang memakai DN (Payment Source) selalu stamp & Credit **Deposit to Supplier COA**, termasuk DN dari Purchase Return yang di-Approve ke **Deposit of Purchase Return** → mismatch masuk vs keluar di GL (laporan tetap balance).
+
+**TO-BE:** saat DN dipakai di Account Payment (UI, clearing, import), GL Account & jurnal Credit deposit = **akun yang sama** dengan Debit saat DN Approve (asal DN):
+
+| Asal DN | COA saat Approve (Dr) | COA saat dipakai di AP (Cr) |
+|---------|------------------------|----------------------------|
+| Manual / AP import Adjustment | Deposit to Supplier | Deposit to Supplier |
+| Purchase Return billed | Deposit of Purchase Return | Deposit of Purchase Return |
+
+- Satu supplier boleh punya sisa DN yang di GL tersebar di **2 akun** deposit; outstanding DN tetap **per dokumen**.
+- Ganti setting COA di General Company setelah DN Approved → pemakaian berikutnya tetap akun **historis** DN itu.
+- Detail AP: [Account Payment §6.2 / §10](../accounting-supplier-payment/requirement.md).
+
 ### 6.5 Contoh kasus
 
 | # | Situasi | Hasil |
@@ -306,6 +323,7 @@ A: Save tanpa ubah status → **draft**; pilih **Open** → **open**.
 | GAP-DN-03 | Cabang Store di list/export legacy; create = Company supplier only | Open — note for Dev |
 | GAP-DN-04 | Validasi balance kas/bank di approve DN: non-blocker jika belum ada | Open |
 | GAP-DN-05 | Void/Closed deferred — belum definisi end user | Open — deferred |
+| GAP-DN-06 | AP consume DN selalu Deposit to Supplier (mismatch vs DN PR) | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — ikut COA asal DN |
 
 ---
 

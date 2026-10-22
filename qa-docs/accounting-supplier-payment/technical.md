@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.4
-last_updated: 2026-10-19
+version: 2.5
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 ---
@@ -12,9 +12,10 @@ status: review
 
 **API prefix:** `accounting/supplier-payment`  
 **Type:** `Payment to Supplier` · **Code prefix:** `PY`  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.4  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.5  
 **Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15725](https://erpintegration.atlassian.net/browse/ETM-15725)  
-**Summary UI (TO-BE):** [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643)
+**Summary UI (TO-BE):** [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643)  
+**DN deposit COA (TO-BE):** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)
 ---
 
 ## 1. File Map
@@ -157,6 +158,8 @@ sequenceDiagram
 **Cash difference:** full-clearing remainder × rate factor  
 
 **Journal:** Dr AP (+ forex/cash diff/adjustment) · Cr cash/bank + DN deposit COA. Requires Exchange Diff + Cash Diff + AP COAs.
+
+**DN deposit COA (TO-BE ETM-16761):** AS-IS `PaymentDetailFundController` / import `createFund` hardcode `Deposit to Supplier COA` ke `payment_detail_deposits.coa_id`. TO-BE: stamp dari asal DN (PR → `Deposit of Purchase Return`; else Deposit to Supplier). `supplierPaymentAutoJournal` sudah Credit `coa_id` baris — tidak perlu ubah rumus journal jika stamp benar.
 
 ---
 

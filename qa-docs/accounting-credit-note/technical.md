@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.1
-last_updated: 2026-08-05
+version: 1.2
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 aliases: [CN technical, credit note API, credit note code]
@@ -13,7 +13,8 @@ aliases: [CN technical, credit note API, credit note code]
 
 **API prefix:** `accounting/credit-note`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.1
+**Behavior SoT:** [requirement.md](./requirement.md) v1.2  
+**TO-BE deposit COA:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)
 
 ---
 
@@ -98,7 +99,8 @@ Invoice tracking (return path): `prepared_to_amount_credit_note`, `processed_to_
 | Fund create on CN | Updates `grand_total = SUM(payment_detail_funds.amount)` |
 | Approve journal | `JournalProcess::creditNoteAutoJournal($cn, $with_auth, $invert_journal)` |
 | Invert | Sales Return billed platform → `invert_journal: true` |
-| Deposit COA | Company: `company_coa_name("Customer's Deposit COA")`; Store: `deposit_coa_id` |
+| Deposit COA (**AS-IS**) | Company: `company_coa_name("Customer's Deposit COA")`; Store: `deposit_coa_id` — semua asal CN |
+| Deposit COA (**TO-BE** ETM-16761) | Manual/overpay: Customer's Deposit / store `deposit_coa_id`; **Sales Return billed:** `company_coa_name("Deposit of Sales Return")`. Consume AR stamp COA yang sama (bukan re-resolve generic) |
 
 Default journal (non-invert): **Dr** fund COAs / **Cr** Deposit COA (balanced).
 

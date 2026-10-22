@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
-version: 2.4
-last_updated: 2026-10-19
+version: 2.5
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 aliases: [Account Payment docs, AP payment, pembayaran hutang, PY]
@@ -20,7 +20,8 @@ aliases: [Account Payment docs, AP payment, pembayaran hutang, PY]
 
 **PM source:** `account-payment-requirement.md` (29 Okt 2025 MVP) + Import AP Relational (Apr 2026)
 
-**Upstream:** [Purchase Invoice](../accounting-supplier-invoice/requirement.md)
+**Upstream:** [Purchase Invoice](../accounting-supplier-invoice/requirement.md)  
+**Related Improvement:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — COA deposit DN ikut asal transaksi
 
 ---
 
@@ -28,6 +29,7 @@ aliases: [Account Payment docs, AP payment, pembayaran hutang, PY]
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.5 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761): Payment Source DN stamp COA dari asal DN (bukan selalu Deposit to Supplier); GAP-PAY-DN-COA |
 | 2.4 | 2026-10-19 | QA - Yemima | **TO-BE** [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643): Section Summary read-only setelah Adjustment (header currency, tanda Debit+/Credit−, DN terpisah, Total orange jika ≠ 0) |
 | 2.0 | 2026-07-05 | QA - Yemima | Initial v2.0 — PI allocation, journal, gaps |
 | 2.1 | 2026-07-06 | QA - Yemima | Full PM merge: multi-source (Cash/Bank + DN), sections A–E, balancing, formulas, import AP, relasi DN/Cash-Bank/PI/PR, gaps §19–§21 |
@@ -209,7 +211,8 @@ display_balance   = available − reserved_payment (draft/open AP funds on same 
 | Aspek | Rule |
 |-------|------|
 | Storage | `payment_detail_deposits` — `deposit_id` → `DebitNote` |
-| COA | Supplier **Deposit to Supplier COA** |
+| COA (**AS-IS**) | Selalu supplier **Deposit to Supplier COA** (termasuk DN dari Purchase Return) |
+| COA (**TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)) | Ikut **asal DN** saat Approve: manual/import → Deposit to Supplier; dari Purchase Return → **Deposit of Purchase Return**. Stamp ke `payment_detail_deposits.coa_id` (UI + clearing + import). Jangan re-resolve setting generic saat consume. |
 | Available | Approved DN; same supplier & currency; DN date < payment date; `processed_to_use_amount < grand_total` |
 | On add | `debit_note.prepared_to_use_amount` ↑ |
 | On approve | prepared ↓, `processed_to_use_amount` ↑ |
@@ -231,7 +234,7 @@ display_balance   = available − reserved_payment (draft/open AP funds on same 
 exchange_diff = (rate_payment − rate_debit_note) × amount
 ```
 
-Minus → Cr Exchange Diff COA; Plus → Dr Exchange Diff COA (on journal).
+Minus → Cr Exchange Diff COA; Plus → Dr Exchange Diff COA (on journal). Rumus tidak berubah; hanya akun deposit Credit yang harus benar (ETM-16761).
 
 **GAP-PAY-DN-CLEAR:** FE bulk DN clearing (`useClearingDebitNote`) memanggil URL **`customer-payment/.../bulk-clearing`** — salah untuk AP (GAP-PAY-DN-CLEAR).
 
@@ -240,7 +243,7 @@ Minus → Cr Exchange Diff COA; Plus → Dr Exchange Diff COA (on journal).
 | Kolom | Cash/Bank | Debit Note |
 |-------|-----------|------------|
 | Debit Note Code | — | ✓ |
-| GL Account | Cash/Bank COA | Deposit to Supplier COA |
+| GL Account | Cash/Bank COA | **AS-IS:** Deposit to Supplier · **TO-BE ETM-16761:** COA deposit asal DN (boleh beda per baris jika campur DN) |
 | Bank Account / Bank Name | ✓ | — |
 | Rate / Currency | — | ✓ (DN rate/currency) |
 | Swift Code | ✓ | — |
@@ -428,11 +431,13 @@ Contoh (header USD @ 18.500): PI Utang IDR 185.000.000 → Utang USD 10.000,00; 
 | Section | COA | Posisi |
 |---------|-----|--------|
 | **B — Funds** | Cash/Bank COA | **Credit** |
-| **B — Deposits (DN)** | Deposit to Supplier COA | **Credit** (+ forex diff on DN) |
+| **B — Deposits (DN)** | **AS-IS:** Deposit to Supplier COA · **TO-BE ETM-16761:** `payment_detail_deposits.coa_id` = COA asal DN (Deposit to Supplier **atau** Deposit of Purchase Return) | **Credit** (+ forex diff on DN) |
 | **D — Details (PI)** | Account Payable (supplier setting) | **Debit** (`paid × PI.exchange_rate`) |
 | **D — Forex** | Exchange Diff. COA | Dr/Cr per line gain/loss |
 | **D — Cash diff** | Cash Diff. COA | Cr (+) / Dr (−) aggregated |
 | **E — Adjustment** | User-selected COA | Dr or Cr per row |
+
+Journal AP sudah mengikuti `coa_id` yang tersimpan di baris deposit — fix utama = **stamp COA yang benar** saat add/update/import DN source (bukan hardcode nama setting Deposit to Supplier).
 
 **AP debit formula (local):**
 ```
@@ -479,13 +484,15 @@ remaining = grand_total − prepared_to_use − processed_to_use
 
 ### 12.2 Asal Debit Note (referensi)
 
-| Sumber | Trx Ref di modal |
-|--------|------------------|
-| **Purchase Return** | PR code — retur barang generate DN |
-| **Account Payment overpayment** | AP code — adjustment Sheet 3 `DEBIT NOTE` (import) |
-| **Manual DN** | User-created debit note |
+| Sumber | Trx Ref di modal | COA deposit Approve → Consume AP (**TO-BE** ETM-16761) |
+|--------|------------------|--------------------------------------------------------|
+| **Purchase Return** | PR code — retur barang generate DN | Deposit of Purchase Return → Credit akun yang sama |
+| **Account Payment overpayment** | AP code — adjustment Sheet 3 `DEBIT NOTE` (import) | Deposit to Supplier → Credit akun yang sama |
+| **Manual DN** | User-created debit note | Deposit to Supplier → Credit akun yang sama |
 
-Cross-ref: [accounting-debit-note/knowledge-base.md](../accounting-debit-note/knowledge-base.md)
+**AS-IS gap:** consume selalu Deposit to Supplier → **GAP-PAY-DN-COA** / [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761).
+
+Cross-ref: [accounting-debit-note/requirement.md](../accounting-debit-note/requirement.md) §6.4.1
 
 ### 12.3 DN pada kolom Outstanding PI
 
@@ -646,6 +653,7 @@ flowchart LR
 |----|-------|---------------|-------|--------|
 | GAP-PAY-VOID-01 | Void approved payment | MVP excluded; if exists must reverse | `approve()` requires `can_approve` (status **open** only) — void from approved **fails** | **Broken UI** |
 | GAP-PAY-VOID-02 | Void reverses PI/DN/journal | Full reversal on void | No void branch in `approvePayment` | **Not implemented** |
+| GAP-PAY-DN-COA | DN Payment Source COA = asal DN | Stamp COA dari journal/asal DN (PR → Deposit of Purchase Return) | Hardcode Deposit to Supplier on add/import | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) |
 | GAP-PAY-DN-CLEAR | Bulk DN clearing | Works on AP | FE calls `customer-payment/.../bulk-clearing` | **Wrong URL** |
 | GAP-PAY-01 | PI status processed on pay | Status reflects payment | PI stays approved | **Not implemented** |
 | GAP-PAY-PR-OUT | PR reduces PI outstanding in payment | Prepared/Paid includes PR | Return fields unused; DN separate path | **Partial / inconsistent** |
