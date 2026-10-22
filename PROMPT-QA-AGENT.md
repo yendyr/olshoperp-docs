@@ -47,12 +47,9 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
    (rule 18) — fetch Test Result + Actual Result, jangan isi manual tanpa Jira.
 9. Cek DB via webhook (Tyas/Staging shared, Merdian terpisah) = supporting saja —
    BUKAN bukti TC `passed`. Baca `tests/DATA-VERIFICATION.md` jika diminta cek/query DB.
-10. Testing card ETM-xxxxx: JANGAN buat file di `tests/scripts/`. Pakai TC +
-    `tests/specs/` (`@TC-`/`@ETM-`) atau probe sementara di `tests/scratch/` saja.
-    Lihat decision tree I di AGENT-RUNBOOK.
-11. Retest bug: data uji dari prompter ≠ otomatis fixture di card. Verifikasi data
-    diminta ada di company target dulu; kalau tidak ada / ambigu → TANYA prompter.
-    Jangan fallback diam-diam ke SKU/contoh di description Jira.
+10. Testing card ETM-xxxxx: baca dulu skill `.cursor/skills/olshoperp-card-testing/SKILL.md`
+    (buku lengkap: UI, data, DB, Jira, Telegram). JANGAN `tests/scripts/`. TC baru = Jira saja
+    (bukan file markdown TC), sejak 22 Okt 2026.
 
 PERINTAH GATE — jalankan sesuai konteks, jangan dilewati:
   npm run docs:drift                   # sinkron dua arah dgn developer (WAJIB sebelum & sesudah)
@@ -147,14 +144,10 @@ Jangan paparkan API key di chat.
 
 ```
 Tugas: testing / re-test card ETM-xxxxx.
-Ikuti rule 16 § Testing specific Jira card + AGENT-RUNBOOK decision tree I
-(termasuk § Data uji: prompter vs fixture card).
-DILARANG membuat tests/scripts/*.js.
-Jalur: cek TC existing → npm run test:tc dengan OLSHOP_RUN_JIRA=ETM-xxxxx;
-kalau belum ada spec → tulis di tests/specs/ (BUILD).
-Kalau saya sebut data uji sendiri (SKU/company/WH): GATE DATA dulu — pastikan ada di
-company target. Tidak ketemu / ambigu → tanya saya dulu, jangan pakai fixture card diam-diam.
-Assert wajib sesuai gejala AC card (bukan screenshot-only).
+WAJIB baca dulu: .cursor/skills/olshoperp-card-testing/SKILL.md (buku lengkap).
+Jangan load banyak .cursor/rules/ — aturan testing sudah di skill.
+DILARANG tests/scripts/. Probe → tests/scratch/ atau check-* tanpa tag; regresi → @ETM-xxxxx.
+Data tidak ada → bilang ke saya; jangan ganti data diam-diam.
 ```
 
 ---

@@ -106,51 +106,19 @@ Kalau perlu menulis **script sekali pakai** (dump DOM, cek API, reproduksi bug):
 > Data seed (menyiapkan data, bukan menguji) diberi nama berprefix `seed-` dan memang
 > tidak bertag — dijalankan manual saat dibutuhkan.
 
-### I. "Tolong testing card ETM-xxxxx" (bukan bikin script baru)
+### I. "Tolong testing card ETM-xxxxx"
 
-Jalur **wajib** — Antigravity **tidak** boleh menjawab dengan file `tests/scripts/*.js`
-atau IIFE Playwright ad-hoc:
+**Baca dulu (wajib):** `.cursor/skills/olshoperp-card-testing/SKILL.md`  
+Itu buku lengkap (UI valid, data uji, DB, credential, Jira, Telegram, log).  
+Jangan load banyak rules — skill sudah ringkas.
 
-1. Cek `test-queue.yaml` + grep `origin_jira` / `card_ref` (rule `16`)
-2. Ada TC + `automated_spec` → `OLSHOP_RUN_JIRA=ETM-xxxxx npm run test:tc -- "@TC-…"`
-3. Ada TC belum ada spec → mode **BUILD**: tulis di `tests/specs/…` + helper/POM, tag `@TC-*` atau `@ETM-xxxxx`
-4. Belum ada TC → overview / konfirmasi dulu (rule `13`), **bukan** script probe
-5. Probe DOM sekali pakai (kalau terpaksa) → **hanya** `tests/scratch/`, lalu hapus
+Ringkas:
+- TC dokumentasi = **Jira saja** (sejak 22 Okt 2026); jangan buat `TC-*.md` baru untuk ini
+- Dilarang `tests/scripts/` → probe di `tests/scratch/` / `check-*` tanpa tag; regresi → `@ETM-xxxxx`
+- Data tidak ada → STOP + tanya prompter; jangan fallback diam-diam
+- Hasil resmi di Jira (Actual → Test Result) + Telegram; DB hanya supporting
 
-Hasil resmi = Playwright CLI + reporter / `last_execution` — bukan console log dari script lepas.
-
-#### Data uji: prompter vs fixture card (retest bug)
-
-**Expected / gejala bug** tetap dari card Jira (atau requirement).  
-**Data uji** (SKU, WH, company, supplier, dll.) **bukan otomatis** = contoh di description card.
-
-```
-Prompter sebut data uji eksplisit? (SKU / company / “pakai yang sudah ada di 153”)
-    │
-    YES → GATE DATA sebelum create transaksi
-    │       1. Verifikasi data ada di company target (UI / select2 / L3 DB read-only)
-    │       2. Ada → pakai; catat di rencana run
-    │       3. Tidak ada / prasyarat bug tak terpenuhi (mis. tanpa alt unit)
-    │          → STOP, tanya prompter — jangan fallback diam-diam ke SKU/fixture card
-    │
-    NO  → Tanya dulu (jangan asumsi):
-            A) Pakai fixture di card Jira?
-            B) Pakai data existing company X (sebut apa)?
-            C) Izinkan create master baru dulu?
-```
-
-Setelah data clear → create transaksi + **assert sesuai AC card** (bukan screenshot-only).
-
-Template tanya jika data tidak ketemu:
-
-```
-Data uji yang diminta belum ketemu di company {code}/{id}:
-- SKU / lokasi / …: …
-Opsi: (1) data lain yang sudah ada  (2) izinkan create master  (3) pakai fixture card Jira?
-Menunggu jawaban sebelum create transaksi.
-```
-
-Detail larangan fallback: rule `16` § Data uji prompter vs card.
+Detail ID/template: skill `reference.md`.
 
 ### G. "Card Jira sudah Done tapi file TC belum ke-update"
 
@@ -295,8 +263,8 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 | 7 | **Web UI crawling untuk act & assert.** API testing hanya jika user eksplisit minta | Rule `13`/`14` §8 |
 | 8 | **Satu TC dipakai di banyak tempat.** `origin_jira` = asal-usul (tidak ditimpa); `last_execution` cukup satu, diperbarui otomatis tiap run termasuk saat flow me-recall-nya. Card baru → **cek dulu**: belum ada TC = bikin baru · expected sama = reuse · expected berubah = **update TC existing** (jangan bikin kembarannya) | Rule `13` §5B pohon keputusan |
 | 9 | **Cek DB (webhook) ≠ TC passed.** L3 DB hanya supporting; Tyas/Staging shared webhook, Merdian terpisah; read-only + `company_id` | `tests/DATA-VERIFICATION.md` · rule docs `19` |
-| 10 | **Dilarang `tests/scripts/` untuk uji card.** Testing ETM → TC + `tests/specs/` (+ tag) atau `tests/scratch/` sementara. Jangan IIFE/probe di `scripts/` | Decision tree **I** · rule `14` §6B |
-| 11 | **Data uji retest ≠ otomatis fixture card.** Prompter sebut data → GATE cek available dulu; tidak ada/ambigu → tanya. Jangan fallback diam-diam ke SKU di description Jira | Runbook **I** § Data uji · rule `16` |
+| 10 | **Testing card → skill `olshoperp-card-testing` dulu.** Jangan `tests/scripts/`; data/DB/Jira/Telegram ikut skill | Decision tree **I** |
+| 11 | **TC baru = Jira saja (22 Okt 2026).** Jangan markdown `TC-*.md` + renumber untuk dokumentasi card baru | Skill card-testing § header |
 
 ---
 
@@ -334,7 +302,8 @@ Catatan transisi: run ETM-16502 (15-10-2026 13:20 WIB) masih menghapus `QA-AUTO-
 | BUILD vs RUN, repo mana yang boleh dibuka | rule `15-playwright-multi-repo.mdc` |
 | Aturan flow cross-menu (recall, gate, fresh data) | rule `17-e2e-cross-menu-flow.mdc` |
 | Sync Jira Done → `last_execution` / `first_execution` | rule `18-sync-jira-done.mdc` |
-| Cek data DB (L1/L2/L3, env Tyas/Staging/Merdian) | `tests/DATA-VERIFICATION.md` · rule docs `19-database-data-verification.mdc` |
+| Cek data DB (L1/L2/L3, env Tyas/Staging/Merdian) | Skill card-testing §8 · `tests/DATA-VERIFICATION.md` (SoT panjang) |
+| Testing card ETM (buku lengkap) | `.cursor/skills/olshoperp-card-testing/SKILL.md` |
 | Akun uji khusus role/izin (mis. user tanpa izin Void/Approve — staging & tyas saja) | `tests/TEST-ACCOUNTS.md` |
 | Apa yang boleh ditulis di `qa-docs/` | rule `03-qa-docs-immutable.mdc` |
 
