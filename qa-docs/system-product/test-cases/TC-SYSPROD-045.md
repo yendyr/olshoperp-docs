@@ -3,7 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-045
 menu: system-product
 menu_name: "System Product"
-test_type: positive
+test_type: happy
 title: "Ganti / Replace Foto pada Varian Child yang Sudah Memiliki Gambar"
 summary: "Memverifikasi bahwa proses penggantian foto pada varian child yang sudah memiliki gambar hanya memperbarui varian tersebut tanpa merusak varian lain"
 status: review

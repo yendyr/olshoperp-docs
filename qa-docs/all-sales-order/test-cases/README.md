@@ -45,36 +45,36 @@ Prefix folder: `ASO`.
 | TC-ASO-035 | [Proteksi Sync Lock Pasca Edit User terhadap pembaruan harga platform](./TC-ASO-035.md) | draft | [ETM-15757](https://erpintegration.atlassian.net/browse/ETM-15757) | OlshopERP | ❌ | 2026-09-03 |
 | TC-ASO-036 | [Pemicuan prevent_auto_approve dan kelengkapan Audit Trail pasca edit detail](./TC-ASO-036.md) | draft | [ETM-15758](https://erpintegration.atlassian.net/browse/ETM-15758) | Jeiniffer | ❌ | 2026-09-03 |
 | TC-ASO-037 | [Read-Only Guard pada Dokumen Berstatus Approved (UI dan Button Save Hilang)](./TC-ASO-037.md) | draft | [ETM-15759](https://erpintegration.atlassian.net/browse/ETM-15759) | OlshopERP | ❌ | 2026-09-03 |
-| PENDING-20260907110300 | [Advanced Filter All Sales Order — Kombinasi >2 Parameter Filter (Trx Date, Booking Number, Platform Status)](./TC-ASO-DRAFT-20260907110300.md) | draft | [ETM-15819](https://erpintegration.atlassian.net/browse/ETM-15819) | QA - Yemima | ❌ | 2026-09-08 |
-| PENDING-20260907141801 | [Advanced Filter All Sales Order — Kombinasi Filter Pesanan Batal Bernomor Outbound (Risiko Rugi Kirim)](./TC-ASO-DRAFT-20260907141801.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
-| PENDING-20260907141802 | [Advanced Filter All Sales Order — Audit Pesanan COD Nominal Besar Berstatus Processed](./TC-ASO-DRAFT-20260907141802.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
-| PENDING-20260907141803 | [Advanced Filter All Sales Order — Filter Error Flag 'Below Benchmark COGS' Tanpa Invoice](./TC-ASO-DRAFT-20260907141803.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
-| PENDING-20260907141804 | [Advanced Filter All Sales Order — Filter Kepatuhan Pajak (Order General > 1 Juta Tanpa VAT)](./TC-ASO-DRAFT-20260907141804.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
+| TC-ASO-038 | [Advanced Filter All Sales Order — Kombinasi >2 Parameter Filter (Trx Date, Booking Number, Platform Status)](./TC-ASO-038.md) | draft | [ETM-15819](https://erpintegration.atlassian.net/browse/ETM-15819) | QA - Yemima | ❌ | 2026-09-08 |
+| TC-ASO-039 | [Advanced Filter All Sales Order — Kombinasi Filter Pesanan Batal Bernomor Outbound (Risiko Rugi Kirim)](./TC-ASO-039.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
+| TC-ASO-040 | [Advanced Filter All Sales Order — Audit Pesanan COD Nominal Besar Berstatus Processed](./TC-ASO-040.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
+| TC-ASO-041 | [Advanced Filter All Sales Order — Filter Error Flag 'Below Benchmark COGS' Tanpa Invoice](./TC-ASO-041.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
+| TC-ASO-042 | [Advanced Filter All Sales Order — Filter Kepatuhan Pajak (Order General > 1 Juta Tanpa VAT)](./TC-ASO-042.md) | draft | - | QA - Yemima | ❌ | 2026-09-07 |
 
 `TC-ASO-004` s/d `TC-ASO-010` — Dibuat untuk pengujian fitur Pill Filter `Net Sales < COGS` pada card origin [ETM-15446](https://erpintegration.atlassian.net/browse/ETM-15446).  
 `TC-ASO-011` s/d `TC-ASO-015` — Dibuat untuk pengujian fitur Extract This Bundle pada card origin [ETM-15605](https://erpintegration.atlassian.net/browse/ETM-15605).  
 `TC-ASO-016` s/d `TC-ASO-021` — Dibuat untuk pengujian fitur Extract This Bundle pada card origin [ETM-15637](https://erpintegration.atlassian.net/browse/ETM-15637).  
 `TC-ASO-028` s/d `TC-ASO-037` — Dibuat untuk pengujian Edit detail SO platform sebelum approve pada card origin [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748).  
-`PENDING-20260907110300` — Dibuat untuk pengujian Advanced Filter >2 parameter pada card origin [ETM-15819](https://erpintegration.atlassian.net/browse/ETM-15819).
+`TC-ASO-038` — Dibuat untuk pengujian Advanced Filter >2 parameter pada card origin [ETM-15819](https://erpintegration.atlassian.net/browse/ETM-15819).
 
 ### ETM-15821 — [All Sales Order] Order unit price under benchmark cogs jadikan 1 di Phills Failed Process
 
 | Kode Draf | Judul Test Case | File | Status |
 |---|---|---|---|
-| `PENDING-JENNI-2026090901` | Verifikasi Takedown Pill Button Net Sales < COGS dari UI Datalist All Sales Order | [`TC-ASO-JENNI-DRAFT-2026090901.md`](./TC-ASO-JENNI-DRAFT-2026090901.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026090902` | Konsolidasi Order Under / Below Benchmark COGS ke Datalist Pill Button Failed Process | [`TC-ASO-JENNI-DRAFT-2026090902.md`](./TC-ASO-JENNI-DRAFT-2026090902.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026090903` | Tampilan Icon Error fa-arrow-trend-down pada Kolom Error Flag untuk Order Under Benchmark COGS | [`TC-ASO-JENNI-DRAFT-2026090903.md`](./TC-ASO-JENNI-DRAFT-2026090903.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026090904` | Tampilan Multiple Icon Indicator pada Kolom Error Flag untuk Transaksi dengan > 1 Error Flag | [`TC-ASO-JENNI-DRAFT-2026090904.md`](./TC-ASO-JENNI-DRAFT-2026090904.md) | DRAFT 🟡 |
+| `TC-ASO-043` | Verifikasi Takedown Pill Button Net Sales < COGS dari UI Datalist All Sales Order | [`TC-ASO-043.md`](./TC-ASO-043.md) | DRAFT 🟡 |
+| `TC-ASO-044` | Konsolidasi Order Under / Below Benchmark COGS ke Datalist Pill Button Failed Process | [`TC-ASO-044.md`](./TC-ASO-044.md) | DRAFT 🟡 |
+| `TC-ASO-045` | Tampilan Icon Error fa-arrow-trend-down pada Kolom Error Flag untuk Order Under Benchmark COGS | [`TC-ASO-045.md`](./TC-ASO-045.md) | DRAFT 🟡 |
+| `TC-ASO-046` | Tampilan Multiple Icon Indicator pada Kolom Error Flag untuk Transaksi dengan > 1 Error Flag | [`TC-ASO-046.md`](./TC-ASO-046.md) | DRAFT 🟡 |
 
 ### Advanced Filter Finance (>1 Parameter)
 
 | Kode Draf / TC | Judul Test Case | File | Status | Last Updated |
 |---|---|---|---|---|
-| `TC-ASO-ADVF-001` | [Audit Pesanan Siap Tagih / Belum Terbit Invoice (Uninvoiced Delivered Orders)](./TC-ASO-ADVF-DRAFT-20260916131101.md) | [`TC-ASO-ADVF-DRAFT-20260916131101.md`](./TC-ASO-ADVF-DRAFT-20260916131101.md) | DRAFT 🟡 | 2026-09-16 |
-| `TC-ASO-ADVF-002` | [Deteksi Risiko Rugi Kirim: Pesanan Batal Marketplace yang Terlanjur Outbound](./TC-ASO-ADVF-DRAFT-20260916131102.md) | [`TC-ASO-ADVF-DRAFT-20260916131102.md`](./TC-ASO-ADVF-DRAFT-20260916131102.md) | DRAFT 🟡 | 2026-09-16 |
-| `TC-ASO-ADVF-003` | [Pengawasan Piutang Berisiko: Pesanan COD Nominal Besar yang Sedang Berjalan](./TC-ASO-ADVF-DRAFT-20260916131103.md) | [`TC-ASO-ADVF-DRAFT-20260916131103.md`](./TC-ASO-ADVF-DRAFT-20260916131103.md) | DRAFT 🟡 | 2026-09-16 |
-| `TC-ASO-ADVF-004` | [Audit Kepatuhan Faktur Pajak: Order General B2B > 1 Juta Tanpa PPN/VAT](./TC-ASO-ADVF-DRAFT-20260916131104.md) | [`TC-ASO-ADVF-DRAFT-20260916131104.md`](./TC-ASO-ADVF-DRAFT-20260916131104.md) | DRAFT 🟡 | 2026-09-16 |
-| `TC-ASO-ADVF-005` | [Proteksi Margin: Pesanan Terindikasi Jual Rugi (Below Benchmark COGS) yang Belum Di-Invoice](./TC-ASO-ADVF-DRAFT-20260916131105.md) | [`TC-ASO-ADVF-DRAFT-20260916131105.md`](./TC-ASO-ADVF-DRAFT-20260916131105.md) | DRAFT 🟡 | 2026-09-16 |
+| `TC-ASO-ADVF-001` | [Audit Pesanan Siap Tagih / Belum Terbit Invoice (Uninvoiced Delivered Orders)](./TC-ASO-047.md) | [`TC-ASO-047.md`](./TC-ASO-047.md) | DRAFT 🟡 | 2026-09-16 |
+| `TC-ASO-ADVF-002` | [Deteksi Risiko Rugi Kirim: Pesanan Batal Marketplace yang Terlanjur Outbound](./TC-ASO-048.md) | [`TC-ASO-048.md`](./TC-ASO-048.md) | DRAFT 🟡 | 2026-09-16 |
+| `TC-ASO-ADVF-003` | [Pengawasan Piutang Berisiko: Pesanan COD Nominal Besar yang Sedang Berjalan](./TC-ASO-049.md) | [`TC-ASO-049.md`](./TC-ASO-049.md) | DRAFT 🟡 | 2026-09-16 |
+| `TC-ASO-ADVF-004` | [Audit Kepatuhan Faktur Pajak: Order General B2B > 1 Juta Tanpa PPN/VAT](./TC-ASO-050.md) | [`TC-ASO-050.md`](./TC-ASO-050.md) | DRAFT 🟡 | 2026-09-16 |
+| `TC-ASO-ADVF-005` | [Proteksi Margin: Pesanan Terindikasi Jual Rugi (Below Benchmark COGS) yang Belum Di-Invoice](./TC-ASO-051.md) | [`TC-ASO-051.md`](./TC-ASO-051.md) | DRAFT 🟡 | 2026-09-16 |
 
 ### ETM-15887 — [Dev - Sales Order] Informasi Total Detail Lines (Termasuk Komponen Bundle) pada Form Sales Order
 

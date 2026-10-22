@@ -20,9 +20,9 @@ Folder ini berisi dokumen spesifikasi test case untuk menu **Finance / Accountin
 
 | Kode Draf | Judul Test Case | File | Status |
 |---|---|---|---|
-| `PENDING-JENNI-2026091001` | Verifikasi Semantik Manual COGS (NULL vs 0 vs >0) pada Benchmark COGS | [`TC-APB-JENNI-DRAFT-2026091001.md`](./TC-APB-JENNI-DRAFT-2026091001.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026091002` | Validasi Mandatory Expiry Date dan Penghapusan Override Permanen | [`TC-APB-JENNI-DRAFT-2026091002.md`](./TC-APB-JENNI-DRAFT-2026091002.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026091003` | Verifikasi Default Auto Expiry +30 Hari saat Expiry NULL & Preservation of Custom Expiry | [`TC-APB-JENNI-DRAFT-2026091003.md`](./TC-APB-JENNI-DRAFT-2026091003.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026091004` | Verifikasi Validasi & Processing Import Excel Benchmark COGS | [`TC-APB-JENNI-DRAFT-2026091004.md`](./TC-APB-JENNI-DRAFT-2026091004.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026091005` | Verifikasi Penanganan Data Existing via Seeder/Migration Data | [`TC-APB-JENNI-DRAFT-2026091005.md`](./TC-APB-JENNI-DRAFT-2026091005.md) | DRAFT 🟡 |
-| `PENDING-JENNI-2026091006` | Verifikasi Audit Log Tracking untuk Aktivitas Perubahan Manual COGS & Expiry | [`TC-APB-JENNI-DRAFT-2026091006.md`](./TC-APB-JENNI-DRAFT-2026091006.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026091001` | Verifikasi Semantik Manual COGS (NULL vs 0 vs >0) pada Benchmark COGS | [`TC-PBC-009.md`](./TC-PBC-009.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026091002` | Validasi Mandatory Expiry Date dan Penghapusan Override Permanen | [`TC-PBC-010.md`](./TC-PBC-010.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026091003` | Verifikasi Default Auto Expiry +30 Hari saat Expiry NULL & Preservation of Custom Expiry | [`TC-PBC-011.md`](./TC-PBC-011.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026091004` | Verifikasi Validasi & Processing Import Excel Benchmark COGS | [`TC-PBC-012.md`](./TC-PBC-012.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026091005` | Verifikasi Penanganan Data Existing via Seeder/Migration Data | [`TC-PBC-013.md`](./TC-PBC-013.md) | DRAFT 🟡 |
+| `PENDING-JENNI-2026091006` | Verifikasi Audit Log Tracking untuk Aktivitas Perubahan Manual COGS & Expiry | [`TC-PBC-014.md`](./TC-PBC-014.md) | DRAFT 🟡 |

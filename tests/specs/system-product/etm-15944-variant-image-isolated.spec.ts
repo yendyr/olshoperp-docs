@@ -14,7 +14,7 @@ import {
  * Company: Dev Staging (ID: 13, code: DEV-STG)
  * User: playwright@gmail.com
  *
- * TC Reference: qa-docs/system-product/test-cases/TC-SYSPROD-DRAFT-20260916140800.md
+ * TC Reference: qa-docs/system-product/test-cases/TC-SYSPROD-060.md
  */
 test.describe('ETM-15944 — System Product Variant Image Isolation', () => {
   test.beforeEach(async ({ page }) => {
@@ -24,7 +24,7 @@ test.describe('ETM-15944 — System Product Variant Image Isolation', () => {
     });
   });
 
-  test('[@PENDING-20260916140800][@ETM-15944] Upload gambar pada spesifik varian child hanya meng-update varian tersebut tanpa menimpa varian child lain', async ({
+  test('[@TC-SYSPROD-060][@ETM-15944] Upload gambar pada spesifik varian child hanya meng-update varian tersebut tanpa menimpa varian child lain', async ({
     page,
   }) => {
     const systemProduct = new SystemProductPage(page);

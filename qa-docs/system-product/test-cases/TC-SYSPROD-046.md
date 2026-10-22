@@ -3,7 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-046
 menu: system-product
 menu_name: "System Product"
-test_type: positive
+test_type: happy
 title: "Bulk Upload Multiple Foto untuk Varian Berbeda Sekaligus via 1 File Import"
 summary: "Memastikan proses import 1 file template berisi update foto untuk multiple varian child berbeda dipetakan secara akurat ke masing-masing child"
 status: review

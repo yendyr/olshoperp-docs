@@ -154,7 +154,7 @@ test.describe('ETM-15858: Purchase Return — Unit Price (Before VAT) & Total Pr
     }
   });
 
-  test('[@TC-APR-JENNI-DRAFT-2026091101] Skenario 1: Unit price PO non VAT/Tax, no discount', async ({
+  test('[@TC-APR-008] Skenario 1: Unit price PO non VAT/Tax, no discount', async ({
     page,
   }) => {
     await ensureDevStagingActive(page);
@@ -172,7 +172,7 @@ test.describe('ETM-15858: Purchase Return — Unit Price (Before VAT) & Total Pr
     expect(result.totalReturn).toBe(200000);
   });
 
-  test('[@TC-APR-JENNI-DRAFT-2026091102] Skenario 2: Unit price PO exclude VAT/Tax, no discount', async ({
+  test('[@TC-APR-009] Skenario 2: Unit price PO exclude VAT/Tax, no discount', async ({
     page,
   }) => {
     await ensureDevStagingActive(page);
@@ -193,7 +193,7 @@ test.describe('ETM-15858: Purchase Return — Unit Price (Before VAT) & Total Pr
     expect(result.totalReturn).toBe(500000);
   });
 
-  test('[@TC-APR-JENNI-DRAFT-2026091103] Skenario 3: Unit price PO include VAT coefficient FALSE, no discount', async ({
+  test('[@TC-APR-010] Skenario 3: Unit price PO include VAT coefficient FALSE, no discount', async ({
     page,
   }) => {
     await ensureDevStagingActive(page);
@@ -212,7 +212,7 @@ test.describe('ETM-15858: Purchase Return — Unit Price (Before VAT) & Total Pr
     expect(result.totalReturn).toBe(300000);
   });
 
-  test('[@TC-APR-JENNI-DRAFT-2026091104] Skenario 4: Unit price PO include VAT coefficient TRUE, no discount', async ({
+  test('[@TC-APR-011] Skenario 4: Unit price PO include VAT coefficient TRUE, no discount', async ({
     page,
   }) => {
     await ensureDevStagingActive(page);
@@ -232,7 +232,7 @@ test.describe('ETM-15858: Purchase Return — Unit Price (Before VAT) & Total Pr
     expect(result.totalReturn).toBe(result.dppCoeff);
   });
 
-  test('[@TC-APR-JENNI-DRAFT-2026091105] Skenario 5: Unit price PO non VAT/Tax, with discount', async ({
+  test('[@TC-APR-012] Skenario 5: Unit price PO non VAT/Tax, with discount', async ({
     page,
   }) => {
     await ensureDevStagingActive(page);
@@ -251,7 +251,7 @@ test.describe('ETM-15858: Purchase Return — Unit Price (Before VAT) & Total Pr
     expect(result.totalReturn).toBe(340000);
   });
 
-  test('[@TC-APR-JENNI-DRAFT-2026091106] Skenario 6: Unit price PO exclude VAT/Tax, with discount', async ({
+  test('[@TC-APR-013] Skenario 6: Unit price PO exclude VAT/Tax, with discount', async ({
     page,
   }) => {
     await ensureDevStagingActive(page);
@@ -274,7 +274,7 @@ test.describe('ETM-15858: Purchase Return — Unit Price (Before VAT) & Total Pr
     expect(result.totalReturn).toBe(160000);
   });
 
-  test('[@TC-APR-JENNI-DRAFT-2026091107] Skenario 7: Unit price PO include VAT coefficient FALSE, with discount', async ({
+  test('[@TC-APR-014] Skenario 7: Unit price PO include VAT coefficient FALSE, with discount', async ({
     page,
   }) => {
     await ensureDevStagingActive(page);
@@ -295,7 +295,7 @@ test.describe('ETM-15858: Purchase Return — Unit Price (Before VAT) & Total Pr
     expect(result.totalReturn).toBe(270000);
   });
 
-  test('[@TC-APR-JENNI-DRAFT-2026091108] Skenario 8: Unit price PO include VAT coefficient TRUE, with discount', async ({
+  test('[@TC-APR-015] Skenario 8: Unit price PO include VAT coefficient TRUE, with discount', async ({
     page,
   }) => {
     await ensureDevStagingActive(page);

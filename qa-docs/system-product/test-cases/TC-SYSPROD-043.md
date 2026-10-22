@@ -3,7 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-043
 menu: system-product
 menu_name: "System Product"
-test_type: positive
+test_type: happy
 title: "Upload Manual Foto Produk ke Varian Child melalui Section Product Detail"
 summary: "Memverifikasi bahwa upload foto manual pada section detail child hanya meng-update varian tersebut dan menampilkan thumbnail di datalist"
 status: review

@@ -3,7 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-044
 menu: system-product
 menu_name: "System Product"
-test_type: positive
+test_type: happy
 title: "Upload Foto Utama pada Level Parent Tidak Menimpa Foto Spesifik Varian Child"
 summary: "Memverifikasi bahwa upload foto utama pada level Parent tidak menimpa atau mereset foto yang sudah terpasang khusus di varian child"
 status: review

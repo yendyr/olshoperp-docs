@@ -3,7 +3,7 @@ doc_type: e2e-test-case
 tc_code: TC-SYSPROD-042
 menu: system-product
 menu_name: "System Product"
-test_type: positive
+test_type: happy
 title: "Upload Gambar via Import pada Spesifik Varian Child saat Default Variant Aktif"
 summary: "Memverifikasi bahwa upload gambar via import hanya meng-update SKU child terkait dan menampilkan thumbnail di datalist"
 status: review
