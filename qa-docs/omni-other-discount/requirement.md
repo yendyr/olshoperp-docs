@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-other-discount
 menu_name: "Other Discount"
-version: 1.3
-last_updated: 2026-08-04
+version: 1.4
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -15,6 +15,7 @@ legacy_sources: []
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.4 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762)/[ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763): warisan SO→SI dikunci (sekali ke SI pertama; manual = PO→PI) |
 | 1.0 | 2026-06-23 | QA - Yemima | Konsolidasi requirement PM + verifikasi AS-IS codebase; selaraskan jawaban konsisten dengan [Other Cost](../omni-other-cost/requirement.md) |
 | 1.1 | 2026-07-10 | QA - Yemima | Cross-ref: COA di Master = **default** untuk PI; override COA per baris di Purchase Invoice (§6) |
 | 1.2 | 2026-07-17 | QA - Yemima | COA scope **sama Other Cost**: semua class + child-only (update req 17 Jul); O-08 = hapus filter class |
@@ -284,7 +285,7 @@ Header: `Code | Name | Other Discount COA | Applied Store | Description`
 | Purchase Order | [supplychain-purchase-order](../supplychain-purchase-order/requirement.md) | Tab other discount |
 | Sales Order General | [sales-order-general](../sales-order-general/requirement.md) | Tab other discount |
 | Sales Order Platform | `sales-order-general` / Omni SO | Tab other discount |
-| Customer Invoice (SI) | [accounting-customer-invoice](../accounting-customer-invoice/requirement.md) | Tab + warisan SO |
+| Customer Invoice (SI) | [accounting-customer-invoice](../accounting-customer-invoice/requirement.md) | Tab + warisan dari SO — **TO-BE ETM-16763** (§5.3.1): sekali ke SI pertama; manual editable seperti PI |
 | Supplier Invoice (PI) | [accounting-supplier-invoice](../accounting-supplier-invoice/requirement.md) | Tab + warisan PO; **COA default dari master, editable override per baris** sebelum approve — [PI §8.3](../accounting-supplier-invoice/requirement.md#83-coa-editable-per-baris-change-req-2026-07) |
 | Instant Settlement | [accounting-settlement-upload](../accounting-settlement-upload/requirement.md) | Template General: `OD:{code}`; filter Applied Store — [§4.6](../accounting-settlement-upload/requirement.md) |
 | Other Cost | [omni-other-cost](../omni-other-cost/requirement.md) | Master paralel |

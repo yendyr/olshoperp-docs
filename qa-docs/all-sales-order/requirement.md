@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.11
-last_updated: 2026-09-09
+version: 1.12
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail, Pending Orders, Unmatched Bookings, Log Data, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, platform_order_id]
@@ -15,10 +15,11 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 **UI route:** `/businessdevelopment/all-sales-order`  
 **Audience:** PM, Ops, Finance, QA  
 
-> **Bukan** menu create master. All Sales Order = **window gabungan** atas [Dev - Sales Platform](../omni-sales-platform/requirement.md) dan [Dev - Sales Order](../sales-order-general/requirement.md) **v3.4**. Perilaku per tipe SO **harus selaras** dengan doc sumber. Dual import general: **Import Processed** / **Import Non-Processed** (gate [Store Fulfillment Mode](../omni-store-binding/requirement.md)).
+> **Bukan** menu create master. All Sales Order = **window gabungan** atas [Dev - Sales Platform](../omni-sales-platform/requirement.md) dan [Dev - Sales Order](../sales-order-general/requirement.md) **v3.6**. Perilaku per tipe SO **harus selaras** dengan doc sumber. Dual import general: **Import Processed** / **Import Non-Processed** (gate [Store Fulfillment Mode](../omni-store-binding/requirement.md)).
 
 **Jira (edit detail platform TO-BE):** [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748) · pasangan SP [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749)  
-**Jira (Log Data Pending Orders TO-BE):** [ETM-15798](https://erpintegration.atlassian.net/browse/ETM-15798) — paritas visibility di [Dev - Sales Platform](../omni-sales-platform/requirement.md)
+**Jira (Log Data Pending Orders TO-BE):** [ETM-15798](https://erpintegration.atlassian.net/browse/ETM-15798) — paritas visibility di [Dev - Sales Platform](../omni-sales-platform/requirement.md)  
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) — Other Cost/Discount di SO (General & Platform) wajib carry ke SI ([ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763))
 
 ---
 
@@ -26,6 +27,7 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.12 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE ETM-16762/16763: OC/OD SO → SI (paritas SOG + SP) |
 | 1.11 | 2026-09-09 | QA - Yemima | TO-BE §5.8: **Void** vs **Void & Recreate** vs **Recreate**; anti auto-create sync; prefix `void-` / `void2-` — ETM-15859 (paritas SP) |
 | 1.10 | 2026-09-08 | QA - Yemima | §5.4a: stok FIFO / Unavailable Stock memakai Processing Order Date (Unassign Wave); Last Checked Expected = tanggal evaluasi (cross-ref UW GAP-UW-04/06) |
 | 1.9 | 2026-09-04 | QA - Yemima | TO-BE §5.7: Log Data tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798); paritas SP |

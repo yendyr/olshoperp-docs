@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-settlement-mapping
 menu_name: "Settlement Mapping"
-version: 2.0
-last_updated: 2026-10-09
+version: 2.1
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 aliases: [settlement mapping, mapping settlement, shopee settlement mapping, tiktok settlement mapping, lazada settlement mapping]
@@ -15,7 +15,8 @@ aliases: [settlement mapping, mapping settlement, shopee settlement mapping, tik
 **UI route:** `/accounting/settlement-mapping`  
 **Audience:** PM, Finance, QA  
 **SoT:** `accounting-settlement-mapping-source-of-truth.md` v1.0 (09 Oct 2026)  
-**Jira:** [ETM-11147](https://erpintegration.atlassian.net/browse/ETM-11147) · [ETM-11150](https://erpintegration.atlassian.net/browse/ETM-11150)
+**Jira:** [ETM-11147](https://erpintegration.atlassian.net/browse/ETM-11147) · [ETM-11150](https://erpintegration.atlassian.net/browse/ETM-11150)  
+**Related:** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) — fee file SI tidak menumpuk OC/OD dari SO
 
 Downstream: [Instant Settlement](../accounting-settlement-upload/requirement.md)
 
@@ -25,6 +26,7 @@ Downstream: [Instant Settlement](../accounting-settlement-upload/requirement.md)
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.1 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE ETM-16763: baris mapping → SI fee file; tidak duplikasi OC/OD yang sudah dari order |
 | 1.0 | 2026-06-23 | QA - Yemima | Stub cross-ref Instant Settlement |
 | 2.0 | 2026-10-09 | QA - Yemima | Full rewrite dari SoT v1.0 + verifikasi codebase; private ownership; Plus/Minus; exact Source Column |
 
@@ -35,6 +37,8 @@ Downstream: [Instant Settlement](../accounting-settlement-upload/requirement.md)
 **Settlement Mapping** adalah master per **platform marketplace** (accordion) untuk memetakan **judul kolom** file Excel/CSV settlement ke **Internal Label**, **COA**, dan **Value Type** (Plus / Minus). Saat Instant Settlement mengunggah file, sistem mencocokkan header kolom ke mapping milik **data owner** company store, lalu membentuk baris **Other Cost** / **Other Discount** pada Sales Invoice.
 
 Tanpa mapping yang cocok, Instant Settlement tetap dapat memproses **nilai produk**; adjustment fee dari kolom platform **tidak** masuk SI.
+
+**TO-BE [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763):** fee hasil mapping adalah komponen **dari file settlement**. Jangan menduplikasi Other Cost/Discount yang sudah diwariskan dari SO ke SI pertama.
 
 | Kebutuhan bisnis | Jawaban Settlement Mapping |
 |------------------|----------------------------|

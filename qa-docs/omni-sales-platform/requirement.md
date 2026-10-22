@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.12
-last_updated: 2026-10-02
+version: 1.13
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package, Pending Orders, Unmatched Bookings, Void, Void & Recreate, Recreate]
@@ -16,7 +16,8 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 **Audience:** PM, Ops, QA  
 **SoT:** 6 file `omni-sales-platform-*-source-of-truth.md` (booking v1.1)  
 **Status:** AS-IS verified + PM SoT merge · lihat §Gaps  
-**Jira (edit detail TO-BE):** [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) · pasangan ASO [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748)
+**Jira (edit detail TO-BE):** [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) · pasangan ASO [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748)  
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) — Additional Cost/Disc SO → SI
 
 ---
 
@@ -24,6 +25,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.13 | 2026-10-22 | QA - Yemima | TO-BE ETM-16762/16763: Additional Cost/Disc dari Labeling+Mapping **wajib** carry ke SI pertama (bukan info-only) |
 | 1.12 | 2026-10-02 | QA - Yemima | §6.10 reprice booking/sync = update in-place (no delete-reinsert) — ETM-16212; §6.11 breakdown Retail + before/after processing / late booking price — ETM-16216 |
 | 1.11 | 2026-09-09 | QA - Yemima | TO-BE §5.8 / §6.9: **Void** vs **Void & Recreate** vs **Recreate**; sync anti auto-create; prefix `void-`/`void2-` — ETM-15859 (GAP-SPD-01 Decided) |
 | 1.10 | 2026-09-04 | QA - Yemima | TO-BE Log Data §5.3.1: tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798; kanonik ASO §5.7) |
@@ -282,7 +284,10 @@ Escrow tersedia lintas status order yang relevan (verified requirement) — jang
 Jika escrow gagal / item tidak match → harga line **0** (risiko `price-error`) — lihat **GAP-SPR-01**.
 
 Pre-sale time: Shopee `ship_by_date` · TikTok `shipping_due_time` · Tokopedia `preorder_deadline`.  
-**Platform Account Label** → Additional Cost/Disc (info SO; **tidak** mengalir ke Sales Invoice). Label baru unmapped → sidebar dot.
+**Platform Account Label** → Additional Cost/Disc di SO (dari Labeling + Mapping).  
+**AS-IS:** sering dianggap info SO saja / tidak mengalir ke SI.  
+**TO-BE [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763):** baris OC/OD di SO **wajib** ke SI pertama (sekali); SI Instant Settlement berikutnya tidak me-rebawa; fee file tidak menumpuk. Detail: [Sales Invoice §5.3.1](../accounting-customer-invoice/requirement.md).  
+Label baru unmapped → sidebar dot.
 
 ### 5.6 Booking (Shopee)
 
@@ -369,7 +374,8 @@ Product Amount = (unit price × qty) − disc/item + VAT
 Net Sales      = Product Amount + additional cost − additional disc
 ```
 
-Additional cost/disc **tidak** masuk Sales Invoice → Net Sales ≠ nilai SI.  
+**AS-IS:** Additional cost/disc sering **tidak** masuk Sales Invoice → Net Sales ≠ nilai SI.  
+**TO-BE ETM-16763:** Additional cost/disc dari SO ikut ke SI pertama → Net Sales SI selaras komponen order (plus fee settlement file yang tidak duplikat).  
 [VERIFY] Total Price baris = extended only vs include disc/VAT (hindari double-count).
 
 ### 6.4 Invoice / Failed Ship status (detail)

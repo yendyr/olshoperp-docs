@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-other-cost
 menu_name: "Other Cost"
-version: 1.6
-last_updated: 2026-08-04
+version: 1.7
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -15,6 +15,7 @@ legacy_sources: []
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.7 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762)/[ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763): warisan SO→SI dikunci (sekali ke SI pertama; manual = PO→PI) |
 | 1.0 | 2026-06-23 | QA - Yemima | Konsolidasi requirement PM + verifikasi AS-IS codebase |
 | 1.1 | 2026-06-23 | QA - Yemima | Klarifikasi QA atas V-30–V-35 & open items; tambah requirement Import TO-BE; selaraskan Code max 50 |
 | 1.2 | 2026-06-23 | QA - Yemima | Konfirmasi PM atas open items; audit import AS-IS vs TO-BE (§4.4); cross-ref menu konsumen |
@@ -411,7 +412,7 @@ Gunakan file xlsx dengan header persis: `Code | Name | Other Cost COA | Applied 
 |------|------|----------------------------|
 | Purchase Order | [supplychain-purchase-order](../supplychain-purchase-order/requirement.md) | Picker other cost di tab header; line `scm_purchase_order_other_costs`; warisan ke PI |
 | Sales Order General | [sales-order-general](../sales-order-general/requirement.md) | Tab other cost; import sheet 2; settlement general |
-| Customer Invoice (SI) | [accounting-customer-invoice](../accounting-customer-invoice/requirement.md) | Tab other cost; warisan dari SO |
+| Customer Invoice (SI) | [accounting-customer-invoice](../accounting-customer-invoice/requirement.md) | Tab other cost; warisan dari SO — **TO-BE ETM-16763** (§5.3.1): sekali ke SI pertama; manual editable seperti PI |
 | Supplier Invoice (PI) | [accounting-supplier-invoice](../accounting-supplier-invoice/requirement.md) | Tab other cost + from PO; **COA default dari master, editable override per baris** sebelum approve — [PI §8.3](../accounting-supplier-invoice/requirement.md#83-coa-editable-per-baris-change-req-2026-07) |
 | Instant Settlement | [accounting-settlement-upload](../accounting-settlement-upload/requirement.md) | Template General: kolom `OC:{code}`; filter Applied Store — [§4.6](../accounting-settlement-upload/requirement.md) |
 | Other Discount | [omni-other-discount](../omni-other-discount/README.md) | Master paralel (struktur serupa) |

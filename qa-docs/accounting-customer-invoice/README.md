@@ -14,13 +14,15 @@ Menu **Sales Invoice** (Accounting / Account Receivable) — faktur penjualan / 
 **UI route:** `/accounting/customer-invoice`  
 **SoT:** [`_meta/sot/accounting-customer-invoice-source-of-truth.md`](../_meta/sot/accounting-customer-invoice-source-of-truth.md) v1.0  
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-customer-invoice/`](../_meta/docs-hub/menus/accounting-customer-invoice/) (`source_type: authored` — tidak di-overwrite)  
-**3 layer version:** 2.0 · **User-guide:** v1.1 · **Feature Map:** 1.0 · **Last updated:** 2026-08-31 16:10
+**3 layer version:** 2.1 · **User-guide:** v1.1 · **Feature Map:** 1.0 · **Last updated:** 2026-10-22  
+**Related Jira:** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) · [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0–1.1 | 2026-06 | Draft AS-IS codebase + Instant Settlement cross-ref |
+| 2.1 | 2026-10-22 | TO-BE ETM-16763: OC/OD dari SO carry ke SI (sekali); manual = PO→PI; settlement anti-duplikat |
 | 2.0 | 2026-08-24 | Full 5-file dari SoT v1.0: status cycle, partial per SKU, import Open-only, journal on Approve, GAP-SI-01..05 |
 | 2.1 | 2026-08-25 | Help Center overview authored: end-user guide, lifecycle matrix, partial invoice rules, and troubleshooting |
 | 2.1b | 2026-08-31 16:10 | Feature Map + 6 Lingo cards; UG v1.1 SF tags |

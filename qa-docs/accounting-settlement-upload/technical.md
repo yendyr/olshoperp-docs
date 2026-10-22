@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.7
-last_updated: 2026-09-09
+version: 1.9
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 related_docs:
@@ -12,6 +12,14 @@ related_docs:
 ---
 
 # Instant Settlement — Technical Documentation
+
+## 0. Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.9 | 2026-10-22 | Cross-ref TO-BE ETM-16763: SI settlement tidak re-bawa OC/OD SO; fee file anti-duplikat — lihat requirement § + SI §5.3.1 |
+| 1.7 | 2026-09-09 | Delete/Revert AR eligibility ETM-15886 |
+| 1.8 | 2026-09-23 | GAP-SETU-01 Shopee Penghasilan parser (ETM-16058) — §7 |
 
 ## 1. Architecture Overview
 
@@ -239,6 +247,26 @@ TOTAL_COLUMNS, ORDER_ID_COLUMNS, TYPES_COLUMNS
 ```
 
 `SettlementUploadController::selectSheet()` picks worksheet by platform name.
+
+| Platform | AS-IS sheet | TO-BE (ETM-16058) |
+|----------|-------------|-------------------|
+| Shopee | `Income` | **`Penghasilan`** (exact) |
+| TikTok | `Order details` | unchanged |
+| Lazada | `Transaction Overview` | unchanged |
+
+CSV single-sheet: `count($sheet_info) == 1` → pakai sheet itu tanpa cek nama (konten harus sudah export Penghasilan).
+
+### Shopee parse — TO-BE GAP-SETU-01 (ETM-16058)
+
+| Step | Rule |
+|------|------|
+| Header row | Row **3** (1-indexed) = column titles for `SettlementSheet` / mapping |
+| Data filter | Keep rows where column `Lihat berdasarkan` === `Order`; **skip** all other rows |
+| Order / date / total | `No. Pesanan`, `Tanggal Dana Dilepaskan`, `Total Penghasilan` from Order rows only |
+| Settlement Mapping | Match `excel_column_name` against **row-3** headers; read amounts from Order rows only |
+| Legacy | Do **not** support `Income` / first-row header / no `Lihat berdasarkan` — fail with clear validation message |
+
+Hotspots: `selectSheet`, `SettlementSheet` (header detection / chunk), `ImportSettlementJob`, Settlement Mapping column index build.
 
 ---
 

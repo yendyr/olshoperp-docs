@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.2
-last_updated: 2026-09-09
+version: 1.4
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 1.8
+source_version: 2.0
 ---
 
 # Panduan Pengguna — Instant Settlement
@@ -128,6 +128,7 @@ Ditulis dari yang kamu alami di layar:
 - **Kalau Failed Ship masih Open**, atau settle COD setelah tanggal failed ship tidak valid, baris gagal.  
 - **Kalau ada draft invoice/outbound** yang belum selesai, selesaikan dulu (approve atau hapus draft).  
 - **Kalau re-settlement tanpa biaya/diskon tambahan**, sistem menolak — settle susulan butuh minimal satu Other Cost atau Other Discount.  
+- **TO-BE ETM-16763:** Other Cost/Discount **dari SO** tidak di-rebawa di SI Instant Settlement jika sudah ada di SI pertama; fee dari file tidak menumpuk baris order.  
 - **Kalau Cash/Bank Receiving belum di-set**, Approve gagal (*Receiving Destination COA is not set*).  
 - **Kalau tanggal transaksi Sales Invoice di batch campur beda hari**, Approve ditolak. Jam boleh beda di hari yang sama. Contoh: SI jam 09:00 dan 18:30 tanggal 1 → OK; tanggal 1 dan tanggal 2 → ditolak.  
 - **Tanggal AR** setelah Approve = tanggal SI (yang sudah sama); **jam AR** = jam paling akhir di antara SI batch itu.  
@@ -147,8 +148,10 @@ Ditulis dari yang kamu alami di layar:
 
 1. Buka **Instant Settlement**.  
 2. Pilih **Store** di kanan atas.  
-3. Ambil file dari Seller Centre (Shopee sheet **Income**, TikTok **Order details**, Lazada **Transaction Overview**) → **simpan CSV**.  
-4. Atau **Import → Download Template** (CSV/Excel sebagai contoh kolom). TikTok: file contoh di menu belum tersedia — pakai export resmi TikTok.  
+3. Ambil file dari Seller Centre → **simpan CSV**:  
+   - **Shopee:** sheet/tab **Penghasilan** (judul kolom di **baris 3**; hanya baris **`Lihat berdasarkan` = Order** yang dipakai). Jangan pakai export Income lama.  
+   - TikTok: **Order details** · Lazada: **Transaction Overview**.  
+4. Atau **Import → Download Template** (CSV sebagai contoh kolom). TikTok: file contoh di menu belum tersedia — pakai export resmi TikTok.  
 5. Toko **Others (General):** pilih store dulu, lalu download template. Kolom wajib: **Order Number** (kode SO internal), **Date Settled**, **Total**. Kolom `OC:` / `OD:` hanya muncul untuk master Active yang berlaku di toko itu.
 
 ### Langkah 2 — Upload
