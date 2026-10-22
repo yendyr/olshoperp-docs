@@ -84,6 +84,7 @@ Skill **repo ini** (`.cursor/skills/`):
 | Skill | Fungsi |
 |-------|--------|
 | `caveman` | Mode jawaban ringkas — hemat token output (~65–75%). Default full. Matikan: `stop caveman` |
+| `olshoperp-card-testing` | Menguji card Jira ETM (Test Case / Error / Improvement) di staging lewat crawl/manual, mencatat hasil (Jira, Telegram, Drive, TC doc), membuat card Test Case baru, dan hemat token. Detail: `reference.md` di folder skill |
 
 Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit user.
 
