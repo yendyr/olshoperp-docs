@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.5
-last_updated: 2026-08-31
+version: 3.6
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -18,7 +18,8 @@ aliases: [SO General, Dev Sales Order, sales order general, SO internal, import 
 **SoT:** `busdev-sales-order-general-source-of-truth.md` v1.0 (21 Jul 2026) + Fulfillment Mode TO-BE (22 Jul 2026) + Sheet 2 OC/OD ambiguity (23 Jul 2026)
 
 Window gabungan: [All Sales Order](../all-sales-order/requirement.md). Platform independen: [Dev - Sales Platform](../omni-sales-platform/requirement.md).  
-Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
+Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).  
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (OC/OD SO → SI) · [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763)
 
 ---
 
@@ -26,6 +27,7 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.6 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE ETM-16762/16763: Other Cost/Discount di SO wajib jadi sumber carry ke SI |
 | 3.5 | 2026-08-31 | QA - Yemima | Status: pisahkan Rejected (editable) vs Closed vs Void; koreksi tabel editable |
 | 3.4 | 2026-08-12 | QA - Yemima | TO-BE snapshot **Benchmark COGS** = effective Manual COGS (§8.2 / GAP-BM-14 consumer) |
 | 3.3 | 2026-08-11 | QA - Yemima | TO-BE Error Flag **Below Benchmark COGS** (§8.1); GAP-SOG-14 → GAP-BM-13 |
@@ -177,6 +179,8 @@ Max **100** detail per SO (`max_child`).
 ### 5.3 Other Cost / Discount
 
 Code exists + aktif + scope company/all-company; Amount numeric, ≠ 0, tidak negatif.
+
+**TO-BE [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763):** baris Other Cost / Discount di SO **wajib diwariskan ke Sales Invoice** (SI pertama; sekali saja). Create SI manual: editable seperti PO→PI. Detail: [Sales Invoice §5.3.1](../accounting-customer-invoice/requirement.md).
 
 ---
 

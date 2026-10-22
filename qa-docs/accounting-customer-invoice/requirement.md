@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 2.0
-last_updated: 2026-08-24
+version: 2.1
+last_updated: 2026-10-22
 owner: QA - Yemima
 status: review
 aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, AR invoice]
@@ -16,7 +16,8 @@ aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, AR
 **Audience:** PM, Finance, QA  
 **UI route:** `/accounting/customer-invoice`  
 **SoT:** `_meta/sot/accounting-customer-invoice-source-of-truth.md` v1.0 (24 Agu 2026)  
-**Jira import:** [ETM-14976](https://erpintegration.atlassian.net/browse/ETM-14976)
+**Jira import:** [ETM-14976](https://erpintegration.atlassian.net/browse/ETM-14976)  
+**Related:** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) (carry OC/OD dari SO) · [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (sumber di SO)
 
 Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · [Credit Note](../accounting-credit-note/requirement.md)
 
@@ -26,6 +27,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.1 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763): OC/OD dari SO carry ke SI (sekali); manual = PO→PI; settlement anti-duplikat |
 | 1.0 | 2026-06-19 | QA - Yemima | Draft AS-IS codebase |
 | 1.1 | 2026-06-23 | QA - Yemima | Cross-ref Instant Settlement |
 | 2.0 | 2026-08-24 | QA - Yemima | Full rewrite dari SoT v1.0: status cycle, outstanding partial per SKU, import Open-only, journal on Approve, GAP-SI-01..05 |
@@ -182,6 +184,21 @@ Setelah ada **detail**, terkunci: Customer, Currency, Rate, Trx Date, Due Date (
 | Masuk Net Sales | Ya | Ya |
 | Masuk basis PPN produk | **Tidak** | **Tidak** |
 
+#### 5.3.1 Warisan dari Sales Order (TO-BE · ETM-16763)
+
+**AS-IS:** create SI manual sering isi OC/OD mandiri; Instant Settlement ambil fee dari file — baris SO bisa tidak ikut / berisiko double dengan outbound auto-SI.
+
+**TO-BE** (selaras PO → PI + anti-duplicate settlement):
+
+| Jalur | Perilaku |
+|-------|----------|
+| **SI pertama** yang membawa identitas OC/OD dari SO | Default **semua** baris Other Cost / Discount SO ikut penuh |
+| **SI kedua dst** (termasuk dari Instant Settlement) | **Tidak** membawa lagi OC/OD dari SO (sudah terbit di SI pertama) |
+| **Create SI manual** | Editable seperti PI: amount dari SO **terkunci**; COA editable sampai approve; baris **boleh di-remove** |
+| **Instant Settlement** | OC/OD dari order **tidak editable**; fee dari **file** tidak menumpuk baris SO yang sudah di SI pertama; follow-up SI boleh OC/OD dari file saja |
+
+Sumber baris di SO: [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) · pola PI: [Purchase Invoice §5.3](../accounting-supplier-invoice/requirement.md).
+
 ### 5.4 Totals
 
 | Label | Arti |
@@ -204,7 +221,7 @@ Create → default customer/currency/rate dari SI terakhir → Trx Date = NOW �
 
 1. Header tersimpan (**draft** AS-IS).  
 2. Use Outstanding SO (detail/group) → `prepared_to_invoice` naik.  
-3. Opsional Other Cost/Discount.  
+3. **TO-BE ETM-16763:** Other Cost/Discount dari SO **auto-masuk** (penuh default; boleh edit/remove seperti PI). AS-IS: opsional add dari master.  
 4. Set **Open** + Save.  
 5. **Approve** → fiscal OK, ≥1 detail, qty prepared cukup, AR/Sales/Tax COA.  
 6. `processed_to_invoice` ↑; `prepared` ↓; journal auto **Approved**.  
@@ -225,6 +242,8 @@ Description: *Auto-Journal from {SI code}* + SO / platform / customer. `autoAppr
 ### 6.4 Platform / Instant Settlement
 
 SI dibuat sistem; sering auto-approved. Create manual **tidak** untuk order platform. Reject/Delete diblokir. Kolom Instant Settlement default hidden.
+
+**TO-BE ETM-16763:** jika OC/OD dari SO sudah ada di SI pertama (mis. via outbound), SI/settlement berikutnya **tidak** me-rebawa OC/OD SO; fee file settlement tidak menduplikasi baris order. Detail: [Instant Settlement](../accounting-settlement-upload/requirement.md).
 
 ### 6.5 Import (saldo awal) — ETM-14976
 
@@ -303,6 +322,7 @@ SI dibuat sistem; sering auto-approved. Create manual **tidak** untuk order plat
 | GAP-SI-03 | BE allow csv/xls; FE terutama xlsx | Minor | Open |
 | GAP-SI-04 | Docs QA sync setelah SOT acc | Missing Doc | Open → addressed by v2.0 split |
 | GAP-SI-05 | Error currency path menyebut “purchase order” | Bug candidate | Open |
+| GAP-SI-06 | OC/OD dari SO wajib carry ke SI (sekali); manual = PO→PI; settlement anti-duplikat | Missing Behavior / Contradiction docs | **TO-BE** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) |
 
 ---
 
