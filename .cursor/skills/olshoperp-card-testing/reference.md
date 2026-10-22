@@ -33,9 +33,10 @@ Tidak ada token/password di file ini. Kredensial hanya dari `.env` repo `olshope
 ## E. Telegram laporan test
 Bot `@OlshopERP_bot` (token `TELEGRAM_BOT_TOKEN` di `.env`), grup `-1001931573603`, thread `51478`, `parse_mode=HTML`.
 Urutan pesan: `<b>ETM-xxxxx — [Menu] judul</b>` → `<b>✅ Hasil: LULUS (Passed)</b>` / `❌ GAGAL` / `⚠️ Hasil sementara` → baris `Staging · company X · tanggal` → `<b>Expected Poin:</b>` (✅/❌/⏸) → `<b>Catatan:</b>` → `<b>Data uji:</b>` → `<b>Jira:</b>` + link + status → `<b>Evidence:</b>` → `Dijalankan oleh Bugsy (Claude) atas permintaan Yemima` → `cc @yemimatifani`. Ubah pesan lewat `editMessageText` (chat_id + message_id).
+**Batch (≥3 card):** satu pesan: `<b>Batch test ETM-xxxxx — N TC</b>` → `✅ a Passed · ❌ b Failed · ⏸ c Blocked` → satu baris per card `ETM-16707 ✅ <hal terpenting>` → card Error baru (bila ada) → `Detail ada di komentar tiap card Jira` → `cc @yemimatifani`.
 
-## F. Drive
-Root `Temuan Bugsy/` (id `167QtP9hNLYjDibgRL6DVd9nbgEDJ2dgU`), subfolder per card `{KEY}`. Isi evidence berupa file teks ringkas (data, query, angka, hasil).
+## F. Drive (TIDAK dipakai secara default)
+Bukti = data di environment bertanda nomor card + komentar Jira. Drive hanya bila Yemima menyuruh: root `Temuan Bugsy/` (id `167QtP9hNLYjDibgRL6DVd9nbgEDJ2dgU`), subfolder `{KEY}`; tool Drive hanya membuat file baru.
 
 ## G. Template komentar non-TC (Jira)
 ```
@@ -44,3 +45,6 @@ Hasil test: LULUS (<satu kalimat>)
 Hasil per Expected: (daftar angka eksak, 0 request / N dari N kasus)
 Catatan: (hal tak sengaja, data awal tidak diketahui, versi build)
 ```
+
+## H. Alat bawaan (folder tools/)
+`tools/jira.sh` (curl Jira; `JV=2` untuk REST v2; `OLSHOP_ENV_FILE` menunjuk `.env`), `tools/qm.py` (DB baca-saja: `from qm import show; show("judul","SQL")`), `tools/tc_lib.py` (+ CLI create/update/docs), `tools/example_tc_data.py` (contoh struktur data). Folder scratchpad agen bisa terhapus antar-hari; alat ini tinggal dipakai, jangan ditulis ulang.
