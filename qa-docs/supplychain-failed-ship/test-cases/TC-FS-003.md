@@ -1,0 +1,93 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-FS-003
+menu: supplychain-failed-ship
+menu_name: "Failed Ship"
+test_type: regression
+title: "Regression: isi dan judul kolom Export All Failed Ship sama dengan datatable, angka murni bertipe angka, urutan baris tetap (ETM-16660)"
+summary: "Export All Failed Ship tidak lulus: Total Weight dan Total Qty Dimension beda dari datatable di order bundle (komponen bundle terhitung), kolom Shipper berbeda sumber data dari datatable, tiga judul kolom tidak konsisten, dan Tracking Number angka murni bertipe teks; Platform Order utuh (sama dengan database, tanpa e+), kolom angka bertipe angka, dan urutan baris stabil."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-10-21
+requirement_ref: "qa-docs/supplychain-failed-ship/requirement.md; card ETM-16699, origin ETM-16660 (Improvement: Optimize Export All, batas 25.000 baris dan 5.000 baris per file)"
+automated: false
+automated_spec: null
+execution_company:
+  id: 13
+  code: DEV-STG
+related_menus:
+  - supplychain-transaction-history
+preconditions:
+  - "Login staging dengan akun yang punya akses Failed Ship dan Export; company aktif Dev Staging (13)"
+  - "Perubahan ETM-16660 sudah ter-deploy di Staging (backend commit 5bc72b9e4, PR 6577)"
+  - "Aturan penilaian QA Lead 21-10-2026: kolom visible datatable wajib ada di export (hidden boleh tidak); angka murni selain Platform Order ID wajib bertipe angka; Platform Order ID boleh teks tetapi tidak boleh rusak atau berformat e+; judul kolom datatable dan export harus konsisten"
+test_data:
+  - field: data_uji
+    value: "Dev Staging tanpa filter: Without Details 1.431 baris, With Details 1.485 baris; 20 baris pertama datalist dibandingkan; export lama 21-10 10:07 (Without) dan 20-10 10:18 (With)"
+steps:
+  - "Buka Supply Chain, Failed Ship; catat judul kolom datatable dan isi 20 baris pertama"
+  - "Export Without Details dan With Details (tanpa filter), unduh, dan baca isi serta tipe tiap kolom"
+  - "Bandingkan judul dan nilai kolom antara datatable dan file untuk 20 baris; bandingkan Platform Order dengan database"
+  - "Ulangi export dengan filter sama dan bandingkan urutan baris"
+  - "Bandingkan dengan export lama (sebelum deploy)"
+expected_result: |
+  1. Semua kolom visible datatable ada di export; judul kolom konsisten dengan datatable.
+  2. Nilai tiap kolom sama dengan datatable (sumber data sama).
+  3. Kolom berisi angka murni bertipe angka di file, kecuali Platform Order ID yang tetap teks dan utuh (tanpa format e+).
+  4. Urutan baris sama persis di dua export berturut-turut.
+test_result:
+  status: failed
+  started_at: "2026-10-21T17:01:00+07:00"
+  finished_at: "2026-10-21T17:26:00+07:00"
+  executed_by: "Bugsy (Claude) atas permintaan Yemima; login playwright-user"
+  environment: staging
+  log_summary: "Sesuai: semua kolom visible ada, Platform Order 29 dari 29 sama dengan database tanpa e+, kolom angka bertipe angka, 18 kolom cocok 20 dari 20 baris, urutan baris identik 3 kali. Gagal: Total Weight dan Total Qty Dimension beda di 9 dari 20 baris bundle (export menjumlahkan komponen), Shipper beda sumber (0 dari 20 sama), 3 judul kolom beda, Tracking Number angka murni (14 sampai 15 digit) bertipe teks."
+  report_url: "https://drive.google.com/drive/folders/1_fB8bx7xjgfbfsXOni4OsMiQay0CUZen"
+test_data_used:
+  - "Dev Staging tanpa filter (1.431 order Failed Ship)"
+run_history:
+  - at: "2026-10-21"
+    status: failed
+    environment: staging
+    note: "Failed: data export tidak konsisten dengan datatable (bobot bundle, Shipper, judul kolom, tipe Tracking Number). Bobot dan Shipper juga sama di export lama, jadi bukan regresi baru dari card."
+origin_jira: ETM-16699
+first_execution:
+  at: "2026-10-21"
+  via: "manual:Bugsy"
+  jira: ETM-16699
+last_execution:
+  at: "2026-10-21"
+  jira: ETM-16699
+  status: failed
+  via: "manual:Bugsy"
+  notes: "Dieksekusi manual oleh Claude (peran Bugsy) 21-10-2026 17:01-17:26 WIB di staging company Dev Staging 13 dengan 20 baris datatable dibandingkan file export: bobot order bundle shipper judul kolom dan tipe tracking number tidak konsisten, platform order utuh dan urutan baris stabil, hasil Failed."
+---
+
+# Isi, judul, dan tipe kolom Export All Failed Ship vs datatable
+
+Card: [ETM-16699](https://erpintegration.atlassian.net/browse/ETM-16699) (Test Case, regression) · card asal: [ETM-16660](https://erpintegration.atlassian.net/browse/ETM-16660)
+
+## Retest cepat
+1. Staging, Dev Staging (13), Failed Ship: catat judul kolom dan 20 baris pertama.
+2. Export Without Details dan With Details, unduh, bandingkan judul, nilai, dan tipe kolom dengan datatable.
+3. Ulangi export: urutan baris harus sama persis.
+
+## Catatan QA
+
+### Hasil run Bugsy 21-10-2026 (WIB)
+| Langkah | Hasil | |
+|---|---|---|
+| Kolom visible ada di export | semua ada | ✅ |
+| Platform Order (29 angka murni, sampai 18 digit) | teks utuh, 29 dari 29 sama dengan database, tanpa e+ | ✅ |
+| Kolom angka (Total SKU, Qty, Weight, Restock/Lost/Defect, Total FS) | bertipe angka | ✅ |
+| 18 kolom lain vs datatable (20 baris) | cocok 20 dari 20 | ✅ |
+| Urutan baris (3 export Without, 3 export With) | identik | ✅ |
+| Total Weight dan Total Qty Dimension | beda di 9 dari 20 baris (order bundle): layar 1 atau 2 Gr, export 3 atau 8 Gr | ❌ |
+| Shipper | layar = shipper delivery order, export = logistik platform; sama di 0 dari 20 | ❌ |
+| Judul kolom | Total Qty Dimensions vs Total Qty Dimension; Sales Order Trx. Status vs SO Status; Failed Ship Trx. Status vs FS Status | ❌ |
+| Tracking Number angka murni (14 sampai 15 digit) | bertipe teks (7 nilai di Without Details) | ❌ |
+
+### Observasi
+- Penyebab bobot dari kode: layar mengecualikan komponen bundle (perbaikan ec22b555a, 20-10-2026), FailedShipExportJob::calculateWeightAndDimension tidak; export lama berisi angka sama.
+- Dibanding export lama: isi sama kecuali Tracking Number (25 order) dan Pickup Time (11 baris) yang kini terisi dan cocok dengan layar dan database.
+- Evidence (teks): https://drive.google.com/drive/folders/1_fB8bx7xjgfbfsXOni4OsMiQay0CUZen

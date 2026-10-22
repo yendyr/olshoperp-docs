@@ -63,8 +63,7 @@ last_execution:
   at: "2026-10-20"
   jira: "ETM-16542"
   status: passed
-  via: "webhook:/bugsy (Telegram)"
-  telegram_message_id: 52045
+  via: "manual:Bugsy"
   notes: "Dev Staging (13) vs Lumi Charms.id (153), playwright@gmail.com. Edit SO-5U73Y7H5 (Buyer Notes, Platform Order ID, Transaction Date) tidak muncul di Audits; SO-5TU4IOKX tidak muncul; tabel normal."
 ---
 

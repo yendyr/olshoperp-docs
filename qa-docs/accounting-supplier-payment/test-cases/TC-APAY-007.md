@@ -1,0 +1,138 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-APAY-007
+menu: accounting-supplier-payment
+menu_name: "Account Payment"
+test_type: edge
+title: "Summary AP USD dengan beberapa Adjustment Debit dan Credit dalam USD (edge)"
+summary: "AP USD: Utang 100,00; Adj Debit 20 + 5 = 25,00; Adj Credit 8,00 (tampil -8,00); Cash/Bank 117,00 membuat Total 0,00."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-10-22
+requirement_ref: "qa-docs/accounting-supplier-payment/requirement.md §9.5 (Adj Debit + dan Adj Credit −) dan §9 (Adjustment: Debit atau Credit per baris)"
+automated: false
+automated_spec: null
+execution_company:
+  id: 153
+  code: lumicharmsid
+related_menus:
+  - accounting-supplier-invoice
+  - accounting-debit-note
+preconditions:
+  - "Akun uji QA yang punya akses menu Account Payment (Finance and Accounting → Account Payment). Login di https://staging.olshoperp.com/login."
+  - "Company aktif harus Lumi Charms.id: klik avatar profil di pojok kanan atas → Switch Company → Lumi Charms.id → Proceed. Cara cek: daftar Account Payment memuat dokumen tanggal 21-10-2026 (mis. PY-5UTDC0FK). Kalau membuka halaman edit dokumen muncul 'You do not have access to this page', berarti company belum benar (data tes ini milik company Lumi Charms.id)."
+  - "Perbaikan ETM-16643 sudah ada di Staging. Cek di bagian paling bawah halaman: tulisan 'Last FE build' tanggal 21-10-2026 15:09 atau lebih baru, dan 'Last API build' 21-10-2026 16:19 atau lebih baru."
+  - "Aturan isian: kolom 'to be Paid Amount (kode mata uang)' di form Use selalu dalam mata uang header AP (Transaction Currency), bukan mata uang invoice. Kolom 'to be Paid Amount' dan 'to be Paid Amount (IDR)' di sisi kanan hanya tampilan."
+  - "Tidak ada dokumen AP lain yang menahan seluruh sisa PI-6954C3EA (sisa PI 39.000.000, aman untuk beberapa AP)."
+test_data:
+  - field: "Data uji / Supplier"
+    value: "PT. Supplier IDR & Foreign (kode SUPP011)"
+  - field: "Data uji / Purchase Invoice"
+    value: "PI-6954C3EA: IDR 39.000.000,00, Approved | https://staging.olshoperp.com/accounting/supplier-invoice/edit/67"
+  - field: "Data uji / Cash/Bank"
+    value: "BCA USD 2 - New 31 Dec 25 (USD) | Saldo tersedia USD 2.571,50. Butuh minimal USD 117,00"
+  - field: "Data uji / Header AP"
+    value: "Transaction Currency USD, Exchange Rate 16.000"
+  - field: "Data uji / Nominal uji"
+    value: "to be Paid Amount (USD) 100,00 | Isian dalam USD (header). Kolom Paid Amount IDR akan menampilkan 1.600.000"
+  - field: "Data uji / Akun Adjustment"
+    value: "'Biaya Admin Bank' (kode 9-90001) untuk Debit; 'Biaya Kirim Dokumen, Pos & Materai' (kode 7-70108) untuk Credit | Pilih lewat Select Account"
+  - field: "Data uji / Baris Adjustment"
+    value: "Debit USD 20,00; Debit USD 5,00; Credit USD 8,00 | Debit 25,00 dan Credit 8,00 jadi tampil di Summary"
+steps:
+  - "Login, pastikan company Lumi Charms.id."
+  - "Buat AP: Create; Supplier = PT. Supplier IDR & Foreign, Transaction Currency = USD, Exchange Rate = 16.000; lanjut sampai halaman Edit."
+  - "Outstanding Purchase Invoice → PI-6954C3EA → Use → to be Paid Amount (USD) = 100,00 → simpan. Cek tabel Detail: Paid Amount 100,00 dan Paid Amount IDR 1.600.000,00. Cek Summary: Utang USD 100,00; Total USD 100,00 orange."
+  - "Di section Adjustment: Account = 'Biaya Admin Bank' (9-90001), Debit (USD) = 20,00, klik Save. Cek Summary: Adj Debit USD 20,00; Total USD 120,00 orange."
+  - "Adjustment kedua: Account = 'Biaya Admin Bank', Debit (USD) = 5,00, Save. Cek Summary: Adj Debit USD 25,00; Total USD 125,00."
+  - "Adjustment ketiga: Account = 'Biaya Kirim Dokumen, Pos & Materai' (7-70108), Credit (USD) = 8,00, Save. Cek Summary: Adj Credit USD -8,00; Total USD 117,00 orange."
+  - "Select Cash/Bank → centang 'BCA USD 2 - New 31 Dec 25' → Use → Amount = 117,00 → simpan. Cek Summary: Cash / Bank USD -117,00; Total USD 0,00 warna normal."
+expected_result: |
+  1. Utang USD 100,00; Cash / Bank USD -117,00; Debit Note USD 0,00; Adj Debit USD 25,00; Adj Credit USD -8,00; Total USD 0,00 normal.
+  2. Adj Debit adalah jumlah semua baris Debit (20 + 5) dan Adj Credit jumlah semua baris Credit, keduanya dalam USD (bukan dalam rupiah, bukan nilai kolom Amount In IDR).
+  3. Setiap Save Adjustment langsung mengubah Summary tanpa reload.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: ETM-16643
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+---
+
+# Summary AP USD dengan beberapa Adjustment Debit dan Credit dalam USD (edge)
+
+Card: [ETM-16711](https://erpintegration.atlassian.net/browse/ETM-16711) (Test Case, edge) · card asal: [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643) · TC terkait lama: ETM-16680 sampai ETM-16684 (TC-APAY-SUM-001 sampai 005)
+
+## Retest cepat
+
+1. Buat AP: Create; Supplier = PT. Supplier IDR & Foreign, Transaction Currency = USD, Exchange Rate = 16.000; lanjut sampai halaman Edit.
+2. Outstanding Purchase Invoice → PI-6954C3EA → Use → to be Paid Amount (USD) = 100,00 → simpan.
+3. Di section Adjustment: Account = 'Biaya Admin Bank' (9-90001), Debit (USD) = 20,00, klik Save.
+
+## Data uji dari awal sampai akhir
+
+Prasyarat umum:
+- Akun uji QA yang punya akses menu Account Payment (Finance and Accounting → Account Payment). Login di https://staging.olshoperp.com/login.
+- Company aktif harus **Lumi Charms.id**: klik avatar profil di pojok kanan atas → Switch Company → Lumi Charms.id → Proceed. Cara cek: daftar Account Payment memuat dokumen tanggal 21-10-2026 (mis. PY-5UTDC0FK). Kalau membuka halaman edit dokumen muncul 'You do not have access to this page', berarti company belum benar (data tes ini milik company Lumi Charms.id).
+- Perbaikan ETM-16643 sudah ada di Staging. Cek di bagian paling bawah halaman: tulisan 'Last FE build' tanggal 21-10-2026 15:09 atau lebih baru, dan 'Last API build' 21-10-2026 16:19 atau lebih baru.
+- Aturan isian: kolom 'to be Paid Amount (kode mata uang)' di form Use selalu dalam mata uang header AP (Transaction Currency), bukan mata uang invoice. Kolom 'to be Paid Amount' dan 'to be Paid Amount (IDR)' di sisi kanan hanya tampilan.
+- Tidak ada dokumen AP lain yang menahan seluruh sisa PI-6954C3EA (sisa PI 39.000.000, aman untuk beberapa AP).
+
+**Data uji (siapkan sebelum mulai)**
+
+| Item | Nilai | Keterangan / link |
+|---|---|---|
+| Supplier | PT. Supplier IDR & Foreign (kode SUPP011) |  |
+| Purchase Invoice | PI-6954C3EA: IDR 39.000.000,00, Approved | https://staging.olshoperp.com/accounting/supplier-invoice/edit/67 |
+| Cash/Bank | BCA USD 2 - New 31 Dec 25 (USD) | Saldo tersedia USD 2.571,50. Butuh minimal USD 117,00 |
+| Header AP | Transaction Currency USD, Exchange Rate 16.000 |  |
+| Nominal uji | to be Paid Amount (USD) 100,00 | Isian dalam USD (header). Kolom Paid Amount IDR akan menampilkan 1.600.000 |
+| Akun Adjustment | 'Biaya Admin Bank' (kode 9-90001) untuk Debit; 'Biaya Kirim Dokumen, Pos & Materai' (kode 7-70108) untuk Credit | Pilih lewat Select Account |
+| Baris Adjustment | Debit USD 20,00; Debit USD 5,00; Credit USD 8,00 | Debit 25,00 dan Credit 8,00 jadi tampil di Summary |
+
+## Langkah dan hasil yang harus terlihat
+
+1. Login, pastikan company Lumi Charms.id.
+2. Buat AP: Create; Supplier = PT. Supplier IDR & Foreign, Transaction Currency = USD, Exchange Rate = 16.000; lanjut sampai halaman Edit.
+3. Outstanding Purchase Invoice → PI-6954C3EA → Use → to be Paid Amount (USD) = 100,00 → simpan.
+   - Cek tabel Detail: Paid Amount 100,00 dan Paid Amount IDR 1.600.000,00.
+   - Cek Summary: Utang USD 100,00; Total USD 100,00 orange.
+4. Di section Adjustment: Account = 'Biaya Admin Bank' (9-90001), Debit (USD) = 20,00, klik Save.
+   - Cek Summary: Adj Debit USD 20,00; Total USD 120,00 orange.
+5. Adjustment kedua: Account = 'Biaya Admin Bank', Debit (USD) = 5,00, Save.
+   - Cek Summary: Adj Debit USD 25,00; Total USD 125,00.
+6. Adjustment ketiga: Account = 'Biaya Kirim Dokumen, Pos & Materai' (7-70108), Credit (USD) = 8,00, Save.
+   - Cek Summary: Adj Credit USD -8,00; Total USD 117,00 orange.
+7. Select Cash/Bank → centang 'BCA USD 2 - New 31 Dec 25' → Use → Amount = 117,00 → simpan.
+   - Cek Summary: Cash / Bank USD -117,00; Total USD 0,00 warna normal.
+
+## Hasil yang diharapkan
+
+- Utang USD 100,00; Cash / Bank USD -117,00; Debit Note USD 0,00; Adj Debit USD 25,00; Adj Credit USD -8,00; Total USD 0,00 normal.
+- Adj Debit adalah jumlah semua baris Debit (20 + 5) dan Adj Credit jumlah semua baris Credit, keduanya dalam USD (bukan dalam rupiah, bukan nilai kolom Amount In IDR).
+- Setiap Save Adjustment langsung mengubah Summary tanpa reload.
+
+## Catatan QA
+
+- Rumus: Utang 100 + Adj Debit 25 − Adj Credit 8 − Cash/Bank 117 = 0.
+- Dokumen ini DRAFT (belum dijalankan). Hasil run dicatat di card ETM-16711.
+
+## Pembersihan data (akhir tes)
+
+- Hapus dokumen AP uji yang kamu buat (daftar Account Payment → pilih dokumen → Delete) supaya PI, Debit Note, dan saldo bank yang tertahan (reserved) dilepas dan bisa dipakai penguji lain. Dokumen yang sudah Approved tidak dihapus.
+- Jangan menghapus dokumen uji milik orang lain (mis. PY-5UTD8RYM adalah bukti card ETM-16702).
+- Simpan screenshot hasil (khususnya kotak Summary) sebagai bukti sebelum dokumen dihapus.

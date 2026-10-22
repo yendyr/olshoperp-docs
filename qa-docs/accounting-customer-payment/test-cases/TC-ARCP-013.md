@@ -1,0 +1,173 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-ARCP-013
+menu: accounting-customer-payment
+menu_name: "Account Receive"
+test_type: regression
+title: "Summary ikut berubah setelah tiap aksi tambah, ubah, hapus detail, destination, dan adjustment tanpa reload (regression)"
+summary: "AR IDR dengan 12 aksi satu per satu: tiap aksi detail, receiving destination (Cash/Bank dan Credit Note), dan adjustment langsung mengubah Summary (Total dari 1.000.000 orange sampai 0,00 normal), angka sama setelah reload."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-10-22
+requirement_ref: "qa-docs/accounting-customer-payment/requirement.md §6.5 dan card ETM-16644 (Summary ikut refresh saat Detail, Receiving Destination, Adjustment berubah)"
+automated: false
+automated_spec: null
+execution_company:
+  id: 13
+  code: DEV-STG
+related_menus:
+  - accounting-customer-invoice
+  - accounting-credit-note
+preconditions:
+  - "Akun uji QA yang punya akses menu Account Receive (Finance and Accounting → Account Receive). Login di https://staging.olshoperp.com/login."
+  - "Company aktif harus Dev Staging: klik avatar profil di pojok kanan atas → Switch Company → Dev Staging → Proceed. Cara cek: daftar Account Receive memuat dokumen customer PT Nusa Jaya Abadi (mis. RC-5UNRJVO7 tanggal 06-10-2026). Kalau membuka halaman edit dokumen muncul 'You do not have access to this page', berarti company belum benar (data tes ini milik company Dev Staging)."
+  - "Perbaikan ETM-16644 sudah ada di Staging. Cek di bagian paling bawah halaman: tulisan 'Last FE build' tanggal 21-10-2026 15:09 atau lebih baru, dan 'Last API build' 21-10-2026 16:19 atau lebih baru."
+  - "Aturan isian: kolom 'to be Paid Amount (kode mata uang)' di sub-modal 'Use this to Payment Process' selalu dalam mata uang header AR (Transaction Currency). Angka bantu di sisi kanan modal (to be Paid Amount dan to be Paid Amount (IDR)) bisa membingungkan (labelnya ganda, catatan screening ETM-16644); yang dinilai di TC ini adalah angka di tabel Detail dan di Summary."
+  - "Customer uji: PT Nusa Jaya Abadi (kode NJA). Di AR, pilihan Customer bisa berisi customer atau store; pilih customer."
+  - "SI-69B36EA9 dan CN-5UME5OMY belum ditahan AR lain."
+  - "Bank BCA Lumi Charms dan Petty Cash aktif (Cash/Bank AR tidak dibatasi saldo)."
+test_data:
+  - field: "Data uji / Customer"
+    value: "PT Nusa Jaya Abadi (kode NJA)"
+  - field: "Data uji / Sales Invoice"
+    value: "SI-69B36EA9: IDR 32.246.361,33, Approved | https://staging.olshoperp.com/accounting/customer-invoice/edit/1220"
+  - field: "Data uji / Cash/Bank 1"
+    value: "Bank BCA Lumi Charms (Bank, IDR)"
+  - field: "Data uji / Cash/Bank 2"
+    value: "Petty Cash (Cash, IDR)"
+  - field: "Data uji / Credit Note"
+    value: "CN-5UME5OMY: IDR 150.000,00, Approved | https://staging.olshoperp.com/accounting/credit-note/edit/3264"
+  - field: "Data uji / Akun Adjustment"
+    value: "'Biaya Admin Bank' (9-90001) untuk Debit; 'Biaya Kirim Dokumen, Pos & Materai' (7-70108) untuk Credit"
+  - field: "Data uji / Header AR"
+    value: "Transaction Currency IDR, Exchange Rate 1"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 1"
+    value: "Use SI-69B36EA9, to be Paid Amount (IDR) 1.000.000 | 1.000.000,00 | 0,00 | 0,00 | 0,00 | 0,00 | 1.000.000,00 | Orange"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 2"
+    value: "Cash/Bank Bank BCA Lumi Charms, Amount 1.000.000 | 1.000.000,00 | -1.000.000,00 | 0,00 | 0,00 | 0,00 | 0,00 | Normal"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 3"
+    value: "Ubah Paid Amount menjadi 1.200.000 | 1.200.000,00 | -1.000.000,00 | 0,00 | 0,00 | 0,00 | 200.000,00 | Orange"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 4"
+    value: "Adjustment Debit 50.000 (Biaya Admin Bank) | 1.200.000,00 | -1.000.000,00 | 0,00 | -50.000,00 | 0,00 | 150.000,00 | Orange"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 5"
+    value: "Edit Adjustment Debit menjadi 70.000 | 1.200.000,00 | -1.000.000,00 | 0,00 | -70.000,00 | 0,00 | 130.000,00 | Orange"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 6"
+    value: "Tambah Adjustment Credit 30.000 (Biaya Kirim Dokumen, Pos & Materai) | 1.200.000,00 | -1.000.000,00 | 0,00 | -70.000,00 | 30.000,00 | 160.000,00 | Orange"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 7"
+    value: "Hapus kedua Adjustment | 1.200.000,00 | -1.000.000,00 | 0,00 | 0,00 | 0,00 | 200.000,00 | Orange"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 8"
+    value: "Tambah Credit Note CN-5UME5OMY, Amount 150.000 | 1.200.000,00 | -1.000.000,00 | -150.000,00 | 0,00 | 0,00 | 50.000,00 | Orange"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 9"
+    value: "Tambah Cash/Bank Petty Cash, Amount 50.000 | 1.200.000,00 | -1.050.000,00 | -150.000,00 | 0,00 | 0,00 | 0,00 | Normal"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 10"
+    value: "Hapus baris Credit Note | 1.200.000,00 | -1.050.000,00 | 0,00 | 0,00 | 0,00 | 150.000,00 | Orange"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 11"
+    value: "Hapus baris detail SI-69B36EA9 | 0,00 | -1.050.000,00 | 0,00 | 0,00 | 0,00 | -1.050.000,00 | Orange"
+  - field: "Rangkaian aksi dan Summary yang harus tampil / 12"
+    value: "Hapus kedua baris Cash/Bank | 0,00 | 0,00 | 0,00 | 0,00 | 0,00 | 0,00 | Normal"
+steps:
+  - "Login, pastikan company Dev Staging. Buat AR: Create; Customer = PT Nusa Jaya Abadi, Transaction Currency = IDR, Exchange Rate = 1; lanjut sampai halaman Edit. Biarkan section Summary terlihat di layar (atau scroll bolak-balik tanpa reload)."
+  - "Jalankan aksi nomor 1 sampai 12 pada tabel 'Rangkaian aksi' satu per satu. Setelah tiap aksi tunggu sampai angka Summary berhenti menampilkan '-' (sedang memuat), lalu bandingkan dengan tabel. Cek: Aksi tambah detail: Available Sales Invoice → Use → isi to be Paid Amount → Save. Ubah detail: klik angka Paid Amount, ketik, Enter. Hapus detail: ikon hapus di tabel Detail. Cek: Aksi destination: Select Cash/Bank atau Select Credit Note → centang → Use → Amount → simpan; hapus: ikon hapus di tabel Receiving Destination. Cek: Aksi Adjustment: pilih Account, isi Debit atau Credit, Save; edit atau hapus lewat kolom Action tabel Adjustment."
+  - "Setelah aksi 12 muat ulang halaman (F5). Cek: Semua baris Summary 0,00 dan Total 0,00 normal (sama dengan sebelum reload)."
+expected_result: |
+  1. Setelah tiap aksi 1 sampai 12, angka Summary dan warna Total sama persis dengan tabel 'Rangkaian aksi', tanpa perlu reload.
+  2. Tidak ada aksi yang membuat Summary tertinggal (angka lama) atau macet di tanda '-'.
+  3. Total negatif (aksi 11) tampil orange.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: ETM-16644
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+---
+
+# Summary ikut berubah setelah tiap aksi tambah, ubah, hapus detail, destination, dan adjustment tanpa reload (regression)
+
+Card: [ETM-16722](https://erpintegration.atlassian.net/browse/ETM-16722) (Test Case, regression) · card asal: [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) · TC terkait lama: ETM-16685 sampai ETM-16689
+
+## Retest cepat
+
+1. Jalankan aksi nomor 1 sampai 12 pada tabel 'Rangkaian aksi' satu per satu. Setelah tiap aksi tunggu sampai angka Summary berhenti menampilkan '-' (sedang memuat), lalu bandingkan dengan tabel.
+2. Setelah aksi 12 muat ulang halaman (F5).
+
+## Data uji dari awal sampai akhir
+
+Prasyarat umum:
+- Akun uji QA yang punya akses menu Account Receive (Finance and Accounting → Account Receive). Login di https://staging.olshoperp.com/login.
+- Company aktif harus **Dev Staging**: klik avatar profil di pojok kanan atas → Switch Company → Dev Staging → Proceed. Cara cek: daftar Account Receive memuat dokumen customer PT Nusa Jaya Abadi (mis. RC-5UNRJVO7 tanggal 06-10-2026). Kalau membuka halaman edit dokumen muncul 'You do not have access to this page', berarti company belum benar (data tes ini milik company Dev Staging).
+- Perbaikan ETM-16644 sudah ada di Staging. Cek di bagian paling bawah halaman: tulisan 'Last FE build' tanggal 21-10-2026 15:09 atau lebih baru, dan 'Last API build' 21-10-2026 16:19 atau lebih baru.
+- Aturan isian: kolom 'to be Paid Amount (kode mata uang)' di sub-modal 'Use this to Payment Process' selalu dalam mata uang header AR (Transaction Currency). Angka bantu di sisi kanan modal (to be Paid Amount dan to be Paid Amount (IDR)) bisa membingungkan (labelnya ganda, catatan screening ETM-16644); yang dinilai di TC ini adalah angka di tabel Detail dan di Summary.
+- Customer uji: PT Nusa Jaya Abadi (kode NJA). Di AR, pilihan Customer bisa berisi customer atau store; pilih customer.
+- SI-69B36EA9 dan CN-5UME5OMY belum ditahan AR lain.
+- Bank BCA Lumi Charms dan Petty Cash aktif (Cash/Bank AR tidak dibatasi saldo).
+
+**Data uji (siapkan sebelum mulai)**
+
+| Item | Nilai | Keterangan / link |
+|---|---|---|
+| Customer | PT Nusa Jaya Abadi (kode NJA) |  |
+| Sales Invoice | SI-69B36EA9: IDR 32.246.361,33, Approved | https://staging.olshoperp.com/accounting/customer-invoice/edit/1220 |
+| Cash/Bank 1 | Bank BCA Lumi Charms (Bank, IDR) |  |
+| Cash/Bank 2 | Petty Cash (Cash, IDR) |  |
+| Credit Note | CN-5UME5OMY: IDR 150.000,00, Approved | https://staging.olshoperp.com/accounting/credit-note/edit/3264 |
+| Akun Adjustment | 'Biaya Admin Bank' (9-90001) untuk Debit; 'Biaya Kirim Dokumen, Pos & Materai' (7-70108) untuk Credit |  |
+| Header AR | Transaction Currency IDR, Exchange Rate 1 |  |
+
+**Rangkaian aksi dan Summary yang harus tampil**
+
+| No | Aksi | Piutang | Cash / Bank | Credit Note | Adj Debit | Adj Credit | Total | Warna Total |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Use SI-69B36EA9, to be Paid Amount (IDR) 1.000.000 | 1.000.000,00 | 0,00 | 0,00 | 0,00 | 0,00 | 1.000.000,00 | Orange |
+| 2 | Cash/Bank Bank BCA Lumi Charms, Amount 1.000.000 | 1.000.000,00 | -1.000.000,00 | 0,00 | 0,00 | 0,00 | 0,00 | Normal |
+| 3 | Ubah Paid Amount menjadi 1.200.000 | 1.200.000,00 | -1.000.000,00 | 0,00 | 0,00 | 0,00 | 200.000,00 | Orange |
+| 4 | Adjustment Debit 50.000 (Biaya Admin Bank) | 1.200.000,00 | -1.000.000,00 | 0,00 | -50.000,00 | 0,00 | 150.000,00 | Orange |
+| 5 | Edit Adjustment Debit menjadi 70.000 | 1.200.000,00 | -1.000.000,00 | 0,00 | -70.000,00 | 0,00 | 130.000,00 | Orange |
+| 6 | Tambah Adjustment Credit 30.000 (Biaya Kirim Dokumen, Pos & Materai) | 1.200.000,00 | -1.000.000,00 | 0,00 | -70.000,00 | 30.000,00 | 160.000,00 | Orange |
+| 7 | Hapus kedua Adjustment | 1.200.000,00 | -1.000.000,00 | 0,00 | 0,00 | 0,00 | 200.000,00 | Orange |
+| 8 | Tambah Credit Note CN-5UME5OMY, Amount 150.000 | 1.200.000,00 | -1.000.000,00 | -150.000,00 | 0,00 | 0,00 | 50.000,00 | Orange |
+| 9 | Tambah Cash/Bank Petty Cash, Amount 50.000 | 1.200.000,00 | -1.050.000,00 | -150.000,00 | 0,00 | 0,00 | 0,00 | Normal |
+| 10 | Hapus baris Credit Note | 1.200.000,00 | -1.050.000,00 | 0,00 | 0,00 | 0,00 | 150.000,00 | Orange |
+| 11 | Hapus baris detail SI-69B36EA9 | 0,00 | -1.050.000,00 | 0,00 | 0,00 | 0,00 | -1.050.000,00 | Orange |
+| 12 | Hapus kedua baris Cash/Bank | 0,00 | 0,00 | 0,00 | 0,00 | 0,00 | 0,00 | Normal |
+
+## Langkah dan hasil yang harus terlihat
+
+1. Login, pastikan company Dev Staging. Buat AR: Create; Customer = PT Nusa Jaya Abadi, Transaction Currency = IDR, Exchange Rate = 1; lanjut sampai halaman Edit. Biarkan section Summary terlihat di layar (atau scroll bolak-balik tanpa reload).
+2. Jalankan aksi nomor 1 sampai 12 pada tabel 'Rangkaian aksi' satu per satu. Setelah tiap aksi tunggu sampai angka Summary berhenti menampilkan '-' (sedang memuat), lalu bandingkan dengan tabel.
+   - Aksi tambah detail: Available Sales Invoice → Use → isi to be Paid Amount → Save. Ubah detail: klik angka Paid Amount, ketik, Enter. Hapus detail: ikon hapus di tabel Detail.
+   - Aksi destination: Select Cash/Bank atau Select Credit Note → centang → Use → Amount → simpan; hapus: ikon hapus di tabel Receiving Destination.
+   - Aksi Adjustment: pilih Account, isi Debit atau Credit, Save; edit atau hapus lewat kolom Action tabel Adjustment.
+3. Setelah aksi 12 muat ulang halaman (F5).
+   - Semua baris Summary 0,00 dan Total 0,00 normal (sama dengan sebelum reload).
+
+## Hasil yang diharapkan
+
+- Setelah tiap aksi 1 sampai 12, angka Summary dan warna Total sama persis dengan tabel 'Rangkaian aksi', tanpa perlu reload.
+- Tidak ada aksi yang membuat Summary tertinggal (angka lama) atau macet di tanda '-'.
+- Total negatif (aksi 11) tampil orange.
+
+## Catatan QA
+
+- TC ini memecah langkah 3 pada TC Summary happy lama yang menggabungkan semua aksi dalam satu langkah. Fokusnya memastikan setiap jalur aksi memicu pembaruan Summary.
+- Kalau ada aksi yang tidak memperbarui Summary, catat nomor aksinya.
+- Dokumen ini DRAFT (belum dijalankan). Hasil run dicatat di card ETM-16722.
+
+## Pembersihan data (akhir tes)
+
+- Hapus dokumen AR uji yang kamu buat (daftar Account Receive → pilih dokumen → Delete) supaya Sales Invoice dan Credit Note yang tertahan (reserved) dilepas dan bisa dipakai penguji lain. Dokumen yang sudah Approved tidak dihapus.
+- Credit Note baru yang kamu buat sendiri (hanya TC Credit Note bagian USD) boleh dibiarkan Approved untuk uji ulang berikutnya.
+- Simpan screenshot hasil (khususnya kotak Summary) sebagai bukti sebelum dokumen dihapus.

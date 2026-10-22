@@ -14,10 +14,10 @@
 | TC-MTIN-010 | Konsistensi Konversi Unit (UOM) dan Validasi Stok saat Penyuntingan Baris Detail | draft | ❌ | 2026-08-30 |
 | TC-MTIN-011 | Validasi Penghapusan Colli Destination saat Perubahan Location Destination Inline (Partial Transfer of a Colli) | draft | ❌ | 2026-08-30 |
 | TC-MTIN-012 | Validasi Pembatasan 1 Colli untuk 1 Location Destination | draft | ❌ | 2026-08-30 |
-| PENDING-20260910154008 | Pembersihan Colli Code saat Hapus Header Dokumen TFI Unapproved | draft | ❌ | 2026-09-14 |
-| PENDING-20260910154009 | Proteksi Merging Stock ID & Preservasi Colli Destination pada Modal Inline Update | draft | ❌ | 2026-09-14 |
-| PENDING-20260914104700 | Validasi Larangan Self-Assignment Colli Destination pada Partial Transfer (V-TFI-11) | draft | ❌ | 2026-09-14 |
-| PENDING-20261019172000 | Edit QTY langsung di tabel detail Transfer Internal tersimpan tanpa muat ulang seluruh tabel | draft | ❌ | 2026-10-19 |
+| TC-MTIN-013 | Pembersihan Colli Code saat Hapus Header Dokumen TFI Unapproved | draft | ❌ | 2026-09-14 |
+| TC-MTIN-014 | Proteksi Merging Stock ID & Preservasi Colli Destination pada Modal Inline Update | draft | ❌ | 2026-09-14 |
+| TC-MTIN-015 | Validasi Larangan Self-Assignment Colli Destination pada Partial Transfer (V-TFI-11) | draft | ❌ | 2026-09-14 |
+| TC-MTIN-016 | Edit QTY langsung di tabel detail Transfer Internal tersimpan tanpa muat ulang seluruh tabel | draft | ❌ | 2026-10-19 |
 
 **Requirement ref:** [requirement.md v2.0](../requirement.md) · Colli BETA §7 · GAP-TFI-01/03/04
 
@@ -30,4 +30,4 @@ Origin Card: [ETM-16361](https://erpintegration.atlassian.net/browse/ETM-16361)
 
 | TC Code | Judul Test Case | File | Status |
 |---|---|---|---|
-| `PENDING-20261019172000` | Edit QTY langsung di tabel detail Transfer Internal tersimpan tanpa muat ulang seluruh tabel | [`TC-MTIN-DRAFT-20261019172000.md`](./TC-MTIN-DRAFT-20261019172000.md) | PASSED 🟢 (19-10-2026) |
+| `TC-MTIN-016` | Edit QTY langsung di tabel detail Transfer Internal tersimpan tanpa muat ulang seluruh tabel | [`TC-MTIN-016.md`](./TC-MTIN-016.md) | PASSED 🟢 (19-10-2026) |

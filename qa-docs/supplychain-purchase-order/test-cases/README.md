@@ -27,4 +27,4 @@ Prefix folder: `PO`.
 
 `TC-PO-003` (TC 1), `TC-PO-004` (TC 2), dan `TC-PO-005` (TC 3) — **PASSED** (19 Agu 2026 via Playwright E2E di Staging company `lumicharmsid`). Terkait card origin [ETM-15425](https://erpintegration.atlassian.net/browse/ETM-15425) & card error [ETM-15598](https://erpintegration.atlassian.net/browse/ETM-15598).
 
-| `TC-PO-DRAFT-20260903155601.md` / PENDING-20260903155601 | Smart Fallback & Konsistensi VAT Type pada Import Detail Purchase Order (With PR & Without PR) | [`TC-PO-DRAFT-20260903155601.md`](./TC-PO-DRAFT-20260903155601.md) | PASSED 🟢 |
+| `TC-PO-015.md` / TC-PO-015 | Smart Fallback & Konsistensi VAT Type pada Import Detail Purchase Order (With PR & Without PR) | [`TC-PO-015.md`](./TC-PO-015.md) | PASSED 🟢 |

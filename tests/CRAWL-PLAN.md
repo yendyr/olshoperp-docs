@@ -2,7 +2,7 @@
 
 Rencana crawl/regresi yang bisa dipakai ulang, supaya run Playwright berikutnya tidak riset menu dari nol.
 
-Contoh hidup: `qa-docs/businessdevelopment-variable-price/test-cases/TC-VP-DRAFT-20261014161000.md`.
+Contoh hidup: `qa-docs/businessdevelopment-variable-price/test-cases/TC-VP-001.md`.
 
 ## Di mana file-nya
 

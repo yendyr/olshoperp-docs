@@ -37,7 +37,7 @@ last_execution:
   jira: "ETM-16543"
   status: failed
   via: "manual:Bugsy"
-  telegram_message_id: 51578
+  notes: "Median 14,2 dtk (129,7 / 14,2 / 1,3) > target 3 dtk. 60 hari OK (tertua 18-08-2026). Last page OK 29,8 dtk."
 ---
 
 # TC-UW-AUDIT-002 — Audit Log Unassign Wave, batas 60 hari & volume besar

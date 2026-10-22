@@ -44,7 +44,8 @@ last_execution:
   at: "2026-10-21"
   jira: "ETM-16682"
   status: failed
-  via: "bugsy"
+  via: "manual:Bugsy"
+  notes: "FAIL 2/4 (1 skip) — Utang 6,16 & Total 0,00 normal OK (PY-5UTD6K2D, rate 16234). FAIL: rate 16.234,50 tersimpan 162.345 (FE kirim '16234.5'; PY-5UTD8RYM). SKIP: PI EUR tidak muncul di outstanding AP USD."
 ---
 
 # TC-APAY-SUM-003 — Summary AP multi-currency & pembulatan

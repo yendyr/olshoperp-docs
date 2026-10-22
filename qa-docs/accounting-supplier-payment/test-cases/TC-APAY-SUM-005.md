@@ -44,7 +44,8 @@ last_execution:
   at: "2026-10-21"
   jira: "ETM-16684"
   status: failed
-  via: "bugsy"
+  via: "manual:Bugsy"
+  notes: "FAIL 1/2 — DN-5UTDAX60 Open 50.000 ref PY-5UTDAX6T OK; DN-6968A669 prepared 250.000 OK. FAIL: DN terbit ikut dihitung minus → Source=Detail 950k tapi Total −50.000 orange."
 ---
 
 # TC-APAY-SUM-005 — Summary & Debit Note terbit dari import AP

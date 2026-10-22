@@ -44,7 +44,8 @@ last_execution:
   at: "2026-10-21"
   jira: "ETM-16683"
   status: failed
-  via: "bugsy"
+  via: "manual:Bugsy"
+  notes: "FAIL 1/3 — PY-5UTDC0FK: to-be-paid 11.625.000 (rate PI), Exchange Gain −23,44 IDR (selisih USD); jurnal GL-5UTDD9NV Debit 11.625.023,44 vs Credit 11.625.000,00. AP USD bayar PI IDR → 6,16 USD OK."
 ---
 
 # TC-APAY-SUM-004 — Konversi full amount PI beda currency (PaymentDetailHelper)

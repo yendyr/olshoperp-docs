@@ -1,0 +1,136 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-ARCP-009
+menu: accounting-customer-payment
+menu_name: "Account Receive"
+test_type: edge
+title: "Summary AR: Piutang Summary untuk SI valas (USD) pada AR IDR dengan Allocate Full Amount memakai kurs header (edge)"
+summary: "AR IDR melunasi SI USD 140 (kurs header 16.000 → Piutang Rp 2.240.000) dan SI USD 180 (kurs header 17.000 → Piutang Rp 3.060.000); hasil saat ini memakai kurs SI (Rp 1.540.000 dan Rp 1.800.000) sehingga TC diperkirakan gagal sampai keputusan kurs ditetapkan."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-10-22
+requirement_ref: "qa-docs/accounting-customer-payment/requirement.md §6.5 (rate = header exchange rate, bukan rate SI) dan card ETM-16644 AC 'konversi pakai rate header'"
+automated: false
+automated_spec: null
+execution_company:
+  id: 13
+  code: DEV-STG
+related_menus:
+  - accounting-customer-invoice
+  - accounting-credit-note
+preconditions:
+  - "Akun uji QA yang punya akses menu Account Receive (Finance and Accounting → Account Receive). Login di https://staging.olshoperp.com/login."
+  - "Company aktif harus Dev Staging: klik avatar profil di pojok kanan atas → Switch Company → Dev Staging → Proceed. Cara cek: daftar Account Receive memuat dokumen customer PT Nusa Jaya Abadi (mis. RC-5UNRJVO7 tanggal 06-10-2026). Kalau membuka halaman edit dokumen muncul 'You do not have access to this page', berarti company belum benar (data tes ini milik company Dev Staging)."
+  - "Perbaikan ETM-16644 sudah ada di Staging. Cek di bagian paling bawah halaman: tulisan 'Last FE build' tanggal 21-10-2026 15:09 atau lebih baru, dan 'Last API build' 21-10-2026 16:19 atau lebih baru."
+  - "Aturan isian: kolom 'to be Paid Amount (kode mata uang)' di sub-modal 'Use this to Payment Process' selalu dalam mata uang header AR (Transaction Currency). Angka bantu di sisi kanan modal (to be Paid Amount dan to be Paid Amount (IDR)) bisa membingungkan (labelnya ganda, catatan screening ETM-16644); yang dinilai di TC ini adalah angka di tabel Detail dan di Summary."
+  - "Customer uji: PT Nusa Jaya Abadi (kode NJA). Di AR, pilihan Customer bisa berisi customer atau store; pilih customer."
+  - "PERHATIAN: kode konversi dipakai bersama dengan Account Payment dan saat ini mengalikan SI valas dengan kurs SI (bukan kurs header) saat Allocate Full Amount (lihat card ETM-16703 untuk sisi Account Payment). Karena itu hasil di layar diperkirakan berbeda dari Expected di bawah. Catat angka yang tampil sebagai Actual Result dan beri tahu Lead QA. Jangan mengubah Expected tanpa keputusan Lead QA/Finance."
+  - "SI-69A9447A dan SI-69A949E7 tidak sedang ditahan AR lain (tombol di Available Sales Invoice 'Use')."
+test_data:
+  - field: "Data uji / Customer"
+    value: "PT Nusa Jaya Abadi (kode NJA)"
+  - field: "Data uji / SI USD (AR A)"
+    value: "SI-69A9447A: USD 140,00, kurs SI 11.000, Approved | https://staging.olshoperp.com/accounting/customer-invoice/edit/860"
+  - field: "Data uji / SI USD (AR B)"
+    value: "SI-69A949E7: USD 180,00, kurs SI 10.000, Approved | https://staging.olshoperp.com/accounting/customer-invoice/edit/861"
+  - field: "Data uji / Cash/Bank"
+    value: "Bank BCA Lumi Charms (Bank, IDR)"
+  - field: "Data uji / AR A"
+    value: "Transaction Currency IDR, Exchange Rate 16.000; Allocate Full Amount; Cash/Bank Rp 2.240.000 | Sesuai requirement: 140 × 16.000 = 2.240.000. Kode saat ini: 140 × 11.000 = 1.540.000"
+  - field: "Data uji / AR B"
+    value: "Transaction Currency IDR, Exchange Rate 17.000; Allocate Full Amount; Cash/Bank Rp 3.060.000 | Sesuai requirement: 180 × 17.000 = 3.060.000. Kode saat ini: 180 × 10.000 = 1.800.000"
+steps:
+  - "Login, pastikan company Dev Staging."
+  - "AR A. Buat AR: Create; Customer = PT Nusa Jaya Abadi, Transaction Currency = IDR, Exchange Rate = 16.000; lanjut sampai halaman Edit."
+  - "Available Sales Invoice → SI-69A9447A → Use → klik 'Allocate Full Amount (Clearing)' → Save. Cek: Catat angka Paid Amount di tabel Detail (rupiah) dan Piutang di Summary."
+  - "Receiving Destination → Select Cash/Bank → centang 'Bank BCA Lumi Charms' → Use → Amount = 2.240.000 → simpan. Cek Summary: Piutang Rp 2.240.000,00; Cash / Bank Rp -2.240.000,00; Total Rp 0,00 warna normal."
+  - "AR B. Buat AR baru: Customer sama, Transaction Currency = IDR, Exchange Rate = 17.000."
+  - "Use SI-69A949E7 dengan 'Allocate Full Amount (Clearing)'; tambah Cash/Bank 'Bank BCA Lumi Charms' Amount = 3.060.000. Cek Summary: Piutang Rp 3.060.000,00; Cash / Bank Rp -3.060.000,00; Total Rp 0,00 warna normal."
+expected_result: |
+  1. AR A: Piutang Rp 2.240.000,00 (140 × kurs header 16.000); Total Rp 0,00 normal.
+  2. AR B: Piutang Rp 3.060.000,00 (180 × kurs header 17.000); Total Rp 0,00 normal.
+  3. Kode currency di Summary = IDR.
+test_result:
+  status: not_run
+  started_at: null
+  finished_at: null
+  executed_by: null
+  environment: staging
+  log_summary: null
+  report_url: null
+test_data_used: []
+run_history: []
+origin_jira: ETM-16644
+first_execution:
+  at: null
+  via: null
+  jira: null
+last_execution:
+  at: null
+  jira: null
+  status: not_run
+  via: null
+---
+
+# Summary AR: Piutang Summary untuk SI valas (USD) pada AR IDR dengan Allocate Full Amount memakai kurs header (edge)
+
+Card: [ETM-16718](https://erpintegration.atlassian.net/browse/ETM-16718) (Test Case, edge) · card asal: [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) · TC terkait lama: ETM-16685 sampai ETM-16689
+
+## Retest cepat
+
+1. AR A. Buat AR: Create; Customer = PT Nusa Jaya Abadi, Transaction Currency = IDR, Exchange Rate = 16.000; lanjut sampai halaman Edit.
+2. Available Sales Invoice → SI-69A9447A → Use → klik 'Allocate Full Amount (Clearing)' → Save.
+3. Receiving Destination → Select Cash/Bank → centang 'Bank BCA Lumi Charms' → Use → Amount = 2.240.000 → simpan.
+
+## Data uji dari awal sampai akhir
+
+Prasyarat umum:
+- Akun uji QA yang punya akses menu Account Receive (Finance and Accounting → Account Receive). Login di https://staging.olshoperp.com/login.
+- Company aktif harus **Dev Staging**: klik avatar profil di pojok kanan atas → Switch Company → Dev Staging → Proceed. Cara cek: daftar Account Receive memuat dokumen customer PT Nusa Jaya Abadi (mis. RC-5UNRJVO7 tanggal 06-10-2026). Kalau membuka halaman edit dokumen muncul 'You do not have access to this page', berarti company belum benar (data tes ini milik company Dev Staging).
+- Perbaikan ETM-16644 sudah ada di Staging. Cek di bagian paling bawah halaman: tulisan 'Last FE build' tanggal 21-10-2026 15:09 atau lebih baru, dan 'Last API build' 21-10-2026 16:19 atau lebih baru.
+- Aturan isian: kolom 'to be Paid Amount (kode mata uang)' di sub-modal 'Use this to Payment Process' selalu dalam mata uang header AR (Transaction Currency). Angka bantu di sisi kanan modal (to be Paid Amount dan to be Paid Amount (IDR)) bisa membingungkan (labelnya ganda, catatan screening ETM-16644); yang dinilai di TC ini adalah angka di tabel Detail dan di Summary.
+- Customer uji: PT Nusa Jaya Abadi (kode NJA). Di AR, pilihan Customer bisa berisi customer atau store; pilih customer.
+- PERHATIAN: kode konversi dipakai bersama dengan Account Payment dan saat ini mengalikan SI valas dengan kurs SI (bukan kurs header) saat Allocate Full Amount (lihat card ETM-16703 untuk sisi Account Payment). Karena itu hasil di layar diperkirakan berbeda dari Expected di bawah. Catat angka yang tampil sebagai Actual Result dan beri tahu Lead QA. Jangan mengubah Expected tanpa keputusan Lead QA/Finance.
+- SI-69A9447A dan SI-69A949E7 tidak sedang ditahan AR lain (tombol di Available Sales Invoice 'Use').
+
+**Data uji (siapkan sebelum mulai)**
+
+| Item | Nilai | Keterangan / link |
+|---|---|---|
+| Customer | PT Nusa Jaya Abadi (kode NJA) |  |
+| SI USD (AR A) | SI-69A9447A: USD 140,00, kurs SI 11.000, Approved | https://staging.olshoperp.com/accounting/customer-invoice/edit/860 |
+| SI USD (AR B) | SI-69A949E7: USD 180,00, kurs SI 10.000, Approved | https://staging.olshoperp.com/accounting/customer-invoice/edit/861 |
+| Cash/Bank | Bank BCA Lumi Charms (Bank, IDR) |  |
+| AR A | Transaction Currency IDR, Exchange Rate 16.000; Allocate Full Amount; Cash/Bank Rp 2.240.000 | Sesuai requirement: 140 × 16.000 = 2.240.000. Kode saat ini: 140 × 11.000 = 1.540.000 |
+| AR B | Transaction Currency IDR, Exchange Rate 17.000; Allocate Full Amount; Cash/Bank Rp 3.060.000 | Sesuai requirement: 180 × 17.000 = 3.060.000. Kode saat ini: 180 × 10.000 = 1.800.000 |
+
+## Langkah dan hasil yang harus terlihat
+
+1. Login, pastikan company Dev Staging.
+2. AR A. Buat AR: Create; Customer = PT Nusa Jaya Abadi, Transaction Currency = IDR, Exchange Rate = 16.000; lanjut sampai halaman Edit.
+3. Available Sales Invoice → SI-69A9447A → Use → klik 'Allocate Full Amount (Clearing)' → Save.
+   - Catat angka Paid Amount di tabel Detail (rupiah) dan Piutang di Summary.
+4. Receiving Destination → Select Cash/Bank → centang 'Bank BCA Lumi Charms' → Use → Amount = 2.240.000 → simpan.
+   - Cek Summary: Piutang Rp 2.240.000,00; Cash / Bank Rp -2.240.000,00; Total Rp 0,00 warna normal.
+5. AR B. Buat AR baru: Customer sama, Transaction Currency = IDR, Exchange Rate = 17.000.
+6. Use SI-69A949E7 dengan 'Allocate Full Amount (Clearing)'; tambah Cash/Bank 'Bank BCA Lumi Charms' Amount = 3.060.000.
+   - Cek Summary: Piutang Rp 3.060.000,00; Cash / Bank Rp -3.060.000,00; Total Rp 0,00 warna normal.
+
+## Hasil yang diharapkan
+
+- AR A: Piutang Rp 2.240.000,00 (140 × kurs header 16.000); Total Rp 0,00 normal.
+- AR B: Piutang Rp 3.060.000,00 (180 × kurs header 17.000); Total Rp 0,00 normal.
+- Kode currency di Summary = IDR.
+
+## Catatan QA
+
+- Hasil yang diperkirakan saat ini (kurs SI dipakai): AR A Piutang Rp 1.540.000,00 dan Total Rp -700.000,00 orange; AR B Piutang Rp 1.800.000,00 dan Total Rp -1.260.000,00 orange. Kalau itu yang tampil, TC ini Failed; tulis kedua angka di Actual Result dan kaitkan dengan ETM-16703.
+- Kalau kamu mengetik sendiri to be Paid Amount (rupiah) tanpa Allocate Full Amount, Piutang di Summary sama dengan angka yang diketik. Karena itu TC ini sengaja memakai Allocate Full Amount.
+- Satu AR IDR hanya punya satu Exchange Rate, jadi dua SI USD diuji di AR yang terpisah. Di AR, SI berbeda currency dengan header boleh dipilih (tidak difilter seperti di AP); data tidak punya SI EUR, jadi EUR tidak diuji.
+- Dokumen ini DRAFT (belum dijalankan). Hasil run dicatat di card ETM-16718.
+
+## Pembersihan data (akhir tes)
+
+- Hapus dokumen AR uji yang kamu buat (daftar Account Receive → pilih dokumen → Delete) supaya Sales Invoice dan Credit Note yang tertahan (reserved) dilepas dan bisa dipakai penguji lain. Dokumen yang sudah Approved tidak dihapus.
+- Credit Note baru yang kamu buat sendiri (hanya TC Credit Note bagian USD) boleh dibiarkan Approved untuk uji ulang berikutnya.
+- Simpan screenshot hasil (khususnya kotak Summary) sebagai bukti sebelum dokumen dihapus.

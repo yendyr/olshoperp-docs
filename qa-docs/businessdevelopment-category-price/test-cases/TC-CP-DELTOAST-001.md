@@ -60,7 +60,9 @@ first_execution:
 last_execution:
   at: "2026-10-20"
   jira: "ETM-16650"
-  status: passed-with-question
+  status: passed
+  via: "manual:Bugsy"
+  notes: "A: 3 load, 0 toast, 0 check-store, read-only. B: 1 toast, check-store 1× 422, store kembali. C: Glowzy dilepas tanpa toast, Cosmetics ditambah, PUT 200, reload Komi+Cosmetics. 0 toast (ekspektasi 1) diterima QA lead 20-10-2026; card Done."
 ---
 
 # TC-CP-DELTOAST-001 — Toast "Data Not Found" di form Category Price terhapus

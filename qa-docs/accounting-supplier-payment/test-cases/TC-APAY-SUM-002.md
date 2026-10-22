@@ -43,7 +43,8 @@ last_execution:
   at: "2026-10-21"
   jira: "ETM-16681"
   status: passed
-  via: "bugsy"
+  via: "manual:Bugsy"
+  notes: "PASS 3/3 — PY-5UTD57NQ: Total 200.000,00 orange (text-warning); Save OK; Approve ditolak 'Total Payment Source must be equal to Total Payment Detail.'"
 ---
 
 # TC-APAY-SUM-002 — Summary AP belum balance menampilkan Total orange

@@ -43,7 +43,8 @@ last_execution:
   at: "2026-10-21"
   jira: "ETM-16680"
   status: passed
-  via: "bugsy"
+  via: "manual:Bugsy"
+  notes: "PASS 4/4 — PY-5UTD2MV2: Utang 1.100.000; Cash −1.000.000; DN −100.000; Total 0,00 normal. Adj Debit 10.000 → Total orange, Adj Credit 10.000 → kembali 0."
 ---
 
 # TC-APAY-SUM-001 — Summary AP IDR balance tampil benar dengan Total 0.00

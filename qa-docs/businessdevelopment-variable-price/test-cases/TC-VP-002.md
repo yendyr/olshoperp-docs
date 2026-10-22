@@ -1,0 +1,95 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-VP-002
+menu: businessdevelopment-variable-price
+menu_name: "Variable Price"
+test_type: negative
+title: "Negative: Value Percentage 10.000 / -10.000 ke atas ditolak dengan pesan jelas (tampilan dan sistem) dan tidak tersimpan"
+summary: "Value band Type Percentage di luar -9.999% sampai 9.999% (10.000, -10.000, 50.000) ditolak saat Save All pada Create dan Edit dengan pesan yang menyebut baris (nomor atau Unlimited) dan batas berformat titik ribuan, data tidak tersimpan dan Audit Log tidak bertambah; request yang dikirim tanpa form juga ditolak HTTP 422."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-10-20
+requirement_ref: "qa-docs/businessdevelopment-variable-price/requirement.md A-08 dan §4.2 (Value Percentage hanya -9.999 … 9.999, ditolak UI dan server; Type Amount tidak kena batas; ETM-16569); card ETM-16634"
+automated: false
+automated_spec: null
+execution_company:
+  id: 13
+  code: DEV-STG
+related_menus:
+  - businessdevelopment-category-price
+preconditions:
+  - "Login staging https://staging.olshoperp.com dengan akun yang punya akses Variable Price (akun default E2E playwright@gmail.com); company aktif Dev Staging (13)"
+  - "Perubahan ETM-16569 sudah ter-deploy di Staging (backend PR #6551 dan #6552, frontend PR #4454 dan #4455)"
+  - "Ada Variable Price valid dengan band 1 bertipe Percentage untuk diedit (di run ini dibuat QA-16634-BUGSY: band 1 End 1.000 Percentage 5, baris Unlimited Percentage 0); QA-16569-HAPPY tidak cocok karena band 1-nya sudah bertipe Amount"
+test_data:
+  - field: nilai_uji
+    value: "10.000, -10.000, 50.000 (Percentage); baris band 1 dan baris Unlimited"
+  - field: data_uji
+    value: "QA-16634-BUGSY (id 77, company 13)"
+steps:
+  - "Login https://staging.olshoperp.com/login, lalu pastikan company aktif Dev Staging (13): klik avatar profil di topbar, pilih Switch Company, pilih Dev Staging, klik Proceed"
+  - "Buka Business Development → Price → Variable Price → Create (https://staging.olshoperp.com/businessdevelopment/variable-price/create); isi Code dan Name, klik tombol + di Margin Price Configuration untuk menambah band 1 (End 1.000), pilih Type Percentage, isi Value band 1 dengan 10.000, lalu klik Save All; catat pesan yang muncul"
+  - "Ulangi dengan band 1 Value 5 dan Value -10.000 di baris Unlimited, klik Save All; catat pesan"
+  - "Buka Edit Variable Price uji (https://staging.olshoperp.com/businessdevelopment/variable-price/edit/77), ubah Value band 1 menjadi 50.000, klik di luar field; catat pesan"
+  - "Refresh halaman; cek Value band 1 dan buka Audit Log (menu samping kanan)"
+  - "Di Edit, buka DevTools → Network, lakukan simpan dengan Value valid, lalu kirim ulang request PUT businessdevelopment/variable-price/{id} (Edit and Resend atau REST) dengan margin_value band 1 = 10000, dan sekali lagi dengan last_value_margin_price = -10000; ulangi untuk POST create"
+expected_result: |
+  1. Langkah 2-4: muncul pesan error yang menyebut baris (nomor atau Unlimited) dan batas yang diizinkan, berformat titik ribuan: "must be between -9.999% and 9.999%".
+  2. Data tidak tersimpan; setelah refresh Value tetap nilai lama dan tidak ada catatan baru di Audit Log.
+  3. Langkah 6: sistem menolak request dengan pesan batas yang sama; data di database tidak berubah.
+test_result:
+  status: passed
+  started_at: "2026-10-20T14:58:00+07:00"
+  finished_at: "2026-10-20T15:10:00+07:00"
+  executed_by: "Jira: akun OlshopERP (Passed, Done 15:06); cross-check Bugsy (Claude, login playwright@gmail.com)"
+  environment: staging
+  log_summary: "Cross-check Bugsy: Create band 1 = 10.000 dan Unlimited = -10.000 ditolak di tampilan tanpa request server (pesan 'on row 1' dan 'on row Unlimited', nilai tidak di-reset); Edit band 1 = 50.000 ditolak; setelah refresh nilai tetap 5 dan Audit Log hanya 4 entri sah; replay REST update dan create dengan 10000 / -10000 semuanya HTTP 422, 0 data uji bocor ke database. Wording baris Unlimited beda: tampilan 'on row Unlimited', sistem 'on the Unlimited row'."
+  report_url: "https://drive.google.com/drive/folders/1VjeBn64MKA1-T8z0gAqYqIiI62iFPM56"
+test_data_used:
+  - "QA-16634-BUGSY"
+run_history:
+  - at: "2026-10-20"
+    status: passed
+    environment: staging
+    note: "Passed: nilai di luar ±9.999 ditolak di tampilan dan sistem, tidak tersimpan, Audit Log tidak bertambah. Eksekusi di Jira oleh akun OlshopERP (hanya baris Unlimited, QA-16569-NEGATIVE); cross-check Bugsy lebih luas. Catatan: wording baris Unlimited beda antara tampilan dan sistem."
+origin_jira: ETM-16634
+first_execution:
+  at: "2026-10-20"
+  via: "manual:OlshopERP"
+  jira: ETM-16634
+last_execution:
+  at: "2026-10-20"
+  jira: ETM-16634
+  status: passed
+  via: "manual:OlshopERP"
+  notes: "Dieksekusi lewat akun Jira OlshopERP 20-10-2026 15:05-15:06 WIB di staging dengan data QA-16569-NEGATIVE baris Unlimited, hasil Passed. Cross-check oleh Claude (peran Bugsy) 14:58-15:10 WIB company Dev Staging 13: nilai sepuluh ribu dan lebih ditolak di tampilan dan sistem dengan pesan baris dan batas, data tidak tersimpan, Audit Log tidak bertambah, replay REST semuanya 422. Catatan wording baris Unlimited berbeda antara tampilan dan sistem. Ditutup passed."
+---
+
+# Value Percentage di luar ±9.999% ditolak dan tidak tersimpan (Variable Price)
+
+Card: [ETM-16634](https://erpintegration.atlassian.net/browse/ETM-16634) (Test Case, negative) · card asal: [ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569)
+
+## Retest cepat
+1. Staging, company **Dev Staging (13)** → **Business Development → Price → Variable Price**.
+2. Create: band 1 Percentage 10.000 → Save All: pesan "Percentage value on row 1 must be between -9.999% and 9.999%"; Unlimited -10.000: pesan "… on row Unlimited …"; tidak ada data dibuat.
+3. Edit: band 1 → 50.000, klik di luar field: pesan row 1; refresh: nilai lama; Audit Log tidak bertambah.
+4. REST tanpa form: PUT/POST dengan `margin_value` 10000 atau `last_value_margin_price` -10000 → HTTP 422.
+
+## Catatan QA
+
+### Hasil cross-check Bugsy 20-10-2026
+| Langkah | Hasil |
+|---|---|
+| Create band 1 = 10.000 | ✅ "Percentage value on row 1 must be between -9.999% and 9.999%"; tanpa request server; nilai tetap terisi; tidak dibuat |
+| Create Unlimited = -10.000 | ✅ "Percentage value on row Unlimited must be between -9.999% and 9.999%" |
+| Edit band 1 = 50.000 | ✅ pesan row 1; tanpa request; refresh: nilai 5 |
+| Audit Log | ✅ UI dan database: 4 entri (3 created, 1 updated 5 → 6 dari edit valid), tidak ada dari percobaan ditolak |
+| REST update: margin_value 10000 / -10000, last_value_margin_price -10000 | ✅ 422; wording "row 1" / "the Unlimited row" |
+| REST create: 10000 / -10000 | ✅ 422; tidak ada Variable Price baru |
+
+### Observasi
+- Wording baris Unlimited tidak identik: tampilan "on row Unlimited", sistem "on the Unlimited row"; batas dan format angka sama (kecil).
+- Save All di Edit setelah edit inline valid mengirim PUT duplikat yang ditolak 422 "Duplicate request detected, please wait 3 seconds" (tanpa dampak data; serupa dengan Purchase Requisition).
+- Eksekusi di Jira oleh akun OlshopERP hanya menguji baris Unlimited pada QA-16569-NEGATIVE; cakupan band 1, 10.000, 50.000, dan replay REST dari cross-check ini.
+- Data uji QA-16634-BUGSY (id 77) dibiarkan di staging company 13.
+- Evidence (teks): https://drive.google.com/drive/folders/1VjeBn64MKA1-T8z0gAqYqIiI62iFPM56

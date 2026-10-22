@@ -1,0 +1,127 @@
+---
+doc_type: e2e-test-case
+tc_code: TC-UW-AUDIT-004
+menu: omni-unassign-wave
+menu_name: "Unassign Wave"
+test_type: happy
+title: "Audit Log Unassign Wave: tab tampil < 3 detik (median 3x), paging cepat, dan riwayat SO in queue → processed 60 hari tampil lengkap"
+summary: "Tab Audit Log di Log Data Unassign Wave tampil dengan median < 3 detik (3x buka), pindah halaman 2 dan halaman terakhir cepat tanpa error, total baris sama dengan data database, dan riwayat SO yang pernah in queue lalu processed dalam 60 hari tampil lengkap (user, waktu, nilai lama dan baru)."
+status: draft
+owner: QA - Yemima
+last_updated: 2026-10-20
+requirement_ref: "card ETM-16541, card asal ETM-16275 (optimasi query Audits, PR olshoperp#6500; AC list < 3 detik); requirement.md menu ini belum merinci tab Audit Log"
+automated: false
+automated_spec: null
+execution_company:
+  id: 153
+  code: lumicharmsid
+related_menus: []
+preconditions:
+  - "Login staging https://staging.olshoperp.com dengan akun yang punya akses menu Unassign Wave (akun default E2E playwright@gmail.com); company aktif Lumi Charms.id (153)"
+  - "Ada SO yang dalam 60 hari terakhir berubah status Unassign Wave dari in queue ke processed (di UI tampil Processing → Success)"
+  - "DevTools Network (filter Fetch/XHR) terbuka agar request GET .../unassign-wave/audits terbaca"
+test_data:
+  - field: so_in_queue_ke_processed_a
+    value: "SO-5TU4IOKX — 15-10-2026 14:14:05, user Playwright User (audit id 60384575)"
+  - field: so_in_queue_ke_processed_b
+    value: "SO-5UQ2D9JT — 12-10-2026 18:47:37, user Jenni Dev-Staging"
+  - field: so_in_queue_ke_processed_c
+    value: "SO-5ULXAGOK — 01-10-2026 09:14:37, user Playwright User"
+  - field: total_baris_audit_log_company_153
+    value: "40 baris (24 event Sales Order in queue/processed + 16 perubahan Scm Setting) per 20-10-2026; perbandingan company lain: FAT (112) 1.081, Dev Staging (13) 992"
+steps:
+  - "Login https://staging.olshoperp.com/login, lalu pastikan company aktif Lumi Charms.id (153): klik avatar profil di topbar, pilih Switch Company, pilih Lumi Charms.id, klik Proceed"
+  - "Buka sidebar Supply Chain Management → Processing → Unassign Wave (https://staging.olshoperp.com/omni/unassign-wave); tunggu datalist selesai dimuat"
+  - "Klik Log Data, lalu klik tab Audit Log; ukur waktu dari klik tab sampai baris tanggal pertama muncul di tabel. Reload halaman dan ulangi sampai 3 kali; catat ketiganya dan hitung median"
+  - "Baca keterangan di bawah tabel ('Showing 1 to 20 of N entries') dan bandingkan N dengan data uji (153 = 40)"
+  - "Cari baris SO dari data uji di tabel (urut default DATE terbaru; kotak 'find something' tidak mencari kode SO): periksa kolom Source = Sales Order, Old Value 'Unassign Wave Status (SO-xxxx): Processing', New Value '... : Success', Action updated, dan User"
+  - "Klik halaman 2 dan ukur waktunya, klik tombol halaman terakhir (») dan ukur waktunya, lalu kembali ke halaman 1"
+  - "Periksa tanggal baris paling bawah di halaman terakhir: tidak boleh lebih dari 60 hari dari hari uji"
+  - "Pantau console browser dan tab Network selama langkah di atas: request GET .../unassign-wave/audits harus berstatus 200, tidak ada error"
+expected_result: |
+  1. Median waktu tampil tab Audit Log kurang dari 3 detik; tidak timeout dan tidak loading terus.
+  2. Total baris di tabel sama dengan hitungan database untuk company yang aktif.
+  3. Riwayat tiap SO dari data uji tampil lengkap: waktu, user, nilai lama (Processing) dan nilai baru (Success).
+  4. Pindah ke halaman 2 dan halaman terakhir tetap cepat dan tidak error.
+  5. Tidak ada baris yang lebih tua dari 60 hari; tidak ada error JavaScript di console.
+
+  [CATATAN QA] requirement.md menu ini belum merinci tab Audit Log; expected diambil dari card ETM-16541 dan ETM-16275. Pembukaan pertama di sesi baru kadang jauh lebih lambat dari median (lihat Catatan QA) dan tidak tercakup oleh kriteria median 3x. Volume staging jauh lebih kecil dari Merdian; hasil di Merdian (840 ribu baris, median 3x 3,15 detik) ada di Catatan QA, dan TC-UW-AUDIT-002 mencakup volume besar.
+test_result:
+  status: passed
+  started_at: "2026-10-20T09:11:41+07:00"
+  finished_at: "2026-10-20T09:50:00+07:00"
+  executed_by: "Bugsy (Claude, login playwright@gmail.com)"
+  environment: staging
+  log_summary: "10 sesi x 3 buka di 3 company: median per sesi 313-450 ms, semua < 3 detik; semua pembukaan n=31 median 382 ms, 28 dari 31 <= 3 detik (3 pembukaan pertama di sesi baru 6,9 / 10,1 / 42,3 detik lalu normal); paging n=44 median 954 ms max 1,7 detik; total baris sama dengan DB (40 / 1.081 / 992); riwayat SO-5TU4IOKX, SO-5UQ2D9JT, SO-5ULXAGOK lengkap; baris tertua 58 hari; console 0 error di tab Audit Log. Tambahan Merdian (production, hanya baca, company WNA 840.270 baris): 3 buka 35,9 / 3,15 / 1,75 detik, median 3,15 detik (152 ms di atas target), buka ke-4 1,62 detik; halaman 2 2,2 detik, halaman terakhir 5,8 detik tanpa error."
+  report_url: "https://drive.google.com/drive/folders/1nh1Te5m-Jq0-HHioczWYdWZmjx_gnblN"
+test_data_used:
+  - "SO-5TU4IOKX"
+  - "SO-5UQ2D9JT"
+  - "SO-5ULXAGOK"
+run_history:
+  - at: "2026-10-20"
+    status: passed
+    environment: staging
+    note: "Passed dengan catatan: 3 dari 31 pembukaan pertama di sesi baru lambat (6,9 / 10,1 / 42,3 detik) dengan penyebab belum terbukti; volume staging kecil; kotak find tidak menemukan kode SO."
+  - at: "2026-10-20"
+    status: passed
+    environment: production
+    note: "Tambahan Merdian hanya baca, company WNA 840.270 baris: median 3 kali buka 3,15 detik (35,9 / 3,15 / 1,75 detik), 152 ms di atas target 3 detik; halaman terakhir 5,8 detik tanpa error. Keputusan QA lead (Yemima, 20-10-2026): median 3,15 detik dianggap dalam toleransi, status passed tetap."
+origin_jira: ETM-16541
+first_execution:
+  at: "2026-10-20"
+  via: "manual:Bugsy"
+  jira: ETM-16541
+last_execution:
+  at: "2026-10-20"
+  jira: ETM-16541
+  status: passed
+  via: "manual:Bugsy"
+  notes: "Dijalankan oleh Claude (peran Bugsy) atas permintaan Yemima, 20-10-2026 09:11-09:30 WIB, staging, company Lumi Charms.id 153, FAT 112 dan Dev Staging 13, login playwright@gmail.com. Actual: 10 sesi tiga kali buka dengan median 313-450 ms, paging median 954 ms, total baris sama dengan database, riwayat tiga SO uji tampil lengkap, console bersih. Tiga dari 31 pembukaan pertama lambat 6,9 sampai 42,3 detik lalu normal, penyebab belum terbukti. Tambahan Merdian company WNA hanya baca: median tiga kali buka 3,15 detik sedikit di atas target, halaman terakhir 5,8 detik. Ditutup passed dengan catatan; QA lead menerima median Merdian 3,15 detik sebagai dalam toleransi."
+---
+
+# Audit Log Unassign Wave: waktu tampil, paging, dan riwayat in queue → processed
+
+Card: [ETM-16541](https://erpintegration.atlassian.net/browse/ETM-16541) (Test Case, happy) · card asal: [ETM-16275](https://erpintegration.atlassian.net/browse/ETM-16275)
+
+## Retest cepat
+1. Staging, company **Lumi Charms.id (153)** → **Supply Chain Management → Processing → Unassign Wave** → **Log Data** → tab **Audit Log**.
+2. Ukur waktu sampai baris pertama muncul, 3 kali (reload tiap kali), ambil median (target < 3 detik).
+3. Cek total baris (153 = 40), baris SO-5TU4IOKX (Processing → Success, 15-10-2026 14:14:05), halaman 2 dan halaman terakhir.
+4. Catat juga pembukaan **pertama** di sesi baru: kadang jauh lebih lambat dari median (lihat di bawah).
+5. Untuk volume produksi: Merdian, company **WNA (4)**, langkah yang sama, hanya baca (login oleh QA di browser).
+
+## Catatan QA
+
+### Hasil ukur 20-10-2026 (n = 31 pembukaan, diukur di dalam halaman)
+| Company | Total baris UI | Hitungan DB | Pembukaan | Median | > 3 detik |
+|---|---|---|---|---|---|
+| Lumi Charms.id (153) | 40 | 24 event SO + 16 Scm Setting | 18 | 420 ms | 2 (6,9 dtk; 42,3 dtk) |
+| FAT (112) | 1.081 | 1.067 + 12 + 2 Unassign Wave | 7 | 344 ms | 1 (10,1 dtk) |
+| Dev Staging (13) | 992 | 822 + 168 + 2 Unassign Wave | 6 | 345 ms | 0 |
+
+- 10 sesi lengkap (3 kali buka): median per sesi 313-450 ms, semuanya di bawah 3 detik.
+- Paging (n = 44): halaman 2 median 974 ms (max 1.149 ms), halaman terakhir median 905 ms (max 1.700 ms).
+- Tiga pembukaan lambat semuanya pembukaan **pertama** di sesi browser baru (09:15, 09:17 dan 09:20 WIB), lalu normal (±0,3 detik). Menunggu lebih dari 5 menit lalu membuka lagi di tiga company tidak mengulangnya (350 / 333 / 313 ms), jadi penyebabnya (mis. hitung total yang di-cache) belum terbukti.
+
+### Tambahan: Merdian (production, hanya baca) — 20-10-2026 09:47-09:50 WIB
+Company WNA (4), 840.270 baris. Login dilakukan Yemima di browser pane; tidak ada data yang diubah.
+
+| Ukuran | Hasil |
+|---|---|
+| Buka ke-1 / ke-2 / ke-3 (sesuai card) | 35.869 / 3.152 / 1.753 ms, median **3.152 ms** (152 ms di atas target 3 detik) |
+| Buka ke-4 (tambahan, hangat) | 1.624 ms; pembukaan hangat 1,6-1,75 detik |
+| Halaman 2 | 2.178 ms |
+| Halaman terakhir (840.261-840.270) | 5.778 ms, tanpa error, baris tertua 22-08-2026 (59 hari) |
+| Kembali ke halaman 1 | 2.240 ms |
+
+- Pembanding: tes 15-10-2026 (TC-UW-AUDIT-002, sebelum perbaikan terakhir) median 14,2 detik, buka pertama 129,7 detik.
+- Pengukuran QA di ETM-16275 (14 Okt) ±0,5 detik untuk tampilan awal; lama request di sini 1,5-3 detik pada pembukaan hangat, selisihnya belum diketahui sebabnya.
+- Sesi login Merdian terputus sendiri setelah buka ke-4 (kembali ke halaman Sign In); total baris tidak dicocokkan dengan database Merdian (query hitung ke tabel production sengaja tidak dijalankan).
+- Keputusan QA lead (Yemima, 20-10-2026): median 3,15 detik di Merdian dianggap dalam toleransi; status passed tetap.
+
+### Observasi
+- Kotak "find something ..." tidak menemukan kode SO (SO-5TU4IOKX dan SO-5USJP3OJ ada di tabel tetapi hasil pencarian kosong); mencari nama user (mis. "Playwright") menemukan 5 dari 40 baris. Baris SO ditemukan lewat urutan tanggal dan paging.
+- Satu perubahan in queue → processed disimpan sebagai **satu** baris audit (nilai lama in queue, nilai baru processed) dan tampil sebagai "Processing" → "Success". Di staging tidak ada event dengan nilai baru "in queue" dalam 120 hari, sehingga cabang filter itu belum teruji dengan data nyata.
+- Urut kolom dan filter per kolom tidak dicakup TC ini (lihat ETM-16552). Pengujian volume besar dan batas 60 hari di Merdian juga ada di TC-UW-AUDIT-002 (ETM-16543).
+- Evidence (teks): https://drive.google.com/drive/folders/1nh1Te5m-Jq0-HHioczWYdWZmjx_gnblN
