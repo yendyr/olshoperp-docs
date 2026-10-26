@@ -24,3 +24,5 @@
 | TC-ARCP-016 | Satu penerimaan dengan Credit Note beda asal dan setelah setting COA customer diubah memakai setting baru sesuai asal CN (edge) (ETM-16787) | draft | ❌ | 2026-10-26 |
 | TC-ARCP-017 | Edit penerimaan berisi Credit Note dan export laporan akuntansi tetap berjalan normal (regression) (ETM-16788) | draft | ❌ | 2026-10-26 |
 | TC-ARCP-018 | Import Account Receive dengan Credit Note dari Sales Return memakai akun Deposit of Sales Return (cross-menu) (ETM-16789) | draft | ❌ | 2026-10-26 |
+
+E2E ETM-16764 (run 26-10-2026): `TC-ARCP-014`, `TC-ARCP-016`, `TC-ARCP-017` — **FAILED** (CN asal Sales Return masih GL 2-20104, expected 4-40103). Error: [ETM-16808](https://erpintegration.atlassian.net/browse/ETM-16808) (relates [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)). `TC-ARCP-015` masih blocked data CN overpay, `TC-ARCP-018` belum dieksekusi.

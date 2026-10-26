@@ -43,7 +43,7 @@ test_result:
   finished_at: "2026-10-26T10:20:00+07:00"
   executed_by: "Bugsy atas permintaan Rachmatulloh Yendy; Playwright staging"
   environment: staging
-  log_summary: "Edit nominal CN-5UOYPXXH 46.000→40.000 dan CN-5UME5OMY 150.000→140.000 tersimpan (PUT 200), tetapi CN SR tetap 2-20104 (expected 4-40103). Export/import belum dijalankan."
+  log_summary: "Edit nominal CN-5UOYPXXH 46.000→40.000 dan CN-5UME5OMY 150.000→140.000 tersimpan (PUT 200), tetapi CN SR tetap 2-20104 (expected 4-40103). Export/import belum dijalankan. Error: ETM-16808."
   report_url: "https://drive.google.com/drive/folders/1_Nfvd5eedd4L5ZgQeG8ge50y011nrGNa"
 test_data_used:
   - "RC-5UV2ZH9Z (AR id 5850, Draft, Dev Staging, desc QA-AUTO ETM-16764 26-10-2026)"
@@ -51,7 +51,7 @@ run_history:
   - at: "2026-10-26"
     status: failed
     environment: staging
-    note: "Edit nominal CN-5UOYPXXH 46.000→40.000 dan CN-5UME5OMY 150.000→140.000 tersimpan (PUT 200), tetapi CN SR tetap 2-20104 (expected 4-40103). Export/import belum dijalankan."
+    note: "Edit nominal CN-5UOYPXXH 46.000→40.000 dan CN-5UME5OMY 150.000→140.000 tersimpan (PUT 200), tetapi CN SR tetap 2-20104 (expected 4-40103). Export/import belum dijalankan. Error: ETM-16808."
 origin_jira: ETM-16764
 first_execution:
   at: "2026-10-26"
@@ -62,7 +62,7 @@ last_execution:
   jira: ETM-16788
   status: failed
   via: "manual:Bugsy"
-  notes: "Dieksekusi sebagian oleh Bugsy 26-10-2026: edit nominal CN di AR RC-5UV2ZH9Z tersimpan tanpa error, tetapi baris CN asal SR tetap 2-20104 (expected 4-40103), Failed; export TB/GL/P&L dan import belum dijalankan."
+  notes: "Dieksekusi sebagian oleh Bugsy 26-10-2026: edit nominal CN di AR RC-5UV2ZH9Z tersimpan tanpa error, tetapi baris CN asal SR tetap 2-20104 (expected 4-40103), Failed; export TB/GL/P&L dan import belum dijalankan. Error: ETM-16808."
 ---
 
 # Edit penerimaan berisi Credit Note dan export laporan akuntansi tetap berjalan normal (regression)
@@ -100,6 +100,7 @@ Prasyarat umum:
 
 ## Catatan QA
 
+- Jira ETM-16788 Done dengan Test Result Failed (26-10-2026). Error: [ETM-16808](https://erpintegration.atlassian.net/browse/ETM-16808) (GL CN asal Sales Return masih 2-20104; kemungkinan build Staging belum memuat fix).
 - Run 26-10-2026 (Bugsy, staging): Edit nominal CN-5UOYPXXH 46.000→40.000 dan CN-5UME5OMY 150.000→140.000 tersimpan (PUT 200), tetapi CN SR tetap 2-20104 (expected 4-40103). Export/import belum dijalankan. Bukti: https://drive.google.com/drive/folders/1_Nfvd5eedd4L5ZgQeG8ge50y011nrGNa
 - Fix ETM-16764 belum aktif pada build API Staging 23-10-2026 16:40:37; ulangi setelah deploy.
 

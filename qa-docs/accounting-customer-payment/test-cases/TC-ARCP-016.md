@@ -45,7 +45,7 @@ test_result:
   finished_at: "2026-10-26T10:20:00+07:00"
   executed_by: "Bugsy atas permintaan Rachmatulloh Yendy; Playwright staging"
   environment: staging
-  log_summary: "AR RC-5UV2ZH9Z: CN-5UME5OMY (SR) dan CN-5UOYPXXH (manual) keduanya 2-20104 (coa_id 751); expected CN SR 4-40103. Langkah ubah setting tidak dijalankan."
+  log_summary: "AR RC-5UV2ZH9Z: CN-5UME5OMY (SR) dan CN-5UOYPXXH (manual) keduanya 2-20104 (coa_id 751); expected CN SR 4-40103. Langkah ubah setting tidak dijalankan. Error: ETM-16808."
   report_url: "https://drive.google.com/drive/folders/1_Nfvd5eedd4L5ZgQeG8ge50y011nrGNa"
 test_data_used:
   - "RC-5UV2ZH9Z (AR id 5850, Draft, Dev Staging, desc QA-AUTO ETM-16764 26-10-2026)"
@@ -53,7 +53,7 @@ run_history:
   - at: "2026-10-26"
     status: failed
     environment: staging
-    note: "AR RC-5UV2ZH9Z: CN-5UME5OMY (SR) dan CN-5UOYPXXH (manual) keduanya 2-20104 (coa_id 751); expected CN SR 4-40103. Langkah ubah setting tidak dijalankan."
+    note: "AR RC-5UV2ZH9Z: CN-5UME5OMY (SR) dan CN-5UOYPXXH (manual) keduanya 2-20104 (coa_id 751); expected CN SR 4-40103. Langkah ubah setting tidak dijalankan. Error: ETM-16808."
 origin_jira: ETM-16764
 first_execution:
   at: "2026-10-26"
@@ -64,7 +64,7 @@ last_execution:
   jira: ETM-16787
   status: failed
   via: "manual:Bugsy"
-  notes: "Dieksekusi manual oleh Bugsy 26-10-2026: di AR RC-5UV2ZH9Z CN asal SR dan CN manual keduanya tampil 2-20104 Uang Muka Penjualan, CN SR seharusnya 4-40103, Failed; setting COA tidak diubah."
+  notes: "Dieksekusi manual oleh Bugsy 26-10-2026: di AR RC-5UV2ZH9Z CN asal SR dan CN manual keduanya tampil 2-20104 Uang Muka Penjualan, CN SR seharusnya 4-40103, Failed; setting COA tidak diubah. Error: ETM-16808."
 ---
 
 # Satu penerimaan dengan Credit Note beda asal dan setelah setting COA customer diubah memakai setting baru sesuai asal CN (edge)
@@ -103,6 +103,7 @@ Prasyarat umum:
 
 ## Catatan QA
 
+- Jira ETM-16787 Done dengan Test Result Failed (26-10-2026). Error: [ETM-16808](https://erpintegration.atlassian.net/browse/ETM-16808) (GL CN asal Sales Return masih 2-20104; kemungkinan build Staging belum memuat fix).
 - Run 26-10-2026 (Bugsy, staging): AR RC-5UV2ZH9Z: CN-5UME5OMY (SR) dan CN-5UOYPXXH (manual) keduanya 2-20104 (coa_id 751); expected CN SR 4-40103. Langkah ubah setting tidak dijalankan. Bukti: https://drive.google.com/drive/folders/1_Nfvd5eedd4L5ZgQeG8ge50y011nrGNa
 - Fix ETM-16764 belum aktif pada build API Staging 23-10-2026 16:40:37; ulangi setelah deploy.
 

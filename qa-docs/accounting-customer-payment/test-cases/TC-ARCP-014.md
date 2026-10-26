@@ -44,7 +44,7 @@ test_result:
   finished_at: "2026-10-26T10:20:00+07:00"
   executed_by: "Bugsy atas permintaan Rachmatulloh Yendy; Playwright staging"
   environment: staging
-  log_summary: "CN-5UME5OMY (asal SR) di AR RC-5UV2ZH9Z tampil GL Account 2-20104 Uang Muka Penjualan (coa_id 751), expected 4-40103. Approve/jurnal tidak dijalankan."
+  log_summary: "CN-5UME5OMY (asal SR) di AR RC-5UV2ZH9Z tampil GL Account 2-20104 Uang Muka Penjualan (coa_id 751), expected 4-40103. Approve/jurnal tidak dijalankan. Error: ETM-16808."
   report_url: "https://drive.google.com/drive/folders/1_Nfvd5eedd4L5ZgQeG8ge50y011nrGNa"
 test_data_used:
   - "RC-5UV2ZH9Z (AR id 5850, Draft, Dev Staging, desc QA-AUTO ETM-16764 26-10-2026)"
@@ -52,7 +52,7 @@ run_history:
   - at: "2026-10-26"
     status: failed
     environment: staging
-    note: "CN-5UME5OMY (asal SR) di AR RC-5UV2ZH9Z tampil GL Account 2-20104 Uang Muka Penjualan (coa_id 751), expected 4-40103. Approve/jurnal tidak dijalankan."
+    note: "CN-5UME5OMY (asal SR) di AR RC-5UV2ZH9Z tampil GL Account 2-20104 Uang Muka Penjualan (coa_id 751), expected 4-40103. Approve/jurnal tidak dijalankan. Error: ETM-16808."
 origin_jira: ETM-16764
 first_execution:
   at: "2026-10-26"
@@ -63,7 +63,7 @@ last_execution:
   jira: ETM-16785
   status: failed
   via: "manual:Bugsy"
-  notes: "Dieksekusi manual oleh Bugsy 26-10-2026 di staging Dev Staging: CN-5UME5OMY asal Sales Return dipakai di AR RC-5UV2ZH9Z, GL Account tampil 2-20104 Uang Muka Penjualan (expected 4-40103 Retur Penjualan), Failed; fix belum aktif di build API 23-10-2026 16:40:37."
+  notes: "Dieksekusi manual oleh Bugsy 26-10-2026 di staging Dev Staging: CN-5UME5OMY asal Sales Return dipakai di AR RC-5UV2ZH9Z, GL Account tampil 2-20104 Uang Muka Penjualan (expected 4-40103 Retur Penjualan), Failed; fix belum aktif di build API 23-10-2026 16:40:37. Error: ETM-16808."
 ---
 
 # Penerimaan dengan Credit Note dari Sales Return mendebit akun Deposit of Sales Return (happy)
@@ -101,6 +101,7 @@ Prasyarat umum:
 
 ## Catatan QA
 
+- Jira ETM-16785 Done dengan Test Result Failed (26-10-2026). Error: [ETM-16808](https://erpintegration.atlassian.net/browse/ETM-16808) (GL CN asal Sales Return masih 2-20104; kemungkinan build Staging belum memuat fix).
 - Run 26-10-2026 (Bugsy, staging): CN-5UME5OMY (asal SR) di AR RC-5UV2ZH9Z tampil GL Account 2-20104 Uang Muka Penjualan (coa_id 751), expected 4-40103. Approve/jurnal tidak dijalankan. Bukti: https://drive.google.com/drive/folders/1_Nfvd5eedd4L5ZgQeG8ge50y011nrGNa
 - Fix ETM-16764 belum aktif pada build API Staging 23-10-2026 16:40:37; ulangi setelah deploy.
 
