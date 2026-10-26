@@ -20,6 +20,36 @@ Seluruh 46 sub-dokumen dari buku dokumentasi resmi UPFOS API telah diekstraksi, 
 
 ---
 
+## 📦 TikTok Shop Partner API (API Reference snapshot)
+
+Dokumentasi resmi TikTok Shop Open API (Partner Center) — snapshot markdown seluruh tab **API Reference**.
+
+| Item | Detail |
+| :--- | :--- |
+| **Folder** | [tiktok-shop/](./tiktok-shop/) |
+| **Sumber** | [partner.tiktokshop.com/docv2](https://partner.tiktokshop.com/docv2/) |
+| **Isi** | ~318 endpoint schema (setara *Download Markdown*) + ~26 overview/guide |
+| **Indeks** | [tiktok-shop/README.md](./tiktok-shop/README.md) · [`_meta/api-index.json`](./tiktok-shop/_meta/api-index.json) |
+
+Kategori utama: Authorization, Event, Seller, Products, Promotion, Orders, Fulfillment, FBT, Logistics, Return and refund, Finance, Analytics, Customer service/engagement, Affiliate (creator/partner/seller), Supply chain, Tools.
+
+---
+
+## 🛒 Shopee Open Platform API (v2 snapshot)
+
+Dokumentasi resmi Shopee Open API v2 — snapshot markdown seluruh endpoint API Reference + Developer Guides.
+
+| Item | Detail |
+| :--- | :--- |
+| **Folder** | [shopee-open/](./shopee-open/) |
+| **Sumber** | [open.shopee.com/documents/v2](https://open.shopee.com/documents/v2/) |
+| **Isi** | 455 endpoint schema + 64 developer guides |
+| **Indeks** | [shopee-open/README.md](./shopee-open/README.md) · [`_meta/api-index.json`](./shopee-open/_meta/api-index.json) |
+
+Modul utama: Product, Order, Logistics, Returns, Payment, GlobalProduct, Ads, AMS, Push, SBS/FBS, Livestream, dll.
+
+---
+
 ## 🎯 Korelasi dengan OlshopERP
 
 UPFOS adalah sistem ERP omnichannel pendahulu yang menjadi acuan arsitektur bisnis bagi OlshopERP. Referensi di atas berguna untuk:

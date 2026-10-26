@@ -1,0 +1,16 @@
+{
+  "category_name": "BRASIL | Jornada do Desenvolvedor / Sua trilha começa aqui!",
+  "category_id": 2125,
+  "document_id": 737,
+  "release_time": 1784470174,
+  "update_time": 1784549784,
+  "operator": "francine.brito@shopee.com",
+  "title": "Referências",
+  "raw_content": "[{\"name\":\"paragraph\",\"children\":[{\"data\":\"• \"},{\"attributes\":{\"bold\":true,\"linkHref\":\"https://open.shopee.com/developer-guide/4\"},\"data\":\"Developer Guide\"},{\"attributes\":{\"bold\":true},\"data\":\" \"},{\"data\":\"- Onboarding do desenvolvedor, separado por tópicos de integração, explicações de fluxos e demais informações. \"}]},{\"name\":\"paragraph\",\"children\":[{\"data\":\"• \"},{\"attributes\":{\"bold\":true,\"linkHref\":\"https://open.shopee.com/documents/v2/v2.ams.get_open_campaign_added_product?module=127&type=1\"},\"data\":\"API Reference\"},{\"data\":\" - Lista de todas APIs disponíveis atualmente e seus respectivos endpoints. Antes de chamar um endpoint, verifique se o mesmo ainda existe.\"},{\"name\":\"softBreak\"},{\"attributes\":{\"bold\":true},\"data\":\"Atentem-se, especialmente, aos anúncios publicados na Open Platform\"},{\"data\":\", pois os anúncios contém informações e atualizações importantes sobre a política da Open Platform e APIs: \"},{\"attributes\":{\"linkHref\":\"https://open.shopee.com/announcements?page=1&category=55\"},\"data\":\"ANNOUNCEMENT.\"}]},{\"name\":\"paragraph\"},{\"name\":\"heading2\",\"children\":[{\"attributes\":{\"bold\":true,\"fontBackgroundColor\":\"rgb(255,255,255)\",\"fontColor\":\"rgb(43,44,45)\",\"linkHref\":\"https://open.shopee.com/announcements/1448?category=3&is_top=false\"},\"data\":\"NOVIDADE: Central de Notificações no Console do Desenvolvedor & Assistente IA!\"},{\"attributes\":{\"fontBackgroundColor\":\"rgb(255,255,255)\",\"fontColor\":\"rgb(43,44,45)\",\"linkHref\":\"https://open.shopee.com/announcements/1448?category=3&is_top=false\"},\"data\":\" ⭐\"}]}]",
+  "content": "<p>• <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://open.shopee.com/developer-guide/4\"><strong>Developer Guide</strong></a><strong> </strong>- Onboarding do desenvolvedor, separado por tópicos de integração, explicações de fluxos e demais informações.&nbsp;</p><p>• <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://open.shopee.com/documents/v2/v2.ams.get_open_campaign_added_product?module=127&amp;type=1\"><strong>API Reference</strong></a> - Lista de todas APIs disponíveis atualmente e seus respectivos endpoints. Antes de chamar um endpoint, verifique se o mesmo ainda existe.<br><strong>Atentem-se, especialmente, aos anúncios publicados na Open Platform</strong>, pois os anúncios contém informações e atualizações importantes sobre a política da Open Platform e APIs: <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://open.shopee.com/announcements?page=1&amp;category=55\">ANNOUNCEMENT.</a></p><p>&nbsp;</p><h2><a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://open.shopee.com/announcements/1448?category=3&amp;is_top=false\"><span style=\"background-color:rgb(255,255,255);color:rgb(43,44,45);\"><strong>NOVIDADE: Central de Notificações no Console do Desenvolvedor &amp; Assistente IA!</strong> ⭐</span></a></h2>",
+  "status": 1,
+  "language_code": "en",
+  "language_list": [
+    "en"
+  ]
+}

@@ -1,0 +1,69 @@
+# Shopee Open API — Product
+
+Snapshot dari [Shopee Open Platform Documents v2](https://open.shopee.com/documents/v2/) · 63 endpoint.
+
+| Method | Path | API |
+| --- | --- | --- |
+| `POST` | `/api/v2/product/publish_item_to_outlet_shop` | [ v2.product.publish_item_to_outlet_shop](./v2.product.publish_item_to_outlet_shop.md) |
+| `POST` | `/api/v2/product/add_item` | [v2.product.add_item](./v2.product.add_item.md) |
+| `POST` | `/api/v2/product/add_kit_item` | [v2.product.add_kit_item](./v2.product.add_kit_item.md) |
+| `POST` | `/api/v2/product/add_model` | [v2.product.add_model](./v2.product.add_model.md) |
+| `POST` | `/api/v2/product/batch_add_item` | [v2.product.batch_add_item](./v2.product.batch_add_item.md) |
+| `POST` | `/api/v2/product/batch_publish_item_to_outlet_shop` | [v2.product.batch_publish_item_to_outlet_shop](./v2.product.batch_publish_item_to_outlet_shop.md) |
+| `POST` | `/api/v2/product/batch_update_outlet_price` | [v2.product.batch_update_outlet_price](./v2.product.batch_update_outlet_price.md) |
+| `POST` | `/api/v2/product/batch_update_outlet_stock` | [v2.product.batch_update_outlet_stock](./v2.product.batch_update_outlet_stock.md) |
+| `POST` | `/api/v2/product/boost_item` | [v2.product.boost_item](./v2.product.boost_item.md) |
+| `GET` | `/api/v2/product/category_recommend` | [v2.product.category_recommend](./v2.product.category_recommend.md) |
+| `POST` | `/api/v2/product/delete_item` | [v2.product.delete_item](./v2.product.delete_item.md) |
+| `POST` | `/api/v2/product/delete_model` | [v2.product.delete_model](./v2.product.delete_model.md) |
+| `POST` | `/api/v2/product/generate_kit_image` | [v2.product.generate_kit_image](./v2.product.generate_kit_image.md) |
+| `GET` | `/api/v2/product/get_aitem_by_pitem_id` | [v2.product.get_aitem_by_pitem_id](./v2.product.get_aitem_by_pitem_id.md) |
+| `GET` | `/api/v2/product/get_all_vehicle_list` | [v2.product.get_all_vehicle_list](./v2.product.get_all_vehicle_list.md) |
+| `GET` | `/api/v2/product/get_attribute_tree` | [v2.product.get_attribute_tree](./v2.product.get_attribute_tree.md) |
+| `GET` | `/api/v2/product/get_batch_task_result` | [v2.product.get_batch_task_result](./v2.product.get_batch_task_result.md) |
+| `GET` | `/api/v2/product/get_boosted_list` | [v2.product.get_boosted_list](./v2.product.get_boosted_list.md) |
+| `GET` | `/api/v2/product/get_brand_list` | [v2.product.get_brand_list](./v2.product.get_brand_list.md) |
+| `GET` | `/api/v2/product/get_category` | [v2.product.get_category](./v2.product.get_category.md) |
+| `GET` | `/api/v2/product/get_comment` | [v2.product.get_comment](./v2.product.get_comment.md) |
+| `GET` | `/api/v2/product/get_direct_item_list` | [v2.product.get_direct_item_list](./v2.product.get_direct_item_list.md) |
+| `GET` | `/api/v2/product/get_direct_shop_recommended_price` | [v2.product.get_direct_shop_recommended_price](./v2.product.get_direct_shop_recommended_price.md) |
+| `GET` | `/api/v2/product/get_item_base_info` | [v2.product.get_item_base_info](./v2.product.get_item_base_info.md) |
+| `POST` | `/api/v2/product/get_item_content_diagnosis_result` | [v2.product.get_item_content_diagnosis_result](./v2.product.get_item_content_diagnosis_result.md) |
+| `GET` | `/api/v2/product/get_item_extra_info` | [v2.product.get_item_extra_info](./v2.product.get_item_extra_info.md) |
+| `GET` | `/api/v2/product/get_item_limit` | [v2.product.get_item_limit](./v2.product.get_item_limit.md) |
+| `GET` | `/api/v2/product/get_item_list` | [v2.product.get_item_list](./v2.product.get_item_list.md) |
+| `POST` | `/api/v2/product/get_item_list_by_content_diagnosis` | [v2.product.get_item_list_by_content_diagnosis](./v2.product.get_item_list_by_content_diagnosis.md) |
+| `GET` | `/api/v2/product/get_item_promotion` | [v2.product.get_item_promotion](./v2.product.get_item_promotion.md) |
+| `GET` | `/api/v2/product/get_item_violation_info` | [v2.product.get_item_violation_info](./v2.product.get_item_violation_info.md) |
+| `GET` | `/api/v2/product/get_kit_item_info` | [v2.product.get_kit_item_info](./v2.product.get_kit_item_info.md) |
+| `GET` | `/api/v2/product/get_kit_item_limit` | [v2.product.get_kit_item_limit](./v2.product.get_kit_item_limit.md) |
+| `GET` | `/api/v2/product/get_main_item_list` | [v2.product.get_main_item_list](./v2.product.get_main_item_list.md) |
+| `POST` | `/api/v2/product/get_mart_item_by_outlet_item_id` | [v2.product.get_mart_item_by_outlet_item_id](./v2.product.get_mart_item_by_outlet_item_id.md) |
+| `POST` | `/api/v2/product/get_mart_item_mapping_by_id` | [v2.product.get_mart_item_mapping_by_id](./v2.product.get_mart_item_mapping_by_id.md) |
+| `GET` | `/api/v2/product/get_model_list` | [v2.product.get_model_list](./v2.product.get_model_list.md) |
+| `POST` | `/api/v2/product/get_product_certification_rule` | [v2.product.get_product_certification_rule](./v2.product.get_product_certification_rule.md) |
+| `GET` | `/api/v2/product/get_recommend_attribute` | [v2.product.get_recommend_attribute](./v2.product.get_recommend_attribute.md) |
+| `GET` | `/api/v2/product/get_size_chart_detail` | [v2.product.get_size_chart_detail](./v2.product.get_size_chart_detail.md) |
+| `GET` | `/api/v2/product/get_size_chart_list` | [v2.product.get_size_chart_list ](./v2.product.get_size_chart_list.md) |
+| `GET` | `/api/v2/product/get_ssp_detail` | [v2.product.get_ssp_detail](./v2.product.get_ssp_detail.md) |
+| `GET` | `/api/v2/product/get_ssp_recommendation` | [v2.product.get_ssp_recommendation](./v2.product.get_ssp_recommendation.md) |
+| `GET` | `/api/v2/product/get_variation_tree` | [v2.product.get_variations](./v2.product.get_variations.md) |
+| `GET` | `/api/v2/product/get_vehicle_list_by_compatibility_detail` | [v2.product.get_vehicle_list_by_compatibility_detail](./v2.product.get_vehicle_list_by_compatibility_detail.md) |
+| `POST` | `/api/v2/product/get_weight_recommendation` | [v2.product.get_weight_recommendation](./v2.product.get_weight_recommendation.md) |
+| `POST` | `/api/v2/product/init_tier_variation` | [v2.product.init_tier_variation](./v2.product.init_tier_variation.md) |
+| `POST` | `/api/v2/product/link_item_to_ssp` | [v2.product.link_item_to_ssp](./v2.product.link_item_to_ssp.md) |
+| `POST` | `/api/v2/product/register_brand` | [v2.product.register_brand](./v2.product.register_brand.md) |
+| `POST` | `/api/v2/product/reply_comment` | [v2.product.reply_comment](./v2.product.reply_comment.md) |
+| `POST` | `/api/v2/product/search_attribute_value_list` | [v2.product.search_attribute_value_list](./v2.product.search_attribute_value_list.md) |
+| `GET` | `/api/v2/product/search_item` | [v2.product.search_item](./v2.product.search_item.md) |
+| `POST` | `/api/v2/product/search_ssp_list` | [v2.product.search_ssp_list](./v2.product.search_ssp_list.md) |
+| `POST` | `/api/v2/product/search_unpackaged_model_list` | [v2.product.search_unpackaged_model_list](./v2.product.search_unpackaged_model_list.md) |
+| `POST` | `/api/v2/product/unlink_item_from_ssp` | [v2.product.unlink_item_from_ssp](./v2.product.unlink_item_from_ssp.md) |
+| `POST` | `/api/v2/product/unlist_item` | [v2.product.unlist_item](./v2.product.unlist_item.md) |
+| `POST` | `/api/v2/product/update_item` | [v2.product.update_item](./v2.product.update_item.md) |
+| `POST` | `/api/v2/product/update_kit_item` | [v2.product.update_kit_item](./v2.product.update_kit_item.md) |
+| `POST` | `/api/v2/product/update_model` | [v2.product.update_model](./v2.product.update_model.md) |
+| `POST` | `/api/v2/product/update_price` | [v2.product.update_price](./v2.product.update_price.md) |
+| `POST` | `/api/v2/product/update_sip_item_price` | [v2.product.update_sip_item_price](./v2.product.update_sip_item_price.md) |
+| `POST` | `/api/v2/product/update_stock` | [v2.product.update_stock](./v2.product.update_stock.md) |
+| `POST` | `/api/v2/product/update_tier_variation` | [v2.product.update_tier_variation](./v2.product.update_tier_variation.md) |

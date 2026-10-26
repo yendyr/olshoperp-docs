@@ -1,0 +1,52 @@
+# Shopee Open API — Logistics
+
+Snapshot dari [Shopee Open Platform Documents v2](https://open.shopee.com/documents/v2/) · 46 endpoint.
+
+| Method | Path | API |
+| --- | --- | --- |
+| `POST` | `/api/v2/logistics/batch_ship_order` | [v2.logistics.batch_ship_order](./v2.logistics.batch_ship_order.md) |
+| `POST` | `/api/v2/logistics/batch_update_tpf_warehouse_tracking_status` | [v2.logistics.batch_update_tpf_warehouse_tracking_status](./v2.logistics.batch_update_tpf_warehouse_tracking_status.md) |
+| `POST` | `/api/v2/logistics/check_polygon_update_status` | [v2.logistics.check_polygon_update_status](./v2.logistics.check_polygon_update_status.md) |
+| `POST` | `/api/v2/logistics/create_booking_shipping_document` | [v2.logistics.create_booking_shipping_document](./v2.logistics.create_booking_shipping_document.md) |
+| `POST` | `/api/v2/logistics/create_shipping_document` | [v2.logistics.create_shipping_document](./v2.logistics.create_shipping_document.md) |
+| `POST` | `/api/v2/logistics/create_shipping_document_job` | [v2.logistics.create_shipping_document_job](./v2.logistics.create_shipping_document_job.md) |
+| `POST` | `/api/v2/logistics/delete_address` | [v2.logistics.delete_address](./v2.logistics.delete_address.md) |
+| `POST` | `/api/v2/logistics/delete_special_operating_hour` | [v2.logistics.delete_special_operating_hour](./v2.logistics.delete_special_operating_hour.md) |
+| `POST` | `/api/v2/logistics/download_booking_shipping_document` | [v2.logistics.download_booking_shipping_document](./v2.logistics.download_booking_shipping_document.md) |
+| `POST` | `/api/v2/logistics/download_shipping_document` | [v2.logistics.download_shipping_document](./v2.logistics.download_shipping_document.md) |
+| `POST` | `/api/v2/logistics/download_shipping_document_job` | [v2.logistics.download_shipping_document_job](./v2.logistics.download_shipping_document_job.md) |
+| `POST` | `/api/v2/logistics/download_to_label` | [v2.logistics.download_to_label](./v2.logistics.download_to_label.md) |
+| `GET` | `/api/v2/logistics/get_address_list` | [v2.logistics.get_address_list](./v2.logistics.get_address_list.md) |
+| `POST` | `/api/v2/logistics/get_booking_shipping_document_data_info` | [v2.logistics.get_booking_shipping_document_data_info](./v2.logistics.get_booking_shipping_document_data_info.md) |
+| `POST` | `/api/v2/logistics/get_booking_shipping_document_parameter` | [v2.logistics.get_booking_shipping_document_parameter](./v2.logistics.get_booking_shipping_document_parameter.md) |
+| `POST` | `/api/v2/logistics/get_booking_shipping_document_result` | [v2.logistics.get_booking_shipping_document_result](./v2.logistics.get_booking_shipping_document_result.md) |
+| `GET` | `/api/v2/logistics/get_booking_shipping_parameter` | [v2.logistics.get_booking_shipping_parameter](./v2.logistics.get_booking_shipping_parameter.md) |
+| `GET` | `/api/v2/logistics/get_booking_tracking_info` | [v2.logistics.get_booking_tracking_info](./v2.logistics.get_booking_tracking_info.md) |
+| `GET` | `/api/v2/logistics/get_booking_tracking_number` | [v2.logistics.get_booking_tracking_number](./v2.logistics.get_booking_tracking_number.md) |
+| `GET` | `/api/v2/logistics/get_channel_list` | [v2.logistics.get_channel_list](./v2.logistics.get_channel_list.md) |
+| `GET` | `/api/v2/logistics/get_mart_packaging_info` | [v2.logistics.get_mart_packaging_info](./v2.logistics.get_mart_packaging_info.md) |
+| `POST` | `/api/v2/logistics/get_mass_shipping_parameter` | [v2.logistics.get_mass_shipping_parameter](./v2.logistics.get_mass_shipping_parameter.md) |
+| `POST` | `/api/v2/logistics/get_mass_tracking_number` | [v2.logistics.get_mass_tracking_number](./v2.logistics.get_mass_tracking_number.md) |
+| `GET` | `/api/v2/logistics/get_operating_hour_restrictions` | [v2.logistics.get_operating_hour_restrictions](./v2.logistics.get_operating_hour_restrictions.md) |
+| `GET` | `/api/v2/logistics/get_operating_hours` | [v2.logistics.get_operating_hours](./v2.logistics.get_operating_hours.md) |
+| `GET` | `/api/v2/logistics/get_pause_status` | [v2.logistics.get_pause_status](./v2.logistics.get_pause_status.md) |
+| `POST` | `/api/v2/logistics/get_shipping_document_data_info` | [v2.logistics.get_shipping_document_data_info](./v2.logistics.get_shipping_document_data_info.md) |
+| `POST` | `/api/v2/logistics/get_shipping_document_job_status` | [v2.logistics.get_shipping_document_job_status](./v2.logistics.get_shipping_document_job_status.md) |
+| `POST` | `/api/v2/logistics/get_shipping_document_parameter` | [v2.logistics.get_shipping_document_parameter](./v2.logistics.get_shipping_document_parameter.md) |
+| `POST` | `/api/v2/logistics/get_shipping_document_result` | [v2.logistics.get_shipping_document_result](./v2.logistics.get_shipping_document_result.md) |
+| `GET` | `/api/v2/logistics/get_shipping_parameter` | [v2.logistics.get_shipping_parameter](./v2.logistics.get_shipping_parameter.md) |
+| `GET` | `/api/v2/logistics/get_tracking_info` | [v2.logistics.get_tracking_info](./v2.logistics.get_tracking_info.md) |
+| `GET` | `/api/v2/logistics/get_tracking_number` | [v2.logistics.get_tracking_number](./v2.logistics.get_tracking_number.md) |
+| `POST` | `/api/v2/logistics/mass_ship_order` | [v2.logistics.mass_ship_order](./v2.logistics.mass_ship_order.md) |
+| `POST` | `/api/v2/logistics/set_address_config` | [v2.logistics.set_address_config](./v2.logistics.set_address_config.md) |
+| `POST` | `/api/v2/logistics/set_mart_packaging_info` | [v2.logistics.set_mart_packaging_info](./v2.logistics.set_mart_packaging_info.md) |
+| `POST` | `/api/v2/logistics/set_pause_status` | [v2.logistics.set_pause_status](./v2.logistics.set_pause_status.md) |
+| `POST` | `/api/v2/logistics/ship_booking` | [v2.logistics.ship_booking](./v2.logistics.ship_booking.md) |
+| `POST` | `/api/v2/logistics/ship_order` | [v2.logistics.ship_order](./v2.logistics.ship_order.md) |
+| `POST` | `/api/v2/logistics/update_address` | [v2.logistics.update_address](./v2.logistics.update_address.md) |
+| `POST` | `/api/v2/logistics/update_channel` | [v2.logistics.update_channel](./v2.logistics.update_channel.md) |
+| `POST` | `/api/v2/logistics/update_operating_hours` | [v2.logistics.update_operating_hours](./v2.logistics.update_operating_hours.md) |
+| `POST` | `/api/v2/logistics/update_self_collection_order_logistics` | [v2.logistics.update_self_collection_order_logistics](./v2.logistics.update_self_collection_order_logistics.md) |
+| `POST` | `/api/v2/logistics/update_shipping_order` | [v2.logistics.update_shipping_order](./v2.logistics.update_shipping_order.md) |
+| `POST` | `/api/v2/logistics/update_tracking_status` | [v2.logistics.update_tracking_status](./v2.logistics.update_tracking_status.md) |
+| `POST` | `/api/v2/logistics/upload_serviceable_polygon` | [v2.logistics.upload_serviceable_polygon](./v2.logistics.upload_serviceable_polygon.md) |

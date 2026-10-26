@@ -1,0 +1,4073 @@
+{
+  "source": "https://partner.tiktokshop.com/docv2/",
+  "section": "API Reference",
+  "crawled_endpoint_count": 318,
+  "endpoints": [
+    {
+      "title": "Add Showcase Products",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202405/showcases/products/add",
+      "document_path": "add-showcase-products-202405",
+      "file": "affiliate-creator/add-showcase-products-202405.md",
+      "scope": [
+        "creator.showcase.write",
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/add-showcase-products-202405"
+    },
+    {
+      "title": "Check Creator Sample Eligibility",
+      "category": "Affiliate creator",
+      "method": "GET",
+      "path": "/affiliate_creator/202412/samples/labels",
+      "document_path": "check-creator-sample-eligibility-202412",
+      "file": "affiliate-creator/check-creator-sample-eligibility-202412.md",
+      "scope": [
+        "creator.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/check-creator-sample-eligibility-202412"
+    },
+    {
+      "title": "Create Video Precheck Task",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202511/videos/precheck_task",
+      "document_path": "create-video-precheck-task-202511",
+      "file": "affiliate-creator/create-video-precheck-task-202511.md",
+      "scope": [
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-video-precheck-task-202511"
+    },
+    {
+      "title": "Creator Search Sample Application Fulfillments",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202409/sample_applications/fulfillments/search",
+      "document_path": "creator-search-sample-application-fulfillments-202409",
+      "file": "affiliate-creator/creator-search-sample-application-fulfillments-202409.md",
+      "scope": [
+        "creator.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/creator-search-sample-application-fulfillments-202409"
+    },
+    {
+      "title": "Generate General Sharing Links",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202505/affiliate_sharing_links/general_publishers/generate_batch",
+      "document_path": "generate-general-sharing-links-202505",
+      "file": "affiliate-creator/generate-general-sharing-links-202505.md",
+      "scope": [
+        "creator.affiliate.share_link.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/generate-general-sharing-links-202505"
+    },
+    {
+      "title": "Generate Publisher Sharing Links in Batch",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202504/affiliate_sharing_links/publisher/{publisher_id}/generate_batch",
+      "document_path": "generate-publisher-sharing-links-in-batch-202504",
+      "file": "affiliate-creator/generate-publisher-sharing-links-in-batch-202504.md",
+      "scope": [
+        "creator.affiliate.share_link.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/generate-publisher-sharing-links-in-batch-202504"
+    },
+    {
+      "title": "Get Creator Profile",
+      "category": "Affiliate creator",
+      "method": "GET",
+      "path": "/affiliate_creator/202508/profiles",
+      "document_path": "get-creator-profile-202508",
+      "file": "affiliate-creator/get-creator-profile-202508.md",
+      "scope": [
+        "creator.affiliate.info",
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-creator-profile-202508"
+    },
+    {
+      "title": "Get Creator Sample Application Detail ",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202412/sample_applications/single_query",
+      "document_path": "get-creator-sample-application-detail-202412",
+      "file": "affiliate-creator/get-creator-sample-application-detail-202412.md",
+      "scope": [
+        "creator.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-creator-sample-application-detail-202412"
+    },
+    {
+      "title": "Get Open Collaboration Product List By Product Ids",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202509/open_collaborations/products",
+      "document_path": "get-open-collaboration-product-list-by-product-ids-202509",
+      "file": "affiliate-creator/get-open-collaboration-product-list-by-product-ids-202509.md",
+      "scope": [
+        "creator.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-open-collaboration-product-list-by-product-ids-202509"
+    },
+    {
+      "title": "Get Shop Products",
+      "category": "Affiliate creator",
+      "method": "GET",
+      "path": "/affiliate_creator/202509/shop_products",
+      "document_path": "get-shop-products-202509",
+      "file": "affiliate-creator/get-shop-products-202509.md",
+      "scope": [
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-products-202509"
+    },
+    {
+      "title": "Get Shoppable Video Precheck Result ",
+      "category": "Affiliate creator",
+      "method": "GET",
+      "path": "/affiliate_creator/202601/videos/precheck_tasks/{task_id}",
+      "document_path": "get-shoppable-video-precheck-result-202601",
+      "file": "affiliate-creator/get-shoppable-video-precheck-result-202601.md",
+      "scope": [
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shoppable-video-precheck-result-202601"
+    },
+    {
+      "title": "Get Shoppable Video Status",
+      "category": "Affiliate creator",
+      "method": "GET",
+      "path": "/affiliate_creator/202509/videos/{video_id}/status",
+      "document_path": "get-shoppable-video-status-202509",
+      "file": "affiliate-creator/get-shoppable-video-status-202509.md",
+      "scope": [
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shoppable-video-status-202509"
+    },
+    {
+      "title": "Get Showcase Products",
+      "category": "Affiliate creator",
+      "method": "GET",
+      "path": "/affiliate_creator/202405/showcases/products",
+      "document_path": "get-showcase-products-202405",
+      "file": "affiliate-creator/get-showcase-products-202405.md",
+      "scope": [
+        "creator.showcase.read",
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-showcase-products-202405"
+    },
+    {
+      "title": "Get Tokopedia and TikTok Shop Product ID Mappings",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202607/map_toko_product",
+      "document_path": "get-tokopedia-and-tiktok-shop-product-id-mappings-202607",
+      "file": "affiliate-creator/get-tokopedia-and-tiktok-shop-product-id-mappings-202607.md",
+      "scope": [
+        "creator.affiliate.share_link.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-tokopedia-and-tiktok-shop-product-id-mappings-202607"
+    },
+    {
+      "title": "Map Tokopedia to TikTok Shop Product IDs",
+      "category": "Affiliate creator",
+      "method": "GET",
+      "path": "/affiliate_creator/202606/toko_product_mappers",
+      "document_path": "map-tokopedia-to-tiktok-shop-product-ids-202606",
+      "file": "affiliate-creator/map-tokopedia-to-tiktok-shop-product-ids-202606.md",
+      "scope": [
+        "creator.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/map-tokopedia-to-tiktok-shop-product-ids-202606"
+    },
+    {
+      "title": "Move Showcase Products to the Top",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202409/showcases/products/top",
+      "document_path": "move-showcase-products-to-the-top-202409",
+      "file": "affiliate-creator/move-showcase-products-to-the-top-202409.md",
+      "scope": [
+        "creator.showcase.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/move-showcase-products-to-the-top-202409"
+    },
+    {
+      "title": "Post Shoppable Photos",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202610/photos",
+      "document_path": "post-shoppable-photos-202610",
+      "file": "affiliate-creator/post-shoppable-photos-202610.md",
+      "scope": [
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/post-shoppable-photos-202610"
+    },
+    {
+      "title": "Post Shoppable Video",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202603/videos",
+      "document_path": "post-shoppable-video-202603",
+      "file": "affiliate-creator/post-shoppable-video-202603.md",
+      "scope": [
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/post-shoppable-video-202603"
+    },
+    {
+      "title": "Remove Showcase Products",
+      "category": "Affiliate creator",
+      "method": "DELETE",
+      "path": "/affiliate_creator/202409/showcases/products",
+      "document_path": "remove-showcase-products-202409",
+      "file": "affiliate-creator/remove-showcase-products-202409.md",
+      "scope": [
+        "creator.showcase.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/remove-showcase-products-202409"
+    },
+    {
+      "title": "Search Affiliate Orders by Creator",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202505/orders/trace/search",
+      "document_path": "search-affiliate-orders-by-creator-202505",
+      "file": "affiliate-creator/search-affiliate-orders-by-creator-202505.md",
+      "scope": [
+        "creator.affiliate.share_link.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-affiliate-orders-by-creator-202505"
+    },
+    {
+      "title": "Search Creator Affiliate Orders",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202410/orders/search",
+      "document_path": "search-creator-affiliate-orders-202410",
+      "file": "affiliate-creator/search-creator-affiliate-orders-202410.md",
+      "scope": [
+        "creator.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-creator-affiliate-orders-202410"
+    },
+    {
+      "title": "Search Creator Sample Applications",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202412/sample_applications/search",
+      "document_path": "search-creator-sample-applications-202412",
+      "file": "affiliate-creator/search-creator-sample-applications-202412.md",
+      "scope": [
+        "creator.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-creator-sample-applications-202412"
+    },
+    {
+      "title": "Search Creator Target Collaborations",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202405/target_collaborations/search",
+      "document_path": "search-creator-target-collaborations-202405",
+      "file": "affiliate-creator/search-creator-target-collaborations-202405.md",
+      "scope": [
+        "creator.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-creator-target-collaborations-202405"
+    },
+    {
+      "title": "Search Open Collaboration Products",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202405/open_collaborations/products/search",
+      "document_path": "search-open-collaboration-products-202405",
+      "file": "affiliate-creator/search-open-collaboration-products-202405.md",
+      "scope": [
+        "creator.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-open-collaboration-products-202405"
+    },
+    {
+      "title": "Upload Shoppable Photo File",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202511/photos/photo_files",
+      "document_path": "upload-shoppable-photo-file-202511",
+      "file": "affiliate-creator/upload-shoppable-photo-file-202511.md",
+      "scope": [
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-shoppable-photo-file-202511"
+    },
+    {
+      "title": "Upload Shoppable Video File",
+      "category": "Affiliate creator",
+      "method": "POST",
+      "path": "/affiliate_creator/202505/videos/video_files",
+      "document_path": "upload-shoppable-video-file-202505",
+      "file": "affiliate-creator/upload-shoppable-video-file-202505.md",
+      "scope": [
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-shoppable-video-file-202505"
+    },
+    {
+      "title": "Create Affiliate Partner Campaign",
+      "category": "Affiliate partner",
+      "method": "POST",
+      "path": "/affiliate_partner/202405/campaigns",
+      "document_path": "create-affiliate-partner-campaign-202405",
+      "file": "affiliate-partner/create-affiliate-partner-campaign-202405.md",
+      "scope": [
+        "partner.tap_campaign.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-affiliate-partner-campaign-202405"
+    },
+    {
+      "title": "Edit Affiliate Partner Campaign",
+      "category": "Affiliate partner",
+      "method": "POST",
+      "path": "/affiliate_partner/202405/campaigns/{campaign_id}/partial_edit",
+      "document_path": "edit-affiliate-partner-campaign-202405",
+      "file": "affiliate-partner/edit-affiliate-partner-campaign-202405.md",
+      "scope": [
+        "partner.tap_campaign.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/edit-affiliate-partner-campaign-202405"
+    },
+    {
+      "title": "Generate Affiliate Partner Campaign Product Link",
+      "category": "Affiliate partner",
+      "method": "POST",
+      "path": "/affiliate_partner/202405/campaigns/{campaign_id}/products/{product_id}/promotion_link/generate",
+      "document_path": "generate-affiliate-partner-campaign-product-link-202405",
+      "file": "affiliate-partner/generate-affiliate-partner-campaign-product-link-202405.md",
+      "scope": [
+        "partner.tap_campaign.link.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/generate-affiliate-partner-campaign-product-link-202405"
+    },
+    {
+      "title": "Generate Campaign Product Promotion Links in Batch",
+      "category": "Affiliate partner",
+      "method": "POST",
+      "path": "/affiliate_partner/202505/campaigns/{campaign_id}/products/promotion_links/generate_batch",
+      "document_path": "generate-campaign-product-promotion-links-in-batch-202505",
+      "file": "affiliate-partner/generate-campaign-product-promotion-links-in-batch-202505.md",
+      "scope": [
+        "partner.tap_campaign.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/generate-campaign-product-promotion-links-in-batch-202505"
+    },
+    {
+      "title": "Get Affiliate Campaign Creator Product Content Statistics",
+      "category": "Affiliate partner",
+      "method": "GET",
+      "path": "/affiliate_partner/202508/campaigns/{campaign_id}/products/{product_id}/creator/{creator_temp_id}/content/statistics",
+      "document_path": "get-affiliate-campaign-creator-product-content-statistics-202508",
+      "file": "affiliate-partner/get-affiliate-campaign-creator-product-content-statistics-202508.md",
+      "scope": [
+        "partner.tap_campaign.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-affiliate-campaign-creator-product-content-statistics-202508"
+    },
+    {
+      "title": "Get Affiliate Campaign Creator Product Sample Status",
+      "category": "Affiliate partner",
+      "method": "GET",
+      "path": "/affiliate_partner/202508/campaigns/{campaign_id}/products/{product_id}/creator/{creator_temp_id}/content/statistics/sample/status",
+      "document_path": "get-affiliate-campaign-creator-product-sample-status-202508",
+      "file": "affiliate-partner/get-affiliate-campaign-creator-product-sample-status-202508.md",
+      "scope": [
+        "partner.tap_campaign.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-affiliate-campaign-creator-product-sample-status-202508"
+    },
+    {
+      "title": "Get Affiliate Partner Campaign Detail",
+      "category": "Affiliate partner",
+      "method": "GET",
+      "path": "/affiliate_partner/202405/campaigns/{campaign_id}",
+      "document_path": "get-affiliate-partner-campaign-detail-202405",
+      "file": "affiliate-partner/get-affiliate-partner-campaign-detail-202405.md",
+      "scope": [
+        "partner.tap_campaign.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-affiliate-partner-campaign-detail-202405"
+    },
+    {
+      "title": "Get Affiliate Partner Campaign List",
+      "category": "Affiliate partner",
+      "method": "GET",
+      "path": "/affiliate_partner/202405/campaigns",
+      "document_path": "get-affiliate-partner-campaign-list-202405",
+      "file": "affiliate-partner/get-affiliate-partner-campaign-list-202405.md",
+      "scope": [
+        "partner.tap_campaign.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-affiliate-partner-campaign-list-202405"
+    },
+    {
+      "title": "Get Affiliate Partner Campaign Product List",
+      "category": "Affiliate partner",
+      "method": "GET",
+      "path": "/affiliate_partner/202405/campaigns/{campaign_id}/products",
+      "document_path": "get-affiliate-partner-campaign-product-list-202405",
+      "file": "affiliate-partner/get-affiliate-partner-campaign-product-list-202405.md",
+      "scope": [
+        "partner.tap_campaign.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-affiliate-partner-campaign-product-list-202405"
+    },
+    {
+      "title": "Get Campaign Product Performance List",
+      "category": "Affiliate partner",
+      "method": "GET",
+      "path": "/affiliate_partner/202501/campaigns/{campaign_id}/products/performance",
+      "document_path": "get-campaign-product-performance-list-202501",
+      "file": "affiliate-partner/get-campaign-product-performance-list-202501.md",
+      "scope": [
+        "partner.tap_campaign.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-campaign-product-performance-list-202501"
+    },
+    {
+      "title": "Get Creator Performance for Campaign Product",
+      "category": "Affiliate partner",
+      "method": "GET",
+      "path": "/affiliate_partner/202508/campaigns/{campaign_id}/products/{product_id}/performance",
+      "document_path": "get-creator-performance-for-campaign-product-202508",
+      "file": "affiliate-partner/get-creator-performance-for-campaign-product-202508.md",
+      "scope": [
+        "partner.tap_campaign.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-creator-performance-for-campaign-product-202508"
+    },
+    {
+      "title": "Publish Affiliate Partner Campaign",
+      "category": "Affiliate partner",
+      "method": "POST",
+      "path": "/affiliate_partner/202405/campaigns/{campaign_id}/publish",
+      "document_path": "publish-affiliate-partner-campaign-202405",
+      "file": "affiliate-partner/publish-affiliate-partner-campaign-202405.md",
+      "scope": [
+        "partner.tap_campaign.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/publish-affiliate-partner-campaign-202405"
+    },
+    {
+      "title": "Review Affiliate Partner Campaign Product",
+      "category": "Affiliate partner",
+      "method": "POST",
+      "path": "/affiliate_partner/202405/campaigns/{campaign_id}/products/{product_id}/review",
+      "document_path": "review-affiliate-partner-campaign-product-202405",
+      "file": "affiliate-partner/review-affiliate-partner-campaign-product-202405.md",
+      "scope": [
+        "partner.tap_campaign.product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/review-affiliate-partner-campaign-product-202405"
+    },
+    {
+      "title": "Search CAP Affiliate Orders",
+      "category": "Affiliate partner",
+      "method": "POST",
+      "path": "/affiliate_partner/202603/cap_order/search",
+      "document_path": "search-cap-affiliate-orders-202603",
+      "file": "affiliate-partner/search-cap-affiliate-orders-202603.md",
+      "scope": [
+        "partner.cap_orders.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-cap-affiliate-orders-202603"
+    },
+    {
+      "title": "Search TAP Affiliate Orders",
+      "category": "Affiliate partner",
+      "method": "POST",
+      "path": "/affiliate_partner/202603/orders/search",
+      "document_path": "search-tap-affiliate-orders-202603",
+      "file": "affiliate-partner/search-tap-affiliate-orders-202603.md",
+      "scope": [
+        "partner.tap_campaign.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-tap-affiliate-orders-202603"
+    },
+    {
+      "title": "Check Creator Outreach Eligibility",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202610/creator_outreach/eligibility/check",
+      "document_path": "check-creator-outreach-eligibility-202610",
+      "file": "affiliate-seller/check-creator-outreach-eligibility-202610.md",
+      "scope": [],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/check-creator-outreach-eligibility-202610"
+    },
+    {
+      "title": "Check Target Collaboration Conflicts",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202605/target_collaborations/conflicts/check",
+      "document_path": "check-target-collaboration-conflicts-202605",
+      "file": "affiliate-seller/check-target-collaboration-conflicts-202605.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/check-target-collaboration-conflicts-202605"
+    },
+    {
+      "title": "Create Compass Offline Export Task",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202603/compass/offline_task",
+      "document_path": "create-compass-offline-export-task-202603",
+      "file": "affiliate-seller/create-compass-offline-export-task-202603.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-compass-offline-export-task-202603"
+    },
+    {
+      "title": "Create Open Collaboration",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202412/open_collaborations",
+      "document_path": "create-open-collaboration-202412",
+      "file": "affiliate-seller/create-open-collaboration-202412.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-open-collaboration-202412"
+    },
+    {
+      "title": "Create Target Collaboration",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202508/target_collaborations",
+      "document_path": "create-target-collaboration-202508",
+      "file": "affiliate-seller/create-target-collaboration-202508.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-target-collaboration-202508"
+    },
+    {
+      "title": "Download Compass Task File",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202603/compass/offline_tasks/{task_id}/file",
+      "document_path": "download-compass-task-file-202603",
+      "file": "affiliate-seller/download-compass-task-file-202603.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/download-compass-task-file-202603"
+    },
+    {
+      "title": "Edit Open Collaboration Sample Rule",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202410/open_collaborations/sample_rules",
+      "document_path": "edit-open-collaboration-sample-rule-202410",
+      "file": "affiliate-seller/edit-open-collaboration-sample-rule-202410.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/edit-open-collaboration-sample-rule-202410"
+    },
+    {
+      "title": "Edit Open Collaboration Settings",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202405/open_collaboration_settings",
+      "document_path": "edit-open-collaboration-settings-202405",
+      "file": "affiliate-seller/edit-open-collaboration-settings-202405.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/edit-open-collaboration-settings-202405"
+    },
+    {
+      "title": "Generate Affiliate Product Promotion Link",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202405/products/{product_id}/promotion_link/generate",
+      "document_path": "generate-affiliate-product-promotion-link-202405",
+      "file": "affiliate-seller/generate-affiliate-product-promotion-link-202405.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/generate-affiliate-product-promotion-link-202405"
+    },
+    {
+      "title": "Generate Target Collaboration Link",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202509/target_collaboration/{target_collaboration_id}/link",
+      "document_path": "generate-target-collaboration-link-202509",
+      "file": "affiliate-seller/generate-target-collaboration-link-202509.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/generate-target-collaboration-link-202509"
+    },
+    {
+      "title": "Get Compass Task List",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202603/compass/offline_tasks",
+      "document_path": "get-compass-task-list-202603",
+      "file": "affiliate-seller/get-compass-task-list-202603.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-compass-task-list-202603"
+    },
+    {
+      "title": "Get Conversation List",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202412/conversations",
+      "document_path": "get-conversation-list-202412",
+      "file": "affiliate-seller/get-conversation-list-202412.md",
+      "scope": [
+        "seller.affiliate_messages.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-conversation-list-202412"
+    },
+    {
+      "title": "Get Creator Conversation Messages",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202412/conversation/{conversation_id}/messages",
+      "document_path": "get-creator-conversation-messages-202412",
+      "file": "affiliate-seller/get-creator-conversation-messages-202412.md",
+      "scope": [
+        "seller.affiliate_messages.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-creator-conversation-messages-202412"
+    },
+    {
+      "title": "Get Creator Marketplace Advanced Search Filters",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202608/marketplace_creators/search/filter",
+      "document_path": "get-creator-marketplace-advanced-search-filters-202608",
+      "file": "affiliate-seller/get-creator-marketplace-advanced-search-filters-202608.md",
+      "scope": [
+        "seller.creator_marketplace.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-creator-marketplace-advanced-search-filters-202608"
+    },
+    {
+      "title": "Get Inbox Category Counts",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202608/conversations/group_counts",
+      "document_path": "get-inbox-category-counts-202608",
+      "file": "affiliate-seller/get-inbox-category-counts-202608.md",
+      "scope": [
+        "seller.affiliate_messages.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-inbox-category-counts-202608"
+    },
+    {
+      "title": "Get Latest Unread Messages",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202412/conversations/messages/list/newest",
+      "document_path": "get-latest-unread-messages-202412",
+      "file": "affiliate-seller/get-latest-unread-messages-202412.md",
+      "scope": [
+        "seller.affiliate_messages.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-latest-unread-messages-202412"
+    },
+    {
+      "title": "Get Marketplace Creator Performance",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202608/marketplace_creators/{creator_user_id}",
+      "document_path": "get-marketplace-creator-performance-202608",
+      "file": "affiliate-seller/get-marketplace-creator-performance-202608.md",
+      "scope": [
+        "seller.creator_marketplace.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-marketplace-creator-performance-202608"
+    },
+    {
+      "title": "Get Open Collaboration Creator Content Details",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202508/open_collaborations/creator_content_details",
+      "document_path": "get-open-collaboration-creator-content-details-202508",
+      "file": "affiliate-seller/get-open-collaboration-creator-content-details-202508.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-open-collaboration-creator-content-details-202508"
+    },
+    {
+      "title": "Get Open Collaboration Sample Rules",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202410/open_collaborations/sample_rules",
+      "document_path": "get-open-collaboration-sample-rules-202410",
+      "file": "affiliate-seller/get-open-collaboration-sample-rules-202410.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-open-collaboration-sample-rules-202410"
+    },
+    {
+      "title": "Get Open Collaboration Settings",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202409/open_collaboration_settings",
+      "document_path": "get-open-collaboration-settings-202409",
+      "file": "affiliate-seller/get-open-collaboration-settings-202409.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-open-collaboration-settings-202409"
+    },
+    {
+      "title": "Get Weekly Creator Outreach Quota",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202607/creator_outreach/quota",
+      "document_path": "get-weekly-creator-outreach-quota-202607",
+      "file": "affiliate-seller/get-weekly-creator-outreach-quota-202607.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-weekly-creator-outreach-quota-202607"
+    },
+    {
+      "title": "Get Weekly Creator Outreach Records",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202608/creator_outreach/records/query",
+      "document_path": "get-weekly-creator-outreach-records-202608",
+      "file": "affiliate-seller/get-weekly-creator-outreach-records-202608.md",
+      "scope": [
+        "seller.affiliate_collaboration.read",
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-weekly-creator-outreach-records-202608"
+    },
+    {
+      "title": "Get or Create Creator Conversation",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202508/conversations",
+      "document_path": "get-or-create-creator-conversation-202508",
+      "file": "affiliate-seller/get-or-create-creator-conversation-202508.md",
+      "scope": [
+        "seller.affiliate_messages.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-or-create-creator-conversation-202508"
+    },
+    {
+      "title": "Mark Conversations as Read",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202412/conversatons/read",
+      "document_path": "mark-conversations-as-read-202412",
+      "file": "affiliate-seller/mark-conversations-as-read-202412.md",
+      "scope": [
+        "seller.affiliate_messages.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/mark-conversations-as-read-202412"
+    },
+    {
+      "title": "Query Creator Promotion Details in Target Collaboration",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202608/target_collaborations/creator_promotion_details/query",
+      "document_path": "query-creator-promotion-details-in-target-collaboration-202608",
+      "file": "affiliate-seller/query-creator-promotion-details-in-target-collaboration-202608.md",
+      "scope": [
+        "seller.affiliate_collaboration.read",
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/query-creator-promotion-details-in-target-collaboration-202608"
+    },
+    {
+      "title": "Query Target Collaboration Detail",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202508/target_collaborations/{target_collaboration_id}",
+      "document_path": "query-target-collaboration-detail-202508",
+      "file": "affiliate-seller/query-target-collaboration-detail-202508.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/query-target-collaboration-detail-202508"
+    },
+    {
+      "title": "Remove Creator From Open Collaboration Product",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202508/open_collaborations/{open_collaboration_id}/remove_creator",
+      "document_path": "remove-creator-from-open-collaboration-product-202508",
+      "file": "affiliate-seller/remove-creator-from-open-collaboration-product-202508.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/remove-creator-from-open-collaboration-product-202508"
+    },
+    {
+      "title": "Remove Open Collaboration",
+      "category": "Affiliate seller",
+      "method": "DELETE",
+      "path": "/affiliate_seller/202409/open_collaborations/products/{product_id}",
+      "document_path": "remove-open-collaboration-202409",
+      "file": "affiliate-seller/remove-open-collaboration-202409.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/remove-open-collaboration-202409"
+    },
+    {
+      "title": "Remove Target Collaboration",
+      "category": "Affiliate seller",
+      "method": "DELETE",
+      "path": "/affiliate_seller/202409/target_collaborations/{target_collaboration_id}",
+      "document_path": "remove-target-collaboration-202409",
+      "file": "affiliate-seller/remove-target-collaboration-202409.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/remove-target-collaboration-202409"
+    },
+    {
+      "title": "Resolve Target Collaboration Conflicts",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202605/target_collaborations/conflicts/resolve",
+      "document_path": "resolve-target-collaboration-conflicts-202605",
+      "file": "affiliate-seller/resolve-target-collaboration-conflicts-202605.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/resolve-target-collaboration-conflicts-202605"
+    },
+    {
+      "title": "Review a Sample Application",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202507/sample_applications/{application_id}/review",
+      "document_path": "review-a-sample-application-202507",
+      "file": "affiliate-seller/review-a-sample-application-202507.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/review-a-sample-application-202507"
+    },
+    {
+      "title": "Search Creators in Creator Marketplace",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202608/marketplace_creators/search",
+      "document_path": "search-creators-in-creator-marketplace-202608",
+      "file": "affiliate-seller/search-creators-in-creator-marketplace-202608.md",
+      "scope": [
+        "seller.creator_marketplace.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-creators-in-creator-marketplace-202608"
+    },
+    {
+      "title": "Search Open Collaborations",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202412/open_collaborations/search",
+      "document_path": "search-open-collaborations-202412",
+      "file": "affiliate-seller/search-open-collaborations-202412.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-open-collaborations-202412"
+    },
+    {
+      "title": "Search Sample Application Fulfillments",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202409/sample_applications/{application_id}/fulfillments/search",
+      "document_path": "search-sample-application-fulfillments-202409",
+      "file": "affiliate-seller/search-sample-application-fulfillments-202409.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-sample-application-fulfillments-202409"
+    },
+    {
+      "title": "Search Sample Applications",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202508/sample_applications/search",
+      "document_path": "search-sample-applications-202508",
+      "file": "affiliate-seller/search-sample-applications-202508.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-sample-applications-202508"
+    },
+    {
+      "title": "Search Seller Affiliate Orders",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202410/orders/search",
+      "document_path": "search-seller-affiliate-orders-202410",
+      "file": "affiliate-seller/search-seller-affiliate-orders-202410.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-seller-affiliate-orders-202410"
+    },
+    {
+      "title": "Search Target Collaborations",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202508/target_collaborations/search",
+      "document_path": "search-target-collaborations-202508",
+      "file": "affiliate-seller/search-target-collaborations-202508.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-target-collaborations-202508"
+    },
+    {
+      "title": "Seller Get Sample Request Deeplink",
+      "category": "Affiliate seller",
+      "method": "GET",
+      "path": "/affiliate_seller/202512/sample_applications/deeplink",
+      "document_path": "seller-get-sample-request-deeplink-202512",
+      "file": "affiliate-seller/seller-get-sample-request-deeplink-202512.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/seller-get-sample-request-deeplink-202512"
+    },
+    {
+      "title": "Seller Search Open Collaboration Products",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202405/open_collaborations/products/search",
+      "document_path": "seller-search-open-collaboration-products-202405",
+      "file": "affiliate-seller/seller-search-open-collaboration-products-202405.md",
+      "scope": [
+        "seller.affiliate_collaboration.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/seller-search-open-collaboration-products-202405"
+    },
+    {
+      "title": "Send IM Message",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202412/conversations/{conversation_id}/messages",
+      "document_path": "send-im-message-202412",
+      "file": "affiliate-seller/send-im-message-202412.md",
+      "scope": [
+        "seller.affiliate_messages.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/send-im-message-202412"
+    },
+    {
+      "title": "Update Conversation Status",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202608/conversations/{conversation_id}/status",
+      "document_path": "update-conversation-status-202608",
+      "file": "affiliate-seller/update-conversation-status-202608.md",
+      "scope": [
+        "seller.affiliate_messages.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-conversation-status-202608"
+    },
+    {
+      "title": "Update Target Collaboration",
+      "category": "Affiliate seller",
+      "method": "PUT",
+      "path": "/affiliate_seller/202508/target_collaborations/{target_collaboration_id}",
+      "document_path": "update-target-collaboration-202508",
+      "file": "affiliate-seller/update-target-collaboration-202508.md",
+      "scope": [
+        "seller.affiliate_collaboration.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-target-collaboration-202508"
+    },
+    {
+      "title": "Upload Message Image",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202511/images/upload",
+      "document_path": "upload-message-image-202511",
+      "file": "affiliate-seller/upload-message-image-202511.md",
+      "scope": [
+        "seller.affiliate_messages.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-message-image-202511"
+    },
+    {
+      "title": "Upload Message Image V2",
+      "category": "Affiliate seller",
+      "method": "POST",
+      "path": "/affiliate_seller/202608/media/upload",
+      "document_path": "upload-message-image-v2-202608",
+      "file": "affiliate-seller/upload-message-image-v2-202608.md",
+      "scope": [
+        "seller.affiliate_messages.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-message-image-v2-202608"
+    },
+    {
+      "title": "Get Bestselling Creators",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202511/creators/bestselling",
+      "document_path": "get-bestselling-creators-202511",
+      "file": "analytics/get-bestselling-creators-202511.md",
+      "scope": [
+        "data.bestselling.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-bestselling-creators-202511"
+    },
+    {
+      "title": "Get Bestselling LIVE Sessions",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202511/lives/bestselling",
+      "document_path": "get-bestselling-live-sessions-202511",
+      "file": "analytics/get-bestselling-live-sessions-202511.md",
+      "scope": [
+        "data.bestselling.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-bestselling-live-sessions-202511"
+    },
+    {
+      "title": "Get Bestselling Products",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202511/products/bestselling",
+      "document_path": "get-bestselling-products-202511",
+      "file": "analytics/get-bestselling-products-202511.md",
+      "scope": [
+        "data.bestselling.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-bestselling-products-202511"
+    },
+    {
+      "title": "Get Bestselling Videos",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202511/videos/bestselling",
+      "document_path": "get-bestselling-videos-202511",
+      "file": "analytics/get-bestselling-videos-202511.md",
+      "scope": [
+        "data.bestselling.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-bestselling-videos-202511"
+    },
+    {
+      "title": "Get Live Room Core Stats",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202502/live_rooms/{live_room_id}/core_stats",
+      "document_path": "get-live-room-core-stats-202502",
+      "file": "analytics/get-live-room-core-stats-202502.md",
+      "scope": [
+        "creator.data.live.read.public"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-live-room-core-stats-202502"
+    },
+    {
+      "title": "Get Live Room GMV and Order Trends",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202502/live_rooms/{live_room_id}/gmv_trend_performances",
+      "document_path": "get-live-room-gmv-and-order-trends-202502",
+      "file": "analytics/get-live-room-gmv-and-order-trends-202502.md",
+      "scope": [
+        "creator.data.live.read.public"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-live-room-gmv-and-order-trends-202502"
+    },
+    {
+      "title": "Get Live Room Interactive Trends",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202502/live_rooms/{live_room_id}/interactive_trend_performances",
+      "document_path": "get-live-room-interactive-trends-202502",
+      "file": "analytics/get-live-room-interactive-trends-202502.md",
+      "scope": [
+        "creator.data.live.read.public"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-live-room-interactive-trends-202502"
+    },
+    {
+      "title": "Get Live Room Product Stats",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202502/live_rooms/{live_room_id}/product_stats",
+      "document_path": "get-live-room-product-stats-202502",
+      "file": "analytics/get-live-room-product-stats-202502.md",
+      "scope": [
+        "creator.data.live.read.public"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-live-room-product-stats-202502"
+    },
+    {
+      "title": "Get Live Room Traffic Performance",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202502/live_rooms/{live_room_id}/traffic_performances",
+      "document_path": "get-live-room-traffic-performance-202502",
+      "file": "analytics/get-live-room-traffic-performance-202502.md",
+      "scope": [
+        "creator.data.live.read.public"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-live-room-traffic-performance-202502"
+    },
+    {
+      "title": "Get Live Room User Portraits",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202502/live_rooms/{live_room_id}/user_portraits",
+      "document_path": "get-live-room-user-portraits-202502",
+      "file": "analytics/get-live-room-user-portraits-202502.md",
+      "scope": [
+        "creator.data.live.read.public"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-live-room-user-portraits-202502"
+    },
+    {
+      "title": "Get Live Room View Trends",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202502/live_rooms/{live_room_id}/view_trend_performances",
+      "document_path": "get-live-room-view-trends-202502",
+      "file": "analytics/get-live-room-view-trends-202502.md",
+      "scope": [
+        "creator.data.live.read.public"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-live-room-view-trends-202502"
+    },
+    {
+      "title": "Get SPS Metric Diagnosis",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202606/shop_performances/metrics/{metric_code}/diagnosis",
+      "document_path": "get-sps-metric-diagnosis-202606",
+      "file": "analytics/get-sps-metric-diagnosis-202606.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-sps-metric-diagnosis-202606"
+    },
+    {
+      "title": "Get SPS Metric Problem Details ",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202606/shop_performances/metrics/{metric_code}/problem_details",
+      "document_path": "get-sps-metric-problem-details-202606",
+      "file": "analytics/get-sps-metric-problem-details-202606.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-sps-metric-problem-details-202606"
+    },
+    {
+      "title": "Get SPS Metric Top Items ",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202606/shop_performances/metrics/{metric_code}/top_items",
+      "document_path": "get-sps-metric-top-items-202606",
+      "file": "analytics/get-sps-metric-top-items-202606.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-sps-metric-top-items-202606"
+    },
+    {
+      "title": "Get SPS Metrics",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202606/shop_performances/metrics",
+      "document_path": "get-sps-metrics-202606",
+      "file": "analytics/get-sps-metrics-202606.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-sps-metrics-202606"
+    },
+    {
+      "title": "Get SPS Overview",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202606/shop_performances/overview",
+      "document_path": "get-sps-overview-202606",
+      "file": "analytics/get-sps-overview-202606.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-sps-overview-202606"
+    },
+    {
+      "title": "Get Shop LIVE Minute Performance",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202510/shop_lives/{live_id}/performance_per_minutes",
+      "document_path": "get-shop-live-minute-performance-202510",
+      "file": "analytics/get-shop-live-minute-performance-202510.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-live-minute-performance-202510"
+    },
+    {
+      "title": "Get Shop LIVE Performance List",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202609/shop_lives/performance",
+      "document_path": "get-shop-live-performance-list-202609",
+      "file": "analytics/get-shop-live-performance-list-202609.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-live-performance-list-202609"
+    },
+    {
+      "title": "Get Shop LIVE Performance Overview",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202609/shop_lives/overview_performance",
+      "document_path": "get-shop-live-performance-overview-202609",
+      "file": "analytics/get-shop-live-performance-overview-202609.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-live-performance-overview-202609"
+    },
+    {
+      "title": "Get Shop LIVE Products Performance List",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202512/shop/{live_id}/products_performance",
+      "document_path": "get-shop-live-products-performance-list-202512",
+      "file": "analytics/get-shop-live-products-performance-list-202512.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-live-products-performance-list-202512"
+    },
+    {
+      "title": "Get Shop Performance",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202609/shop/performance",
+      "document_path": "get-shop-performance-202609",
+      "file": "analytics/get-shop-performance-202609.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-performance-202609"
+    },
+    {
+      "title": "Get Shop Performance Per Hour",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202510/shop/performance/{date}/performance_per_hour",
+      "document_path": "get-shop-performance-per-hour-202510",
+      "file": "analytics/get-shop-performance-per-hour-202510.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-performance-per-hour-202510"
+    },
+    {
+      "title": "Get Shop Product Performance Detail",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202509/shop_products/{product_id}/performance",
+      "document_path": "get-shop-product-performance-detail-202509",
+      "file": "analytics/get-shop-product-performance-detail-202509.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-product-performance-detail-202509"
+    },
+    {
+      "title": "Get Shop Product Performance List",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202605/shop_products/performance",
+      "document_path": "get-shop-product-performance-list-202605",
+      "file": "analytics/get-shop-product-performance-list-202605.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-product-performance-list-202605"
+    },
+    {
+      "title": "Get Shop SKU Performance Detail",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202509/shop_skus/{sku_id}/performance",
+      "document_path": "get-shop-sku-performance-detail-202509",
+      "file": "analytics/get-shop-sku-performance-detail-202509.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-sku-performance-detail-202509"
+    },
+    {
+      "title": "Get Shop SKU Performance List",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202509/shop_skus/performance",
+      "document_path": "get-shop-sku-performance-list-202509",
+      "file": "analytics/get-shop-sku-performance-list-202509.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-sku-performance-list-202509"
+    },
+    {
+      "title": "Get Shop Video Performance Details",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202509/shop_videos/{video_id}/performance",
+      "document_path": "get-shop-video-performance-details-202509",
+      "file": "analytics/get-shop-video-performance-details-202509.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-video-performance-details-202509"
+    },
+    {
+      "title": "Get Shop Video Performance List",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202605/shop_videos/performance",
+      "document_path": "get-shop-video-performance-list-202605",
+      "file": "analytics/get-shop-video-performance-list-202605.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-video-performance-list-202605"
+    },
+    {
+      "title": "Get Shop Video Performance Overview",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202609/shop_videos/overview_performance",
+      "document_path": "get-shop-video-performance-overview-202609",
+      "file": "analytics/get-shop-video-performance-overview-202609.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-video-performance-overview-202609"
+    },
+    {
+      "title": "Get Shop Video Product Performance List",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202509/shop_videos/{video_id}/products/performance",
+      "document_path": "get-shop-video-product-performance-list-202509",
+      "file": "analytics/get-shop-video-product-performance-list-202509.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-video-product-performance-list-202509"
+    },
+    {
+      "title": "Get Shop Videos Performance Details",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202609/shop_videos/batch_performance",
+      "document_path": "get-shop-videos-performance-details-202609",
+      "file": "analytics/get-shop-videos-performance-details-202609.md",
+      "scope": [
+        "data.shop_analytics.public.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-videos-performance-details-202609"
+    },
+    {
+      "title": "Get Video Performances",
+      "category": "Analytics",
+      "method": "GET",
+      "path": "/analytics/202403/videos/performances",
+      "document_path": "get-video-performances-202403",
+      "file": "analytics/get-video-performances-202403.md",
+      "scope": [
+        "creator.video.write",
+        "creator.data.live.read.public"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-video-performances-202403"
+    },
+    {
+      "title": "Get Authorized Category Assets",
+      "category": "Authorization",
+      "method": "GET",
+      "path": "/authorization/202405/category_assets",
+      "document_path": "get-authorized-category-assets-202405",
+      "file": "authorization/get-authorized-category-assets-202405.md",
+      "scope": [
+        "partner.authorization.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-authorized-category-assets-202405"
+    },
+    {
+      "title": "Get Authorized Shops",
+      "category": "Authorization",
+      "method": "GET",
+      "path": "/authorization/202309/shops",
+      "document_path": "get-authorized-shops-202309",
+      "file": "authorization/get-authorized-shops-202309.md",
+      "scope": [
+        "seller.authorization.info",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-authorized-shops-202309"
+    },
+    {
+      "title": "Create Custom Engagement Task",
+      "category": "Customer engagement",
+      "method": "POST",
+      "path": "/customer_engagement/202502/engagement_tasks/custom",
+      "document_path": "create-custom-engagement-task-202502",
+      "file": "customer-engagement/create-custom-engagement-task-202502.md",
+      "scope": [
+        "seller.customer_engagement.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-custom-engagement-task-202502"
+    },
+    {
+      "title": "Create Engagement Task",
+      "category": "Customer engagement",
+      "method": "POST",
+      "path": "/customer_engagement/202412/engagement_tasks",
+      "document_path": "create-engagement-task-202412",
+      "file": "customer-engagement/create-engagement-task-202412.md",
+      "scope": [
+        "seller.customer_engagement.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-engagement-task-202412"
+    },
+    {
+      "title": "Get Engagement Feature Permissions",
+      "category": "Customer engagement",
+      "method": "GET",
+      "path": "/customer_engagement/202502/permissions",
+      "document_path": "get-engagement-feature-permissions-202502",
+      "file": "customer-engagement/get-engagement-feature-permissions-202502.md",
+      "scope": [
+        "seller.customer_engagement.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-engagement-feature-permissions-202502"
+    },
+    {
+      "title": "Get Engagement Task Performances",
+      "category": "Customer engagement",
+      "method": "POST",
+      "path": "/customer_engagement/202412/performances",
+      "document_path": "get-engagement-task-performances-202412",
+      "file": "customer-engagement/get-engagement-task-performances-202412.md",
+      "scope": [
+        "seller.customer_engagement.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-engagement-task-performances-202412"
+    },
+    {
+      "title": "Get Message Templates",
+      "category": "Customer engagement",
+      "method": "GET",
+      "path": "/customer_engagement/202412/message_templates",
+      "document_path": "get-message-templates-202412",
+      "file": "customer-engagement/get-message-templates-202412.md",
+      "scope": [
+        "seller.customer_engagement.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-message-templates-202412"
+    },
+    {
+      "title": "Send Engagement Message",
+      "category": "Customer engagement",
+      "method": "POST",
+      "path": "/customer_engagement/202412/messages",
+      "document_path": "send-engagement-message-202412",
+      "file": "customer-engagement/send-engagement-message-202412.md",
+      "scope": [
+        "seller.customer_engagement.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/send-engagement-message-202412"
+    },
+    {
+      "title": "Create Conversation",
+      "category": "Customer service",
+      "method": "POST",
+      "path": "/customer_service/202309/conversations",
+      "document_path": "create-conversation-202309",
+      "file": "customer-service/create-conversation-202309.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-conversation-202309"
+    },
+    {
+      "title": "End Session",
+      "category": "Customer service",
+      "method": "POST",
+      "path": "/customer_service/202605/conversations/{conversation_id}/sessions/{session_id}/end",
+      "document_path": "end-session-202605",
+      "file": "customer-service/end-session-202605.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/end-session-202605"
+    },
+    {
+      "title": "Get Agent Settings",
+      "category": "Customer service",
+      "method": "GET",
+      "path": "/customer_service/202309/agents/settings",
+      "document_path": "get-agent-settings-202309",
+      "file": "customer-service/get-agent-settings-202309.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-agent-settings-202309"
+    },
+    {
+      "title": "Get Conversation",
+      "category": "Customer service",
+      "method": "GET",
+      "path": "/customer_service/202601/conversations/{conversation_id}",
+      "document_path": "get-conversation-202601",
+      "file": "customer-service/get-conversation-202601.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-conversation-202601"
+    },
+    {
+      "title": "Get Conversation Messages",
+      "category": "Customer service",
+      "method": "GET",
+      "path": "/customer_service/202309/conversations/{conversation_id}/messages",
+      "document_path": "get-conversation-messages-202309",
+      "file": "customer-service/get-conversation-messages-202309.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-conversation-messages-202309"
+    },
+    {
+      "title": "Get Conversations",
+      "category": "Customer service",
+      "method": "GET",
+      "path": "/customer_service/202309/conversations",
+      "document_path": "get-conversations-202309",
+      "file": "customer-service/get-conversations-202309.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-conversations-202309"
+    },
+    {
+      "title": "Get Customer Service Performance",
+      "category": "Customer service",
+      "method": "GET",
+      "path": "/customer_service/202407/performance",
+      "document_path": "get-customer-service-performance-202407",
+      "file": "customer-service/get-customer-service-performance-202407.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-customer-service-performance-202407"
+    },
+    {
+      "title": "Mark Buyer Messages as Read",
+      "category": "Customer service",
+      "method": "POST",
+      "path": "/customer_service/202309/conversations/{conversation_id}/messages/read",
+      "document_path": "mark-buyer-messages-as-read-202309",
+      "file": "customer-service/mark-buyer-messages-as-read-202309.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/mark-buyer-messages-as-read-202309"
+    },
+    {
+      "title": "Search Sessions",
+      "category": "Customer service",
+      "method": "POST",
+      "path": "/customer_service/202602/sessions/search",
+      "document_path": "search-sessions-202602",
+      "file": "customer-service/search-sessions-202602.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-sessions-202602"
+    },
+    {
+      "title": "Send Message",
+      "category": "Customer service",
+      "method": "POST",
+      "path": "/customer_service/202606/conversations/{conversation_id}/messages",
+      "document_path": "send-message-202606",
+      "file": "customer-service/send-message-202606.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/send-message-202606"
+    },
+    {
+      "title": "Update Agent Settings ",
+      "category": "Customer service",
+      "method": "PUT",
+      "path": "/customer_service/202309/agents/settings",
+      "document_path": "update-agent-settings-202309",
+      "file": "customer-service/update-agent-settings-202309.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-agent-settings-202309"
+    },
+    {
+      "title": "Upload Image for Buyer Messages",
+      "category": "Customer service",
+      "method": "POST",
+      "path": "/customer_service/202309/images/upload",
+      "document_path": "upload-image-for-buyer-messages-202309",
+      "file": "customer-service/upload-image-for-buyer-messages-202309.md",
+      "scope": [
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-image-for-buyer-messages-202309"
+    },
+    {
+      "title": "Delete Webhook for an Event",
+      "category": "Event",
+      "method": "DELETE",
+      "path": "/event/202309/webhooks",
+      "document_path": "delete-webhook-for-an-event-202309",
+      "file": "event/delete-webhook-for-an-event-202309.md",
+      "scope": [
+        "seller.authorization.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/delete-webhook-for-an-event-202309"
+    },
+    {
+      "title": "Get Shop Webhooks",
+      "category": "Event",
+      "method": "GET",
+      "path": "/event/202309/webhooks",
+      "document_path": "get-shop-webhooks-202309",
+      "file": "event/get-shop-webhooks-202309.md",
+      "scope": [
+        "seller.authorization.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-webhooks-202309"
+    },
+    {
+      "title": "Update Shop Webhook",
+      "category": "Event",
+      "method": "PUT",
+      "path": "/event/202309/webhooks",
+      "document_path": "update-shop-webhook-202309",
+      "file": "event/update-shop-webhook-202309.md",
+      "scope": [
+        "seller.authorization.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-shop-webhook-202309"
+    },
+    {
+      "title": "Get Payments",
+      "category": "Finance",
+      "method": "GET",
+      "path": "/finance/202605/payments",
+      "document_path": "get-payments-202605",
+      "file": "finance/get-payments-202605.md",
+      "scope": [
+        "seller.finance.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-payments-202605"
+    },
+    {
+      "title": "Get Seller Financial Transactions",
+      "category": "Finance",
+      "method": "GET",
+      "path": "/finance/202309/withdrawals",
+      "document_path": "get-seller-financial-transactions-202309",
+      "file": "finance/get-seller-financial-transactions-202309.md",
+      "scope": [
+        "seller.finance.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-seller-financial-transactions-202309"
+    },
+    {
+      "title": "Get Statements",
+      "category": "Finance",
+      "method": "GET",
+      "path": "/finance/202309/statements",
+      "document_path": "get-statements-202309",
+      "file": "finance/get-statements-202309.md",
+      "scope": [
+        "seller.finance.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-statements-202309"
+    },
+    {
+      "title": "Get TradeIn Account Transactions",
+      "category": "Finance",
+      "method": "GET",
+      "path": "/finance/202609/account_transactions",
+      "document_path": "get-tradein-account-transactions-202609",
+      "file": "finance/get-tradein-account-transactions-202609.md",
+      "scope": [
+        "seller.finance.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-tradein-account-transactions-202609"
+    },
+    {
+      "title": "Get TradeIn Supplier Account Balance",
+      "category": "Finance",
+      "method": "GET",
+      "path": "/finance/202609/account_balances",
+      "document_path": "get-tradein-supplier-account-balance-202609",
+      "file": "finance/get-tradein-supplier-account-balance-202609.md",
+      "scope": [
+        "seller.finance.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-tradein-supplier-account-balance-202609"
+    },
+    {
+      "title": "Get Transactions by Order",
+      "category": "Finance",
+      "method": "GET",
+      "path": "/finance/202501/orders/{order_id}/statement_transactions",
+      "document_path": "get-transactions-by-order-202501",
+      "file": "finance/get-transactions-by-order-202501.md",
+      "scope": [
+        "seller.finance.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-transactions-by-order-202501"
+    },
+    {
+      "title": "Get Transactions by Statement",
+      "category": "Finance",
+      "method": "GET",
+      "path": "/finance/202501/statements/{statement_id}/statement_transactions",
+      "document_path": "get-transactions-by-statement-202501",
+      "file": "finance/get-transactions-by-statement-202501.md",
+      "scope": [
+        "seller.finance.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-transactions-by-statement-202501"
+    },
+    {
+      "title": "Get Unsettled Transactions",
+      "category": "Finance",
+      "method": "GET",
+      "path": "/finance/202507/orders/unsettled",
+      "document_path": "get-unsettled-transactions-202507",
+      "file": "finance/get-unsettled-transactions-202507.md",
+      "scope": [
+        "seller.finance.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-unsettled-transactions-202507"
+    },
+    {
+      "title": "Cancel FBT MCF Order",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202601/mcf_outbound_orders/cancel",
+      "document_path": "cancel-fbt-mcf-order-202601",
+      "file": "fulfilled-by-tiktok-fbt/cancel-fbt-mcf-order-202601.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/cancel-fbt-mcf-order-202601"
+    },
+    {
+      "title": "Cancel Inbound Order",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202602/inbound_orders/cancel",
+      "document_path": "cancel-inbound-order-202602",
+      "file": "fulfilled-by-tiktok-fbt/cancel-inbound-order-202602.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/cancel-inbound-order-202602"
+    },
+    {
+      "title": "Confirm Inbound Method",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202603/confirm_inbound_method",
+      "document_path": "confirm-inbound-method-202603",
+      "file": "fulfilled-by-tiktok-fbt/confirm-inbound-method-202603.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/confirm-inbound-method-202603"
+    },
+    {
+      "title": "Create FBT Goods",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202607/goods/create_goods",
+      "document_path": "create-fbt-goods-202607",
+      "file": "fulfilled-by-tiktok-fbt/create-fbt-goods-202607.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-fbt-goods-202607"
+    },
+    {
+      "title": "Create FBT MCF Order",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202607/mcf_outbound_orders",
+      "document_path": "create-fbt-mcf-order-202607",
+      "file": "fulfilled-by-tiktok-fbt/create-fbt-mcf-order-202607.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-fbt-mcf-order-202607"
+    },
+    {
+      "title": "Create or Update Inbound Plan",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202602/create_update_inbound_plan",
+      "document_path": "create-or-update-inbound-plan-202602",
+      "file": "fulfilled-by-tiktok-fbt/create-or-update-inbound-plan-202602.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-or-update-inbound-plan-202602"
+    },
+    {
+      "title": "Get FBT Inbound Order Details",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "GET",
+      "path": "/fbt/202602/inbound_orders",
+      "document_path": "get-fbt-inbound-order-details-202602",
+      "file": "fulfilled-by-tiktok-fbt/get-fbt-inbound-order-details-202602.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-fbt-inbound-order-details-202602"
+    },
+    {
+      "title": "Get FBT MCF Order Status",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "GET",
+      "path": "/fbt/202601/mcf_outbound_orders",
+      "document_path": "get-fbt-mcf-order-status-202601",
+      "file": "fulfilled-by-tiktok-fbt/get-fbt-mcf-order-status-202601.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-fbt-mcf-order-status-202601"
+    },
+    {
+      "title": "Get FBT Merchant MCF Status",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "GET",
+      "path": "/fbt/202601/merchants/mcf_status",
+      "document_path": "get-fbt-merchant-mcf-status-202601",
+      "file": "fulfilled-by-tiktok-fbt/get-fbt-merchant-mcf-status-202601.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-fbt-merchant-mcf-status-202601"
+    },
+    {
+      "title": "Get FBT Merchant Onboarded Regions",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "GET",
+      "path": "/fbt/202409/merchants/onboarded_regions",
+      "document_path": "get-fbt-merchant-onboarded-regions-202409",
+      "file": "fulfilled-by-tiktok-fbt/get-fbt-merchant-onboarded-regions-202409.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-fbt-merchant-onboarded-regions-202409"
+    },
+    {
+      "title": "Get FBT Warehouse List ",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "GET",
+      "path": "/fbt/202408/warehouses",
+      "document_path": "get-fbt-warehouse-list-202408",
+      "file": "fulfilled-by-tiktok-fbt/get-fbt-warehouse-list-202408.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-fbt-warehouse-list-202408"
+    },
+    {
+      "title": "Get Inbound Method Detail",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202602/inbound_method_detail",
+      "document_path": "get-inbound-method-detail-202602",
+      "file": "fulfilled-by-tiktok-fbt/get-inbound-method-detail-202602.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-inbound-method-detail-202602"
+    },
+    {
+      "title": "List Available Inbound Methods",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202602/list_available_inbound_method",
+      "document_path": "list-available-inbound-methods-202602",
+      "file": "fulfilled-by-tiktok-fbt/list-available-inbound-methods-202602.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/list-available-inbound-methods-202602"
+    },
+    {
+      "title": "Print Inbound Order Labels",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202602/inbound_orders/label_print",
+      "document_path": "print-inbound-order-labels-202602",
+      "file": "fulfilled-by-tiktok-fbt/print-inbound-order-labels-202602.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/print-inbound-order-labels-202602"
+    },
+    {
+      "title": "Query Goods Inventory For MCF",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202601/mcf/goods/inventory/search",
+      "document_path": "query-goods-inventory-for-mcf-202601",
+      "file": "fulfilled-by-tiktok-fbt/query-goods-inventory-for-mcf-202601.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/query-goods-inventory-for-mcf-202601"
+    },
+    {
+      "title": "Search FBT Inventory",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202408/inventory/search",
+      "document_path": "search-fbt-inventory-202408",
+      "file": "fulfilled-by-tiktok-fbt/search-fbt-inventory-202408.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-fbt-inventory-202408"
+    },
+    {
+      "title": "Search FBT Inventory Record",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202410/inventory_records/search",
+      "document_path": "search-fbt-inventory-record-202410",
+      "file": "fulfilled-by-tiktok-fbt/search-fbt-inventory-record-202410.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-fbt-inventory-record-202410"
+    },
+    {
+      "title": "Search Goods Hazmat And Expiration Info",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202603/goods/hazmat_and_expiration_info/search",
+      "document_path": "search-goods-hazmat-and-expiration-info-202603",
+      "file": "fulfilled-by-tiktok-fbt/search-goods-hazmat-and-expiration-info-202603.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-goods-hazmat-and-expiration-info-202603"
+    },
+    {
+      "title": "Search Goods Info",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202607/goods/search",
+      "document_path": "search-goods-info-202607",
+      "file": "fulfilled-by-tiktok-fbt/search-goods-info-202607.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-goods-info-202607"
+    },
+    {
+      "title": "Ship Inbound Order",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202603/ship_inbound_order",
+      "document_path": "ship-inbound-order-202603",
+      "file": "fulfilled-by-tiktok-fbt/ship-inbound-order-202603.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/ship-inbound-order-202603"
+    },
+    {
+      "title": "Update FBT Goods Info",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202607/goods/update_goods_info",
+      "document_path": "update-fbt-goods-info-202607",
+      "file": "fulfilled-by-tiktok-fbt/update-fbt-goods-info-202607.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-fbt-goods-info-202607"
+    },
+    {
+      "title": "Update Goods-SKU Relations",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202603/goods/update_goods_sku_relation",
+      "document_path": "update-goods-sku-relations-202603",
+      "file": "fulfilled-by-tiktok-fbt/update-goods-sku-relations-202603.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-goods-sku-relations-202603"
+    },
+    {
+      "title": "Update Inbound Order Tracking",
+      "category": "Fulfilled by TikTok (FBT)",
+      "method": "POST",
+      "path": "/fbt/202602/inbound_orders/tracking_update",
+      "document_path": "update-inbound-order-tracking-202602",
+      "file": "fulfilled-by-tiktok-fbt/update-inbound-order-tracking-202602.md",
+      "scope": [
+        "seller.fbt.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-inbound-order-tracking-202602"
+    },
+    {
+      "title": "Batch Ship Packages",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/packages/ship",
+      "document_path": "batch-ship-packages-202309",
+      "file": "fulfillment/batch-ship-packages-202309.md",
+      "scope": [
+        "seller.fulfillment.basic",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/batch-ship-packages-202309"
+    },
+    {
+      "title": "Check TikTok Shipping and Collection by TikTok Coverage",
+      "category": "Fulfillment",
+      "method": "GET",
+      "path": "/fulfillment/202508/tts_tracking_validation",
+      "document_path": "check-tiktok-shipping-and-collection-by-tiktok-coverage-202508",
+      "file": "fulfillment/check-tiktok-shipping-and-collection-by-tiktok-coverage-202508.md",
+      "scope": [
+        "seller.logistics"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/check-tiktok-shipping-and-collection-by-tiktok-coverage-202508"
+    },
+    {
+      "title": "Combine Package",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/packages/combine",
+      "document_path": "combine-package-202309",
+      "file": "fulfillment/combine-package-202309.md",
+      "scope": [
+        "seller.fulfillment.package.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/combine-package-202309"
+    },
+    {
+      "title": "Confirm Order Split",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/orders/{order_id}/split",
+      "document_path": "confirm-order-split-202309",
+      "file": "fulfillment/confirm-order-split-202309.md",
+      "scope": [
+        "seller.fulfillment.package.write",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/confirm-order-split-202309"
+    },
+    {
+      "title": "Create First Mile Bundle",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202407/bundles",
+      "document_path": "create-first-mile-bundle-202407",
+      "file": "fulfillment/create-first-mile-bundle-202407.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-first-mile-bundle-202407"
+    },
+    {
+      "title": "Create First Mile Bundle(V2)",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202510/first_mile_bundle",
+      "document_path": "create-first-mile-bundle-v2-202510",
+      "file": "fulfillment/create-first-mile-bundle-v2-202510.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-first-mile-bundle-v2-202510"
+    },
+    {
+      "title": "Create Packages",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202512/packages",
+      "document_path": "create-packages-202512",
+      "file": "fulfillment/create-packages-202512.md",
+      "scope": [
+        "seller.fulfillment.basic",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-packages-202512"
+    },
+    {
+      "title": "Get Eligible Shipping Services",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/orders/{order_id}/shipping_services/query",
+      "document_path": "get-eligible-shipping-services-202309",
+      "file": "fulfillment/get-eligible-shipping-services-202309.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-eligible-shipping-services-202309"
+    },
+    {
+      "title": "Get Order Customs Requirements",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202607/orders/customs_info/query",
+      "document_path": "get-order-customs-requirements-202607",
+      "file": "fulfillment/get-order-customs-requirements-202607.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-order-customs-requirements-202607"
+    },
+    {
+      "title": "Get Order Split Attributes",
+      "category": "Fulfillment",
+      "method": "GET",
+      "path": "/fulfillment/202309/orders/split_attributes",
+      "document_path": "get-order-split-attributes-202309",
+      "file": "fulfillment/get-order-split-attributes-202309.md",
+      "scope": [
+        "seller.fulfillment.package.write",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-order-split-attributes-202309"
+    },
+    {
+      "title": "Get Order Tracking",
+      "category": "Fulfillment",
+      "method": "GET",
+      "path": "/fulfillment/202309/orders/{order_id}/tracking",
+      "document_path": "get-order-tracking-202309",
+      "file": "fulfillment/get-order-tracking-202309.md",
+      "scope": [
+        "seller.logistics"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-order-tracking-202309"
+    },
+    {
+      "title": "Get POD Customization Details",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202606/pod_details/get",
+      "document_path": "get-pod-customization-details-202606",
+      "file": "fulfillment/get-pod-customization-details-202606.md",
+      "scope": [
+        "seller.redeem_info.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-pod-customization-details-202606"
+    },
+    {
+      "title": "Get Package Detail",
+      "category": "Fulfillment",
+      "method": "GET",
+      "path": "/fulfillment/202309/packages/{package_id}",
+      "document_path": "get-package-detail-202309",
+      "file": "fulfillment/get-package-detail-202309.md",
+      "scope": [
+        "seller.fulfillment.basic",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-package-detail-202309"
+    },
+    {
+      "title": "Get Package Handover Time Slots",
+      "category": "Fulfillment",
+      "method": "GET",
+      "path": "/fulfillment/202309/packages/{package_id}/handover_time_slots",
+      "document_path": "get-package-handover-time-slots-202309",
+      "file": "fulfillment/get-package-handover-time-slots-202309.md",
+      "scope": [
+        "seller.fulfillment.package.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-package-handover-time-slots-202309"
+    },
+    {
+      "title": "Get Package Shipping Document",
+      "category": "Fulfillment",
+      "method": "GET",
+      "path": "/fulfillment/202309/packages/{package_id}/shipping_documents",
+      "document_path": "get-package-shipping-document-202309",
+      "file": "fulfillment/get-package-shipping-document-202309.md",
+      "scope": [
+        "seller.fulfillment.basic",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-package-shipping-document-202309"
+    },
+    {
+      "title": "Mark Package As Shipped",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202610/orders/{order_id}/packages",
+      "document_path": "mark-package-as-shipped-202610",
+      "file": "fulfillment/mark-package-as-shipped-202610.md",
+      "scope": [
+        "seller.fulfillment.basic",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/mark-package-as-shipped-202610"
+    },
+    {
+      "title": "Search Combinable Packages",
+      "category": "Fulfillment",
+      "method": "GET",
+      "path": "/fulfillment/202309/combinable_packages/search",
+      "document_path": "search-combinable-packages-202309",
+      "file": "fulfillment/search-combinable-packages-202309.md",
+      "scope": [
+        "seller.fulfillment.package.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-combinable-packages-202309"
+    },
+    {
+      "title": "Search Package",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/packages/search",
+      "document_path": "search-package-202309",
+      "file": "fulfillment/search-package-202309.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-package-202309"
+    },
+    {
+      "title": "Ship Package",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/packages/{package_id}/ship",
+      "document_path": "ship-package-202309",
+      "file": "fulfillment/ship-package-202309.md",
+      "scope": [
+        "seller.fulfillment.basic",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/ship-package-202309"
+    },
+    {
+      "title": "Submit Customs Clearance Information",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202607/orders/customs_info/submit",
+      "document_path": "submit-customs-clearance-information-202607",
+      "file": "fulfillment/submit-customs-clearance-information-202607.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/submit-customs-clearance-information-202607"
+    },
+    {
+      "title": "Submit Redemption Information",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202601/redeem_info/callback",
+      "document_path": "submit-redemption-information-202601",
+      "file": "fulfillment/submit-redemption-information-202601.md",
+      "scope": [
+        "seller.redeem_info.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/submit-redemption-information-202601"
+    },
+    {
+      "title": "Tracking status update",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202609/order/sof/track/update",
+      "document_path": "tracking-status-update-202609",
+      "file": "fulfillment/tracking-status-update-202609.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/tracking-status-update-202609"
+    },
+    {
+      "title": "Uncombine Packages",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/packages/{package_id}/uncombine",
+      "document_path": "uncombine-packages-202309",
+      "file": "fulfillment/uncombine-packages-202309.md",
+      "scope": [
+        "seller.fulfillment.package.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/uncombine-packages-202309"
+    },
+    {
+      "title": "Update Order Shipping Info",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/orders/{order_id}/shipping_info/update",
+      "document_path": "update-order-shipping-info-202309",
+      "file": "fulfillment/update-order-shipping-info-202309.md",
+      "scope": [
+        "seller.logistics"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-order-shipping-info-202309"
+    },
+    {
+      "title": "Update Package Delivery Status",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/packages/deliver",
+      "document_path": "update-package-delivery-status-202309",
+      "file": "fulfillment/update-package-delivery-status-202309.md",
+      "scope": [
+        "seller.delivery.status.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-package-delivery-status-202309"
+    },
+    {
+      "title": "Update Package Shipping Info",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202610/packages/{package_id}/shipping_info/update",
+      "document_path": "update-package-shipping-info-202610",
+      "file": "fulfillment/update-package-shipping-info-202610.md",
+      "scope": [
+        "seller.fulfillment.basic",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-package-shipping-info-202610"
+    },
+    {
+      "title": "Upload Invoice",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202502/invoice/upload",
+      "document_path": "upload-invoice-202502",
+      "file": "fulfillment/upload-invoice-202502.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-invoice-202502"
+    },
+    {
+      "title": "Upload Proof of Delivery File",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/files/upload",
+      "document_path": "upload-proof-of-delivery-file-202309",
+      "file": "fulfillment/upload-proof-of-delivery-file-202309.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-proof-of-delivery-file-202309"
+    },
+    {
+      "title": "Upload Proof of Delivery Image",
+      "category": "Fulfillment",
+      "method": "POST",
+      "path": "/fulfillment/202309/images/upload",
+      "document_path": "upload-proof-of-delivery-image-202309",
+      "file": "fulfillment/upload-proof-of-delivery-image-202309.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-proof-of-delivery-image-202309"
+    },
+    {
+      "title": "Check Shipping Template Existence",
+      "category": "Logistics",
+      "method": "GET",
+      "path": "/logistics/202606/seller_template/template_exist",
+      "document_path": "check-shipping-template-existence-202606",
+      "file": "logistics/check-shipping-template-existence-202606.md",
+      "scope": [
+        "seller.logistics"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/check-shipping-template-existence-202606"
+    },
+    {
+      "title": "Get Global Seller Warehouses",
+      "category": "Logistics",
+      "method": "GET",
+      "path": "/logistics/202309/global_warehouses",
+      "document_path": "get-global-seller-warehouses-202309",
+      "file": "logistics/get-global-seller-warehouses-202309.md",
+      "scope": [
+        "seller.shop.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-global-seller-warehouses-202309"
+    },
+    {
+      "title": "Get Logistics Tracking",
+      "category": "Logistics",
+      "method": "GET",
+      "path": "/logistics/202604/orders/{order_id}/tracking",
+      "document_path": "get-logistics-tracking-202604",
+      "file": "logistics/get-logistics-tracking-202604.md",
+      "scope": [
+        "seller.logistics"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-logistics-tracking-202604"
+    },
+    {
+      "title": "Get Shipping Providers",
+      "category": "Logistics",
+      "method": "GET",
+      "path": "/logistics/202309/delivery_options/{delivery_option_id}/shipping_providers",
+      "document_path": "get-shipping-providers-202309",
+      "file": "logistics/get-shipping-providers-202309.md",
+      "scope": [
+        "seller.fulfillment.basic",
+        "seller.logistics",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shipping-providers-202309"
+    },
+    {
+      "title": "Get Shipping Template Availability",
+      "category": "Logistics",
+      "method": "GET",
+      "path": "/logistics/202510/seller_templates",
+      "document_path": "get-shipping-template-availability-202510",
+      "file": "logistics/get-shipping-template-availability-202510.md",
+      "scope": [
+        "seller.logistics"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shipping-template-availability-202510"
+    },
+    {
+      "title": "Get Warehouse Delivery Options",
+      "category": "Logistics",
+      "method": "GET",
+      "path": "/logistics/202309/warehouses/{warehouse_id}/delivery_options",
+      "document_path": "get-warehouse-delivery-options-202309",
+      "file": "logistics/get-warehouse-delivery-options-202309.md",
+      "scope": [
+        "seller.logistics"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-warehouse-delivery-options-202309"
+    },
+    {
+      "title": "Get Warehouse List",
+      "category": "Logistics",
+      "method": "GET",
+      "path": "/logistics/202309/warehouses",
+      "document_path": "get-warehouse-list-202309",
+      "file": "logistics/get-warehouse-list-202309.md",
+      "scope": [
+        "seller.logistics"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-warehouse-list-202309"
+    },
+    {
+      "title": "Add External Order References",
+      "category": "Orders",
+      "method": "POST",
+      "path": "/order/202406/orders/external_orders",
+      "document_path": "add-external-order-references-202406",
+      "file": "orders/add-external-order-references-202406.md",
+      "scope": [
+        "seller.order.ext_ref.write.custom",
+        "seller.order.ext_ref.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/add-external-order-references-202406"
+    },
+    {
+      "title": "Get External Order References",
+      "category": "Orders",
+      "method": "GET",
+      "path": "/order/202406/orders/{order_id}/external_orders",
+      "document_path": "get-external-order-references-202406",
+      "file": "orders/get-external-order-references-202406.md",
+      "scope": [
+        "seller.order.ext_ref.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-external-order-references-202406"
+    },
+    {
+      "title": "Get Order Detail",
+      "category": "Orders",
+      "method": "GET",
+      "path": "/order/202507/orders",
+      "document_path": "get-order-detail-202507",
+      "file": "orders/get-order-detail-202507.md",
+      "scope": [
+        "seller.order.info",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-order-detail-202507"
+    },
+    {
+      "title": "Get Order List",
+      "category": "Orders",
+      "method": "POST",
+      "path": "/order/202309/orders/search",
+      "document_path": "get-order-list-202309",
+      "file": "orders/get-order-list-202309.md",
+      "scope": [
+        "seller.order.info",
+        "seller.fs.order&fufillment.management"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-order-list-202309"
+    },
+    {
+      "title": "Get Order Price Details",
+      "category": "Orders",
+      "method": "GET",
+      "path": "/order/202407/orders/{order_id}/price_detail",
+      "document_path": "get-order-price-details-202407",
+      "file": "orders/get-order-price-details-202407.md",
+      "scope": [
+        "seller.order.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-order-price-details-202407"
+    },
+    {
+      "title": "Search Orders by External Order Reference",
+      "category": "Orders",
+      "method": "POST",
+      "path": "/order/202406/orders/external_order_search",
+      "document_path": "search-orders-by-external-order-reference-202406",
+      "file": "orders/search-orders-by-external-order-reference-202406.md",
+      "scope": [
+        "seller.order.ext_ref.read"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-orders-by-external-order-reference-202406"
+    },
+    {
+      "title": "Search POD Customization Details",
+      "category": "Orders",
+      "method": "POST",
+      "path": "/order/202606/pod_details/search",
+      "document_path": "search-pod-customization-details-202606",
+      "file": "orders/search-pod-customization-details-202606.md",
+      "scope": [
+        "seller.order.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-pod-customization-details-202606"
+    },
+    {
+      "title": "Update The Blind Box Opening Results",
+      "category": "Orders",
+      "method": "POST",
+      "path": "/order/202605/orders/blind_box_result/callback",
+      "document_path": "update-the-blind-box-opening-results-202605",
+      "file": "orders/update-the-blind-box-opening-results-202605.md",
+      "scope": [
+        "seller.order.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-the-blind-box-opening-results-202605"
+    },
+    {
+      "title": "Activate Products",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/products/activate",
+      "document_path": "activate-products-202309",
+      "file": "products/activate-products-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/activate-products-202309"
+    },
+    {
+      "title": "Check Listing Prerequisites",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202312/prerequisites",
+      "document_path": "check-listing-prerequisites-202312",
+      "file": "products/check-listing-prerequisites-202312.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/check-listing-prerequisites-202312"
+    },
+    {
+      "title": "Check Product Listing",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/products/listing_check",
+      "document_path": "check-product-listing-202309",
+      "file": "products/check-product-listing-202309.md",
+      "scope": [
+        "seller.product.basic",
+        "serller.product.optimize"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/check-product-listing-202309"
+    },
+    {
+      "title": "Create Category Upgrade Task",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202407/products/category_upgrade_task",
+      "document_path": "create-category-upgrade-task-202407",
+      "file": "products/create-category-upgrade-task-202407.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-category-upgrade-task-202407"
+    },
+    {
+      "title": "Create Custom Brands",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/brands",
+      "document_path": "create-custom-brands-202309",
+      "file": "products/create-custom-brands-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-custom-brands-202309"
+    },
+    {
+      "title": "Create GPA Upgrade Task",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202604/products/gpa_upgrade_task",
+      "document_path": "create-gpa-upgrade-task-202604",
+      "file": "products/create-gpa-upgrade-task-202604.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-gpa-upgrade-task-202604"
+    },
+    {
+      "title": "Create Global Product",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/global_products",
+      "document_path": "create-global-product-202309",
+      "file": "products/create-global-product-202309.md",
+      "scope": [
+        "seller.global_product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-global-product-202309"
+    },
+    {
+      "title": "Create Image Translation Tasks",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202505/images/translation_tasks",
+      "document_path": "create-image-translation-tasks-202505",
+      "file": "products/create-image-translation-tasks-202505.md",
+      "scope": [
+        "serller.product.optimize"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-image-translation-tasks-202505"
+    },
+    {
+      "title": "Create Manufacturer",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202409/compliance/manufacturers",
+      "document_path": "create-manufacturer-202409",
+      "file": "products/create-manufacturer-202409.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-manufacturer-202409"
+    },
+    {
+      "title": "Create Product",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/products",
+      "document_path": "create-product-202309",
+      "file": "products/create-product-202309.md",
+      "scope": [
+        "seller.product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-product-202309"
+    },
+    {
+      "title": "Create Responsible Person",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202409/compliance/responsible_persons",
+      "document_path": "create-responsible-person-202409",
+      "file": "products/create-responsible-person-202409.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-responsible-person-202409"
+    },
+    {
+      "title": "Create Size Chart V2",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202610/size_charts",
+      "document_path": "create-size-chart-v2-202610",
+      "file": "products/create-size-chart-v2-202610.md",
+      "scope": [],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-size-chart-v2-202610"
+    },
+    {
+      "title": "Deactivate Products",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/products/deactivate",
+      "document_path": "deactivate-products-202309",
+      "file": "products/deactivate-products-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/deactivate-products-202309"
+    },
+    {
+      "title": "Delete Global Products",
+      "category": "Products",
+      "method": "DELETE",
+      "path": "/product/202309/global_products",
+      "document_path": "delete-global-products-202309",
+      "file": "products/delete-global-products-202309.md",
+      "scope": [
+        "seller.global_product.delete"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/delete-global-products-202309"
+    },
+    {
+      "title": "Delete Products",
+      "category": "Products",
+      "method": "DELETE",
+      "path": "/product/202309/products",
+      "document_path": "delete-products-202309",
+      "file": "products/delete-products-202309.md",
+      "scope": [
+        "seller.product.delete"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/delete-products-202309"
+    },
+    {
+      "title": "Diagnose and Optimize Product",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202411/products/diagnose_optimize",
+      "document_path": "diagnose-and-optimize-product-202411",
+      "file": "products/diagnose-and-optimize-product-202411.md",
+      "scope": [
+        "serller.product.optimize"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/diagnose-and-optimize-product-202411"
+    },
+    {
+      "title": "Edit Global Product",
+      "category": "Products",
+      "method": "PUT",
+      "path": "/product/202309/global_products/{global_product_id}",
+      "document_path": "edit-global-product-202309",
+      "file": "products/edit-global-product-202309.md",
+      "scope": [
+        "seller.global_product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/edit-global-product-202309"
+    },
+    {
+      "title": "Edit Product",
+      "category": "Products",
+      "method": "PUT",
+      "path": "/product/202509/products/{product_id}",
+      "document_path": "edit-product-202509",
+      "file": "products/edit-product-202509.md",
+      "scope": [
+        "seller.product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/edit-product-202509"
+    },
+    {
+      "title": "Edit Size Chart V2",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202610/size_charts/edit",
+      "document_path": "edit-size-chart-v2-202610",
+      "file": "products/edit-size-chart-v2-202610.md",
+      "scope": [],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/edit-size-chart-v2-202610"
+    },
+    {
+      "title": "Get Brands",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202309/brands",
+      "document_path": "get-brands-202309",
+      "file": "products/get-brands-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-brands-202309"
+    },
+    {
+      "title": "Get Categories",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202309/categories",
+      "document_path": "get-categories-202309",
+      "file": "products/get-categories-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-categories-202309"
+    },
+    {
+      "title": "Get Category Attributes",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202309/categories/{category_id}/attributes",
+      "document_path": "get-category-attributes-202309",
+      "file": "products/get-category-attributes-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-category-attributes-202309"
+    },
+    {
+      "title": "Get Category Rules",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202309/categories/{category_id}/rules",
+      "document_path": "get-category-rules-202309",
+      "file": "products/get-category-rules-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-category-rules-202309"
+    },
+    {
+      "title": "Get Global Attributes",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202309/categories/{category_id}/global_attributes",
+      "document_path": "get-global-attributes-202309",
+      "file": "products/get-global-attributes-202309.md",
+      "scope": [
+        "seller.global_product.category.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-global-attributes-202309"
+    },
+    {
+      "title": "Get Global Categories",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202309/global_categories",
+      "document_path": "get-global-categories-202309",
+      "file": "products/get-global-categories-202309.md",
+      "scope": [
+        "seller.global_product.category.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-global-categories-202309"
+    },
+    {
+      "title": "Get Global Category Rules",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202309/categories/{category_id}/global_rules",
+      "document_path": "get-global-category-rules-202309",
+      "file": "products/get-global-category-rules-202309.md",
+      "scope": [
+        "seller.global_product.category.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-global-category-rules-202309"
+    },
+    {
+      "title": "Get Global Listing Rules",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202507/global_listing_rules",
+      "document_path": "get-global-listing-rules-202507",
+      "file": "products/get-global-listing-rules-202507.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-global-listing-rules-202507"
+    },
+    {
+      "title": "Get Global Product",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202309/global_products/{global_product_id}",
+      "document_path": "get-global-product-202309",
+      "file": "products/get-global-product-202309.md",
+      "scope": [
+        "seller.global_product.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-global-product-202309"
+    },
+    {
+      "title": "Get Global Replicated Products ",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202507/products/{product_id}/replicated_products",
+      "document_path": "get-global-replicated-products-202507",
+      "file": "products/get-global-replicated-products-202507.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-global-replicated-products-202507"
+    },
+    {
+      "title": "Get Image Translation Tasks",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202506/images/translation_tasks",
+      "document_path": "get-image-translation-tasks-202506",
+      "file": "products/get-image-translation-tasks-202506.md",
+      "scope": [
+        "serller.product.optimize"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-image-translation-tasks-202506"
+    },
+    {
+      "title": "Get Opportunity Detail",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202604/opportunities/{opportunity_id}",
+      "document_path": "get-opportunity-detail-202604",
+      "file": "products/get-opportunity-detail-202604.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-opportunity-detail-202604"
+    },
+    {
+      "title": "Get Product",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202309/products/{product_id}",
+      "document_path": "get-product-202309",
+      "file": "products/get-product-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-product-202309"
+    },
+    {
+      "title": "Get Product Diagnoses",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202405/products/diagnoses",
+      "document_path": "get-product-diagnoses-202405",
+      "file": "products/get-product-diagnoses-202405.md",
+      "scope": [
+        "serller.product.optimize"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-product-diagnoses-202405"
+    },
+    {
+      "title": "Get Product Package Recommendations",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202602/packages/recommend",
+      "document_path": "get-product-package-recommendations-202602",
+      "file": "products/get-product-package-recommendations-202602.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-product-package-recommendations-202602"
+    },
+    {
+      "title": "Get Product SKPP Detail",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202606/skpps/{product_id}",
+      "document_path": "get-product-skpp-detail-202606",
+      "file": "products/get-product-skpp-detail-202606.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-product-skpp-detail-202606"
+    },
+    {
+      "title": "Get Products SEO Words",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202405/products/seo_words",
+      "document_path": "get-products-seo-words-202405",
+      "file": "products/get-products-seo-words-202405.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-products-seo-words-202405"
+    },
+    {
+      "title": "Get Recommended Product Title And Description",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202405/products/suggestions",
+      "document_path": "get-recommended-product-title-and-description-202405",
+      "file": "products/get-recommended-product-title-and-description-202405.md",
+      "scope": [
+        "serller.product.optimize"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-recommended-product-title-and-description-202405"
+    },
+    {
+      "title": "Get Shop SKPP Summary",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202606/skpps/sum",
+      "document_path": "get-shop-skpp-summary-202606",
+      "file": "products/get-shop-skpp-summary-202606.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-skpp-summary-202606"
+    },
+    {
+      "title": "Get Submission Records",
+      "category": "Products",
+      "method": "GET",
+      "path": "/product/202604/opportunities/submissions",
+      "document_path": "get-submission-records-202604",
+      "file": "products/get-submission-records-202604.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-submission-records-202604"
+    },
+    {
+      "title": "Inventory Search",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/inventory/search",
+      "document_path": "inventory-search-202309",
+      "file": "products/inventory-search-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/inventory-search-202309"
+    },
+    {
+      "title": "List Opportunities",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202604/opportunities/query",
+      "document_path": "list-opportunities-202604",
+      "file": "products/list-opportunities-202604.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/list-opportunities-202604"
+    },
+    {
+      "title": "List Product SKPP Statuses",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202606/skpps/search",
+      "document_path": "list-product-skpp-statuses-202606",
+      "file": "products/list-product-skpp-statuses-202606.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/list-product-skpp-statuses-202606"
+    },
+    {
+      "title": "Optimize Images",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202404/images/optimize",
+      "document_path": "optimize-images-202404",
+      "file": "products/optimize-images-202404.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/optimize-images-202404"
+    },
+    {
+      "title": "Partial Edit Global Product",
+      "category": "Products",
+      "method": "PUT",
+      "path": "/product/202509/global_products/{global_product_id}/partial_edit",
+      "document_path": "partial-edit-global-product-202509",
+      "file": "products/partial-edit-global-product-202509.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/partial-edit-global-product-202509"
+    },
+    {
+      "title": "Partial Edit Manufacturer",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202409/compliance/manufacturers/{manufacturer_id}/partial_edit",
+      "document_path": "partial-edit-manufacturer-202409",
+      "file": "products/partial-edit-manufacturer-202409.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/partial-edit-manufacturer-202409"
+    },
+    {
+      "title": "Partial Edit Product",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202509/products/{product_id}/partial_edit",
+      "document_path": "partial-edit-product-202509",
+      "file": "products/partial-edit-product-202509.md",
+      "scope": [
+        "seller.product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/partial-edit-product-202509"
+    },
+    {
+      "title": "Partial Edit Responsible Person",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202409/compliance/responsible_persons/{responsible_person_id}/partial_edit",
+      "document_path": "partial-edit-responsible-person-202409",
+      "file": "products/partial-edit-responsible-person-202409.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/partial-edit-responsible-person-202409"
+    },
+    {
+      "title": "Predict Product Package Dimensions and Weight",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202609/products/package/predict",
+      "document_path": "predict-product-package-dimensions-and-weight-202609",
+      "file": "products/predict-product-package-dimensions-and-weight-202609.md",
+      "scope": [],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/predict-product-package-dimensions-and-weight-202609"
+    },
+    {
+      "title": "Publish Global Product",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/global_products/{global_product_id}/publish",
+      "document_path": "publish-global-product-202309",
+      "file": "products/publish-global-product-202309.md",
+      "scope": [
+        "seller.global_product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/publish-global-product-202309"
+    },
+    {
+      "title": "Recommend Category",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/categories/recommend",
+      "document_path": "recommend-category-202309",
+      "file": "products/recommend-category-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/recommend-category-202309"
+    },
+    {
+      "title": "Recommend Global Categories",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/global_categories/recommend",
+      "document_path": "recommend-global-categories-202309",
+      "file": "products/recommend-global-categories-202309.md",
+      "scope": [
+        "seller.global_product.category.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/recommend-global-categories-202309"
+    },
+    {
+      "title": "Recommend Required Product Properties",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202609/products/properties/recommend",
+      "document_path": "recommend-required-product-properties-202609",
+      "file": "products/recommend-required-product-properties-202609.md",
+      "scope": [],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/recommend-required-product-properties-202609"
+    },
+    {
+      "title": "Recover Products",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/products/recover",
+      "document_path": "recover-products-202309",
+      "file": "products/recover-products-202309.md",
+      "scope": [
+        "seller.product.delete"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/recover-products-202309"
+    },
+    {
+      "title": "Replicate Product",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202507/products/{product_id}/global_replicate",
+      "document_path": "replicate-product-202507",
+      "file": "products/replicate-product-202507.md",
+      "scope": [
+        "seller.product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/replicate-product-202507"
+    },
+    {
+      "title": "Search Global Products",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202312/global_products/search",
+      "document_path": "search-global-products-202312",
+      "file": "products/search-global-products-202312.md",
+      "scope": [
+        "seller.global_product.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-global-products-202312"
+    },
+    {
+      "title": "Search Manufacturers",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202501/compliance/manufacturers/search",
+      "document_path": "search-manufacturers-202501",
+      "file": "products/search-manufacturers-202501.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-manufacturers-202501"
+    },
+    {
+      "title": "Search Products",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202502/products/search",
+      "document_path": "search-products-202502",
+      "file": "products/search-products-202502.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-products-202502"
+    },
+    {
+      "title": "Search Products for Compliance Auditing",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202601/compliance/auditing/research",
+      "document_path": "search-products-for-compliance-auditing-202601",
+      "file": "products/search-products-for-compliance-auditing-202601.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-products-for-compliance-auditing-202601"
+    },
+    {
+      "title": "Search Responsible Persons",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202501/compliance/responsible_persons/search",
+      "document_path": "search-responsible-persons-202501",
+      "file": "products/search-responsible-persons-202501.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-responsible-persons-202501"
+    },
+    {
+      "title": "Search Size Charts",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202407/sizecharts/search",
+      "document_path": "search-size-charts-202407",
+      "file": "products/search-size-charts-202407.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-size-charts-202407"
+    },
+    {
+      "title": "Submit Product via Opportunity",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202604/opportunities/{opportunity_id}/submit",
+      "document_path": "submit-product-via-opportunity-202604",
+      "file": "products/submit-product-via-opportunity-202604.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/submit-product-via-opportunity-202604"
+    },
+    {
+      "title": "Submit Size Chart Appeal",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202604/appeals/submit",
+      "document_path": "submit-size-chart-appeal-202604",
+      "file": "products/submit-size-chart-appeal-202604.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/submit-size-chart-appeal-202604"
+    },
+    {
+      "title": "Submit Strikethrough Price",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202609/products/{product_id}/strikethrough_price/submit",
+      "document_path": "submit-strikethrough-price-202609",
+      "file": "products/submit-strikethrough-price-202609.md",
+      "scope": [],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/submit-strikethrough-price-202609"
+    },
+    {
+      "title": "Suggest Brands",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202609/brands/suggest",
+      "document_path": "suggest-brands-202609",
+      "file": "products/suggest-brands-202609.md",
+      "scope": [],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/suggest-brands-202609"
+    },
+    {
+      "title": "Update Global Inventory",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/global_products/{global_product_id}/inventory/update",
+      "document_path": "update-global-inventory-202309",
+      "file": "products/update-global-inventory-202309.md",
+      "scope": [
+        "seller.global_product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-global-inventory-202309"
+    },
+    {
+      "title": "Update Inventory",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/products/{product_id}/inventory/update",
+      "document_path": "update-inventory-202309",
+      "file": "products/update-inventory-202309.md",
+      "scope": [
+        "seller.product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-inventory-202309"
+    },
+    {
+      "title": "Update Price",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/products/{product_id}/prices/update",
+      "document_path": "update-price-202309",
+      "file": "products/update-price-202309.md",
+      "scope": [
+        "seller.product.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-price-202309"
+    },
+    {
+      "title": "Update Stock Operation Settings",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202608/inventory/operation/settings",
+      "document_path": "update-stock-operation-settings-202608",
+      "file": "products/update-stock-operation-settings-202608.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-stock-operation-settings-202608"
+    },
+    {
+      "title": "Upload Product File",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/files/upload",
+      "document_path": "upload-product-file-202309",
+      "file": "products/upload-product-file-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-product-file-202309"
+    },
+    {
+      "title": "Upload Product Image",
+      "category": "Products",
+      "method": "POST",
+      "path": "/product/202309/images/upload",
+      "document_path": "upload-product-image-202309",
+      "file": "products/upload-product-image-202309.md",
+      "scope": [
+        "seller.product.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-product-image-202309"
+    },
+    {
+      "title": "Create Promotion Activity",
+      "category": "Promotion",
+      "method": "POST",
+      "path": "/promotion/202309/activities",
+      "document_path": "create-promotion-activity-202309",
+      "file": "promotion/create-promotion-activity-202309.md",
+      "scope": [
+        "seller.promotion.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-promotion-activity-202309"
+    },
+    {
+      "title": "Deactivate Activity",
+      "category": "Promotion",
+      "method": "POST",
+      "path": "/promotion/202309/activities/{activity_id}/deactivate",
+      "document_path": "deactivate-activity-202309",
+      "file": "promotion/deactivate-activity-202309.md",
+      "scope": [
+        "seller.promotion.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/deactivate-activity-202309"
+    },
+    {
+      "title": "Get Activity",
+      "category": "Promotion",
+      "method": "GET",
+      "path": "/promotion/202309/activities/{activity_id}",
+      "document_path": "get-activity-202309",
+      "file": "promotion/get-activity-202309.md",
+      "scope": [
+        "seller.promotion.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-activity-202309"
+    },
+    {
+      "title": "Get Coupon ",
+      "category": "Promotion",
+      "method": "GET",
+      "path": "/promotion/202406/coupons/{coupon_id}",
+      "document_path": "get-coupon-202406",
+      "file": "promotion/get-coupon-202406.md",
+      "scope": [
+        "seller.promotion.info",
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-coupon-202406"
+    },
+    {
+      "title": "Remove Promotion Activity Products",
+      "category": "Promotion",
+      "method": "DELETE",
+      "path": "/promotion/202309/activities/{activity_id}/products",
+      "document_path": "remove-promotion-activity-products-202309",
+      "file": "promotion/remove-promotion-activity-products-202309.md",
+      "scope": [
+        "seller.promotion.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/remove-promotion-activity-products-202309"
+    },
+    {
+      "title": "Republish Activity",
+      "category": "Promotion",
+      "method": "POST",
+      "path": "/promotion/202607/activities/{activity_id}/republish",
+      "document_path": "republish-activity-202607",
+      "file": "promotion/republish-activity-202607.md",
+      "scope": [
+        "seller.promotion.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/republish-activity-202607"
+    },
+    {
+      "title": "Search Coupon List",
+      "category": "Promotion",
+      "method": "POST",
+      "path": "/promotion/202406/coupons/search",
+      "document_path": "search-coupon-list-202406",
+      "file": "promotion/search-coupon-list-202406.md",
+      "scope": [
+        "seller.promotion.info",
+        "seller.customer_service"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-coupon-list-202406"
+    },
+    {
+      "title": "Search Promotion Activities",
+      "category": "Promotion",
+      "method": "POST",
+      "path": "/promotion/202309/activities/search",
+      "document_path": "search-promotion-activities-202309",
+      "file": "promotion/search-promotion-activities-202309.md",
+      "scope": [
+        "seller.promotion.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-promotion-activities-202309"
+    },
+    {
+      "title": "Update Promotion Activity",
+      "category": "Promotion",
+      "method": "PUT",
+      "path": "/promotion/202309/activities/{activity_id}",
+      "document_path": "update-promotion-activity-202309",
+      "file": "promotion/update-promotion-activity-202309.md",
+      "scope": [
+        "seller.promotion.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-promotion-activity-202309"
+    },
+    {
+      "title": "Update Promotion Activity Products",
+      "category": "Promotion",
+      "method": "PUT",
+      "path": "/promotion/202309/activities/{activity_id}/products",
+      "document_path": "update-promotion-activity-products-202309",
+      "file": "promotion/update-promotion-activity-products-202309.md",
+      "scope": [
+        "seller.promotion.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/update-promotion-activity-products-202309"
+    },
+    {
+      "title": "Approve Cancellation",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202309/cancellations/{cancel_id}/approve",
+      "document_path": "approve-cancellation-202309",
+      "file": "return-and-refund/approve-cancellation-202309.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/approve-cancellation-202309"
+    },
+    {
+      "title": "Approve Return",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202309/returns/{return_id}/approve",
+      "document_path": "approve-return-202309",
+      "file": "return-and-refund/approve-return-202309.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/approve-return-202309"
+    },
+    {
+      "title": "Calculate Refund",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202602/refunds/calculate",
+      "document_path": "calculate-refund-202602",
+      "file": "return-and-refund/calculate-refund-202602.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/calculate-refund-202602"
+    },
+    {
+      "title": "Cancel Order",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202602/cancellations",
+      "document_path": "cancel-order-202602",
+      "file": "return-and-refund/cancel-order-202602.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/cancel-order-202602"
+    },
+    {
+      "title": "Create Return",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202602/returns",
+      "document_path": "create-return-202602",
+      "file": "return-and-refund/create-return-202602.md",
+      "scope": [
+        "seller.fulfillment.basic",
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/create-return-202602"
+    },
+    {
+      "title": "Get Aftersale Eligibility",
+      "category": "Return and refund",
+      "method": "GET",
+      "path": "/return_refund/202602/orders/{order_id}/aftersale_eligibility",
+      "document_path": "get-aftersale-eligibility-202602",
+      "file": "return-and-refund/get-aftersale-eligibility-202602.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-aftersale-eligibility-202602"
+    },
+    {
+      "title": "Get Available Review Decisions",
+      "category": "Return and refund",
+      "method": "GET",
+      "path": "/return_refund/202606/review_decision",
+      "document_path": "get-available-review-decisions-202606",
+      "file": "return-and-refund/get-available-review-decisions-202606.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-available-review-decisions-202606"
+    },
+    {
+      "title": "Get Decision Eligibility",
+      "category": "Return and refund",
+      "method": "GET",
+      "path": "/return_refund/202601/decision_eligibility",
+      "document_path": "get-decision-eligibility-202601",
+      "file": "return-and-refund/get-decision-eligibility-202601.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-decision-eligibility-202601"
+    },
+    {
+      "title": "Get Reject Reasons",
+      "category": "Return and refund",
+      "method": "GET",
+      "path": "/return_refund/202309/reject_reasons",
+      "document_path": "get-reject-reasons-202309",
+      "file": "return-and-refund/get-reject-reasons-202309.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-reject-reasons-202309"
+    },
+    {
+      "title": "Get Return Records",
+      "category": "Return and refund",
+      "method": "GET",
+      "path": "/return_refund/202309/returns/{return_id}/records",
+      "document_path": "get-return-records-202309",
+      "file": "return-and-refund/get-return-records-202309.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-return-records-202309"
+    },
+    {
+      "title": "Reject Cancellation",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202309/cancellations/{cancel_id}/reject",
+      "document_path": "reject-cancellation-202309",
+      "file": "return-and-refund/reject-cancellation-202309.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/reject-cancellation-202309"
+    },
+    {
+      "title": "Reject Return",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202606/returns/{return_id}/reject",
+      "document_path": "reject-return-202606",
+      "file": "return-and-refund/reject-return-202606.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/reject-return-202606"
+    },
+    {
+      "title": "Review Aftersales Requests",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202609/aftersales/review",
+      "document_path": "review-aftersales-requests-202609",
+      "file": "return-and-refund/review-aftersales-requests-202609.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/review-aftersales-requests-202609"
+    },
+    {
+      "title": "Search Aftersales Requests",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202603/aftersales/search",
+      "document_path": "search-aftersales-requests-202603",
+      "file": "return-and-refund/search-aftersales-requests-202603.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-aftersales-requests-202603"
+    },
+    {
+      "title": "Search Cancellations",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202602/cancellations/search",
+      "document_path": "search-cancellations-202602",
+      "file": "return-and-refund/search-cancellations-202602.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-cancellations-202602"
+    },
+    {
+      "title": "Search Return Merchandise Authorizations",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202604/rma/search",
+      "document_path": "search-return-merchandise-authorizations-202604",
+      "file": "return-and-refund/search-return-merchandise-authorizations-202604.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-return-merchandise-authorizations-202604"
+    },
+    {
+      "title": "Search Returns",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202602/returns/search",
+      "document_path": "search-returns-202602",
+      "file": "return-and-refund/search-returns-202602.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/search-returns-202602"
+    },
+    {
+      "title": "Upload Return Shipping Information",
+      "category": "Return and refund",
+      "method": "POST",
+      "path": "/return_refund/202405/returns/shipping_documents",
+      "document_path": "upload-return-shipping-information-202405",
+      "file": "return-and-refund/upload-return-shipping-information-202405.md",
+      "scope": [
+        "seller.return_refund.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-return-shipping-information-202405"
+    },
+    {
+      "title": "Get Active Shops",
+      "category": "Seller",
+      "method": "GET",
+      "path": "/seller/202309/shops",
+      "document_path": "get-active-shops-202309",
+      "file": "seller/get-active-shops-202309.md",
+      "scope": [
+        "seller.shop.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-active-shops-202309"
+    },
+    {
+      "title": "Get Global Product Permission",
+      "category": "Seller",
+      "method": "GET",
+      "path": "/seller/202309/permissions",
+      "document_path": "get-global-product-permission-202309",
+      "file": "seller/get-global-product-permission-202309.md",
+      "scope": [
+        "seller.shop.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-global-product-permission-202309"
+    },
+    {
+      "title": "Get Shop Group and Related Shops",
+      "category": "Seller",
+      "method": "GET",
+      "path": "/seller/202601/shop_groups",
+      "document_path": "get-shop-group-and-related-shops-202601",
+      "file": "seller/get-shop-group-and-related-shops-202601.md",
+      "scope": [
+        "seller.authorization.info"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/get-shop-group-and-related-shops-202601"
+    },
+    {
+      "title": "Confirm Package Shipment ",
+      "category": "Supply chain",
+      "method": "POST",
+      "path": "/supply_chain/202309/packages/sync",
+      "document_path": "confirm-package-shipment-202309",
+      "file": "supply-chain/confirm-package-shipment-202309.md",
+      "scope": [
+        "seller.fulfillment.basic"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/confirm-package-shipment-202309"
+    },
+    {
+      "title": "Upload File Init",
+      "category": "Tools",
+      "method": "POST",
+      "path": "/open/202512/file/init",
+      "document_path": "upload-file-init-202512",
+      "file": "tools/upload-file-init-202512.md",
+      "scope": [
+        "seller.customer_service",
+        "creator.video.write"
+      ],
+      "source_url": "https://partner.tiktokshop.com/docv2/page/upload-file-init-202512"
+    }
+  ],
+  "overview_count": 26,
+  "overviews": [
+    {
+      "title": "UK & EU: Purchase shipping labels from TikTok",
+      "document_path": "i83mvdfg",
+      "file": "fulfillment/i83mvdfg.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/i83mvdfg",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "fulfillment"
+    },
+    {
+      "title": "Order API overview",
+      "document_path": "order-api-overview",
+      "file": "orders/order-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/order-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "orders"
+    },
+    {
+      "title": "Fulfillment API overview",
+      "document_path": "fulfillment-api-overview",
+      "file": "fulfillment/fulfillment-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/fulfillment-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "fulfillment"
+    },
+    {
+      "title": "Affiliate Creator API overview",
+      "document_path": "affiliate-creator-api-overview",
+      "file": "affiliate-creator/affiliate-creator-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/affiliate-creator-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "affiliate-creator"
+    },
+    {
+      "title": "Affiliate Seller API overview",
+      "document_path": "affiliate-seller-api-overview",
+      "file": "affiliate-seller/affiliate-seller-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/affiliate-seller-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "affiliate-seller"
+    },
+    {
+      "title": "Refund reasons",
+      "document_path": "refund-reasons",
+      "file": "return-and-refund/refund-reasons.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/refund-reasons",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "return-and-refund"
+    },
+    {
+      "title": "Return, refund, and cancel API overview",
+      "document_path": "return-refund-and-cancel-api-overview",
+      "file": "return-and-refund/return-refund-and-cancel-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/return-refund-and-cancel-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "return-and-refund"
+    },
+    {
+      "title": "Action_Code_Name",
+      "document_path": "37tihrdq",
+      "file": "logistics/37tihrdq.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/37tihrdq",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "logistics"
+    },
+    {
+      "title": "Additional Notes",
+      "document_path": "1cjht3qx",
+      "file": "logistics/1cjht3qx.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/1cjht3qx",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "logistics"
+    },
+    {
+      "title": "Return reasons",
+      "document_path": "return-reasons",
+      "file": "return-and-refund/return-reasons.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/return-reasons",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "return-and-refund"
+    },
+    {
+      "title": "Cancel reasons",
+      "document_path": "cancel-reasons",
+      "file": "return-and-refund/cancel-reasons.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/cancel-reasons",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "return-and-refund"
+    },
+    {
+      "title": "Finance API overview",
+      "document_path": "finance-api-overview",
+      "file": "finance/finance-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/finance-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "finance"
+    },
+    {
+      "title": "Post-sales Solutions for Customer Services",
+      "document_path": "gx13i64p",
+      "file": "customer-service/gx13i64p.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/gx13i64p",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "customer-service"
+    },
+    {
+      "title": "Shipping discount supported areas",
+      "document_path": "shipping-discount-supported-areas",
+      "file": "promotion/shipping-discount-supported-areas.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/shipping-discount-supported-areas",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "promotion"
+    },
+    {
+      "title": "Promotion API overview",
+      "document_path": "promotion-api-overview",
+      "file": "promotion/promotion-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/promotion-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "promotion"
+    },
+    {
+      "title": "Seller API overview",
+      "document_path": "seller-api-overview",
+      "file": "seller/seller-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/seller-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "seller"
+    },
+    {
+      "title": "Common mistakes",
+      "document_path": "common-mistakes",
+      "file": "products/common-mistakes.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/common-mistakes",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "products"
+    },
+    {
+      "title": "Listing quality diagnosis",
+      "document_path": "listing-quality-diagnosis",
+      "file": "products/listing-quality-diagnosis.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/listing-quality-diagnosis",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "products"
+    },
+    {
+      "title": "Affiliate Partner API overview",
+      "document_path": "affiliate-partner-api-overview",
+      "file": "affiliate-partner/affiliate-partner-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/affiliate-partner-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "affiliate-partner"
+    },
+    {
+      "title": "Product pricing",
+      "document_path": "product-pricing",
+      "file": "products/product-pricing.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/product-pricing",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "products"
+    },
+    {
+      "title": "Products API overview",
+      "document_path": "products-api-overview",
+      "file": "products/products-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/products-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "products"
+    },
+    {
+      "title": "Customer engagement API overview",
+      "document_path": "customer-engagement-api-overview",
+      "file": "customer-engagement/customer-engagement-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/customer-engagement-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "customer-engagement"
+    },
+    {
+      "title": "FBT Inbound API — Overview Guide",
+      "document_path": "16f0ojsg",
+      "file": "fulfilled-by-tiktok-fbt/16f0ojsg.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/16f0ojsg",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "fulfilled-by-tiktok-fbt"
+    },
+    {
+      "title": "Message Types",
+      "document_path": "6y23rc6a",
+      "file": "customer-service/6y23rc6a.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/6y23rc6a",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "customer-service"
+    },
+    {
+      "title": "Customer Service API overview",
+      "document_path": "customer-service-api-overview",
+      "file": "customer-service/customer-service-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/customer-service-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "customer-service"
+    },
+    {
+      "title": "Logistic API overview",
+      "document_path": "logistic-api-overview",
+      "file": "logistics/logistic-api-overview.md",
+      "source_url": "https://partner.tiktokshop.com/docv2/page/logistic-api-overview",
+      "type": "overview",
+      "has_content": true,
+      "category_folder": "logistics"
+    }
+  ],
+  "total_documents": 344
+}

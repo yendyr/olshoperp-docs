@@ -1,0 +1,559 @@
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "document_id": "get-sps-metric-problem-details-202606",
+    "document_api_meta": {
+      "interface_path": "/analytics/202606/shop_performances/metrics/{metric_code}/problem_details",
+      "title": "Get SPS Metric Problem Details ",
+      "env_desc": "Returns problem order or chat details for a selected SPS metric. \nShop Performance Score (SPS) reflects a shop’s performance across key operational and service metrics on TikTok Shop. By integrating the read-only SPS APIs, ISVs can retrieve a shop’s score, tier, benefits, and metric benchmarks, diagnose performance gaps, and drill down to the products, logistics providers, aftersales types, orders, or chats associated with specific issues. This enables ISVs to embed actionable performance insights into their solutions, helping merchants identify problem areas faster and take targeted actions to improve shop performance. Available only for US-region shops.\nUse case guide: [Click here](https://partner.tiktokshop.com/docv2/page/ph0ccose)\n",
+      "method": 2,
+      "query": "https://open-api.tiktokglobalshop.com/analytics/202606/shop_performances/metrics/NRR/problem_details?app_key=123abc&sign=5361235029d141222525e303d742f9e38aea052d10896d3197ab9d6233730b8c&timestamp=1625484268&shop_cipher=ROW_RHkDDABBAAB8tKAVoAqsMTjsQZFLyNfY&locale=en-US&page_token=2&page_size=10",
+      "request_header_param": [
+        {
+          "name": "content-type",
+          "type": "string",
+          "required": "Y",
+          "desc": "Allowed type: application/json"
+        },
+        {
+          "name": "x-tts-access-token",
+          "type": "string",
+          "required": "Y",
+          "desc": "The seller access_token value from [Get Access Token](https://partner.tiktokshop.com/docv2/page/678e3a3292b0f40314a92d75#Get%20Access%20Token%20API), when user_type = 0. Follow this [guide](https://partner.tiktokshop.com/docv2/page/678e3a344ddec3030b238fa0) to get seller access_token."
+        }
+      ],
+      "request_query_param": [
+        {
+          "name": "locale",
+          "type": "string",
+          "required": "N",
+          "desc": "BCP 47 locale code used to localize response text. If omitted, the default locale is resolved from the request context."
+        },
+        {
+          "name": "page_token",
+          "type": "string",
+          "required": "N",
+          "desc": "For the first page, leave this parameter empty. For later pages, pass the opaque `next_page_token` returned by the previous response unchanged and use the same `page_size`."
+        },
+        {
+          "name": "page_size",
+          "type": "int",
+          "required": "N",
+          "desc": "The number of results to return per page. Minimum value is 1. Default value is 10. Maximum value is 50."
+        },
+        {
+          "name": "shop_cipher",
+          "type": "string",
+          "required": "Y",
+          "desc": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. \nGet by API [Get Authorization Shop](https://partner.tiktokshop.com/docv2/page/6507ead7b99d5302be949ba9?external_id=6507ead7b99d5302be949ba9)"
+        }
+      ],
+      "response_param": [
+        {
+          "name": "code",
+          "type": "int",
+          "required": "N",
+          "example": "0",
+          "desc": "The success or failure status code returned in API response."
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": "N",
+          "example": "Success",
+          "desc": "The success or failure messages returned in API response. Reasons of failure will be described in the message."
+        },
+        {
+          "name": "request_id",
+          "type": "string",
+          "required": "N",
+          "example": "202203070749000101890810281E8C70B7",
+          "desc": "Request log"
+        },
+        {
+          "name": "data",
+          "type": "object",
+          "required": "N",
+          "example": "",
+          "desc": "Specific return information"
+        },
+        {
+          "name": "^aht_problem_order_items",
+          "type": "[]object",
+          "required": "N",
+          "example": "",
+          "desc": "AHT problem order items."
+        },
+        {
+          "name": "^^aftersales_type_name",
+          "type": "string",
+          "required": "N",
+          "example": "Only Return",
+          "desc": "Aftersales type returned by TikTok Shop aftersales classification."
+        },
+        {
+          "name": "^^approve_duration_hours",
+          "type": "string",
+          "required": "N",
+          "example": "12.5",
+          "desc": "Approval duration in hours."
+        },
+        {
+          "name": "^^inspect_duration_hours",
+          "type": "string",
+          "required": "N",
+          "example": "30.0",
+          "desc": "Inspection duration in hours."
+        },
+        {
+          "name": "^^order_id",
+          "type": "string",
+          "required": "N",
+          "example": "576461413038785752",
+          "desc": "Order ID."
+        },
+        {
+          "name": "^^return_order_id",
+          "type": "string",
+          "required": "N",
+          "example": "576461413038785753",
+          "desc": "Return order ID."
+        },
+        {
+          "name": "^^review_count",
+          "type": "int",
+          "required": "N",
+          "example": "2",
+          "desc": "Number of review rounds."
+        },
+        {
+          "name": "^^total_handle_duration_hours",
+          "type": "string",
+          "required": "N",
+          "example": "42.5",
+          "desc": "Total aftersales handle duration in hours."
+        },
+        {
+          "name": "^im_dsat_chat_items",
+          "type": "[]object",
+          "required": "N",
+          "example": "",
+          "desc": "IM_DSAT chat session items."
+        },
+        {
+          "name": "^^chat_duration_hours",
+          "type": "string",
+          "required": "N",
+          "example": "1.5",
+          "desc": "Chat duration in hours."
+        },
+        {
+          "name": "^^chat_record_id",
+          "type": "string",
+          "required": "N",
+          "example": "745961413038785752",
+          "desc": "Chat record ID."
+        },
+        {
+          "name": "^^customer_name",
+          "type": "string",
+          "required": "N",
+          "example": "J*** D***",
+          "desc": "Masked customer name."
+        },
+        {
+          "name": "^^customer_rating",
+          "type": "int",
+          "required": "N",
+          "example": "2",
+          "desc": "Customer rating from 1 to 5."
+        },
+        {
+          "name": "^^first_reply_time",
+          "type": "int",
+          "required": "N",
+          "example": "1761264060",
+          "desc": "First reply time. Unix timestamp in seconds."
+        },
+        {
+          "name": "^^rating_reasons",
+          "type": "[]string",
+          "required": "N",
+          "example": "[\"other\"]",
+          "desc": "Customer rating reasons."
+        },
+        {
+          "name": "^^service_agent",
+          "type": "string",
+          "required": "N",
+          "example": "Agent A",
+          "desc": "Service agent name."
+        },
+        {
+          "name": "^metric_code",
+          "type": "string",
+          "required": "N",
+          "example": "NRR",
+          "desc": "Stable metric code. Possible values: NRR, NBFR, SFCR, OTDR, AHT, and IM_DSAT."
+        },
+        {
+          "name": "^nbfr_problem_order_items",
+          "type": "[]object",
+          "required": "N",
+          "example": "",
+          "desc": "NBFR problem order items."
+        },
+        {
+          "name": "^^deliver_time",
+          "type": "int",
+          "required": "N",
+          "example": "1761523200",
+          "desc": "Delivery time. Unix timestamp in seconds."
+        },
+        {
+          "name": "^^order_create_time",
+          "type": "int",
+          "required": "N",
+          "example": "1761264000",
+          "desc": "Order creation time. Unix timestamp in seconds."
+        },
+        {
+          "name": "^^order_id",
+          "type": "string",
+          "required": "N",
+          "example": "576461413038785752",
+          "desc": "Order ID."
+        },
+        {
+          "name": "^^product_id",
+          "type": "string",
+          "required": "N",
+          "example": "1729592969712207010",
+          "desc": "Product ID, when available."
+        },
+        {
+          "name": "^^product_name",
+          "type": "string",
+          "required": "N",
+          "example": "Cotton T-Shirt",
+          "desc": "Product name."
+        },
+        {
+          "name": "^^return_refund_reason",
+          "type": "string",
+          "required": "N",
+          "example": "Wrong size",
+          "desc": "Return or refund reason."
+        },
+        {
+          "name": "^^sku_id",
+          "type": "string",
+          "required": "N",
+          "example": "1729592969712207013",
+          "desc": "SKU ID."
+        },
+        {
+          "name": "^next_page_token",
+          "type": "string",
+          "required": "N",
+          "example": "2",
+          "desc": "An opaque token used to retrieve the next page of a paginated result set. Returns an empty string when there are no more results."
+        },
+        {
+          "name": "^nrr_problem_order_items",
+          "type": "[]object",
+          "required": "N",
+          "example": "",
+          "desc": "NRR problem order items."
+        },
+        {
+          "name": "^^deliver_time",
+          "type": "int",
+          "required": "N",
+          "example": "1761523200",
+          "desc": "Delivery time. Unix timestamp in seconds."
+        },
+        {
+          "name": "^^order_create_time",
+          "type": "int",
+          "required": "N",
+          "example": "1761264000",
+          "desc": "Order creation time. Unix timestamp in seconds."
+        },
+        {
+          "name": "^^order_id",
+          "type": "string",
+          "required": "N",
+          "example": "576461413038785752",
+          "desc": "Order ID."
+        },
+        {
+          "name": "^^product_id",
+          "type": "string",
+          "required": "N",
+          "example": "1729592969712207008",
+          "desc": "Product ID, when available."
+        },
+        {
+          "name": "^^product_name",
+          "type": "string",
+          "required": "N",
+          "example": "Wireless Headphones",
+          "desc": "Product name."
+        },
+        {
+          "name": "^^sku_id",
+          "type": "string",
+          "required": "N",
+          "example": "1729592969712207012",
+          "desc": "SKU ID."
+        },
+        {
+          "name": "^^user_review_rating",
+          "type": "int",
+          "required": "N",
+          "example": "2",
+          "desc": "User review rating from 1 to 5."
+        },
+        {
+          "name": "^otdr_problem_order_items",
+          "type": "[]object",
+          "required": "N",
+          "example": "",
+          "desc": "OTDR problem order items."
+        },
+        {
+          "name": "^^actual_deliver_time",
+          "type": "int",
+          "required": "N",
+          "example": "1761609600",
+          "desc": "Actual deliver time. Unix timestamp in seconds."
+        },
+        {
+          "name": "^^expect_deliver_time",
+          "type": "int",
+          "required": "N",
+          "example": "1761523200",
+          "desc": "Expected deliver time. Unix timestamp in seconds."
+        },
+        {
+          "name": "^^order_id",
+          "type": "string",
+          "required": "N",
+          "example": "576461413038785752",
+          "desc": "Order ID."
+        },
+        {
+          "name": "^^product_name",
+          "type": "string",
+          "required": "N",
+          "example": "Wireless Headphones",
+          "desc": "Product name."
+        },
+        {
+          "name": "^^sku_id",
+          "type": "string",
+          "required": "N",
+          "example": "1729592969712207014",
+          "desc": "SKU ID."
+        },
+        {
+          "name": "^sfcr_problem_order_items",
+          "type": "[]object",
+          "required": "N",
+          "example": "",
+          "desc": "SFCR problem order items."
+        },
+        {
+          "name": "^^cancellation_reasons",
+          "type": "[]string",
+          "required": "N",
+          "example": "[\"Defective item\"]",
+          "desc": "Cancellation reasons."
+        },
+        {
+          "name": "^^order_create_time",
+          "type": "int",
+          "required": "N",
+          "example": "1761264000",
+          "desc": "Order creation time. Unix timestamp in seconds."
+        },
+        {
+          "name": "^^order_id",
+          "type": "string",
+          "required": "N",
+          "example": "576461413038785752",
+          "desc": "Order ID."
+        },
+        {
+          "name": "^^product_id",
+          "type": "string",
+          "required": "N",
+          "example": "1729592969712207011",
+          "desc": "Product ID, when available."
+        },
+        {
+          "name": "^^product_name",
+          "type": "string",
+          "required": "N",
+          "example": "Smart Watch",
+          "desc": "Product name."
+        },
+        {
+          "name": "^^sku_id",
+          "type": "string",
+          "required": "N",
+          "example": "1729592969712207014",
+          "desc": "SKU ID."
+        },
+        {
+          "name": "^total_count",
+          "type": "int",
+          "required": "N",
+          "example": "200",
+          "desc": "Total number of available records."
+        }
+      ],
+      "request_body": "",
+      "response_body": "{\"code\":0,\"data\":{\"aht_problem_order_items\":[{\"aftersales_type_name\":\"Only Return\",\"approve_duration_hours\":\"12.5\",\"inspect_duration_hours\":\"30.0\",\"order_id\":\"576461413038785752\",\"return_order_id\":\"576461413038785753\",\"review_count\":2,\"total_handle_duration_hours\":\"42.5\"}],\"im_dsat_chat_items\":[{\"chat_duration_hours\":\"1.5\",\"chat_record_id\":\"745961413038785752\",\"customer_name\":\"J*** D***\",\"customer_rating\":2,\"first_reply_time\":1761264060,\"rating_reasons\":[\"other\"],\"service_agent\":\"Agent A\"}],\"metric_code\":\"NRR\",\"nbfr_problem_order_items\":[{\"deliver_time\":1761523200,\"order_create_time\":1761264000,\"order_id\":\"576461413038785752\",\"product_id\":\"1729592969712207010\",\"product_name\":\"Cotton T-Shirt\",\"return_refund_reason\":\"Wrong size\",\"sku_id\":\"1729592969712207013\"}],\"next_page_token\":\"2\",\"nrr_problem_order_items\":[{\"deliver_time\":1761523200,\"order_create_time\":1761264000,\"order_id\":\"576461413038785752\",\"product_id\":\"1729592969712207008\",\"product_name\":\"Wireless Headphones\",\"sku_id\":\"1729592969712207012\",\"user_review_rating\":2}],\"otdr_problem_order_items\":[{\"actual_deliver_time\":1761609600,\"expect_deliver_time\":1761523200,\"order_id\":\"576461413038785752\",\"product_name\":\"Wireless Headphones\",\"sku_id\":\"1729592969712207014\"}],\"sfcr_problem_order_items\":[{\"cancellation_reasons\":[\"Defective item\"],\"order_create_time\":1761264000,\"order_id\":\"576461413038785752\",\"product_id\":\"1729592969712207011\",\"product_name\":\"Smart Watch\",\"sku_id\":\"1729592969712207014\"}],\"total_count\":200},\"message\":\"Success\",\"request_id\":\"202203070749000101890810281E8C70B7\"}",
+      "title_list": [
+        "Common Require / 公共入参",
+        "API Require / API入参",
+        "Require Sample / 请求示例",
+        "API Response / API出参",
+        "ResponseSample / 响应示例",
+        "Error Code / 错误码",
+        "Feedback / 文档反馈"
+      ],
+      "error_code_sheet": {
+        "header_list": [
+          "Code",
+          "Message"
+        ]
+      },
+      "api_request_header_sheet": {
+        "header_list": [
+          "Properties",
+          "Type",
+          "Required",
+          "Properties description"
+        ]
+      },
+      "api_request_query_sheet": {
+        "header_list": [
+          "Properties",
+          "Type",
+          "Required",
+          "Properties description"
+        ]
+      },
+      "api_request_body_sheet": {
+        "header_list": [
+          "Properties",
+          "Type",
+          "Required",
+          "Properties description"
+        ]
+      },
+      "api_response_sheet": {
+        "header_list": [
+          "Properties",
+          "Type",
+          "Sample",
+          "Properties description"
+        ]
+      },
+      "is_post_method": false,
+      "is_request_path_exist": true,
+      "is_request_query_exist": true,
+      "is_request_body_exist": false,
+      "api_auth_info_sheet": {
+        "header_list": [
+          "API Scope",
+          "API Scope Type"
+        ]
+      },
+      "api_auth_info_list": [
+        {
+          "package": "TikTok Shop Analytics",
+          "package_type": "Public"
+        }
+      ],
+      "is_shop_chiper_exist": true,
+      "is_v2": true,
+      "dynamic_configuration": {
+        "common_error_code_link": "https://partner.tiktokshop.com/docv2/page/678e3a45786253031531b942",
+        "common_param_link": "https://partner.tiktokshop.com/docv2/page/678e3a4278f4c20311b8b57e"
+      },
+      "sample_code": [
+        {
+          "label": "Curl",
+          "key": "curl",
+          "value": "curl -X GET \\\n 'https://open-api.tiktokglobalshop.com/analytics/202606/shop_performances/metrics/NRR/problem_details?locale=en-US&page_token=2&page_size=10&app_key=29a39d&sign=bc721f0e0182914e3487b81df204de37a352fc3aa96947efda6dc1e5dd0d5290&timestamp=1623812664&shop_cipher=GCP_XF90igAAAABh00qsWgtvOiGFNqyubMt3' \\\n-H 'content-type: application/json' \\\n-H 'x-tts-access-token: TTP_pwSm2AAAAABmmtFz1xlyKMnwg74T2GJ5s0uQbS8jPjb_GkdFVCxPqzQXSyuyfXdQa0AqyDsea2tYFNVf4XeqgZHFfPyv0Vs659QqyLYfsGzanZ5XZAin3_ZkcIxxS0_In6u6XDeU96k'",
+          "language": "shell"
+        },
+        {
+          "label": "Go",
+          "key": "go",
+          "value": "// For more details about the SDK, refer to the documentation:\n// https://partner.tiktokshop.com/docv2/page/67c83e0799a75104986ae498\nfunc analytics202606GetSPSMetricProblemDetailsGet() {\n    configuration := apis.NewConfiguration()\n    configuration.AddAppInfo(appKey, appSecret)\n    apiClient := apis.NewAPIClient(configuration)\n    request := apiClient.AnalyticsV202606API.Analytics202606ShopPerformancesMetricsMetricCodeProblemDetailsGet(context.Background(), \"NRR\")\n    request = request.XTtsAccessToken(\"your access token\")\n    request = request.ContentType(\"application/json\")\n    request = request.Locale(\"en-US\")\n    request = request.PageToken(\"2\")\n    request = request.PageSize(10)\n    request = request.ShopCipher(\"your shop cipher\")\n    resp, httpResp, err := request.Execute()\n    if err != nil || httpResp.StatusCode != 200 {\n        fmt.Printf(\"productsRequest err:%v resbody:%s\", err, httpResp.Body)\n        return\n    }\n    if resp == nil {\n        fmt.Printf(\"response is nil\")\n        return\n    }\n    if resp.GetCode()!= 0 {\n        fmt.Printf(\"response business is error, errorCode:%d errorMessage:%s\", resp.GetCode(), resp.GetMessage())\n        return\n    }\n    respDataJson, _ := json.MarshalIndent(resp.GetData(), \"\", \"  \")\n    fmt.Println(\"response data:\", string(respDataJson))\n    return\n}\n",
+          "language": "go"
+        },
+        {
+          "label": "Node.js",
+          "key": "node",
+          "value": "// For more details about the SDK, refer to the documentation:\n// https://partner.tiktokshop.com/docv2/page/67c83e0799a75104986ae498\nasync function analytics202606GetSPSMetricProblemDetailsGet() {\n    const result = await client.api.AnalyticsV202606Api.ShopPerformancesMetricsMetricCodeProblemDetailsGet(\"NRR\", \"your access token\", \"application/json\", \"en-US\", \"2\", 10, \"your shop cipher\");\n    console.log('response: ', JSON.stringify(result, null, 2));\n}\n",
+          "language": "typescript"
+        },
+        {
+          "label": "Java",
+          "key": "java",
+          "value": "// For more details about the SDK, refer to the documentation:\n// https://partner.tiktokshop.com/docv2/page/67c83e0799a75104986ae498\npublic void analytics202606GetSPSMetricProblemDetailsGet() throws Exception {\n    ApiClient defaultClient = Configuration.getDefaultApiClient()\n            .setAppkey(\"your appKey\")\n            .setSecret(\"your secret\")\n            .setBasePath(\"https://open-api.tiktokglobalshop.com\");\n    AnalyticsV202606Api apiInstance = new AnalyticsV202606Api(defaultClient);\n    GetSPSMetricProblemDetailsResponse result = apiInstance.analytics202606ShopPerformancesMetricsMetricCodeProblemDetailsGet(\"NRR\", \"your access token\", \"application/json\", \"en-US\", \"2\", 10, \"your shop cipher\");\n    System.out.println(result);\n}\n",
+          "language": "java"
+        }
+      ],
+      "scenario": 1,
+      "document_path": "get-sps-metric-problem-details-202606",
+      "scope_list": [
+        {
+          "package_id": 948484,
+          "package_name": "TikTok Shop Analytics",
+          "package_name_starling_key": "",
+          "package_description": "The application will be able to access TikTok shop analytics such as live and video, GMV, orders and content traffic data such as CTR, visitors for a shop and products in shop.",
+          "package_status": 200,
+          "package_type": 100,
+          "auth_info_starling_key": "",
+          "auth_info": "The application will be able to access your prior and go-forward TikTok Shop sales and traffic data by Shop and product, including but not limited to GMV, Number of orders, units sold, Number of buyers, product listings, product impressions and page views, Number of visitors, and click through rate (CTR), all by content type (video, live and product card).",
+          "auth_type": 1,
+          "launch_time": 1725646623285,
+          "update_time": 1790677290066,
+          "create_time": 1725646623286,
+          "operator": "shenxiaochuan@bytedance.com",
+          "package_description_starling_key": "",
+          "scope_key": "data.shop_analytics.public.read",
+          "data_source_list": [
+            100
+          ]
+        }
+      ],
+      "request_path_param": [
+        {
+          "name": "metric_code",
+          "type": "string",
+          "required": "Y",
+          "desc": "Metric code. Possible values: NRR, NBFR, SFCR, OTDR, AHT, and IM_DSAT."
+        }
+      ],
+      "api_request_path_sheet": {
+        "header_list": [
+          "Properties",
+          "Type",
+          "Required",
+          "Properties description"
+        ]
+      }
+    },
+    "api_basic_id": "7657154706397513488",
+    "source_id": "7657154706397513488"
+  }
+}
