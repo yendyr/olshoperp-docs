@@ -73,7 +73,7 @@ Post-approve: eligible sebagai deposit di `SupplierPayment` (same supplier/curre
 
 **AS-IS:** `PaymentDetailFundController` + AP import stamp `payment_detail_deposits.coa_id` = **Deposit to Supplier COA** untuk semua DN.
 
-**TO-BE:** stamp COA dari asal DN (derive `transaction_reference_class == PurchaseReturn` → Deposit of Purchase Return; else Deposit to Supplier) atau salin dari jurnal Approve DN. `supplierPaymentAutoJournal` sudah Credit `coa_id` tersimpan — fix di stamp path saja.
+**TO-BE:** stamp COA dari **setting** by asal DN (`transaction_reference_class == PurchaseReturn` → field Deposit of Purchase Return; else Deposit to Supplier). **Bukan** salin dari jurnal Approve DN. `supplierPaymentAutoJournal` sudah Credit `coa_id` tersimpan — fix di stamp path saja.
 
 ---
 

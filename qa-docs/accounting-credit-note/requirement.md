@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.2
-last_updated: 2026-10-22
+version: 1.3
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, credit note docs, nota kredit, customer deposit credit]
@@ -26,6 +26,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.3 | 2026-10-26 | QA - Yemima | Klarifikasi final ETM-16764: AR baca COA dari **setting** by asal CN (bukan historis dokumen/jurnal) |
 | 1.2 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764): CN dari Sales Return → Deposit of Sales Return; consume di AR ikut COA asal; GAP-CN-06 |
 | 1.1 | 2026-08-05 | QA - Yemima | **TO-BE:** Receiving Destination dual path Cash/Bank + free COA (locked D1–D14); GAP-CN-05; Sales Return fund type `COA` |
 | 1.0 | 2026-07-17 | QA - Yemima | Draft awal dari SoT v1.0 + analisa codebase (create/import/approve, auto dari Sales Return billed, pemakaian di AR) |
@@ -258,17 +259,18 @@ Invert debit/kredit untuk CN return billed platform tertentu (docs AS-IS; wiring
 
 #### 6.8.1 COA deposit saat CN dipakai (TO-BE · ETM-16764)
 
-**AS-IS:** Account Receive stamp deposit dari setting actor saat ini (Customer's Deposit / store deposit) — tidak membaca jurnal/asal CN.
+**AS-IS:** Account Receive selalu stamp Customer's Deposit / store deposit — tidak membedakan CN dari Sales Return.
 
-**TO-BE:** GL Account & jurnal Debit deposit = **akun yang sama** dengan Credit saat CN Approve:
+**TO-BE (final · klarifikasi 26 Okt 2026):** saat CN dipakai di Account Receive (UI, clearing, import), sistem **identifikasi asal CN**, lalu resolve COA dari **field setting** — **bukan** menyalin COA dari dokumen/jurnal CN:
 
-| Asal CN | COA saat Approve (Cr) | COA saat dipakai di AR (Dr) |
-|---------|------------------------|----------------------------|
-| Manual / AR import overpay | Customer's Deposit / store deposit | Akun yang sama |
-| Sales Return billed | Deposit of Sales Return | Deposit of Sales Return |
+| Asal CN | Field setting yang dibaca untuk stamp & Debit AR |
+|---------|---------------------------------------------------|
+| Dari Sales Return billed | **Deposit of Sales Return** (company owner) |
+| Regular (manual / AR import overpay) | **Customer's Deposit** / store `deposit_coa_id` |
 
+- SET Approve CN dari SR juga memakai Deposit of Sales Return (lihat §6.7) agar sejalur jika setting tidak diganti.
 - Satu customer boleh punya sisa CN yang di GL tersebar di **2 akun**; outstanding CN tetap **per dokumen**.
-- Ganti setting COA setelah CN Approved → pemakaian tetap akun **historis** CN.
+- Setting diganti setelah CN Approved → pemakaian ikut **setting saat consume** (tetap sesuai asal CN). **Bukan** requirement akun historis jurnal CN.
 - Mirror AP: [Debit Note §6.4.1](../accounting-debit-note/requirement.md) · [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761).
 
 ---
@@ -375,7 +377,7 @@ flowchart TB
 | GAP-CN-03 | Status Void/Closed ada di siklus Payment + FE; requirement mentah awal hanya Draft/Open/Reject/Approved | Perlu keputusan tampilan filter/kolom status final | Open |
 | GAP-CN-04 | Validasi hapus CN yang sudah dipakai sebagai deposit AR belum terdokumentasi pesan/rule jelas | Risiko remaining funds tidak konsisten | Open |
 | GAP-CN-05 | **TO-BE:** Free COA Receiving Destination + fund type `COA` + Sales Return type fix + reconcile D11 — belum production | Equity/modal awal tidak bisa jadi destinasi CN; Sales Return salah label `Cash/Bank` | Open (locked requirement) |
-| GAP-CN-06 | CN dari Sales Return & consume AR selalu Customer's Deposit; Deposit of Sales Return idle | SET SR → Deposit of Sales Return; USE = COA asal CN | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) |
+| GAP-CN-06 | CN dari Sales Return & consume AR selalu Customer's Deposit; Deposit of Sales Return idle | SET SR → Deposit of Sales Return; USE = setting by asal CN | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) |
 
 ---
 

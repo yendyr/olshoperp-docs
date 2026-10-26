@@ -159,7 +159,7 @@ sequenceDiagram
 
 **Journal:** Dr AP (+ forex/cash diff/adjustment) · Cr cash/bank + DN deposit COA. Requires Exchange Diff + Cash Diff + AP COAs.
 
-**DN deposit COA (TO-BE ETM-16761):** AS-IS `PaymentDetailFundController` / import `createFund` hardcode `Deposit to Supplier COA` ke `payment_detail_deposits.coa_id`. TO-BE: stamp dari asal DN (PR → `Deposit of Purchase Return`; else Deposit to Supplier). `supplierPaymentAutoJournal` sudah Credit `coa_id` baris — tidak perlu ubah rumus journal jika stamp benar.
+**DN deposit COA (TO-BE ETM-16761):** AS-IS `PaymentDetailFundController` / import `createFund` hardcode `Deposit to Supplier COA` ke `payment_detail_deposits.coa_id`. TO-BE: identifikasi asal DN → resolve **setting** (PR → `Deposit of Purchase Return`; else Deposit to Supplier) — bukan COA historis jurnal DN. `supplierPaymentAutoJournal` sudah Credit `coa_id` baris — tidak perlu ubah rumus journal jika stamp benar.
 
 ---
 

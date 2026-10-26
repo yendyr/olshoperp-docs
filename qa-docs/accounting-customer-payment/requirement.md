@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.3
-last_updated: 2026-10-22
+version: 2.4
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 ---
@@ -20,6 +20,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.4 | 2026-10-26 | QA - Yemima | Klarifikasi final ETM-16764: stamp COA = setting by asal CN (bukan historis jurnal CN) |
 | 2.3 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764): Payment Source CN stamp COA dari asal CN; GAP-AR-CN-COA |
 | 2.2 | 2026-10-19 | QA - Yemima | **TO-BE** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644): Section Summary read-only setelah Adjustment (header currency; Credit=+/Debit=−; CN terpisah; Total orange jika ≠ 0) |
 | 2.1 | 2026-09-01 | QA - Yemima | Relasi Instant Settlement: AR date/time dari SI + guard same calendar date (ETM-15701) |
@@ -148,10 +149,10 @@ Pembayaran via Credit Note menuntut CN sudah Approved, saldo outstanding CN menc
 
 | Aspek | AS-IS | TO-BE |
 |-------|-------|-------|
-| Stamp `payment_detail_deposits.coa_id` (manual / import / clearing) | Re-resolve Customer's Deposit actor / store deposit saat ini | Ikut **asal CN** saat Approve (manual/overpay → Customer's Deposit atau store; dari Sales Return → **Deposit of Sales Return**) |
-| Jurnal AR approve | Debit `coa_id` tersimpan | Tidak berubah — pastikan stamp benar |
+| Stamp `payment_detail_deposits.coa_id` (manual / import / clearing) | Selalu Customer's Deposit / store deposit | Identifikasi **asal CN** → baca **setting** (bukan COA dokumen/jurnal CN): Sales Return → **Deposit of Sales Return**; regular → Customer's Deposit / store deposit |
+| Jurnal AR approve | Debit `coa_id` tersimpan | Tidak berubah — pastikan stamp benar dari resolve setting |
 
-Satu Account Receive boleh campur beberapa CN beda asal → baris GL boleh beda akun. Detail SET: [Credit Note §6.7–6.8.1](../accounting-credit-note/requirement.md).
+Satu Account Receive boleh campur beberapa CN beda asal → baris GL boleh beda akun. Setting diganti setelah CN Approve → ikut setting saat consume. Detail: [Credit Note §6.7–6.8.1](../accounting-credit-note/requirement.md).
 
 ### 5.4 Adjustment — kelebihan dan kekurangan bayar
 
@@ -333,7 +334,7 @@ flowchart TB
 | GAP-AR-08 | Requirement raw §7 (Smart Settlement Adjustment, Failed Ship, Hard Delete Protection) sebenarnya menjelaskan perilaku menu Instant Settlement, bukan menu ini. | Unverified | Berisiko dobel dokumentasi dan salah rumah fakta | Open |
 | GAP-AR-09 | Alur manual (create dokumen AR, insert Sales Invoice lewat modal Available Sales Invoice, bulk approve) belum punya sumber requirement tertulis, padahal sudah punya 9 test case aktif. | Missing Behavior | 9 TC berdiri tanpa acuan requirement | Open |
 | GAP-AR-SUMMARY-01 | Section Summary setelah Adjustment | Info total Piutang / Cash-Bank / CN / Adj / Total (header CCY; tanda Credit+/Debit−) | Belum ada di UI | **TO-BE** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) |
-| GAP-AR-CN-COA | CN Payment Source COA = asal CN | Stamp COA dari journal/asal CN (SR → Deposit of Sales Return) | Hardcode Customer's Deposit / store deposit on add/import | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) |
+| GAP-AR-CN-COA | CN Payment Source COA = setting by asal CN | Asal CN → field setting (SR → Deposit of Sales Return); bukan historis jurnal | Hardcode Customer's Deposit / store deposit on add/import | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) |
 
 ## 9. FAQ
 

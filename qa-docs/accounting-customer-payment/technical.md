@@ -180,6 +180,6 @@ Sign rule AR: journal **Cr → +**, **Dr → −**. See [requirement §6.5](./re
 | GAP-AR-08 | Requirement raw §7 sebenarnya milik menu Instant Settlement |
 | GAP-AR-09 | Alur manual belum punya sumber requirement |
 | GAP-AR-SUMMARY-01 | Summary section TO-BE ETM-16644 |
-| GAP-AR-CN-COA | CN Payment Source stamp COA asal CN (SR → Deposit of Sales Return) — TO-BE ETM-16764; fix di `PaymentDetailFundController` + `ReceiveImportPerMutationJob::createFund` |
+| GAP-AR-CN-COA | CN Payment Source stamp COA dari **setting** by asal CN (SR → Deposit of Sales Return) — TO-BE ETM-16764; bukan historis jurnal; fix di `PaymentDetailFundController` + `ReceiveImportPerMutationJob::createFund` |
 
 Detail lengkap: [requirement §8](./requirement.md).
