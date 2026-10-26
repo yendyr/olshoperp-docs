@@ -9,8 +9,8 @@ summary: >-
   Tiga jenis qty retur: Restock ke gudang return, Broken transfer ke scrap,
   Lost deduction + jurnal expense. Minimal satu qty > 0 sebelum Complete.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Restock / Broken / Lost

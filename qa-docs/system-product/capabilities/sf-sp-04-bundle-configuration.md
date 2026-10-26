@@ -9,8 +9,8 @@ summary: >-
   Set as Product Bundle menggabungkan beberapa SKU jadi satu paket jual di
   Sales Order. Section Accounting & Tax parent disembunyikan; pajak per komponen.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Bundle Configuration & tax hide

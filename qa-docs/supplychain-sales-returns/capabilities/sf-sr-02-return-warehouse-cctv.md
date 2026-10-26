@@ -9,8 +9,8 @@ summary: >-
   Pilih gudang tujuan retur dan lokasi CCTV sebelum scan. Pilihan disimpan
   untuk sesi berikutnya; Reset mengosongkan keduanya.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Return WH & CCTV Location

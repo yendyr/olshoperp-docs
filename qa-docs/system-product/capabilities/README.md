@@ -2,8 +2,8 @@
 doc_type: menu-capability-index
 menu: system-product
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # System Product — Capability cards

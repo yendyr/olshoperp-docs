@@ -4,8 +4,8 @@ menu_slug: manage-platform-product
 menu_name: Manage Platform Product
 lang: en
 version: 1.0
-last_updated: 2026-07-31
-status: draft
+last_updated: 2026-10-26
+status: review
 audience: help-center
 source_type: authored
 source_ref: "Downloads/Help Center Manage Platform Product ID Version.md"

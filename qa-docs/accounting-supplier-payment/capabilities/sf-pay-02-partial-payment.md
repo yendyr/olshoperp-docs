@@ -9,8 +9,8 @@ summary: >-
   Satu Purchase Invoice boleh dibayar bertahap lewat beberapa Account Payment.
   Qty/amount di draft mengunci sisa; setelah approve, hutang PI berkurang.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Partial payment

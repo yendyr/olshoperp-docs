@@ -4,8 +4,8 @@ menu_slug: accounting-company-detail-bank
 menu_name: Cash/Bank Account
 lang: en
 version: 1.0
-last_updated: 2026-08-05
-status: draft
+last_updated: 2026-10-26
+status: review
 audience: help-center
 source_type: authored
 source_ref: "Downloads/Cash Bank Account Help Center ID Version.md"

@@ -7,9 +7,10 @@ aliases: [pakai debit note, deposit AP, DN sebagai payment source]
 scope: menu
 summary: >-
   Setelah DN Approved, saldo dipakai sebagai Payment Source Debit Note di
-  Account Payment agar klaim supplier memotong hutang PI tanpa/kurangi kas keluar.
-version: 1.0
-last_updated: 2026-08-12
+  Account Payment. TO-BE ETM-16761: COA deposit di AP = setting by asal DN
+  (bukan selalu Deposit to Supplier / bukan historis jurnal DN).
+version: 1.1
+last_updated: 2026-10-26
 status: review
 ---
 
@@ -18,6 +19,15 @@ status: review
 ## Apa ini
 
 Tujuan utama Debit Note setelah approve: dipilih di **Account Payment** sebagai **Payment Source — Debit Note**, sehingga hutang Purchase Invoice berkurang tanpa harus mengeluarkan kas penuh.
+
+**Akun deposit (TO-BE · [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)):** saat DN dipakai di AP, sistem **identifikasi asal DN** lalu baca **field setting** — **bukan** menyalin COA dari dokumen/jurnal DN:
+
+| Asal DN | Setting yang dibaca |
+|---------|---------------------|
+| Purchase Return | **Deposit of Purchase Return** |
+| Manual / AP import overpay | **Deposit to Supplier** |
+
+Satu AP boleh campur beberapa DN beda asal → baris GL boleh beda akun. Setting diganti setelah DN Approve → ikut **setting saat consume**.
 
 ## Kapan dipakai
 
@@ -40,6 +50,7 @@ Tujuan utama Debit Note setelah approve: dipilih di **Account Payment** sebagai 
 - Supplier & currency DN harus cocok dengan header Account Payment.
 - Tanggal DN harus sebelum tanggal AP (aturan eligibility).
 - Boleh gabung Cash/Bank + Debit Note di satu AP — lihat Payment Source di menu Account Payment.
+- **AS-IS gap:** AP selalu stamp Deposit to Supplier — termasuk DN dari PR → mismatch GL (GAP-PAY-DN-COA / ETM-16761).
 - Downstream menu: Account Payment (`/accounting/supplier-payment`).
 
 ## Contoh
@@ -47,6 +58,7 @@ Tujuan utama Debit Note setelah approve: dipilih di **Account Payment** sebagai 
 | Given | Aksi | Hasil |
 |-------|------|--------|
 | DN Approved outstanding 2 jt, PI 10 jt | AP: DN 2 jt + kas 8 jt → Approve | Outstanding DN → 0; PI lunas |
+| DN dari PR + DN manual di satu AP | Approve AP | **TO-BE:** Credit dua akun deposit berbeda sesuai asal |
 | DN Outstanding 2 jt, input 3 jt di AP | Simpan source | Ditolak — melebihi sisa DN |
 | DN belum Approve | Cari di modal DN AP | Tidak eligible / tidak muncul |
 

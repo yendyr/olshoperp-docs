@@ -4,8 +4,8 @@ menu_slug: accounting-supplier-payment
 menu_name: Account Payment
 lang: en
 version: 1.2
-last_updated: 2026-10-19
-status: draft
+last_updated: 2026-10-26
+status: review
 audience: help-center
 source_type: derived
 source_ref: null

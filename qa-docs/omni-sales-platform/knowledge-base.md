@@ -2,12 +2,12 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.12
-last_updated: 2026-10-02
+version: 1.13
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 audience: operator
-aliases: [sales platform, order marketplace, sync shopee, failed process, booking shopee, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, MATCHED, advance package, Pending Orders, Unmatched Bookings]
+aliases: [sales platform, order marketplace, sync shopee, failed process, booking shopee, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, MATCHED, advance package, Pending Orders, Unmatched Bookings, TikTok price, ETM-16805]
 ---
 
 # Dev - Sales Platform — Knowledge Base
@@ -130,6 +130,7 @@ Edit field booking (Other Information) dilakukan dari **All Sales Order**, bukan
 - Jadwal tarik order lebih jarang malam hari.
 - **Order Sync Start Date** di Omni Setting membatasi order terlalu lama tidak ikut ditarik.
 - **Harga Shopee (penting):** unit price di detail SO **bukan** sekadar harga “setelah diskon” di order detail API. Sistem memakai data **escrow** Shopee: harga diskon + **potongan yang ditanggung Shopee** (`shopee_discount`), supaya nilai penjualan seller tidak mengecil salah. Contoh: SKU tampil 25.900 di order detail padahal harga seller 53.999 karena Shopee menanggung 28.099.
+- **Harga TikTok (TO-BE · ETM-16805):** unit price = **`original_price − seller_discount`** (seller_discount kosong → 0). Rumus lama `sale_price + platform_discount` (ETM-14808) overstate Penjualan Produk karena `platform_discount` API menggabungkan potongan item (sudah di `sale_price`) + potongan payment. **Hanya order sync setelah deploy** — order lama tidak di-recalculate.
 - Jika harga line Shopee jadi **0** setelah sync, kemungkinan escrow gagal / item tidak ketemu — cek API Data Log (escrow) lalu **Sync** ulang; laporkan jika berulang.
 - Order yang sudah masuk **sebelum** perbaikan harga escrow mungkin masih understated sampai di-sync/backfill ulang.
 - Biaya/diskon tambahan dari label akun platform hanya info di SO — **tidak** ikut ke Sales Invoice.

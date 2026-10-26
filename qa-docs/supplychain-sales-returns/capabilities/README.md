@@ -2,8 +2,8 @@
 doc_type: menu-capability-index
 menu: supplychain-sales-returns
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Sales Return (SCM) — Capability cards

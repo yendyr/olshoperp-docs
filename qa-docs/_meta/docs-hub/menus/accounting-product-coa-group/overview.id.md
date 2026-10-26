@@ -4,8 +4,8 @@ menu_slug: accounting-product-coa-group
 menu_name: Product COA Group
 lang: id
 version: 1.0
-last_updated: 2026-08-05
-status: draft
+last_updated: 2026-10-26
+status: review
 audience: help-center
 source_type: authored
 source_ref: "Downloads/Product COA Group Help Center ID Version.md"

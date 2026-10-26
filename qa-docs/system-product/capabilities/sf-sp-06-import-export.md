@@ -9,8 +9,8 @@ summary: >-
   Import/Export Excel hanya di System Product full. New/Update/Bundle/Random/Alt Unit/VAT
   (max 5000). TO-BE: Import Product Images dari Google Drive publik (max 1000, replace primary).
 version: 1.1
-last_updated: 2026-08-11
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Import / Export

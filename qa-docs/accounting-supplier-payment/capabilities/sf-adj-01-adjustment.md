@@ -9,8 +9,8 @@ summary: >-
   Baris penyesuaian manual (Debit atau Credit ke COA pilihan) yang memengaruhi
   grand total detail sebelum balancing dengan Payment Source.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Adjustment

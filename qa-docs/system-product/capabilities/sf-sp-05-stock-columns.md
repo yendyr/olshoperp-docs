@@ -9,8 +9,8 @@ summary: >-
   Tiga angka stok di datalist: Availability (bisa dipakai), On Hand (fisik), dan
   ATS (bersih untuk dijual). Bundle memakai komponen paling sedikit.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Availability / On Hand / ATS

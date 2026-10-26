@@ -9,8 +9,8 @@ summary: >-
   Membaca angka di list: Total = jumlah fund; Paid = sudah dipakai di Account
   Receive approved; Outstanding = Total − Paid (sisa di list).
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Total / Paid / Outstanding

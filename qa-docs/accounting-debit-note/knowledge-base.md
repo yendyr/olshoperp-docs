@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.2
-last_updated: 2026-10-22
+version: 1.3
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 audience: operator
@@ -87,7 +87,7 @@ flowchart TD
 
 Saat retur billed ke PI disetujui, sistem buat DN status **Open** dengan baris **Return Deposit** (bukan kas/bank). User tetap **Approve** manual. Trx Ref menunjuk ke kode Purchase Return.
 
-**Akun deposit (TO-BE ETM-16761):** Approve DN dari PR memakai **Deposit of Purchase Return**. Saat DN itu dipakai di Account Payment, akun yang keluar harus **sama** (bukan Deposit to Supplier). Satu supplier boleh punya sisa DN di dua akun deposit berbeda di laporan GL.
+**Akun deposit (TO-BE ETM-16761):** Approve DN dari PR memakai **Deposit of Purchase Return**. Saat DN itu dipakai di Account Payment, sistem baca **setting by asal DN** (PR → Deposit of Purchase Return; regular → Deposit to Supplier) — **bukan** selalu Deposit to Supplier, **bukan** menyalin COA historis dari jurnal DN. Satu supplier boleh punya sisa DN di dua akun deposit berbeda di laporan GL.
 
 ---
 

@@ -9,8 +9,8 @@ summary: >-
   Pill Sales Return Platform menampilkan order marketplace refund/cancelled.
   Sync menarik status retur terbaru dari marketplace sebelum diproses.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Sales Return Platform & Sync

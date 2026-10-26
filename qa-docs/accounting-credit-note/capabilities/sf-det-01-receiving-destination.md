@@ -9,8 +9,8 @@ summary: >-
   Isi destinasi nilai Credit Note: Cash/Bank (Use/Bulk Use) dan/atau Free COA
   (TO-BE). Amount > 0 wajib sebelum Approve. Boleh campur; no duplicate COA.
 version: 1.1
-last_updated: 2026-08-05
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Receiving Destination — Cash/Bank & Free COA

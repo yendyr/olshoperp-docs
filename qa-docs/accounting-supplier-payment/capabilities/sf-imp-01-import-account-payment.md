@@ -9,8 +9,8 @@ summary: >-
   Import massal Account Payment via Excel multi-sheet (Bank Mutation, Detail,
   Adjustment). Hasil berstatus Open untuk direview lalu di-approve satu per satu.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Import Account Payment

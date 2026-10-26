@@ -3,9 +3,9 @@ doc_type: feature-map
 menu: accounting-sales-return
 menu_name: "Sales Return"
 version: 1.0
-last_updated: 2026-07-29
+last_updated: 2026-10-26
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [sales return approval feature map, SR finance features, complete sales return]
 ---
 

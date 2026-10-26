@@ -9,8 +9,8 @@ summary: >-
   Empat tipe SKU: Single, Variant Parent, Variant Child, dan Bundle. Hanya
   Single, Child, dan Bundle (di Sales Order) yang bisa ditransaksikan.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Product Type & transactability

@@ -9,8 +9,8 @@ summary: >-
   Aktifkan Enable Variations untuk membuat SKU child otomatis dari kombinasi
   opsi (maks 3 tipe). Hanya child yang bisa ditransaksikan.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Variant Configuration

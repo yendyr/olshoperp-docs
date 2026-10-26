@@ -9,8 +9,8 @@ summary: >-
   Tombol Complete di menu Finance menyelesaikan retur open: post stok,
   jurnal, dan Credit Note jika Billed. Hanya muncul di Sales Return Accounting.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Complete

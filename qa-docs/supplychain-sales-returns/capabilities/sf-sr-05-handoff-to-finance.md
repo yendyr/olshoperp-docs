@@ -9,8 +9,8 @@ summary: >-
   Setelah gudang mengisi qty, SR tetap Open dan menunggu Finance Complete.
   Tombol Complete memang tidak tersedia di menu SCM.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Save & handoff to Finance

@@ -9,8 +9,8 @@ summary: >-
   Saat Approve, Total Payment Source harus sama persis dengan Total Payment Detail
   (setelah adjustment). Kalau tidak balance, Approve ditolak.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Strict balancing

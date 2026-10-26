@@ -9,8 +9,8 @@ summary: >-
   Scan SO internal atau platform order untuk membuat retur. Order harus sudah
   outbound dan invoiced, IDR, tanpa payment atau retur lain yang masih pending.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Scan Order & eligibility

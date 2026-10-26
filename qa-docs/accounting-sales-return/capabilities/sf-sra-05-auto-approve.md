@@ -9,8 +9,8 @@ summary: >-
   Jika Global Setting Sales Return Configuration mengaktifkan auto-approve,
   SR open yang melewati durasi bisa Complete otomatis tanpa klik manual.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Auto-approve

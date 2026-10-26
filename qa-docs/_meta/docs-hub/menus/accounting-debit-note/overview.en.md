@@ -4,8 +4,8 @@ menu_slug: accounting-debit-note
 menu_name: Debit Note
 lang: en
 version: 1.0
-last_updated: 2026-08-12
-status: draft
+last_updated: 2026-10-26
+status: review
 audience: help-center
 source_type: authored
 source_ref: "Downloads/Debit Note Help Center ID Version.md"

@@ -3,9 +3,9 @@ doc_type: feature-map
 menu: accounting-credit-note
 menu_name: "Credit Note"
 version: 1.0
-last_updated: 2026-07-29
+last_updated: 2026-10-26
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [CN feature map, credit note features, nota kredit features]
 ---
 

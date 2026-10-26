@@ -9,8 +9,8 @@ summary: >-
   Bagi qty retur per SKU menjadi Restock, Broken, atau Lost. Total tidak boleh
   melebihi sisa qty outbound dan minimal satu kategori harus terisi.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Restock / Broken / Lost

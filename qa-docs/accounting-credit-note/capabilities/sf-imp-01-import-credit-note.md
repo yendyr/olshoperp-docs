@@ -9,8 +9,8 @@ summary: >-
   Import massal Credit Note via Excel/CSV untuk customer General.
   Satu baris error membatalkan seluruh file; hasil berstatus Open.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Import Credit Note

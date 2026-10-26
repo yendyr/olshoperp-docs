@@ -4,8 +4,8 @@ menu_slug: supplychain-sales-returns
 menu_name: Sales Return (SCM)
 lang: id
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 audience: help-center
 source_type: derived
 source_ref: null

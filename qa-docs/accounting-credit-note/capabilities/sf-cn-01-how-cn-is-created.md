@@ -8,9 +8,9 @@ scope: menu
 summary: >-
   Credit Note bisa dibuat manual, diimpor, otomatis dari Sales Return Billed,
   atau terkait kelebihan bayar Account Receive — status awal berbeda per jalur.
-version: 1.0
-last_updated: 2026-07-29
-status: draft
+version: 1.1
+last_updated: 2026-10-26
+status: review
 ---
 
 # How CN is created
@@ -19,13 +19,15 @@ status: draft
 
 Credit Note (CN) bisa muncul dari beberapa jalur. Yang berbeda: apakah kamu harus **Approve** sendiri, dan apakah **Trx Ref** terisi ke dokumen asal.
 
+**COA approve (TO-BE · [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)):** CN dari **Sales Return billed** memakai **Deposit of Sales Return**; CN **manual / AR import** memakai **Customer's Deposit** (atau store deposit). Saat CN dipakai di Account Receive, COA resolve lagi dari **setting by asal** — lihat [Use in Account Receive](#sf-lingo:SF-CN-03).
+
 ## Kapan dipakai
 
 | Jalur | Hasil status | Kapan |
 |-------|--------------|--------|
 | **Manual** di menu ini | **Open** — approve sendiri | Catat kredit/deposit customer |
 | **Import** Excel/CSV | **Open** — approve sendiri | Massal customer General |
-| **Sales Return Billed** (Finance Complete) | Langsung **Approved** + jurnal | Retur untuk invoice yang sudah pernah dibayar |
+| **Sales Return Billed** (Finance Complete) | Langsung **Approved** + jurnal (**Deposit of Sales Return** TO-BE) | Retur untuk invoice yang sudah pernah dibayar |
 | Kelebihan bayar / import Account Receive | Mengikuti proses AR | Overpayment yang menghasilkan CN |
 
 ## Cara pakai

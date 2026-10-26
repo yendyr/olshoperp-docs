@@ -3,9 +3,9 @@ doc_type: feature-map
 menu: accounting-supplier-payment
 menu_name: "Account Payment"
 version: 1.0
-last_updated: 2026-07-29
+last_updated: 2026-10-26
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [AP payment feature map, account payment features, PY features]
 ---
 

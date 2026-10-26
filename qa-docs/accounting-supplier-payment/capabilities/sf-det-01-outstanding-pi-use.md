@@ -10,8 +10,8 @@ summary: >-
   Use = satu PI dengan To Be Paid bisa sebagian; Bulk Use = banyak PI;
   Allocate Full = lunas outstanding baris itu.
 version: 1.0
-last_updated: 2026-07-29
-status: draft
+last_updated: 2026-10-26
+status: review
 ---
 
 # Outstanding PI — Use / Bulk Use / Allocate Full
