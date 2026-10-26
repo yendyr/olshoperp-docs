@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.12
-last_updated: 2026-10-02
+version: 1.13
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog **1.13 (2026-10-26):** TO-BE TikTok unit price [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) — `original_price − seller_discount` (supersede ETM-14808); hotspot `OmniTikTokService` map line_item + `$price`. Forward-only.  
 > Changelog **1.12 (2026-10-02):** Reprice in-place (ETM-16212 / §6.10); bundle breakdown Retail + post-wave (ETM-16216 / §6.11). Touchpoints: `OmniShopeeService` `$converting_booking` path — **jangan** delete children + `pickBundleChildren` recreate; `SalesOrderDetailController::pickBundleChildren` — random harus `product->price` bukan `benchmarkPrice`.  
 > Changelog **1.11 (2026-09-09):** Void / Void & Recreate / Recreate + sync gate — [requirement §5.8 / §6.9](./requirement.md); ETM-15859; GAP-SPD-01 Decided. Touchpoints: `SalesOrderApprovalController` void, rename Void & Clone → Void & Recreate, show Recreate, platform sync services (Shopee/TikTok/Lazada/…) skip create on void+exact ID, order lock.  
 > Changelog 1.10 (2026-09-04): Log Data tab **Pending Orders** + pill **Unmatched Bookings** — [requirement §5.3.1](./requirement.md) · [ASO §5.7](../all-sales-order/requirement.md) · ETM-15798.  
@@ -112,7 +113,8 @@ related_docs:
 | Platform | Unit price at sync |
 |----------|-------------------|
 | Shopee | Escrow `get_escrow_detail` → `order_income.items[]`: **`discounted_price + shopee_discount`**, match `line_item_id` ke item order detail. **Bukan** `item_list.model_discounted_price` |
-| TikTok | `sale_price + platform_discount` |
+| TikTok (**AS-IS** ETM-14808) | `sale_price + platform_discount` (`OmniTikTokService` ~map `original_price`/`sale_price`/`platform_discount`) |
+| TikTok (**TO-BE** ETM-16805) | `original_price − seller_discount` (null seller_discount → 0); map field `seller_discount` dari line_item; **jangan** pakai agregat `platform_discount` untuk unit price. Order lama: no recalculate |
 | Lazada | Existing product price path |
 
 **Shopee implementation (`OmniShopeeService`):**

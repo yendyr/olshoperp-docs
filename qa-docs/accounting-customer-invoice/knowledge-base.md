@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 2.1
-last_updated: 2026-10-22
+version: 2.2
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, piutang]
@@ -130,6 +130,9 @@ A: Manual = SO General. Platform = dari settlement; sering auto-approved & terba
 
 **Q: Other Cost/Discount dari SO ikut ke SI? (TO-BE ETM-16763)**  
 A: Ya — default penuh ke **SI pertama**; SI berikutnya (termasuk Instant Settlement) tidak bawa lagi. Create manual: editable seperti PO→PI (amount terkunci, COA boleh ubah, baris boleh dihapus). Settlement: fee file tidak menumpuk baris order; OC/OD dari order tidak diedit di jalur settlement.
+
+**Q: SO masih ada SKU random — bisa di-invoice? (TO-BE ETM-16807)**  
+A: **Tidak.** Kalau SO (single atau komponen bundle) masih random, tidak bisa Use / create SI. Di modal outstanding ada ikon warning + tooltip (bahasa Inggris). Proses **Outbound** dulu sampai random jadi SKU tetap, baru invoice. Ini mencegah SI pecah (sebagian komponen dulu, sisanya SI kedua setelah Outbound).
 
 **Q: Wajib Other Cost?**  
 A: Tidak.

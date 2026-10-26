@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 2.1
-last_updated: 2026-10-22
+version: 2.2
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, AR invoice]
@@ -17,7 +17,7 @@ aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, AR
 **UI route:** `/accounting/customer-invoice`  
 **SoT:** `_meta/sot/accounting-customer-invoice-source-of-truth.md` v1.0 (24 Agu 2026)  
 **Jira import:** [ETM-14976](https://erpintegration.atlassian.net/browse/ETM-14976)  
-**Related:** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) (carry OC/OD dari SO) · [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (sumber di SO)
+**Related:** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) (carry OC/OD dari SO) · [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (sumber di SO) · [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807) (blok SI jika SO masih random)
 
 Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · [Credit Note](../accounting-credit-note/requirement.md)
 
@@ -27,6 +27,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.2 | 2026-10-26 | QA - Yemima | **TO-BE** [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807): blok Use/create SI jika SO masih contain random SKU; warning icon + tooltip EN di modal outstanding |
 | 2.1 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763): OC/OD dari SO carry ke SI (sekali); manual = PO→PI; settlement anti-duplikat |
 | 1.0 | 2026-06-19 | QA - Yemima | Draft AS-IS codebase |
 | 1.1 | 2026-06-23 | QA - Yemima | Cross-ref Instant Settlement |
@@ -174,6 +175,31 @@ Setelah ada **detail**, terkunci: Customer, Currency, Rate, Trx Date, Due Date (
 
 **Outstanding Detail view:** SO Code/Date · SKU/Name · SO Qty · Unit · Unit Price (as-is SO) · Discount · VAT · Total · Invoice Progress.  
 **Group view:** per SO masih ada SKU outstanding; create-group menambah semua outstanding line SO.
+
+#### 5.2.1 Blok SO yang masih contain random SKU (TO-BE · ETM-16807)
+
+**Latar belakang:** SI boleh dibuat sebelum Outbound. SKU **random** baru jadi SKU asli setelah processing / Outbound. Jika SI dibuat saat order belum proses, komponen random sering hilang; setelah Outbound approve, sistem bisa auto-generate **SI kedua** hanya untuk SKU hasil konversi → satu order terpecah (bukti QA: bundle `BDL-BATH-CLEAN` → SI-5UV2OY4I lalu SI-5UV2TFFK).
+
+**Definisi “SO contains random”:** ada **satu atau lebih** baris Sales Order detail (produk single **atau** komponen bundle) yang masih SKU random / unresolved random (definisi sama dengan rule processing order). Jika **any** baris masih random → **seluruh SO** tidak boleh di-invoice (bukan partial Use baris non-random saja).
+
+| Area | TO-BE |
+|------|--------|
+| Create / Use outstanding SO (manual) | **Ditolak** dengan validasi jelas (English — lihat copy di bawah) |
+| Import SI | Baris yang target SO contain random **ditolak** (pesan per row, English) |
+| Modal outstanding SO | SO contain random **tetap tampil** agar operator paham, tapi **tidak selectable / tidak Use**; tampilkan **ikon warning** |
+| Hover ikon warning | Tooltip English (copy di bawah) |
+| Setelah Outbound (random → SKU asli) | SO outstanding normal → boleh Use / auto-SI Outbound sesuai rule qty invoicable tersisa |
+
+**Recommended English copy**
+
+- Validation (create / Use / save):  
+  `This Sales Order cannot be invoiced because it still contains a random SKU. Process Outbound first so the random SKU is converted to a real SKU, then create the Sales Invoice.`
+- Import row:  
+  `Row [N]: Sales Order [code] still contains a random SKU. Process Outbound before invoicing.`
+- Tooltip (warning icon):  
+  `This Sales Order cannot be used for Sales Invoice yet because it still contains a random SKU. Random SKUs must be processed through Outbound before invoicing.`
+
+Cross-ref auto-SI Outbound: [Outbound §6.3](../supplychain-mutation-outbound/requirement.md) · card [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807).
 
 ### 5.3 Additional Cost / Discount
 
@@ -323,6 +349,7 @@ SI dibuat sistem; sering auto-approved. Create manual **tidak** untuk order plat
 | GAP-SI-04 | Docs QA sync setelah SOT acc | Missing Doc | Open → addressed by v2.0 split |
 | GAP-SI-05 | Error currency path menyebut “purchase order” | Bug candidate | Open |
 | GAP-SI-06 | OC/OD dari SO wajib carry ke SI (sekali); manual = PO→PI; settlement anti-duplikat | Missing Behavior / Contradiction docs | **TO-BE** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) |
+| GAP-SI-07 | SI boleh Use SO yang masih random → invoice pecah setelah Outbound | Missing Behavior | **TO-BE** [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807) — §5.2.1 |
 
 ---
 

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-mutation-outbound
 menu_name: "Outbound External"
-version: 2.0
-last_updated: 2026-10-11
+version: 2.1
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 aliases: [outbound external, inventory out, OT outbound, mutation outbound]
@@ -15,7 +15,8 @@ aliases: [outbound external, inventory out, OT outbound, mutation outbound]
 **UI route:** `/supplychain/mutation-outbound`  
 **Kode:** prefix `OT`  
 **Audience:** PM, Operations, QA  
-**SoT:** `supplychain-mutation-outbound-source-of-truth.md` v1.0 (11 Oct 2026)
+**SoT:** `supplychain-mutation-outbound-source-of-truth.md` v1.0 (11 Oct 2026)  
+**Related:** [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807) — SI diblok jika SO masih random; Outbound dulu baru invoice
 
 ---
 
@@ -23,6 +24,7 @@ aliases: [outbound external, inventory out, OT outbound, mutation outbound]
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.1 | 2026-10-26 | QA - Yemima | Cross-ref TO-BE ETM-16807: random harus lewat Outbound sebelum SI; auto-SI tetap per detail tanpa invoice qty |
 | 1.0–1.2 | 2026-06 ~ 07 | QA - Yemima | Draft auto + cross-ref Settlement / Assembly / Unit |
 | 2.0 | 2026-10-11 | QA - Yemima | Rewrite dari SoT v1.0; type SO/Other; FIFO/manual; journal; gaps DO & approve |
 
@@ -145,7 +147,9 @@ Ada last OT → default warehouse + type → POST → edit. Belum pernah → isi
 ### 6.3 Approve — stok & jurnal
 
 Cr **Inventory**. Dr: Other → **Operational Expense**; Sales Order → **COGS**; Assembly ref → **WIP**.  
-Conditional auto Sales Invoice jika detail ref SO Detail tanpa invoice qty.
+Conditional auto Sales Invoice jika detail ref SO Detail tanpa invoice qty (per baris: `prepared`/`processed` invoice qty kosong → antrian auto-SI; `extractOrderDetails` hanya sisa invoicable).
+
+**TO-BE [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807):** create SI **manual** diblok jika SO masih contain SKU random — operator harus Outbound dulu (konversi random → SKU asli) baru invoice. Setelah konversi, auto-SI dari Approve Outbound untuk sisa belum di-invoice tetap sah. Detail gate SI: [Sales Invoice §5.2.1](../accounting-customer-invoice/requirement.md).
 
 ### 6.4 Generate lain
 

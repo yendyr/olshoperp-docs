@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-mutation-outbound
 menu_name: "Outbound External"
-version: 2.0
-last_updated: 2026-10-11
+version: 2.1
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 audience: operator
@@ -71,7 +71,8 @@ SKU-PENSIL datang 2 kali: 1.500 pcs lalu 500 pcs. Outbound **1.700** pcs:
 
 - Stok berkurang.
 - Jurnal: persediaan kredit; debit biaya operasional (Other), HPP/COGS (Sales Order), atau WIP (dari Assembly).
-- Order terkait bisa memicu Sales Invoice otomatis (kondisional).
+- Order terkait bisa memicu Sales Invoice otomatis (kondisional — detail SO belum punya qty invoice).
+- **TO-BE ETM-16807:** kalau SO masih punya SKU random, buat SI di menu Sales Invoice dulu **tidak boleh** — Outbound dulu sampai random jadi SKU tetap.
 - **Tidak ada unapprove** di staging/production. OT dari settlement dihapus lewat **delete Instant Settlement**.
 
 ---

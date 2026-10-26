@@ -5,7 +5,7 @@ menu_name: "System Product"
 version: 1.1
 last_updated: 2026-10-22
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [system product feature map, SKU master features, product bundle variant map]
 ---
 

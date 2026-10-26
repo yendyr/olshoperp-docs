@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.12
-last_updated: 2026-10-22
+version: 1.13
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail, Pending Orders, Unmatched Bookings, Log Data, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, platform_order_id]
@@ -19,7 +19,7 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 **Jira (edit detail platform TO-BE):** [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748) · pasangan SP [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749)  
 **Jira (Log Data Pending Orders TO-BE):** [ETM-15798](https://erpintegration.atlassian.net/browse/ETM-15798) — paritas visibility di [Dev - Sales Platform](../omni-sales-platform/requirement.md)  
-**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) — Other Cost/Discount di SO (General & Platform) wajib carry ke SI ([ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763))
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) — Other Cost/Discount di SO (General & Platform) wajib carry ke SI ([ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763)) · [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) TikTok harga (kanonik SP §5.5)
 
 ---
 
@@ -27,6 +27,7 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.13 | 2026-10-26 | QA - Yemima | Cross-ref TO-BE ETM-16805 TikTok unit price (kanonik SP §5.5) |
 | 1.12 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE ETM-16762/16763: OC/OD SO → SI (paritas SOG + SP) |
 | 1.11 | 2026-09-09 | QA - Yemima | TO-BE §5.8: **Void** vs **Void & Recreate** vs **Recreate**; anti auto-create sync; prefix `void-` / `void2-` — ETM-15859 (paritas SP) |
 | 1.10 | 2026-09-08 | QA - Yemima | §5.4a: stok FIFO / Unavailable Stock memakai Processing Order Date (Unassign Wave); Last Checked Expected = tanggal evaluasi (cross-ref UW GAP-UW-04/06) |
@@ -352,7 +353,7 @@ flowchart TB
 - [ ] Failed Process icons/tooltip selaras SP
 - [ ] Create memakai alur SO General
 - [ ] Edit booking unmatched tidak memaksa form SP
-- [ ] Tidak mendefinisikan ulang formula harga — merujuk SOG/SP (**Shopee:** escrow `discounted_price + shopee_discount`, SP req §5.5)
+- [ ] Tidak mendefinisikan ulang formula harga — merujuk SOG/SP (**Shopee:** escrow `discounted_price + shopee_discount`; **TikTok AS-IS:** `sale_price + platform_discount` · **TO-BE ETM-16805:** `original_price − seller_discount` — SP req §5.5)
 - [ ] Tombol **Recheck failed process** hanya di ASO; lock saat batch jalan
 - [ ] Baris platform: Auto Add VAT dari Store (GAP-ASO-04); Benchmark COGS effective snapshot (GAP-ASO-05)
 - [ ] **Edit detail platform TO-BE (ETM-15748 / §5.6):** paritas penuh dengan SP §6.8 (add/replace, price/disc/VAT, no delete, sync lock)

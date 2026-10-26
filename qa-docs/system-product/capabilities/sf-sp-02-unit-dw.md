@@ -10,7 +10,7 @@ summary: >-
   per satuan. Platform Default & Trx Default bersifat global lintas semua unit.
 version: 1.1
 last_updated: 2026-10-22
-status: draft
+status: review
 ---
 
 # Unit Configuration & D&W per unit

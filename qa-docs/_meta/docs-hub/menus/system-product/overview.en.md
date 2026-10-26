@@ -5,7 +5,7 @@ menu_name: System Product
 lang: en
 version: 1.1
 last_updated: 2026-10-22
-status: draft
+status: review
 audience: help-center
 source_type: derived
 source_ref: null

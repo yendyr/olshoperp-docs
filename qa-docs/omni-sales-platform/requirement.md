@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.13
-last_updated: 2026-10-22
+version: 1.14
+last_updated: 2026-10-26
 owner: QA - Yemima
 status: review
 aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package, Pending Orders, Unmatched Bookings, Void, Void & Recreate, Recreate]
@@ -17,7 +17,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 **SoT:** 6 file `omni-sales-platform-*-source-of-truth.md` (booking v1.1)  
 **Status:** AS-IS verified + PM SoT merge · lihat §Gaps  
 **Jira (edit detail TO-BE):** [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) · pasangan ASO [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748)  
-**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) — Additional Cost/Disc SO → SI
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) — Additional Cost/Disc SO → SI · [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) (TikTok unit price) supersedes rumus [ETM-14808](https://erpintegration.atlassian.net/browse/ETM-14808)
 
 ---
 
@@ -25,6 +25,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.14 | 2026-10-26 | QA - Yemima | **TO-BE** [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805): TikTok unit price = `original_price − seller_discount` (supersede ETM-14808 `sale_price + platform_discount`); forward-only |
 | 1.13 | 2026-10-22 | QA - Yemima | TO-BE ETM-16762/16763: Additional Cost/Disc dari Labeling+Mapping **wajib** carry ke SI pertama (bukan info-only) |
 | 1.12 | 2026-10-02 | QA - Yemima | §6.10 reprice booking/sync = update in-place (no delete-reinsert) — ETM-16212; §6.11 breakdown Retail + before/after processing / late booking price — ETM-16216 |
 | 1.11 | 2026-09-09 | QA - Yemima | TO-BE §5.8 / §6.9: **Void** vs **Void & Recreate** vs **Recreate**; sync anti auto-create; prefix `void-`/`void2-` — ETM-15859 (GAP-SPD-01 Decided) |
@@ -263,7 +264,8 @@ Outcome counters: Created / Updated / Skipped / Failed.
 | Platform | Rule harga unit (per line) |
 |----------|----------------------------|
 | Shopee | **Escrow** `v2.payment.get_escrow_detail` → match item by `line_item_id` → **`discounted_price + shopee_discount`** (field di `order_income.items`). **Jangan** pakai `v2.order.get_order_detail`.`model_discounted_price` sebagai unit price |
-| TikTok | `sale_price + platform_discount` ([VERIFY] NULL discount) |
+| TikTok (**AS-IS** · [ETM-14808](https://erpintegration.atlassian.net/browse/ETM-14808)) | `sale_price + platform_discount` (`platform_discount` null → 0; `sale_price` null → fallback `original_price`) |
+| TikTok (**TO-BE** · [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805)) | **`original_price − seller_discount`** (`seller_discount` null/absen → 0). Alasan: `platform_discount` API menggabungkan *item* platform discount (sudah di `sale_price`) + *payment* platform discount (bukan revenue item) → rumus lama overstate Penjualan Produk. **Hanya order sync setelah deploy**; order lama tidak di-recalculate. Relates ETM-14808. Uji: 3 pola evidence + sampel vs settlement (jangan regress selisih settlement tanpa penjelasan). |
 | Lazada | Product price existing; **tanpa** pre-sale datetime |
 
 **Latar belakang Shopee (wajib):**  
