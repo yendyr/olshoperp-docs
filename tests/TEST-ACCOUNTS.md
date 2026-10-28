@@ -2,6 +2,8 @@
 
 Akun untuk kasus uji yang butuh **role atau izin tertentu**. Akun default E2E (company FAT, `playwright@gmail.com`) tetap dijelaskan di rule `13-test-case-format.mdc` §4 dan **tidak** diulang di sini.
 
+Company default: pakai company yang disebut user; kalau tidak disebut, urutan **153 → 112 → 13**.
+
 > [!CAUTION]
 > Folder `qa-docs/` (termasuk file TC) dimirror ke repo developer dan dipakai Help Center. Karena itu **kata sandi hanya boleh ditulis di file ini** (`tests/` tidak dimirror). File TC cukup menyebut email akun dan menunjuk ke file ini.
 

@@ -33,7 +33,7 @@ Scope selalu tunggal (1 acceptance criteria) — **tidak** melahirkan Test Case 
 
 ### Jalur 2 — `Improvement` / `Change Requirement` / `Story` / `Task`
 
-Tipe ini **wajib** melahirkan Test Case card dulu (lihat `16-card-tc-queue.mdc`) — tidak diverifikasi langsung tanpa TC.
+Tipe ini **wajib** melahirkan Test Case card dulu (di Jira, skill `olshoperp-testcase-authoring`; lihat `16-card-tc-queue.mdc`) — tidak diverifikasi langsung tanpa TC.
 
 1. Transisi status card origin → **Re-OPEN** — **TANPA clone**.
 2. Buat card **Error/Bug baru** untuk defect yang ditemukan, format penuh sesuai `12-jira-card-format.mdc` Tipe 1 (Summary, Environment, Precondition Data, Steps to Reproduce, Expected Result, Actual Result, Additional Context lengkap — bukan comment singkat).
@@ -44,11 +44,14 @@ Tipe ini **wajib** melahirkan Test Case card dulu (lihat `16-card-tc-queue.mdc`)
 
 Test Case **tidak pernah** ditransisikan ke Re-OPEN. Status akhirnya tetap **Done** — hasil dicatat di `customfield_10202` (Test Result). Urutan pengisian sebelum Done: **wajib** ikut `17-jira-testcase-status-transition.mdc` (repo `olshoperp`) — Actual Result → Test Result → baru Done.
 
-- **Test Result = Failed** (atau Blocked) → **wajib** terbit card Bug/Error baru:
+- **Test Result = Failed** → **wajib** terbit card Bug/Error baru:
   - Relates ke card Test Case itu sendiri **dan** ke `origin_jira` (card Improvement/Change Requirement/Story/Task yang melahirkan TC ini).
   - Assignee = assignee card origin (bukan tester/QA yang menjalankan TC).
   - Origin Improvement/Change Requirement/Story/Task otomatis masuk **Jalur 2** di atas (reopen).
 - **Test Result = Passed** → tidak ada aksi lanjutan.
+- **“Blocked” ada dua jenis (keputusan Yemima 28-10-2026):**
+  - **(a)** TC tidak bisa diuji karena hal di luar aplikasi (data/precondition belum ada, environment atau antrian down) → TC **tetap / kembali ke `Not Execute`**; hanya dilaporkan — **tanpa** Test Result, **tanpa** card Error.
+  - **(b)** TC sudah dijalankan dan aplikasi memunculkan error → diperlakukan sebagai **Failed** (Test Result Failed, TC → Done, card Error baru, origin RE-OPEN tanpa clone seperti di atas).
 
 > [!NOTE]
 > Mismatch yang ketahuan **sebelum** Test Result difinalkan (screening kelengkapan field / kualitas Actual Result) **bukan** bagian rule ini — itu notifikasi ke tim QA untuk revisi/retest, belum tentu defect sistem. Rule ini berlaku setelah Test Result = Failed benar-benar ditetapkan.
@@ -74,9 +77,9 @@ Test Case **tidak pernah** ditransisikan ke Re-OPEN. Status akhirnya tetap **Don
 ## Relasi rule lain
 
 - `12-jira-card-format.mdc` — format & custom field wajib tiap tipe card (dipakai saat create card Bug baru / clone).
-- `16-card-tc-queue.mdc` — antrian Test Case per card (`test-queue.yaml`), kewajiban TC untuk Improvement/Change Requirement/Story/Task.
-- `18-sync-jira-done.mdc` — sync hasil Done dari Jira ke file TC.
-- `13-test-case-format.mdc` — `origin_jira`, evidence tier `last_execution`.
+- `16-card-tc-queue.mdc` — TC hanya di Jira sejak 22-10-2026 (antrian `test-queue.yaml` sudah tidak dipakai); kewajiban TC untuk Improvement/Change Requirement/Story/Task.
+- `18-sync-jira-done.mdc` — dinonaktifkan sejak 22-10-2026 (hasil TC hanya di Jira, tidak disalin ke file TC).
+- `13-test-case-format.mdc` — format file TC lama (arsip read-only sejak 22-10-2026).
 - `olshoperp/.cursor/rules/17-jira-testcase-status-transition.mdc` — urutan isi Actual Result → Test Result → Done.
 - `23-tc-screening-notify.mdc` — jalan **sebelum** rule ini, notify-only ke tim QA saat Test Case Done; rule ini baru relevan setelah Test Result = Failed final & diverifikasi manusia.
 - `24-plain-language-team-comms.mdc` — gaya bahasa wajib description card Bug baru & pesan Telegram.

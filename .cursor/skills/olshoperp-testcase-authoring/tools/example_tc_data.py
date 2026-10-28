@@ -3,7 +3,8 @@
 #   python3 tools/tc_lib.py contoh.py update   -> perbarui description card yang sudah ada
 CFG = dict(
     origin="ETM-00000", request_id="recXXXXXXXXXXXXXX",      # salin Request ID card origin
-    menu_label="Nama Menu",                                    # nama menu persis di aplikasi (juga field Notion Page)
+    menu_label="Nama Menu",                                    # nama menu persis di aplikasi (field Menu / customfield_10429)
+    # assignee="Firda",  # opsional; kosong = gantian Firda <-> Jeiniffer (assignee_start="Jeiniffer" untuk mulai dari dia)
     company_label="Dev Staging (kode DEV-STG)",
     list_url="https://staging.olshoperp.com/modul/menu",
     pre_common=["Akun uji QA yang punya akses menu ...", "Company aktif harus ... (cara cek ...)"],

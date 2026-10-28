@@ -26,10 +26,10 @@ Klasifikasikan pertanyaan sebelum jawab; baca layer yang tepat (lihat `05-qa-eng
 | **Cari menu** | "Menu X ada di modul apa?" | `manifest.yaml` | README menu |
 | **Jira card** | `bug:` / `improvement:` / `cr:` atau minta tiket | `requirement.md` | KB, technical |
 | **Buat / edit TC** | "buat test case untuk…" | **Baca dulu** `13-test-case-format.mdc` (requestable) | `requirement.md`, `test-cases/` |
-| **Renumber TC** | `#renumber-tc` atau `#renumber-tc {menu-slug}` | **Baca dulu** `13` §9 | scan DRAFT per menu, update README |
-| **Antrian TC per card Jira** | `#card-tc` atau `#card-tc ETM-xxxxx` | `16-card-tc-queue.mdc` | To Do + QA Review → `test-queue.yaml`; overview dulu, run hanya `ready` |
+| **Renumber TC** | `#renumber-tc` *(nonaktif sejak 22-10-2026)* | `13` §9 | file TC = arsip read-only; jangan renumber |
+| **Antrian TC per card Jira** | `#card-tc` *(nonaktif sejak 22-10-2026)* | `16-card-tc-queue.mdc` | TC hanya di Jira; `test-queue.yaml` = arsip read-only |
 | **Tes card Jira spesifik** | "test ETM-xxxxx", "testing card ETM-…", "test case ETM-…" | skill `olshoperp-card-testing/SKILL.md` | buku lengkap testing; runbook **I** hanya pointer |
-| **Sync Jira Done → file TC** | `#sync-jira-done` / `#syncjiradone ETM-*` | `18-sync-jira-done.mdc` | fetch Jira Test Result + Actual Result; `tc:jira-sync --apply` |
+| **Sync Jira Done → file TC** | `#sync-jira-done` / `#syncjiradone ETM-*` *(nonaktif sejak 22-10-2026)* | `18-sync-jira-done.mdc` | hasil TC hanya di Jira; tidak ditulis ke file TC |
 | **Reopen / defect handling QA Review** | "card ini reopen", "QA Review nggak sesuai AC", "test result failed jadi bug apa" | `22-reopen-defect-flow.mdc` | Error/Bug → Re-OPEN + Clone; Improvement/CR/Story/Task → Re-OPEN tanpa clone + card Bug baru relates; TC tidak punya status Re-OPEN |
 | **Screening TC Done (kelengkapan/kualitas)** | "kenapa TC ini kena screening", "cek kelengkapan actual result", "notif telegram screening TC" | `23-tc-screening-notify.mdc` | Check 1 field kosong (deterministic) + Check 2 kualitas Actual Result (AI); notify-only ke Telegram, tidak eksekusi Jira |
 | **Screening card Improvement ber-Request ID** | "improvement dari request user", "lengkapi description card improvement", "kenapa card ini butuh konfirmasi" | `25-improvement-request-screening.mdc` | Simple → auto-lengkapi description (pertahankan Request Asli verbatim); butuh konfirmasi → notify Telegram, description tidak disentuh |
@@ -51,8 +51,8 @@ Klasifikasikan pertanyaan sebelum jawab; baca layer yang tepat (lihat `05-qa-eng
 |------------|---------|
 | Implementasi kode / fix bug | Arahkan repo app OlshopERP + tim dev |
 | Edit docs (KB/requirement/technical) | Tolak — agent read-only `qa-docs/` (lihat `03-qa-docs-immutable.mdc`) |
-| Buat / edit test case (`TC-*.md`) | Boleh di `test-cases/` dengan konfirmasi eksplisit — ikuti `13-test-case-format.mdc` |
-| Buat folder `test-cases/` baru | Boleh jika `{menu-slug}` valid di manifest & path `qa-docs/{menu-slug}/test-cases/` — ikuti `03` + `13` |
+| Buat / edit test case (`TC-*.md`) | **Tidak** — TC hanya di Jira sejak 22-10-2026; file lama arsip read-only. Buat TC → skill `olshoperp-testcase-authoring` |
+| Buat folder `test-cases/` baru | **Tidak** — TC hanya di Jira sejak 22-10-2026 |
 | Buat Jira card | Ikuti `12-jira-card-format.mdc`; expected & AS-IS **hanya** dari `olshoperp-docs` — meski ada temuan Playwright |
 | Playwright — tulis spec / BUILD | Baca `15` + `14`; FE/BE hanya setelah registry/shared (`14` §8A) |
 | Playwright — re-run TC lengkap | `15` mode RUN — **hanya** `olshoperp-docs`; repo app hanya jika FAIL debug |

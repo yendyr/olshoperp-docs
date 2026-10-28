@@ -13,7 +13,7 @@ description: >-
 
 **Baca file ini dulu untuk tugas testing.** Jangan load banyak `.cursor/rules/` —
 aturan operasional testing sudah diringkas di sini. Detail ID field / template pesan:
-[reference.md](reference.md). Alat: [tools/](tools/) (`jira.sh`, `qm.py`).
+[reference.md](reference.md). Alat: [tools/](tools/) (`jira.sh`, `qm.py`) — **satu-satunya salinan**; skill `olshoperp-testcase-authoring` memakai `jira.sh` dari folder ini.
 
 Bahasa ke Yemima/tim: Indonesia sehari-hari, angka eksak, label UI persis di aplikasi.
 
@@ -54,15 +54,19 @@ Perintah “test card ini” = izin uji + catat hasil. Tidak perlu minta izin ul
 ## 3. Alur Test Case
 
 1. **TESTING PROGRESS dulu** (sebelum klik uji) — ambil id transisi via `GET .../transitions` (contoh id di reference; jangan hafal buta).
-2. Pastikan **data uji** (§5). Tidak ada data → **STOP**, bilang ke prompter; jangan ganti data diam-diam.
+2. Pastikan **data uji** (§5). Tidak ada data → **STOP**, bilang ke prompter; jangan ganti data diam-diam. TC dikembalikan ke **Not Execute** (lihat “Blocked” jenis (a) di langkah 6).
 3. Uji sesuai **Steps + Expected** di description card (sumber kebenaran = Jira, bukan markdown repo).
-4. Isi **Actual Result** (company, akun, data + URL, hasil per Expected, angka eksak) → baru **Test Result** (Passed / Failed / Blocked) → komentar bila perlu → **Done**.
+4. Isi **Actual Result** (company, akun, data + URL, hasil per Expected, angka eksak) → baru **Test Result** (Passed / Failed) → komentar bila perlu → **Done**.
 5. **Test Case tidak punya status RE-OPEN** — tetap Done; hasil ada di Test Result.
-6. **Failed / Blocked** → wajib card **Error** baru (bukan comment singkat saja):
+6. **Failed** → wajib card **Error** baru (bukan comment singkat saja):
    - Relates ke **TC ini** + ke **origin** (Improvement/CR/Story yang dilink).
    - Assignee Error = **assignee origin** (bukan tester).
    - Origin Improvement/CR → **RE-OPEN tanpa clone**, lalu Error baru di atas.
    - Jangan Done-kan origin yang masih gagal tanpa tindak lanjut ini.
+
+   **“Blocked” ada dua jenis (keputusan Yemima 28-10-2026):**
+   - **(a) TC tidak bisa diuji karena hal di luar aplikasi** (data/precondition belum ada, environment atau antrian down, akses kurang) → TC **tetap / dikembalikan ke `Not Execute`**. Hanya **lapor** ke prompter: **tanpa** Test Result, **tanpa** card Error.
+   - **(b) TC sudah dijalankan dan aplikasi memunculkan error / hasil salah** → **Test Result = Failed**, TC → **Done**, buat card **Error** + RE-OPEN origin (tanpa clone) seperti di atas. Jangan pakai nilai Test Result “Blocked” untuk kasus ini.
 
 Site Jira: **hanya ETM** (`erpintegration.atlassian.net`). Jangan eduqat.
 
@@ -83,7 +87,7 @@ Site Jira: **hanya ETM** (`erpintegration.atlassian.net`). Jangan eduqat.
 
 ## 5. Data uji (wajib sebelum create/ubah transaksi)
 
-**Urutan sumber:** instruksi prompter → description/komentar card → requirement menu (`qa-docs/.../requirement.md`, status review/approved) → cek data nyata (UI atau DB baca-saja).
+**Urutan sumber:** instruksi prompter → description/komentar card → requirement menu (`qa-docs/.../requirement.md`, status review/approved) atau `qa-docs/.../feature-map.md` (sumber Expected yang sah, keputusan Yemima 28-10-2026) → cek data nyata (UI atau DB baca-saja).
 
 ```
 Prompter / card sebut data konkret?
@@ -270,7 +274,7 @@ Isi mengikuti ringkasan Bugsy:
 
 ## 11. Bukan tugas skill ini
 
-- Membuat banyak card Test Case baru dari AC → skill **`olshoperp-testcase-authoring`** (rapikan terpisah).
+- Membuat banyak card Test Case baru dari AC → skill **`olshoperp-testcase-authoring`** (`.cursor/skills/olshoperp-testcase-authoring/`).
 - Edit `requirement.md` / KB / technical → hanya Yemima lewat alur resmi.
 - Webhook `#testcase … ready` → hanya jika Yemima ketik perintah itu.
 
@@ -298,6 +302,7 @@ Isi mengikuti ringkasan Bugsy:
 - [ ] Expected di card tercakup di Actual (angka eksak)
 - [ ] Data jejak `QA-AUTO-` / `QA ETM-…` bila buat di staging; **tidak dihapus**
 - [ ] Failed → Error + Relates + assignee origin (+ RE-OPEN jalur benar)
+- [ ] Blocked jenis (a) di luar aplikasi → TC tetap Not Execute, lapor saja (tanpa Test Result / Error); jenis (b) error aplikasi → Failed
 - [ ] Passed bukan dari MCP-only
 - [ ] Telegram terkirim
 - [ ] Probe/scratch dibersihkan; tidak ada file di `tests/scripts/`

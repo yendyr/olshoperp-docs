@@ -12,9 +12,9 @@ Dipakai bersama [SKILL.md](SKILL.md). Jangan diikuti sendirian tanpa skill.
 | Issuetype Test Case | `10051` |
 | Status awal | Not Execute |
 | Story Points | `1` |
-| Assignee (authoring) | Yemima — accountId di `tools/tc_lib.py` / konfirmasi lookup |
+| Assignee (authoring) | Gantian **Firda ↔ Jeiniffer** (QA tester), kecuali user menyebut nama → `CFG["assignee"]`. Rotasi dimulai dari `CFG["assignee_start"]` (default Firda); accountId dicari lewat Jira user search di `tools/tc_lib.py` |
 | Request ID | Salin dari origin (`customfield_10495`); kosong → `none` |
-| Menu (Notion Page) | Nama menu persis di app (`customfield_10429`) |
+| Menu | Nama menu persis di app (`customfield_10429`) |
 | Labels | `ETM-{origin}`, `test-case`, `test-type-{happy\|negative\|…}` |
 | Link | Relates → card origin |
 | Jeda create | ~2,5 detik antar card |
@@ -70,6 +70,8 @@ Tone: rule `12` / `24` — non-teknis di section utama.
 ## C. tools/tc_lib.py
 
 Lokasi: `.cursor/skills/olshoperp-testcase-authoring/tools/`.
+
+`jira.sh` (dan `qm.py`) **tidak** disalin ke folder ini — satu salinan kanonis di `.cursor/skills/olshoperp-card-testing/tools/`; `tc_lib.py` memanggil `jira.sh` dari path itu. Jangan buat salinan baru di sini.
 
 | Perintah | Fungsi |
 |----------|--------|

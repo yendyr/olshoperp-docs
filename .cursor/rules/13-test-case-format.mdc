@@ -8,6 +8,8 @@ alwaysApply: false
 
 # Test Case Documentation Standard
 
+> **Sejak 22-10-2026 TC hanya di Jira.** File `TC-*.md` lama = arsip read-only — jangan dibuat/diubah (termasuk `#renumber-tc`, `last_execution`, `test-queue.yaml`). Membuat TC → skill `olshoperp-testcase-authoring`. Isi rule ini hanya untuk membaca/memahami arsip.
+
 Rule ini berlaku di repo `olshoperp-docs`. Semua operasi tulis di `qa-docs/{menu-slug}/test-cases/` mengikuti rule ini.
 
 ---

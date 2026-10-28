@@ -10,7 +10,7 @@ Bukti layar: folder Drive [UX crawl 14 Okt 2026](https://drive.google.com/drive/
 
 Spec sekali pakai (tidak di repo): `tests/scratch/ux-common.ts`, `ux-po-1.spec.ts`, `ux-po-2.spec.ts`, `ux-vp.spec.ts`.
 
-Data uji crawl itu sudah dihapus (PO-6ACFA887, Variable Price `QA-AUTO-VPUX-*`). Tidak ada PO yang di-approve.
+Data uji crawl itu (PO-6ACFA887, Variable Price `QA-AUTO-VPUX-*`) tercatat sudah tidak ada saat dokumen ini ditulis. Tidak ada PO yang di-approve. Catatan: agent **tidak menghapus** data uji; data uji tidak dihapus kecuali TC-nya memang menguji delete / show deleted.
 
 ## 1. Cara memakai
 
@@ -214,8 +214,8 @@ Company crawl UI mengikuti allowlist menu itu. Baseline PO diukur di lumicharmsi
 1. Form master, field biasa: isi atau blur satu field header. Tidak ada request simpan. Baru ada setelah Save All.
 2. Menu transaksi: ubah satu line item lalu pindah field. Ada request simpan baris itu, plus toast.
 3. Jika ada inline edit (sel datatable atau text box section konfigurasi, master atau transaksi): selesai edit tanpa Save All, ada request simpan, data tetap ada setelah reload.
-5. Menu transaksi dengan detail kosong: ganti Transaction Date header lalu blur. Ada request simpan header, nilai bertahan setelah reload (baseline PO `POST /api/supplychain/purchase-order/{id}`, SO General `POST /api/omnichannel/sales-order/{id}`).
-4. Tinggalkan halaman dengan perubahan form master yang belum di-Save All. Catat apakah ada peringatan. Kitab tidak mewajibkan teks peringatan tertentu.
+4. Menu transaksi dengan detail kosong: ganti Transaction Date header lalu blur. Ada request simpan header, nilai bertahan setelah reload (baseline PO `POST /api/supplychain/purchase-order/{id}`, SO General `POST /api/omnichannel/sales-order/{id}`).
+5. Tinggalkan halaman dengan perubahan form master yang belum di-Save All. Catat apakah ada peringatan. Kitab tidak mewajibkan teks peringatan tertentu.
 
 ### Pilar toast
 

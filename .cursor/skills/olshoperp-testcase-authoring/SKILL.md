@@ -56,6 +56,7 @@ Bahasa: Indonesia sehari-hari, non-teknis; label tombol/field = teks di aplikasi
 | Sumber Expected | Boleh? |
 |-----------------|--------|
 | `qa-docs/{menu}/requirement.md` (status **review** / **approved**) — sebut § / judul section | **Ya** — default |
+| `qa-docs/{menu}/feature-map.md` — sebut § / judul section (keputusan Yemima 28-10-2026) | **Ya** — sumber Expected yang sah, sejajar requirement |
 | Acceptance Criteria di description card origin, **setelah** dicek selaras requirement | Ya, dengan catatan “sesuai AC origin + requirement §…” |
 | Pesan error / guard backend (FormRequest) | Hanya sebagai **bentuk penolakan yang diverifikasi**; norma bisnis tetap dari requirement |
 | Asumsi agent, “biasanya ERP…”, tebak dari kode tanpa requirement | **Tidak** |
@@ -206,7 +207,7 @@ Selaras skill **`olshoperp-card-testing`** § data uji / QA-AUTO.
 ## 5. Menerbitkan card
 
 1. Salin `tools/example_tc_data.py` → isi CFG + TCS (lihat reference §C). Pastikan tiap TC punya `req` (path + § requirement).
-2. `python3 tools/tc_lib.py file_data.py create` → issuetype Test Case `10051`, Menu, Request ID (salin origin atau `none`), Story Points 1, labels `[ETM-origin, test-case, test-type-…]`, assignee Yemima (reference), Relates ke origin, jeda ~2,5 dtk.
+2. `python3 tools/tc_lib.py file_data.py create` → issuetype Test Case `10051`, Menu, Request ID (salin origin atau `none`), Story Points 1, labels `[ETM-origin, test-case, test-type-…]`, assignee gantian Firda ↔ Jeiniffer kecuali ada nama yang disebut (reference §A), Relates ke origin, jeda ~2,5 dtk.
 3. Site: **hanya ETM** (`erpintegration.atlassian.net`).
 4. Update isi: ubah file data → `… update`. Verifikasi GET: Not Execute, link ada, description memuat rujukan requirement.
 5. Laporan ke Yemima (chat): tabel card → tipe → skenario → rujukan § → data kunci; reuse vs baru; **defer/gap** bila ada (§3A). Tidak wajib komentar di card origin (Relates sudah cukup).

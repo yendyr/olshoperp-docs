@@ -103,4 +103,4 @@ Catatan: …
 
 ## H. Membuat card Test Case
 
-Bukan skill ini → `olshoperp-testcase-authoring` (akan dirapikan terpisah).
+Bukan skill ini → `.cursor/skills/olshoperp-testcase-authoring/` (SKILL.md + reference.md di folder itu).

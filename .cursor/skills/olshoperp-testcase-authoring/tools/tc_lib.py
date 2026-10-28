@@ -2,9 +2,14 @@
 import json, os, re, subprocess, time
 
 import tempfile
-S = os.path.dirname(os.path.abspath(__file__))  # folder tools (jira.sh ada di sini)
+S = os.path.dirname(os.path.abspath(__file__))  # folder tools skill ini
+# jira.sh = satu salinan kanonis di skill olshoperp-card-testing (jangan duplikat di sini)
+JIRA_SH = os.path.normpath(os.path.join(S, "..", "..", "olshoperp-card-testing", "tools", "jira.sh"))
 TMP = os.environ.get("OLSHOP_TMP", tempfile.gettempdir())
-YEMIMA = "70121:4ae91cca-e288-40ee-aed0-32b6050a1bc1"
+# Assignee TC: gantian Firda <-> Jeiniffer kecuali CFG["assignee"] (nama) diisi.
+# CFG["assignee_start"] = nama pertama dalam rotasi (default Firda). accountId dicari via Jira user search.
+QA_TESTERS = ["Firda", "Jeiniffer"]
+_ACC = {}
 JIRA = "https://erpintegration.atlassian.net/browse/"
 URL_RE = re.compile(r"(https?://[^\s)]+)")
 
@@ -96,13 +101,29 @@ def description(tc, cfg):
 
 
 def jira(method, path, body=None, v="3"):
-    args = [S + "/jira.sh", method, path]
+    args = [JIRA_SH, method, path]
     if body is not None:
         fn = os.path.join(TMP, "_jtc.json")
         open(fn, "w").write(json.dumps(body, ensure_ascii=False))
         args.append(fn)
     r = subprocess.run(args, capture_output=True, text=True, env=dict(os.environ, JV=v))
     return r.stdout.strip()
+
+
+def account_id(name):
+    if name not in _ACC:
+        r = json.loads(jira("GET", "user/search?query=" + name) or "[]")
+        if not r:
+            raise SystemExit("assignee tidak ketemu di Jira: " + name)
+        _ACC[name] = r[0]["accountId"]
+    return _ACC[name]
+
+
+def pick_assignee(tc, cfg):
+    if cfg.get("assignee"):
+        return cfg["assignee"]
+    start = QA_TESTERS.index(cfg.get("assignee_start", QA_TESTERS[0]))
+    return QA_TESTERS[(start + int(tc["n"]) - 1) % len(QA_TESTERS)]
 
 
 def create_card(tc, cfg):
@@ -112,7 +133,7 @@ def create_card(tc, cfg):
         "description": description(tc, cfg),
         "priority": {"name": tc["priority"]},
         "labels": [cfg["origin"], "test-case", "test-type-" + tc["ttype"]],
-        "assignee": {"accountId": YEMIMA},
+        "assignee": {"accountId": account_id(pick_assignee(tc, cfg))},
         "customfield_10429": cfg["menu_label"],
         "customfield_10495": cfg["request_id"],
         "customfield_10043": 1,
