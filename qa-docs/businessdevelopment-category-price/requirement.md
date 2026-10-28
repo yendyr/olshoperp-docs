@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.2
-last_updated: 2026-10-21
+version: 1.3
+last_updated: 2026-10-28
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16313](https://erpintegration.atlassian.net/browse/ETM-16313)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar D)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §4, §6–9  
-**Relates:** ETM-16312 · ETM-16314 · mirror validasi Percentage [ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569) · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (weight System Product → Pricelist/Category)
+**Relates:** ETM-16312 · ETM-16314 · mirror validasi Percentage [ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569) · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (weight System Product → Pricelist/Category) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value snapshot dari Variable Price)
 
 ---
 
@@ -21,6 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3 | 2026-10-28 | Cross-ref TO-BE ETM-16835: Max Value ikut snapshot band / edit lokal Percentage + hitung Pricelist |
 | 1.2 | 2026-10-21 | Cross-ref TO-BE ETM-16668: auto-recalc nilai weight-related saat DnW default berubah; input manual category tidak tertimpa |
 | 0.1 | 2026-10-07 | Draft AS-IS + TO-BE multi tier |
 | 1.0 | 2026-10-09 | Full dari final: Variable Price Tiers, Select VP, Update from Master / to Pricelist |
@@ -55,6 +56,7 @@ flowchart LR
 | A-06 | Update to Pricelist: dialog keras + checkbox acknowledge; tombol merah disabled sampai dicentang | **TO-BE** |
 | A-07 | Satu VP tidak bisa dipasang dua kali; hanya Active; by Weight pakai satuan `g` | **TO-BE** |
 | A-08 | Edit band lokal Type **Percentage**: Value -9.999 … 9.999; ≥10.000 / ≤-10.000 ditolak; desimal truncate 4dp (sama master VP) | **TO-BE** |
+| A-09 | Snapshot / edit lokal band Percentage menyertakan **Max Value** (aturan sama master VP ETM-16835); Amount → clear+disable | **TO-BE** |
 
 ---
 
@@ -74,9 +76,11 @@ Pola Select Product PO. Placeholder **Select Variable Price**. Opsi hilang setel
 | Judul | `{Code} — {Name}` + badge type |
 | Snapshot | Tanggal-jam last sync |
 | Hapus | Icon → dialog Remove |
-| Isi | Band Start/End/Type/Value + Unlimited (edit lokal) |
+| Isi | Band Start/End/Type/Value + **Max Value** (Percentage) + Unlimited (edit lokal) |
 
 Edited lokal ≠ master → icon info oranye: *"This tier was edited in this Category Price, so it no longer matches the Variable Price master."*
+
+**Max Value (ETM-16835):** ikut dari master saat Select / Update from Master. Edit lokal Percentage: enable Max Value; Amount: disable+clear. Aturan tanda/NULL/primary currency = [Variable Price §4.2.1](../businessdevelopment-variable-price/requirement.md). Dipakai saat **Update to Pricelist**.
 
 Bantuan hitung di bawah daftar: contoh default 16.000 + weight 1.500 g → margin 8.500 / final 24.500.
 
@@ -106,6 +110,7 @@ Saat **System Product** mengubah Dimensions & Weight **default** (edit row defau
 - Validasi band lokal = AS-IS (range + Unlimited) **plus** mirror master Variable Price:
   - Type Percentage: Value **-9.999 … 9.999** (tolak di luar); Amount tidak kena batas.
   - Percentage desimal: truncate **4 dp**.
+  - **Max Value** (ETM-16835): mirror master — NULL = no cap; cap hasil `% × default` sebelum SUM ke Pricelist.
 - Tidak migrasi otomatis data margin lama.
 - **ETM-16668:** auto weight sync **tidak** boleh override nilai Category yang diinput manual.
 

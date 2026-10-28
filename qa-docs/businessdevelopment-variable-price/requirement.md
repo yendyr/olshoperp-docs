@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-variable-price
 menu_name: "Variable Price"
-version: 1.1
-last_updated: 2026-10-14
+version: 1.2
+last_updated: 2026-10-28
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16312](https://erpintegration.atlassian.net/browse/ETM-16312) (RE-OPEN)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar A–B)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §1–3, §6–9  
-**Relates:** ETM-16313 (Category) · ETM-16314 (Pricelist)  
+**Relates:** ETM-16313 (Category) · ETM-16314 (Pricelist) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value Percentage)  
 **Follow-up:** [ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569) (batas Percentage ±9.999) · Error: [ETM-16566](https://erpintegration.atlassian.net/browse/ETM-16566) · [ETM-16567](https://erpintegration.atlassian.net/browse/ETM-16567) · [ETM-16568](https://erpintegration.atlassian.net/browse/ETM-16568) · [ETM-16562](https://erpintegration.atlassian.net/browse/ETM-16562) (desimal Percentage) · [ETM-16565](https://erpintegration.atlassian.net/browse/ETM-16565) (Audit Log tier)
 
 ---
@@ -22,6 +22,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-10-28 | **TO-BE** [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835): field **Max Value** per band Percentage (cap hasil hitung; NULL = no cap; Amount clear+disable) |
 | 0.1 | 2026-10-07 | Stub dari SoT |
 | 1.0 | 2026-10-09 | Full dari final requirement + wireframe; Type lock setelah dipakai Category |
 | 1.1 | 2026-10-14 | Sync RE-OPEN ETM-16312 + ETM-16569 (±9.999% Percentage) + finding Type/Update/tooltip (16566–16568); desimal Percentage 4dp (16562); Audit Log tier akurat (16565) |
@@ -57,6 +58,9 @@ Sidebar: Business Development → Price → **Variable Price** (di atas Category
 | A-11 | Tooltip Type (info / lock) muncul saat hover icon (ETM-16566) | **TO-BE** |
 | A-12 | Value Percentage desimal tersimpan benar (pemisah desimal); dipotong **4 digit desimal** (bukan dibulatkan ke atas) ([ETM-16562](https://erpintegration.atlassian.net/browse/ETM-16562)) | **TO-BE** |
 | A-13 | Audit Log tier: Start/End/Margin default tampil angka/`Unlimited` (bukan `-`); Old Value lengkap saat update baris; UI slideover konsisten ([ETM-16565](https://erpintegration.atlassian.net/browse/ETM-16565)) | **TO-BE** |
+| A-14 | Field **Max Value** per band: enabled hanya Type **Percentage**; Type **Amount** → disabled + clear; NULL = no cap ([ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)) | **TO-BE** |
+| A-15 | Max Value diisi → cap hasil `% × default price` (tanda ikut Percentage; % minus → Max tersimpan negatif saat Save); tidak boleh 0; % ≥ 0 → Max tidak boleh minus; satuan **primary currency** | **TO-BE** ETM-16835 |
+| A-16 | Tooltip EN Max Value + contoh +/−; ganti Percentage → Amount clear & disable Max Value | **TO-BE** ETM-16835 |
 
 ---
 
@@ -105,9 +109,36 @@ Pola sama Category Price AS-IS. by Amount: prefix `Rp.`; by Weight: suffix `g`. 
 | Value Type **Percentage** di luar -9.999 … 9.999 | Tolak Save/Save All + pesan jelas (baris + batas); server juga reject ([ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569)) |
 | Value Type **Percentage** desimal | Simpan dengan pemisah desimal yang benar; truncate ke **4 dp** (contoh `2,56789` → `2,5678`) ([ETM-16562](https://erpintegration.atlassian.net/browse/ETM-16562)) |
 | Value Type **Amount** | Tidak kena batas ±9.999 |
+| **Max Value** (TO-BE ETM-16835) | Lihat §4.2.1 |
 | Code duplikat | Tolak |
 
 Contoh Percentage: `15`, `-5.000`, `9.999`, `-9.999` → OK; `10.000`, `-10.000`, `50.000` → ditolak.
+
+#### 4.2.1 Max Value (TO-BE · ETM-16835)
+
+Plafon **hasil margin** setelah hitung Percentage (bukan mengganti %). Label UI: **Max Value**.
+
+| Aturan | Perilaku |
+|--------|----------|
+| Type = **Percentage** | Field **enabled** |
+| Type = **Amount** | Field **disabled** + **clear** (NULL) |
+| Ganti Percentage → Amount | Clear + disable |
+| Ganti Amount → Percentage | Enabled lagi; default kosong |
+| Kosong / NULL | Tidak ada cap — hitung % seperti AS-IS |
+| Diisi | Wajib absolut **> 0** (tidak boleh 0). Satuan = **primary currency** company (jangan hardcode `Rp.`) |
+| Percentage ≥ 0 | Max Value tidak boleh negatif |
+| Percentage < 0 | User boleh input positif (mis. 250.000); **saat Save** Max Value diset **negatif** (mis. −250.000) |
+
+**Rumus (Max terisi):**
+
+- `% > 0`: `margin = min(default × %/100, Max Value)`
+- `% < 0`: `margin = max(default × %/100, Max Value)` (Max negatif)
+
+**Contoh:** default 1.000.000 · 50% · Max 250.000 → margin **+250.000** (bukan +500.000). · −50% · input Max 250.000 → tersimpan −250.000 → margin **−250.000**.
+
+**Tooltip (EN):** Max Value limits how large the percentage-based margin can be after it is calculated from the SKU default price (primary currency). Include +/− examples; leave empty = no limit; only when Type is Percentage. Copy penuh: [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835).
+
+**Hilir:** Max Value ikut **snapshot** ke Category (Select / Update from Master) dan dipakai saat hitung Pricelist — [Category](../businessdevelopment-category-price/requirement.md) · [Pricelist](../businessdevelopment-pricelist-product/requirement.md).
 
 ### 4.3 Used in Category Price
 
@@ -121,7 +152,7 @@ Judul **Update to Category Price?** · daftar category · catatan Pricelist tida
 
 ## 5. Aturan hitung (lintas menu — ringkas)
 
-Matching Start–End inklusif → else Unlimited → else 0. Percentage × default price. Weight null/0 → skip tier Weight. Final = default + Σ kontribusi. Detail: final §2 · contoh §7.
+Matching Start–End inklusif → else Unlimited → else 0. Percentage × default price; **lalu** apply **Max Value** jika terisi (ETM-16835). Weight null/0 → skip tier Weight. Final = default + Σ kontribusi. Detail: final §2 · contoh §7.
 
 ---
 
@@ -140,6 +171,7 @@ Auto-update hilir · migrasi band Category lama · campur Amount+Weight satu mas
 | GAP-VP-03 | Inactive Category ikut Update | Ya + tampilkan status |
 | GAP-VP-04 | Permission Update | Hak edit menu (kecuali role khusus diminta) |
 | GAP-VP-05 | Batas Value Percentage | **Resolved (1.1)** — ±9.999 per ETM-16569; mirror ke edit band lokal Category (konsistensi) |
+| GAP-VP-06 | Cap hasil Percentage (Max Value) | **TO-BE** [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835) — §4.2.1 |
 
 ---
 

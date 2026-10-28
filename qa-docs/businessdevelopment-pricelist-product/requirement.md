@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.1
-last_updated: 2026-10-21
+version: 1.2
+last_updated: 2026-10-28
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16314](https://erpintegration.atlassian.net/browse/ETM-16314)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar F)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §5, §7–9  
-**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc dari weight System Product)
+**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc dari weight System Product) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (Advanced Filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value di hitung tier)
 
 ---
 
@@ -21,6 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-10-28 | **TO-BE** [ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861): Advanced Filter **Manual Margin** Yes/No dropdown; cross-ref Max Value ETM-16835 pada hitung tier |
 | 1.1 | 2026-10-21 | **TO-BE** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668): auto-recalc Weight/margin/final saat DnW default System Product berubah; log Pricelist; jangan override manual |
 | 0.1 | 2026-10-07 | Draft multi-tier margin + weight |
 | 1.0 | 2026-10-09 | Full: Weight column, tier breakdown + override, inline orange override |
@@ -47,6 +48,7 @@ status: review
 | A-08 | Ubah weight DnW **default** di System Product → Weight + margin + final Category (by Weight) auto-update; **Log Pricelist** wajib | **TO-BE** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) |
 | A-09 | Ganti radio default DnW → ikut weight default baru + recalc; DnW non-default tanpa ganti default → **tidak** recalc | **TO-BE** ETM-16668 |
 | A-10 | Margin / nilai **manual** tidak tertimpa auto-recalc dari weight | **TO-BE** ETM-16668 |
+| A-11 | Advanced Filter variable **Manual Margin** (Yes/No dropdown); Equals / Not Equals; scope **Any** category cell manual ([ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)) | **TO-BE** |
 
 ---
 
@@ -57,7 +59,7 @@ Margin      = Σ kontribusi tier yang cocok
 Final price = Default price + Margin
 ```
 
-Matching & percentage: final §2.2–2.5. Percentage selalu dari **default price**. Weight null/0 → skip Weight tiers. Urutan tier hanya tampilan.
+Matching & percentage: final §2.2–2.5. Percentage selalu dari **default price**; **lalu** apply **Max Value** band jika terisi ([ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835) / VP §4.2.1). Weight null/0 → skip Weight tiers. Urutan tier hanya tampilan.
 
 ---
 
@@ -83,7 +85,26 @@ Setelah SKU. Format `1.500 g`. Info header. Kosong/0: icon oranye + **"No weight
 
 ### 4.3 Edit margin
 
-Inline klik → Enter save / Esc cancel. Final ikut. Tidak ubah Category/VP. Override: warna oranye; isi sama calculated → kembali normal. Log: old→new, user, time, flag non-calculated.
+Inline klik → Enter save / Esc cancel. Final ikut. Tidak ubah Category/VP. Override: warna oranye; isi sama calculated → kembali normal. Log: old→new, user, time, flag non-calculated (`is_edited`).
+
+### 4.4 Advanced Filter — Manual Margin (TO-BE · ETM-16861)
+
+| Item | Aturan |
+|------|--------|
+| Label | **Manual Margin** |
+| Value | Dropdown **Yes** \| **No** (bukan free text) |
+| Operator | **Equals**, **Not Equals** |
+| Sumber | Flag margin manual / override (`is_edited` / oranye) — bukan CSS saja |
+| Scope v1 (**Any**) | **Yes** jika **minimal satu** kolom Category pada baris punya margin manual; **No** jika tidak ada margin manual pada baris |
+
+| Operator | Value | Expected |
+|----------|-------|----------|
+| Equals | Yes | Hanya baris dengan ≥1 margin manual |
+| Equals | No | Hanya baris tanpa margin manual |
+| Not Equals | Yes | ≡ Equals No |
+| Not Equals | No | ≡ Equals Yes |
+
+Edit balik ke nilai calculated → `is_edited = 0` → masuk filter **No**.
 
 ---
 
@@ -138,6 +159,7 @@ Master & band lengkap + kasus batas (boundary inklusif, override, re-Update): fi
 | GAP-PL-03 | Konversi satuan weight → gram | Convert sebelum match |
 | GAP-PL-04 | N rows besar | Job background + toast start/finish |
 | GAP-PL-05 | Auto-recalc weight dari System Product | **TO-BE** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) — DnW default only; log; preserve manual |
+| GAP-PL-06 | Filter Manual Margin di Advanced Filter | **TO-BE** [ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861) — §4.4 |
 
 ---
 

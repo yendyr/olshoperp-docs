@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.2
-last_updated: 2026-10-21
+version: 1.3
+last_updated: 2026-10-28
 owner: QA - Yemima
 status: review
-aliases: [Category Price, pricelist category, kategori harga, Variable Price Tiers]
+aliases: [Category Price, pricelist category, kategori harga, Variable Price Tiers, Max Value]
 ---
 
 # Category Price — Knowledge Base
@@ -42,7 +42,7 @@ Ubah weight DnW **default** di System Product → nilai Category/Pricelist yang 
 
 - Edit band di Category **tidak** mengubah Variable Price master.
 - Ubah master → Update to Category dari Variable Price, atau Update from Master di sini.
-- Edit Value Type **Percentage** di tier lokal: batas **-9.999 … 9.999** (sama Variable Price); desimal dipotong 4 digit.
+- Edit Value Type **Percentage** di tier lokal: batas **-9.999 … 9.999** (sama Variable Price); desimal dipotong 4 digit; **Max Value** ikut (plafon hasil %) — kosong = tidak ada batas ([ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)).
 - Harga jual baru berubah setelah **Update to Pricelist** — kecuali path auto weight (ETM-16668) untuk nilai calculated by Weight.
 - Contoh: harga 16.000 + berat 1.500 g + 3 tier → margin 8.500 → final 24.500.
 

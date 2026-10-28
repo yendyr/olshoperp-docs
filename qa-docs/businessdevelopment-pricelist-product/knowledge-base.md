@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.1
-last_updated: 2026-10-21
+version: 1.2
+last_updated: 2026-10-28
 owner: QA - Yemima
 status: review
-aliases: [Pricelist Product, product pricelist, harga jual SKU, tier breakdown]
+aliases: [Pricelist Product, product pricelist, harga jual SKU, tier breakdown, Manual Margin]
 ---
 
 # Pricelist Product — Knowledge Base
@@ -43,6 +43,7 @@ Tampilkan pecahan per tier + **range band** yang dipakai + total. Kalau margin d
 - Contoh: harga 16.000 + berat 1.500 g → margin **8.500** → final **24.500**.
 - Margin oranye = diubah user. Update to Pricelist dari Category menimpa lagi ke hasil hitung.
 - Edit di Pricelist **tidak** mengubah Category / Variable Price.
+- **Advanced Filter → Manual Margin** (TO-BE ETM-16861): pilih **Yes** untuk baris yang punya margin oranye (minimal satu category); **No** untuk yang masih hitung sistem. Value lewat dropdown; operator Equals / Not Equals.
 
 ## Troubleshooting
 
@@ -52,5 +53,6 @@ Tampilkan pecahan per tier + **range band** yang dipakai + total. Kalau margin d
 | Margin Weight = 0 / skipped | Isi weight pada DnW **default** di System Product (TO-BE ETM-16668: auto-recalc; AS-IS masih perlu Update to Pricelist) |
 | Override hilang | Normal setelah Update to Pricelist (bukan dari auto weight) |
 | Ubah weight DnW non-default | Pricelist tidak berubah sampai baris itu jadi default |
+| Mau daftar yang diedit manual | Advanced Filter **Manual Margin** Equals **Yes** (ETM-16861) |
 
 Detail: [requirement.md](./requirement.md)

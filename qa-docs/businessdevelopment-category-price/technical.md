@@ -2,8 +2,8 @@
 doc_type: technical
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.2
-last_updated: 2026-10-21
+version: 1.3
+last_updated: 2026-10-28
 owner: QA - Yemima
 status: review
 related_docs:
@@ -17,7 +17,8 @@ related_docs:
 **FE AS-IS:** `src/pages/BusinessDevelopment/PricelistCategory/**`  
 **BE AS-IS:** `PricelistCategoryController` · `PricelistCategory` · `PricelistCategoryMarginPrice` (`bd_pricelist_category_margin_prices`)  
 **TO-BE:** ganti section margin tunggal → multi tier snapshot dari Variable Price (ETM-16313).  
-**TO-BE weight sync:** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) — consumer dari System Product DnW default change (bukan endpoint Category baru).
+**TO-BE weight sync:** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) — consumer dari System Product DnW default change (bukan endpoint Category baru).  
+**TO-BE Max Value:** [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835) — snapshot `max_value` dari Variable Price; mirror enable/disable + calc ke Pricelist.
 
 ---
 
@@ -56,7 +57,7 @@ Pricelist auto weight (ETM-16668): audit di **Log Pricelist**, bukan mengganti l
 | Select Variable Price | Pola `PurchaseOrder/DatalistDetail` Select Product |
 | Tier accordion | Badge type; snapshot datetime; orange info jika dirty vs master |
 | Update to Pricelist | Tombol merah; checkbox gate sebelum enable |
-| Band lokal Percentage | Validasi Value `-9999…9999` + truncate 4dp (mirror Variable Price / ETM-16569, 16562) |
+| Band lokal Percentage | Validasi Value `-9999…9999` + truncate 4dp (mirror Variable Price / ETM-16569, 16562); **Max Value** enable + rules ETM-16835 |
 
 ---
 
@@ -70,6 +71,7 @@ Pricelist auto weight (ETM-16668): audit di **Log Pricelist**, bukan mengganti l
 | G-04 | Dirty detection tier vs master untuk icon oranye |
 | G-05 | Share FormRequest/helper validasi Percentage dengan Variable Price |
 | G-06 | **ETM-16668** — preserve manual category values saat weight sync |
+| G-07 | **ETM-16835** — persist/edit Max Value on tier bands + pass to Pricelist calc |
 
 ---
 

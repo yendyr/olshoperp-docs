@@ -61,3 +61,4 @@ Kalau butuh aturan harga **dan** berat, buat **dua** Variable Price, lalu pasang
 - Hover kolom **Used in Categories** untuk lihat Category pemakai.
 - Hover icon info/gembok di field Type untuk penjelasan (satu type per master / kenapa terkunci).
 - Mass Update: centang beberapa baris → icon Update to Category di bar atas (nonaktif jika ada yang belum dipakai Category).
+- Type band **Percentage:** boleh isi **Max Value** untuk membatasi hasil margin (mata uang primary). Kosongkan jika tidak perlu plafon. Type **Amount** → Max Value tidak dipakai.

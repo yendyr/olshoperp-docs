@@ -40,6 +40,10 @@ Contoh: 16.000 + berat 1.500 g → margin 8.500 → final 24.500.
 
 **Update to Pricelist** dari Category akan menimpa lagi ke hasil hitung (warna kembali normal).
 
+### Cari yang sudah diedit manual (TO-BE ETM-16861)
+
+Advanced Filter → variable **Manual Margin** → pilih **Yes** atau **No** (dropdown). **Yes** = ada margin oranye di baris itu; **No** = semua masih hitung sistem.
+
 ---
 
 ## 4. Weight kosong
