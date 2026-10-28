@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.2
-last_updated: 2026-10-21
+version: 1.4
+last_updated: 2026-10-28
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.2"
+source_version: "1.4"
 owner: QA - Yemima
 status: review
 ---
@@ -18,7 +18,9 @@ status: review
 
 ## 1. Apa yang berubah
 
-Section aturan margin diganti menjadi **Variable Price Tiers**: kamu memasang satu atau lebih Variable Price. Data dasar Category (Code, Name, Store, dll.) tetap sama.
+Section aturan margin diganti menjadi **Variable Price Tiers**: kamu memasang satu atau lebih Variable Price. Data dasar Category (Code, Name, dll.) tetap sama.
+
+**Applied Store:** boleh pilih store platform **dan** store Others yang Active (boleh kosong / campur).
 
 ---
 
@@ -38,9 +40,11 @@ Kalau band lokal sudah beda dari master, muncul icon info oranye di header tier.
 | Tombol | Kapan |
 |--------|-------|
 | **Update from Master** | Samakan semua tier dengan Variable Price terkini (edit lokal hilang). |
-| **Update to Pricelist** | Hitung ulang harga/margin semua produk category. Wajib centang “saya paham override manual tertimpa”. |
+| **Update to Pricelist** | Hitung ulang Final di Pricelist. Margin yang sudah diedit manual di Pricelist **tetap**; Final bisa berubah karena tier category ditambahkan ke margin user. Wajib centang persetujuan. |
 
-Harga jual di Pricelist biasanya berubah setelah **Update to Pricelist**. Pengecualian TO-BE: ubah weight DnW **default** di System Product → nilai by Weight ikut auto-update (ETM-16668); input manual Category tidak tertimpa.
+Harga jual di Pricelist biasanya berubah setelah **Update to Pricelist**. Pengecualian: ubah weight DnW **default** di System Product → nilai by Weight ikut auto-update (ETM-16668); input manual Category tidak tertimpa.
+
+Category hanya Others / tanpa store platform: harga Final tetap terhitung di Pricelist, tapi Sync ke marketplace tidak muncul.
 
 ---
 
@@ -48,6 +52,6 @@ Harga jual di Pricelist biasanya berubah setelah **Update to Pricelist**. Pengec
 
 - Hapus tier → master Variable Price tetap ada; bisa dipasang lagi nanti.
 - Edit Value **Percentage** di tier: maksimal ±9.999 (sama Variable Price).
-- Contoh cek: produk 16.000 + berat 1.500 g → margin 8.500 → final 24.500 (setelah Update to Pricelist).
+- **Max Value** pada Percentage: plafon hasil % (lihat Variable Price).
 
-Referensi: [knowledge-base.md](./knowledge-base.md) · [Variable Price](../businessdevelopment-variable-price/user-guide.md)
+Referensi: [knowledge-base.md](./knowledge-base.md) · [Pricelist Product](../businessdevelopment-pricelist-product/user-guide.md)

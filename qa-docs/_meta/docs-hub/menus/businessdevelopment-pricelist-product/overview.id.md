@@ -3,24 +3,24 @@ doc_type: docs-hub-menu-overview
 menu_slug: businessdevelopment-pricelist-product
 menu_name: Pricelist Product
 lang: id
-version: 1.1
-last_updated: 2026-10-22
+version: 1.3
+last_updated: 2026-10-28
 status: review
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Landing Help Center. Derived dari QA docs multi-tier Variable Price / ETM-16314 · ETM-16668 weight sync.
+notes: Landing Help Center. Derived QA docs ETM-16314 · 16668 · 16861 · 16883 · 16884.
 ---
 
 ## Modul/Fitur: Pricelist Product
 
-**Definisi bisnis.** Pricelist Product menampilkan harga jual dan margin per SKU untuk suatu Category. Dengan multi-tier Variable Price, margin = **jumlah kontribusi tier yang cocok** (Amount dan/atau Weight). Hover breakdown menjelaskan tiap tier; tier Weight dilewati jika berat primary kosong. **TO-BE:** ubah weight DnW **default** di System Product ikut auto-update nilai by Weight + Log Pricelist (input manual tidak tertimpa).
+**Definisi bisnis.** Menampilkan **Final Price** per SKU per Category. Angka kecil di bawah = **User Set Margin** — hanya jika diedit manual (oranye); jika belum, tampil `-` (detail hitungan di tooltip). Multi-tier Variable Price dijumlahkan. Sync ke platform hanya jika Category punya store platform. Update to Pricelist tidak menghapus margin manual; Final = default + margin user + tier category.
 
 ## Kapan dipakai
 
-* Cek atau override harga jual / margin setelah Category Update to Pricelist.
-* Audit bagaimana band multi-tier menghasilkan margin saat ini.
-* (TO-BE) Verifikasi harga by Weight setelah ubah berat default di System Product.
+* Cek Final Price setelah Category **Update to Pricelist**.
+* Override Manual Price (Final atau User Set Margin) lalu lihat dampak Update category berikutnya.
+* Filter baris Manual Margin; audit Log Pricelist setelah ubah weight default.
 
 ## Navigasi
 

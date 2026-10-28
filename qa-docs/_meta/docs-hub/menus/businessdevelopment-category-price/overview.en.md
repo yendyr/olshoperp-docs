@@ -3,30 +3,30 @@ doc_type: docs-hub-menu-overview
 menu_slug: businessdevelopment-category-price
 menu_name: Category Price
 lang: en
-version: 1.1
-last_updated: 2026-10-22
+version: 1.4
+last_updated: 2026-10-28
 status: review
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing. Derived from QA docs multi-tier Variable Price · ETM-16668 weight sync.
+notes: Help Center landing. Derived QA docs · ETM-16668 · 16835 · 16882 · 16884.
 ---
 
 ## Module/Feature: Category Price
 
-**Business definition.** Category Price groups stores/channels and holds **Variable Price tiers** (snapshots). Edit bands locally if needed, refresh from master with **Update from Master**, then push sell prices with **Update to Pricelist**. **TO-BE:** by-Weight values can also auto-update when **default** DnW weight changes on System Product (manual Category inputs are not overwritten).
+**Business definition.** Category Price groups stores/channels and holds **Variable Price tiers** (snapshots). **Applied Store** may include platform stores and Active **Others** (nullable / mix allowed). Edit bands locally, refresh with **Update from Master**, then publish with **Update to Pricelist** — manual margins on Pricelist are **kept**; Final may change because category tier is stacked on the user margin.
 
 ## Key terms
 
-* **Tier:** One attached Variable Price (Amount and/or Weight masters can coexist).
-* **Update from Master:** Replace all tier snapshots from current masters (local edits lost).
-* **Update to Pricelist:** Recalculate margin/final price for all Pricelist rows in this category (manual overrides overwritten after confirm).
-* **Auto weight (TO-BE):** sync from System Product DnW default — distinct from bulk Update to Pricelist.
+* **Tier:** One attached Variable Price (Amount and/or Weight).
+* **Update from Master:** Replace all tier snapshots from current masters.
+* **Update to Pricelist:** Recalculate Final on Pricelist; Manual Price preserved (stacked with tier).
+* **Applied Store Others:** Non-platform Active stores may be selected (ETM-16882).
 
 ## When to use
 
-* Binding Variable Price rules to a pricing category / store group.
-* Publishing margin changes to Pricelist after reviewing tiers.
+* Binding Variable Price rules to a pricing category / store group (including Others).
+* Publishing changes to Pricelist after reviewing tiers.
 
 ## Navigation
 

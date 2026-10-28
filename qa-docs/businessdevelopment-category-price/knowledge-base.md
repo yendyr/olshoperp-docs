@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.3
+version: 1.4
 last_updated: 2026-10-28
 owner: QA - Yemima
 status: review
-aliases: [Category Price, pricelist category, kategori harga, Variable Price Tiers, Max Value]
+aliases: [Category Price, pricelist category, kategori harga, Variable Price Tiers, Max Value, Applied Store]
 ---
 
 # Category Price — Knowledge Base
@@ -14,6 +14,10 @@ aliases: [Category Price, pricelist category, kategori harga, Variable Price Tie
 ## Apa itu
 
 Kategori harga untuk channel/store. **TO-BE:** aturan margin diambil dari satu atau lebih **Variable Price** (tier). Hasil semua tier dijumlahkan saat Update ke Pricelist.
+
+## Applied Store (TO-BE ETM-16882)
+
+Bisa pilih store **platform** dan store **Others** yang **Active**. Boleh kosong. Boleh campur platform + Others. Store Others inactive tidak muncul. (Sebelumnya ETM-16666 hanya platform — diganti sebagian.)
 
 ## Alur standar
 
@@ -32,7 +36,7 @@ flowchart TD
 |------|------|
 | **Select Variable Price** | Pasang tier (snapshot). Hanya Active yang belum dipasang. |
 | **Update from Master** | Timpa semua tier dari master terkini (edit lokal hilang). |
-| **Update to Pricelist** (merah) | Hitung ulang margin semua produk category itu — termasuk yang pernah diedit manual di Pricelist. Wajib centang persetujuan. |
+| **Update to Pricelist** (merah) | Hitung ulang Final di Pricelist. Margin yang diedit manual di Pricelist **tidak dihapus**; Final = default + margin user + tier category (ETM-16884). Wajib centang persetujuan. |
 
 ## Weight berubah di System Product (TO-BE ETM-16668)
 
@@ -44,7 +48,8 @@ Ubah weight DnW **default** di System Product → nilai Category/Pricelist yang 
 - Ubah master → Update to Category dari Variable Price, atau Update from Master di sini.
 - Edit Value Type **Percentage** di tier lokal: batas **-9.999 … 9.999** (sama Variable Price); desimal dipotong 4 digit; **Max Value** ikut (plafon hasil %) — kosong = tidak ada batas ([ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)).
 - Harga jual baru berubah setelah **Update to Pricelist** — kecuali path auto weight (ETM-16668) untuk nilai calculated by Weight.
-- Contoh: harga 16.000 + berat 1.500 g + 3 tier → margin 8.500 → final 24.500.
+- Category hanya Others / tanpa store: Final di Pricelist tetap terhitung; Sync ke platform tidak muncul (ETM-16884).
+- Contoh: harga 16.000 + berat 1.500 g + 3 tier → Final 24.500 (User Set Margin di Pricelist = `-` jika belum edit manual).
 
 ## Troubleshooting
 

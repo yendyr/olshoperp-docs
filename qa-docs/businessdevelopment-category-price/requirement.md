@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.3
+version: 1.4
 last_updated: 2026-10-28
 owner: QA - Yemima
 status: review
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16313](https://erpintegration.atlassian.net/browse/ETM-16313)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar D)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §4, §6–9  
-**Relates:** ETM-16312 · ETM-16314 · mirror validasi Percentage [ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569) · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (weight System Product → Pricelist/Category) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value snapshot dari Variable Price)
+**Relates:** ETM-16312 · ETM-16314 · mirror validasi Percentage [ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569) · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others Active) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** / **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (dampak Pricelist)
 
 ---
 
@@ -21,6 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-10-28 | **TO-BE** ETM-16882: Applied Store = platform + Others **Active**; NULL OK; mix OK. Update to Pricelist: Manual Price di Pricelist **tidak** ditimpa (stack — ETM-16884). Catatan: membalik sebagian ETM-16666 |
 | 1.3 | 2026-10-28 | Cross-ref TO-BE ETM-16835: Max Value ikut snapshot band / edit lokal Percentage + hitung Pricelist |
 | 1.2 | 2026-10-21 | Cross-ref TO-BE ETM-16668: auto-recalc nilai weight-related saat DnW default berubah; input manual category tidak tertimpa |
 | 0.1 | 2026-10-07 | Draft AS-IS + TO-BE multi tier |
@@ -34,7 +35,7 @@ status: review
 **AS-IS:** section *Margin Price Configuration* = satu set band by default price.  
 **TO-BE:** diganti **Variable Price Tiers** — attach ≥1 Variable Price (snapshot band); boleh by Amount dan/atau by Weight; edit lokal OK; Update from Master / Update to Pricelist manual + konfirmasi.
 
-Basic Information (Code, Category Name, Description, Applied Store, Show for all company) **tidak berubah**. DataList Category **tidak berubah**.
+Basic Information (Code, Category Name, Description, Show for all company) tetap. **Applied Store** → TO-BE ETM-16882 (§3.0). DataList Category selain Store List mengikuti Applied Store.
 
 ```mermaid
 flowchart LR
@@ -57,12 +58,31 @@ flowchart LR
 | A-07 | Satu VP tidak bisa dipasang dua kali; hanya Active; by Weight pakai satuan `g` | **TO-BE** |
 | A-08 | Edit band lokal Type **Percentage**: Value -9.999 … 9.999; ≥10.000 / ≤-10.000 ditolak; desimal truncate 4dp (sama master VP) | **TO-BE** |
 | A-09 | Snapshot / edit lokal band Percentage menyertakan **Max Value** (aturan sama master VP ETM-16835); Amount → clear+disable | **TO-BE** |
+| A-10 | Applied Store: store platform eligible **dan** store Others **Active**; Inactive Others tidak muncul; NULL / mix platform+Others boleh disimpan | **TO-BE** ETM-16882 |
+| A-11 | Update to Pricelist: Manual Price di Pricelist tidak dihapus; Final = Default + User Set Margin + Category tier ([Pricelist §5](../businessdevelopment-pricelist-product/requirement.md)) | **TO-BE** ETM-16884 |
 
 ---
 
 ## 3. Form Edit — Variable Price Tiers
 
 Sidebar: jump-section · **Update from Master** · **Update to Pricelist** (merah) · **Save All**.
+
+### 3.0 Applied Store (TO-BE · ETM-16882)
+
+**AS-IS / historis ETM-16666:** dropdown hanya store **platform**; Others di-hide & ditolak server.  
+**TO-BE:** revisi sebagian 16666.
+
+| Aturan | Expected |
+|--------|----------|
+| Opsi dropdown | Store platform eligible **+** store tipe **Others** yang **Active** |
+| Others Inactive | Tidak muncul / tidak bisa dipilih |
+| NULL / kosong | Tetap boleh |
+| Mix platform + Others | Boleh disimpan |
+| Server | Menerima Others Active (tidak 422 “Store Field not found” ala 16666 untuk Others Active) |
+
+**Dampak Pricelist (bukan AC penuh card ini):** Sync icon hanya jika category mengandung ≥1 platform; Others-only / NULL → calc Final tetap, tanpa Sync — [Pricelist ETM-16884](../businessdevelopment-pricelist-product/requirement.md). Future: Others → Unit Price SO — out of scope.
+
+**TC historis:** TC-CP-002 / TC-CP-003 (Passed terhadap 16666) **disupersede** oleh TO-BE 16882 — perlu TC baru setelah deploy.
 
 ### 3.1 Select Variable Price
 
@@ -90,7 +110,14 @@ Dialog: *"All tiers will be replaced with the current Variable Price master. Any
 
 ### 3.4 Update to Pricelist
 
-Dialog keras: N baris Pricelist category akan dihitung ulang; manual override tertimpa; **cannot be undone**. Checkbox *"I understand…"* wajib. Toast dengan N rows. Detail hitung: [Pricelist requirement](../businessdevelopment-pricelist-product/requirement.md).
+Dialog keras: N baris Pricelist category akan dihitung ulang; **cannot be undone**. Checkbox *"I understand…"* wajib. Toast dengan N rows.
+
+**TO-BE ETM-16884 (bukan overwrite Manual Price):**
+- Row **non-manual:** Final dari Category tier; cell User Set Margin di Pricelist tetap `-`.
+- Row **Manual Price:** User Set Margin **tidak** ditimpa; Final = Default + User Set Margin + Category tier.
+- Copy dialog harus mencerminkan perilaku ini (bukan “manual override tertimpa” secara absolut).
+
+Detail hitung & Sync: [Pricelist requirement](../businessdevelopment-pricelist-product/requirement.md).
 
 ### 3.5 Auto-recalc weight (TO-BE ETM-16668)
 
@@ -130,6 +157,8 @@ Category `SH-GARME` attach VP-AMT-RETAIL + VP-WGT-STD + VP-AMT-MKTPLACE → SKU-
 | GAP-CP-02 | Mass Update from Master di datalist | Pola icon massal seperti VP (card ada, wireframe belum) |
 | GAP-CP-03 | Data margin AS-IS | Bersihkan saat go-live; tidak auto-migrate |
 | GAP-CP-04 | Auto weight → Category/Pricelist (ETM-16668) | Sync dari DnW default; preserve manual; log Pricelist |
+| GAP-CP-05 | Applied Store Others Active (ETM-16882) | Balik sebagian 16666; TC baru menggantikan TC-CP-002/003 |
+| GAP-CP-06 | Copy dialog Update to Pricelist vs Manual stack | Selaras ETM-16884 |
 
 ---
 

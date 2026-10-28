@@ -3,24 +3,24 @@ doc_type: docs-hub-menu-overview
 menu_slug: businessdevelopment-pricelist-product
 menu_name: Pricelist Product
 lang: en
-version: 1.1
-last_updated: 2026-10-22
+version: 1.3
+last_updated: 2026-10-28
 status: review
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing. Derived from QA docs multi-tier Variable Price / ETM-16314 · ETM-16668 weight sync.
+notes: Help Center landing. Derived QA docs ETM-16314 · 16668 · 16861 · 16883 · 16884.
 ---
 
 ## Module/Feature: Pricelist Product
 
-**Business definition.** Pricelist Product shows per-SKU sell price and margin for a Category. With multi-tier Variable Price, margin is the **sum of matched tier contributions** (Amount and/or Weight). Hover breakdown explains each tier; weight-based tiers skip when primary weight is missing. **TO-BE:** changing **default** DnW weight on System Product auto-updates by-Weight values and writes Pricelist log (manual overrides preserved).
+**Business definition.** Shows **Final Price** per SKU per Category. The small value below is **User Set Margin** — only when manually edited (orange); otherwise `-` (full calc remains in the tooltip). Multi-tier Variable Price contributions are summed. Sync to marketplace only when the Category has at least one platform store. Update to Pricelist does not wipe manual margin; Final = default + user margin + category tier.
 
 ## When to use
 
-* Checking or overriding sell price / margin after Category Update to Pricelist.
-* Auditing how multi-tier bands produced the current margin.
-* (TO-BE) Verifying by-Weight prices after changing default weight on System Product.
+* Check Final Price after Category **Update to Pricelist**.
+* Set Manual Price (Final or User Set Margin) and see how later category updates affect Final.
+* Filter Manual Margin rows; audit Log Pricelist after default weight changes.
 
 ## Navigation
 

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.1
-last_updated: 2026-10-21
+version: 1.3
+last_updated: 2026-10-28
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.1"
+source_version: "1.3"
 owner: QA - Yemima
 status: review
 ---
@@ -18,42 +18,51 @@ status: review
 
 ## 1. Apa itu
 
-Daftar harga jual per produk. Margin bisa hasil penjumlahan beberapa aturan dari Category (harga dan/atau berat).
+Daftar harga jual per produk. Angka besar = **Final Price**. Angka kecil = **User Set Margin** — hanya muncul jika kamu mengubah harga manual; jika belum diubah, tampil **`-`** (detail hitungan tetap bisa dilihat di tooltip).
 
 ---
 
 ## 2. Setelah Update dari Category
 
 1. Cek kolom **Weight** (dari System Product primary).
-2. Lihat harga final (besar) dan margin (kecil di bawah).
-3. Arahkan mouse ke margin → pecahan per tier + range band.
+2. Lihat **Final Price** (besar). **User Set Margin** tetap `-` kalau kamu belum edit manual.
+3. Arahkan mouse ke area margin → pecahan per tier (tooltip calculation).
+4. Arahkan mouse ke **nama kolom category** → ringkasan tier + waktu **Last Update to Pricelist**.
 
-Contoh: 16.000 + berat 1.500 g → margin 8.500 → final 24.500.
+Contoh: 16.000 + berat 1.500 g → Final **24.500**; User Set Margin `-`.
 
 ---
 
-## 3. Ubah margin manual
+## 3. Ubah harga manual (Manual Price)
 
-1. Klik angka margin → edit langsung.
+1. Klik **Final Price** (atas) atau **User Set Margin** (bawah) — tooltip: *Click to edit Final Price* / *Click to edit User Set Margin*.
 2. Enter simpan / Esc batal.
-3. Angka jadi **oranye** = diubah manual (tercatat siapa & kapan di tooltip).
+3. Angka User Set Margin jadi **oranye** = diubah manual.
 
-**Update to Pricelist** dari Category akan menimpa lagi ke hasil hitung (warna kembali normal).
+**Update to Pricelist** dari Category **tidak menghapus** margin oranye. Final bisa berubah karena tier category ditambahkan ke margin kamu (contoh: margin kamu 2.000 + tier 1.500 → Final naik).
 
-### Cari yang sudah diedit manual (TO-BE ETM-16861)
+**Reset:** kosongkan / hapus isi margin → kembali `-`, Final mengikuti Category saja, warna oranye hilang.
 
-Advanced Filter → variable **Manual Margin** → pilih **Yes** atau **No** (dropdown). **Yes** = ada margin oranye di baris itu; **No** = semua masih hitung sistem.
+### Cari yang sudah diedit manual (ETM-16861)
 
----
-
-## 4. Weight kosong
-
-Muncul peringatan **No weight**. Aturan berdasarkan berat di-skip. Isi weight di System Product (baris DnW **default**).
+Advanced Filter → **Manual Margin** → **Yes** atau **No**.
 
 ---
 
-## 5. Weight berubah di System Product (TO-BE ETM-16668)
+## 4. Sync ke toko platform
 
-Kalau weight diubah pada DnW **default** (atau radio default diganti) di System Product → Weight + margin + final Category di Pricelist ikut update otomatis. Perubahan masuk **Log Pricelist**. Margin oranye (manual) **tidak** berubah.
+Icon Sync muncul hanya jika category punya store **platform**. Category hanya store Others atau tanpa store → tidak ada Sync. Tombol Sync All juga hanya untuk category ber-platform.
 
-Referensi: [knowledge-base.md](./knowledge-base.md) · [Category Price](../businessdevelopment-category-price/user-guide.md) · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)
+---
+
+## 5. Weight kosong
+
+Peringatan **No weight**. Aturan berat di-skip. Isi weight di System Product (DnW **default**).
+
+---
+
+## 6. Weight berubah di System Product (ETM-16668)
+
+Ubah DnW **default** (atau ganti radio default) → Weight + Final by Weight di Pricelist ikut update. Manual oranye **tidak** berubah. Perubahan masuk **Log Pricelist**.
+
+Referensi: [knowledge-base.md](./knowledge-base.md) · [Category Price](../businessdevelopment-category-price/user-guide.md)
