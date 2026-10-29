@@ -47,9 +47,9 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
 9. Cek DB via webhook = supporting saja — BUKAN bukti TC Passed. Baca dulu skill
    `.cursor/skills/olshoperp-db-verify/SKILL.md` (bukan load rule 19 penuh). Detail panjang:
    `tests/DATA-VERIFICATION.md`.
-10. Testing card ETM-xxxxx: baca dulu skill `.cursor/skills/olshoperp-card-testing/SKILL.md`
-    (buku lengkap: UI, data, DB, Jira, Telegram). JANGAN `tests/scripts/`. TC baru = Jira saja
-    (bukan file markdown TC), sejak 26 Okt 2026.
+10. Testing card ETM-xxxxx **atau** run Playwright untuk card (`@ETM-…`, BUILD POM card):
+    baca skill `.cursor/skills/olshoperp-card-testing/SKILL.md` (§7 Playwright). JANGAN
+    `tests/scripts/`; jangan skill Playwright terpisah. TC baru = Jira saja (sejak 26 Okt 2026).
 11. Q&A menu/aturan (bukan testing): skill `.cursor/skills/olshoperp-qa-menu-ask/SKILL.md`
     — alias → satu layer doc → jawaban ringkas. Jangan load rule 04/06/08/09 penuh.
 12. Buat card Error/Improvement/CR: skill `.cursor/skills/olshoperp-jira-card/SKILL.md`

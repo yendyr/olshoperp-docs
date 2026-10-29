@@ -1,12 +1,13 @@
 ---
 name: olshoperp-card-testing
 description: >-
-  Buku lengkap menjalankan test card Jira ETM (Test Case / Error / Improvement / CR)
-  di staging/tyas — UI crawl atau Playwright, data uji, kapan cek DB, credential,
-  Jira status/hasil, Telegram. Termasuk aturan Playwright untuk uji card (MCP≠Passed,
-  @ETM, scratch, dilarang tests/scripts). Jangan buat skill Playwright terpisah.
-  Pakai saat "test card ETM-xxxxx", "jalankan test case", "laporkan hasil test".
-  Buat TC = olshoperp-testcase-authoring.
+  Uji card Jira ETM + Playwright untuk card itu: UI crawl/CLI, data uji, DB, credential,
+  Actual/Test Result, Telegram, Failed→Error. Pakai juga saat "run playwright",
+  "jalankan spec @ETM-…", "npx playwright test … card", "BUILD/perbaiki POM untuk ETM-…",
+  "probe/scratch test card" — Playwright uji card = skill ini (§7), jangan skill Playwright
+  terpisah. MCP ≠ Passed. Trigger lain: "test card ETM-xxxxx", "jalankan test case",
+  "laporkan hasil test". Buat TC = olshoperp-testcase-authoring. Otomasi murni tanpa
+  card → tests/AGENT-RUNBOOK.md.
 ---
 
 # OlshopERP — Skill Testing Card (buku lengkap)
