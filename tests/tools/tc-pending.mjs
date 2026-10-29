@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
- * TC Pending — daftar TC yang hasilnya BELUM diketahui, dipisah menurut apakah
- * jawabannya bisa dicari sendiri atau harus ditanyakan ke orang.
+ * TC Pending — LEGACY / ARSIP.
+ * Membaca file TC-*.md (last_execution) — BUKAN status TC terkini di Jira
+ * (sejak 26-10-2026 hasil hanya di Jira; reporter file dimatikan 29-10-2026).
+ * Alias: npm run legacy:tc-pending
  *
- * Latar: sebagian besar TC dijalankan manual oleh tim. Hasilnya sering ada di card
- * Jira (Done with passed / failed / blocked), bukan di file TC. Selama TC menyimpan
- * rujukan card (`last_execution.jira` / `origin_jira` / `card_ref`), hasilnya bisa
- * ditelusuri. Yang tidak punya rujukan sama sekali = harus ditanyakan ke prompter.
+ * Latar historis: sebagian besar TC dijalankan manual; file menyimpan
+ * `last_execution.jira` / `origin_jira` / `card_ref` sebagai jejak arsip.
  *
  * Pakai:
- *   node tests/tools/tc-pending.mjs             # ringkasan
+ *   node tests/tools/tc-pending.mjs             # ringkasan arsip
  *   node tests/tools/tc-pending.mjs --ask       # hanya yang perlu ditanyakan
  *   node tests/tools/tc-pending.mjs --menu {slug}
  */
@@ -72,21 +72,21 @@ const print = (rows, head) => {
   }
 };
 
-console.log(`TC Pending — ${traceable.length + mustAsk.length} TC belum punya hasil`);
+console.log(
+  `⚠️  ARSIP — tc:pending membaca file TC-*.md, BUKAN status TC terkini di Jira.\n` +
+    `   Hasil resmi: card TC → Actual Result + Test Result. Alias: npm run legacy:tc-pending\n`,
+);
+console.log(`TC Pending (arsip) — ${traceable.length + mustAsk.length} file tanpa last_execution terisi`);
 if (!ONLY_ASK) {
   print(
     traceable,
-    `📌 ${traceable.length} PUNYA rujukan card — hasilnya cek status card Jira-nya\n` +
-      `   (Done with passed / failed / blocked), lalu catat ke last_execution + notes`,
+    `📌 ${traceable.length} PUNYA rujukan card di file arsip — cek status di Jira (jangan tulis last_execution lagi)`,
   );
 }
 print(
   mustAsk,
-  `❓ ${mustAsk.length} TANPA rujukan card — tidak ada jejak siapa pun\n` +
-    `   Tanyakan hasilnya ke prompter/penguji. Jangan menebak, jangan biarkan menggantung.`,
+  `❓ ${mustAsk.length} TANPA rujukan card di file arsip — jejak historis saja; status terkini di Jira`,
 );
 console.log(
-  `\nSesudah dapat jawabannya, catat di TC-nya:\n` +
-    `  last_execution: { status, via: "manual:{Nama}", notes: "actual result", jira: {card} }\n` +
-    `Lalu: npm run tc:lint && npm run docs:sync`,
+  `\nJangan update file TC arsip. Catat hasil di Jira (skill olshoperp-card-testing).`,
 );

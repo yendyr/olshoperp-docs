@@ -25,7 +25,7 @@ Card Jira ETM issue type **Test Case** yang statusnya **Done** dan field `custom
 | Jira card | `customfield_10495` (Request ID) | Terisi (atau `"none"`) |
 | Jira card | assignee | Terisi |
 | Jira card | `customfield_10203` (Actual Result) | Terisi, bukan kosong/placeholder |
-| Jira card | `customfield_10202` (Test Result) | Salah satu: Passed / Failed / Blocked |
+| Jira card | `customfield_10202` (Test Result) | **Passed** atau **Failed** saja. Nilai `Blocked` di dropdown **jangan** dipakai sebagai hasil final (Blocked jenis a → Not Execute tanpa Test Result; jenis b → Failed — rule `22`) |
 | Jira card | company & identitas tester | Disebut di Actual Result atau comment (`17-jira-testcase-status-transition.mdc`, repo `olshoperp`) |
 
 Kalau ada yang kosong → langsung masuk daftar temuan, tidak perlu AI judgment.
@@ -85,4 +85,4 @@ Lookup: ambil identitas tester dari `customfield_10201` (Test Execute By) atau a
 - `17-jira-testcase-status-transition.mdc` (olshoperp) — syarat Actual Result + Test Result sebelum Done, jadi dasar Check 1.
 - `22-reopen-defect-flow.mdc` — jalur lanjutan setelah Test Result = Failed final & diverifikasi manusia.
 - `24-plain-language-team-comms.mdc` — gaya bahasa wajib semua notifikasi & comment.
-- `13-test-case-format.mdc` — (arsip sejak 22-10-2026) format file TC lama; TC aktif hanya di Jira, screening tidak lagi cross-check file `TC-*.md`.
+- `13-test-case-format.mdc` — (arsip sejak 26-10-2026) format file TC lama; TC aktif hanya di Jira, screening tidak lagi cross-check file `TC-*.md`.

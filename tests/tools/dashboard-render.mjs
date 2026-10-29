@@ -289,7 +289,7 @@ ${runRows}
   </div>
 
   <footer class="note">
-    Sumber: <span class="mono">last_execution</span> (utama) + <span class="mono">test_result</span> (fallback) di TC-*.md (ARSIP — sejak 22-10-2026 tidak diperbarui; hasil TC terkini ada di Jira) — bukan menjalankan test baru. Mencakup run Playwright CLI dan manual QA. Refresh manual: <span class="mono">npm run dashboard:build</span>. TC belum pernah run (${summary.never_run_tc}) tidak ikut pass rate.
+    Sumber: <span class="mono">last_execution</span> (utama) + <span class="mono">test_result</span> (fallback) di TC-*.md (ARSIP — sejak 26-10-2026 tidak diperbarui; hasil TC terkini ada di Jira) — bukan menjalankan test baru. Mencakup run Playwright CLI dan manual QA. Refresh manual: <span class="mono">npm run dashboard:build</span>. TC belum pernah run (${summary.never_run_tc}) tidak ikut pass rate.
   </footer>
 </div>
 

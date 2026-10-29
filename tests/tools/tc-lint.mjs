@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * TC Lint — jaga qa-docs bebas test case duplikat / rujukan putus.
+ * TC Lint — LEGACY format guard untuk file TC arsip (qa-docs/**/TC-*.md).
+ * Bukan gate TC baru (TC baru = Jira). Tetap berguna menjaga format arsip.
  *
  * Cek (ERROR = exit 1):
  *  1. tc_code duplikat antar file mana pun (single-menu maupun flow)

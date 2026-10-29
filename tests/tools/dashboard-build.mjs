@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 /**
- * Test Dashboard — baca status eksekusi TC yang SUDAH ADA (last_execution / test_result
- * di frontmatter TC-*.md), bukan menjalankan test baru. Menghasilkan dashboard-data.json
- * yang dipakai halaman statis dashboard/index.html.
+ * Test Dashboard — LEGACY / ARSIP.
+ * Baca last_execution / test_result di file TC-*.md (beku sejak reporter dimatikan
+ * 29-10-2026). BUKAN status TC terkini di Jira. Alias: npm run legacy:dashboard
  *
  * Pakai: npm run dashboard:build
  */
+console.error(
+  '⚠️  ARSIP — dashboard dari file TC-*.md, bukan Jira terkini. Hasil resmi di card Test Case.',
+);
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

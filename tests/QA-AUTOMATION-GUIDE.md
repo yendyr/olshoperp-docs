@@ -141,34 +141,25 @@ atau hanya: `adjustment-addition` / `stock-opname` / dll.
 
 Agent wajib (berlaku seterusnya):
 1. Baca `qa-docs/{menu}/requirement.md` + FE form jika BUILD
-2. Tulis TC di `qa-docs/.../test-cases/` **ikut rule naming 13** (lihat § Naming TC di bawah) — skenario create/update/view/filter boleh di **judul**, bukan di `tc_code`. Gabung ubah header + detail (satu dokumen/konteks) ke **satu** TC update; jangan pecah TC detail terpisah kecuali benar-benar flow berbeda. Menu report/read-only → skenario view (+ filter) sebagai TC terpisah bernomor.
+2. **Buat TC di Jira** (skill `olshoperp-testcase-authoring`) — jangan buat file `TC-*.md`. Skenario create/update/view/filter di **judul** card. Gabung ubah header + detail (satu dokumen/konteks) ke **satu** TC; pecah hanya jika flow berbeda. Menu report/read-only → view (+ filter) sebagai TC terpisah.
 3. Update **kamus elemen** `tests/pom-registry/{slug}.yaml`
-4. Helper `tests/helpers/{slug}.ts` + spec serial di `tests/specs/` dengan tag `@TC-{PREFIX}-{NNN}` yang **sama** dengan `tc_code` di file TC
-5. Run di `lumicharmsid` → update `test_result` di TC
+4. Helper `tests/helpers/{slug}.ts` + spec serial di `tests/specs/` dengan tag `@ETM-xxxxx` / `@TC-…` yang **selaras** key/kode di card Jira
+5. Run di `lumicharmsid` → catat hasil di **Jira** (Actual Result + Test Result pada card TC; skill `olshoperp-card-testing`)
 6. Summary **WH + 1H** + **fungsi menu** (apa kegunaan bisnis dari hasil testing / requirement)
 7. **Description fields** (Transfer External header dan field Description di flow terkait / automation mendatang): isi tepat `automation playwright` — jangan stamp/random text
 
-### 2A. Naming TC (ARSIP — file TC tidak dibuat lagi sejak 22-10-2026; TC baru di Jira)
+### 2A. Naming TC file (ARSIP — jangan buat baru)
 
-> Tabel di bawah hanya untuk membaca/menautkan file TC lama (`.cursor/rules/13-test-case-format.mdc`, arsip).
-> Jangan membuat `TC-*-DRAFT-*.md` baru atau menjalankan `#renumber-tc`.
+> Tabel di bawah hanya untuk membaca file TC lama (rule `13`). TC baru = Jira saja.
+> Jangan membuat `TC-*-DRAFT-*.md` atau menjalankan `#renumber-tc`.
 
-| Tahap | File | `tc_code` |
+| Tahap (arsip) | File | `tc_code` |
 |-------|------|-----------|
-| TC baru | `TC-{PREFIX}-DRAFT-{YYYYMMDDHHmmss}.md` | `PENDING-{timestamp}` |
-| Setelah `#renumber-tc` | `TC-{PREFIX}-{NNN}.md` | `TC-{PREFIX}-{NNN}` |
+| Historis DRAFT | `TC-{PREFIX}-DRAFT-{YYYYMMDDHHmmss}.md` | `PENDING-{timestamp}` |
+| Historis bernomor | `TC-{PREFIX}-{NNN}.md` | `TC-{PREFIX}-{NNN}` |
 
-- `{PREFIX}` — dari TC bernomor di folder yang sama; jika folder kosong, derive dari menu slug (contoh: `supplychain-adjustment-addition` → `ADJADD`, `accounting-customer-payment` → `ARCP`)
-- Spec Playwright: `test('[@TC-{PREFIX}-{NNN}] …')` — **harus match** `tc_code`
-- Setelah buat DRAFT: QA lead jalankan `#renumber-tc` (atau `#renumber-tc {menu-slug}`)
-
-| ✅ Benar | ❌ Dilarang |
-|---------|-------------|
-| `TC-ADJADD-DRAFT-20260715120000.md` → `TC-ADJADD-001` | `TC-CREATE-adjustment-addition` |
-| `TC-SOPNAME-002` | `TC-UPDATE-stock-opname-detail` |
-| `@TC-LOC-001` di spec | `@TC-CREATE-location` / `@TC-VIEW-*` / `@TC-FILTER-*` sebagai `tc_code` |
-
-Judul/summary boleh menyebut Create/Update/View/Filter — **bukan** bagian dari `tc_code`.
+- Spec baru: prefer tag `@ETM-{key}` (card Jira). Tag `@TC-{PREFIX}-{NNN}` hanya jika merujuk arsip / key yang sudah ada.
+- Judul/summary boleh menyebut Create/Update/View/Filter.
 
 ### 3. Aturan emas
 
@@ -176,9 +167,9 @@ Judul/summary boleh menyebut Create/Update/View/Filter — **bukan** bagian dari
 |-----------|----------|
 | Panggil method POM di spec | Tulis `page.locator('div.xxx')` di spec |
 | Baca `pom-registry/*.yaml` untuk nama elemen | Pakai POM generator extension mentah |
-| Run scoped `-g "@TC-{PREFIX}-{NNN}"` | Run full suite untuk satu TC |
+| Run scoped `-g "@ETM-xxxxx"` / tag TC | Run full suite untuk satu TC |
 | Expected dari `requirement.md` | Tebak expected dari pengalaman ERP lain |
-| Nama file + `tc_code` = `TC-{PREFIX}-{NNN}` (setelah renumber) | `TC-CREATE-*` / `TC-UPDATE-*` / `TC-VIEW-*` / `TC-FILTER-*` sebagai kode |
+| TC baru di Jira + tag spec selaras | File `TC-*-DRAFT-*` / `#renumber-tc` / `TC-CREATE-*` sebagai kode |
 
 ---
 
@@ -198,8 +189,8 @@ Checklist menu baru:
 - [ ] `tests/pom-registry/{slug}.yaml`
 - [ ] `tests/helpers/{slug}.ts` (pakai `shared/`)
 - [ ] Smoke di `tests/specs/smoke/pom-smoke.spec.ts`
-- [ ] Minimal 1 TC bernama `TC-{PREFIX}-DRAFT-{timestamp}` (lalu `#renumber-tc`) + spec tag `@TC-{PREFIX}-{NNN}`
-- [ ] **Jangan** pakai `TC-CREATE-*` / `TC-UPDATE-*` / `TC-VIEW-*` / `TC-FILTER-*` sebagai `tc_code`
+- [ ] Minimal 1 card **Test Case di Jira** (skill authoring) + spec bertag `@ETM-xxxxx` (atau `@TC-…` selaras Jira)
+- [ ] **Jangan** buat file `TC-*-DRAFT-*` / `#renumber-tc`; **jangan** pakai `TC-CREATE-*` / `TC-UPDATE-*` sebagai kode
 
 ---
 

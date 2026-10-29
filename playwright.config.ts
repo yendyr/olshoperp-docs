@@ -34,7 +34,7 @@ export default defineConfig({
     ['list'],
     ['html', { open: 'never' }],
     ['./tests/reporters/flow-summary-reporter.ts'],
-    // Dimatikan 29-10-2026: hasil TC hanya di Jira (sejak 22-10-2026). Reporter ini menulis
+    // Dimatikan 29-10-2026: hasil TC hanya di Jira (sejak 26-10-2026). Reporter ini menulis
     // `last_execution` ke file TC-*.md (arsip read-only) tiap run. File reporter dibiarkan.
     // ['./tests/reporters/tc-execution-reporter.ts'],
   ],

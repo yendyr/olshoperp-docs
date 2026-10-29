@@ -34,7 +34,7 @@ Daftar flow + override test data → Baca: `tests/flows/README.md`.
 
 ### C. "Buat TC baru"
 
-**TC hanya di Jira sejak 22 Okt 2026.** Jangan buat file `TC-*.md` / `TC-*-DRAFT-*.md`, jangan
+**TC hanya di Jira sejak 26 Okt 2026.** Jangan buat file `TC-*.md` / `TC-*-DRAFT-*.md`, jangan
 `#renumber-tc`, jangan isi `test-queue.yaml`. File TC lama = **arsip read-only**.
 
 Buat / perbarui card Test Case di Jira → **baca dulu**
@@ -82,7 +82,7 @@ Itu buku lengkap (UI valid, data uji, DB, credential, Jira, Telegram, log).
 Jangan load banyak rules — skill sudah ringkas.
 
 Ringkas:
-- TC dokumentasi = **Jira saja** (sejak 22 Okt 2026); jangan buat `TC-*.md` baru untuk ini
+- TC dokumentasi = **Jira saja** (sejak 26 Okt 2026); jangan buat `TC-*.md` baru untuk ini
 - Dilarang `tests/scripts/` → probe di `tests/scratch/` / `check-*` tanpa tag; regresi → `@ETM-xxxxx`
 - Data tidak ada → STOP + tanya prompter; jangan fallback diam-diam
 - Hasil resmi di Jira (Actual → Test Result) + Telegram; DB hanya supporting
@@ -91,7 +91,7 @@ Detail ID/template: skill `reference.md`.
 
 ### G. "Card Jira sudah Done tapi file TC belum ke-update"
 
-**Tidak ada lagi.** Sejak 22 Okt 2026 hasil TC (Test Result + Actual Result) hanya di Jira —
+**Tidak ada lagi.** Sejak 26 Okt 2026 hasil TC (Test Result + Actual Result) hanya di Jira —
 tidak disalin ke file TC. Trigger `#sync-jira-done` / `#syncjiradone` **nonaktif**
 (rule `18-sync-jira-done.mdc` tinggal catatan). Jangan jalankan `npm run tc:jira-sync -- --apply`
 dan jangan tulis `last_execution` / `first_execution` ke file TC.
@@ -101,7 +101,7 @@ dan jangan tulis `last_execution` / `first_execution` ke file TC.
 ### F. "TC mana yang belum ada hasil / mau kejar ke tim"
 
 Hasil TC resmi = **Jira** (status + Test Result). `tc:pending` hanya memindai **arsip** file TC
-(snapshot sebelum 22 Okt 2026) — jangan jadikan sumber status terkini.
+(snapshot sebelum 26 Okt 2026) — jangan jadikan sumber status terkini.
 
 ```bash
 npm run tc:pending            # arsip file TC; JANGAN hitung sendiri via grep/skrip
@@ -137,7 +137,7 @@ SoT teknis `olshoperp/.cursor/rules/19-database-debugger.mdc`
 
 ## Kalau TC-nya dijalankan manual (bukan Playwright)
 
-Sebagian besar TC dijalankan orang, bukan mesin. Sejak 22 Okt 2026 hasilnya dicatat **hanya di Jira**
+Sebagian besar TC dijalankan orang, bukan mesin. Sejak 26 Okt 2026 hasilnya dicatat **hanya di Jira**
 (card Test Case: Actual Result → Test Result → Done), **bukan** di file `TC-*.md` / YAML `last_execution`.
 
 - Mau tahu hasilnya → buka card Jira TC-nya (Done + Test Result Passed/Failed).
@@ -184,9 +184,9 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 | # | Aturan | Kenapa |
 |---|---|---|
 | 1 | **Eksekusi test = Playwright CLI.** MCP hanya eksplorasi/diagnosa | MCP mem-bypass preflight, storageState, reporter, history → hasil tidak reproducible |
-| 2 | **Tiap hasil wajib menyebut asalnya.** `passed`/`failed` harus punya `via:` — path spec (run CLI) **atau** `manual:{Nama}` + `notes` berisi actual result. `via` bermuatan "MCP" ditolak | Run manual itu sah dan wajib tercatat; yang dilarang adalah hasil tanpa penanggung jawab. Verifikasi lewat MCP bukan hasil test — catat sebagai observasi |
-| 2b | **Status card Jira tidak pernah menulis hasil TC.** Card *Done* = pekerjaan selesai; TC `passed` = pengujian terbukti. Card Done + TC `not_run` → laporkan, jangan tambal | Rule `12` |
-| 3 | **TC hasil crawling wajib format rule 13** (`tc_code`, `menu`, `steps`, `expected_result`) | Skema lain (`id:`, `menu_slug:`) invisible bagi `tc:lint`, tak bisa di-recall flow, jadi duplikat tak terdeteksi |
+| 2 | **Hasil resmi di Jira.** Card TC: Actual Result → Test Result (Passed/Failed) → Done. Non-TC: bukti di **komentar**. Run CLI: sebut path spec di Actual/komentar. MCP ≠ bukti lulus. (`via:` / `last_execution` = **arsip** file TC, jangan ditulis lagi) | Rule `12` · skill card-testing |
+| 2b | **Status card Jira ≠ hasil uji.** Card *Done* = pekerjaan selesai; lulus/gagal = Test Result di card TC (atau komentar non-TC). Card Done + TC masih Not Execute → laporkan, jangan tambal | Rule `12` |
+| 3 | **TC baru = card Jira** (skill authoring). File `TC-*.md` / format rule 13 = **arsip** — jangan buat skema crawling baru di markdown | Skill authoring · rule `13` arsip |
 | 4 | **Jangan duplikasi langkah TC.** Langkah hidup di `tests/scenarios/` (1 fungsi = 1 TC origin); flow me-*recall*, tidak menyalin | Kalau UX berubah, cukup update 1 tempat — bukan berburu salinan |
 | 4b | **Dokumen sistem milik repo developer.** requirement/technical/knowledge-base/user-guide/capabilities di sini = salinan. Jangan diedit; `docs:drift` sebelum kerja | Salinan tertinggal pernah bikin 15 TC Purchase Inbound divalidasi ke requirement v2.3 padahal developer sudah v2.4 |
 | 5 | **Selector dari source Vue, bukan DOM scraping**, dan mendarat di `pom-registry`/`helpers` — bukan hardcoded di spec | Fondasi stabilitas; selector scraping pecah tiap re-render |
@@ -196,7 +196,7 @@ isi TC, dan langkah TC benar-benar menguji yang dimaksud.
 | 8 | **Satu TC dipakai di banyak tempat.** Card baru → **cek dulu TC existing di Jira** (Relates / label `ETM-origin`): belum ada TC = bikin baru · expected sama = reuse · expected berubah = **update card TC existing** (jangan bikin kembarannya) | Skill `olshoperp-testcase-authoring` |
 | 9 | **Cek DB (webhook) ≠ TC passed.** L3 DB hanya supporting; Tyas/Staging shared webhook, Merdian terpisah; read-only + `company_id` | `tests/DATA-VERIFICATION.md` · rule docs `19` |
 | 10 | **Testing card → skill `olshoperp-card-testing` dulu.** Jangan `tests/scripts/`; data/DB/Jira/Telegram ikut skill | Decision tree **I** |
-| 11 | **TC baru = Jira saja (22 Okt 2026).** Jangan markdown `TC-*.md` + renumber untuk dokumentasi card baru | Skill card-testing § header |
+| 11 | **TC baru = Jira saja (26 Okt 2026).** Jangan markdown `TC-*.md` + renumber untuk dokumentasi card baru | Skill card-testing § header |
 
 ---
 
@@ -208,7 +208,7 @@ Keputusan Rachy 15-10-2026. Data uji hasil crawl/eksekusi TC di staging **tidak 
 2. **Name** atau **Description** wajib menyebut jejaknya, berisi key TC/card dan tanggal run. Contoh Description: `QA-AUTO ETM-16502 langkah 3, 15-10-2026`. Kalau form tidak punya Description, pakai Name.
 3. Draft yang otomatis terbentuk saat buka halaman create PO/SO juga dibiarkan, dengan jejak yang sama bila bisa diedit.
 4. Pengecualian: hapus data hanya kalau langkah TC itu sendiri menguji hapus (delete / show deleted).
-5. Laporan run dan Actual Result Jira menyebut kode data yang dibuat, supaya bisa dipakai ulang atau dicari.
+5. Laporan run + **Actual Result (card TC)** / **komentar (non-TC)** menyebut kode data yang dibuat, supaya bisa dipakai ulang atau dicari.
 
 Catatan transisi: run ETM-16502 (15-10-2026 13:20 WIB) masih menghapus `QA-AUTO-VPDEC-266983` dan `QA-AUTO-VPDECW-266983` sebelum aturan ini berlaku.
 
@@ -233,7 +233,7 @@ Catatan transisi: run ETM-16502 (15-10-2026 13:20 WIB) masih menghapus `QA-AUTO-
 | SOP eksekusi lengkap, tooling MCP/CLI (§6B) | rule `14-playwright-e2e.mdc` |
 | BUILD vs RUN, repo mana yang boleh dibuka | rule `15-playwright-multi-repo.mdc` |
 | Aturan flow cross-menu (recall, gate, fresh data) | rule `17-e2e-cross-menu-flow.mdc` |
-| Sync Jira Done → file TC | **nonaktif** sejak 22-10-2026 (rule `18-sync-jira-done.mdc`) |
+| Sync Jira Done → file TC | **nonaktif** sejak 26-10-2026 (rule `18-sync-jira-done.mdc`) |
 | Cek data DB (L1/L2/L3, env Tyas/Staging/Merdian) | Skill card-testing §8 · `tests/DATA-VERIFICATION.md` (SoT panjang) |
 | Testing card ETM (buku lengkap) | `.cursor/skills/olshoperp-card-testing/SKILL.md` |
 | Akun uji khusus role/izin (mis. user tanpa izin Void/Approve — staging & tyas saja) | `tests/TEST-ACCOUNTS.md` |
@@ -244,17 +244,18 @@ Catatan transisi: run ETM-16502 (15-10-2026 13:20 WIB) masih menghapus `QA-AUTO-
 ```bash
 npm run tc:lint                              # anti-duplikat TC (wajib sebelum tambah TC)
 npm run tc:coverage                          # matrix cakupan menu x test_type + prioritas gap
-npm run tc:refs                              # peta rujukan kode TC (arsip; #renumber-tc nonaktif sejak 22-10-2026)
+npm run tc:refs                              # peta rujukan kode TC (arsip; #renumber-tc nonaktif sejak 26-10-2026)
 npm run guard:scan                           # guard backend -> kandidat negative TC per menu
 npm run flow:preflight -- {flow-id}          # gate kelengkapan chain (wajib sebelum flow)
 npm run test:tc -- "@TC-XXX"                 # jalankan TC by tag
 npm run test:smoke                           # smoke 4 menu
 npm run test:report                          # buka HTML report
 npm run component:sync                       # cek drift katalog komponen vs source frontend
-npm run tc:pending                              # TC belum punya hasil eksekusi
-npm run tc:jira-drift                           # drift Jira vs repo (kandidat sync)
-npm run tc:jira-sync -- --apply payload.json    # tulis last/first_execution dari Jira
-OLSHOP_RUN_JIRA=ETM-15647 npm run test:tc -- "@TC-XXX"   # run CLI (tier bukti tertinggi)
+npm run tc:pending                              # (LEGACY arsip) file TC tanpa last_execution — bukan status Jira terkini
+npm run tc:jira-drift                           # (LEGACY) drift Jira vs arsip last_execution
+npm run tc:jira-sync -- --apply payload.json    # (LEGACY nonaktif) jangan dipakai — hasil hanya di Jira
+# OLSHOP_RUN_JIRA=… — arsip reporter; hasil resmi = field/komentar Jira, bukan file TC
+npm run test:tc -- "@ETM-xxxxx"                 # run CLI by tag (bukti di Actual/komentar Jira)
 ```
 
 ## Repo app = READ-ONLY

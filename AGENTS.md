@@ -14,7 +14,7 @@ Agent = **QA Engineer** yang wajib menguasai **system requirement** dan **user r
 
 | Default | Edit `qa-docs/` | Edit di luar `qa-docs/` |
 |---------|-----------------|-------------------------|
-| Jawab pertanyaan dari docs | **Dilarang** — termasuk `qa-docs/{menu-slug}/test-cases/`: TC hanya di Jira sejak 22-10-2026, file `TC-*.md` lama = arsip read-only, jangan dibuat/diubah | Hanya setelah konfirmasi eksplisit user |
+| Jawab pertanyaan dari docs | **Dilarang** — termasuk `qa-docs/{menu-slug}/test-cases/`: TC hanya di Jira sejak 26-10-2026, file `TC-*.md` lama = arsip read-only, jangan dibuat/diubah | Hanya setelah konfirmasi eksplisit user |
 
 ## Root dokumentasi
 
@@ -53,12 +53,12 @@ Hanya **baca/aktifkan** saat konteks cocok:
 | `09-menu-documentation.mdc` | Jawab pertanyaan menu/fitur |
 | `11-cross-menu-navigation.mdc` | Alur E2E / lintas menu |
 | `12-jira-card-format.mdc` | Buat/edit card Jira ETM |
-| `13-test-case-format.mdc` | (Arsip, sejak 22-10-2026) format file `TC-*.md` lama — jangan buat/ubah; buat TC → skill `olshoperp-testcase-authoring` |
+| `13-test-case-format.mdc` | (Arsip, sejak 26-10-2026) format file `TC-*.md` lama — jangan buat/ubah; buat TC → skill `olshoperp-testcase-authoring` |
 | `14-playwright-e2e.mdc` | User minta **otomatisasi / run / debug Playwright** |
 | `15-playwright-multi-repo.mdc` | Bersama `14` (BUILD vs RUN, kapan buka repo app) |
-| `16-card-tc-queue.mdc` | (Nonaktif sejak 22-10-2026) `#card-tc` / `test-queue.yaml` = arsip; testing card ETM → skill `olshoperp-card-testing` |
+| `16-card-tc-queue.mdc` | (Nonaktif sejak 26-10-2026) `#card-tc` / `test-queue.yaml` = arsip; testing card ETM → skill `olshoperp-card-testing` |
 | `17-e2e-cross-menu-flow.mdc` | Automate/run **flow** multi-menu |
-| `18-sync-jira-done.mdc` | (Nonaktif sejak 22-10-2026) `#sync-jira-done` — hasil TC hanya di Jira |
+| `18-sync-jira-done.mdc` | (Nonaktif sejak 26-10-2026) `#sync-jira-done` — hasil TC hanya di Jira |
 | `19-database-data-verification.mdc` | Cek/query DB via webhook (Zero-Exploration via `agent-db/schema-catalog.yaml`) |
 | `20-telegram-chatbot-guardrails.mdc` | Tuning/uji bot di IDE (bukan runtime bot) |
 | `21-log-debugger.mdc` | Cek log server / exception |
@@ -105,12 +105,12 @@ Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit 
 | `10-anti-hallucination.mdc` | **Always** — larangan mengarang menu/API/status |
 | `11-cross-menu-navigation.mdc` | **Requestable** — trace alur lintas modul |
 | `12-jira-card-format.mdc` | **Requestable** — format card Jira ETM |
-| `13-test-case-format.mdc` | **Requestable** — arsip format `TC-*.md` (read-only sejak 22-10-2026); TC hanya di Jira |
+| `13-test-case-format.mdc` | **Requestable** — arsip format `TC-*.md` (read-only sejak 26-10-2026); TC hanya di Jira |
 | `14-playwright-e2e.mdc` | **Requestable** — eksekusi Playwright; aktifkan HANYA jika minta otomatisasi/run/debug |
 | `15-playwright-multi-repo.mdc` | **Requestable** — BUILD vs RUN; aktifkan bersama tugas Playwright |
-| `16-card-tc-queue.mdc` | **Requestable** — nonaktif (TC hanya di Jira sejak 22-10-2026); `test-queue.yaml` = arsip |
+| `16-card-tc-queue.mdc` | **Requestable** — nonaktif (TC hanya di Jira sejak 26-10-2026); `test-queue.yaml` = arsip |
 | `17-e2e-cross-menu-flow.mdc` | **Requestable** — E2E flow multi-menu; aktifkan HANYA untuk automate/run flow |
-| `18-sync-jira-done.mdc` | **Requestable** — nonaktif sejak 22-10-2026 (tidak ada lagi sync ke `last_execution`) |
+| `18-sync-jira-done.mdc` | **Requestable** — nonaktif sejak 26-10-2026 (tidak ada lagi sync ke `last_execution`) |
 | `19-database-data-verification.mdc` | **Requestable** — cek DB via webhook (Zero-Exploration; wajib pakai `agent-db/schema-catalog.yaml`) |
 | `20-telegram-chatbot-guardrails.mdc` | **Requestable** — referensi IDE/red-team bot Telegram (**bukan** runtime; runtime = 2 file hazel) |
 | `21-log-debugger.mdc` | **Requestable** — log server / exception |

@@ -44,6 +44,11 @@
     "tc:backfill-first-execution": "node tests/tools/tc-backfill-first-execution.mjs",
     "tc:jira-drift": "node tests/tools/tc-jira-drift.mjs",
     "tc:jira-sync": "node tests/tools/tc-jira-sync-apply.mjs",
+    "legacy:tc-pending": "npm run tc:pending",
+    "legacy:tc-jira-drift": "npm run tc:jira-drift",
+    "legacy:tc-jira-sync": "npm run tc:jira-sync",
+    "legacy:tc-coverage": "npm run tc:coverage",
+    "legacy:dashboard": "npm run dashboard",
     "agent:db": "node scripts/agent-db-query.mjs",
     "agent:log": "node scripts/agent-log-fetch.mjs",
     "postinstall": "playwright install chromium"

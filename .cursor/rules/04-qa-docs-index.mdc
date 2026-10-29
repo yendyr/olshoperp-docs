@@ -33,7 +33,7 @@ qa-docs/
     ├── knowledge-base.md     ← operator, support, ops
     ├── requirement.md        ← PM, QA, support
     ├── technical.md          ← developer
-    └── test-cases/           ← ARSIP read-only (TC hanya di Jira sejak 22-10-2026)
+    └── test-cases/           ← ARSIP read-only (TC hanya di Jira sejak 26-10-2026)
         ├── README.md
         └── TC-*.md
 ```

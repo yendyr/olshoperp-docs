@@ -17,7 +17,7 @@ aturan operasional testing sudah diringkas di sini. Detail ID field / template p
 
 Bahasa ke Yemima/tim: Indonesia sehari-hari, angka eksak, label UI persis di aplikasi.
 
-**Sejak 22 Okt 2026:** dokumentasi Test Case **hanya di Jira** (bukan file `TC-*.md` di repo).
+**Sejak 26 Okt 2026:** dokumentasi Test Case **hanya di Jira** (bukan file `TC-*.md` di repo).
 Jangan buat/update/renumber markdown TC untuk card baru.
 
 ---
@@ -53,12 +53,12 @@ Perintah “test card ini” = izin uji + catat hasil. Tidak perlu minta izin ul
 
 ## 3. Alur Test Case
 
-1. **TESTING PROGRESS dulu** (sebelum klik uji) — ambil id transisi via `GET .../transitions` (contoh id di reference; jangan hafal buta).
+1. **TESTING PROGRESS dulu** (sebelum klik uji) — pakai id/nama status di [reference.md](reference.md) §A (peta 28-10-2026). `GET .../transitions` **hanya jika** panggilan transisi gagal.
 2. Pastikan **data uji** (§5). Tidak ada data → **STOP**, bilang ke prompter; jangan ganti data diam-diam. TC dikembalikan ke **Not Execute** (lihat “Blocked” jenis (a) di langkah 6).
 3. Uji sesuai **Steps + Expected** di description card (sumber kebenaran = Jira, bukan markdown repo).
-4. Isi **Actual Result** (company, akun, data + URL, hasil per Expected, angka eksak) → baru **Test Result** (Passed / Failed) → komentar bila perlu → **Done**.
+4. Isi **Actual Result** (company, akun, data + URL, hasil per Expected, angka eksak) → baru **Test Result** (**Passed** / **Failed** saja) → komentar bila perlu → **Done**. Jangan isi Test Result `Blocked`.
 5. **Test Case tidak punya status RE-OPEN** — tetap Done; hasil ada di Test Result.
-6. **Failed** → wajib card **Error** baru (bukan comment singkat saja):
+6. **Failed** → langsung (tanpa tanya lagi): card **Error** baru + Done TC:
    - Relates ke **TC ini** + ke **origin** (Improvement/CR/Story yang dilink).
    - Assignee Error = **assignee origin** (bukan tester).
    - Origin Improvement/CR → **RE-OPEN tanpa clone**, lalu Error baru di atas.
@@ -74,14 +74,14 @@ Site Jira: **hanya ETM** (`erpintegration.atlassian.net`). Jangan eduqat.
 
 ## 4. Alur non–Test Case (Error / Improvement / CR)
 
-1. Uji sesuai Expected di description. Bukti di **komentar Jira** (bukan field Actual/Test Result).
-2. **Lulus** → komentar bukti → transisi ke Done (lewat QA Review bila ada; cek transitions).
+1. Uji sesuai Expected di description. Bukti di **komentar Jira** — field Actual/Test Result **tidak tampil** di tipe card ini.
+2. **Lulus** → komentar bukti → transisi ke Done (lewat QA Review bila ada; id di reference §A; `GET transitions` hanya bila gagal).
 3. **Gagal** → jangan Done. Ikuti jalur:
    - **Error / Bug origin:** RE-OPEN origin → **Clone** origin → judul clone `RE-OPEN [Menu] - {desc}`. Copy Request ID / Menu / Story Points / labels. Assignee clone = assignee origin. Retest berikutnya = **clone**, bukan origin yang sudah RE-OPEN.
-   - **Improvement / Change Requirement / Story / Task:** RE-OPEN origin **tanpa** clone → buat card **Error baru** (format lengkap: Summary, Environment, Precondition, Steps, Expected, Actual, Additional Context) → Relates ke origin (+ TC penemu jika ada) → assignee = assignee origin.
+   - **Improvement / Change Requirement / Story / Task:** RE-OPEN origin **tanpa** clone → buat card **Error baru** (format lengkap: Summary, Environment, Precondition, Steps, Expected, Actual di *description*, Additional Context) → Relates ke origin (+ TC penemu jika ada) → assignee = assignee origin.
 4. Expected bersyarat data → uji **kedua** kondisi (ada / tidak ada) dan sebut data per kondisi.
 5. Scope E2E / cross-menu sangat panjang & ragu: tanya Yemima dulu sebelum automasi RE-OPEN massal.
-6. Selalu `GET .../transitions` sebelum RE-OPEN/clone — nama/id bisa berubah.
+6. Pakai peta status di reference §A; `GET .../transitions` **hanya bila** call gagal.
 
 ---
 
@@ -111,7 +111,7 @@ Setelah run di **staging**, data yang dibuat untuk uji **tidak dihapus** (kecual
 1. Kode / SKU / nama: prefix **`QA-AUTO-`** bila memungkinkan (contoh `QA-AUTO-VPDEC-266983`).
 2. **Name** atau **Description** wajib jejak: key card + tanggal (contoh `QA-AUTO ETM-16502 langkah 3, 15-10-2026`). Form tanpa Description → pakai Name. Tanpa Jira → teks skenario + tanggal (§ di atas).
 3. Draft otomatis saat buka create PO/SO juga dibiarkan, beri jejak yang sama bila bisa diedit.
-4. Actual Result Jira + Telegram menyebut **kode data** yang dipakai/dibuat (+ skenario bila tanpa card).
+4. **Actual Result** (card TC) **atau komentar** (non-TC) + Telegram menyebut **kode data** yang dipakai/dibuat (+ skenario bila tanpa card).
 5. Tyas/Merdian tetap **no create** (§6) — aturan simpan ini terutama untuk staging.
 
 ---

@@ -108,9 +108,9 @@ Dua alat sah dipakai di workspace ini, **dengan pembagian tugas yang mengikat**.
 **Aturan turunan (wajib):**
 
 1. **Selector dari source Vue, bukan DOM scraping.** MCP boleh dipakai untuk *memastikan* sebuah selector benar, tapi selector yang masuk ke registry/helper harus punya dasar di source (`olshoperp-frontend`). Ini fondasi stabilitas jangka panjang — DOM scraping menghasilkan selector yang pecah tiap re-render.
-2. **Status "passed" hanya sah dari CLI.** Verifikasi via MCP boleh dicatat sebagai temuan/observasi (`status: draft` + catatan), **tidak boleh** menjadikan TC `automated: true` atau `status: passed`. TC dianggap otomatis hanya jika punya `automated_spec` yang benar-benar ada dan pernah hijau via CLI.
+2. **Status "passed" hanya sah dari CLI + dicatat di Jira.** Verifikasi via MCP = observasi saja, **bukan** bukti lulus. Jangan tulis `automated: true` / `last_execution` ke file TC arsip. Hasil resmi: card TC → Actual Result + Test Result; non-TC → komentar.
 3. **Flow cross-menu wajib CLI.** Menjalankan chain via MCP mem-bypass preflight gate (rule 17 §0), `global-setup`/storageState, reporter summary, dan history — hasilnya tidak reproducible dan tidak tercatat. Dilarang.
-4. **TC hasil crawling MCP wajib berformat rule 13.** Gunakan frontmatter `tc_code`/`menu`/`steps`/`expected_result` dan penamaan `TC-{PREFIX}-DRAFT-{timestamp}` (rule 13 §2). Skema lain (`id:`, `menu_slug:`, `author: Playwright Web Crawler`, nama `TC-*-CRAWL-*`) membuat TC **invisible** bagi `tc:lint`, tidak bisa di-`recalls` oleh flow, dan berisiko jadi duplikat tak terdeteksi. Cek dengan `npm run tc:lint` setelah membuat TC.
+4. **TC baru = card Jira** (skill `olshoperp-testcase-authoring`). Jangan buat file `TC-*-DRAFT-*` / skema crawling markdown. File rule 13 = **arsip**. Spec wajib bertag (§ di bawah).
 5. **Temuan UX dari MCP wajib dipropagasi.** Kalau crawling menemukan UI berubah (tombol hilang, dialog baru, tombol disabled), update **helper + `ui-components.md` + TC origin** — jangan hanya ditulis di TC baru. Kalau tidak, spec existing diam-diam jadi stale.
 6. **Spec resmi WAJIB bertag.** Tag yang dikenali `npm test` (`--grep "@(TC|FLOW|ETM)-"`):
    - `@TC-*` — spec TC single-menu (traceability ke `qa-docs/.../test-cases/`)
@@ -341,7 +341,7 @@ npm run test:signoff -- "@TC-SYSPROD-003"
 ### Pelaporan
 - [ ] Status PASS/FAIL untuk TC yang diminta saja
 - [ ] Sebutkan jika expected result TC tidak cocok dengan test data aktual
-- [ ] Ringkas **Actual Result** dengan bahasa sederhana, jelas, dan langsung ke poin
+- [ ] Ringkas hasil uji dengan bahasa sederhana (card **TC**: field Actual Result; **non-TC**: komentar)
 - [ ] Hindari jargon teknis yang tidak perlu atau kalimat ambigu
 - [ ] Lampirkan perintah run yang dipakai
 

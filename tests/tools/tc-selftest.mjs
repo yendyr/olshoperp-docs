@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * TC Selftest — menguji GATE-nya, bukan dokumennya.
+ * TC Selftest — LEGACY: menguji GATE lint arsip file TC, bukan status Jira terkini.
  *
  * Kenapa ada: aturan yang hanya ditulis di rules bergantung pada kepatuhan agent.
  * Yang bisa dipercaya hanya aturan yang **ditolak mesin**. Tool ini membangun repo

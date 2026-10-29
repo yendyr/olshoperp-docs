@@ -104,7 +104,7 @@ Data **tidak dihapus** setelah uji (selaras skill card-testing).
 
 ## E. Batasan dokumen repo
 
-- **Jangan** create/edit `qa-docs/**/test-cases/TC-*.md` untuk SoT baru (kebijakan 22 Okt 2026).
+- **Jangan** create/edit `qa-docs/**/test-cases/TC-*.md` untuk SoT baru (kebijakan 26 Okt 2026).
 - File markdown TC lama boleh dibaca untuk konteks historis; SoT aktif = **Jira**.
 - Requirement/KB/technical tetap read-only kecuali alur Yemima.
 

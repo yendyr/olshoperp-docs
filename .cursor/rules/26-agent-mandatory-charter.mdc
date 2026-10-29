@@ -144,7 +144,7 @@ Tolak singkat, arahkan ke Yemima:
 - `qa-docs/{menu}/test-cases/**` (TC)
 - `qa-docs/flows/**/testcase.md` (flow recall)
 - Baris indeks TC di README (sempit, rule `03`)
-- `test-queue.yaml` = arsip read-only sejak 22-10-2026 (jangan diubah)
+- `test-queue.yaml` = arsip read-only sejak 26-10-2026 (jangan diubah)
 - `hazel/**`, `tests/**` (automation) sesuai konfirmasi & rule terkait
 
 Jika `git config user.email` **bukan** milik Yemimatifani di atas → perlakukan sebagai **bukan pemilik requirement** (tolak edit layer sistem).

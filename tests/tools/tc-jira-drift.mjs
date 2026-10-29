@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
- * Deteksi drift: TC di repo belum tercatat eksekusi tapi punya rujukan card Jira.
+ * LEGACY / ARSIP — drift file TC vs rujukan Jira di frontmatter.
+ * Bukan status TC terkini (hasil hanya di Jira sejak 26-10-2026).
+ * Alias: npm run legacy:tc-jira-drift
+ * #sync-jira-done / tc:jira-sync --apply = NONAKTIF (jangan tulis last_execution).
  *
- * Pakai:
+ * Pakai (arsip saja):
  *   npm run tc:jira-drift
  *   npm run tc:jira-drift -- ETM-15635 ETM-15485
  *   npm run tc:jira-drift -- --menu accounting-cash-bank-reconcile
- *
- * Output = daftar card + file TC untuk di-fetch Jira lalu `tc:jira-sync --apply`.
- * Agent #sync-jira-done: fetch Jira MCP → build payload → tc:jira-sync --apply.
  */
 import fs from 'fs';
 import path from 'path';
@@ -66,18 +66,22 @@ for (const file of walkTcFiles(qaDocs)) {
   }
 }
 
+console.log(
+  '⚠️  ARSIP — tc:jira-drift membandingkan file TC vs frontmatter. Bukan status terkini. Alias: legacy:tc-jira-drift\n',
+);
+
 if (!byKey.size) {
-  console.log('tc:jira-drift — tidak ada TC pending dengan rujukan card Jira' + (keysArg.length ? ` untuk ${keysArg.join(', ')}` : ''));
+  console.log('tc:jira-drift (arsip) — tidak ada file pending dengan rujukan card' + (keysArg.length ? ` untuk ${keysArg.join(', ')}` : ''));
   process.exit(0);
 }
 
-console.log(`tc:jira-drift — ${byKey.size} card Jira perlu dicek / sync\n`);
+console.log(`tc:jira-drift (arsip) — ${byKey.size} card di frontmatter file\n`);
 for (const [key, { rows }] of [...byKey.entries()].sort()) {
-  console.log(`${key} (${rows.length} TC)`);
+  console.log(`${key} (${rows.length} TC file)`);
   for (const r of rows.slice(0, 5)) {
     console.log(`  · ${r.tcCode} — ${r.title?.slice(0, 55) ?? ''}`);
     console.log(`    ${r.file}`);
   }
   if (rows.length > 5) console.log(`  … ${rows.length - 5} file lagi`);
-  console.log(`  → fetch Jira Done + Test Result, lalu: npm run tc:jira-sync -- --apply payload.json\n`);
+  console.log(`  → cek status di Jira saja; JANGAN tc:jira-sync --apply (nonaktif)\n`);
 }

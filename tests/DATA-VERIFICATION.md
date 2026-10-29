@@ -124,7 +124,8 @@ Saat L3 dipakai, laporkan ringkas:
 3. Temuan faktual (id, status, company_id, deleted_at bila relevan).
 4. Label jelas: **Catatan DB (supporting)** — bukan “test passed”.
 
-Untuk card Jira: masukkan ke **Additional Context** / Actual Result investigasi;
+Untuk card Jira: masukkan ke **komentar** / Additional Context (description).
+**Actual Result** (`customfield_10203`) hanya di card **Test Case**. Non-TC tidak punya field itu.
 Expected Result tetap dari `requirement.md` (rule `12`).
 
 ---

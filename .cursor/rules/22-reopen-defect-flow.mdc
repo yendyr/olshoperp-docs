@@ -36,7 +36,7 @@ Scope selalu tunggal (1 acceptance criteria) — **tidak** melahirkan Test Case 
 Tipe ini **wajib** melahirkan Test Case card dulu (di Jira, skill `olshoperp-testcase-authoring`; lihat `16-card-tc-queue.mdc`) — tidak diverifikasi langsung tanpa TC.
 
 1. Transisi status card origin → **Re-OPEN** — **TANPA clone**.
-2. Buat card **Error/Bug baru** untuk defect yang ditemukan, format penuh sesuai `12-jira-card-format.mdc` Tipe 1 (Summary, Environment, Precondition Data, Steps to Reproduce, Expected Result, Actual Result, Additional Context lengkap — bukan comment singkat).
+2. Buat card **Error/Bug baru** untuk defect yang ditemukan, format penuh sesuai `12-jira-card-format.mdc` Tipe 1 (Summary, Environment, Precondition Data, Steps to Reproduce, Expected Result, **Actual Result** = bagian di *description* — bukan field `customfield_10203`, Additional Context lengkap — bukan comment singkat).
 3. Card Bug baru **relates** ke: (a) card origin Improvement/Change Requirement/Story/Task, dan (b) card Test Case yang menemukan defect (kalau defect ditemukan lewat TC — lihat § Test Case di bawah).
 4. **Assignee card Bug baru = assignee card origin** — jangan assignee/tester TC.
 
@@ -62,7 +62,7 @@ Test Case **tidak pernah** ditransisikan ke Re-OPEN. Status akhirnya tetap **Don
 - Jangan clone card Improvement/Change Requirement/Story/Task — clone hanya untuk Jalur 1.
 - Jangan buat card Bug baru tanpa relates ke origin + (kalau relevan) TC penemunya.
 - Jangan set assignee default/acak — selalu trace assignee dari card origin.
-- Jangan tulis Actual Result / description card Bug baru dari asumsi — dasarnya wajib bukti verifikasi nyata (live check atau catatan QA lead).
+- Jangan tulis bagian Actual Result (description) / description card Bug baru dari asumsi — dasarnya wajib bukti verifikasi nyata (live check atau catatan QA lead). Hasil uji pada card **non-TC** yang sedang diuji (bukan card Error baru): tulis di **komentar**, bukan field Actual Result.
 - Jangan live-check otomatis untuk scope cross-menu/E2E panjang — lempar ke overview manual dulu.
 
 ## Prasyarat teknis — WAJIB diverifikasi sebelum automasi dijalankan penuh
@@ -77,9 +77,9 @@ Test Case **tidak pernah** ditransisikan ke Re-OPEN. Status akhirnya tetap **Don
 ## Relasi rule lain
 
 - `12-jira-card-format.mdc` — format & custom field wajib tiap tipe card (dipakai saat create card Bug baru / clone).
-- `16-card-tc-queue.mdc` — TC hanya di Jira sejak 22-10-2026 (antrian `test-queue.yaml` sudah tidak dipakai); kewajiban TC untuk Improvement/Change Requirement/Story/Task.
-- `18-sync-jira-done.mdc` — dinonaktifkan sejak 22-10-2026 (hasil TC hanya di Jira, tidak disalin ke file TC).
-- `13-test-case-format.mdc` — format file TC lama (arsip read-only sejak 22-10-2026).
+- `16-card-tc-queue.mdc` — TC hanya di Jira sejak 26-10-2026 (antrian `test-queue.yaml` sudah tidak dipakai); kewajiban TC untuk Improvement/Change Requirement/Story/Task.
+- `18-sync-jira-done.mdc` — dinonaktifkan sejak 26-10-2026 (hasil TC hanya di Jira, tidak disalin ke file TC).
+- `13-test-case-format.mdc` — format file TC lama (arsip read-only sejak 26-10-2026).
 - `olshoperp/.cursor/rules/17-jira-testcase-status-transition.mdc` — urutan isi Actual Result → Test Result → Done.
 - `23-tc-screening-notify.mdc` — jalan **sebelum** rule ini, notify-only ke tim QA saat Test Case Done; rule ini baru relevan setelah Test Result = Failed final & diverifikasi manusia.
 - `24-plain-language-team-comms.mdc` — gaya bahasa wajib description card Bug baru & pesan Telegram.

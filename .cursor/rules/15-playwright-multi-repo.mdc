@@ -35,16 +35,16 @@ Semua poin berikut **harus terpenuhi** sebelum agent menetapkan mode RUN untuk T
 
 | # | Kriteria | Cek di |
 |---|----------|--------|
-| 1 | TC ada (arsip file `TC-*.md` atau card TC di Jira) — file baru tidak dibuat sejak 22-10-2026 | `qa-docs/{slug}/test-cases/` / Jira |
-| 2 | `automated: true` | frontmatter TC |
-| 3 | `automated_spec` mengarah ke file spec yang **ada** | path di frontmatter TC |
-| 4 | Spec berisi tag `@TC-{CODE}` yang **match** `tc_code` | file `automated_spec` |
-| 5 | Registry menu ada | `tests/pom-registry/{menu}.yaml` (atau path di registry) |
-| 6 | POM helper ada | `tests/helpers/{menu}.ts` (atau `pom_helper` di registry) |
+| 1 | Card **Test Case** ada di Jira (atau arsip file `TC-*.md` untuk run historis) | Jira ETM / `qa-docs/{slug}/test-cases/` (arsip) |
+| 2 | Spec ada dan berisi tag `@ETM-*` atau `@TC-*` yang menunjuk TC yang diuji | `tests/specs/**` |
+| 3 | Registry menu ada | `tests/pom-registry/{menu}.yaml` |
+| 4 | POM helper ada | `tests/helpers/{menu}.ts` (atau `pom_helper` di registry) |
+
+> **Arsip:** frontmatter `automated: true` / `automated_spec` / match `tc_code` di file `TC-*.md` = kriteria lama. Jangan di-update; untuk TC baru cukup tag spec + Jira + registry + POM.
 
 Jika salah satu kosong → mode **BUILD** (boleh baca repo app setelah urutan lookup § bawah).
 
-Contoh RUN: user minta `npm run test:tc -- "@TC-ARCP-001"` dan keenam kriteria di atas OK → baca TC + requirement + registry + helper + spec di **olshoperp-docs** saja, lalu jalankan.
+Contoh RUN: user minta `npm run test:tc -- "@ETM-15214"` (atau `@TC-…`) dan kriteria di atas OK → baca card/requirement + registry + helper + spec di **olshoperp-docs** saja, lalu jalankan.
 
 ---
 
@@ -222,7 +222,7 @@ Temuan kode/run ≠ requirement — label **Catatan automation**. Actual ≠ doc
 
 ## Jira card — docs tetap referensi utama
 
-Expected / AS-IS bisnis dari `requirement.md` — bukan dari kode app. Temuan Playwright → Actual Result / Additional Context. Lihat `12-jira-card-format.mdc`.
+Expected / AS-IS bisnis dari `requirement.md` — bukan dari kode app. Temuan Playwright → **komentar** / Additional Context (field **Actual Result** hanya di card Test Case). Lihat `12-jira-card-format.mdc`.
 
 ---
 

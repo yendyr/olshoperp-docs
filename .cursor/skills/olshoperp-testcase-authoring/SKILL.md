@@ -16,7 +16,7 @@ Menjalankan test / isi Actual / Telegram → skill **`olshoperp-card-testing`**.
 
 Bahasa: Indonesia sehari-hari, non-teknis; label tombol/field = teks di aplikasi.
 
-**Sejak 22 Okt 2026:** dokumentasi TC **hanya di Jira**. Jangan buat/update/renumber `TC-*.md`.
+**Sejak 26 Okt 2026:** dokumentasi TC **hanya di Jira**. Jangan buat/update/renumber `TC-*.md`.
 
 ---
 

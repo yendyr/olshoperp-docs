@@ -15,10 +15,44 @@ Akun uji khusus: `tests/TEST-ACCOUNTS.md` (di repo docs; tidak dimirror ke Help 
 - Failed TC / RE-OPEN detail operasional: **SKILL.md §3–§4** (ringkas dari rule reopen).
 - Auth: `JIRA_EMAIL` + `JIRA_API_TOKEN` (basic auth; `tools/jira.sh` pakai curl `-K -`).
 - Issue type id: Error `10033`, Test Case `10051`, Improvement `10088`, Change Requirement `10048`.
-- Field: Test Result `customfield_10202` `{"value":"Passed|Failed|Blocked"}`, Actual Result `customfield_10203` (ADF), Menu `customfield_10429`, Request ID `customfield_10495`, Story Points `customfield_10043`.
-- **Transisi:** selalu `GET issue/{key}/transitions` dulu. Angka di bawah = **contoh historis**, bisa berubah:
-  - Test Case → TESTING PROGRESS ≈ `4`, Done ≈ `2`
-  - Non-TC → QA Review → Done ≈ `291`, RE-OPEN ≈ `10` / `71`, TESTING PROGRESS ≈ `6`
+- Field (**Test Case saja**): Test Result `customfield_10202` `{"value":"Passed|Failed"}` — **jangan** pakai `Blocked` sebagai hasil final; Actual Result `customfield_10203` (ADF). Non-TC: hasil di **komentar** (field Actual tidak tampil).
+- Menu `customfield_10429`, Request ID `customfield_10495`, Story Points `customfield_10043`.
+- **Transisi:** pakai **peta status di bawah langsung** (dipetakan 28-10-2026 dari card ETM nyata). `GET issue/{key}/transitions` **hanya jika** call gagal. **Id beda per tipe** — jangan campur TC vs non-TC.
+
+### Peta status ETM (28-10-2026)
+
+**Test Case / Subtask TC** — bebas pindah; **tidak ada RE-OPEN**:
+
+| Ke status | Transition id (contoh) |
+|-----------|------------------------|
+| TESTING PROGRESS | `4` |
+| Done | `2` |
+| BLOCKED (status board, bukan Test Result) | `71` |
+| Re-Test | `61` |
+| Not Execute | `11` |
+| Cancelled | `3` |
+
+**Error / Improvement / CR / Story / Task** (global; sebagian CR/Story/Task diasumsikan sama Error/Improvement):
+
+| Dari → ke | Transition id |
+|-----------|---------------|
+| → TESTING PROGRESS | `6` |
+| → RE-OPEN | `10` |
+| → Cancelled | `12` |
+| → PENDING DISCUSSION | `351` |
+| → BLOCKED | `361` |
+| QA Review → Done | `291` |
+| QA Review → Closed | `5` |
+| QA Review → Rejected | `311` |
+| OTW DEV → QA Review | `341` |
+| In Progress → QA Review | `171` |
+| To Do → In Progress | `11` |
+| RE-OPEN → Done | `2` |
+| TESTING PROGRESS → Done | `7` |
+| BLOCKED → QA Review | `391` |
+
+**Tidak ada** Done langsung dari To Do / In Progress / OTW DEV.
+
 - Link: `Relates`; clone: `Cloners` (inward = clone, outward = origin).
 - Lampiran file di Jira ETM sering nonaktif → bukti = teks komentar + data bertanda card di app.
 - Jeda ~2,5 dtk antar create/update/link beruntun.

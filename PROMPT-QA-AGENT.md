@@ -31,7 +31,7 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
    `automated: true`, dan flow cross-menu DILARANG dijalankan lewat MCP.
 2. Spec resmi WAJIB bertag `@TC-*` / `@FLOW-*` / `@ETM-*`. Tanpa tag, spec tidak akan
    pernah jalan di `npm test`. Script sekali pakai justru jangan diberi tag.
-3. TC hanya di Jira sejak 22-10-2026 (skill `olshoperp-testcase-authoring`); jangan buat/ubah
+3. TC hanya di Jira sejak 26-10-2026 (skill `olshoperp-testcase-authoring`); jangan buat/ubah
    file `TC-*.md` — itu arsip read-only (rule 13 = format arsip).
 4. `test_type` WAJIB salah satu: happy | negative | edge | permission | regression |
    cross-menu. Menu transaksional tidak dianggap tercakup kalau isinya happy semua.
@@ -41,13 +41,14 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
    diubah. Perbaikan di sana dilaporkan sebagai temuan, bukan dikerjakan.
 7. Kalau `requirement.md` menu masih `draft` atau tidak ada: JANGAN mengarang expected
    result. Lempar balik ke yang meminta.
-8. Hasil TC dicatat di card TC Jira (Actual Result + Test Result). Tidak ada sync ke file
-   TC (`#sync-jira-done` nonaktif sejak 22-10-2026, rule 18).
+8. Hasil TC dicatat di card TC Jira (Actual Result + Test Result). Non-TC (Error /
+   Improvement / CR / Story / Task): hasil di **komentar** Jira (field Actual tidak tampil).
+   Tidak ada sync ke file TC (`#sync-jira-done` nonaktif, rule 18).
 9. Cek DB via webhook (Tyas/Staging shared, Merdian terpisah) = supporting saja —
    BUKAN bukti TC Passed. Baca `tests/DATA-VERIFICATION.md` jika diminta cek/query DB.
 10. Testing card ETM-xxxxx: baca dulu skill `.cursor/skills/olshoperp-card-testing/SKILL.md`
     (buku lengkap: UI, data, DB, Jira, Telegram). JANGAN `tests/scripts/`. TC baru = Jira saja
-    (bukan file markdown TC), sejak 22 Okt 2026.
+    (bukan file markdown TC), sejak 26 Okt 2026.
 
 PERINTAH GATE — jalankan sesuai konteks, jangan dilewati.
 (LEGACY: skrip `tc:*` + `dashboard` di bawah membaca file TC arsip — hasilnya bukan status TC terkini,
@@ -110,24 +111,11 @@ playwright-report/flow-summary.md (dokumen yang tercipta per phase + status).
 Data selalu fresh tiap run; jangan bergantung dokumen run sebelumnya.
 ```
 
-**Menjalankan renumber:**
+**Renumber / sync hasil ke file TC — NONAKTIF**
 
-```
-Tugas: jalankan #renumber-tc.
-Wajib berurutan: (1) `npm run tc:lint` harus 0 error, (2) `npm run tc:refs` untuk memetakan
-rujukan tiap kode PENDING, (3) renumber + UPDATE SEMUA RUJUKAN dari peta itu
-(rule 13 §9 langkah 8), (4) `npm run tc:lint` lagi harus tetap 0 error.
-```
-
-**Sync hasil Jira Done ke file TC (drift / tim lupa kabari agent):**
-
-```
-#sync-jira-done ETM-15635 ETM-15485
-#syncjiradone ETM-15635
-```
-
-Ikuti rule `18-sync-jira-done.mdc`: fetch Jira (Done + Test Result + Actual Result) →
-`npm run tc:jira-sync -- --apply payload.json` → `npm run tc:lint`.
+`#renumber-tc` dan `#sync-jira-done` **nonaktif**. Hasil TC hanya di Jira (Actual Result +
+Test Result di card TC). File `TC-*.md` = arsip read-only. Skrip `tc:jira-sync` /
+`tc:refs` = legacy baca arsip — jangan dipakai untuk TC baru.
 
 **Cek / query data di DB (staging / tyas / merdian):**
 

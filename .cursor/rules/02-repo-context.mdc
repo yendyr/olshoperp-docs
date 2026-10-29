@@ -23,7 +23,7 @@ Jangan grep/baca kode app “untuk konteks” pada pertanyaan requirement murni.
 - **Tidak ada** source code backend/frontend di repo ini.
 - Field `code_globs` di manifest hanya referensi ke repo aplikasi terpisah — jangan klaim bisa baca/mengubah kode dari sini.
 - Folder `qa-docs/` **read-only** untuk agent — lihat `03-qa-docs-immutable.mdc`.
-- `test-queue.yaml` di root repo = arsip read-only (antrian uji card sudah di Jira sejak 22-10-2026; `16-card-tc-queue.mdc`).
+- `test-queue.yaml` di root repo = arsip read-only (antrian uji card sudah di Jira sejak 26-10-2026; `16-card-tc-queue.mdc`).
 
 ## Aplikasi live (staging)
 

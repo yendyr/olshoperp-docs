@@ -11,7 +11,7 @@ Gunakan rule ini setiap kali user meminta membuat Jira card, bug report, improve
 
 **Site Jira:** hanya project **ETM** di `erpintegration.atlassian.net` (`cloudId` `44cc9820-3372-4c12-884c-698b1397173c`). Jangan org lain (`eduqat.atlassian.net`). MCP Rovo wajib `cloudId` ETM di setiap call.
 
-**Sumber AS-IS & Expected:** `olshoperp-docs` (`qa-docs/{slug}/requirement.md`) — **bukan** dari kode `olshoperp` / `olshoperp-frontend`, meski investigasi Playwright memakai repo app. Temuan automation → Actual Result / Additional Context saja (`15-playwright-multi-repo.mdc`).
+**Sumber AS-IS & Expected:** `olshoperp-docs` (`qa-docs/{slug}/requirement.md`) — **bukan** dari kode `olshoperp` / `olshoperp-frontend`, meski investigasi Playwright memakai repo app. Temuan automation → **komentar** / Additional Context (field **Actual Result** hanya di card Test Case) — lihat `15-playwright-multi-repo.mdc`.
 
 ---
 
@@ -19,7 +19,7 @@ Gunakan rule ini setiap kali user meminta membuat Jira card, bug report, improve
 > **Status card Jira BUKAN hasil test.**
 > Card digeser ke *Done* oleh alur kerja tim — bisa "done passed", bisa "done failed",
 > bisa juga ditutup karena alasan lain. Itu status **pekerjaan**, bukan status
-> **pengujian**. Sejak 22-10-2026 hasil pengujian hidup di **card Test Case Jira**
+> **pengujian**. Sejak 26-10-2026 hasil pengujian hidup di **card Test Case Jira**
 > (Actual Result + Test Result), bukan di file TC / `last_execution` (arsip).
 >
 > Konsekuensinya, dua-duanya dicatat terpisah:
@@ -35,6 +35,13 @@ Gunakan rule ini setiap kali user meminta membuat Jira card, bug report, improve
 > saja; mengirimkannya ke Jira tidak, sampai diminta. Yang tidak pernah boleh: menggeser
 > card ke *Done* atas **inisiatif sendiri** karena merasa pengujian sudah beres —
 > penilaian selesai/tidak ada pada orang yang mengerjakan.
+>
+> **Pengecualian (keputusan 28-10-2026):** saat user meminta **menguji** card di sesi itu,
+> alur **Failed** dijalankan langsung tanpa konfirmasi tambahan: Test Result Failed + Done
+> pada TC → card **Error** baru (Relates TC + origin) → origin Improvement/CR/Story/Task
+> **RE-OPEN tanpa clone** (lihat rule `22` / skill `olshoperp-card-testing`). Transisi status
+> pengujian TC (TESTING PROGRESS → isi field → Done) juga langsung. Larangan “geser ke Done
+> atas inisiatif sendiri” tetap berlaku untuk card **non-TC** yang tidak sedang diuji.
 
 ---
 
@@ -145,6 +152,7 @@ Contoh anti-pola yang **dilarang**:
 
 **Actual Result**
 [apa yang benar-benar terjadi — error message verbatim, partial/full failure, dll]
+*(Bagian di **description** card Error/Bug — **bukan** custom field `customfield_10203`. Field Actual Result Jira hanya ada di issue type Test Case.)*
 
 ---
 
@@ -422,17 +430,19 @@ Issue type → lihat § Proyek ETM — tipe issue & relasi.
 | **Actual Result** *(Post-Test)* | `customfield_10203` | Doc / ADF / Text | — | **Wajib** saat Done | — | — |
 | **Test Result** *(Post-Test)* | `customfield_10202` | Object (`{"value": "Passed"}`) | — | **Wajib** saat Done | — | — |
 
+**Non-TC** (Error / Improvement / Change Requirement / Story / Task): field Actual Result **tidak tampil** di card — hasil test ditulis di **komentar Jira**. Jangan mengisi / mengharapkan `customfield_10203` pada tipe itu.
+
 ---
 
 ## Urutan Transisi Status Card Test Case Jira (WAJIB)
 
-Khusus issue bertipe **`Test Case`**. Transisi tetap **hanya atas permintaan user di sesi itu** (lihat WARNING di atas). Twin di `olshoperp/.cursor/rules/17-jira-testcase-status-transition.mdc` — ubah di satu tempat → sync keduanya.
+Khusus issue bertipe **`Test Case`**. Twin di `olshoperp/.cursor/rules/17-jira-testcase-status-transition.mdc` — ubah di satu tempat → sync keduanya. Saat user minta uji card: jalankan urutan ini langsung (lihat pengecualian WARNING di atas).
 
 1. **Memulai Pengujian:** pindahkan status ke **`TESTING PROGRESS`**.
-2. **Saat Pengujian Selesai (Passed / Failed / Blocked)** — isi berurutan:
+2. **Saat Pengujian Selesai (Passed / Failed)** — isi berurutan:
    1. **`customfield_10203` (Actual Result)** — rincian bukti pengujian: nomor transaksi (SO/Inbound/FS), SKU, **company** (dari `execution_company`, mis. `FAT`), **user/login** yang dipakai, URL fixture, dan temuan aktual.
-   2. **`customfield_10202` (Test Result)** — `{"value": "Passed"}`, `{"value": "Failed"}`, atau `{"value": "Blocked"}`. Jangan diisi sebelum Actual Result (validasi workflow bisa gagal).
-   3. Tambahkan komentar eksekusi di Jira yang merangkum hasil verifikasi.
+   2. **`customfield_10202` (Test Result)** — `{"value": "Passed"}` atau `{"value": "Failed"}`. **Jangan** pakai nilai `Blocked` di field ini (dropdown Jira boleh tetap ada; kebijakan 28-10-2026: Blocked jenis (a) = kembali **Not Execute** tanpa Test Result; jenis (b) = perlakukan sebagai **Failed** — lihat rule `22`).
+   3. Tambahkan komentar eksekusi di Jira yang merangkum hasil verifikasi (opsional, pelengkap field).
 3. **Penyelesaian:** setelah kedua field terisi, baru pindahkan status ke **`Done`**.
 4. **Larangan:** dilarang menggeser Test Case ke `Done` sebelum Actual Result dan Test Result terisi.
 

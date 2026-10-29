@@ -1,7 +1,7 @@
 ---
 name: menu-tc-automate
 description: >-
-  Inventory fitur menu OlshopERP, tulis skenario+TC di qa-docs, buat helper/spec
+  Inventory fitur menu OlshopERP, buat TC di Jira (skill authoring), buat helper/spec
   Playwright, jalankan di staging (lumicharmsid). Pakai saat user sebut nama
   menu saja (mis. "Asset Category", "Asset List"), atau minta buat TC / automate
   menu master/transaksi QA.
@@ -21,7 +21,7 @@ atau:
 menu: {Nama Menu}
 ```
 
-Artinya: **inventory fitur → tulis skenario+TC → automate → run → laporkan PASS/FAIL**. Jangan minta ulang perintah panjang.
+Artinya: **inventory fitur → buat TC di Jira → automate → run → laporkan PASS/FAIL di Jira**. Jangan minta ulang perintah panjang.
 
 ## Defaults
 
@@ -41,21 +41,17 @@ Artinya: **inventory fitur → tulis skenario+TC → automate → run → lapork
 2. **Inventory fitur** dari FE (`Datalist.vue` + `Form.vue`) + BE (Controller/Request/Entity):
    - Datalist: Create, search/filter, kolom, bulk delete, show deleted, row edit
    - Form: field wajib/opsional, dropdown, switch, Save All / Save & Next, Audit Log, status flow
-3. **Tulis TC** — sejak 22-10-2026 TC hanya di **Jira** (skill `olshoperp-testcase-authoring`), jangan buat file `TC-*.md`. Pola penamaan/isi di bawah = referensi arsip:
-   - Satu TC = satu aksi utama (VIEW / CREATE / UPDATE / SEARCH / DELETE / …)
-   - Prefix kode: singkat dari menu (contoh Asset Category → `TC-ASC-xxx`)
-   - Ikuti pola frontmatter Tax (`TC-TAX-001.md`)
-   - Update `test-cases/README.md` + ringkas `knowledge-base.md` jika masih pending
+3. **Buat TC di Jira** — skill `olshoperp-testcase-authoring` (bukan file `TC-*.md`). Satu card = satu aksi utama (VIEW / CREATE / UPDATE / SEARCH / DELETE / …) + `test_type` sesuai skill. Jangan update `test-cases/README.md` / `knowledge-base.md` untuk TC baru.
 4. **Mapping step → POM** (tabel) sebelum coding — rules `14-playwright-e2e.mdc`.
 5. **Automate**:
    - `tests/pom-registry/{menu}.yaml`
    - `tests/helpers/{menu}.ts` (POM)
-   - `tests/specs/{menu}/{menu}-crud.spec.ts` (serial; tag `[@TC-…]`)
+   - `tests/specs/{menu}/{menu}-crud.spec.ts` (serial; tag `@ETM-xxxxx` atau `@TC-…` selaras key/kode di Jira)
 6. **Preflight sekali** lalu **run scoped** (bukan full suite):
    ```powershell
    npx playwright test tests/specs/{menu}/{menu}-crud.spec.ts
    ```
-7. **Lapor** PASS/FAIL per TC + WH/1H jika ada; update `test_result` di file TC.
+7. **Lapor** PASS/FAIL di **Jira**: card TC → Actual Result + Test Result → Done (skill `olshoperp-card-testing`). Jangan tulis `test_result` / `last_execution` ke file TC arsip.
 8. **Jangan commit** kecuali user minta.
 
 ## Cakupan TC (default master CRUD)

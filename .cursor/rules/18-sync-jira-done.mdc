@@ -1,13 +1,13 @@
 ---
 description: >-
-  (Nonaktif sejak 22-10-2026) Trigger #sync-jira-done / #syncjiradone. Hasil TC hanya
+  (Nonaktif sejak 26-10-2026) Trigger #sync-jira-done / #syncjiradone. Hasil TC hanya
   di Jira — tidak disalin ke file TC.
 alwaysApply: false
 ---
 
 # Sync Jira Done → TC Execution (NONAKTIF)
 
-**TC hanya di Jira sejak 22-10-2026.** File `TC-*.md` lama = **arsip read-only** — jangan dibuat/diubah.
+**TC hanya di Jira sejak 26-10-2026.** File `TC-*.md` lama = **arsip read-only** — jangan dibuat/diubah.
 
 Trigger `#sync-jira-done` / `#syncjiradone` **tidak dipakai lagi**: agent **tidak** menulis
 `last_execution` / `first_execution` ke file TC dan tidak menjalankan `npm run tc:jira-sync -- --apply`.

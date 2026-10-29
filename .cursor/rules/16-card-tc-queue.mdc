@@ -1,13 +1,13 @@
 ---
 description: >-
-  (Nonaktif sejak 22-10-2026) Antrian test-queue.yaml / #card-tc. TC hanya di Jira.
+  (Nonaktif sejak 26-10-2026) Antrian test-queue.yaml / #card-tc. TC hanya di Jira.
   Rule ini tinggal catatan arsip + site Jira ETM.
 alwaysApply: false
 ---
 
 # Card Jira → Test Queue (NONAKTIF)
 
-**TC hanya di Jira sejak 22-10-2026.** File `TC-*.md` lama = **arsip read-only** — jangan dibuat/diubah.
+**TC hanya di Jira sejak 26-10-2026.** File `TC-*.md` lama = **arsip read-only** — jangan dibuat/diubah.
 `test-queue.yaml` di root repo juga **arsip read-only** (terakhir disinkron 2026-08-14 / diubah 18-10-2026) — jangan create/update/hapus.
 Trigger `#card-tc` **tidak dipakai lagi**; jangan menulis antrian atau file TC dari card Jira.
 

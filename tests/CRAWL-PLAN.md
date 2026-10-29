@@ -2,7 +2,7 @@
 
 Rencana crawl/regresi yang bisa dipakai ulang, supaya run Playwright berikutnya tidak riset menu dari nol.
 
-> **Sejak 22-10-2026 TC hanya di Jira.** Jangan buat file `TC-*.md` baru, jangan update `README.md` test-cases,
+> **Sejak 26-10-2026 TC hanya di Jira.** Jangan buat file `TC-*.md` baru, jangan update `README.md` test-cases,
 > jangan isi `last_execution`. Rencana crawl baru ditulis sebagai card Test Case Jira (skill
 > `olshoperp-testcase-authoring`); isi badan di bawah tetap jadi acuan isinya. Bagian "Di mana file-nya" dan
 > "Frontmatter" = **format arsip** untuk membaca file lama.
