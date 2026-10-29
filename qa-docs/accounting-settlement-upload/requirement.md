@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.0
-last_updated: 2026-10-22
+version: 2.1
+last_updated: 2026-10-29
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -15,6 +15,7 @@ legacy_sources: []
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.1 | 2026-10-29 | QA - Yemima | **AS-IS deploy** [ETM-16060](https://erpintegration.atlassian.net/browse/ETM-16060) antrean In Queue (1 generate global + jeda 10 menit); **TO-BE** [ETM-16910](https://erpintegration.atlassian.net/browse/ETM-16910) / [ETM-16911](https://erpintegration.atlassian.net/browse/ETM-16911); guard SI kosong [ETM-16895](https://erpintegration.atlassian.net/browse/ETM-16895) Done; tooltip [ETM-16894](https://erpintegration.atlassian.net/browse/ETM-16894) |
 | 2.0 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763): OC/OD dari SO tidak di-rebawa di SI settlement ke-2+; fee file tidak menumpuk baris order |
 | 1.0 | 2026-06-23 | QA - Yemima | Konsolidasi requirement final (Juni 2026) + sinkronisasi AS-IS codebase backend & frontend |
 | 1.1 | 2026-06-23 | QA - Yemima | Klarifikasi PM: CSV by design, total penghasilan, gap analysis, flowchart mermaid, retry/reject UI |
@@ -44,7 +45,9 @@ legacy_sources: []
    **TO-BE ETM-16763:** OC/OD **dari SO** hanya sekali (di SI pertama yang sudah carry). SI dari settlement / follow-up **tidak** me-rebawa identitas OC/OD SO. Fee dari **file** (mapping / `OC:`/`OD:`) **tidak menumpuk** baris order yang sudah di SI; OC/OD dari order **tidak editable** di jalur settlement.
 3. **Receive (AR)** — **1 dokumen per batch/store**, di-generate saat user **Approve Settlement**.
 
-Upload sukses (validasi lolos) → SI & Outbound + jurnal keduanya auto-approved. AR menunggu approval manual user.
+**Antrean (AS-IS deploy · ETM-16060):** setelah file masuk sistem, generate SI/Outbound **tidak** langsung paralel. Hanya **1 batch** first-stage (generate SI/OB + jurnal upload) di **seluruh company**; file lain menunggu **In Queue**; setelah batch aktif selesai → jeda **±10 menit** baru file berikutnya (acuan Skip Wave / ETM-16582). **Approve AR tetap manual** di luar antrean.
+
+**Validasi vs giliran (keputusan QA 29 Okt · ETM-16910):** validasi isi file dilakukan saat file **mendapat giliran** (desain yang jalan di Merdian). Gagal validasi → Failed, tidak generate SI/OB (all-or-nothing).
 
 **All-or-Nothing:** 1 file = 1 batch. Jika ada **1 SO gagal** validasi, seluruh batch gagal — tidak ada SI/Outbound yang terbentuk.
 
@@ -52,7 +55,10 @@ Upload sukses (validasi lolos) → SI & Outbound + jurnal keduanya auto-approved
 
 ```mermaid
 flowchart TD
-    A[User pilih Store + upload CSV] --> B[Validasi per baris SO]
+    A[User pilih Store + upload CSV] --> Q[Masuk antrean In Queue]
+    Q --> Dsp{Giliran global + jeda 10 m?}
+    Dsp -->|Belum| Q
+    Dsp -->|Ya| B[Validasi per baris SO]
     B --> C{Semua eligible?}
     C -->|Tidak| D[Batch FAILED - All-or-Nothing]
     C -->|Ya| E[Generate SI per order]
@@ -91,6 +97,10 @@ flowchart LR
 | A-07 | Re-settlement order yang sama: skip Outbound, SI baru hanya adjustment | V-17 | F-03 |
 | A-08 | Delete/Revert settlement (hard delete rantai generate): boleh jika OB+SI+AR murni dari Instant Settlement; diblokir jika ada AR luar; bulk Delete ikut eligibility yang sama | V-18 | F-14 |
 | A-09 | Retry job saat proses stuck/gagal | — | F-15 |
+| A-10 | Antrean In Queue: 1 generate global; jeda 10 menit; Import unlimited (ETM-16060) | §6.5 | F-16 |
+| A-11 | Tidak buat SI kosong (0 detail / Net Sales 0) saat sisa qty ≤0 tanpa OC/OD (ETM-16895 / V-12) | V-12 | F-03 |
+| A-12 | TO-BE antrean: FIFO eksplisit, Stop Queue, Delete blok saat generating, Retry vs batch aktif, retensi file 24 jam (ETM-16910) | §6.5 | — |
+| A-13 | TO-BE: batch macet auto-selesai (job failed + counter aman + pemantau) agar antrean tidak tertahan 1 hari (ETM-16911) | §6.5 | — |
 | A-10 | Export DataList, audit log, download file upload asli | — | F-16, F-17 |
 | A-11 | Download template import per platform | V-01 | F-18 |
 
@@ -310,7 +320,7 @@ Upload operasional **hanya CSV** (bukan Excel) karena risiko korupsi **Platform 
 | V-09 | Pending Outbound/SI (Draft/Open) | extractOrderDetails | *"...pending transactions... approve or delete draft"* |
 | V-10 | Outbound Approved manual ada | Generate outbound | **Skip** outbound baru (`without_outbound`) |
 | V-11 | SI Approved manual ada | Upload baris | **Mode adjustment** — tanpa detail SKU |
-| V-12 | Re-settlement tanpa OC/OD | Follow-up row | *"...must have at least one other cost or other discount"* |
+| V-12 | Re-settlement / generate tanpa sisa qty & tanpa OC/OD | Follow-up / generate | Tolak baris — **jangan** buat SI header kosong Net Sales 0 (ETM-16895 Done: guard saat generate). Pesan arah: minimal OC/OD atau ada qty invoicable |
 | V-13 | Order milik store lain / platform file ≠ store terpilih | Per baris | *"File content mismatch..."* — 1 batch = 1 store; platform & format template mengikuti store |
 | V-14 | **Fiscal period** harus exist & **open** pada tanggal settle | Per baris | Settlement menimbulkan jurnal — tidak boleh di periode closed / belum ada |
 | V-15 | **Receiving Destination COA** terisi | Approve | *"Receiving Destination COA is not set"* |
@@ -430,10 +440,53 @@ Tombol **Approve** membuka `ApprovalDialog` dengan dua opsi:
 
 ---
 
+## 6.5 Antrean In Queue (ETM-16060 · follow-up 16910 / 16911)
+
+**Acuan perilaku:** Skip Wave Process (antrian global, 1 aktif, delay 10 menit, unlimited file) — [ETM-16582](https://erpintegration.atlassian.net/browse/ETM-16582). Instant Settlement **tanpa** Processing Date; urutan = FIFO waktu masuk antrean.
+
+### AS-IS (sudah deploy · QA Review origin)
+
+| Aturan | Expected |
+|--------|----------|
+| Slot generate | **1** batch first-stage di **semua company** |
+| Setelah lolos masuk sistem | Status menunggu / **In Queue** sebelum generate SI/OB |
+| Jeda | ±**10 menit** setelah batch aktif selesai (sukses/gagal path yang sudah set selesai) sebelum In Queue berikutnya |
+| Jumlah In Queue | **Unlimited**; Import tidak di-disable hanya karena ada antrean |
+| Approve AR | **Manual**, di luar antrean |
+| Retry | Untuk gagal/macet generate — **bukan** untuk mempercepat file yang masih In Queue |
+
+**Gap AS-IS (screening + tes 27–29 Okt → card follow-up):** Stop Queue belum ada; Delete belum diblok API saat generating; tooltip Active Files/FIFO belum lengkap ([ETM-16894](https://erpintegration.atlassian.net/browse/ETM-16894)); `ORDER BY` FIFO belum eksplisit; gagal generate jurnal bisa menahan antrean; Retry bisa bentrok dengan batch aktif; file temp/cleanup mengganggu `updated_at` / file hilang saat giliran.
+
+### TO-BE ETM-16910 (Improvement · To Do)
+
+- Retensi file: hapus **±24 jam setelah status final**; jangan hapus saat pending/validating; pembersihan **tidak** ubah `updated_at`.
+- File tidak terbaca saat giliran → batch **Failed** jelas; **tanpa** jeda 10 menit; antrean lanjut; tidak spam log tiap menit.
+- Urutan: `ORDER BY created_at, id`.
+- Retry: tolak jika ada batch first-stage aktif lain; izinkan jika tidak ada aktif **atau** Retry pada batch macet yang sendiri aktif; kunci sama dengan `settlement:dispatch` agar tidak 2 batch; setelah Retry selesai → jeda 10 menit lagi.
+- `checkSettlementWithDetailExists`: scope ke file yang sedang divalidasi (bukan sisa baris file Failed lain).
+- **Stop Queue** hanya **In Queue** → Failed (dihentikan manual), tanpa jeda 10 menit.
+- **Delete:** (a) sebelum SI/OB → hapus baris saja; (b) setelah generate → revert penuh V-18; Delete In Queue = stop + jangan diproses lagi; **API tolak Delete saat generating** (termasuk macet).
+- Tooltip Import (EN): *Active files: N (all companies). Uploaded files wait in line and are processed one at a time, first come, first served. A file is checked when its turn comes, and the next file starts about 10 minutes after the previous one finishes.*
+
+### TO-BE ETM-16911 (Improvement · To Do)
+
+- Job settlement punya `failed()` → batch bisa jadi Failed, hitungan maju.
+- Counter progres **tidak berlipat** jika job dijalankan 2× untuk dokumen sama.
+- Pemantau otomatis: first-stage tanpa kemajuan > N menit → auto-retry M× lalu Failed + notifikasi (usulan N=15, M=2, config).
+- Setelah macet selesai Failed → antrean lanjut (~10 menit), bukan tunggu abandoned 1 hari.
+- Ops: selesaikan batch gantung Merdian contoh ST-5UQ1MKYF / ST-5UQSSIWN.
+
+### Guard SI kosong (ETM-16895 · Done)
+
+Dua file berisi SO sama tanpa OC/OD: file ke-2 tidak boleh menghasilkan SI detail kosong / Net Sales 0. Saat generate, jika sisa qty ≤0 dan tidak ada OC/OD → gagalkan baris (V-12), bukan insert header kosong.
+
+---
+
 ## 7. Progress Bar (9 Tahapan)
 
 ### Upload Progress (kolom **Progress Status**)
 
+0. **In Queue** (menunggu giliran antrean — ETM-16060)  
 1. Validating  
 2. Generating Invoices & Outbounds  
 3. Approving Invoices & Outbounds  
@@ -458,7 +511,8 @@ Tombol **Approve** membuka `ApprovalDialog` dengan dua opsi:
 | Elemen | Lokasi | Fungsi | Enable / Disable |
 |--------|--------|--------|------------------|
 | **Store Select** | Kanan atas tabel | Filter & scope upload | Wajib sebelum import |
-| **Import** | Header | Upload `.csv` | Butuh store; loading saat upload |
+| **Import** | Header | Upload `.csv` | Butuh store; loading saat upload. Tooltip Active Files / FIFO — **TO-BE** ETM-16910 / ETM-16894 |
+| **Stop Queue** | Baris In Queue | Hentikan file menunggu | **TO-BE** ETM-16910: hanya In Queue; generating tidak bisa di-stop |
 | **Download Template → CSV/Excel** | Sub-menu Import | Template per platform | Butuh store |
 | **Export** | Header | Export DataList (all / active page) | — |
 | **Log Data** | Header | Audit trail settlement upload | — |
@@ -471,7 +525,7 @@ Tombol **Approve** membuka `ApprovalDialog` dengan dua opsi:
 | **SI / Out / AR counters** | Kolom masing-masing | Slideover hasil / log error per tipe | Klik angka error → log + retry |
 | **Progress Status / Progress** | 2 kolom | 5-bar upload & 4-bar approve | Polling `GET .../progress`; warning = retry |
 | **Approve** (✓) | Action | Buka ApprovalDialog → approve/reject AR flow | `can_approve` & belum semua SI punya AR |
-| **Delete** (🗑) | Action | Hard delete settlement + dokumen generate (rantai IS) | Permission `delete` **dan** eligible V-18 / §9 (bukan sekadar “punya `payment_details`”) |
+| **Delete** (🗑) | Action | Hard delete settlement + dokumen generate (rantai IS) | Permission `delete` **dan** eligible V-18 / §9. **TO-BE ETM-16910:** API **tolak** saat generating; In Queue = stop+hapus baris; sebelum SI/OB = hapus baris saja |
 | **Bulk Delete** | Toolbar (multi-select) | Hapus beberapa upload sekaligus | Semua selected harus eligible V-18; jika ada satu not eligible → tombol **tidak muncul** |
 | **ApprovalDialog** | Modal | **Approve** → lanjut AR; **Reject** → tolak pelunasan batch (tanpa AR) | Permission `approval`; progress upload harus `journals approved` |
 | **LogTable slideover** | Kanan layar | Daftar error per tipe | Dibuka dari angka merah di kolom SO/SI/Out/AR |
@@ -735,6 +789,10 @@ Export DataList async, Audit log (`Log Data`), bulk approve guard — pola stand
 - Uji approve tanpa `cash_bank_account_id` → error V-15.  
 - **Template General (Others):** uji G-01–G-06 §4.6 — filter `OC:`/`OD:` per Applied Store & status Active.  
 - Regression: retry saat stuck, download file upload, export datalist.
+- **Antrean ETM-16060:** 5 file eligible → 1 generating + 4 In Queue; jeda ~10 menit; gagal validasi tidak masuk generate; Approve AR manual.  
+- **ETM-16895:** 2 file SO sama tanpa OC/OD → file ke-2 tidak boleh SI Net Sales 0.  
+- **ETM-16910 (setelah deploy):** Stop Queue hanya In Queue; Delete diblok saat generating; FIFO `created_at`; Retry ditolak saat ada batch aktif lain; retensi file 24 jam.  
+- **ETM-16911:** batch macet tidak menahan antrean 1 hari; counter jurnal tidak dobel.
 
 ---
 
@@ -744,6 +802,7 @@ Export DataList async, Audit log (`Log Data`), bulk approve guard — pola stand
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
+| Skip Wave Process (acuan antrean) | [../omni-skip-wave-process/requirement.md](../omni-skip-wave-process/requirement.md) |
 | Settlement Mapping | [../accounting-settlement-mapping/README.md](../accounting-settlement-mapping/README.md) |
 | Master Other Cost | [../omni-other-cost/requirement.md](../omni-other-cost/requirement.md) | Kolom template `OC: {code}`; filter Applied Store §4.6 |
 | Master Other Discount | [../omni-other-discount/requirement.md](../omni-other-discount/requirement.md) | Kolom template `OD: {code}`; filter Applied Store §4.6 |

@@ -6,18 +6,19 @@ title: Upload Progress (5 tahap)
 aliases: [progress status, upload progress settlement]
 scope: menu
 summary: >-
-  Kolom Progress Status menampilkan 5 tahap otomatis setelah import: validasi → SI/Outbound → approve → jurnal → approve jurnal.
-version: 1.0
-last_updated: 2026-09-28
+  Progress Status: In Queue (antrean) lalu validating → SI/Outbound → approve → jurnal → approve jurnal.
+version: 1.1
+last_updated: 2026-10-29
 status: review
 ---
 
-# Upload Progress (5 tahap)
+# Upload Progress (5 tahap + In Queue)
 
 ## Apa ini
 
-Kolom **Progress Status** mengikuti 5 tahap otomatis setelah file lolos import:
+Kolom **Progress Status** setelah import:
 
+0. **In Queue** — menunggu giliran antrean global ([SF-SETU-12](#sf-lingo:SF-SETU-12))  
 1. Validating  
 2. Generating Invoices & Outbounds  
 3. Approving Invoices & Outbounds  

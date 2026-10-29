@@ -1,8 +1,8 @@
 ---
 doc_type: menu-capability-index
 menu: accounting-settlement-upload
-version: 1.0
-last_updated: 2026-09-28
+version: 1.1
+last_updated: 2026-10-29
 status: review
 ---
 
@@ -20,5 +20,7 @@ Shared UI → [`_meta/shared-capabilities/`](../../_meta/shared-capabilities/).
 | SF-SETU-06 | [sf-setu-06-approve-progress.md](./sf-setu-06-approve-progress.md) | detailed |
 | SF-SETU-07 | [sf-setu-07-retry.md](./sf-setu-07-retry.md) | detailed |
 | SF-SETU-08 | [sf-setu-08-delete-revert.md](./sf-setu-08-delete-revert.md) | detailed |
+| SF-SETU-12 | [sf-setu-12-in-queue.md](./sf-setu-12-in-queue.md) | detailed |
 
 Indeks lengkap: [feature-map.md](../feature-map.md).
+

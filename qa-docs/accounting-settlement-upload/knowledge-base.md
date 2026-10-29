@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.0
-last_updated: 2026-10-22
+version: 2.1
+last_updated: 2026-10-29
 owner: QA - Yemima
 status: review
 audience: operator
@@ -31,11 +31,14 @@ legacy_sources: []
 
 ```mermaid
 flowchart LR
-    A[Upload CSV] --> B[Validasi semua order]
+    A[Upload CSV] --> Q[In Queue]
+    Q --> B[Giliran: validasi]
     B --> C[Auto SI + Outbound + Jurnal]
     C --> D[User Approve]
     D --> E[1 AR + Jurnal AR]
 ```
+
+**Antrean (sejak ETM-16060):** banyak file boleh di-upload. Sistem hanya memproses **1 file** generate di semua company; sisanya **In Queue**. Setelah file aktif selesai, tunggu **±10 menit** baru file berikutnya. Mirip Skip Wave Process, tanpa Processing Date.
 
 ---
 
@@ -44,6 +47,7 @@ flowchart LR
 | Istilah | Artinya |
 |---------|---------|
 | **Batch / Upload** | Satu kali import file = satu transaksi settlement (`ST-xxxxx`) |
+| **In Queue** | File menunggu giliran generate (antrean global) |
 | **SO File** | Jumlah order unik dalam file |
 | **SO Success / Failed** | Order lolos / gagal validasi |
 | **All-or-Nothing** | 1 order gagal → **seluruh file** dibatalkan |
@@ -52,8 +56,9 @@ flowchart LR
 | Settlement Mapping | Menu pemetaan kolom biaya CSV ke akun (Other Cost/Disc) — **platform marketplace saja** |
 | **OC: / OD:** | Kolom template General dari master Other Cost / Other Discount |
 | **Smart AR** | Saat approve, sistem skip invoice yang sudah punya AR manual |
-| **Upload Progress** | 5 tahap otomatis setelah import |
+| **Upload Progress** | In Queue + tahap generate/approve dokumen upload |
 | **Approve Progress** | 4 tahap setelah user approve settlement |
+| **Stop Queue** | Hentikan file yang masih In Queue (TO-BE ETM-16910 — belum di Staging) |
 | **Difference Settlement-SI** | Selisih nilai file vs invoice — cek rekonsiliasi |
 
 ---
@@ -61,11 +66,11 @@ flowchart LR
 ## 3. Yang Bisa / Tidak Bisa Dilakukan
 
 ### Bisa
-- Upload settlement per **store** (satu file = satu toko)
+- Upload settlement per **store** (satu file = satu toko); banyak file mengantri
 - Download template per platform (CSV/Excel)
-- Pantau progress real-time (2 progress bar)
-- Retry jika proses macet (ikon ⚠️ kuning)
-- Approve settlement untuk generate **1 AR** per batch
+- Pantau progress real-time (In Queue + progress bar)
+- Retry jika proses macet (ikon ⚠️ kuning) — aturan ketat vs batch aktif lain = TO-BE ETM-16910
+- Approve settlement untuk generate **1 AR** per batch (manual, di luar antrean)
 - Hapus settlement / revert rantai Instant Settlement (jika eligible — lihat §6.3)
 - Lihat detail order, invoice, outbound, AR, jurnal lewat angka di tabel
 - Export daftar settlement & audit log
@@ -74,11 +79,13 @@ flowchart LR
 - Partial success dalam 1 file — **semua order harus valid**
 - Upload tanpa pilih store
 - Generate outbound **kedua kali** untuk order yang sama
+- Memaksa 2 file generate bersamaan (antrean global 1 slot)
 - Hapus settlement jika ada Sales Invoice yang sudah dilunasi **Customer Payment di luar** Instant Settlement (AR luar)
 - Approve AR jika **Receiving Destination COA** belum di-set di Store Setting
 - Approve jika **semua** Sales Invoice batch sudah punya AR
 - Approve jika **tanggal transaksi Sales Invoice** di batch **campur beda hari** (jam boleh beda; tanggal harus sama)
 - Bulk Delete jika **satu saja** baris yang dicentang tidak eligible untuk Delete
+- (TO-BE) Delete saat file **sedang generating**; Stop Queue pada file yang sudah generating
 
 ---
 
@@ -164,6 +171,15 @@ Sistem **tidak** memblokir upload jika ada selisih kecil; operator yang mengecek
 ---
 
 ## 6. Cara Pakai (How-To)
+
+### 6.0 Antrean file (In Queue)
+
+1. Upload beberapa file → status **In Queue** / menunggu.
+2. Hanya **satu** file di semua company yang sedang dibuat SI/Outbound-nya.
+3. Setelah selesai, tunggu **±10 menit** baru file berikutnya mulai.
+4. Urutan: yang lebih dulu di-upload lebih dulu diproses (FIFO; penegasan kode = TO-BE ETM-16910).
+5. Approve AR tetap kamu klik manual setelah jurnal upload siap.
+6. Kalau antrean “diam” lama: bisa ada batch macet di company lain (TO-BE pemantau ETM-16911).
 
 ### 6.1 Upload settlement baru
 
@@ -295,7 +311,11 @@ Detail integrasi lengkap: [requirement.md §10](./requirement.md#10-relasi-menu-
 | *Unable to find order* / SO Failed | Order ID di file tidak ada di sistem | Cek typo No. Pesanan; untuk **booking Shopee** tunggu **MATCHED** (Platform Order ID terisi di baris booking) — lihat Sales Platform KB § Booking |
 | Seluruh batch gagal, SO Failed > 0 | Ada order belum Shipped / tidak ditemukan / stok | Klik SO Failed → perbaiki order → upload ulang file **baru** |
 | *File does not match selected store* | File platform salah atau header tidak dikenali | Pastikan file dari platform yang sama dengan store; cek kolom wajib §5. **Shopee:** pakai CSV Penghasilan (header row 3, ada `Lihat berdasarkan`) — format Income lama ditolak |
+| File lama di In Queue, tidak mulai | Menunggu file aktif + jeda 10 menit (bisa company lain) | Normal; cek apakah ada batch generating di daftar |
+| Antrean “macet” berjam-jam | Batch stuck di first-stage (TO-BE ETM-16911) | Retry batch macet / hubungi admin; jangan spam upload tanpa cek |
 | Import macet, ikon ⚠️ | Queue/job lambat atau error background | Klik ⚠️ atau tunggu; hubungi admin jika >1 jam |
+| Stop Queue tidak ada | Belum deploy ETM-16910 | Tunggu fitur; jangan Delete saat generating (TO-BE diblok API) |
+| SI Net Sales 0 / detail kosong | Bug timing 2 file SO sama (ETM-16895) | Sudah diperbaiki — re-test; jangan pakai SI phantom |
 | Tombol Approve disabled | Semua SI sudah punya AR | Normal jika piutang sudah lunas manual |
 | Error saat Approve: Receiving Destination COA | Cash/Bank Receiving belum di Store Setting | Isi di menu Store Setting |
 | Approve ditolak karena tanggal SI beda | Dalam 1 batch ada SI tanggal kalender berbeda | Pisahkan file/batch per tanggal settle; jam boleh beda, **hari** harus sama |
@@ -309,6 +329,12 @@ Detail integrasi lengkap: [requirement.md §10](./requirement.md#10-relasi-menu-
 ---
 
 ## 12. FAQ
+
+**Q: Kenapa file saya belum diproses padahal sudah upload?**  
+A: Karena antrean global (ETM-16060): hanya 1 file generate di semua company. Tunggu giliran + ±10 menit setelah file sebelumnya selesai.
+
+**Q: Bisa Stop Queue / batalkan file yang menunggu?**  
+A: **TO-BE** ETM-16910 — Stop Queue hanya untuk **In Queue**. File yang sudah generating harus menunggu selesai (atau gagal). Saat ini tombol bisa belum muncul di Staging.
 
 **Q: Other Cost/Discount dari SO ikut lagi saat Instant Settlement? (TO-BE ETM-16763)**  
 A: **Tidak** di SI settlement ke-2+. OC/OD dari order hanya sekali di **SI pertama**. Fee dari file (Settlement Mapping / kolom `OC:`/`OD:`) **tidak menumpuk** baris order yang sudah ada. Detail: [Sales Invoice KB](../accounting-customer-invoice/knowledge-base.md).

@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.4
-last_updated: 2026-10-22
+version: 2.1
+last_updated: 2026-10-29
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 2.0
+source_version: 2.1
 ---
 
 # Panduan Pengguna — Instant Settlement
@@ -38,7 +38,8 @@ Satu file CSV bisa menyelesaikan ratusan order sekaligus — tanpa input invoice
 flowchart LR
     Fulfill[Wave sampai DO] --> Ship[Shipped gudang 3PL]
     Ship --> Up[Upload CSV]
-    Up --> Docs[Sales Invoice + Outbound]
+    Up --> Q[In Queue]
+    Q --> Docs[Sales Invoice + Outbound]
     Docs --> App[User Approve]
     App --> AR[1 Account Receive]
 ```
@@ -47,10 +48,10 @@ flowchart LR
 
 1. Order diproses gudang: Wave → Pick → Check → Pack → Collect → Delivery Order.  
 2. Setelah kirim, status order jadi **Shipped** di gudang 3PL / kurir.  
-3. Kamu pilih **satu toko**, lalu upload file CSV settlement.  
-4. Kalau semua order lolos, sistem membuat **Sales Invoice** + **Outbound** (potong stok) + jurnal keduanya (langsung approved).  
-5. Kamu klik **Approve** → sistem membuat **satu Account Receive** untuk seluruh batch (satu toko).  
-6. Kalau kamu **Reject**, invoice dan outbound tetap ada — hanya pelunasan yang tidak jadi.
+3. Kamu pilih **satu toko**, lalu upload file CSV settlement (boleh banyak file — mereka mengantri).  
+4. File menunggu **In Queue**. Hanya **satu** file di semua company yang digenerate pada satu waktu; setelah selesai tunggu **±10 menit** baru file berikutnya.  
+5. Saat giliran: sistem validasi → kalau lolos, buat **Sales Invoice** + **Outbound** + jurnal (approved).  
+6. Kamu klik **Approve** → **satu Account Receive** untuk batch. **Reject** = tidak buat pelunasan; SI/OB tetap ada.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -71,11 +72,18 @@ stateDiagram-v2
 
 | Status | Artinya | Bisa diedit? |
 |--------|---------|--------------|
-| **In Progress** | File sedang divalidasi / dokumen sedang dibuat | Tunggu; retry jika macet |
+| **In Queue** | Menunggu giliran antrean global | Tunggu; Stop Queue = TO-BE (belum pasti di Staging) |
+| **In Progress** | Validasi / generate SI·OB / jurnal | Tunggu; retry jika macet (⚠️) |
 | **Import Failed** | Ada order gagal — seluruh file batal | Upload file baru setelah perbaiki order |
 | **Import Complete** (jurnal siap) | Invoice + outbound + jurnal sudah ada | Approve / Reject / Delete (jika syarat terpenuhi) |
 | **Approved** | Pelunasan AR batch sudah dibuat | Tidak untuk langkah AR ini |
 | **Rejected** | Kamu menolak pelunasan; dokumen upload tetap | Bukan hapus; pakai Delete jika perlu hapus rantai |
+
+### Antrean — tip singkat
+
+- Upload banyak file = normal; jangan kira sistem “error” hanya karena masih In Queue.  
+- Antrean **lintas company**: file company lain bisa menahan giliranmu.  
+- Jangan Delete saat status generating (akan diblok API setelah ETM-16910).
 
 ---
 

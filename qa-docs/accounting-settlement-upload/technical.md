@@ -2,13 +2,14 @@
 doc_type: technical
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.9
-last_updated: 2026-10-22
+version: 2.1
+last_updated: 2026-10-29
 owner: QA - Yemima
 status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md
+  - ../omni-skip-wave-process/technical.md
 ---
 
 # Instant Settlement — Technical Documentation
@@ -17,6 +18,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1 | 2026-10-29 | Antrean In Queue ETM-16060 (§1.1); follow-up ETM-16910/16911; guard SI kosong ETM-16895 |
 | 1.9 | 2026-10-22 | Cross-ref TO-BE ETM-16763: SI settlement tidak re-bawa OC/OD SO; fee file anti-duplikat — lihat requirement § + SI §5.3.1 |
 | 1.7 | 2026-09-09 | Delete/Revert AR eligibility ETM-15886 |
 | 1.8 | 2026-09-23 | GAP-SETU-01 Shopee Penghasilan parser (ETM-16058) — §7 |
@@ -46,9 +48,24 @@ flowchart TD
     JOBS --> RP
 ```
 
-**State machine** (`SettlementUploadStatus`): `validating` → `generating` → `approving` → `generating journals` → `approving journals` → (`journals approved`) → user approve → `generating receives` → … → `receive journals approved`.
+**State machine** (`SettlementUploadStatus`): **pending / In Queue** → `validating` → `generating` → `approving` → `generating journals` → `approving journals` → (`journals approved`) → user approve → `generating receives` → … → `receive journals approved`. (+ `failed` di tahap mana pun).
 
-**All-or-nothing:** `SettlementUploadObserver::afterValidation` set `failed` jika `!isSuccess()`; `processSettlement` hanya jalan jika `order_errors - skipped_rows <= 0`.
+**All-or-nothing:** gagal validasi → `failed`, tidak generate SI/OB.
+
+### 1.1 Antrean global (ETM-16060 AS-IS · follow-up 16910/16911)
+
+| Komponen | Peran |
+|----------|--------|
+| `settlement:dispatch` (scheduler ~1 menit) | Ambil 1 batch menunggu; cek tidak ada first-stage aktif global; hormati jeda **10 menit** sejak `first_stage_completed_at` |
+| `first_stage_completed_at` | Timestamp selesai first-stage (generate SI/OB/jurnal upload) — basis delay |
+| Observer / progress | Orkestrasi generate; **gap AS-IS:** path gagal jurnal harus set `progress` Failed agar antrean tidak tertahan |
+| FE Import tooltip / Stop Queue | **TO-BE** ETM-16910 / ETM-16894 (`pending-count` mungkin sudah ada BE) |
+
+**TO-BE ETM-16910:** `ORDER BY created_at, id`; Retry guard + lock vs dispatch; Stop Queue; Delete API block saat generating; retensi file 24 jam tanpa rewrite `updated_at`; reread file missing → Failed; scope `checkSettlementWithDetailExists` ke file aktif.
+
+**TO-BE ETM-16911:** `failed()` pada job settlement; counter idempotent; pemantau stuck (N/M config); jangan andalkan abandoned 1 hari saja.
+
+**ETM-16895 Done:** guard generate — jangan insert SI jika detail kosong & tanpa OC/OD (sisa qty ≤0).
 
 ---
 

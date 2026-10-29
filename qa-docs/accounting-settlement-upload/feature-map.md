@@ -2,11 +2,11 @@
 doc_type: feature-map
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 1.0
-last_updated: 2026-09-28
+version: 1.1
+last_updated: 2026-10-29
 owner: QA - Yemima
 status: review
-aliases: [settlement upload feature map, instant settlement capabilities]
+aliases: [settlement upload feature map, instant settlement capabilities, In Queue]
 ---
 
 # Instant Settlement — Feature Map
@@ -30,6 +30,7 @@ Indeks sub-feature / capability di menu **Instant Settlement** (`/accounting/set
 | SF-SETU-02 | [Download Template](#sf-lingo:SF-SETU-02) | menu | AS-IS | detailed | capabilities · sf-setu-02 | Ya | overview |
 | SF-SETU-03 | [All-or-nothing Validasi](#sf-lingo:SF-SETU-03) | menu | AS-IS | detailed | capabilities · sf-setu-03 | Ya | overview |
 | SF-SETU-04 | [Upload Progress (5 tahap)](#sf-lingo:SF-SETU-04) | menu | AS-IS | detailed | capabilities · sf-setu-04 | Ya | overview |
+| SF-SETU-12 | [In Queue / Antrean global](#sf-lingo:SF-SETU-12) | menu | AS-IS+TO-BE | detailed | capabilities · sf-setu-12 · ETM-16060/16910/16911 | Ya | overview |
 | SF-SETU-05 | [Approve / Bulk Approve](#sf-lingo:SF-SETU-05) | menu | AS-IS | detailed | capabilities · sf-setu-05 | Ya | overview |
 | SF-SETU-06 | [Approve Progress (4 tahap)](#sf-lingo:SF-SETU-06) | menu | AS-IS | detailed | capabilities · sf-setu-06 | Ya | overview |
 | SF-SETU-07 | [Retry batch / per order](#sf-lingo:SF-SETU-07) | menu | AS-IS | detailed | capabilities · sf-setu-07 | Ya | overview |
