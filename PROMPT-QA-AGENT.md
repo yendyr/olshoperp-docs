@@ -44,8 +44,9 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
 8. Hasil TC dicatat di card TC Jira (Actual Result + Test Result). Non-TC (Error /
    Improvement / CR / Story / Task): hasil di **komentar** Jira (field Actual tidak tampil).
    Tidak ada sync ke file TC (`#sync-jira-done` nonaktif, rule 18).
-9. Cek DB via webhook (Tyas/Staging shared, Merdian terpisah) = supporting saja —
-   BUKAN bukti TC Passed. Baca `tests/DATA-VERIFICATION.md` jika diminta cek/query DB.
+9. Cek DB via webhook = supporting saja — BUKAN bukti TC Passed. Baca dulu skill
+   `.cursor/skills/olshoperp-db-verify/SKILL.md` (bukan load rule 19 penuh). Detail panjang:
+   `tests/DATA-VERIFICATION.md`.
 10. Testing card ETM-xxxxx: baca dulu skill `.cursor/skills/olshoperp-card-testing/SKILL.md`
     (buku lengkap: UI, data, DB, Jira, Telegram). JANGAN `tests/scripts/`. TC baru = Jira saja
     (bukan file markdown TC), sejak 26 Okt 2026.
