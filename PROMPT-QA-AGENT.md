@@ -49,6 +49,8 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
 10. Testing card ETM-xxxxx: baca dulu skill `.cursor/skills/olshoperp-card-testing/SKILL.md`
     (buku lengkap: UI, data, DB, Jira, Telegram). JANGAN `tests/scripts/`. TC baru = Jira saja
     (bukan file markdown TC), sejak 26 Okt 2026.
+11. Q&A menu/aturan (bukan testing): skill `.cursor/skills/olshoperp-qa-menu-ask/SKILL.md`
+    — alias → satu layer doc → jawaban ringkas. Jangan load rule 04/06/08/09 penuh.
 
 PERINTAH GATE — jalankan sesuai konteks, jangan dilewati.
 (LEGACY: skrip `tc:*` + `dashboard` di bawah membaca file TC arsip — hasilnya bukan status TC terkini,
