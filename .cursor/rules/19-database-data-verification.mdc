@@ -81,7 +81,7 @@ curl -sS -X POST "https://n9n.olshoperp.com/webhook/agent-db-merdian" \
 
 ## Larangan QA (mutlak)
 
-1. Hasil DB **bukan** bukti `last_execution.status: passed` untuk TC UI-crawling.
+1. Hasil DB **bukan** bukti Test Result Passed (card TC Jira) untuk TC UI-crawling.
 2. Jangan expose `DB_DEBUG_API_KEY*` / URL override di chat, TC, atau commit.
 3. **Dilarang** `agent-db-query.mjs` / `.php` — **wajib** HTTP POST langsung ke webhook.
 4. Selalu filter scope **company** (`owned_by`) yang sedang diuji; SoftDeletes awareness (`deleted_at IS NULL`).

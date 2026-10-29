@@ -17,14 +17,14 @@ Jangan pakai DB sebagai pengganti assert UI untuk menandai TC `passed`.
 
 | Level | Alat | Kapan | Boleh jadi bukti TC `passed`? |
 |-------|------|-------|-------------------------------|
-| **L1 UI** | Playwright CLI + POM / Browser MCP (observasi) | Default act & assert TC | **Ya** — hanya CLI + `via:` path spec (atau `manual:{Nama}` + notes) |
+| **L1 UI** | Playwright CLI + POM / Browser MCP (observasi) | Default act & assert TC | **Ya** — hasil dicatat di card TC Jira (Actual Result + Test Result) |
 | **L2 API read** | `page.request` / network response (hati-hati) | Debug payload, select2, status HTTP | Tidak sendirian |
 | **L3 DB read** | Direct HTTP POST Webhook (Rule `19`) | Precondition (“id X ada di company Y?”), FAIL forensik, UI ≠ DB, audit trail | **Tidak** — supporting evidence saja |
 
 > [!CAUTION]
-> Hasil L3 DB **dilarang** menulis `last_execution.status: passed` untuk TC yang
-> expected-nya UI crawling (rule `13`/`14` §8). Catat sebagai observasi di chat /
-> Additional Context Jira / `notes` investigasi — bukan status eksekusi TC.
+> Hasil L3 DB **dilarang** dijadikan Test Result Passed untuk TC yang expected-nya
+> UI crawling (rule `14` §8). Catat sebagai observasi di chat / Additional Context
+> Jira / Actual Result sebagai supporting evidence — bukan penentu status eksekusi TC.
 
 ---
 
@@ -110,7 +110,7 @@ Detail guard read-only + forensik 4 langkah → rule `19` di `olshoperp`.
 
 - Mengklaim TC / flow E2E **passed** hanya karena baris DB “kelihatan benar”.
 - Mengganti hard gate UI (harga > 0, WH level, outbound approved, toast sukses).
-- Menulis hasil query ke `last_execution` sebagai pengganti run Playwright / manual bernama.
+- Menjadikan hasil query sebagai Test Result card TC pengganti run UI (Playwright / manual bernama).
 - Menyimpan webhook URL + API key di `qa-docs/` atau frontmatter TC.
 
 ---

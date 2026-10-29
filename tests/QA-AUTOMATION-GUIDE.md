@@ -148,7 +148,10 @@ Agent wajib (berlaku seterusnya):
 6. Summary **WH + 1H** + **fungsi menu** (apa kegunaan bisnis dari hasil testing / requirement)
 7. **Description fields** (Transfer External header dan field Description di flow terkait / automation mendatang): isi tepat `automation playwright` — jangan stamp/random text
 
-### 2A. Naming TC (WAJIB — ikut `.cursor/rules/13-test-case-format.mdc`)
+### 2A. Naming TC (ARSIP — file TC tidak dibuat lagi sejak 22-10-2026; TC baru di Jira)
+
+> Tabel di bawah hanya untuk membaca/menautkan file TC lama (`.cursor/rules/13-test-case-format.mdc`, arsip).
+> Jangan membuat `TC-*-DRAFT-*.md` baru atau menjalankan `#renumber-tc`.
 
 | Tahap | File | `tc_code` |
 |-------|------|-----------|

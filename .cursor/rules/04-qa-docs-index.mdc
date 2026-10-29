@@ -33,7 +33,7 @@ qa-docs/
     ├── knowledge-base.md     ← operator, support, ops
     ├── requirement.md        ← PM, QA, support
     ├── technical.md          ← developer
-    └── test-cases/           ← opsional (2 menu saat ini)
+    └── test-cases/           ← ARSIP read-only (TC hanya di Jira sejak 22-10-2026)
         ├── README.md
         └── TC-*.md
 ```
@@ -94,7 +94,7 @@ Contoh: `menu_links: [accounting/journal]` → `/accounting/journal`
 | `knowledge-base` | `audience`, `sections` |
 | `requirement` | § acceptance criteria, AS-IS |
 | `technical` | `related_docs`, architecture, file map |
-| `e2e-test-case` | `tc_code`, `steps`, `expected_result`, `related_menus`, `origin_jira`, `last_execution` |
+| `e2e-test-case` *(arsip, TC aktif hanya di Jira)* | `tc_code`, `steps`, `expected_result`, `related_menus`, `origin_jira`, `last_execution` |
 
 ## Yang diabaikan saat indexing jawaban
 

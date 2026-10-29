@@ -3,6 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /**
+ * [LEGACY / NONAKTIF sejak 29-10-2026 — tidak terdaftar di playwright.config.ts. Hasil TC hanya
+ * di Jira sejak 22-10-2026; file TC-*.md = arsip read-only, jangan diperbarui reporter ini.]
+ *
  * TC Execution Reporter — memperbarui `last_execution` di file TC origin setiap kali
  * TC tersebut dieksekusi, baik langsung maupun lewat flow yang me-recall-nya.
  *

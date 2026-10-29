@@ -41,7 +41,7 @@ Artinya: **inventory fitur → tulis skenario+TC → automate → run → lapork
 2. **Inventory fitur** dari FE (`Datalist.vue` + `Form.vue`) + BE (Controller/Request/Entity):
    - Datalist: Create, search/filter, kolom, bulk delete, show deleted, row edit
    - Form: field wajib/opsional, dropdown, switch, Save All / Save & Next, Audit Log, status flow
-3. **Tulis TC** di `qa-docs/{menu-slug}/test-cases/`:
+3. **Tulis TC** — sejak 22-10-2026 TC hanya di **Jira** (skill `olshoperp-testcase-authoring`), jangan buat file `TC-*.md`. Pola penamaan/isi di bawah = referensi arsip:
    - Satu TC = satu aksi utama (VIEW / CREATE / UPDATE / SEARCH / DELETE / …)
    - Prefix kode: singkat dari menu (contoh Asset Category → `TC-ASC-xxx`)
    - Ikuti pola frontmatter Tax (`TC-TAX-001.md`)

@@ -161,8 +161,8 @@ Backfill massal TC lama: `npm run tc:backfill-first-execution` (aproksimasi dari
 > - Yang dilarang adalah **TC duplikat**, bukan TC baru. Card *improvement* /
 >   *change requirement* memang wajar melahirkan TC baru — lihat pohon keputusan §5B.
 
-**Pembaruan `last_execution` berjalan otomatis** — `tests/reporters/tc-execution-reporter.ts`
-menulisnya setiap run, dari dua sumber:
+**(ARSIP) Pembaruan `last_execution` dulu berjalan otomatis** — `tests/reporters/tc-execution-reporter.ts`
+menulisnya setiap run; **reporter dimatikan 29-10-2026** (hasil TC hanya di Jira), jadi bagian ini tidak berlaku lagi. Dulu dari dua sumber:
 1. tag `@TC-*` di judul test (spec single-menu), dan
 2. daftar `recalls` pada flow — sehingga **menjalankan satu flow ikut memperbarui semua
    TC origin yang dirantainya**. Contoh nyata: satu run `scm-inbound` memperbarui
@@ -480,8 +480,8 @@ Tentukan dengan urutan ini:
 
 **2. Expected result-nya masih sama?**
 - **Ya** (card cuma minta verifikasi/regression) → **REUSE**. Jalankan TC existing,
-  jangan bikin file baru. `last_execution.jira` terisi otomatis saat run
-  (`OLSHOP_RUN_JIRA=ETM-xxxxx`); `origin_jira` **tidak** berubah.
+  jangan bikin TC baru. (Arsip: `last_execution.jira` dulu terisi otomatis saat run via
+  `OLSHOP_RUN_JIRA=ETM-xxxxx` — sudah tidak berlaku, hasil dicatat di card TC Jira.)
 - **Tidak** (requirement berubah) → lanjut ke 3.
 
 **3. Perilaku lama masih berlaku untuk kondisi tertentu?**

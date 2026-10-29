@@ -148,7 +148,7 @@ Inti perilaku (sudah di 2 file hazel):
 
 **Alat eksekusi**: Browser MCP = eksplorasi/diagnosa saja; Playwright CLI = satu-satunya jalur eksekusi TC & flow. Detail + aturan turunan di rule `14` §6B.
 
-**Sebelum menambah TC / menjalankan flow**: `npm run tc:lint` (anti-duplikat) dan `npm run flow:preflight -- {flow-id}` (gate kelengkapan chain) wajib bersih.
+**Sebelum menjalankan flow**: `npm run flow:preflight -- {flow-id}` (gate kelengkapan chain) wajib bersih. Skrip `tc:*` (lint/pending/coverage/refs/jira-*/backfill) dan `dashboard` = **legacy** — membaca file TC arsip, bukan status TC terkini (Jira); TC baru tidak dibuat sebagai file.
 
 ## Playwright — dua mode (ringkas)
 

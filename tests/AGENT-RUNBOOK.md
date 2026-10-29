@@ -108,7 +108,7 @@ npm run tc:pending            # arsip file TC; JANGAN hitung sendiri via grep/sk
 ```
 
 **Jangan parsing frontmatter sendiri** — hasilnya beda dari tool, dan status **dokumen**
-(`draft`/`review`) ≠ **hasil eksekusi** (`last_execution`). `tc:pending` sudah benar.
+(`draft`/`review`) ≠ **hasil eksekusi** (di Jira; `last_execution` = arsip). `tc:pending` (legacy) hanya membaca arsip.
 Detail cara membaca hasil + menindaklanjuti → § "Kalau TC-nya dijalankan manual" di bawah.
 
 ### H. "Cek data di DB" (staging / tyas / merdian)

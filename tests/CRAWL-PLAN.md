@@ -2,11 +2,16 @@
 
 Rencana crawl/regresi yang bisa dipakai ulang, supaya run Playwright berikutnya tidak riset menu dari nol.
 
-Contoh hidup: `qa-docs/businessdevelopment-variable-price/test-cases/TC-VP-001.md`.
+> **Sejak 22-10-2026 TC hanya di Jira.** Jangan buat file `TC-*.md` baru, jangan update `README.md` test-cases,
+> jangan isi `last_execution`. Rencana crawl baru ditulis sebagai card Test Case Jira (skill
+> `olshoperp-testcase-authoring`); isi badan di bawah tetap jadi acuan isinya. Bagian "Di mana file-nya" dan
+> "Frontmatter" = **format arsip** untuk membaca file lama.
 
-## Di mana file-nya
+Contoh arsip: `qa-docs/businessdevelopment-variable-price/test-cases/TC-VP-001.md`.
 
-Simpan sebagai test case di menu yang sudah ada di manifest:
+## Di mana file-nya (ARSIP)
+
+Format file lama di menu yang sudah ada di manifest:
 
 `qa-docs/{menu-slug}/test-cases/TC-{PREFIX}-DRAFT-{timestamp14}.md`
 
@@ -21,9 +26,9 @@ Halaman `/docs/{modul}/{menu-slug}/test-cases` mengisi daftar dari file `TC-*.md
 
 `manifest.yaml` tidak perlu diubah supaya daftar test case muncul. Slug menu harus sudah terdaftar.
 
-## Frontmatter
+## Frontmatter (ARSIP)
 
-Ikuti rule `13`. Parser-nya PHP Symfony YAML (`E2eTestCaseDocService.php`). Yang sering menjatuhkan halaman:
+Ikuti rule `13` (arsip). Parser-nya PHP Symfony YAML (`E2eTestCaseDocService.php`). Yang sering menjatuhkan halaman:
 
 - Tiap baris di bawah `expected_result: |` menjorok **2 spasi**.
 - Kutipan di dalam `steps` / `preconditions`: single quote di dalam double quote.

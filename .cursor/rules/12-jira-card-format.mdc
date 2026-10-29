@@ -16,16 +16,17 @@ Gunakan rule ini setiap kali user meminta membuat Jira card, bug report, improve
 ---
 
 > [!CAUTION]
-> **Status card Jira BUKAN hasil test, dan tidak pernah menulis `last_execution`.**
+> **Status card Jira BUKAN hasil test.**
 > Card digeser ke *Done* oleh alur kerja tim — bisa "done passed", bisa "done failed",
 > bisa juga ditutup karena alasan lain. Itu status **pekerjaan**, bukan status
-> **pengujian**. Hasil pengujian hidup di `last_execution` TC-nya (rule `13`).
+> **pengujian**. Sejak 22-10-2026 hasil pengujian hidup di **card Test Case Jira**
+> (Actual Result + Test Result), bukan di file TC / `last_execution` (arsip).
 >
-> Konsekuensinya, dua-duanya harus dicatat terpisah:
-> - TC lulus saat diuji manual → `last_execution` diisi `via: manual:{Nama}` + `notes`
-> - Card selesai → digeser di Jira oleh manusia
+> Konsekuensinya, dua-duanya dicatat terpisah:
+> - TC lulus/gagal saat diuji → Actual Result + Test Result di card TC (skill `olshoperp-card-testing`)
+> - Card selesai → digeser di Jira oleh manusia / alur status
 >
-> **Card Done sementara TC-nya masih `not_run` = pekerjaan belum benar-benar terbukti.**
+> **Card Done sementara TC-nya masih Not Execute = pekerjaan belum benar-benar terbukti.**
 > Kalau menemukan pola ini, laporkan; jangan menambal dengan menulis hasil karangan.
 
 > [!WARNING]

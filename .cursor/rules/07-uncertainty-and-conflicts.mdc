@@ -18,7 +18,7 @@ Sebut status di jawaban jika layer yang dipakai bukan `review`.
 ## Dokumen bertabrakan dengan datanya sendiri
 
 Kalau prosa/komentar di sebuah file menyatakan sesuatu yang **dibantah oleh data di file
-yang sama** — mis. header `test-queue.yaml` menulis "belum ada status ready" padahal ada
+yang sama** — mis. header sebuah file antrian/indeks menulis "belum ada status ready" padahal ada
 entry `status: ready` — maka:
 
 1. **Ikuti datanya**, bukan prosanya. Data punya pemilik dan diperbarui; prosa membeku.

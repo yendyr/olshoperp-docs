@@ -35,7 +35,7 @@ Semua poin berikut **harus terpenuhi** sebelum agent menetapkan mode RUN untuk T
 
 | # | Kriteria | Cek di |
 |---|----------|--------|
-| 1 | File TC ada (`TC-*.md`, bukan DRAFT tanpa spec) | `qa-docs/{slug}/test-cases/` |
+| 1 | TC ada (arsip file `TC-*.md` atau card TC di Jira) — file baru tidak dibuat sejak 22-10-2026 | `qa-docs/{slug}/test-cases/` / Jira |
 | 2 | `automated: true` | frontmatter TC |
 | 3 | `automated_spec` mengarah ke file spec yang **ada** | path di frontmatter TC |
 | 4 | Spec berisi tag `@TC-{CODE}` yang **match** `tc_code` | file `automated_spec` |

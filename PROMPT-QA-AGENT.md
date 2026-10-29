@@ -31,9 +31,8 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
    `automated: true`, dan flow cross-menu DILARANG dijalankan lewat MCP.
 2. Spec resmi WAJIB bertag `@TC-*` / `@FLOW-*` / `@ETM-*`. Tanpa tag, spec tidak akan
    pernah jalan di `npm test`. Script sekali pakai justru jangan diberi tag.
-3. TC WAJIB format rule 13: frontmatter lengkap (`tc_code`, `menu`, `test_type`,
-   `steps`, `expected_result`). TC tanpa frontmatter invisible bagi tooling, tidak bisa
-   di-recall flow, dan `last_execution`-nya tidak terisi.
+3. TC hanya di Jira sejak 22-10-2026 (skill `olshoperp-testcase-authoring`); jangan buat/ubah
+   file `TC-*.md` — itu arsip read-only (rule 13 = format arsip).
 4. `test_type` WAJIB salah satu: happy | negative | edge | permission | regression |
    cross-menu. Menu transaksional tidak dianggap tercakup kalau isinya happy semua.
 5. JANGAN menyalin langkah TC antar spec. Langkah hidup di `tests/scenarios/`
@@ -42,22 +41,23 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
    diubah. Perbaikan di sana dilaporkan sebagai temuan, bukan dikerjakan.
 7. Kalau `requirement.md` menu masih `draft` atau tidak ada: JANGAN mengarang expected
    result. Lempar balik ke yang meminta.
-8. Satu TC dipakai di banyak tempat. Card Jira = asal-usul (`origin_jira`), bukan
-   kepemilikan. Card Done di Jira tanpa update file? → `#sync-jira-done ETM-xxxxx`
-   (rule 18) — fetch Test Result + Actual Result, jangan isi manual tanpa Jira.
+8. Hasil TC dicatat di card TC Jira (Actual Result + Test Result). Tidak ada sync ke file
+   TC (`#sync-jira-done` nonaktif sejak 22-10-2026, rule 18).
 9. Cek DB via webhook (Tyas/Staging shared, Merdian terpisah) = supporting saja —
-   BUKAN bukti TC `passed`. Baca `tests/DATA-VERIFICATION.md` jika diminta cek/query DB.
+   BUKAN bukti TC Passed. Baca `tests/DATA-VERIFICATION.md` jika diminta cek/query DB.
 10. Testing card ETM-xxxxx: baca dulu skill `.cursor/skills/olshoperp-card-testing/SKILL.md`
     (buku lengkap: UI, data, DB, Jira, Telegram). JANGAN `tests/scripts/`. TC baru = Jira saja
     (bukan file markdown TC), sejak 22 Okt 2026.
 
-PERINTAH GATE — jalankan sesuai konteks, jangan dilewati:
+PERINTAH GATE — jalankan sesuai konteks, jangan dilewati.
+(LEGACY: skrip `tc:*` + `dashboard` di bawah membaca file TC arsip — hasilnya bukan status TC terkini,
+ yang ada di Jira. Jangan dipakai sebagai gate TC baru.)
   npm run docs:drift                   # sinkron dua arah dgn developer (WAJIB sebelum & sesudah)
   npm run tc:selftest                  # gate-nya sendiri masih bekerja? (wajib 22/22 hijau)
   npm run tc:lint                      # sebelum & sesudah menambah/mengubah TC (wajib 0 error)
   npm run tc:coverage                  # lihat gap coverage sebelum menulis TC baru
 npm run tc:pending                   # TC mana belum ada hasil (JANGAN hitung sendiri via grep)
-  npm run tc:jira-drift                # drift: card Jira vs last_execution not_run
+  npm run tc:jira-drift                # (legacy) drift: card Jira vs arsip last_execution
   npm run tc:jira-sync -- --apply …    # apply payload Jira (lihat rule 18)
   npm run guard:scan -- --menu {slug}  # kandidat negative TC dari guard backend
   npm run flow:preflight -- {flow-id}  # WAJIB sebelum menjalankan flow E2E
