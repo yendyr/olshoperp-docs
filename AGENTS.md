@@ -87,7 +87,7 @@ Skill **repo ini** (`.cursor/skills/`):
 | `olshoperp-qa-menu-ask` | Q&A menu/aturan dari qa-docs (hemat token): alias → README → **satu** layer → jawaban ringkas. Jangan load rule `04`/`06`/`08`/`09` penuh. Bukan testing/TC/DB |
 | `olshoperp-db-verify` | Cek/query DB via webhook (staging/tyas/merdian): read-only, `owned_by`, anti-dump, supporting ≠ TC Passed. Jangan load rule `19` + DATA-VERIFICATION penuh kecuali perlu |
 | `olshoperp-jira-card` | Buat/regenerate card ETM **non-TC** (Error/Improvement/CR): format, label UI, Expected dari docs, Relates, Request ID screening. TC → authoring; uji → card-testing |
-| `olshoperp-card-testing` | **Buku lengkap** test card Jira ETM (UI/Playwright, data uji, DB, credential, Jira, Telegram, log). Task "test card ETM-…" → baca skill ini dulu (jangan load banyak rules). Detail ID/template: `reference.md` di folder skill |
+| `olshoperp-card-testing` | **Buku lengkap** test card Jira ETM (UI/crawl/Playwright, data, DB, Jira, Telegram). Playwright untuk uji card = §7 skill ini — **jangan** skill Playwright terpisah. Task "test card ETM-…" → baca skill dulu |
 | `olshoperp-testcase-authoring` | Membuat card Jira Test Case (cek gap vs AC, **minimal set per `test_type`** + relasi cross-menu, Expected hanya dari requirement atau `feature-map.md`, data uji `QA ETM-…` / skenario tanpa Jira, **jangan hapus** data, terbitkan + Relates). Jira saja — bukan `TC-*.md`. Alat: `tools/` di folder skill |
 
 Hanya ikuti skill dari folder `.cursor/skills/` repo ini atau request eksplisit user.

@@ -94,6 +94,8 @@ Webhook log: staging/tyas via n8n `agent-log-tyas`; merdian via n9n `agent-log-m
 
 ## D. Playwright / company / UI
 
+Playwright untuk uji card → **SKILL.md §7** (tidak ada skill `olshoperp-playwright-run`). Otomasi murni → `tests/AGENT-RUNBOOK.md`.
+
 - **Urutan company Staging (default):** `153` lumicharmsid → `112` FAT → `13` DEV-STG. Prompter sebut spesifik → ikuti prompter.
 - Allowlist lain bila diminta: Lumielle `810`, TANRISE `3`, HUAWEI `915`.
 - Credential login per server: **SKILL.md §6** (staging/tyas `playwright@…`, merdian `yemimamerdian@…`; Tyas+Merdian **no create**).

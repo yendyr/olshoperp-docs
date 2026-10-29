@@ -3,10 +3,10 @@ name: olshoperp-card-testing
 description: >-
   Buku lengkap menjalankan test card Jira ETM (Test Case / Error / Improvement / CR)
   di staging/tyas — UI crawl atau Playwright, data uji, kapan cek DB, credential,
-  Jira status/hasil, Telegram. Pakai saat user bilang "test card ETM-xxxxx",
-  "jalankan test case", "laporkan hasil test", atau minta Bugsy/agent menguji.
-  Membuat card Test Case baru = skill terpisah (olshoperp-testcase-authoring) — jangan
-  campur di sini kecuali user minta.
+  Jira status/hasil, Telegram. Termasuk aturan Playwright untuk uji card (MCP≠Passed,
+  @ETM, scratch, dilarang tests/scripts). Jangan buat skill Playwright terpisah.
+  Pakai saat "test card ETM-xxxxx", "jalankan test case", "laporkan hasil test".
+  Buat TC = olshoperp-testcase-authoring.
 ---
 
 # OlshopERP — Skill Testing Card (buku lengkap)
@@ -169,44 +169,51 @@ Coba / pakai berurutan: **153 (lumicharmsid)** → **112 (FAT)** → **13 (DEV-S
 
 ---
 
-## 7. Uji UI agar valid (jangan keliru komponen)
+## 7. Uji UI & Playwright (satu tempat — jangan skill paralel)
+
+**Tidak ada** skill `olshoperp-playwright-run` terpisah. Aturan Playwright untuk uji card = **section ini**.  
+Task murni otomasi (BUILD POM/spec tanpa isi Actual Jira) → `tests/AGENT-RUNBOOK.md`; buka rule `14`/`15` **hanya** jika runbook menyuruh — jangan load keduanya default.
 
 **Tujuan:** hasil tes bisa dipercaya — bukan asal klik.
 
 1. Baca **Expected di Jira** dulu; tiap assert harus nyambung ke Expected (bukan screenshot-only tanpa cek).
 2. Interaksi UI: **helper / POM dulu** (`tests/helpers/`, `tests/helpers/shared/`, `tests/pom-registry/`).  
-   Kontrak komponen (multiselect, dialog, numeric-mask, dll.): `tests/ui-components.md` — **jangan tulis selector dari nol**.
-3. Kalau UI berubah / helper gagal: catat di komentar Jira; perbaiki helper + `ui-components.md` bila sesi BUILD, jangan “tambal sekali jalan” tanpa jejak.
-4. Label tombol/field di langkah = **persis** teks di aplikasi.
+   Kontrak komponen: `tests/ui-components.md` — **jangan tulis selector dari nol**.
+3. UI berubah / helper gagal: catat di komentar Jira; perbaiki helper + `ui-components.md` bila sesi BUILD.
+4. Label tombol/field = **persis** teks di aplikasi.
+
+### RUN vs BUILD (ringkas — detail di rule 15 bila perlu)
+
+| Mode | Kapan | Repo app |
+|------|-------|----------|
+| **RUN** | Spec + registry + POM sudah ada; re-run tag `@ETM-…` / `@FLOW-…` | ❌ default — cukup docs |
+| **BUILD** | Spec/POM belum ada atau gap selector | ✅ setelah registry/shared; FE/BE terbatas |
 
 ### Browser MCP vs Playwright CLI
 
-| | Browser MCP / pane | Playwright CLI (`npx playwright test`) |
-|---|-------------------|----------------------------------------|
-| Boleh | Eksplorasi UI, cek selector, reproduksi cepat | Jalur resmi jika pakai spec bertag / regresi |
-| **Dilarang** | Menandai Test Result **Passed** hanya dari MCP; jadi satu-satunya “bukti lulus” tanpa langkah Actual yang jujur | — |
+| | Browser MCP | Playwright CLI |
+|---|-------------|----------------|
+| Boleh | Eksplorasi, cek selector, reproduksi cepat | Jalur resmi spec bertag / regresi |
+| **Dilarang** | Menandai **Passed** / jadi satu-satunya bukti lulus | — |
 
-- Hasil resmi ke Jira = apa yang benar-benar diverifikasi di UI (crawl CLI atau manual + catatan). Observasi MCP saja = **catatan**, bukan Passed otomatis.
-- Headless default; headed hanya jika prompter minta demo.
-- Jangan spam login / retry tanpa batas saat debug selector — perbaiki helper, laporkan blocker.
-- Spec yang mengubah data: `retries=0`.
+Hasil resmi ke Jira = verifikasi UI nyata (CLI atau manual + Actual). Observasi MCP = **catatan** saja.  
+Headless default; headed hanya jika diminta. Spec ubah data: `retries=0`. Jangan spam login saat debug selector.
 
-### Di mana file Playwright boleh hidup
+### Di mana file boleh hidup
 
-| Tempat | Pakai untuk | Simpan next run? |
-|--------|-------------|------------------|
+| Tempat | Pakai | Simpan? |
+|--------|-------|---------|
 | `tests/scripts/` | **DILARANG** | — |
-| `tests/scratch/` | Probe sekali pakai, screenshot | **Tidak** — hapus setelah selesai |
-| `tests/specs/check-*.spec.ts` (tanpa tag `@ETM`/`@FLOW`) | Probe sementara | Hapus / pindah scratch setelah selesai |
-| `tests/specs/…` + tag `@ETM-xxxxx` (atau `@FLOW-`) | Regresi yang akan diulang | **Ya** — commit hanya jika worth retest |
+| `tests/scratch/` | Probe sekali pakai | Hapus setelah selesai |
+| `tests/specs/check-*.spec.ts` (tanpa `@ETM`/`@FLOW`) | Probe sementara | Hapus / pindah scratch |
+| `tests/specs/…` + `@ETM-xxxxx` / `@FLOW-` | Regresi berulang | Commit hanya jika worth retest |
 
-- Spec **tidak membaca** description Jira sendiri. Cocokkan manual Expected card vs assert di spec sebelum klaim lulus.
-- Otomasi baru: tag **`@ETM-xxxxx`**. Tag `@TC-*` lama boleh dibiarkan sampai diganti pelan-pelan.
-- Satu card sekali uji → cukup crawl/probe; **jangan** commit spec baru kecuali kasus kritis/sering diulang.
-- Reuse yang benar = **helper/POM**, bukan satu spec generik untuk semua card.
-- `prepareSession` + `switchCompanyByCode`; spek yang ubah data: `retries=0`.
-- Input kosong: `fill('')` (di Mac, Ctrl+A sering salah = ke awal baris).
-- Tes negatif di data bersama: `page.route` abort endpoint **sebelum** aksi; hitung request.
+- Spec **tidak** baca description Jira sendiri — cocokkan Expected card vs assert sebelum klaim lulus.
+- Otomasi baru: tag **`@ETM-xxxxx`**. `@TC-*` lama boleh sampai diganti pelan-pelan.
+- Satu card sekali uji → crawl/probe cukup; **jangan** commit spec kecuali kritis/sering diulang.
+- Reuse = **helper/POM**, bukan satu spec generik semua card.
+- `prepareSession` + `switchCompanyByCode`. Input kosong: `fill('')`.
+- Tes negatif di data bersama: `page.route` abort **sebelum** aksi; hitung request.
 
 ---
 
