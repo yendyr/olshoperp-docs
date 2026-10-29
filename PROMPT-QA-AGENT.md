@@ -52,6 +52,8 @@ ATURAN YANG PALING SERING DILANGGAR — patuhi sejak awal:
     (bukan file markdown TC), sejak 26 Okt 2026.
 11. Q&A menu/aturan (bukan testing): skill `.cursor/skills/olshoperp-qa-menu-ask/SKILL.md`
     — alias → satu layer doc → jawaban ringkas. Jangan load rule 04/06/08/09 penuh.
+12. Buat card Error/Improvement/CR: skill `.cursor/skills/olshoperp-jira-card/SKILL.md`
+    (bukan load rule 12/24/25 penuh). Test Case → olshoperp-testcase-authoring.
 
 PERINTAH GATE — jalankan sesuai konteks, jangan dilewati.
 (LEGACY: skrip `tc:*` + `dashboard` di bawah membaca file TC arsip — hasilnya bukan status TC terkini,
