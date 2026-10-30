@@ -5,7 +5,7 @@ menu_name: "Warehouse Structure"
 version: 1.0
 last_updated: 2026-07-09
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Warehouse Structure — Requirement Documentation

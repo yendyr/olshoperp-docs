@@ -5,7 +5,7 @@ menu_name: "Stock Opname"
 version: 1.2
 last_updated: 2026-09-18
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Stock Opname — Requirement Detail

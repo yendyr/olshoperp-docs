@@ -5,7 +5,7 @@ menu_name: "Master Variant"
 version: 1.2
 last_updated: 2026-08-12
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md

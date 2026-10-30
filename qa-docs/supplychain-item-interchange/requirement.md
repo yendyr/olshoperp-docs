@@ -5,7 +5,7 @@ menu_name: "Product Interchange"
 version: 1.0
 last_updated: 2026-06-19
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Product Interchange — Requirement Detail

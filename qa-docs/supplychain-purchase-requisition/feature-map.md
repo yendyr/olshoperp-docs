@@ -5,7 +5,7 @@ menu_name: "Purchase Requisition"
 version: 1.0
 last_updated: 2026-07-29
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [PR feature map, purchase requisition features, sub feature PR]
 ---
 

@@ -5,7 +5,7 @@ menu_name: "Asset Category"
 version: 1.1
 last_updated: 2026-07-24
 owner: QA - Cursor
-status: draft
+status: review
 audience: operator
 ---
 

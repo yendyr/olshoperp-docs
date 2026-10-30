@@ -7,7 +7,7 @@ last_updated: 2026-08-11
 source_docs: [requirement.md, knowledge-base.md, technical.md]
 source_version: 1.1
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Stock Monitoring Value — Panduan Pengguna

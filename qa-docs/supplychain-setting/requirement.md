@@ -5,7 +5,7 @@ menu_name: "Warehouse Setting"
 version: 1.2
 last_updated: 2026-07-05
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Warehouse Setting — Requirement Documentation

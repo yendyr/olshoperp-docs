@@ -5,7 +5,7 @@ menu_name: "Warehouse Level"
 version: 1.0
 last_updated: 2026-06-19
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Warehouse Level — Requirement Documentation

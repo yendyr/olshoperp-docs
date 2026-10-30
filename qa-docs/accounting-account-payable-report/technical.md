@@ -5,7 +5,7 @@ menu_name: "Account Payable Report"
 version: 1.0
 last_updated: 2026-09-02
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Account Payable Report — Technical Documentation

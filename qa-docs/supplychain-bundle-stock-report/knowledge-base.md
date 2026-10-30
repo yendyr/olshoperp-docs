@@ -5,7 +5,7 @@ menu_name: "Bundle Stock Report"
 version: 1.0
 last_updated: 2026-06-19
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 sections:
   core: [what-is, glossary, can-cannot, faq, help]

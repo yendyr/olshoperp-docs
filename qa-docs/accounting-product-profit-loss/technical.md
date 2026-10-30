@@ -5,7 +5,7 @@ menu_name: "Product Profit Loss"
 version: 1.6
 last_updated: 2026-10-11
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md

@@ -5,7 +5,7 @@ menu_name: "Product Mutation History"
 version: 1.1
 last_updated: 2026-09-25
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md

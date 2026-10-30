@@ -5,7 +5,7 @@ menu_name: "Stock Deduction"
 version: 1.1
 last_updated: 2026-07-09
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Stock Deduction — Requirement Documentation

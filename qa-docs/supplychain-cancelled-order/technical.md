@@ -5,7 +5,7 @@ menu_name: "Cancelled Order"
 version: 1.0
 last_updated: 2026-10-09
 owner: QA - Yemima
-status: draft
+status: review
 # end_user_used: false — skip SOT / review upgrade
 related_docs:
   - ./knowledge-base.md

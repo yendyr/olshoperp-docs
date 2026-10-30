@@ -5,7 +5,7 @@ menu_name: "Master Variant"
 version: 1.2
 last_updated: 2026-08-12
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 aliases: [Master Variant, Variant Group, Variant Type, Set as Default System Product]
 ---

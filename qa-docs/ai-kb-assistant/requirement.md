@@ -5,7 +5,7 @@ menu_name: "AI Assistant"
 version: 1.0
 last_updated: 2026-06-20
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # AI Assistant — Requirement Documentation

@@ -5,7 +5,7 @@ menu_name: "Purchase Return"
 version: 1.2
 last_updated: 2026-10-22
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [Purchase Return, retur beli, PR billed, ETM-15726, Unit Price Before VAT, Total Price Return, Available Product]
 ---
 

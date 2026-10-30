@@ -5,7 +5,7 @@ menu_name: "Account Payable Report"
 version: 1.0
 last_updated: 2026-09-02
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [Account Payable Report, AP report, laporan hutang, ETM-15728]
 ---
 

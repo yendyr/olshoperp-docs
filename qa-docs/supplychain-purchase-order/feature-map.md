@@ -5,7 +5,7 @@ menu_name: "Purchase Order"
 version: 1.0
 last_updated: 2026-07-28
 owner: QA - Yemima
-status: draft
+status: review
 aliases: [PO feature map, purchase order features, sub feature PO]
 ---
 

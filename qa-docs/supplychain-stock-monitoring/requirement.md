@@ -5,7 +5,7 @@ menu_name: "Dev - Stock Monitoring"
 version: 1.1
 last_updated: 2026-08-11
 owner: QA - Yemima
-status: draft
+status: review
 ---
 
 # Dev - Stock Monitoring — Requirement Documentation

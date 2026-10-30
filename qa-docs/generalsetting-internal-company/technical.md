@@ -5,7 +5,7 @@ menu_name: "Internal Company"
 version: 1.1
 last_updated: 2026-08-04
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md

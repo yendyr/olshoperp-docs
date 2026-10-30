@@ -5,7 +5,7 @@ menu_name: "Stock Monitoring Value"
 version: 1.1
 last_updated: 2026-08-11
 owner: QA - Yemima
-status: draft
+status: review
 related_docs:
   - ./knowledge-base.md
   - ./requirement.md

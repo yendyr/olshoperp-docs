@@ -5,7 +5,7 @@ menu_name: "Product Transaction History"
 version: 1.1
 last_updated: 2026-09-02
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 ---
 

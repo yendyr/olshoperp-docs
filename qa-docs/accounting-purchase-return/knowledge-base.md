@@ -5,7 +5,7 @@ menu_name: "Purchase Return"
 version: 1.2
 last_updated: 2026-09-09
 owner: QA - Yemima
-status: draft
+status: review
 audience: operator
 ---
 
