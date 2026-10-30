@@ -3,12 +3,12 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-10-11T13:58:40Z'
+generated: '2026-10-30T07:15:24Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
-menu_count: 132
-alias_count: 818
-ambiguous_count: 27
+menu_count: 133
+alias_count: 832
+ambiguous_count: 28
 aliases:
   3pl: supplychain-delivery-order
   account payable report: accounting-account-payable-report
@@ -110,6 +110,7 @@ aliases:
   ap payment: accounting-supplier-payment
   ap report: accounting-account-payable-report
   application: generalsetting-application
+  applied store: businessdevelopment-category-price
   approval penambahan stok: accounting-adjustment-inbound
   approval pengurangan stok: accounting-adjustment-outbound
   approval stock opname: accounting-stock-opname-approval
@@ -286,6 +287,7 @@ aliases:
   etm 15728: accounting-account-payable-report
   etm 15729: accounting-purchase-report
   etm 16011: accounting-purchase-report
+  etm 16805: omni-sales-platform
   extract bundle:
     slugs:
     - omni-sales-platform
@@ -478,6 +480,7 @@ aliases:
       accounting-product-benchmark-price: Accounting = Benchmark COGS (/accounting/product-benchmark-price)
   manual cogs expiry: accounting-product-benchmark-price
   manual journal: journal
+  manual margin: businessdevelopment-pricelist-product
   manual picking list: supplychain-manual-picking-list
   map kolom settlement: accounting-settlement-mapping
   mapping settlement: accounting-settlement-mapping
@@ -496,6 +499,15 @@ aliases:
   master variant default: system-product
   master warranty: supplychain-warranty
   matched: omni-sales-platform
+  max value:
+    slugs:
+    - businessdevelopment-variable-price
+    - businessdevelopment-category-price
+    hint: BusinessDevelopment = Variable Price (/businessdevelopment/variable-price). BusinessDevelopment
+      = Category Price (/businessdevelopment/pricelist-category).
+    by_slug:
+      businessdevelopment-variable-price: BusinessDevelopment = Variable Price (/businessdevelopment/variable-price)
+      businessdevelopment-category-price: BusinessDevelopment = Category Price (/businessdevelopment/pricelist-category)
   mpl: supplychain-manual-picking-list
   mss: omni-shipping-service
   mutation inbound: supplychain-mutation-inbound
@@ -532,6 +544,7 @@ aliases:
   omni shipping service platform: omni-shipping-service-platform
   omni skip processing: omni-skip-processing
   omni skip wave process: omni-skip-wave-process
+  omni stock shortage monitoring: omni-stock-shortage-monitoring
   omni store binding: omni-store-binding
   omni unassign wave: omni-unassign-wave
   omni warehouse binding: omni-warehouse-binding
@@ -553,6 +566,7 @@ aliases:
   omni-shipping-service-platform: omni-shipping-service-platform
   omni-skip-processing: omni-skip-processing
   omni-skip-wave-process: omni-skip-wave-process
+  omni-stock-shortage-monitoring: omni-stock-shortage-monitoring
   omni-store-binding: omni-store-binding
   omni-unassign-wave: omni-unassign-wave
   omni-warehouse-binding: omni-warehouse-binding
@@ -730,6 +744,7 @@ aliases:
   rekonsiliasi bank: accounting-cash-bank-reconcile
   remapping stok: accounting-stock-remapping
   replace defective: omni-checking-list
+  report shortage: omni-stock-shortage-monitoring
   restock lost scrap: supplychain-failed-ship
   retry skip: omni-skip-processing
   retur beli: accounting-purchase-return
@@ -772,6 +787,7 @@ aliases:
   send to default waves: omni-unassign-wave
   send wave logs: omni-unassign-wave
   send wave logs technical: omni-unassign-wave
+  server reboot schedule: horizon-jobs
   set as default system product:
     slugs:
     - supplychain-variant
@@ -788,6 +804,7 @@ aliases:
   shipping service platform: omni-shipping-service-platform
   shopee booking: omni-sales-platform
   shopee settlement mapping: accounting-settlement-mapping
+  shortage monitoring: omni-stock-shortage-monitoring
   si: accounting-customer-invoice
   si technical: accounting-customer-invoice
   sidebar menu: sidebar-menu
@@ -836,6 +853,7 @@ aliases:
   sr finance: accounting-sales-return
   sr gudang: supplychain-sales-returns
   sr warehouse: supplychain-sales-returns
+  ssm: omni-stock-shortage-monitoring
   stock acak: accounting-stock-remapping
   stock addition: supplychain-adjustment-addition
   stock addition approval: accounting-adjustment-inbound
@@ -853,9 +871,11 @@ aliases:
   stock opname approval: accounting-stock-opname-approval
   stock opname gudang: supplychain-stock-opname
   stock remapping: accounting-stock-remapping
+  stock shortage monitoring: omni-stock-shortage-monitoring
   stock take: supplychain-stock-opname
   stockmutationoutbound: supplychain-mutation-outbound
   store: omni-store-binding
+  sunday reboot: horizon-jobs
   supplier deposit: accounting-debit-note
   supplier invoice: accounting-supplier-invoice
   supplier invoice api: accounting-supplier-invoice
@@ -967,6 +987,7 @@ aliases:
   tf scrap: omni-checking-list
   tfi: supplychain-mutation-transfer-internal
   tier breakdown: businessdevelopment-pricelist-product
+  tiktok price: omni-sales-platform
   tiktok settlement mapping: accounting-settlement-mapping
   tipe wadah: supplychain-colli-type
   total price return: accounting-purchase-return
@@ -1005,6 +1026,7 @@ aliases:
   upload order to wave and ship: omni-skip-wave-process
   upload skip wave: omni-skip-wave-process
   user (gate): gate-user
+  user set margin: businessdevelopment-pricelist-product
   variable price: businessdevelopment-variable-price
   variable price tiers: businessdevelopment-category-price
   variant group: supplychain-variant

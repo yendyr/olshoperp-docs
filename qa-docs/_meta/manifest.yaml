@@ -2196,6 +2196,40 @@ menus:
         - olshoperp-frontend/src/pages/Omni/Processing/SkipWaveProcess/**/*
         - olshoperp-frontend/src/pages/SCM/Setting/components/SalesOrderProcessingDate.vue
 
+  omni-stock-shortage-monitoring:
+    menu_name: "Stock Shortage Monitoring"
+    short_description: "SKU shortage report from orders still waiting in Unassign Wave."
+    path: omni-stock-shortage-monitoring
+    module: OmniChannel
+    menu_links:
+      - omni/stock-shortage-monitoring
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+      user-guide:
+        file: user-guide.md
+        status: review
+      test_cases:
+        path: test-cases/
+        status: review
+    legacy_sources: []
+    code_globs:
+      backend:
+        - Modules/OmniChannel/Http/Controllers/StockShortageMonitoringController.php
+        - Modules/OmniChannel/Entities/StockShortageMonitoring.php
+        - Modules/OmniChannel/Jobs/StockShortageMonitoringExportJob.php
+        - Modules/OmniChannel/Jobs/StockShortageDetailExportJob.php
+      frontend:
+        - olshoperp-frontend/src/pages/Omni/Report/StockShortageMonitoring/**/*
+
   omni-unassign-wave:
     menu_name: "Unassign Wave"
     short_description: "Remove orders from a wave so they can be reassigned."
