@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: omni-stock-shortage-monitoring
 menu_name: "Stock Shortage Monitoring"
-version: 1.0
+version: 1.1
 last_updated: 2026-10-30
 owner: QA - Yemima
 status: review
