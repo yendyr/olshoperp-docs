@@ -13,7 +13,7 @@ Gaya bahasa (description card & notifikasi) **wajib** ikut `24-plain-language-te
 
 ## Kapan rule ini berlaku
 
-Card Jira ETM issue type **Improvement** yang `customfield_10495` (Request ID) terisi (bukan kosong / `"none"`) — artinya card ini lahir dari request end user, bukan inisiatif internal tim.
+Card Jira ETM issue type **Improvement** yang `customfield_10495` (Request ID) terisi dengan **ID asli** (definisi valid di `12-jira-card-format.mdc`, mis. `rec…`, `REQ-…`) — artinya card ini lahir dari request end user, bukan inisiatif internal tim. Literal `"none"`, kosong, spasi, atau `-` = **tidak terisi**; perlakukan sama seperti Request ID kosong — rule ini tidak berlaku.
 
 **Khusus Improvement** — Change Requirement, Story, Task, Error/Bug **tidak** masuk rule ini, tetap full manual review QA lead.
 

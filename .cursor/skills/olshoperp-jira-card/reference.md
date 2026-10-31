@@ -63,4 +63,4 @@ Tulis di **komentar** Jira (template mirip skill card-testing reference §G). Ja
 
 ## D. Improvement Request ID — pointer
 
-Simple vs konfirmasi: SKILL.md §3. Notify topic & gaya: rule `25` + `24`. Bot idempotent: skip jika sudah ada "Request Asli (dari User)" / footer draf.
+Simple vs konfirmasi: SKILL.md §3. Notify topic & gaya: rule `25` + `24`. Syarat masuk: Request ID = ID asli (rule `12`). `none`, `-`, kosong, atau spasi = tidak terisi — rule `25` tidak jalan, sama seperti Request ID kosong. Bot idempotent: skip jika sudah ada "Request Asli (dari User)" / footer draf.

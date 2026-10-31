@@ -60,7 +60,7 @@ Bahasa ke tim QA: sehari-hari, non-teknis (jangan `customfield_*`, `last_executi
 
 ## 3. Improvement + Request ID (screening ringkas)
 
-Jika Improvement dan Request ID terisi (bukan `none`):
+Jika Improvement dan Request ID terisi dengan ID asli (rule `12` / rule `25`). Literal `none`, `-`, kosong, atau spasi = tidak terisi — screening ini tidak jalan:
 
 | Simple (semua terpenuhi) | Butuh konfirmasi (salah satu cukup) |
 |--------------------------|-------------------------------------|
