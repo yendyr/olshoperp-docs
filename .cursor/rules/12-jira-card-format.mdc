@@ -461,6 +461,7 @@ Khusus issue bertipe **`Test Case`**. Twin di `olshoperp/.cursor/rules/17-jira-t
 - [ ] Tidak ada jargon teknis di section utama (Summary/Steps/Expected/Actual)?
 - [ ] Expected Result sudah divalidasi dari requirement.md?
 - [ ] Request ID valid (ID asli atau `none` — bukan `-` / kosong / spasi) dan sudah dicek GET setelah create?
+- [ ] Menu (`customfield_10429`) terisi dan sama persis dengan `[Nama Menu]` di judul, dan sudah dicek GET setelah create?
 - [ ] Additional Context kosong ditulis "(tidak ada catatan tambahan)", bukan dihapus?
 
 ## Custom Field Request ID (`customfield_10495`) (WAJIB)
@@ -481,7 +482,9 @@ Berlaku untuk **setiap** pembuatan card ETM (Error / Test Case / Improvement / C
 
 ## Cek setelah create & sebelum Done (WAJIB)
 
-**Setelah create** (semua tipe, termasuk Test Case): GET `fields=customfield_10495,customfield_10429,customfield_10043,labels,assignee`. Request ID masih tidak valid → perbaiki dulu (definisi di atas) sebelum lanjut ke link, transisi, atau card berikutnya.
+**Setelah create** (semua tipe, termasuk Test Case): GET `fields=customfield_10495,customfield_10429,customfield_10043,labels,assignee`. Request ID masih tidak valid, atau Menu Name / Story Points / labels / assignee kosong → **PUT sekali** field yang salah, lalu GET ulang sekali. Masih tidak valid → jangan lanjut ke link, transisi, atau card berikutnya; laporkan.
+
+**Menu (`customfield_10429`, nama internal "Notion Page")** = nama menu persis di app, **sama dengan `[Nama Menu]` di judul** (card lintas menu ikut menu di judul, bukan menu card origin). Jira tidak menolak create tanpa Menu, tetapi Test Case tanpa Menu tidak bisa digeser ke TESTING PROGRESS (pesan "Tolong Input Field Notion Page Terlebih Dahulu .."). Kejadian 30 Okt 2026: 9 TC (ETM-16939–16942, ETM-16953–16957) terbit tanpa Menu; per 31 Okt 2026 dalam 45 hari terakhir Menu kosong di 114 dari 210 card Error (54%) dan 26 dari 35 Improvement (74%). Jangan membuat card lewat MCP / REST tanpa langkah GET ini; untuk TC pakai `tools/tc_lib.py` (skill `olshoperp-testcase-authoring`), yang menambal Menu otomatis. Exit code curl tetap 0 walau Jira menolak PUT / transisi: baca isi respons.
 
 **Sebelum transisi Test Case → Done:** `customfield_10203` (Actual Result) dan `customfield_10202` (Test Result: Passed `10343` / Failed `10342`) wajib sudah terisi. Belum → **jangan transisi**, laporkan field yang kosong. Jangan pakai Blocked (`10344`).
 

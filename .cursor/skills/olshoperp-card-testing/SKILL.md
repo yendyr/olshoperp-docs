@@ -54,7 +54,7 @@ Perintah “test card ini” = izin uji + catat hasil. Tidak perlu minta izin ul
 
 ## 3. Alur Test Case
 
-1. **TESTING PROGRESS dulu** (sebelum klik uji) — pakai id/nama status di [reference.md](reference.md) §A (peta 28-10-2026). `GET .../transitions` **hanya jika** panggilan transisi gagal.
+1. **TESTING PROGRESS dulu** (sebelum klik uji) — pakai id/nama status di [reference.md](reference.md) §A (peta 28-10-2026). `GET .../transitions` **hanya jika** panggilan transisi gagal. Gagal dengan pesan "Tolong Input Field Notion Page Terlebih Dahulu" = field **Menu** (`customfield_10429`) kosong: `PUT issue/{key}` isi dari `[Nama Menu]` di judul card, lalu ulangi transisi. Exit code curl tetap 0 walau gagal, jadi baca isi respons.
 2. Pastikan **data uji** (§5). Tidak ada data → **STOP**, bilang ke prompter; jangan ganti data diam-diam. TC dikembalikan ke **Not Execute** (lihat “Blocked” jenis (a) di langkah 6).
 3. Uji sesuai **Steps + Expected** di description card (sumber kebenaran = Jira, bukan markdown repo).
 4. Isi **Actual Result** (company, akun, data + URL, hasil per Expected, angka eksak) → baru **Test Result** (**Passed** / **Failed** saja) → komentar bila perlu → **Done**. Jangan isi Test Result `Blocked`. Sebelum Done, Actual Result + Test Result wajib terisi (rule `12`); belum → jangan transisi, laporkan.

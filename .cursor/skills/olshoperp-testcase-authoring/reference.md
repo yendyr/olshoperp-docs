@@ -14,7 +14,7 @@ Dipakai bersama [SKILL.md](SKILL.md). Jangan diikuti sendirian tanpa skill.
 | Story Points | `1` |
 | Assignee (authoring) | Gantian **Firda ↔ Jeiniffer** (QA tester), kecuali user menyebut nama → `CFG["assignee"]`. Rotasi dimulai dari `CFG["assignee_start"]` (default Firda); accountId dicari lewat Jira user search di `tools/tc_lib.py` |
 | Request ID | Ikut rule `12`: ID asli atau literal `none`. `-`, kosong, spasi = tidak valid (jangan disalin; origin invalid → ID valid dari relasi origin, else `none`). Layar create TC tidak menampilkan field ini — set lewat API. Setelah create, verifikasi GET (rule `12`) |
-| Menu | Nama menu persis di app (`customfield_10429`) |
+| Menu | **Wajib.** Nama menu persis di app = `[Nama Menu]` di judul (`customfield_10429`). Kosong → TC tidak bisa ke TESTING PROGRESS. Setelah create, verifikasi GET (rule `12`) |
 | Labels | `ETM-{origin}`, `test-case`, `test-type-{happy\|negative\|…}` |
 | Link | Relates → card origin |
 | Jeda create | ~2,5 detik antar card |

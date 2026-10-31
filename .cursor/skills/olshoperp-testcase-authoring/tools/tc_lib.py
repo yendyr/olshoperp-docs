@@ -159,8 +159,8 @@ def create_card(tc, cfg):
         return {"error": r[:600]}
 
 
-def verify_created(key, request_id):
-    """GET field wajib rule 12. Request ID invalid → PUT sekali, lalu cek lagi."""
+def verify_created(key, request_id, menu):
+    """GET field wajib rule 12. Request ID invalid atau Menu kosong/beda → PUT sekali, lalu cek lagi."""
     raw = jira("GET", "issue/%s?fields=customfield_10495,customfield_10429,customfield_10043,labels,assignee" % key)
     try:
         fields = json.loads(raw).get("fields") or {}
@@ -168,19 +168,27 @@ def verify_created(key, request_id):
         raise SystemExit("verifikasi create gagal untuk " + key + ": " + raw[:400])
     got = fields.get("customfield_10495")
     got_s = got.strip() if isinstance(got, str) else ""
-    if got_s and got_s != "-" and got_s == request_id:
+    fix = {}
+    if not (got_s and got_s != "-" and got_s == request_id):
+        fix["customfield_10495"] = request_id
+    if fields.get("customfield_10429") != menu:
+        fix["customfield_10429"] = menu
+    if not fix:
         return "ok"
-    jira("PUT", "issue/" + key, {"fields": {"customfield_10495": request_id}})
+    jira("PUT", "issue/" + key, {"fields": fix})
     time.sleep(2.5)
-    raw2 = jira("GET", "issue/%s?fields=customfield_10495" % key)
+    raw2 = jira("GET", "issue/%s?fields=customfield_10495,customfield_10429" % key)
     try:
-        got2 = (json.loads(raw2).get("fields") or {}).get("customfield_10495")
+        fields2 = json.loads(raw2).get("fields") or {}
     except Exception:
-        got2 = None
+        fields2 = {}
+    got2 = fields2.get("customfield_10495")
     got2_s = got2.strip() if isinstance(got2, str) else ""
     if not got2_s or got2_s == "-" or got2_s != request_id:
         raise SystemExit("Request ID tetap tidak valid pada " + key + " setelah perbaiki: " + repr(got2)[:200])
-    return "fixed"
+    if fields2.get("customfield_10429") != menu:
+        raise SystemExit("Menu tetap kosong/beda pada " + key + " setelah perbaiki: " + repr(fields2.get("customfield_10429"))[:200])
+    return "fixed " + ", ".join(sorted(fix))
 
 
 def link_card(new_key, cfg):
@@ -217,7 +225,7 @@ if __name__ == "__main__":
             keys[str(tc["n"])] = r["key"]
             json.dump(keys, open(keys_file, "w"))
             time.sleep(2.5)
-            print("  verify:", verify_created(r["key"], request_id_value(D.CFG)))
+            print("  verify:", verify_created(r["key"], request_id_value(D.CFG), D.CFG["menu_label"]))
             time.sleep(2.5)
             print("  link:", link_card(r["key"], D.CFG))
             time.sleep(2.5)
