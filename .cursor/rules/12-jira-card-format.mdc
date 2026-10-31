@@ -422,7 +422,7 @@ Issue type → lihat § Proyek ETM — tipe issue & relasi.
 | **Summary** | `summary` | String | `[Menu] - desc` | `[Menu] - desc` | `[Menu] - desc` | `[Menu] - desc` |
 | **Description** | `description` | Markdown / ADF | Format Bug | Format TC | Format Improvement | Format CR |
 | **Menu Name / Notion Page** | `customfield_10429` | String | **Wajib** nama menu | **Wajib** nama menu | **Wajib** nama menu | **Wajib** nama menu |
-| **Request ID** | `customfield_10495` | String | Origin / `"none"` | Origin / `"none"` | Origin / `"none"` | Origin / `"none"` |
+| **Request ID** | `customfield_10495` | String | ID valid / `"none"` | ID valid / `"none"` | ID valid / `"none"` | ID valid / `"none"` |
 | **Story Points** | `customfield_10043` | Number | `1` / `2` | `1` / `0.5` | `3` / `5` | `3` / `5` |
 | **Labels** | `labels` | Array String | `["bug", ...]` | `["test-case", ...]`| `["improvement", ...]`| `["change-requirement", ...]` |
 | **Priority** | `priority` | Object (`{"id": "..."}`) | `1` (Highest) s/d `5` | Default Medium / High | Default | Default |
@@ -444,7 +444,7 @@ Khusus issue bertipe **`Test Case`**. Twin di `olshoperp/.cursor/rules/17-jira-t
    2. **`customfield_10202` (Test Result)** — `{"value": "Passed"}` atau `{"value": "Failed"}`. **Jangan** pakai nilai `Blocked` di field ini (dropdown Jira boleh tetap ada; kebijakan 28-10-2026: Blocked jenis (a) = kembali **Not Execute** tanpa Test Result; jenis (b) = perlakukan sebagai **Failed** — lihat rule `22`).
    3. Tambahkan komentar eksekusi di Jira yang merangkum hasil verifikasi (opsional, pelengkap field).
 3. **Penyelesaian:** setelah kedua field terisi, baru pindahkan status ke **`Done`**.
-4. **Larangan:** dilarang menggeser Test Case ke `Done` sebelum Actual Result dan Test Result terisi.
+4. **Larangan:** dilarang menggeser Test Case ke `Done` sebelum Actual Result dan Test Result terisi. Kalau belum terisi → jangan transisi, laporkan (lihat § Cek setelah create & sebelum Done).
 
 ---
 
@@ -460,16 +460,30 @@ Khusus issue bertipe **`Test Case`**. Twin di `olshoperp/.cursor/rules/17-jira-t
 - [ ] Jika fixture staging accessible: URL **edit** ada di Environment / Precondition / Steps?
 - [ ] Tidak ada jargon teknis di section utama (Summary/Steps/Expected/Actual)?
 - [ ] Expected Result sudah divalidasi dari requirement.md?
+- [ ] Request ID valid (ID asli atau `none` — bukan `-` / kosong / spasi) dan sudah dicek GET setelah create?
 - [ ] Additional Context kosong ditulis "(tidak ada catatan tambahan)", bukan dihapus?
 
 ## Custom Field Request ID (`customfield_10495`) (WAJIB)
 
-Berlaku untuk setiap pembuatan card ETM (Error / Test Case / Improvement / Change Requirement). Field: `Request ID`, tipe `string`.
+Berlaku untuk **setiap** pembuatan card ETM (Error / Test Case / Improvement / Change Requirement / Story / Task). Field: `Request ID`, tipe `string`. Layar create **Test Case tidak menampilkan** field ini — tetap di-set lewat API.
 
-- Card origin / relate punya Request ID (mis. `recvqWrTHZ1dOV`) → **copy nilai persis**.
+**Nilai valid** hanya salah satu:
+
+- ID asli (mis. `recvqWrTHZ1dOV`, `REQ-…`, atau bentuk ID request lain yang nyata), atau
+- literal **`none`**.
+
+**Tidak valid:** `-`, string kosong, atau spasi saja. Jangan tulis dan jangan salin nilai itu ke card baru.
+
+- Origin / relate punya Request ID **valid** → **copy nilai persis**.
+- Origin tidak valid (`-` / kosong / spasi) → **jangan salin**. Pakai Request ID valid dari origin-nya origin atau card yang di-relate, kalau ketemu. Kalau tidak ketemu → isi **`none`** dan catat di laporan. Kasus khusus lain → konfirmasi ke user dulu.
 - Card baru / mandiri tanpa referensi request user → isi string **`none`**.
-- Case khusus lain → konfirmasi ke user dulu.
 - **Gotcha API:** `getJiraIssue` tanpa `fields=*` sering hanya me-render field standar. Jangan simpulkan Request ID kosong dari payload ringkas — cek `customfield_10495` secara eksplisit, atau description / Notion / Airtable request context.
+
+## Cek setelah create & sebelum Done (WAJIB)
+
+**Setelah create** (semua tipe, termasuk Test Case): GET `fields=customfield_10495,customfield_10429,customfield_10043,labels,assignee`. Request ID masih tidak valid → perbaiki dulu (definisi di atas) sebelum lanjut ke link, transisi, atau card berikutnya.
+
+**Sebelum transisi Test Case → Done:** `customfield_10203` (Actual Result) dan `customfield_10202` (Test Result: Passed `10343` / Failed `10342`) wajib sudah terisi. Belum → **jangan transisi**, laporkan field yang kosong. Jangan pakai Blocked (`10344`).
 
 ## Rate Limiting & Jeda Eksekusi Pembuatan/Perubahan Card Jira (MCP Anti Session Drop)
 

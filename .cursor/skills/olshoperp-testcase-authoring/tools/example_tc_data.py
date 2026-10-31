@@ -2,7 +2,7 @@
 #   python3 tools/tc_lib.py contoh.py create   -> buat card Jira + link ke origin (jeda 2,5 dtk)
 #   python3 tools/tc_lib.py contoh.py update   -> perbarui description card yang sudah ada
 CFG = dict(
-    origin="ETM-00000", request_id="recXXXXXXXXXXXXXX",      # salin Request ID card origin
+    origin="ETM-00000", request_id="recXXXXXXXXXXXXXX",      # ID asli (rec…/REQ-…) atau literal none. Jangan "-", kosong, atau spasi (rule 12)
     menu_label="Nama Menu",                                    # nama menu persis di aplikasi (field Menu / customfield_10429)
     # assignee="Firda",  # opsional; kosong = gantian Firda <-> Jeiniffer (assignee_start="Jeiniffer" untuk mulai dari dia)
     company_label="Dev Staging (kode DEV-STG)",

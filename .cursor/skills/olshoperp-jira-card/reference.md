@@ -12,7 +12,7 @@ Dipakai bersama [SKILL.md](SKILL.md). Struktur penuh historis: rule `12`.
 | Change Requirement | `10048` |
 | Test Case | `10051` → skill authoring |
 | Menu | `customfield_10429` |
-| Request ID | `customfield_10495` |
+| Request ID | `customfield_10495` — nilai sah: rule `12` (ID asli atau `none`, bukan `-`). Setelah create, verifikasi GET di rule `12` |
 | Story Points | `customfield_10043` |
 | Link | Relates |
 

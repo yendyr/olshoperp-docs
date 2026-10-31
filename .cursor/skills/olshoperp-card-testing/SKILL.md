@@ -57,12 +57,13 @@ Perintah “test card ini” = izin uji + catat hasil. Tidak perlu minta izin ul
 1. **TESTING PROGRESS dulu** (sebelum klik uji) — pakai id/nama status di [reference.md](reference.md) §A (peta 28-10-2026). `GET .../transitions` **hanya jika** panggilan transisi gagal.
 2. Pastikan **data uji** (§5). Tidak ada data → **STOP**, bilang ke prompter; jangan ganti data diam-diam. TC dikembalikan ke **Not Execute** (lihat “Blocked” jenis (a) di langkah 6).
 3. Uji sesuai **Steps + Expected** di description card (sumber kebenaran = Jira, bukan markdown repo).
-4. Isi **Actual Result** (company, akun, data + URL, hasil per Expected, angka eksak) → baru **Test Result** (**Passed** / **Failed** saja) → komentar bila perlu → **Done**. Jangan isi Test Result `Blocked`.
+4. Isi **Actual Result** (company, akun, data + URL, hasil per Expected, angka eksak) → baru **Test Result** (**Passed** / **Failed** saja) → komentar bila perlu → **Done**. Jangan isi Test Result `Blocked`. Sebelum Done, Actual Result + Test Result wajib terisi (rule `12`); belum → jangan transisi, laporkan.
 5. **Test Case tidak punya status RE-OPEN** — tetap Done; hasil ada di Test Result.
 6. **Failed** → langsung (tanpa tanya lagi): card **Error** baru + Done TC:
    - Relates ke **TC ini** + ke **origin** (Improvement/CR/Story yang dilink).
    - Assignee Error = **assignee origin** (bukan tester).
    - Origin Improvement/CR → **RE-OPEN tanpa clone**, lalu Error baru di atas.
+   - Request ID / Menu Name / Story Points / labels pada Error baru ikut rule `12` (jangan salin `-` / kosong / spasi). Setelah create, verifikasi GET di rule `12` sebelum lanjut.
    - Jangan Done-kan origin yang masih gagal tanpa tindak lanjut ini.
 
    **“Blocked” ada dua jenis (keputusan Yemima 28-10-2026):**
@@ -78,8 +79,8 @@ Site Jira: **hanya ETM** (`erpintegration.atlassian.net`). Jangan eduqat.
 1. Uji sesuai Expected di description. Bukti di **komentar Jira** — field Actual/Test Result **tidak tampil** di tipe card ini.
 2. **Lulus** → komentar bukti → transisi ke Done (lewat QA Review bila ada; id di reference §A; `GET transitions` hanya bila gagal).
 3. **Gagal** → jangan Done. Ikuti jalur:
-   - **Error / Bug origin:** RE-OPEN origin → **Clone** origin → judul clone `RE-OPEN [Menu] - {desc}`. Copy Request ID / Menu / Story Points / labels. Assignee clone = assignee origin. Retest berikutnya = **clone**, bukan origin yang sudah RE-OPEN.
-   - **Improvement / Change Requirement / Story / Task:** RE-OPEN origin **tanpa** clone → buat card **Error baru** (format lengkap: Summary, Environment, Precondition, Steps, Expected, Actual di *description*, Additional Context) → Relates ke origin (+ TC penemu jika ada) → assignee = assignee origin.
+   - **Error / Bug origin:** RE-OPEN origin → **Clone** origin → judul clone `RE-OPEN [Menu] - {desc}`. Copy Menu / Story Points / labels. Request ID ikut rule `12` (jangan salin `-` / kosong / spasi). Assignee clone = assignee origin. Setelah create/clone, verifikasi GET di rule `12`. Retest berikutnya = **clone**, bukan origin yang sudah RE-OPEN.
+   - **Improvement / Change Requirement / Story / Task:** RE-OPEN origin **tanpa** clone → buat card **Error baru** (format lengkap: Summary, Environment, Precondition, Steps, Expected, Actual di *description*, Additional Context) → Relates ke origin (+ TC penemu jika ada) → assignee = assignee origin. Request ID (rule `12`), Menu Name, Story Points, labels wajib; setelah create verifikasi GET di rule `12`.
 4. Expected bersyarat data → uji **kedua** kondisi (ada / tidak ada) dan sebut data per kondisi.
 5. Scope E2E / cross-menu sangat panjang & ragu: tanya Yemima dulu sebelum automasi RE-OPEN massal.
 6. Pakai peta status di reference §A; `GET .../transitions` **hanya bila** call gagal.

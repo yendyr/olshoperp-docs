@@ -126,7 +126,21 @@ def pick_assignee(tc, cfg):
     return QA_TESTERS[(start + int(tc["n"]) - 1) % len(QA_TESTERS)]
 
 
+def request_id_value(cfg):
+    """ID asli atau literal 'none'. '-', kosong, dan spasi ditolak (rule 12)."""
+    raw = cfg.get("request_id")
+    text = raw.strip() if isinstance(raw, str) else ""
+    if not text or text == "-":
+        raise SystemExit(
+            "request_id tidak valid: '-', kosong, atau spasi ditolak. "
+            "Isi ID asli (rec…, REQ-…) atau literal 'none'. "
+            "Definisi: .cursor/rules/12-jira-card-format.mdc"
+        )
+    return text
+
+
 def create_card(tc, cfg):
+    request_id = request_id_value(cfg)
     body = {"fields": {
         "project": {"key": "ETM"}, "issuetype": {"id": "10051"},
         "summary": "[" + cfg["menu_label"] + "] - " + tc["title"],
@@ -135,7 +149,7 @@ def create_card(tc, cfg):
         "labels": [cfg["origin"], "test-case", "test-type-" + tc["ttype"]],
         "assignee": {"accountId": account_id(pick_assignee(tc, cfg))},
         "customfield_10429": cfg["menu_label"],
-        "customfield_10495": cfg["request_id"],
+        "customfield_10495": request_id,
         "customfield_10043": 1,
     }}
     r = jira("POST", "issue", body)
@@ -143,6 +157,30 @@ def create_card(tc, cfg):
         return json.loads(r)
     except Exception:
         return {"error": r[:600]}
+
+
+def verify_created(key, request_id):
+    """GET field wajib rule 12. Request ID invalid → PUT sekali, lalu cek lagi."""
+    raw = jira("GET", "issue/%s?fields=customfield_10495,customfield_10429,customfield_10043,labels,assignee" % key)
+    try:
+        fields = json.loads(raw).get("fields") or {}
+    except Exception:
+        raise SystemExit("verifikasi create gagal untuk " + key + ": " + raw[:400])
+    got = fields.get("customfield_10495")
+    got_s = got.strip() if isinstance(got, str) else ""
+    if got_s and got_s != "-" and got_s == request_id:
+        return "ok"
+    jira("PUT", "issue/" + key, {"fields": {"customfield_10495": request_id}})
+    time.sleep(2.5)
+    raw2 = jira("GET", "issue/%s?fields=customfield_10495" % key)
+    try:
+        got2 = (json.loads(raw2).get("fields") or {}).get("customfield_10495")
+    except Exception:
+        got2 = None
+    got2_s = got2.strip() if isinstance(got2, str) else ""
+    if not got2_s or got2_s == "-" or got2_s != request_id:
+        raise SystemExit("Request ID tetap tidak valid pada " + key + " setelah perbaiki: " + repr(got2)[:200])
+    return "fixed"
 
 
 def link_card(new_key, cfg):
@@ -178,6 +216,8 @@ if __name__ == "__main__":
                 break
             keys[str(tc["n"])] = r["key"]
             json.dump(keys, open(keys_file, "w"))
+            time.sleep(2.5)
+            print("  verify:", verify_created(r["key"], request_id_value(D.CFG)))
             time.sleep(2.5)
             print("  link:", link_card(r["key"], D.CFG))
             time.sleep(2.5)

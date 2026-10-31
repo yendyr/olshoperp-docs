@@ -17,18 +17,20 @@ Card Jira ETM issue type **Test Case** yang statusnya **Done** dan field `custom
 
 **Bukan** bagian dari `22-reopen-defect-flow.mdc` — rule ini jalan duluan, notify-only, tidak eksekusi apa pun ke Jira (tidak reopen, tidak create card baru). Alur reopen/defect baru relevan setelah Test Result = Failed benar-benar final dan diverifikasi manusia (lihat `22-reopen-defect-flow.mdc` § Test Case card).
 
-## Check 1 — Kelengkapan Dasar (deterministic, cek isi/kosong saja)
+## Check 1 — Kelengkapan Dasar (deterministic, cek isi/kosong; Request ID juga menolak `-`)
 
 | Sumber | Field | Syarat |
 |---|---|---|
 | Jira card | `customfield_10429` (Menu Name) | Terisi |
-| Jira card | `customfield_10495` (Request ID) | Terisi (atau `"none"`) |
+| Jira card | `customfield_10495` (Request ID) | Nilai **valid** saja: ID asli (`rec…`, `REQ-…`, dll.) atau literal `"none"`. `-`, kosong, atau spasi = **gagal** |
 | Jira card | assignee | Terisi |
 | Jira card | `customfield_10203` (Actual Result) | Terisi, bukan kosong/placeholder |
 | Jira card | `customfield_10202` (Test Result) | **Passed** atau **Failed** saja. Nilai `Blocked` di dropdown **jangan** dipakai sebagai hasil final (Blocked jenis a → Not Execute tanpa Test Result; jenis b → Failed — rule `22`) |
 | Jira card | company & identitas tester | Disebut di Actual Result atau comment (`17-jira-testcase-status-transition.mdc`, repo `olshoperp`) |
 
-Kalau ada yang kosong → langsung masuk daftar temuan, tidak perlu AI judgment.
+Kalau ada yang kosong, atau Request ID tidak valid (`-` / kosong / spasi) → langsung masuk daftar temuan, tidak perlu AI judgment.
+
+Request ID yang gagal itu **bukan** "terisi". Rule ini notify-only (tidak menulis ke Jira) — **jangan silent-fix**. Flag di notifikasi, dan sebut nilai yang diharapkan: Request ID valid milik origin, atau `"none"` bila origin memang `"none"`.
 
 ## Check 2 — Kualitas Actual Result (butuh AI baca & bandingkan)
 

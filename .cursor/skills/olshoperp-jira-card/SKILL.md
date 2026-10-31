@@ -50,7 +50,7 @@ Site: **hanya ETM** (`erpintegration.atlassian.net`, cloudId `44cc9820-3372-4c12
 | Improvement | Improvement | `10088` |
 | Change Requirement | Change Requirement | `10048` |
 
-Wajib field: Menu (`customfield_10429`), Request ID (`customfield_10495` — salin origin atau `none`), Story Points, labels, Relates ke card sumber bila ada.
+Wajib field: Menu (`customfield_10429`), Request ID (`customfield_10495` — definisi valid di rule `12`: ID asli atau literal `none`; `-` / kosong / spasi tidak valid, jangan disalin), Story Points, labels, Relates ke card sumber bila ada.
 
 **Hasil uji** pada card tipe ini → **komentar** (field Actual Result tidak tampil). Bagian “Actual Result” di template Error = teks di **description**, bukan `customfield_10203`.
 
@@ -80,7 +80,7 @@ Detail: reference §D atau rule `25`.
 2. Resolve menu + baca **satu** layer requirement (status OK).  
 3. Susun draft section sesuai tipe (reference §B).  
 4. Cek FE/docs untuk label UI; URL edit jika ada data.  
-5. Setelah izin: create/update Jira + Relates; laporkan URL.  
+5. Setelah izin: create/update Jira + Relates; verifikasi GET sesuai rule `12` (Request ID tidak valid diperbaiki sebelum lanjut); laporkan URL.  
 6. Jeda ~2,5 dtk antar create beruntun.
 
 ---
@@ -90,7 +90,7 @@ Detail: reference §D atau rule `25`.
 - [ ] Tipe benar (Error ≠ Bug subtask)
 - [ ] Judul `[Menu] - …`; istilah UI konsisten
 - [ ] Expected/AS-IS/AC dari docs; gap dilabeli
-- [ ] Menu + Request ID + Relates (jika ada sumber)
+- [ ] Menu + Request ID valid (rule `12`, bukan `-`) + Relates (jika ada sumber); sudah dicek GET setelah create
 - [ ] URL edit jika fixture staging
 - [ ] Bahasa non-teknis di section utama
 - [ ] Create hanya karena permintaan sesi ini
