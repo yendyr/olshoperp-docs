@@ -126,17 +126,21 @@ def pick_assignee(tc, cfg):
     return QA_TESTERS[(start + int(tc["n"]) - 1) % len(QA_TESTERS)]
 
 
+_REQUEST_ID_RE = re.compile(r"^rec[A-Za-z0-9]+$")
+
+
 def request_id_value(cfg):
-    """ID asli atau literal 'none'. '-', kosong, dan spasi ditolak (rule 12)."""
+    """Lark rec… atau literal 'none'. REQ-… / '-' / kosong ditolak (rule 12 HARD)."""
     raw = cfg.get("request_id")
     text = raw.strip() if isinstance(raw, str) else ""
-    if not text or text == "-":
-        raise SystemExit(
-            "request_id tidak valid: '-', kosong, atau spasi ditolak. "
-            "Isi ID asli (rec…, REQ-…) atau literal 'none'. "
-            "Definisi: .cursor/rules/12-jira-card-format.mdc"
-        )
-    return text
+    if text == "none" or _REQUEST_ID_RE.fullmatch(text):
+        return text
+    raise SystemExit(
+        "request_id tidak valid: %r. "
+        "Hanya Lark record ID (^rec[A-Za-z0-9]+$) atau literal 'none'. "
+        "Dilarang: REQ-…, label notulen, '-', kosong, n/a. "
+        "Definisi HARD: .cursor/rules/12-jira-card-format.mdc" % (raw,)
+    )
 
 
 def create_card(tc, cfg):

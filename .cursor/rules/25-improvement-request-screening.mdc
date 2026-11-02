@@ -13,7 +13,7 @@ Gaya bahasa (description card & notifikasi) **wajib** ikut `24-plain-language-te
 
 ## Kapan rule ini berlaku
 
-Card Jira ETM issue type **Improvement** yang `customfield_10495` (Request ID) terisi dengan **ID asli** (definisi valid di `12-jira-card-format.mdc`, mis. `rec…`, `REQ-…`) — artinya card ini lahir dari request end user, bukan inisiatif internal tim. Literal `"none"`, kosong, spasi, atau `-` = **tidak terisi**; perlakukan sama seperti Request ID kosong — rule ini tidak berlaku.
+Card Jira ETM issue type **Improvement** yang `customfield_10495` (Request ID) terisi dengan **Lark record ID** valid (definisi HARD di `12-jira-card-format.mdc`: cocok `^rec[A-Za-z0-9]+$`) — artinya card ini lahir dari request end user di Lark, bukan inisiatif internal tim. Literal `"none"`, `REQ-…`, kosong, spasi, atau `-` = **tidak terisi** / **tidak valid**; perlakukan sama seperti Request ID kosong — rule ini tidak berlaku. Jangan pernah mengisi label `REQ-…` supaya “terlihat terisi”.
 
 **Khusus Improvement** — Change Requirement, Story, Task, Error/Bug **tidak** masuk rule ini, tetap full manual review QA lead.
 

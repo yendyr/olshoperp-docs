@@ -16,7 +16,7 @@ Akun uji khusus: `tests/TEST-ACCOUNTS.md` (di repo docs; tidak dimirror ke Help 
 - Auth: `JIRA_EMAIL` + `JIRA_API_TOKEN` (basic auth; `tools/jira.sh` pakai curl `-K -`).
 - Issue type id: Error `10033`, Test Case `10051`, Improvement `10088`, Change Requirement `10048`.
 - Field (**Test Case saja**): Test Result `customfield_10202` `{"value":"Passed|Failed"}` — **jangan** pakai `Blocked` sebagai hasil final; Actual Result `customfield_10203` (ADF). Non-TC: hasil di **komentar** (field Actual tidak tampil).
-- Menu `customfield_10429`, Request ID `customfield_10495` (nilai sah = rule `12`: ID asli atau `none`, bukan `-`), Story Points `customfield_10043`. Setelah create card: verifikasi GET di rule `12`. Sebelum TC → Done: Actual Result + Test Result wajib terisi, kalau belum jangan transisi.
+- Menu `customfield_10429`, Request ID `customfield_10495` (HARD rule `12`: hanya Lark `rec…` atau `none`; **dilarang** `REQ-…` / `-`), Story Points `customfield_10043`. Setelah create card: verifikasi GET di rule `12`. Sebelum TC → Done: Actual Result + Test Result wajib terisi, kalau belum jangan transisi.
 - **Transisi:** pakai **peta status di bawah langsung** (dipetakan 28-10-2026 dari card ETM nyata). `GET issue/{key}/transitions` **hanya jika** call gagal. **Id beda per tipe** — jangan campur TC vs non-TC.
 
 ### Peta status ETM (28-10-2026)

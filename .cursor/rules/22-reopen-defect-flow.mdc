@@ -27,7 +27,7 @@ Scope selalu tunggal (1 acceptance criteria) — **tidak** melahirkan Test Case 
 1. Transisi status card origin → **Re-OPEN**.
 2. **Clone** card origin (fitur Clone Jira; kalau tidak ada endpoint clone via API/MCP, create manual + copy field satu-satu — lihat § Prasyarat teknis).
 3. Judul clone wajib prefix: `RE-OPEN [Nama Menu] - {desc asli}` (format dasar tetap ikut `12-jira-card-format.mdc`).
-4. Copy persis dari origin: `customfield_10429` (Menu Name), `customfield_10043` (Story Points), `labels`. Request ID (`customfield_10495`) ikut definisi valid di `12-jira-card-format.mdc` — jangan salin `-` / kosong / spasi.
+4. Copy persis dari origin: `customfield_10429` (Menu Name), `customfield_10043` (Story Points), `labels`. Request ID (`customfield_10495`) ikut HARD di `12-jira-card-format.mdc`: salin hanya jika origin `rec…` valid; **jangan** salin `REQ-…` / `-` / kosong — else `none`.
 5. **Assignee clone = assignee card origin** — jangan default/acak.
 6. Card clone inilah target retest berikutnya (bukan card origin yang sudah Re-OPEN).
 
@@ -39,7 +39,7 @@ Tipe ini **wajib** melahirkan Test Case card dulu (di Jira, skill `olshoperp-tes
 2. Buat card **Error/Bug baru** untuk defect yang ditemukan, format penuh sesuai `12-jira-card-format.mdc` Tipe 1 (Summary, Environment, Precondition Data, Steps to Reproduce, Expected Result, **Actual Result** = bagian di *description* — bukan field `customfield_10203`, Additional Context lengkap — bukan comment singkat).
 3. Card Bug baru **relates** ke: (a) card origin Improvement/Change Requirement/Story/Task, dan (b) card Test Case yang menemukan defect (kalau defect ditemukan lewat TC — lihat § Test Case di bawah).
 4. **Assignee card Bug baru = assignee card origin** — jangan assignee/tester TC.
-5. Pada Error baru, isi juga: Request ID (`customfield_10495`) ikut definisi valid di `12-jira-card-format.mdc` (salin origin yang valid; jangan salin `-` / kosong / spasi), Menu Name (`customfield_10429`), Story Points (`customfield_10043`), labels. Setelah create, jalankan cek GET di rule `12`.
+5. Pada Error baru, isi juga: Request ID (`customfield_10495`) ikut HARD di `12-jira-card-format.mdc` (salin origin/`rec…` Relates yang valid; **jangan** salin `REQ-…` / `-` / kosong — else `none`), Menu Name (`customfield_10429`), Story Points (`customfield_10043`), labels. Setelah create, jalankan cek GET di rule `12`.
 
 ## Test Case card — tidak punya status Re-OPEN
 

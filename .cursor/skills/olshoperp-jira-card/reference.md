@@ -12,7 +12,7 @@ Dipakai bersama [SKILL.md](SKILL.md). Struktur penuh historis: rule `12`.
 | Change Requirement | `10048` |
 | Test Case | `10051` → skill authoring |
 | Menu | `customfield_10429` |
-| Request ID | `customfield_10495` — nilai sah: rule `12` (ID asli atau `none`, bukan `-`). Setelah create, verifikasi GET di rule `12` |
+| Request ID | `customfield_10495` — HARD rule `12`: hanya Lark `rec…` atau `none`; **dilarang** `REQ-…` / notulen label / `-`. Setelah create, verifikasi GET di rule `12` |
 | Story Points | `customfield_10043` |
 | Link | Relates |
 
@@ -63,4 +63,4 @@ Tulis di **komentar** Jira (template mirip skill card-testing reference §G). Ja
 
 ## D. Improvement Request ID — pointer
 
-Simple vs konfirmasi: SKILL.md §3. Notify topic & gaya: rule `25` + `24`. Syarat masuk: Request ID = ID asli (rule `12`). `none`, `-`, kosong, atau spasi = tidak terisi — rule `25` tidak jalan, sama seperti Request ID kosong. Bot idempotent: skip jika sudah ada "Request Asli (dari User)" / footer draf.
+Simple vs konfirmasi: SKILL.md §3. Notify topic & gaya: rule `25` + `24`. Syarat masuk: Request ID = Lark `rec…` (HARD rule `12`). `none`, `REQ-…`, `-`, kosong, atau spasi = tidak terisi / tidak valid — rule `25` tidak jalan. Bot idempotent: skip jika sudah ada "Request Asli (dari User)" / footer draf.

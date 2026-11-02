@@ -32,7 +32,7 @@ Bahasa: Indonesia sehari-hari, non-teknis; label tombol/field = teks di aplikasi
 
 ## 1. Cek TC yang kurang (gap vs AC)
 
-1. Origin: `GET issue/{key}?fields=summary,description,comment,issuelinks,customfield_10495,customfield_10429`. Request ID origin yang `-` / kosong / spasi jangan dipakai — ikut definisi rule `12`.
+1. Origin: `GET issue/{key}?fields=summary,description,comment,issuelinks,customfield_10495,customfield_10429`. Request ID origin: salin **hanya** jika Lark `rec…` valid (HARD rule `12`). `REQ-…` / `-` / kosong / spasi → **jangan salin**; cari Relates lain yang `rec…`, else `none`.
 2. TC existing: issuelinks + JQL `issuetype = "Test Case" AND (summary ~ "…" OR text ~ "ETM-xxxxx")` — cegah duplikat.
 3. Baca `qa-docs/{menu}/requirement.md` — status harus **review** atau **approved** (§2).
 4. Petakan **tiap AC → TC** (penuh / sebagian / tidak ada). Laporkan: requirement bilang X · kode/UI melakukan Y · TC kurang Z.
@@ -207,7 +207,7 @@ Selaras skill **`olshoperp-card-testing`** § data uji / QA-AUTO.
 ## 5. Menerbitkan card
 
 1. Salin `tools/example_tc_data.py` → isi CFG + TCS (lihat reference §C). Pastikan tiap TC punya `req` (path + § requirement).
-2. `python3 tools/tc_lib.py file_data.py create` → issuetype Test Case `10051`, Menu, Request ID (rule `12`: ID asli atau literal `none`; `tc_lib.py` menolak `-` / kosong / spasi), Story Points 1, labels `[ETM-origin, test-case, test-type-…]`, assignee gantian Firda ↔ Jeiniffer kecuali ada nama yang disebut (reference §A), Relates ke origin, jeda ~2,5 dtk. Layar create TC tidak punya field Request ID — tetap di-set lewat API. Menu (`customfield_10429`) = `[Nama Menu]` di judul; `tc_lib.py` mem-GET tiap card dan menambal Menu / Request ID yang kosong atau salah. **Jangan buat TC lewat MCP / REST langsung** tanpa `tc_lib.py`: kasus 30 Okt 2026, 9 TC terbit tanpa Menu dan tidak bisa digeser ke TESTING PROGRESS.
+2. `python3 tools/tc_lib.py file_data.py create` → issuetype Test Case `10051`, Menu, Request ID (HARD rule `12`: hanya Lark `rec…` atau literal `none`; `tc_lib.py` **menolak** `REQ-…` / `-` / kosong / spasi), Story Points 1, labels `[ETM-origin, test-case, test-type-…]`, assignee gantian Firda ↔ Jeiniffer kecuali ada nama yang disebut (reference §A), Relates ke origin, jeda ~2,5 dtk. Layar create TC tidak punya field Request ID — tetap di-set lewat API. Menu (`customfield_10429`) = `[Nama Menu]` di judul; `tc_lib.py` mem-GET tiap card dan menambal Menu / Request ID yang kosong atau salah. **Jangan buat TC lewat MCP / REST langsung** tanpa `tc_lib.py`: kasus 30 Okt 2026, 9 TC terbit tanpa Menu dan tidak bisa digeser ke TESTING PROGRESS.
 3. Site: **hanya ETM** (`erpintegration.atlassian.net`).
 4. Update isi: ubah file data → `… update`. Verifikasi GET: Not Execute, link ada, description memuat rujukan requirement, plus field wajib rule `12` (`customfield_10495`, `customfield_10429`, `customfield_10043`, labels, assignee). Request ID tidak valid → perbaiki sebelum lanjut.
 5. Laporan ke Yemima (chat): tabel card → tipe → skenario → rujukan § → data kunci; reuse vs baru; **defer/gap** bila ada (§3A). Tidak wajib komentar di card origin (Relates sudah cukup).
@@ -249,5 +249,5 @@ Menjalankan uji, Testing Progress, Actual, Test Result, Telegram, Failed→Error
 - [ ] Precondition/Steps memerintahkan jejak `QA ETM-…` atau teks skenario tanpa Jira
 - [ ] **Tidak** ada instruksi hapus data (kecuali TC uji hapus)
 - [ ] Environment Staging + company jelas
-- [ ] Relates + Request ID valid (rule `12`, bukan `-` / kosong / spasi) + Menu terisi; status Not Execute; sudah dicek GET setelah create
+- [ ] Relates + Request ID HARD valid (rule `12`: `rec…` atau `none`, **bukan** `REQ-…`) + Menu terisi; status Not Execute; sudah dicek GET setelah create
 - [ ] Laporan chat ke Yemima: tabel tipe → cover/reuse/baru/defer/gap

@@ -50,7 +50,7 @@ Site: **hanya ETM** (`erpintegration.atlassian.net`, cloudId `44cc9820-3372-4c12
 | Improvement | Improvement | `10088` |
 | Change Requirement | Change Requirement | `10048` |
 
-Wajib field: Menu (`customfield_10429`), Request ID (`customfield_10495` — definisi valid di rule `12`: ID asli atau literal `none`; `-` / kosong / spasi tidak valid, jangan disalin), Story Points, labels, Relates ke card sumber bila ada.
+Wajib field: Menu (`customfield_10429`), Request ID (`customfield_10495` — HARD rule `12`: hanya Lark `rec…` (`^rec[A-Za-z0-9]+$`) atau literal `none`; **dilarang** `REQ-…` / label notulen / `-` / kosong — salin dari origin hanya jika `rec…` valid, else `none`), Story Points, labels, Relates ke card sumber bila ada.
 
 **Hasil uji** pada card tipe ini → **komentar** (field Actual Result tidak tampil). Bagian “Actual Result” di template Error = teks di **description**, bukan `customfield_10203`.
 
@@ -60,7 +60,7 @@ Bahasa ke tim QA: sehari-hari, non-teknis (jangan `customfield_*`, `last_executi
 
 ## 3. Improvement + Request ID (screening ringkas)
 
-Jika Improvement dan Request ID terisi dengan ID asli (rule `12` / rule `25`). Literal `none`, `-`, kosong, atau spasi = tidak terisi — screening ini tidak jalan:
+Jika Improvement dan Request ID terisi dengan Lark `rec…` valid (rule `12` HARD / rule `25`). Literal `none`, `REQ-…`, `-`, kosong, atau spasi = tidak terisi / tidak valid — screening ini tidak jalan:
 
 | Simple (semua terpenuhi) | Butuh konfirmasi (salah satu cukup) |
 |--------------------------|-------------------------------------|
@@ -90,7 +90,7 @@ Detail: reference §D atau rule `25`.
 - [ ] Tipe benar (Error ≠ Bug subtask)
 - [ ] Judul `[Menu] - …`; istilah UI konsisten
 - [ ] Expected/AS-IS/AC dari docs; gap dilabeli
-- [ ] Menu + Request ID valid (rule `12`, bukan `-`) + Relates (jika ada sumber); sudah dicek GET setelah create
+- [ ] Menu + Request ID HARD valid (rule `12`: `rec…` atau `none`, **bukan** `REQ-…`) + Relates (jika ada sumber); sudah dicek GET setelah create
 - [ ] URL edit jika fixture staging
 - [ ] Bahasa non-teknis di section utama
 - [ ] Create hanya karena permintaan sesi ini

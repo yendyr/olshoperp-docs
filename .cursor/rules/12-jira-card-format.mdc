@@ -460,25 +460,33 @@ Khusus issue bertipe **`Test Case`**. Twin di `olshoperp/.cursor/rules/17-jira-t
 - [ ] Jika fixture staging accessible: URL **edit** ada di Environment / Precondition / Steps?
 - [ ] Tidak ada jargon teknis di section utama (Summary/Steps/Expected/Actual)?
 - [ ] Expected Result sudah divalidasi dari requirement.md?
-- [ ] Request ID valid (ID asli atau `none` — bukan `-` / kosong / spasi) dan sudah dicek GET setelah create?
+- [ ] Request ID valid (`rec…` Lark **atau** `none` — **bukan** `REQ-…` / `-` / kosong) dan sudah dicek GET setelah create?
 - [ ] Menu (`customfield_10429`) terisi dan sama persis dengan `[Nama Menu]` di judul, dan sudah dicek GET setelah create?
 - [ ] Additional Context kosong ditulis "(tidak ada catatan tambahan)", bukan dihapus?
 
-## Custom Field Request ID (`customfield_10495`) (WAJIB)
+## Custom Field Request ID (`customfield_10495`) (WAJIB — HARD)
 
-Berlaku untuk **setiap** pembuatan card ETM (Error / Test Case / Improvement / Change Requirement / Story / Task). Field: `Request ID`, tipe `string`. Layar create **Test Case tidak menampilkan** field ini — tetap di-set lewat API.
+Berlaku untuk **setiap** pembuatan / clone / update field Request ID pada card ETM (Error / Test Case / Improvement / Change Requirement / Story / Task). Field: `Request ID`, tipe `string`. Layar create **Test Case tidak menampilkan** field ini — tetap di-set lewat API.
 
-**Nilai valid** hanya salah satu:
+**Nilai valid** hanya salah satu (regex ketat):
 
-- ID asli (mis. `recvqWrTHZ1dOV`, `REQ-…`, atau bentuk ID request lain yang nyata), atau
-- literal **`none`**.
+1. **Lark Bitable record ID** — cocok `^rec[A-Za-z0-9]+$` (contoh: `recvqWrTHZ1dOV`, `reczz28QJt9r7Xhq`), atau
+2. Literal **`none`** (tanpa request Lark: notulen, inisiatif internal, origin tanpa `rec…`).
 
-**Tidak valid:** `-`, string kosong, atau spasi saja. Jangan tulis dan jangan salin nilai itu ke card baru.
+**DILARANG KERAS** (insiden Nov 2026: label `REQ-NOTULEN-27OKT` di ETM-16865 → n8n `RecordIdNotFound` / crash node JS):
 
-- Origin / relate punya Request ID **valid** → **copy nilai persis**.
-- Origin tidak valid (`-` / kosong / spasi) → **jangan salin**. Pakai Request ID valid dari origin-nya origin atau card yang di-relate, kalau ketemu. Kalau tidak ketemu → isi **`none`** dan catat di laporan. Kasus khusus lain → konfirmasi ke user dulu.
-- Card baru / mandiri tanpa referensi request user → isi string **`none`**.
-- **Gotcha API:** `getJiraIssue` tanpa `fields=*` sering hanya me-render field standar. Jangan simpulkan Request ID kosong dari payload ringkas — cek `customfield_10495` secara eksplisit, atau description / Notion / Airtable request context.
+- Label buatan manusia / kode internal: `REQ-…`, `REQ-NOTULEN-…`, `REQ-TYAS-…`, `REQ-MERDIAN-…`, dll.
+- Placeholder: `-`, kosong, spasi saja, `n/a`, `null`, `NONE` (kecuali literal tepat `none`)
+- ID Notion / Airtable / slug lain yang **bukan** `rec…`
+- Mengarang Request ID dari judul, notulen, atau ringkasan meeting
+
+**Salin dari origin / Relates:**
+
+- Origin atau card Relates punya Request ID **`rec…` valid** → **copy nilai persis**.
+- Origin berisi `REQ-…` / `-` / kosong / nilai lain yang tidak cocok regex → **jangan salin**. Cari `rec…` valid di origin-nya origin atau Relates lain. Tidak ketemu → isi **`none`** dan catat di laporan.
+- Card baru / mandiri / dari notulen tanpa Lark request → **`none`**.
+- RE-OPEN / clone / TC dari origin → Request ID **sama aturan** (ikut `rec…` origin yang valid, atau `none` — jangan wariskan `REQ-…`).
+- **Gotcha API:** `getJiraIssue` tanpa `fields=*` sering hanya me-render field standar. Jangan simpulkan Request ID kosong dari payload ringkas — cek `customfield_10495` secara eksplisit.
 
 ## Cek setelah create & sebelum Done (WAJIB)
 
