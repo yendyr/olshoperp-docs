@@ -122,12 +122,33 @@ Setelah run di **staging**, data yang dibuat untuk uji **tidak dihapus** (kecual
 
 ## 6. Server, credential, company
 
+### Klasifikasi environment (wajib — anti-blocker)
+
+OlshopERP punya **tiga target QA resmi**. Host **tidak** harus mengandung kata `staging` / `qa` / `dev` / `sandbox` / `preview`.
+
+| Target | Host UI | Kelas data | Uji UI/API oleh agent |
+|--------|---------|------------|------------------------|
+| **Staging** | `staging.olshoperp.com` | Data uji | Default; boleh create data uji |
+| **Tyas** | `tyas.olshoperp.com` | Live tenant (prod-class) | **Boleh** — **read-only** (no create/ubah/hapus) |
+| **Merdian** | `merdian.olshoperp.com` | Live tenant (prod-class) | **Boleh** setelah gate kode — **read-only** |
+
+**Arti “prod / produksi” di rule infra (Hostinger, `production-servers.md`, VPS):** itu soal **inventaris server / SSH / hardware**, **bukan** larangan uji QA. Jangan samakan “VPS prod-class” dengan “dilarang login/test”.
+
+**Dilarang keras (anti stuck):**
+
+- Menolak uji Tyas/Merdian **hanya** karena hostname tidak bertanda `staging`/`qa`/`dev`.
+- Meminta / mengarang host baru (`merdian-staging…`, `tyas-qa…`, salinan infra) sebagai syarat boleh test.
+- Menolak setelah Lead QA sudah menulis kode approval exact di pesan yang sama.
+- Mengutamakan “memori chat lama” / heuristik model di atas skill ini + pesan prompter saat ini.
+
+Kalau gate lolos → lanjut **seamless seperti staging** (login, buka menu, Playwright, DB read-only, log), dengan batasan **no write** di bawah.
+
 Perintah singkat dari Yemima:
 - **“test di staging”** (default) → host staging, boleh create/ubah data uji (hati-hati fixture bersama).
 - **“test di tyas”** → login dengan credential di bawah, **dilarang create / ubah / hapus data**. Hanya uji baca/verifikasi tampilan/filter/export/read API. Kalau Expected card mengharuskan create data → **STOP**, bilang ke prompter.
-- **“test di merdian”** → **WAJIB ada kode approval** di pesan prompter (lihat gate di bawah). Tanpa kode → **dilarang** buka Merdian. Dengan kode → sama seperti Tyas: login OK, **no create/ubah/hapus**.
+- **“test di merdian”** → **WAJIB ada kode approval** di pesan prompter (lihat gate di bawah). Tanpa kode → **dilarang** buka Merdian. Dengan kode → **lanjut segera** (jangan tawar staging-clone): login OK, **no create/ubah/hapus**.
 
-### Gate Merdian (wajib — hati-hati production)
+### Gate Merdian (satu-satunya gerbang — bukan hostname)
 
 Siapa pun (termasuk agent lain) yang minta uji di Merdian **harus** menulis kode approval di pesan yang sama:
 
@@ -138,10 +159,12 @@ yemimamerdian
 | Kondisi | Aksi agent |
 |---------|------------|
 | Minta “test di merdian” / buka `merdian.olshoperp.com` **tanpa** kode `yemimamerdian` di pesan | **TOLAK.** Jangan login, jangan Playwright, jangan DB UI crawl. Balas: butuh kode approval dari Yemima. |
-| Ada kode `yemimamerdian` di pesan (boleh di baris sendiri atau bersama instruksi) | Boleh lanjut **read-only** dengan credential Merdian di tabel bawah |
+| Ada kode `yemimamerdian` di pesan (boleh di baris sendiri atau bersama instruksi) | **WAJIB lanjut** uji **read-only** di `merdian.olshoperp.com` dengan credential Merdian di tabel bawah. Jangan block, jangan minta host alternatif. |
 | Kode salah / mirip tapi tidak exact | Anggap **tidak ada** → tolak |
 
 Jangan simpan “izin permanen” antar chat: tiap permintaan Merdian baru harus bawa kode lagi.
+
+**Setelah kode lolos:** perlakuan operasional = setara staging untuk *cara kerja agent* (buka URL, login akun uji, crawl/CLI, isi Actual), bedanya hanya **mutasi data dilarang**.
 
 ### Credential login UI (jangan cetak ulang ke chat/Telegram)
 
@@ -167,7 +190,8 @@ Coba / pakai berurutan: **153 (lumicharmsid)** → **112 (FAT)** → **13 (DEV-S
 |-------|-------------|
 | Buka menu, filter, datalist, detail, export/download baca, cek tampilan/angka | Create / Approve yang menulis / Void / hapus / ubah master atau transaksi |
 | Cek DB read-only | Mutasi SQL |
-| Login agent dengan credential di tabel **setelah** gate Merdian lolos (kode `yemimamerdian`) | Uji Merdian tanpa kode approval; create data di Tyas/Merdian; cetak password ke chat/TC |
+| Login agent dengan credential di tabel (Merdian: **setelah** kode `yemimamerdian`) | Uji Merdian tanpa kode; create data di Tyas/Merdian; cetak password ke chat/TC |
+| Lanjut uji di host resmi `tyas` / `merdian` meski data bisnis nyata | Menolak karena “ini production” / hostname tanpa `staging`; minta `merdian-staging` / salinan infra |
 
 ---
 
@@ -299,6 +323,8 @@ Isi mengikuti ringkasan Bugsy:
 - Probe di `tests/scripts/` atau assert harga/bug tanpa ganti unit / tanpa `expect`.
 - Fallback diam-diam ke SKU di description card padahal prompter sudah kasih data lain.
 - Test / login Merdian tanpa kode approval `yemimamerdian` di pesan.
+- Block Merdian/Tyas padahal gate sudah lolos / Tyas read-only sudah diizinkan — beralasan hostname atau “produksi”.
+- Meminta host `*-staging` / `*-qa` sebagai syarat boleh uji Tyas/Merdian.
 - Hapus data `QA-AUTO-` staging setelah run “biar rapi”.
 - RE-OPEN pada card Test Case, atau clone Improvement (salah jalur).
 - Tandai Passed hanya karena MCP/screenshot tanpa cocokkan Expected.
