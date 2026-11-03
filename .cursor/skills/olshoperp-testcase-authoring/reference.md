@@ -17,6 +17,7 @@ Dipakai bersama [SKILL.md](SKILL.md). Jangan diikuti sendirian tanpa skill.
 | Menu | **Wajib.** Nama menu persis di app = `[Nama Menu]` di judul (`customfield_10429`). Kosong → TC tidak bisa ke TESTING PROGRESS. Setelah create, verifikasi GET (rule `12`) |
 | Labels | `ETM-{origin}`, `test-case`, `test-type-{happy\|negative\|…}`; tambah `need-data` bila Precondition butuh data khusus (SKILL.md §3B) |
 | Link | Relates → card origin |
+| Webhook Moira | Env `MOIRA_WEBHOOK_URL` + `MOIRA_WEBHOOK_TOKEN` (Bearer), atau `.env` seperti jira.sh. URL/token **tidak** ditulis di repo (publik). Payload & aturan: SKILL.md §3B |
 | Jeda create | Minimum 3 detik antar create, termasuk beruntun dalam satu run. Batch lain tetap 2-3 detik (rule `12`) |
 
 Jangan isi Testing Progress / Actual Result / Test Result dari skill authoring.
@@ -77,6 +78,7 @@ Lokasi: `.cursor/skills/olshoperp-testcase-authoring/tools/`.
 |----------|--------|
 | `python3 tools/tc_lib.py file_data.py create` | Buat card + Relates + keys JSON |
 | `python3 tools/tc_lib.py file_data.py update` | Perbarui description dari file yang sama |
+| `python3 tools/tc_lib.py file_data.py notify [n…]` | Kirim (ulang) webhook Moira untuk TC `need_data` yang sudah terbit (opsional nomor TC; berhenti di gagal pertama) |
 
 Contoh: salin `example_tc_data.py`. Field penting per TC:
 
