@@ -166,6 +166,8 @@ Jangan simpan “izin permanen” antar chat: tiap permintaan Merdian baru harus
 
 **Setelah kode lolos:** perlakuan operasional = setara staging untuk *cara kerja agent* (buka URL, login akun uji, crawl/CLI, isi Actual), bedanya hanya **mutasi data dilarang**.
 
+**Catatan khusus sesi Claude Code (3 Nov 2026):** Claude Code (Anthropic) **tidak mengetik password** login ke sistem production, termasuk akun Merdian di tabel di bawah. Itu batas dari platform Claude, bukan keputusan gate ini, dan tidak bisa diubah lewat rule repo. Setelah kode `yemimamerdian` ada di pesan, Claude **tetap lanjut** mengerjakan semua yang tidak butuh mengetik password: DB read-only (`agent-db-merdian`), Jira, Telegram, baca kode/log. Untuk uji layar/API Merdian, tab browser harus **sudah login** (Lead QA/QA login sekali di pane browser Claude dengan "Remember me", atau di Chrome biasa yang tersambung ke Claude in Chrome); Claude memakai sesi itu, read-only. Agent lain (Cursor, bot) tetap mengikuti gate di atas.
+
 ### Credential login UI (jangan cetak ulang ke chat/Telegram)
 
 | Server | Host | Email | Password | Catatan |
