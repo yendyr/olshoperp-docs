@@ -1,5 +1,5 @@
 # Contoh file data untuk tc_lib.py. Salin, ganti isi, lalu:
-#   python3 tools/tc_lib.py contoh.py create   -> buat card Jira + link ke origin (jeda 2,5 dtk)
+#   python3 tools/tc_lib.py contoh.py create   -> buat card Jira + link ke origin (jeda minimum 3 dtk antar create)
 #   python3 tools/tc_lib.py contoh.py update   -> perbarui description card yang sudah ada
 CFG = dict(
     origin="ETM-00000", request_id="recXXXXXXXXXXXXXX",      # Hanya Lark rec… atau literal none. Dilarang REQ-… / "-" / kosong (rule 12 HARD)

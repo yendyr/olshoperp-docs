@@ -228,7 +228,7 @@ if __name__ == "__main__":
                 break
             keys[str(tc["n"])] = r["key"]
             json.dump(keys, open(keys_file, "w"))
-            time.sleep(2.5)
+            time.sleep(3)  # minimum antar create (rule 12); edit/link tetap 2.5
             print("  verify:", verify_created(r["key"], request_id_value(D.CFG), D.CFG["menu_label"]))
             time.sleep(2.5)
             print("  link:", link_card(r["key"], D.CFG))

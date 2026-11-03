@@ -81,7 +81,7 @@ Detail: reference §D atau rule `25`.
 3. Susun draft section sesuai tipe (reference §B).  
 4. Cek FE/docs untuk label UI; URL edit jika ada data.  
 5. Setelah izin: create/update Jira + Relates; verifikasi GET sesuai rule `12` (Request ID tidak valid diperbaiki sebelum lanjut); laporkan URL.  
-6. Jeda ~2,5 dtk antar create beruntun.
+6. Jeda antar create: **minimum 3 detik**, termasuk create beruntun dalam satu run. Operasi batch lain tetap 2-3 detik (`time.sleep(2.5)`, rule `12`).
 
 ---
 

@@ -20,6 +20,8 @@ Card Jira ETM berstatus **QA Review** yang hasil verifikasinya menyatakan **tida
 
 ## Dua jalur berdasarkan tipe issue
 
+Setiap create di rule ini (Clone RE-OPEN, Error baru, Test Case dari Improvement/CR/Story/Task) wajib jeda **minimum 3 detik** antar create, termasuk beruntun dalam satu run. Jeda batch lain (edit/link/transition) tetap 2-3 detik — rule `12`.
+
 ### Jalur 1 — `Error` / `Bug`
 
 Scope selalu tunggal (1 acceptance criteria) — **tidak** melahirkan Test Case card, tidak berpotensi melebar.

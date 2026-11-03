@@ -55,7 +55,7 @@ Akun uji khusus: `tests/TEST-ACCOUNTS.md` (di repo docs; tidak dimirror ke Help 
 
 - Link: `Relates`; clone: `Cloners` (inward = clone, outward = origin).
 - Lampiran file di Jira ETM sering nonaktif → bukti = teks komentar + data bertanda card di app.
-- Jeda ~2,5 dtk antar create/update/link beruntun.
+- Jeda batch (update/link) ~2,5 dtk. Antar **create** (Test Case, Subtask TC, Error, Clone RE-OPEN, beruntun dalam satu run ikut): minimum 3 detik.
 - Browse: `https://erpintegration.atlassian.net/browse/ETM-xxxxx`
 
 Alat: `tools/jira.sh GET|POST|PUT "issue/…" [body.json]` — set `JV=2` bila perlu REST v2.

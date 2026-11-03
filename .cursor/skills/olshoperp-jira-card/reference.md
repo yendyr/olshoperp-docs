@@ -15,6 +15,7 @@ Dipakai bersama [SKILL.md](SKILL.md). Struktur penuh historis: rule `12`.
 | Request ID | `customfield_10495` — HARD rule `12`: hanya Lark `rec…` atau `none`; **dilarang** `REQ-…` / notulen label / `-`. Setelah create, verifikasi GET di rule `12` |
 | Story Points | `customfield_10043` |
 | Link | Relates |
+| Jeda create | Minimum 3 detik antar create (beruntun dalam satu run ikut). Batch lain tetap 2-3 detik (rule `12`) |
 
 Browse: `https://erpintegration.atlassian.net/browse/ETM-xxxxx`
 

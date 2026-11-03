@@ -17,7 +17,7 @@ Dipakai bersama [SKILL.md](SKILL.md). Jangan diikuti sendirian tanpa skill.
 | Menu | **Wajib.** Nama menu persis di app = `[Nama Menu]` di judul (`customfield_10429`). Kosong → TC tidak bisa ke TESTING PROGRESS. Setelah create, verifikasi GET (rule `12`) |
 | Labels | `ETM-{origin}`, `test-case`, `test-type-{happy\|negative\|…}` |
 | Link | Relates → card origin |
-| Jeda create | ~2,5 detik antar card |
+| Jeda create | Minimum 3 detik antar create, termasuk beruntun dalam satu run. Batch lain tetap 2-3 detik (rule `12`) |
 
 Jangan isi Testing Progress / Actual Result / Test Result dari skill authoring.
 

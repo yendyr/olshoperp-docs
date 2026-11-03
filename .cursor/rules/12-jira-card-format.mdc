@@ -501,4 +501,5 @@ Berlaku untuk **setiap** pembuatan / clone / update field Request ID pada card E
 - **Latar Belakang:** Panggilan API Atlassian/Jira yang terlalu beruntun dan cepat dalam jumlah banyak dapat menyebabkan session auth token pada plugin/MCP Atlassian ter-reset atau otomatis sign out.
 - **Aturan Eksekusi Wajib:**
   - Saat membuat (*create*) atau mengupdate (*edit/link/transition*) beberapa card Jira secara berurutan (batch), **WAJIB memberikan jeda waktu 2-3 detik (`time.sleep(2.5)`)** di antara setiap operasi MCP tool Jira.
+  - **Create** (Test Case, Subtask TC, Error, Clone RE-OPEN, dan create lain): jeda **minimum 3 detik** antar pemanggilan create, termasuk create beruntun dalam satu run. Jeda 2-3 detik di atas tetap untuk edit/link/transition.
   - Jangan memanggil tool Jira secara paralel atau tanpa jeda pada operasi berulang.
