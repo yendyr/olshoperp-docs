@@ -179,6 +179,23 @@ Defer ≠ diam: tulis di laporan “belum diterbitkan: … (alasan)”. Relates 
 
 ---
 
+## 3B. Label `need-data` — TC yang butuh data
+
+Beri label Jira **`need-data`** pada TC yang **Precondition-nya bergantung pada data/fixture spesifik** yang harus disiapkan atau di-reserve dulu sebelum dijalankan: dokumen/transaksi/master dengan kondisi tertentu (contoh: Category Price berisi store tertentu, dokumen dengan Description kosong, store yang dinonaktifkan setelah terpasang).
+
+| Situasi | Label |
+|---------|-------|
+| Precondition menyebut data/kondisi tertentu yang perlu disiapkan atau dijaga (fixture bersama) | `need-data` |
+| TC cukup membuka layar atau memakai data yang pasti ada (mis. cek teks tooltip) | tanpa label |
+
+- **Cara:** isi `need_data=True` pada dict TC di file data → `tc_lib.py create` menambah label (hasil: `ETM-…`, `need-data`, `test-case`, `test-type-…`). Card yang sudah terbit: PUT `{"update":{"labels":[{"add":"need-data"}]}}` — jangan menimpa seluruh array label.
+- **Tujuan:** penanda untuk penyiap data. Pola yang terlihat di Jira (ETM-17014): TC berlabel ini ditindaklanjuti agen penyiap data (tercatat "Moira" di komentar) yang menyiapkan/me-reserve data lalu berkomentar "Test data siap" dengan kode TD-xxxx; penguji memakai data dari komentar itu.
+- **Tetap wajib:** Precondition lengkap dengan identitas data (§3). Label tidak menggantikannya, dan authoring tidak menyiapkan data sendiri (§7).
+- **Laporan ke Yemima:** sebut TC mana yang diberi `need-data`.
+- **Asal aturan:** arahan Yemima 3 Nov 2026: TC yang butuh data diberi label `need-data` di Jira. Contoh: ETM-17014/17016/17017/17018 (origin ETM-16991), ETM-17026–17029 dan ETM-17031 (origin ETM-16882). Batas kriteria bisa disesuaikan Yemima.
+
+---
+
 ## 4. Data uji — jejak & larangan hapus
 
 ### Jejak (wajib di Precondition / Steps / catatan penguji)
@@ -207,7 +224,7 @@ Selaras skill **`olshoperp-card-testing`** § data uji / QA-AUTO.
 ## 5. Menerbitkan card
 
 1. Salin `tools/example_tc_data.py` → isi CFG + TCS (lihat reference §C). Pastikan tiap TC punya `req` (path + § requirement).
-2. `python3 tools/tc_lib.py file_data.py create` → issuetype Test Case `10051`, Menu, Request ID (HARD rule `12`: hanya Lark `rec…` atau literal `none`; `tc_lib.py` **menolak** `REQ-…` / `-` / kosong / spasi), Story Points 1, labels `[ETM-origin, test-case, test-type-…]`, assignee gantian Firda ↔ Jeiniffer kecuali ada nama yang disebut (reference §A), Relates ke origin, jeda minimum 3 detik antar create. Layar create TC tidak punya field Request ID — tetap di-set lewat API. Menu (`customfield_10429`) = `[Nama Menu]` di judul; `tc_lib.py` mem-GET tiap card dan menambal Menu / Request ID yang kosong atau salah. **Jangan buat TC lewat MCP / REST langsung** tanpa `tc_lib.py`: kasus 30 Okt 2026, 9 TC terbit tanpa Menu dan tidak bisa digeser ke TESTING PROGRESS.
+2. `python3 tools/tc_lib.py file_data.py create` → issuetype Test Case `10051`, Menu, Request ID (HARD rule `12`: hanya Lark `rec…` atau literal `none`; `tc_lib.py` **menolak** `REQ-…` / `-` / kosong / spasi), Story Points 1, labels `[ETM-origin, test-case, test-type-…]` (+ `need-data` bila TC butuh data khusus, §3B; set `need_data=True` di dict TC), assignee gantian Firda ↔ Jeiniffer kecuali ada nama yang disebut (reference §A), Relates ke origin, jeda minimum 3 detik antar create. Layar create TC tidak punya field Request ID — tetap di-set lewat API. Menu (`customfield_10429`) = `[Nama Menu]` di judul; `tc_lib.py` mem-GET tiap card dan menambal Menu / Request ID yang kosong atau salah. **Jangan buat TC lewat MCP / REST langsung** tanpa `tc_lib.py`: kasus 30 Okt 2026, 9 TC terbit tanpa Menu dan tidak bisa digeser ke TESTING PROGRESS.
 3. Site: **hanya ETM** (`erpintegration.atlassian.net`).
 4. Update isi: ubah file data → `… update`. Verifikasi GET: Not Execute, link ada, description memuat rujukan requirement, plus field wajib rule `12` (`customfield_10495`, `customfield_10429`, `customfield_10043`, labels, assignee). Request ID tidak valid → perbaiki sebelum lanjut.
 5. Laporan ke Yemima (chat): tabel card → tipe → skenario → rujukan § → data kunci; reuse vs baru; **defer/gap** bila ada (§3A). Tidak wajib komentar di card origin (Relates sudah cukup).
@@ -245,6 +262,7 @@ Menjalankan uji, Testing Progress, Actual, Test Result, Telegram, Failed→Error
 - [ ] Sinyal relasi antar menu (§2B) sudah ditimbang; `cross-menu` punya assert di menu target + baseline
 - [ ] Negative/edge tidak melebur ke Expected happy
 - [ ] Precondition punya identitas data / baseline (bukan “siapkan data yang sesuai”)
+- [ ] Precondition butuh data khusus → label `need-data` (§3B) dan ditandai di laporan
 - [ ] Soft cap §3A dihormati atau kelebihan dijelaskan + defer di laporan
 - [ ] Precondition/Steps memerintahkan jejak `QA ETM-…` atau teks skenario tanpa Jira
 - [ ] **Tidak** ada instruksi hapus data (kecuali TC uji hapus)

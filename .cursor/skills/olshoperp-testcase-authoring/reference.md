@@ -15,7 +15,7 @@ Dipakai bersama [SKILL.md](SKILL.md). Jangan diikuti sendirian tanpa skill.
 | Assignee (authoring) | Gantian **Firda ↔ Jeiniffer** (QA tester), kecuali user menyebut nama → `CFG["assignee"]`. Rotasi dimulai dari `CFG["assignee_start"]` (default Firda); accountId dicari lewat Jira user search di `tools/tc_lib.py` |
 | Request ID | HARD rule `12`: hanya Lark `rec…` (`^rec[A-Za-z0-9]+$`) atau literal `none`. **Dilarang** `REQ-…` / label notulen / `-` / kosong (jangan disalin; origin invalid → cari `rec…` di Relates, else `none`). Layar create TC tidak menampilkan field ini — set lewat API. Setelah create, verifikasi GET (rule `12`) |
 | Menu | **Wajib.** Nama menu persis di app = `[Nama Menu]` di judul (`customfield_10429`). Kosong → TC tidak bisa ke TESTING PROGRESS. Setelah create, verifikasi GET (rule `12`) |
-| Labels | `ETM-{origin}`, `test-case`, `test-type-{happy\|negative\|…}` |
+| Labels | `ETM-{origin}`, `test-case`, `test-type-{happy\|negative\|…}`; tambah `need-data` bila Precondition butuh data khusus (SKILL.md §3B) |
 | Link | Relates → card origin |
 | Jeda create | Minimum 3 detik antar create, termasuk beruntun dalam satu run. Batch lain tetap 2-3 detik (rule `12`) |
 
@@ -87,6 +87,7 @@ Contoh: salin `example_tc_data.py`. Field penting per TC:
 | `pre` / `data_tables` | Disarankan | Termasuk jejak data |
 | `notes` | Disarankan | “Jangan hapus…”, cara tandai QA ETM-… |
 | `ttype` | Ya | Satu tipe per card |
+| `need_data` | Opsional | `True` bila Precondition butuh data khusus → label `need-data` (SKILL.md §3B) |
 | `cleanup` di CFG | — | **Bukan** instruksi hapus data. Pakai teks jejak + larangan hapus (lihat example) |
 
 ---

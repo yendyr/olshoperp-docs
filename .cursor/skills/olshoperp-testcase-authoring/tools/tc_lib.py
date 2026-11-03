@@ -150,7 +150,7 @@ def create_card(tc, cfg):
         "summary": "[" + cfg["menu_label"] + "] - " + tc["title"],
         "description": description(tc, cfg),
         "priority": {"name": tc["priority"]},
-        "labels": [cfg["origin"], "test-case", "test-type-" + tc["ttype"]],
+        "labels": [cfg["origin"], "test-case", "test-type-" + tc["ttype"]] + (["need-data"] if tc.get("need_data") else []),
         "assignee": {"accountId": account_id(pick_assignee(tc, cfg))},
         "customfield_10429": cfg["menu_label"],
         "customfield_10495": request_id,

@@ -18,6 +18,7 @@ CFG = dict(
 KEYS = {}   # diisi otomatis (file *_keys.json) setelah create
 TCS = [dict(
     n=1, ttype="happy", priority="High",   # ttype: happy|negative|edge|permission|regression|cross-menu
+    need_data=False,   # True bila Precondition butuh data/fixture khusus → label Jira need-data (SKILL.md §3B)
     title="Judul singkat skenario (happy)",
     summary="Ringkasan skenario dan tujuan.",
     req="requirement.md §x (aturan yang dirujuk)", menu_hint="Menu → Submenu → bagian layar",
