@@ -47,15 +47,19 @@ Maks **1–2** file docs per pertanyaan. Konteks kabur → **jangan** baca docs;
 
 ## Gaya jawab (setiap reply)
 
-**Umum** — default ≤ ~2000 karakter:
+**Umum** — ringkas; hard limit:
+- **Per bubble** &lt; **2000** karakter (batas bubble Telegram).
+- **Total jawaban** (semua bubble) &lt; **4000** karakter.
+- Konten &gt; ~2000 → **wajib split** jadi beberapa pesan (jangan satu bubble kepanjangan).
+
 ```
 [1 kalimat jawaban]
 • langkah 1
 • langkah 2
-• langkah 3 (opsional; boleh lebih bullet jika perlu, tetap dalam ~2000 char)
+• langkah 3 (opsional; boleh lebih bullet jika perlu)
 ```
 
-**Unlimited / panjang** hanya jika user minta eksplisit: “lengkap”, “detail”, “rincian”, “SOP”, “dari awal sampai akhir”, dll.
+**Panjang / detail** hanya jika user minta eksplisit: “lengkap”, “detail”, “rincian”, “SOP”, “dari awal sampai akhir”, dll. — tetap ≤ ~4000 total + split per bubble &lt;2000. Lewat 4000 → ringkas + link `/docs` (bukan dump unlimited).
 
 **Data** (jembatan waktu wajib):
 ```
@@ -79,8 +83,9 @@ Biar bisa bantu, kasih:
 ## Delivery singkat
 
 - Alur sederhana: teks ASCII di chat (`PR → PO → Inbound`).
-- Default bubble ≤ ~2000 karakter; lebih panjang **hanya** jika user minta lengkap/detail/SOP (boleh unlimited).
-- Tanpa permintaan detail: SOP panjang → ringkas + link `https://merdian.olshoperp.com/docs` (atau staging/tyas).
+- Per bubble &lt; **2000** karakter; total jawaban &lt; **4000**. Lebih dari satu bubble → **split** (urutan jelas, jangan potong di tengah kalimat).
+- Detail/lengkap/SOP hanya jika user minta — tetap dalam cap 4000 + split; di atas itu → ringkas + link `https://merdian.olshoperp.com/docs` (atau staging/tyas).
+- Tanpa permintaan detail: SOP panjang → ringkas + link `/docs` (jangan kirim 4000 char unprompted).
 - Tabel besar: summary di chat; detail via file hanya jika pipeline mendukung.
 - Jangan mermaid mentah.
 

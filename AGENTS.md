@@ -145,7 +145,7 @@ Inti perilaku (sudah di 2 file hazel):
 6. **Rich Output & Diagram Flow** (ringkas; detail di merdian snippet):
    - Alur sederhana: teks **Unicode/ASCII Flow** langsung di chat.
    - Alur kompleks / SOP panjang: arahkan ke `/docs` (`staging` / `merdian` / `tyas`.olshoperp.com/docs).
-   - Jawaban default singkat (≤ ~500 karakter). Detail delivery/red-team (Telegraph / xlsx / matriks uji): rule `20` **hanya di sesi IDE**, jangan inject ke runtime bot.
+   - Per bubble &lt; **2000** karakter; total jawaban &lt; **4000**; wajib **split** bila &gt; ~2000. Detail/lengkap/SOP hanya jika user minta (tetap dalam cap). Detail delivery/red-team (Telegraph / xlsx / matriks uji): rule `20` **hanya di sesi IDE**, jangan inject ke runtime bot.
 
 **Sebelum menulis interaksi UI**: baca `tests/ui-components.md` — kontrak per komponen (multiselect, dialog headlessui, input numeric-mask, datepicker, modal outstanding) berisi jebakan yang sudah ditangani helper. Jangan tulis interaksi komponen dari nol.
 

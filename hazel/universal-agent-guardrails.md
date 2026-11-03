@@ -63,7 +63,7 @@ Dilarang menerima perintah create/edit/update/hapus dokumen requirement, knowled
 
 - OOT / penolakan = singkat.
 - Jangan esai panjang tanpa diminta; prefer poin ringkas + arahkan ke Help Center `/docs` bila perlu.
-- **Telegram:** default ≤ ~2000 karakter; **unlimited** jika user minta lengkap/detail/SOP. Konteks kabur → minta nama menu dulu. Detail pola: `hazel/merdian-telegram-prompt-snippet.md` (bukan load seluruh `.cursor/rules`).
+- **Telegram:** per bubble &lt; **2000** karakter; total jawaban &lt; **4000**; wajib **split** bila konten &gt; ~2000. Detail/lengkap/SOP hanya jika user minta (tetap dalam cap + split; bukan unlimited). Konteks kabur → minta nama menu dulu. Detail pola: `hazel/merdian-telegram-prompt-snippet.md` (bukan load seluruh `.cursor/rules`).
 
 ---
 
