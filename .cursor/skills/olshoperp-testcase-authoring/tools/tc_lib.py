@@ -1,6 +1,5 @@
 """Library: bangun card Jira Test Case (ADF) dari satu struktur data. Jira saja (tanpa dokumen TC di repo)."""
 import json, os, re, subprocess, time
-import socket, urllib.error, urllib.request
 
 import tempfile
 S = os.path.dirname(os.path.abspath(__file__))  # folder tools skill ini
@@ -200,65 +199,6 @@ def link_card(new_key, cfg):
     return jira("POST", "issueLink", {"type": {"name": "Relates"}, "inwardIssue": {"key": new_key}, "outwardIssue": {"key": cfg["origin"]}}) or "ok"
 
 
-def _env_value(name):
-    """Nilai dari env proses atau .env (lokasi sama dengan jira.sh)."""
-    val = os.environ.get(name, "").strip()
-    env_file = os.environ.get("OLSHOP_ENV_FILE", os.path.expanduser("~/Documents/GitHub/olshoperp/.env"))
-    if not val and os.path.exists(env_file):
-        for line in open(env_file):
-            if line.startswith(name + "="):
-                val = line.split("=", 1)[1].strip().strip("'\"")
-                break
-    return val
-
-
-def moira_url():
-    """URL webhook Moira (penyiap data): env MOIRA_WEBHOOK_URL atau .env.
-    Repo ini PUBLIK: JANGAN tulis URL atau token-nya di repo, komentar Jira, atau output."""
-    return _env_value("MOIRA_WEBHOOK_URL")
-
-
-def precondition_text(tc, cfg):
-    """Isi section Precondition Data apa adanya (bullet + tabel data uji) sebagai teks."""
-    lines = ["- " + t for t in cfg["pre_common"] + tc["pre"]]
-    for title, header, rows in tc["data_tables"]:
-        lines += ["", title, "| " + " | ".join(header) + " |"]
-        lines += ["| " + " | ".join(str(c) for c in row) + " |" for row in rows]
-    return "\n".join(lines)
-
-
-def notify_moira(key, tc, cfg, event="created"):
-    """Panggil webhook Moira untuk TC berlabel need-data. Tidak pernah raise; kembalikan teks status."""
-    url = moira_url()
-    if not url:
-        return "TIDAK TERKIRIM: MOIRA_WEBHOOK_URL belum diset (env atau .env)"
-    payload = {
-        "key": key, "event": event, "origin": cfg["origin"],
-        "summary": "[" + cfg["menu_label"] + "] - " + tc["title"],
-        "menu": cfg["menu_label"], "precondition": precondition_text(tc, cfg),
-    }
-    headers = {"Content-Type": "application/json"}
-    token = _env_value("MOIRA_WEBHOOK_TOKEN")
-    if token:
-        headers["Authorization"] = "Bearer " + token
-    req = urllib.request.Request(
-        url, data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-        headers=headers, method="POST")
-    try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            return "terkirim HTTP %s" % resp.status
-    except urllib.error.HTTPError as e:
-        return "GAGAL HTTP %s" % e.code
-    except (socket.timeout, TimeoutError):
-        return "TIMEOUT: tidak pasti terkirim (workflow bisa saja sudah menerima). Cek eksekusi n8n / komentar Moira sebelum kirim ulang"
-    except urllib.error.URLError as e:
-        if isinstance(getattr(e, "reason", None), (socket.timeout, TimeoutError)):
-            return "TIMEOUT: tidak pasti terkirim (workflow bisa saja sudah menerima). Cek eksekusi n8n / komentar Moira sebelum kirim ulang"
-        return "GAGAL %s" % type(e).__name__
-    except Exception as e:
-        return "GAGAL %s" % type(e).__name__
-
-
 def update_card(key, tc, cfg):
     fields = {"description": description(tc, cfg)}
     if tc.get("retitle"):
@@ -267,7 +207,7 @@ def update_card(key, tc, cfg):
 
 
 # ------------------------------------------------------------------ CLI
-# python3 tc_lib.py <file_data.py> create|update|notify
+# python3 tc_lib.py <file_data.py> create|update
 # file_data.py memuat CFG (dict), TCS (list), dan KEYS (dict n->key, diisi otomatis setelah create).
 if __name__ == "__main__":
     import importlib.util, sys
@@ -293,20 +233,6 @@ if __name__ == "__main__":
             time.sleep(2.5)
             print("  link:", link_card(r["key"], D.CFG))
             time.sleep(2.5)
-            if tc.get("need_data"):
-                print("  moira:", notify_moira(r["key"], tc, D.CFG))
-                time.sleep(2.5)
-    elif cmd == "notify":  # kirim ulang / susulan webhook Moira untuk TC need_data yang sudah terbit
-        only = set(sys.argv[3:])  # opsional: nomor TC saja, mis. `notify 1` atau `notify 2 3`
-        for tc in D.TCS:
-            k = keys.get(str(tc["n"]))
-            if tc.get("need_data") and k and (not only or str(tc["n"]) in only):
-                status = notify_moira(k, tc, D.CFG)
-                print(tc["n"], k, status)
-                if not status.startswith("terkirim"):
-                    print("Berhenti: kirim berikutnya ditahan sampai penyebabnya jelas (lihat SKILL.md §3B).")
-                    break
-                time.sleep(2.5)
     elif cmd == "update":
         for tc in D.TCS:
             print(tc["n"], keys[str(tc["n"])], update_card(keys[str(tc["n"])], tc, D.CFG)[:80])

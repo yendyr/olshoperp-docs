@@ -190,12 +190,9 @@ Beri label Jira **`need-data`** pada TC yang **Precondition-nya bergantung pada 
 
 - **Cara:** isi `need_data=True` pada dict TC di file data → `tc_lib.py create` menambah label (hasil: `ETM-…`, `need-data`, `test-case`, `test-type-…`). Card yang sudah terbit: PUT `{"update":{"labels":[{"add":"need-data"}]}}` — jangan menimpa seluruh array label.
 - **Tujuan:** penanda untuk penyiap data. Pola yang terlihat di Jira (ETM-17014): TC berlabel ini ditindaklanjuti agen penyiap data (tercatat "Moira" di komentar) yang menyiapkan/me-reserve data lalu berkomentar "Test data siap" dengan kode TD-xxxx; penguji memakai data dari komentar itu.
-- **Webhook Moira (wajib setelah create):** untuk tiap TC `need-data`, panggil webhook Moira (grokbot penyiap data testing; automation Cursor) supaya data disiapkan. `tc_lib.py create` melakukannya otomatis sesudah Relates. Payload JSON (`Content-Type: application/json`): `key` (ETM-xxxxx), `event` (`"created"`), `origin` (ETM origin), `summary` (judul TC), `menu` (isi `customfield_10429`), `precondition` (isi Precondition Data apa adanya, teks).
-- **URL dan token webhook:** dibaca dari env `MOIRA_WEBHOOK_URL` dan `MOIRA_WEBHOOK_TOKEN` (dikirim sebagai header `Authorization: Bearer …`), atau dari `.env` (lokasi yang sama dengan `jira.sh`). Repo ini **publik**, jadi URL dan token **dilarang** ditulis di repo, komentar Jira, atau laporan. Belum diset → minta Yemima.
-- **Jangan "tes" webhook dengan GET/ping:** panggilan apa pun ke webhook ini bisa memulai workflow Moira (kejadian 3 Nov 2026 pada webhook n8n lama: GET kosong dijawab `Workflow was started`). Uji alat hanya dengan permintaan tiruan (tanpa jaringan).
-- **Gagal / belum terkirim:** `tc_lib.py` tidak membatalkan create, hanya mencetak status. `TIMEOUT` berarti **tidak pasti** (bisa sudah diterima): cek riwayat eksekusi automation / komentar "Test data siap" dulu. Laporkan ke Yemima, lalu kirim ulang dengan `python3 tools/tc_lib.py file_data.py notify [nomor TC…]` (berhenti di kegagalan pertama; hanya untuk TC yang statusnya belum terkirim; jangan kirim dua kali untuk key yang sama tanpa dicek). Label yang ditambahkan manual ke card lama: panggil webhook sendiri dengan payload yang sama (`curl -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $MOIRA_WEBHOOK_TOKEN" -d '{...}' "$MOIRA_WEBHOOK_URL"`).
+- **Cukup label:** tidak perlu memanggil webhook atau menghubungi Moira. Penyiapan data ditangani Moira sendiri setelah label terpasang.
 - **Tetap wajib:** Precondition lengkap dengan identitas data (§3). Label tidak menggantikannya, dan authoring tidak menyiapkan data sendiri (§7).
-- **Laporan ke Yemima:** sebut TC mana yang diberi `need-data` dan status webhook Moira tiap TC (terkirim / gagal).
+- **Laporan ke Yemima:** sebut TC mana yang diberi `need-data`.
 - **Asal aturan:** arahan Yemima 3 Nov 2026: TC yang butuh data diberi label `need-data` di Jira. Contoh: ETM-17014/17016/17017/17018 (origin ETM-16991), ETM-17026–17029 dan ETM-17031 (origin ETM-16882). Batas kriteria bisa disesuaikan Yemima.
 
 ---
@@ -228,7 +225,7 @@ Selaras skill **`olshoperp-card-testing`** § data uji / QA-AUTO.
 ## 5. Menerbitkan card
 
 1. Salin `tools/example_tc_data.py` → isi CFG + TCS (lihat reference §C). Pastikan tiap TC punya `req` (path + § requirement).
-2. `python3 tools/tc_lib.py file_data.py create` → issuetype Test Case `10051`, Menu, Request ID (HARD rule `12`: hanya Lark `rec…` atau literal `none`; `tc_lib.py` **menolak** `REQ-…` / `-` / kosong / spasi), Story Points 1, labels `[ETM-origin, test-case, test-type-…]` (+ `need-data` bila TC butuh data khusus, §3B; set `need_data=True` di dict TC; webhook Moira otomatis), assignee gantian Firda ↔ Jeiniffer kecuali ada nama yang disebut (reference §A), Relates ke origin, jeda minimum 3 detik antar create. Layar create TC tidak punya field Request ID — tetap di-set lewat API. Menu (`customfield_10429`) = `[Nama Menu]` di judul; `tc_lib.py` mem-GET tiap card dan menambal Menu / Request ID yang kosong atau salah. **Jangan buat TC lewat MCP / REST langsung** tanpa `tc_lib.py`: kasus 30 Okt 2026, 9 TC terbit tanpa Menu dan tidak bisa digeser ke TESTING PROGRESS.
+2. `python3 tools/tc_lib.py file_data.py create` → issuetype Test Case `10051`, Menu, Request ID (HARD rule `12`: hanya Lark `rec…` atau literal `none`; `tc_lib.py` **menolak** `REQ-…` / `-` / kosong / spasi), Story Points 1, labels `[ETM-origin, test-case, test-type-…]` (+ `need-data` bila TC butuh data khusus, §3B; set `need_data=True` di dict TC), assignee gantian Firda ↔ Jeiniffer kecuali ada nama yang disebut (reference §A), Relates ke origin, jeda minimum 3 detik antar create. Layar create TC tidak punya field Request ID — tetap di-set lewat API. Menu (`customfield_10429`) = `[Nama Menu]` di judul; `tc_lib.py` mem-GET tiap card dan menambal Menu / Request ID yang kosong atau salah. **Jangan buat TC lewat MCP / REST langsung** tanpa `tc_lib.py`: kasus 30 Okt 2026, 9 TC terbit tanpa Menu dan tidak bisa digeser ke TESTING PROGRESS.
 3. Site: **hanya ETM** (`erpintegration.atlassian.net`).
 4. Update isi: ubah file data → `… update`. Verifikasi GET: Not Execute, link ada, description memuat rujukan requirement, plus field wajib rule `12` (`customfield_10495`, `customfield_10429`, `customfield_10043`, labels, assignee). Request ID tidak valid → perbaiki sebelum lanjut.
 5. Laporan ke Yemima (chat): tabel card → tipe → skenario → rujukan § → data kunci; reuse vs baru; **defer/gap** bila ada (§3A). Tidak wajib komentar di card origin (Relates sudah cukup).
@@ -266,7 +263,7 @@ Menjalankan uji, Testing Progress, Actual, Test Result, Telegram, Failed→Error
 - [ ] Sinyal relasi antar menu (§2B) sudah ditimbang; `cross-menu` punya assert di menu target + baseline
 - [ ] Negative/edge tidak melebur ke Expected happy
 - [ ] Precondition punya identitas data / baseline (bukan “siapkan data yang sesuai”)
-- [ ] Precondition butuh data khusus → label `need-data` (§3B), webhook Moira terkirim, dan status dilaporkan
+- [ ] Precondition butuh data khusus → label `need-data` (§3B) dan ditandai di laporan
 - [ ] Soft cap §3A dihormati atau kelebihan dijelaskan + defer di laporan
 - [ ] Precondition/Steps memerintahkan jejak `QA ETM-…` atau teks skenario tanpa Jira
 - [ ] **Tidak** ada instruksi hapus data (kecuali TC uji hapus)
