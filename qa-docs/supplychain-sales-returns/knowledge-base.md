@@ -2,13 +2,13 @@
 doc_type: knowledge-base
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.3
+version: 2.4
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 audience: operator
 sections:
-  core: [what-is, vs-failed-ship, workflow, ui-buttons, qty-rules, troubleshooting, faq]
+  core: [what-is, vs-failed-ship, workflow, ui-buttons, export, qty-rules, troubleshooting, faq]
 ---
 
 # Sales Return — Knowledge Base (Team Gudang)
@@ -89,10 +89,24 @@ Qty auto-save setelah edit (~1 detik). Satu SKU yang Restock, Broken, dan Lost-n
 | **Sales Return Platform** | Toggle daftar order platform refund/cancelled |
 | **Sync** | Tarik data retur terbaru dari marketplace API |
 | **Reset** | Clear WH + CCTV selection |
-| **Export** | Download Excel (with/without details) |
+| **Export** | Unduh Excel. Pilih ringkasan dokumen atau rincian per SKU — lihat §4.1 |
 | **Continue** | Lanjut proses SR yang sudah ter-create |
 | **Delete** | Hapus SR open (belum approved) |
 | **Show** | Lihat SR yang sudah approved (read-only) |
+
+### 4.1 Export Excel
+
+**Export** mengunduh Excel dari daftar. Ada dua pilihan.
+
+**Without Details** (tanpa rincian): satu baris Excel = satu dokumen retur, sama dengan baris di daftar.
+
+**With Details** (dengan rincian): satu baris Excel = satu SKU. Kalau satu dokumen punya dua SKU, misalnya `HOME-DEC-CORTRAYWOOD` dan `TECH-ACC-MULTICARDREADER`, file berisi **dua baris**. Kode transaksi, pembeli, dan data dokumen lain diulang di tiap baris. Rincian yang ikut: SKU, nama produk, varian, harga dan HPP order, qty produk, harga dan HPP retur, qty yang masih outstanding, Restock, Lost, Broken, total qty retur, dan satuan.
+
+Di **menu gudang ini**, keempat nilai harga dan HPP tertulis **0**. Kolomnya tetap ada. Angka harga terisi di menu Finance.
+
+Dokumen yang tidak punya baris SKU tetap muncul **satu baris**, tidak hilang. Seharusnya seluruh kolom rincian berisi tanda strip. Saat ini nama, SKU, varian, dan satuan sudah strip, tetapi angka qty dan harga masih 0. Perbaikan sudah terdaftar.
+
+**Show/Hide Column** (pilih kolom mana yang terlihat di daftar) seharusnya ikut ke file: kolom yang kamu sembunyikan tidak boleh ada di judul maupun isi Excel. Saat ini kolom yang disembunyikan, misalnya Assignee atau Trx. Ref, masih ikut terunduh. Perbaikan sudah terdaftar.
 
 ---
 
@@ -143,6 +157,15 @@ A: **Billed** = barang retur **sudah punya Sales Invoice (SI)** → generate Cre
 **Q: Sync platform untuk apa?**  
 A: Update status retur dari marketplace (refund/cancelled) ke datalist pill.
 
+**Q: Kenapa file With Details masih satu baris padahal ada dua SKU?**  
+A: Seharusnya tidak. With Details memecah satu baris per SKU. Contoh dua SKU di atas harus menjadi dua baris, dengan data dokumen diulang.
+
+**Q: Saya sembunyikan kolom, kenapa masih ada di Excel?**  
+A: Export belum mengikuti Show/Hide Column. Kolom yang disembunyikan masih ikut. Perbaikan sudah terdaftar.
+
+**Q: Kenapa harga di Excel gudang nol?**  
+A: Di menu gudang, harga dan HPP memang tertulis 0. Lihat angkanya di menu Finance Sales Return.
+
 ---
 
 ## Related Documents
@@ -154,5 +177,3 @@ A: Update status retur dari marketplace (refund/cancelled) ke datalist pill.
 | Requirement (full) | [requirement.md](./requirement.md) |
 | Finance menu | [../accounting-sales-return/knowledge-base.md](../accounting-sales-return/knowledge-base.md) |
 | Failed Ship | [../supplychain-failed-ship/knowledge-base.md](../supplychain-failed-ship/knowledge-base.md) |
-
-

@@ -2,13 +2,13 @@
 doc_type: knowledge-base
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.3
+version: 2.4
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 audience: operator
 sections:
-  core: [what-is, workflow, price-columns, complete, journals, faq]
+  core: [what-is, workflow, price-columns, complete, journals, export, faq]
 ---
 
 # Sales Return Approval — Knowledge Base (Team Finance)
@@ -74,7 +74,26 @@ Setelah Complete, dokumen **read-only** — tidak bisa edit qty.
 
 ---
 
-## 6. FAQ
+## 6. Export Excel
+
+**Export** di daftar mengunduh Excel. Dua pilihan:
+
+| Pilihan | Hasil |
+|---------|-------|
+| **Without Details** (tanpa rincian) | Satu baris Excel = satu dokumen, sama dengan daftar |
+| **With Details** (dengan rincian) | Satu baris Excel = satu SKU. Data dokumen diulang di tiap baris |
+
+Contoh: satu dokumen berisi `HOME-DEC-CORTRAYWOOD` dan `TECH-ACC-MULTICARDREADER`. Tanpa rincian = 1 baris. Dengan rincian = 2 baris, masing-masing satu SKU, plus qty, harga, dan HPP.
+
+Di menu Finance ini, harga dan HPP **terisi**. Di menu gudang, keempat angka itu tertulis 0.
+
+Dokumen tanpa baris SKU tetap satu baris. Nama, SKU, varian, dan satuan sudah tanda strip. Angka qty dan harga masih 0, padahal seharusnya strip juga. Perbaikan sudah terdaftar.
+
+**Show/Hide Column** (atur kolom yang terlihat) seharusnya membuat kolom tersembunyi hilang dari Excel, judul maupun isi. Saat ini kolom yang kamu sembunyikan, misalnya Assignee atau Trx. Ref, masih ikut. Perbaikan sudah terdaftar.
+
+---
+
+## 7. FAQ
 
 **Q: Kenapa tidak bisa Complete?**  
 A: Cek status masih open, ada minimal satu qty lebih dari 0 di seluruh dokumen, fiscal period terbuka, COA lengkap, lost expense COA jika ada lost. Satu baris SKU yang nol semua bukan penyebabnya.
@@ -91,6 +110,12 @@ A: Auto-create saat Complete untuk type **Billed**. Lihat menu [Credit Note](../
 **Q: Auto-approve?**  
 A: Bisa aktif via Global Setting Sales Return Configuration — SR open lama auto-complete.
 
+**Q: File With Details kok cuma satu baris?**  
+A: Kalau dokumen punya lebih dari satu SKU, With Details harus satu baris per SKU. Dua SKU di contoh di atas harus dua baris.
+
+**Q: Kolom yang saya sembunyikan masih ada di Excel?**  
+A: Benar, saat ini masih ikut. Show/Hide Column belum diterapkan ke file unduhan. Perbaikan sudah terdaftar.
+
 ---
 
 ## Related Documents
@@ -103,5 +128,3 @@ A: Bisa aktif via Global Setting Sales Return Configuration — SR open lama aut
 | Canonical (full flow) | [../supplychain-sales-returns/requirement.md](../supplychain-sales-returns/requirement.md) |
 | Failed Ship vs SR | [../supplychain-failed-ship/knowledge-base.md](../supplychain-failed-ship/knowledge-base.md) |
 | Credit Note | [../accounting-credit-note/knowledge-base.md](../accounting-credit-note/knowledge-base.md) |
-
-

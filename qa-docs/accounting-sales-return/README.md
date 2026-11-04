@@ -14,7 +14,7 @@ Menu **Sales Return** di modul **Finance Accounting** — review harga/COGS dan 
 **UI route:** `/accounting/sales-return`  
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-sales-return/`](../_meta/docs-hub/menus/accounting-sales-return/)  
 **Canonical E2E:** [supplychain-sales-returns/](../supplychain-sales-returns/)  
-**3 layer version:** 2.3 · **User-guide:** v1.2 · `source_version` 2.3 · **Feature Map:** 1.0 · **Last updated:** 2026-11-04
+**3 layer version:** 2.4 · **User-guide:** v1.3 · `source_version` 2.4 · **Feature Map:** 1.0 · **Last updated:** 2026-11-04
 
 **Maintenance owner:** QA — Yemima
 
@@ -24,6 +24,7 @@ Menu **Sales Return** di modul **Finance Accounting** — review harga/COGS dan 
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-04 16:37 | 2.4 | Export All: tanpa rincian satu baris per dokumen, dengan rincian satu baris per SKU dan harga terisi. Dokumen tanpa SKU tetap satu baris, tetapi angka rincian masih 0 bukan tanda strip. Kolom yang disembunyikan di daftar masih ikut ke Excel (ETM-17067) |
 | 2026-11-04 13:30 | 2.3 | Syarat minimal satu qty retur berlaku untuk seluruh dokumen saat Complete, bukan untuk tiap baris saat simpan (ETM-17054) |
 | 2026-11-04 | 2.2 | Billed = ada SI / Unbilled = belum SI (bukan AR); parity Purchase Return; ETM-17064 |
 | 2026-07-05 | 2.0 | Finance layer docs created; canonical flow di supplychain-sales-returns v2.0 |
@@ -60,5 +61,3 @@ Qty return ≤ qty outbound per SKU. Pill platform di Failed Ship vs Sales Retur
 - [Credit Note](../accounting-credit-note/README.md) — auto-generated billed returns
 - [Customer Invoice](../accounting-customer-invoice/) — source price & tax
 - [Failed Ship](../supplychain-failed-ship/README.md) — pre-settlement
-
-

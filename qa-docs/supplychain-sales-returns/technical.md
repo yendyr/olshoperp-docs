@@ -2,7 +2,7 @@
 doc_type: technical
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.3
+version: 2.4
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -82,6 +82,8 @@ Flags: `is_return_process = 1`, `return_type = RETURN_TYPE_PLATFORM` (`'platform
 | `Modules/Accounting/Http/Controllers/SalesReturnController.php` | store, show, approve, destroy |
 | `Modules/Accounting/Http/Controllers/SalesReturnDetailController.php` | index, update |
 | `Modules/OmniChannel/Http/Controllers/SalesReturnController.php` | datalist, count, sync, export |
+| `Modules/OmniChannel/Jobs/SalesReturnExportJob.php` | Flatten 1 baris per dokumen atau per SKU; SCM memaksa harga 0 |
+| `Modules/OmniChannel/Exports/SalesReturnExportAll.php` | Header dan sel Excel; belum menyaring kolom tersembunyi |
 | `Modules/OmniChannel/Http/Controllers/SalesReturnConfigurationController.php` | auto-approve config |
 | `Modules/Accounting/Entities/SalesReturn.php` | StockMutation subclass |
 | `Modules/Accounting/Entities/SalesReturnDetail.php` | generateStock, ItemStock, TF, deduction |
@@ -244,9 +246,29 @@ Set in `SCM/SalesReturn/DataList.vue` on WH/location change.
 
 ## 12. Export
 
-- Chunk: **5000** rows (`SalesReturnController@exportExcel` Omni L460)
-- Types: `with_details` / `without_details`
-- Job: `SalesReturnExportJob`
+Dipakai kedua menu. Commit `fe26ea765` (ETM-17067) mengisi grain With Details. Filter Show/Hide belum.
+
+| Item | AS-IS |
+|------|-------|
+| Chunk | **5000** (`Modules/OmniChannel/Http/Controllers/SalesReturnController.php` `exportExcel`, `$limit = 5000`) |
+| Start / poll | GET `omnichannel/sales-returns/export-file`, `export-progress` |
+| Tipe | Request `filter`: `MainModel::EXPORT_WITHOUT_DETAILS` atau `EXPORT_WITH_DETAILS` |
+| Menu | `from_scm` true → nama file/menu `Sales Return SCM`; selain itu `Sales Return FA` |
+| Without Details | `SalesReturnExportJob` menulis **1 baris per header**. Jumlah baris Excel = jumlah dokumen di query |
+| With Details | Controller eager-load `details` dan mengisi atribut per SKU. Job mengulang map header **sekali per detail**. N detail → N baris |
+| Tanpa detail | Job tetap mendorong **1 baris**. Kunci teks (`system_product_sku`, nama, varian, unit) = `-`. Kunci angka (harga, COGS, qty) = `0` — GAP-SR-15; kontrak `-` |
+| Harga | `$with_price` default `! $from_scm`. Di job: `$with_price && ! str_contains($menu, 'SCM')`. Menu SCM menulis Order/Return Price dan COGS sebagai `0`; heading kolom tetap ada |
+| Heading detail | Disisipkan sebelum Description: System Product SKU, System Product Name, Product Variant, Order Price, Order COGS, Product Qty, Return Price, Return COGS, Outstanding Qty, Restock Qty, Lost Items, Broken Items, Total Return Qty, Unit |
+| Show/Hide | **Belum.** Controller, job, dan `SalesReturnExportAll` tidak membaca `hidden_columns` / `visible_columns`. Kolom tersembunyi tetap diekspor — GAP-SR-14, TO-BE ETM-17067. Pola mature: `PickingListController` meneruskan `visible_columns` (ref TC-OPL-16144-02) |
+
+**Invariants**
+
+- Without Details: jumlah baris Excel = jumlah header (dipotong per chunk 5000).
+- With Details dan ada minimal satu detail: jumlah baris Excel = jumlah baris detail, bukan jumlah dokumen.
+- With Details dan `details` kosong: tepat satu baris untuk dokumen itu.
+- Nama menu memuat `SCM` → sel Order Price, Order COGS, Return Price, Return COGS = 0.
+
+Query kosong mengembalikan `Data not found.` Batch gagal lewat `handleExportExcelAllBatchFailure`.
 
 ---
 
@@ -263,6 +285,7 @@ Set in `SCM/SalesReturn/DataList.vue` on WH/location change.
 9. Foreign currency SO → create blocked
 10. FE Return COGS tooltip vs BE average (regression GAP-SR-02)
 11. Multi-SKU row with restock/lost/broken all 0 saves; approve 422 only when every detail qty is 0 (ETM-17054)
+12. Export: 2 SKU → 2 baris With Details; dokumen tanpa detail → 1 baris (teks `-`, angka `0`, GAP-SR-15). Menu SCM: sel harga/COGS 0. Kolom di-hide masih ada (GAP-SR-14)
 
 ---
 
@@ -274,5 +297,3 @@ Set in `SCM/SalesReturn/DataList.vue` on WH/location change.
 | Finance technical | [../accounting-sales-return/technical.md](../accounting-sales-return/technical.md) |
 | Failed Ship | [../supplychain-failed-ship/technical.md](../supplychain-failed-ship/technical.md) |
 | API routes | `docs/api/accounting/routes.md`, `docs/api/omni_channel/routes.md` |
-
-

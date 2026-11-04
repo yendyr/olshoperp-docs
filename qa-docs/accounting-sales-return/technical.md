@@ -2,7 +2,7 @@
 doc_type: technical
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.3
+version: 2.4
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -125,11 +125,23 @@ Selects open platform returns older than `open_to_approve_duration`, dispatches 
 
 ---
 
+## 8. Export (Finance)
+
+Implementasi bersama menu SCM: [supplychain-sales-returns/technical.md](../supplychain-sales-returns/technical.md) §12. Kelas yang sama: `Modules/OmniChannel/Http/Controllers/SalesReturnController.php` `exportExcel`, `Modules/OmniChannel/Jobs/SalesReturnExportJob.php`, `Modules/OmniChannel/Exports/SalesReturnExportAll.php`. Commit grain: `fe26ea765`.
+
+| Item | Menu Finance |
+|------|----------------|
+| `from_scm` | false → nama menu `Sales Return FA` |
+| `with_price` | default true. Order Price, Order COGS, Return Price, Return COGS terisi. Job tetap memaksa 0 hanya bila nama menu memuat `SCM` |
+| Without / With Details | 1 baris per dokumen / 1 baris per SKU, header diulang |
+| Tanpa detail | 1 baris; teks `-`; angka detail `0` (GAP-SR-15, kontrak `-`) |
+| Show/Hide | Tidak dibaca (`hidden_columns` / `visible_columns` tidak ada). GAP-SR-14, TO-BE [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067) |
+
+---
+
 ## Related Documents
 
 | Doc | Path |
 |-----|------|
 | Canonical technical | [../supplychain-sales-returns/technical.md](../supplychain-sales-returns/technical.md) |
 | Credit Note | [../accounting-credit-note/README.md](../accounting-credit-note/README.md) |
-
-

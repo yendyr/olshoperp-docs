@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 1.2
+version: 1.3
 last_updated: 2026-11-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.3
+source_version: 2.4
 owner: QA - Yemima
 status: review
 ---
@@ -95,6 +95,11 @@ Setelah gudang menyimpan qty:
 - Kalau seluruh dokumen masih 0, Finance tidak bisa menyelesaikan retur. Isi minimal satu Restock, Broken, atau Lost.
 - Kalau mencari tombol Complete di SCM, tombol memang tidak ada—itu tugas Finance.
 - Kalau ada Lost tanpa Return Expense COA, Finance tidak bisa Complete.
+- Kalau kamu unduh **Without Details**, satu baris Excel = satu dokumen, sama dengan daftar.
+- Kalau kamu unduh **With Details** pada dokumen dua SKU (misalnya `HOME-DEC-CORTRAYWOOD` dan `TECH-ACC-MULTICARDREADER`), file harus dua baris. Data dokumen diulang; tiap baris membawa satu SKU.
+- Kalau dokumen tidak punya baris SKU, Excel tetap satu baris. Nama, SKU, varian, dan satuan sudah tanda strip; angka qty dan harga masih 0. Seharusnya angka itu juga strip. Perbaikan masih berjalan.
+- Kalau kamu mengunduh dari menu gudang, harga dan HPP tertulis 0. Angkanya ada di menu Finance.
+- Kalau kamu menyembunyikan kolom lewat **Show/Hide Column** (atur kolom mana yang terlihat), kolom itu seharusnya tidak ada di Excel. Saat ini kolom yang disembunyikan masih ikut. Perbaikan masih berjalan.
 
 ---
 
@@ -134,6 +139,8 @@ Setelah gudang menyimpan qty:
 - **Billed** (= sudah ada SI): Credit Note otomatis setelah Finance Complete.
 - **Open salah input:** delete sebelum approved, lalu proses ulang.
 - **Satu SKU nol:** boleh. Yang tidak boleh adalah menyelesaikan dokumen yang semua qty-nya masih nol.
+- **Export dua SKU:** With Details harus dua baris, bukan satu. Without Details tetap satu baris.
+- **Kolom disembunyikan:** belum hilang dari Excel. Show/Hide Column belum diikuti export.
 
 ---
 
@@ -150,6 +157,4 @@ Setelah gudang menyimpan qty:
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.3.*
-
-
+*Derivatif dari requirement / knowledge-base / technical v2.4.*

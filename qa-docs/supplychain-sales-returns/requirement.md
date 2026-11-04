@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.3
+version: 2.4
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -32,6 +32,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.4 | 2026-11-04 | QA - Yemima | Export All: tanpa rincian 1 baris per dokumen; dengan rincian 1 baris per SKU. Harga/COGS menu gudang = 0. Dokumen tanpa detail tetap 1 baris (angka masih 0, kontrak `-` = GAP-SR-15). Kolom Show/Hide belum dihormati (GAP-SR-14 / ETM-17067) |
 | 2.3 | 2026-11-04 | QA - Yemima | Baris SKU Restock+Lost+Broken = 0 tetap tersimpan; cek minimal satu qty hanya saat Complete (ETM-17054) |
 | 2.2 | 2026-11-04 | QA - Yemima | Billed = ada SI / Unbilled = belum SI (bukan AR); GAP-SR-13 / ETM-17064 |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft AS-IS codebase |
@@ -326,9 +327,37 @@ Messages: `Data already approved.` · `Data approval process is in progress. Ple
 
 | Feature | AS-IS |
 |---------|-------|
-| **Export datalist** | ✓ `omnichannel/sales-returns/export-*` — chunk 5000, with/without details |
+| **Export datalist** | ✓ `omnichannel/sales-returns/export-*` — chunk 5000. Kontrak baris: §9.1 (ETM-17067, reopen ETM-10609) |
 | **Import** | ❌ V1 routes commented |
 | **Print** | Seeder SCM `print=1` but **no UI** (GAP-SR-09) |
+
+Berlaku untuk **kedua menu**: Supply Chain `/supplychain/sales-returns` dan Accounting `/accounting/sales-return`. Standar grain mengikuti [Order Processing Trace SOT §6](../_meta/sot/order-processing-trace-source-of-truth.md).
+
+### 9.1 Export All — Without Details vs With Details
+
+| Mode | Grain | Isi |
+|------|-------|-----|
+| **Without Details** (header) | **1 baris Excel = 1 dokumen** Sales Return, sama dengan baris datalist | Kolom ringkasan dokumen saja. Tidak ada kolom rincian per SKU |
+| **With Details** (item, flattened) | **1 baris Excel = 1 baris detail SKU**. Dokumen dengan N SKU menghasilkan N baris | Kolom header **diulang** di setiap baris. Kolom detail menyusul sebelum Description |
+
+**Kolom detail (With Details):** System Product SKU, System Product Name, Product Variant, Order Price, Order COGS, Product Qty, Return Price, Return COGS, Outstanding Qty, Restock Qty, Lost Items, Broken Items, Total Return Qty, Unit.
+
+**Harga / COGS per menu:** menu Supply Chain menulis Order Price, Order COGS, Return Price, dan Return COGS sebagai **0** (`with_price` false; proses export juga memaksa 0 bila nama menu memuat SCM). Kolomnya tetap ada. Menu Accounting mengisi nilainya.
+
+**Dokumen tanpa baris detail:** tetap **1 baris** (bukan hilang). Kontrak [ETM-10609](https://erpintegration.atlassian.net/browse/ETM-10609): seluruh kolom detail terisi `-`. AS-IS setelah `fe26ea765`: SKU, Product Name, Variant, dan Unit sudah `-`; kolom **angka** (harga, COGS, qty) masih **0** — GAP-SR-15, masih terbuka di [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067).
+
+**Contoh:** satu dokumen berisi 2 SKU (`HOME-DEC-CORTRAYWOOD` dan `TECH-ACC-MULTICARDREADER`).
+
+| Opsi | Hasil yang benar |
+|------|------------------|
+| Without Details | 1 baris header |
+| With Details | 2 baris. Trx. Code, pembeli, dan kolom header lain sama di kedua baris; tiap baris membawa satu SKU beserta qty dan harga |
+
+### 9.2 Show/Hide Column pada export (TO-BE)
+
+Export **wajib** mengikuti visibilitas kolom datatable yang sedang aktif. Kolom yang user sembunyikan lewat **Show/Hide Column** (`visible = false`) **tidak boleh** muncul di header maupun sel Excel. Standar yang sama dengan export mature, ref `TC-OPL-16144-02`.
+
+**AS-IS di dev:** backend **tidak** menerima dan **tidak** menyaring `hidden_columns` / `visible_columns`. Kolom yang disembunyikan (misalnya Assignee atau Trx. Ref) tetap ada di file. **TO-BE / known gap** GAP-SR-14, terikat [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067). Grain §9.1 sudah jalan di `fe26ea765`; filter kolom belum.
 
 ---
 
@@ -389,6 +418,7 @@ Messages: `Data already approved.` · `Data approval process is in progress. Ple
 9. Foreign currency SO blocked at create  
 10. COGS uses average outbound price (7 Mei 2026 rule)  
 11. Complete ditolak jika seluruh dokumen qty 0 (`Please enter at least one restock quantity, broken quantity, or lost quantity`)
+12. Export Without Details = 1 baris per dokumen; With Details = 1 baris per SKU (header diulang). Menu gudang: harga/COGS = 0. Dokumen tanpa detail tetap 1 baris (angka masih 0, kontrak `-` = GAP-SR-15). Kolom yang di-hide belum hilang dari Excel (GAP-SR-14 / ETM-17067)
 
 ---
 
@@ -445,6 +475,8 @@ Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/
 | GAP-SR-11 | Return Shipper column default hidden | Hidden | Visible default | **UI differs** |
 | GAP-SR-12 | Status processed/complete | — | Jump open→approved | **By design AS-IS** |
 | GAP-SR-13 | Definisi Billed/Unbilled | Billed = ada SI; Unbilled = belum SI (parity PR) | Code memakai `processed_to_payment_amount > 0` | **Open** [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) |
+| GAP-SR-14 | Export hormati Show/Hide Column | Kolom tersembunyi tidak ada di header maupun sel Excel (TC-OPL-16144-02) | Backend tidak menerima/menyaring `hidden_columns` / `visible_columns` | **TO-BE** [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067) |
+| GAP-SR-15 | Dokumen tanpa detail: kolom detail `-` | Semua kolom detail `-` (kontrak ETM-10609) | Teks (SKU, nama, varian, unit) `-`; angka harga/qty `0` | **TO-BE** [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067) |
 
 ---
 
@@ -458,6 +490,8 @@ Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/
 | DEV-SR-04 | Print Summary | New blade/component |
 | DEV-SR-05 | Return shipper/tracking on edit form | Header or new section |
 | DEV-SR-06 | Bulk multi-order create | New API + FE selection |
+| DEV-SR-07 | Export buang kolom yang di-hide | GAP-SR-14 — terima dan saring kolom Show/Hide |
+| DEV-SR-08 | Baris tanpa detail: angka jadi `-` | GAP-SR-15 — jangan tulis 0 pada kolom detail |
 
 ---
 
@@ -489,5 +523,3 @@ Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/
 | Knowledge Base (Gudang) | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
 | Failed Ship | [../supplychain-failed-ship/requirement.md](../supplychain-failed-ship/requirement.md) |
-
-

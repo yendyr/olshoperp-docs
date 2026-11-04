@@ -13,13 +13,14 @@ Menu **Sales Return** — operasi gudang; shared API dengan Finance.
 
 **UI gudang:** `/supplychain/sales-returns` · **Finance:** `/accounting/sales-return`  
 **Help Center:** [`_meta/docs-hub/menus/supplychain-sales-returns/`](../_meta/docs-hub/menus/supplychain-sales-returns/)  
-**3 layer:** v2.3 · **User Guide:** v1.2 (`source_version` 2.3) · **Feature Map:** v1.0  
+**3 layer:** v2.4 · **User Guide:** v1.3 (`source_version` 2.4) · **Feature Map:** v1.0  
 **Maintenance owner:** QA — Yemima
 
 ## Changelog
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-04 16:37 | 2.4 | Export All: tanpa rincian satu baris per dokumen, dengan rincian satu baris per SKU. Di menu gudang harga dan HPP tertulis 0. Dokumen tanpa SKU tetap satu baris, tetapi angka rincian masih 0 bukan tanda strip. Kolom yang disembunyikan di daftar masih ikut ke Excel (ETM-17067) |
 | 2026-11-04 13:30 | 2.3 | Baris SKU yang Restock, Lost, dan Broken-nya nol tetap tersimpan. Syarat minimal satu qty hanya dicek saat Finance menyelesaikan dokumen (ETM-17054) |
 | 2026-11-04 | 2.2 | Billed = ada SI / Unbilled = belum SI; GAP-SR-13 / ETM-17064 |
 | 2026-07-29 | 2.1b | Feature Map + 5 Lingo cards; user-guide v1.0; Help Center overview en/id |
@@ -39,5 +40,3 @@ Menu **Sales Return** — operasi gudang; shared API dengan Finance.
 - [Sales Platform](../omni-sales-platform/) — return marketplace
 - [Sales Return Approval](../accounting-sales-return/) — Complete & journals
 - [Credit Note](../accounting-credit-note/) — auto dari return billed
-
-

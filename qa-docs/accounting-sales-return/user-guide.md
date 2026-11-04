@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 1.2
+version: 1.3
 last_updated: 2026-11-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.3
+source_version: 2.4
 owner: QA - Yemima
 status: review
 ---
@@ -108,6 +108,10 @@ Dialog ringkasan “Sales Return Processed” + print summary **belum** tersedia
 - **Kalau auto-approve aktif**, SR open lama bisa selesai tanpa klik manual — pantau antrian open.
 - **Kalau kamu mengharapkan Reject**, tombol/endpoint belum aktif.
 - **Kalau tooltip COGS menyebut stock ID terbaru**, acuannya yang benar untuk nilai = **rata-rata outbound** order.
+- **Kalau kamu unduh Without Details**, satu baris Excel = satu dokumen, sama dengan daftar.
+- **Kalau kamu unduh With Details** pada dokumen dua SKU (misalnya `HOME-DEC-CORTRAYWOOD` dan `TECH-ACC-MULTICARDREADER`), file harus dua baris. Data dokumen diulang, dan harga serta HPP terisi di menu ini.
+- **Kalau dokumen tidak punya baris SKU**, Excel tetap satu baris. Nama dan SKU sudah tanda strip; angka qty dan harga masih 0. Seharusnya angka itu juga strip.
+- **Kalau kamu menyembunyikan kolom lewat Show/Hide Column** (atur kolom yang terlihat), kolom itu seharusnya tidak ada di Excel. Saat ini masih ikut. Perbaikan masih berjalan.
 
 ---
 
@@ -146,6 +150,8 @@ Dialog ringkasan “Sales Return Processed” + print summary **belum** tersedia
 - **Credit Note di mana?** Auto saat Complete **Billed** — lihat menu Credit Note.
 - **Tidak bisa Complete?** Status open, minimal satu qty di seluruh dokumen (bukan tiap baris), fiscal, COA, lost expense COA.
 - **Auto-approve:** cek Global Setting Sales Return Configuration.
+- **Export dua SKU:** With Details harus dua baris. Harga terisi di menu Finance; di menu gudang harga tertulis 0.
+- **Kolom disembunyikan:** belum hilang dari file Excel.
 
 ---
 
@@ -162,6 +168,4 @@ Dialog ringkasan “Sales Return Processed” + print summary **belum** tersedia
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.3 — tanpa menambah fakta baru di luar sumber.*
-
-
+*Derivatif dari requirement / knowledge-base / technical v2.4 — tanpa menambah fakta baru di luar sumber.*
