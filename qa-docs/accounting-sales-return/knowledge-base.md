@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.2
+version: 2.3
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -67,7 +67,7 @@ Sama seperti Purchase Return: yang menentukan adalah **sudah ada invoice penjual
 ## 5. Tombol Complete
 
 - Hanya muncul jika status **open** dan user punya privilege **approval**.
-- Minimal satu qty (Restock/Broken/Lost) > 0.
+- Minimal satu qty (Restock/Broken/Lost) lebih dari 0 **di seluruh dokumen**. Satu SKU boleh 0/0/0 dan tetap tersimpan (retur parsial).
 - Jika ada **Lost Items** → produk wajib punya **Return Expense COA** di Product COA Group.
 
 Setelah Complete, dokumen **read-only** — tidak bisa edit qty.
@@ -77,7 +77,10 @@ Setelah Complete, dokumen **read-only** — tidak bisa edit qty.
 ## 6. FAQ
 
 **Q: Kenapa tidak bisa Complete?**  
-A: Cek status masih open, qty > 0, fiscal period terbuka, COA lengkap, lost expense COA jika ada lost.
+A: Cek status masih open, ada minimal satu qty lebih dari 0 di seluruh dokumen, fiscal period terbuka, COA lengkap, lost expense COA jika ada lost. Satu baris SKU yang nol semua bukan penyebabnya.
+
+**Q: Satu SKU 0 semua, boleh?**  
+A: Boleh disimpan. Misalnya SKU A Restock 2 dan SKU B 0/0/0. Complete ditolak hanya jika semua baris masih nol.
 
 **Q: Apakah Finance bisa input qty?**  
 A: Ya — form sama dengan gudang; tapi best practice: gudang input, Finance review & Complete.
@@ -100,3 +103,5 @@ A: Bisa aktif via Global Setting Sales Return Configuration — SR open lama aut
 | Canonical (full flow) | [../supplychain-sales-returns/requirement.md](../supplychain-sales-returns/requirement.md) |
 | Failed Ship vs SR | [../supplychain-failed-ship/knowledge-base.md](../supplychain-failed-ship/knowledge-base.md) |
 | Credit Note | [../accounting-credit-note/knowledge-base.md](../accounting-credit-note/knowledge-base.md) |
+
+

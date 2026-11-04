@@ -2,7 +2,7 @@
 doc_type: technical
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.2
+version: 2.3
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -146,6 +146,8 @@ $average_price = bcdiv($total_cogs_price, $total_quantity_in_base, 4);
 
 ## 6. Approve Flow
 
+Document-level gate in `SalesReturnController::approve` (not per detail row): at least one of restock, broken, or lost across the document must be greater than 0. Otherwise `Please enter at least one restock quantity, broken quantity, or lost quantity`. A SKU row of 0/0/0 does not fail this check by itself (ETM-17054).
+
 ```mermaid
 sequenceDiagram
     participant FE as DetailButtons.vue
@@ -178,9 +180,11 @@ sequenceDiagram
 
 ## 7. Detail Update (`SalesReturnDetailController@update`)
 
-- Whole number validation on qty fields
+- Whole number validation on qty fields; **0 is valid** on a SKU row
+- No per-row "must be greater than 0" gate. `components/DetailTable.vue` no longer shows `Total return quantity must be greater than 0 to save this document.` (ETM-17054). Restock 0 + Lost 0 + Broken 0 persists
 - FIFO/LIFO allocation by `initial_inbound_mutation_date` on outbound item stocks
 - Cap: `Total quantity exceed returnable quantity`
+- Document-level min 1 qty is only on approve — §6 above
 - Updates `prepared_to_return_quantity` on outbound + SO detail
 - Updates invoice `prepared_to_amount_return` / `prepared_to_amount_credit_note`
 
@@ -258,6 +262,7 @@ Set in `SCM/SalesReturn/DataList.vue` on WH/location change.
 8. SCM Form: Complete button absent (`fromScm=true`)
 9. Foreign currency SO → create blocked
 10. FE Return COGS tooltip vs BE average (regression GAP-SR-02)
+11. Multi-SKU row with restock/lost/broken all 0 saves; approve 422 only when every detail qty is 0 (ETM-17054)
 
 ---
 
@@ -269,3 +274,5 @@ Set in `SCM/SalesReturn/DataList.vue` on WH/location change.
 | Finance technical | [../accounting-sales-return/technical.md](../accounting-sales-return/technical.md) |
 | Failed Ship | [../supplychain-failed-ship/technical.md](../supplychain-failed-ship/technical.md) |
 | API routes | `docs/api/accounting/routes.md`, `docs/api/omni_channel/routes.md` |
+
+

@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.2
+version: 2.3
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -32,6 +32,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.3 | 2026-11-04 | QA - Yemima | Baris SKU Restock+Lost+Broken = 0 tetap tersimpan; cek minimal satu qty hanya saat Complete (ETM-17054) |
 | 2.2 | 2026-11-04 | QA - Yemima | Billed = ada SI / Unbilled = belum SI (bukan AR); GAP-SR-13 / ETM-17064 |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft AS-IS codebase |
 | 2.0 | 2026-07-05 | QA - Yemima | Full rewrite: merge PM requirement, D&W COGS 7 Mei, dual-menu flow, gaps §19–§21 |
@@ -229,6 +230,10 @@ outbound_qty_in_base - prepared_to_return_qty - processed_to_return_qty
 
 **SCM toast after save:** `Return data saved. Waiting for Finance team to review and complete the approval process.` ✓
 
+**Baris qty 0 (ETM-17054):** satu baris SKU dengan Restock = 0, Lost = 0, dan Broken = 0 tetap auto-save sebagai 0. Pesan `Total return quantity must be greater than 0 to save this document.` tidak dipakai lagi. Save hanya menolak bilangan non-bulat dan total yang melebihi qty yang masih bisa diretur. Cek "minimal satu qty lebih dari 0" ada di level dokumen, saat Finance Complete (§7.2).
+
+**Contoh:** SO dua SKU. SKU A Restock 2; SKU B Restock 0, Lost 0, Broken 0. Kedua baris tersimpan, Complete boleh. Jika semua baris 0/0/0, save tetap sukses dan Complete ditolak.
+
 **Kolom Finance** (`with_price=1`): Order Price/COGS, Return Price/COGS — lihat [accounting-sales-return](../accounting-sales-return/requirement.md).
 
 ### 5.3 Action Buttons
@@ -277,7 +282,7 @@ Setelah save qty → status tetap **open** → menunggu Finance. Tidak ada Compl
 | Rule | Message |
 |------|---------|
 | Not already approved | `This data and its properties already approved…` |
-| Min 1 qty > 0 | `Please enter at least one restock quantity, broken quantity, or lost quantity` |
+| Min 1 qty lebih dari 0 (level dokumen, bukan per baris) | `Please enter at least one restock quantity, broken quantity, or lost quantity` |
 | Lost > 0 needs Return Expense COA | `Cannot approve. Return Expense COA is not configured…` |
 | Product active + COA group | `SKU {sku} is inactive` / `Please check COA group…` |
 | `description` max 150 | optional approval note |
@@ -353,7 +358,8 @@ Messages: `Data already approved.` · `Data approval process is in progress. Ple
 | Pending SR exists | `There is a pending sales return for this order…` |
 | Fully processed | `This Sales Order is already fully processed to Sales Return.` |
 | Total SR > Product Qty | `Total return qty can't exceed the original ordered qty.` (FE) / `Total quantity exceed returnable quantity` (BE) |
-| Qty = 0 save | `Total return quantity must be greater than 0 to save this document.` |
+| Satu baris SKU qty 0 (save) | Tersimpan normal sebagai 0. Pesan `Total return quantity must be greater than 0 to save this document.` tidak dipakai lagi (ETM-17054) |
+| Seluruh dokumen qty 0 (Complete) | `Please enter at least one restock quantity, broken quantity, or lost quantity` |
 | Sync in progress | `Sync Sales Return Platform is being processed…` |
 
 ---
@@ -363,7 +369,7 @@ Messages: `Data already approved.` · `Data approval process is in progress. Ple
 | ✅ Do | ❌ Don't |
 |-------|----------|
 | Pastikan order sudah outbound + invoice sebelum scan | Pakai SR untuk order pre-outbound (gunakan Failed Ship) |
-| Isi minimal 1 dari Restock/Broken/Lost | Complete dengan semua qty 0 |
+| Biarkan baris SKU 0/0/0 tersimpan bila SKU lain diretur; pastikan dokumen punya minimal 1 qty sebelum Complete | Complete saat seluruh Restock, Broken, dan Lost dokumen = 0 |
 | Set Return Expense COA jika ada Lost Items | Approve tanpa COA group produk |
 | Finance Complete setelah gudang save | Gudang klik Complete (hidden di SCM) |
 | Foreign currency → manual settlement | Force SR untuk order non-IDR |
@@ -374,14 +380,15 @@ Messages: `Data already approved.` · `Data approval process is in progress. Ple
 
 1. Scan valid SO → create SR open + omni header  
 2. Datalist platform pill shows count + full-outbound filter  
-3. Edit restock/broken/lost → auto-save + SCM waiting toast  
+3. Edit restock/broken/lost → auto-save + SCM waiting toast, termasuk satu baris SKU 0/0/0 pada SO multi-SKU  
 4. Total SR qty capped at returnable  
 5. SCM tidak lihat Complete; Finance lihat Complete  
 6. Approve → ItemStock + journals + optional Credit Note (billed)  
 7. Broken → auto TF scrap; Lost → auto deduction + expense journal  
 8. Delete open SR reverts prepared qty  
 9. Foreign currency SO blocked at create  
-10. COGS uses average outbound price (7 Mei 2026 rule)
+10. COGS uses average outbound price (7 Mei 2026 rule)  
+11. Complete ditolak jika seluruh dokumen qty 0 (`Please enter at least one restock quantity, broken quantity, or lost quantity`)
 
 ---
 
@@ -482,3 +489,5 @@ Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/
 | Knowledge Base (Gudang) | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
 | Failed Ship | [../supplychain-failed-ship/requirement.md](../supplychain-failed-ship/requirement.md) |
+
+

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 1.1
+version: 1.2
 last_updated: 2026-11-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.2
+source_version: 2.3
 owner: QA - Yemima
 status: review
 ---
@@ -99,7 +99,7 @@ Dialog ringkasan “Sales Return Processed” + print summary **belum** tersedia
 
 ## 5. Yang Perlu Diperhatikan
 
-- **Kalau kamu Complete tanpa qty > 0**, sistem menolak — isi minimal satu Restock/Broken/Lost.
+- **Kalau kamu Complete tanpa satupun qty lebih dari 0 di seluruh dokumen**, sistem menolak — isi minimal satu Restock/Broken/Lost. Satu SKU boleh 0/0/0 selama SKU lain ada qty (retur parsial).
 - **Kalau ada Lost tanpa Return Expense COA**, Complete ditolak — lengkapi master produk dulu.
 - **Kalau kamu mencari tombol Complete di menu SCM**, tidak ada — hanya di `/accounting/sales-return`.
 - **Kalau barang retur sudah punya Sales Invoice (SI)**, retur **Billed** → akan ada Credit Note (meski AR belum ada); jangan kaget.
@@ -144,7 +144,7 @@ Dialog ringkasan “Sales Return Processed” + print summary **belum** tersedia
 - **Gudang vs Finance:** gudang input qty; Finance review & Complete (meski form bisa sama).
 - **Failed Ship vs Sales Return:** belum SI & outbound → Failed Ship; sudah SI & outbound → Sales Return.
 - **Credit Note di mana?** Auto saat Complete **Billed** — lihat menu Credit Note.
-- **Tidak bisa Complete?** Status open, qty > 0, fiscal, COA, lost expense COA.
+- **Tidak bisa Complete?** Status open, minimal satu qty di seluruh dokumen (bukan tiap baris), fiscal, COA, lost expense COA.
 - **Auto-approve:** cek Global Setting Sales Return Configuration.
 
 ---
@@ -162,4 +162,6 @@ Dialog ringkasan “Sales Return Processed” + print summary **belum** tersedia
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.0 — tanpa menambah fakta baru di luar sumber.*
+*Derivatif dari requirement / knowledge-base / technical v2.3 — tanpa menambah fakta baru di luar sumber.*
+
+

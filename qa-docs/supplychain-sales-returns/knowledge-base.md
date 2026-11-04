@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.2
+version: 2.3
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -70,7 +70,7 @@ Fitur untuk memproses **pengembalian barang dari customer** setelah order sudah 
 | **Lost Items** | Hilang → otomatis deduction + biaya saat Finance approve |
 | **Total SR Qty** | Restock + Broken + Lost — **tidak boleh > Product Qty** |
 
-Qty auto-save setelah edit (~1 detik).
+Qty auto-save setelah edit (~1 detik). Satu SKU yang Restock, Broken, dan Lost-nya semuanya 0 tetap tersimpan. Itu normal untuk retur parsial.
 
 **Pesan sukses:** *"Return data saved. Waiting for Finance team to review and complete the approval process."*
 
@@ -103,7 +103,7 @@ Total SR Qty = Restock + Broken + Lost
 Total SR Qty ≤ (Qty outbound - retur sebelumnya)
 ```
 
-Minimal **satu** dari Restock/Broken/Lost harus > 0 sebelum Finance bisa approve.
+Minimal **satu** dari Restock/Broken/Lost di **seluruh dokumen** harus lebih dari 0 sebelum Finance bisa menyelesaikan retur. Satu baris SKU boleh 0/0/0 dan tetap tersimpan.
 
 ---
 
@@ -131,6 +131,9 @@ A: Tidak. Approve/Complete hanya di menu **Accounting → Sales Return**.
 **Q: Satu SR bisa beberapa order?**  
 A: Saat ini **scan per order**. Bulk multi-order belum aktif.
 
+**Q: Satu SKU saya isi 0 semua, kenapa tetap tersimpan?**  
+A: Normal. Misalnya order dua SKU: SKU A Restock 2, SKU B Restock 0, Broken 0, Lost 0. Keduanya tersimpan. Syarat minimal satu qty dicek saat Finance menyelesaikan **seluruh dokumen**, bukan tiap baris. Kalau semua baris 0, simpan tetap berhasil dan Finance tidak bisa Complete.
+
 **Q: Barang rusak/hilang kemana stoknya?**  
 A: Saat Finance approve: rusak → transfer ke scrap WH; hilang → stock deduction + jurnal expense.
 
@@ -151,3 +154,5 @@ A: Update status retur dari marketplace (refund/cancelled) ke datalist pill.
 | Requirement (full) | [requirement.md](./requirement.md) |
 | Finance menu | [../accounting-sales-return/knowledge-base.md](../accounting-sales-return/knowledge-base.md) |
 | Failed Ship | [../supplychain-failed-ship/knowledge-base.md](../supplychain-failed-ship/knowledge-base.md) |
+
+

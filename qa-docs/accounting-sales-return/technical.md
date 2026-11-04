@@ -2,7 +2,7 @@
 doc_type: technical
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.2
+version: 2.3
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -28,6 +28,8 @@ Full architecture: [supplychain-sales-returns/technical.md](../supplychain-sales
 | `withPrice` | `true` | Detail API `?with_price=1`; price/COGS columns |
 
 **Complete handler:** `DetailButtons.vue` → `POST accounting/sales-returns/{id}/approve`
+
+**Qty save vs approve (ETM-17054):** shared `components/DetailTable.vue` (also SCM). `PATCH accounting/sales-returns/{id}/details/{detail_id}` accepts whole numbers including 0 and rejects only `Total quantity exceed returnable quantity`. The per-row FE message `Total return quantity must be greater than 0 to save this document.` is removed. Document-level check is only in `SalesReturnController::approve`: `Please enter at least one restock quantity, broken quantity, or lost quantity`. Detail update contract: [supplychain-sales-returns/technical.md](../supplychain-sales-returns/technical.md) §7.
 
 ---
 
@@ -119,6 +121,7 @@ Selects open platform returns older than `open_to_approve_duration`, dispatches 
 4. Unbilled path → no CN, sales/AR journal lines
 5. Lost without Return Expense COA → 422 on approve
 6. Tax reversal via `customer_invoice_detail_taxes` pivot
+7. SKU row 0/0/0 saves; approve 422 only when every detail qty is 0 (ETM-17054)
 
 ---
 
@@ -128,3 +131,5 @@ Selects open platform returns older than `open_to_approve_duration`, dispatches 
 |-----|------|
 | Canonical technical | [../supplychain-sales-returns/technical.md](../supplychain-sales-returns/technical.md) |
 | Credit Note | [../accounting-credit-note/README.md](../accounting-credit-note/README.md) |
+
+

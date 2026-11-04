@@ -13,13 +13,14 @@ Menu **Sales Return** — operasi gudang; shared API dengan Finance.
 
 **UI gudang:** `/supplychain/sales-returns` · **Finance:** `/accounting/sales-return`  
 **Help Center:** [`_meta/docs-hub/menus/supplychain-sales-returns/`](../_meta/docs-hub/menus/supplychain-sales-returns/)  
-**3 layer:** v2.2 · **User Guide:** v1.0 (`source_version` 2.2) · **Feature Map:** v1.0  
+**3 layer:** v2.3 · **User Guide:** v1.2 (`source_version` 2.3) · **Feature Map:** v1.0  
 **Maintenance owner:** QA — Yemima
 
 ## Changelog
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-04 13:30 | 2.3 | Baris SKU yang Restock, Lost, dan Broken-nya nol tetap tersimpan. Syarat minimal satu qty hanya dicek saat Finance menyelesaikan dokumen (ETM-17054) |
 | 2026-11-04 | 2.2 | Billed = ada SI / Unbilled = belum SI; GAP-SR-13 / ETM-17064 |
 | 2026-07-29 | 2.1b | Feature Map + 5 Lingo cards; user-guide v1.0; Help Center overview en/id |
 | 2026-07-15 | 2.1 | Relasi Sales Platform (Return bucket, flow vs Failed Ship) |
@@ -38,3 +39,5 @@ Menu **Sales Return** — operasi gudang; shared API dengan Finance.
 - [Sales Platform](../omni-sales-platform/) — return marketplace
 - [Sales Return Approval](../accounting-sales-return/) — Complete & journals
 - [Credit Note](../accounting-credit-note/) — auto dari return billed
+
+

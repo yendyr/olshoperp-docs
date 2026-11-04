@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.2
+version: 2.3
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -24,6 +24,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.3 | 2026-11-04 | Minimal satu qty lebih dari 0 dicek di level dokumen saat Complete, bukan per baris saat save (ETM-17054) |
 | 2.2 | 2026-11-04 | **Billed = sudah ada SI**; **Unbilled = belum ada SI** (bukan status AR/payment). Parity Purchase Return → Debit Note. Gap code [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) |
 | 2.1 | 2026-10-22 | Cross-ref TO-BE ETM-16764: CN dari billed Complete memakai Deposit of Sales Return; Account Receive ikut akun itu |
 | 2.0 | 2026-07-05 | Initial Finance layer — split from canonical SR v2.0 |
@@ -71,7 +72,11 @@ Return Price dari invoice: `each_price_after_discount_after_vat × return qty`.
 
 Body: `{ approval_status: 'approved', description?: string(max 150) }`
 
-**Pre-conditions:** status open; min 1 qty > 0; Return Expense COA if lost; product COA valid; fiscal period open.
+**Pre-conditions:** status open; min 1 qty lebih dari 0 **pada level dokumen** (bukan per baris SKU), dicek saat Complete; Return Expense COA if lost; product COA valid; fiscal period open.
+
+Jika seluruh dokumen Restock + Broken + Lost = 0, Complete ditolak: `Please enter at least one restock quantity, broken quantity, or lost quantity`.
+
+Satu baris SKU 0/0/0 tetap boleh disimpan (retur parsial). Save detail hanya menolak bilangan non-bulat dan total yang melebihi qty yang masih bisa diretur. Pesan lama per baris `Total return quantity must be greater than 0 to save this document.` tidak dipakai lagi ([ETM-17054](https://erpintegration.atlassian.net/browse/ETM-17054)). Contoh dan tabel validasi: [supplychain-sales-returns §5.2](../supplychain-sales-returns/requirement.md).
 
 **Reject:** tidak ada endpoint/button aktif (GAP-SR-10).
 
@@ -142,6 +147,7 @@ Finance harus aware: SR open lebih lama dari duration bisa auto-approved tanpa m
 6. Lost qty tanpa Return Expense COA → approve blocked
 7. COGS return value = average outbound (bukan latest stock date)
 8. Partial return → remainder omni return duplicated
+9. Baris SKU 0/0/0 tersimpan; Complete ditolak hanya jika tidak ada satupun qty lebih dari 0 di dokumen (ETM-17054)
 
 ---
 
@@ -153,3 +159,5 @@ Finance harus aware: SR open lebih lama dari duration bisa auto-approved tanpa m
 | KB Finance | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
 | Credit Note | [../accounting-credit-note/README.md](../accounting-credit-note/README.md) |
+
+

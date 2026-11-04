@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 1.1
+version: 1.2
 last_updated: 2026-11-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.2
+source_version: 2.3
 owner: QA - Yemima
 status: review
 ---
@@ -91,7 +91,8 @@ Setelah gudang menyimpan qty:
 - Kalau invoice foreign currency atau payment masih pending, scan ditolak.
 - Kalau sudah ada SR Open, lanjutkan dokumen itu—jangan buat duplikat.
 - Kalau total Restock+Broken+Lost melebihi sisa returnable, kurangi qty.
-- Kalau semua qty 0, dokumen tidak bisa diselesaikan.
+- Kalau satu SKU kamu isi Restock, Broken, dan Lost semuanya 0, baris itu tetap tersimpan. Misalnya SKU A retur 2 dan SKU B 0/0/0 pada order yang sama — simpan normal.
+- Kalau seluruh dokumen masih 0, Finance tidak bisa menyelesaikan retur. Isi minimal satu Restock, Broken, atau Lost.
 - Kalau mencari tombol Complete di SCM, tombol memang tidak ada—itu tugas Finance.
 - Kalau ada Lost tanpa Return Expense COA, Finance tidak bisa Complete.
 
@@ -132,6 +133,7 @@ Setelah gudang menyimpan qty:
 - **Platform return:** Sync memperbarui refund/cancelled dari marketplace.
 - **Billed** (= sudah ada SI): Credit Note otomatis setelah Finance Complete.
 - **Open salah input:** delete sebelum approved, lalu proses ulang.
+- **Satu SKU nol:** boleh. Yang tidak boleh adalah menyelesaikan dokumen yang semua qty-nya masih nol.
 
 ---
 
@@ -148,4 +150,6 @@ Setelah gudang menyimpan qty:
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.1.*
+*Derivatif dari requirement / knowledge-base / technical v2.3.*
+
+
