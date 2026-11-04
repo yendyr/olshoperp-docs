@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.4
-last_updated: 2026-10-28
+version: 1.5
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 ---
@@ -21,6 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5 | 2026-11-04 | **TO-BE** ETM-16882: tooltip Applied Store menyebut store platform dan Others Active (kalimat "Only platform stores can be selected" tidak dipakai); satu store hanya di satu Category Price; Category yang masih terikat store tidak bisa dihapus. Hapus saat store terikat sudah Inactive masih lolos — GAP-CP-07 (ETM-17053) |
 | 1.4 | 2026-10-28 | **TO-BE** ETM-16882: Applied Store = platform + Others **Active**; NULL OK; mix OK. Update to Pricelist: Manual Price di Pricelist **tidak** ditimpa (stack — ETM-16884). Catatan: membalik sebagian ETM-16666 |
 | 1.3 | 2026-10-28 | Cross-ref TO-BE ETM-16835: Max Value ikut snapshot band / edit lokal Percentage + hitung Pricelist |
 | 1.2 | 2026-10-21 | Cross-ref TO-BE ETM-16668: auto-recalc nilai weight-related saat DnW default berubah; input manual category tidak tertimpa |
@@ -60,6 +61,9 @@ flowchart LR
 | A-09 | Snapshot / edit lokal band Percentage menyertakan **Max Value** (aturan sama master VP ETM-16835); Amount → clear+disable | **TO-BE** |
 | A-10 | Applied Store: store platform eligible **dan** store Others **Active**; Inactive Others tidak muncul; NULL / mix platform+Others boleh disimpan | **TO-BE** ETM-16882 |
 | A-11 | Update to Pricelist: Manual Price di Pricelist tidak dihapus; Final = Default + User Set Margin + Category tier ([Pricelist §5](../businessdevelopment-pricelist-product/requirement.md)) | **TO-BE** ETM-16884 |
+| A-12 | Tooltip Applied Store menyebut store platform dan store Others Active. Kalimat lama "Only platform stores can be selected" tidak dipakai | **TO-BE** ETM-16882 (TC ETM-17030) |
+| A-13 | Satu store hanya boleh terikat ke satu Category Price. Pesan: "{nama store} has already been used. A store cannot be bound to multiple category prices." (contoh nama: Aeri's Store 2) | **TO-BE** ETM-16882 (TC ETM-17029) |
+| A-14 | Category Price yang masih terikat store tidak bisa dihapus, satu baris maupun banyak sekaligus. Pesan: "Category Price cannot be deleted because it is still bound to Store {nama}. Please unbind the store first." Berlaku juga bila store itu kemudian Inactive | **TO-BE** ETM-16882 (TC ETM-17028, ETM-17032) |
 
 ---
 
@@ -79,6 +83,10 @@ Sidebar: jump-section · **Update from Master** · **Update to Pricelist** (mera
 | NULL / kosong | Tetap boleh |
 | Mix platform + Others | Boleh disimpan |
 | Server | Menerima Others Active (tidak 422 “Store Field not found” ala 16666 untuk Others Active) |
+| Store tidak eligible | Others Inactive atau store lain yang dikirim langsung (tidak ada di dropdown) ditolak: "Store Field not found." (TC ETM-17031) |
+| Tooltip | Menyebut store platform dan store Others Active. Kalimat "Only platform stores can be selected" tidak dipakai (TC ETM-17030) |
+| Satu store | Hanya boleh di satu Category Price. Pesan: "{nama store} has already been used. A store cannot be bound to multiple category prices." |
+| Hapus | Masih terikat store → tidak bisa dihapus (satu baris atau banyak). Berlaku juga jika store kemudian Inactive |
 
 **Dampak Pricelist (bukan AC penuh card ini):** Sync icon hanya jika category mengandung ≥1 platform; Others-only / NULL → calc Final tetap, tanpa Sync — [Pricelist ETM-16884](../businessdevelopment-pricelist-product/requirement.md). Future: Others → Unit Price SO — out of scope.
 
@@ -159,6 +167,7 @@ Category `SH-GARME` attach VP-AMT-RETAIL + VP-WGT-STD + VP-AMT-MKTPLACE → SKU-
 | GAP-CP-04 | Auto weight → Category/Pricelist (ETM-16668) | Sync dari DnW default; preserve manual; log Pricelist |
 | GAP-CP-05 | Applied Store Others Active (ETM-16882) | Balik sebagian 16666; TC baru menggantikan TC-CP-002/003 |
 | GAP-CP-06 | Copy dialog Update to Pricelist vs Manual stack | Selaras ETM-16884 |
+| GAP-CP-07 | Hapus Category yang store-nya sudah Inactive (ETM-17053) | **TO-BE** ETM-16882 / TC ETM-17032: tetap tidak bisa dihapus selama masih terikat store. Kode sekarang hanya menolak jika store terikat masih **Active**, jadi Category dengan store Inactive masih bisa terhapus |
 
 ---
 

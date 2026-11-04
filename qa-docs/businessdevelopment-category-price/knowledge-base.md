@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.4
-last_updated: 2026-10-28
+version: 1.5
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [Category Price, pricelist category, kategori harga, Variable Price Tiers, Max Value, Applied Store]
@@ -18,6 +18,8 @@ Kategori harga untuk channel/store. **TO-BE:** aturan margin diambil dari satu a
 ## Applied Store (TO-BE ETM-16882)
 
 Bisa pilih store **platform** dan store **Others** yang **Active**. Boleh kosong. Boleh campur platform + Others. Store Others inactive tidak muncul. (Sebelumnya ETM-16666 hanya platform — diganti sebagian.)
+
+Tooltip Applied Store menyebut store platform dan store Others Active (bukan lagi "Only platform stores can be selected"). Satu store hanya boleh dipasang di satu Category Price. Category yang masih terikat store tidak bisa dihapus — termasuk jika store itu kemudian dinonaktifkan; saat ini hapus masih lolos kalau store-nya sudah Inactive.
 
 ## Alur standar
 

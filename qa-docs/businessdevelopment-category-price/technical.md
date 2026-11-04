@@ -2,8 +2,8 @@
 doc_type: technical
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.4
-last_updated: 2026-10-28
+version: 1.5
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 related_docs:
@@ -19,7 +19,7 @@ related_docs:
 **TO-BE:** ganti section margin tunggal → multi tier snapshot dari Variable Price (ETM-16313).  
 **TO-BE weight sync:** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) — consumer dari System Product DnW default change (bukan endpoint Category baru).  
 **TO-BE Max Value:** [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835) — snapshot `max_value` dari Variable Price; mirror enable/disable + calc ke Pricelist.  
-**TO-BE Applied Store:** [ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882) — allow Active Others (+ platform); reverse partial ETM-16666 filter.  
+**TO-BE Applied Store:** [ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882) — allow Active Others (+ platform); reverse partial ETM-16666 filter. Tooltip: platform + Others Active (drop "Only platform stores can be selected"). Satu store = satu category (`store()` / `update()`). Hapus (`destroy()`) menolak hanya store terikat `status = 1` — GAP-CP-07 / ETM-17053.  
 **TO-BE Update to Pricelist vs Manual:** [ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884) — preserve `is_edited` + stack formula (lihat Pricelist technical).
 
 ---
@@ -59,7 +59,7 @@ Pricelist auto weight (ETM-16668): audit di **Log Pricelist**, bukan mengganti l
 | Select Variable Price | Pola `PurchaseOrder/DatalistDetail` Select Product |
 | Tier accordion | Badge type; snapshot datetime; orange info jika dirty vs master |
 | Update to Pricelist | Tombol merah; checkbox gate; copy dialog selaras Manual stack (ETM-16884) |
-| Applied Store | Options: platform + Others Active; validate allow Others (ETM-16882) |
+| Applied Store | Options: platform + Others Active; validate allow Others (ETM-16882). Tooltip menyebut platform dan Others Active. Store tidak eligible → "Store Field not found." Store sudah terpakai → "{nama} has already been used. A store cannot be bound to multiple category prices." |
 | Band lokal Percentage | Validasi Value `-9999…9999` + truncate 4dp (mirror Variable Price / ETM-16569, 16562); **Max Value** enable + rules ETM-16835 |
 
 ---
@@ -77,6 +77,7 @@ Pricelist auto weight (ETM-16668): audit di **Log Pricelist**, bukan mengganti l
 | G-07 | **ETM-16835** — persist/edit Max Value on tier bands + pass to Pricelist calc |
 | G-08 | **ETM-16882** — reopen Applied Store Others Active (FE list + BE validation) |
 | G-09 | **ETM-16884** — UpdateToPricelistJob preserve manual + dialog copy |
+| G-10 | **ETM-17053 / GAP-CP-07** — `destroy()` hanya memblokir store terikat Active; store Inactive masih bisa menghapus Category |
 
 ---
 

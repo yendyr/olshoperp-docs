@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.4
-last_updated: 2026-10-28
+version: 1.5
+last_updated: 2026-11-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.4"
+source_version: "1.5"
 owner: QA - Yemima
 status: review
 ---
@@ -20,7 +20,7 @@ status: review
 
 Section aturan margin diganti menjadi **Variable Price Tiers**: kamu memasang satu atau lebih Variable Price. Data dasar Category (Code, Name, dll.) tetap sama.
 
-**Applied Store:** boleh pilih store platform **dan** store Others yang Active (boleh kosong / campur).
+**Applied Store:** boleh pilih store platform **dan** store Others yang Active (boleh kosong / campur). Tooltip menjelaskan kedua jenis store itu. Satu store hanya bisa dipasang di satu Category Price. Category yang masih menempel ke store tidak bisa dihapus, termasuk setelah store itu dinonaktifkan.
 
 ---
 
