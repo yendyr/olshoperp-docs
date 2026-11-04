@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.0
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 audience: operator
@@ -53,10 +53,14 @@ Gudang input qty di menu SCM terpisah: [Sales Return SCM](../supplychain-sales-r
 
 ## 4. Billed vs Unbilled
 
+Sama seperti Purchase Return: yang menentukan adalah **sudah ada invoice penjualan (SI) atau belum** — **bukan** apakah customer sudah bayar (AR).
+
 | Type | Kapan | Dampak finance |
 |------|-------|----------------|
-| **Unbilled** | Invoice belum dibayar customer | Jurnal penyesuaian Sales & AR |
-| **Billed** | Invoice sudah ada payment | **Credit Note** otomatis + jurnal persediaan |
+| **Unbilled** | Barang retur **belum punya Sales Invoice** | Jurnal penyesuaian Sales & AR (tanpa Credit Note) |
+| **Billed** | Barang retur **sudah punya Sales Invoice** | **Credit Note** otomatis + jurnal (mirip Debit Note di Purchase Return billed) |
+
+**Contoh:** dua SKU di satu order, keduanya sudah punya SI; satu SI sudah dilunasi, satu belum ada penerimaan. Keduanya tetap **Billed**.
 
 ---
 

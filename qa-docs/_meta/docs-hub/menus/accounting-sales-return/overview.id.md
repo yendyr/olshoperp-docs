@@ -19,7 +19,7 @@ notes: Help Center landing (Docs Page). Terpisah dari layer QA.
 ## Istilah penting
 
 * **Complete:** Persetujuan Finance yang menuntaskan retur.
-* **Billed / Unbilled:** Tipe akuntansi dari riwayat payment invoice (CN vs jurnal sales/AR).
+* **Billed / Unbilled:** Billed = sudah ada Sales Invoice (SI); Unbilled = belum ada SI (bukan status AR/payment). Billed → Credit Note (parity Purchase Return → Debit Note).
 * **Restock / Broken / Lost:** Tiga nasib qty dengan dampak stok berbeda.
 * **Order / Return Price & COGS:** Kolom nilai khusus Finance untuk review.
 * **Auto-approve:** Complete otomatis opsional setelah SR open melewati durasi setting.

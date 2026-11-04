@@ -21,7 +21,7 @@ notes: Help Center landing. Terpisah dari layer QA.
 * **Restock / Broken / Lost:** Kondisi barang dan perlakuan stok berikutnya.
 * **Return WH / CCTV Location:** Gudang tujuan dan lokasi kamera proses.
 * **Sales Return Platform:** Daftar retur marketplace refund/cancelled.
-* **Billed / Unbilled:** Menentukan Credit Note atau jurnal penyesuaian sales/AR.
+* **Billed / Unbilled:** Billed = sudah ada SI → Credit Note; Unbilled = belum ada SI → jurnal sales/AR (bukan dari status bayar AR).
 
 ## Kapan dipakai
 

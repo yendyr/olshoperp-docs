@@ -21,7 +21,7 @@ notes: Help Center landing. Separate from QA layers.
 * **Restock / Broken / Lost:** Item condition and downstream stock treatment.
 * **Return WH / CCTV Location:** Required warehouse destination and processing camera location.
 * **Sales Return Platform:** Marketplace refund/cancelled return list.
-* **Billed / Unbilled:** Determines whether Finance creates a Credit Note or sales/AR adjustment.
+* **Billed / Unbilled:** Billed = SI already exists → Credit Note; Unbilled = no SI yet → sales/AR journal (not based on AR payment).
 
 ## When to use
 

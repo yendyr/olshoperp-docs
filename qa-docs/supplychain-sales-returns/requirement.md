@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.1
-last_updated: 2026-07-15
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 ---
@@ -32,6 +32,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.2 | 2026-11-04 | QA - Yemima | Billed = ada SI / Unbilled = belum SI (bukan AR); GAP-SR-13 / ETM-17064 |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft AS-IS codebase |
 | 2.0 | 2026-07-05 | QA - Yemima | Full rewrite: merge PM requirement, D&W COGS 7 Mei, dual-menu flow, gaps §19–§21 |
 | 2.1 | 2026-07-15 | QA - Yemima | Relasi Sales Platform (Return bucket, flow vs Failed Ship) |
@@ -48,7 +49,7 @@ status: review
 | Restock / rusak / hilang | Tiga qty per SKU: Restock, Broken, Lost |
 | Kontrol finance | Gudang save qty → Finance **Complete** → stok + jurnal |
 | Platform refund/cancel | Pill **Sales Return Platform** + Sync API |
-| Billed vs Unbilled | `accounting_type` dari status pembayaran invoice |
+| Billed vs Unbilled | `accounting_type` dari **keberadaan Sales Invoice** (bukan status AR/payment); parity Purchase Return |
 
 ### 1.1 Arsitektur data (AS-IS)
 
@@ -298,7 +299,7 @@ Setelah save qty → status tetap **open** → menunggu Finance. Tidak ada Compl
 | **UNBILLED** | J1: Sales (D) / AR (K) · J2: Return Inventory (D) / COGS (K) · J3: Expense (D) / Inventory (K) if Lost |
 | **BILLED** | J1: **Credit Note** (D) / AR (K) · J2: Return Inventory (D) / COGS (K) · J3: Expense if Lost |
 
-**Credit Note (billed):** auto jika `processed_to_payment_amount > 0` → `generateCreditNoteFromReturn`. Lihat [Credit Note](../accounting-credit-note/README.md).
+**Credit Note (billed):** auto jika baris **sudah punya SI** → `generateCreditNoteFromReturn` (parity Purchase Return billed → Debit Note). **Bukan** syarat payment/AR. Gap code: GAP-SR-13 / [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064). Lihat [Credit Note](../accounting-credit-note/README.md).
 
 **PM Completion Summary Dialog:** `Sales Return Processed` dengan breakdown + Print Summary — **not implemented** (GAP-SR-08).
 
@@ -436,6 +437,7 @@ Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/
 | GAP-SR-10 | Reject flow | — | No reject button | **Not implemented** |
 | GAP-SR-11 | Return Shipper column default hidden | Hidden | Visible default | **UI differs** |
 | GAP-SR-12 | Status processed/complete | — | Jump open→approved | **By design AS-IS** |
+| GAP-SR-13 | Definisi Billed/Unbilled | Billed = ada SI; Unbilled = belum SI (parity PR) | Code memakai `processed_to_payment_amount > 0` | **Open** [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) |
 
 ---
 

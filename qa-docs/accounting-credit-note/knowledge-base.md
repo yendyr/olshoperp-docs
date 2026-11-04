@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.3
-last_updated: 2026-10-26
+version: 1.4
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, nota kredit, customer credit, deposit credit note]
@@ -18,7 +18,7 @@ aliases: [CN, credit note, nota kredit, customer credit, deposit credit note]
 
 ## 1. Apa itu Credit Note?
 
-Credit Note (CN) adalah dokumen yang mencatat **saldo kredit customer** — misalnya kelebihan bayar, kompensasi, atau nilai retur untuk invoice yang sudah pernah dibayar. Saldo itu bisa dipakai lagi saat **Account Receive** (menerima pembayaran) sebagai sumber deposit.
+Credit Note (CN) adalah dokumen yang mencatat **saldo kredit customer** — misalnya kelebihan bayar, kompensasi, atau nilai retur **Billed** (barang sudah punya Sales Invoice). Saldo itu bisa dipakai lagi saat **Account Receive** (menerima pembayaran) sebagai sumber deposit.
 
 **Kode transaksi:** diawali `CN`.
 
@@ -130,7 +130,7 @@ Customer, mata uang, kurs, dan tanggal transaksi **terkunci** begitu sudah ada b
 A: Manual/import perlu kamu approve. Dari return **Billed**, sistem langsung approve + jurnal. **TO-BE ETM-16764:** CN dari Sales Return memakai akun **Deposit of Sales Return**; CN manual memakai **Customer's Deposit**. Saat dipakai di Account Receive, sistem baca lagi **setting by asal CN** (bukan menyalin COA historis dari jurnal CN).
 
 **Q: Unbilled return kenapa tidak ada CN?**  
-A: Invoice belum dibayar — sistem menyesuaikan sales/AR, bukan membuat deposit customer.
+A: Retur **belum punya Sales Invoice** — sistem menyesuaikan sales/AR, bukan membuat deposit customer. (Billed = sudah ada SI, bukan “sudah bayar AR”.)
 
 **Q: Apa itu Remaining di footer fund?**  
 A: Sisa saldo CN yang masih bisa dialokasikan (setelah yang sudah/sedang dipakai di penerimaan).

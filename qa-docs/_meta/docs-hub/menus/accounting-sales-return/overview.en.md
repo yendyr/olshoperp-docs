@@ -19,7 +19,7 @@ notes: Help Center landing (Docs Page). Separate from QA layers.
 ## Key terms
 
 * **Complete:** Finance approval that finalizes the return.
-* **Billed / Unbilled:** Accounting type from invoice payment history (CN vs sales/AR journal).
+* **Billed / Unbilled:** Billed = Sales Invoice already exists; Unbilled = no SI yet (not AR/payment). Billed → Credit Note (parity Purchase Return → Debit Note).
 * **Restock / Broken / Lost:** Three quantity fates with different stock outcomes.
 * **Order / Return Price & COGS:** Finance-only value columns for review.
 * **Auto-approve:** Optional background Complete after a configured open duration.

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.3
-last_updated: 2026-10-26
+version: 1.4
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, credit note docs, nota kredit, customer deposit credit]
@@ -26,6 +26,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.4 | 2026-11-04 | QA - Yemima | Trigger CN dari SR billed = **ada SI** (bukan payment/AR); parity PR→DN; ETM-17064 |
 | 1.3 | 2026-10-26 | QA - Yemima | Klarifikasi final ETM-16764: AR baca COA dari **setting** by asal CN (bukan historis dokumen/jurnal) |
 | 1.2 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764): CN dari Sales Return → Deposit of Sales Return; consume di AR ikut COA asal; GAP-CN-06 |
 | 1.1 | 2026-08-05 | QA - Yemima | **TO-BE:** Receiving Destination dual path Cash/Bank + free COA (locked D1–D14); GAP-CN-05; Sales Return fund type `COA` |
@@ -66,7 +67,7 @@ flowchart LR
 | Cash/Bank aktif untuk currency CN | Master Cash Bank | Wajib create manual |
 | Currency aktif; primary currency company ter-set | Master Currency | Tanpa primary, import gagal |
 | Fiscal period aktif untuk tanggal CN | Fiscal Period | Create, edit tanggal, approve |
-| Return billed: invoice sudah pernah dibayar + Sales COA produk | Sales Invoice, Product COA | Complete return gagal jika Sales COA kosong |
+| Return billed: baris retur **sudah punya SI** + Sales COA produk | Sales Invoice, Product COA | Complete return gagal jika Sales COA kosong; bukan syarat AR/payment |
 
 ---
 
@@ -228,7 +229,7 @@ Template A–H: Trx Code (opsional), Trx Date, Customer Code, Store (opsional ma
 
 ### 6.6 Auto dari Sales Return Billed
 
-Trigger: Complete Sales Return, invoice `processed_to_payment_amount` lebih dari 0.
+Trigger: Complete Sales Return **Billed** = baris retur **sudah punya Sales Invoice** (parity Purchase Return billed → Debit Note). **Bukan** `processed_to_payment_amount > 0`. Gap code: [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064).
 
 ```
 credit_note_amount = harga_setelah_diskon_setelah_PPN * qty_return

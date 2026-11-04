@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 1.0
-last_updated: 2026-07-29
+version: 1.1
+last_updated: 2026-11-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.1
+source_version: 2.2
 owner: QA - Yemima
 status: review
 ---
@@ -80,7 +80,7 @@ Setelah gudang menyimpan qty:
 1. SR tetap **Open**.
 2. Finance mereview Price/COGS dan klik **Complete**.
 3. Restock masuk Return Warehouse; Broken ke scrap; Lost menjadi deduction.
-4. Return Billed menghasilkan Credit Note; Unbilled memakai jurnal sales/AR.
+4. Return **Billed** (sudah ada SI) menghasilkan Credit Note; **Unbilled** (belum ada SI) memakai jurnal sales/AR — bukan dari status bayar AR.
 
 ---
 
@@ -130,7 +130,7 @@ Setelah gudang menyimpan qty:
 - **Complete tidak muncul:** normal di SCM.
 - **Satu SR beberapa order:** belum tersedia; satu order per scan.
 - **Platform return:** Sync memperbarui refund/cancelled dari marketplace.
-- **Billed:** Credit Note otomatis setelah Finance Complete.
+- **Billed** (= sudah ada SI): Credit Note otomatis setelah Finance Complete.
 - **Open salah input:** delete sebelum approved, lalu proses ulang.
 
 ---

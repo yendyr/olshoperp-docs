@@ -13,13 +13,14 @@ Menu **Sales Return** — operasi gudang; shared API dengan Finance.
 
 **UI gudang:** `/supplychain/sales-returns` · **Finance:** `/accounting/sales-return`  
 **Help Center:** [`_meta/docs-hub/menus/supplychain-sales-returns/`](../_meta/docs-hub/menus/supplychain-sales-returns/)  
-**3 layer:** v2.1 · **User Guide:** v1.0 (`source_version` 2.1) · **Feature Map:** v1.0  
+**3 layer:** v2.2 · **User Guide:** v1.0 (`source_version` 2.2) · **Feature Map:** v1.0  
 **Maintenance owner:** QA — Yemima
 
 ## Changelog
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-04 | 2.2 | Billed = ada SI / Unbilled = belum SI; GAP-SR-13 / ETM-17064 |
 | 2026-07-29 | 2.1b | Feature Map + 5 Lingo cards; user-guide v1.0; Help Center overview en/id |
 | 2026-07-15 | 2.1 | Relasi Sales Platform (Return bucket, flow vs Failed Ship) |
 | 2026-07-05 | 2.0 | PM merge, COGS average, dual-menu, gaps |

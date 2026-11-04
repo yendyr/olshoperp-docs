@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.2
-last_updated: 2026-10-22
+version: 1.4
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [CN technical, credit note API, credit note code]
@@ -222,7 +222,7 @@ Detail messages: [requirement §7](./requirement.md).
 
 | Document | Flag / link | When it moves |
 |----------|-------------|----------------|
-| Customer Invoice | `processed_to_payment_amount` | Determines billed return → CN |
+| Customer Invoice | existence of SI / invoice detail | Determines billed return → CN (required); code bug still uses `processed_to_payment_amount` — ETM-17064 |
 | Customer Invoice | `prepared/processed_to_amount_credit_note` | On return complete generating CN |
 | Credit Note | `prepared_to_use_amount` | AR allocates CN as deposit (draft/open) |
 | Credit Note | `processed_to_use_amount` | AR approved |

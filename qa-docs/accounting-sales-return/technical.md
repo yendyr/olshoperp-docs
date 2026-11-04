@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.0
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 related_docs:
@@ -59,12 +59,23 @@ Journal auto-approved (system user 0).
 
 ## 4. Accounting type logic
 
-Set in `createDetail` from invoice payment:
+**Required (parity Purchase Return):**
+
+| Type | Condition | Path |
+|------|-----------|------|
+| `billed` | Sales Invoice **exists** for the return line/SKU | Credit Note + journal (mirror PR → Debit Note) |
+| `unbilled` | **No** Sales Invoice yet | Sales/AR journal only (no CN) |
+
+`accounting_type` on `omni_sales_returns`. Not tied to AR/`processed_to_payment_amount`.
+
+**Known bug (code AS-IS — [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) / GAP-SR-13):**
 
 ```php
+// WRONG — still in SalesReturnController + ItemStockMutation
 $is_billed = $invoice->processed_to_payment_amount > 0;
-// accounting_type: 'billed' | 'unbilled' on omni_sales_returns
 ```
+
+Must become: billed iff customer invoice detail/SI exists (same spirit as PR billed = has Purchase Invoice).
 
 Invoice counters updated on qty edit:
 

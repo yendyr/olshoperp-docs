@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.2
-last_updated: 2026-08-05
+version: 1.3
+last_updated: 2026-11-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.1
+source_version: 1.4
 owner: QA - Yemima
 status: review
 ---
@@ -21,7 +21,7 @@ status: review
 
 ## 1. Apa Itu & Kenapa Penting
 
-Credit Note dipakai untuk mencatat **saldo kredit customer** — misalnya nilai retur untuk invoice yang sudah pernah dibayar, atau kelebihan bayar yang perlu disimpan sebagai deposit.
+Credit Note dipakai untuk mencatat **saldo kredit customer** — misalnya nilai retur **Billed** (barang sudah punya Sales Invoice), atau kelebihan bayar yang perlu disimpan sebagai deposit.
 
 Setelah Credit Note di-approve, saldo itu bisa dipilih lagi saat **Account Receive** (menerima pembayaran) supaya tidak perlu mengembalikan uang tunai dulu, atau untuk mengurangi tagihan berikutnya.
 
@@ -41,8 +41,8 @@ flowchart LR
 
 **Versi teks (tanpa diagram):**
 
-1. Customer punya **Sales Invoice** (bisa sudah dibayar sebagian/seluruhnya).
-2. Ada retur yang di-complete Finance sebagai tipe **Billed** → sistem bisa membuat Credit Note otomatis ([jalur pembuatan](#sf-lingo:SF-CN-01)).
+1. Customer punya **Sales Invoice** (status AR tidak menentukan tipe Billed).
+2. Ada retur yang di-complete Finance sebagai tipe **Billed** (sudah ada SI) → sistem membuat Credit Note otomatis ([jalur pembuatan](#sf-lingo:SF-CN-01)).
 3. Atau Finance membuat / mengimpor Credit Note manual di menu ini.
 4. Credit Note yang sudah di-approve dipakai di **[Account Receive](#sf-lingo:SF-CN-03)**.
 5. Saat approve Credit Note, sistem menerbitkan **Journal** otomatis.

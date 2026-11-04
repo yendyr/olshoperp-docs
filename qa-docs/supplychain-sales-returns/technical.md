@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.0
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 related_docs:
@@ -201,16 +201,18 @@ Default join: full outbound (`processed_to_out_quantity = sales_order_quantity_i
 
 ## 9. Accounting Types
 
-Set at create from invoice payment state:
+**Required (parity Purchase Return — ada/tidak ada invoice, bukan payment):**
 
 | Type | Condition | Journal path |
 |------|-----------|--------------|
-| `unbilled` | No payment on invoice | Sales + AR reversal |
-| `billed` | `processed_to_payment_amount > 0` | Credit Note + AR |
+| `unbilled` | No Sales Invoice yet for the line/SKU | Sales + AR reversal (no CN) |
+| `billed` | Sales Invoice **exists** | Credit Note + AR (mirror PR → Debit Note) |
 
 Constants: `OmniSalesReturn::TYPE_ACCOUNTING_BILLED`, `TYPE_ACCOUNTING_UNBILLED`.
 
 Credit Note: `generateCreditNoteFromReturn` in approve path.
+
+**Known bug:** code still uses `processed_to_payment_amount > 0` — [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) / GAP-SR-13.
 
 ---
 

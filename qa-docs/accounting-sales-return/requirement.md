@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.1
-last_updated: 2026-10-22
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 ---
@@ -16,7 +16,7 @@ status: review
 
 **UI route:** `/accounting/sales-return`  
 **Canonical E2E doc:** [supplychain-sales-returns/requirement.md](../supplychain-sales-returns/requirement.md)  
-**Related:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) — CN dari SR → Deposit of Sales Return
+**Related:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) — CN dari SR → Deposit of Sales Return · [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) — definisi Billed/Unbilled = keberadaan SI (parity Purchase Return)
 
 ---
 
@@ -24,6 +24,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.2 | 2026-11-04 | **Billed = sudah ada SI**; **Unbilled = belum ada SI** (bukan status AR/payment). Parity Purchase Return → Debit Note. Gap code [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) |
 | 2.1 | 2026-10-22 | Cross-ref TO-BE ETM-16764: CN dari billed Complete memakai Deposit of Sales Return; Account Receive ikut akun itu |
 | 2.0 | 2026-07-05 | Initial Finance layer — split from canonical SR v2.0 |
 
@@ -92,7 +93,9 @@ Body: `{ approval_status: 'approved', description?: string(max 150) }`
 
 ### 4.2 Credit Note (billed)
 
-Auto jika invoice `processed_to_payment_amount > 0` → `generateCreditNoteFromReturn`.
+Auto jika baris retur **Billed** (SKU/baris **sudah punya Sales Invoice**) → `generateCreditNoteFromReturn` — mirror generate **Debit Note** pada Purchase Return billed, sampai penjurnalan.
+
+**Bukan** syarat “invoice sudah ada Account Receive / `processed_to_payment_amount > 0`”.
 
 **COA deposit (TO-BE [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)):** Approve CN dari SR billed → Credit **Deposit of Sales Return** (bukan Customer's Deposit). Saat CN dipakai di Account Receive, Debit harus ke akun **yang sama**.
 
@@ -106,12 +109,16 @@ PM mensyaratkan dialog `Sales Return Processed` + Print Summary — **not implem
 
 ## 5. Billed vs Unbilled
 
+Definisi wajib **konsisten dengan Purchase Return** (Billed = sudah ada invoice pembelian; Unbilled = belum). **Tidak berhubungan dengan AR / status payment.**
+
 | Type | Set when | Finance impact |
 |------|----------|----------------|
-| `unbilled` | Invoice belum ada payment | Jurnal sales/AR reversal |
-| `billed` | `processed_to_payment_amount > 0` | Credit Note + AR adjustment |
+| `unbilled` | SKU/baris **belum punya Sales Invoice (SI)** | Jurnal sales/AR reversal (tanpa Credit Note) |
+| `billed` | SKU/baris **sudah punya SI** | Credit Note + AR adjustment (parity PR billed → Debit Note → jurnal) |
 
-Mixed invoices dalam satu order → type `billed` jika ada satu invoice billed.
+**Contoh:** satu SO punya dua SI — satu sudah dilunasi AR, satu belum ada AR. Keduanya punya SI → **keduanya Billed** (bukan dipecah karena status payment).
+
+**Gap code (AS-IS salah):** implementasi masih memakai `processed_to_payment_amount > 0` → [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) / GAP-SR-13.
 
 ---
 
@@ -129,11 +136,12 @@ Finance harus aware: SR open lebih lama dari duration bisa auto-approved tanpa m
 
 1. Complete button hanya di `/accounting/sales-return`, tidak di SCM edit
 2. Kolom Order/Return Price & COGS tampil dengan `with_price=1`
-3. Approve billed → Credit Note ter-create
-4. Approve unbilled → jurnal sales/AR, bukan CN
-5. Lost qty tanpa Return Expense COA → approve blocked
-6. COGS return value = average outbound (bukan latest stock date)
-7. Partial return → remainder omni return duplicated
+3. Approve billed (ada SI) → Credit Note ter-create — termasuk SI yang belum ada AR
+4. Approve unbilled (belum ada SI) → jurnal sales/AR, bukan CN
+5. Definisi Billed/Unbilled tidak memakai status payment/AR (parity Purchase Return; ETM-17064)
+6. Lost qty tanpa Return Expense COA → approve blocked
+7. COGS return value = average outbound (bukan latest stock date)
+8. Partial return → remainder omni return duplicated
 
 ---
 

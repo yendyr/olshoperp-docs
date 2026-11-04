@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.0
-last_updated: 2026-07-05
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 audience: operator
@@ -134,8 +134,8 @@ A: Saat ini **scan per order**. Bulk multi-order belum aktif.
 **Q: Barang rusak/hilang kemana stoknya?**  
 A: Saat Finance approve: rusak → transfer ke scrap WH; hilang → stock deduction + jurnal expense.
 
-**Q: Apa beda Billed vs Unbilled?**  
-A: **Billed** = invoice sudah ada pembayaran → generate Credit Note. **Unbilled** = jurnal sales/AR adjustment.
+**Q: Apa beda Billed vs Unbilled?**
+A: **Billed** = barang retur **sudah punya Sales Invoice (SI)** → generate Credit Note (sama pola Purchase Return → Debit Note). **Unbilled** = **belum punya SI** → jurnal sales/AR saja. Bukan dari status bayar AR.
 
 **Q: Sync platform untuk apa?**  
 A: Update status retur dari marketplace (refund/cancelled) ke datalist pill.
