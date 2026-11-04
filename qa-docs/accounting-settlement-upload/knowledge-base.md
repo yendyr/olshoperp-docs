@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.3
+version: 2.4
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -183,7 +183,7 @@ Sistem **tidak** memblokir upload jika ada selisih kecil; operator yang mengecek
 3. Setelah selesai, tunggu **±10 menit** baru file berikutnya mulai.
 4. Urutan: yang lebih dulu di-upload lebih dulu diproses (FIFO; penegasan kode = TO-BE ETM-16910).
 5. Approve AR tetap kamu klik manual setelah jurnal upload siap.
-6. Kalau antrean “diam” lama: bisa ada batch macet di company lain (TO-BE pemantau ETM-16911).
+6. Kalau antrean “diam” lama: bisa ada batch macet di company lain. Batch yang tanpa kemajuan lebih dari 1 jam bisa dihentikan lewat tombol **Stop Generating** (TO-BE ETM-16911); setelah itu antrean lanjut.
 7. File untuk toko milik company lain harus ditolak saat upload (**TO-BE ETM-17057**). Saat ini file bisa masuk lalu macet di Validating dan menahan antrean semua company.
 
 ### 6.1 Upload settlement baru
@@ -319,7 +319,7 @@ Detail integrasi lengkap: [requirement.md §10](./requirement.md#10-relasi-menu-
 | Seluruh batch gagal, SO Failed > 0 | Ada order belum Shipped / tidak ditemukan / stok | Klik SO Failed → perbaiki order → upload ulang file **baru** |
 | *File does not match selected store* | File platform salah atau header tidak dikenali | Pastikan file dari platform yang sama dengan store; cek kolom wajib §5. **Shopee:** pakai CSV Penghasilan (header row 3, ada `Lihat berdasarkan`) — format Income lama ditolak |
 | File lama di In Queue, tidak mulai | Menunggu file aktif + jeda 10 menit (bisa company lain) | Normal; cek apakah ada batch generating di daftar |
-| Antrean “macet” berjam-jam | Batch stuck di first-stage (TO-BE ETM-16911) | Retry batch macet / hubungi admin; jangan spam upload tanpa cek |
+| Antrean “macet” berjam-jam | Batch stuck di first-stage (termasuk Validating) | Setelah tanpa kemajuan >1 jam: klik **Stop Generating** (TO-BE ETM-16911), lalu **Delete** untuk membersihkan data setengah jadi. Sebelum fitur deploy: hubungi admin/Dev; jangan spam upload |
 | Upload tampak sukses, batch diam di Validating, Delete ditolak (*masih in progress*), Retry *Nothing to continue*, antrean semua company berhenti | File untuk toko milik company lain. Contoh: company yang aktif Dev Staging, toko Offline Store LUMI milik company lain (**TO-BE ETM-17057**) | Jangan unggah toko di luar company yang sedang aktif. Setelah perbaikan: upload ditolak langsung (tidak ada batch); kalau pembacaan file tetap gagal, batch jadi gagal dan giliran lanjut; batch yang macet bisa dihapus atau di-retry |
 | Import macet, ikon ⚠️ | Queue/job lambat atau error background | Klik ⚠️ atau tunggu; hubungi admin jika >1 jam |
 | Stop Queue tidak ada | Belum deploy ETM-16910 | Tunggu fitur; jangan Delete saat generating (TO-BE diblok API) |
@@ -406,5 +406,3 @@ A: Order ID marketplace (terutama TikTok) angkanya panjang; Excel mengubah forma
 | Settlement Mapping | [../accounting-settlement-mapping/README.md](../accounting-settlement-mapping/README.md) |
 | Master Other Cost | [../omni-other-cost/requirement.md](../omni-other-cost/requirement.md) |
 | Master Other Discount | [../omni-other-discount/requirement.md](../omni-other-discount/requirement.md) |
-
-

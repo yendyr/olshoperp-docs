@@ -8,8 +8,8 @@ scope: menu
 summary: >-
   File Instant Settlement menunggu giliran: 1 generate di semua company, jeda ±10 menit,
   FIFO. Approve AR tetap manual. Follow-up Stop Queue / Retry / Delete / stuck di ETM-16910/16911.
-version: 1.0
-last_updated: 2026-10-29
+version: 1.1
+last_updated: 2026-11-04
 status: review
 jira: [ETM-16060, ETM-16910, ETM-16911, ETM-16894, ETM-16895]
 ---
@@ -36,7 +36,7 @@ Setelah upload, file masuk **In Queue** sebelum generate Sales Invoice & Outboun
 
 - **AS-IS (ETM-16060):** antrean + jeda 10 menit sudah deploy; tooltip FIFO / Stop Queue masih gap ([ETM-16894](https://erpintegration.atlassian.net/browse/ETM-16894), [ETM-16910](https://erpintegration.atlassian.net/browse/ETM-16910)).
 - **TO-BE ETM-16910:** Stop Queue hanya In Queue; Delete diblok saat generating; Retry vs batch aktif; retensi file 24 jam; FIFO `ORDER BY created_at`.
-- **TO-BE ETM-16911:** batch macet tidak menahan antrean sampai 1 hari.
+- **TO-BE ETM-16911:** batch tanpa kemajuan >1 jam menampilkan tombol **Stop Generating** (manual) → Failed, antrean lanjut; data setengah jadi dibersihkan lewat **Delete** (revert); hitungan progres tidak berlipat.
 - Jangan buat SI kosong Net Sales 0 (guard [ETM-16895](https://erpintegration.atlassian.net/browse/ETM-16895)).
 
 ## Lihat juga

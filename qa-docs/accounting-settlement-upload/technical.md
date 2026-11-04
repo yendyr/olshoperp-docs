@@ -2,7 +2,7 @@
 doc_type: technical
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.3
+version: 2.4
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -18,6 +18,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.4 | 2026-11-04 | TO-BE ETM-16911 direvisi (§1.1): counter idempotent + Stop Generating manual >1 jam + Delete revert; `failed()` per job dan pemantau otomatis dicabut |
 | 2.3 | 2026-11-04 | TO-BE ETM-17057 (§1.1): tolak store company lain di `store()`; re-read gagal → `failed` dan antrean lanjut; Delete/Retry batch macet |
 | 2.2 | 2026-11-04 | Kolom panel SI Net Sales SO / Net Sales SI / Difference SO-SI (§9): AS-IS ETM-16871, TO-BE ETM-17052, GAP-SETU-02 |
 | 2.1 | 2026-10-29 | Antrean In Queue ETM-16060 (§1.1); follow-up ETM-16910/16911; guard SI kosong ETM-16895 |
@@ -65,7 +66,7 @@ flowchart TD
 
 **TO-BE ETM-16910:** `ORDER BY created_at, id`; Retry guard + lock vs dispatch; Stop Queue; Delete API block saat generating; retensi file 24 jam tanpa rewrite `updated_at`; reread file missing → Failed; scope `checkSettlementWithDetailExists` ke file aktif. Retry batch dan per baris memakai baris Settlement di DB setelah file asli terhapus (bukan baca file; baca file hanya validasi giliran dan tautan unduh). Retry ditolak saat first-stage lain aktif, contoh pesan "Another file is being processed. Please retry after it finishes."
 
-**TO-BE ETM-16911:** `failed()` pada job settlement; counter idempotent; pemantau stuck (N/M config); jangan andalkan abandoned 1 hari saja.
+**TO-BE ETM-16911 (direvisi 4 Nov 2026):** (1) counter idempotent — `Settlement::generateInvoiceJournal()` tidak boleh `addColumn('invoice_journal_count')` bila jurnal sudah ada (kasus ST-5UQ1MKYF); (2) aksi **Stop Generating** manual: FE menampilkan tombol bila first-stage (validating / generating / approving / generating journals / approving journals) tanpa kemajuan >1 jam (ambang di config); BE menyetel batch `failed` + `first_stage_completed_at` sehingga `settlement:dispatch` lanjut setelah jeda 10 menit tanpa menunggu abandoned 1 hari; nama route/permission ditentukan Dev; (3) Delete (revert V-18) yang sudah ada membersihkan SI/Outbound/jurnal setengah jadi. Job sisa batch yang di-stop sebaiknya berhenti membuat dokumen. **Dicabut:** `failed()` per job (tak bisa menulis bila DB tak terjangkau), pemantau terjadwal N/M dengan auto-retry/notifikasi, cadangan `temp:fix-settlement-counter`.
 
 **TO-BE ETM-17057** (belum di dev). **AS-IS:** `SettlementUploadLogic::store` memuat store lewat `Store::withoutCompanyScope()->find` tanpa membandingkan company store dengan company aktif. Store company lain lolos; respons *"Data import is in progress. Please wait."*; batch tercipta. `SettlementRereadExcelJob` memuat relasi `store` pada company pemilik batch, jadi store company lain null. `SettlementSheet::__construct` menuntut `Store|int`; null melempar type error. Catch job hanya `addOrderErrors("Failed to re-read settlement file, …")` dan tidak mengubah progress ke `failed` (`reread()` sudah men-set `validating`). `stuck` mengecualikan `VALIDATING_STATE`. Retry tidak punya cabang validating → *"Nothing to continue"* (`CONSIDERED_NOT_RETRIABLE` memuat validating). Delete yang diamati Staging 4 Nov 2026: 422 *"{kode} is still in progress"* (contoh ST-5UYDF7JL, company 13, store 71 milik company 153). `validating` ada di `INCOMPLETE_FIRST_STAGE_STATES`; `isAbandoned(false)` baru melepas slot setelah `updated_at` lebih dari 1 hari, sehingga antrean semua company tertahan. **TO-BE:** (1) tolak di upload, tanpa batch, pesan jelas; (2) kegagalan re-read apa pun → progress `failed` dan antrean lanjut; (3) batch macet boleh Delete dan Retry.
 
@@ -433,5 +434,3 @@ flowchart TB
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Requirement | [requirement.md](./requirement.md) |
-
-

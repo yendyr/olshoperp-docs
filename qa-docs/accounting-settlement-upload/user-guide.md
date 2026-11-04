@@ -10,7 +10,7 @@ source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 2.3
+source_version: 2.4
 ---
 
 # Panduan Pengguna — Instant Settlement
@@ -73,7 +73,7 @@ stateDiagram-v2
 | Status | Artinya | Bisa diedit? |
 |--------|---------|--------------|
 | **In Queue** | Menunggu giliran antrean global | Tunggu; Stop Queue = TO-BE (belum pasti di Staging) |
-| **In Progress** | Validasi / generate SI·OB / jurnal | Tunggu; retry jika macet (⚠️) |
+| **In Progress** | Validasi / generate SI·OB / jurnal | Tunggu; retry jika macet (⚠️); tanpa kemajuan >1 jam: Stop Generating = TO-BE |
 | **Import Failed** | Ada order gagal — seluruh file batal | Upload file baru setelah perbaiki order |
 | **Import Complete** (jurnal siap) | Invoice + outbound + jurnal sudah ada | Approve / Reject / Delete (jika syarat terpenuhi) |
 | **Approved** | Pelunasan AR batch sudah dibuat | Tidak untuk langkah AR ini |
@@ -227,7 +227,7 @@ Other Cost hanya untuk Toko A → download template Toko A: kolom `OC:` ada. Dow
 Rounding platform / mapping biaya. Cek **Difference Settlement-SI** — sistem tidak memblokir selisih kecil.
 
 **Import macet.**  
-Klik ⚠️ atau tunggu. Hubungi admin jika lebih dari 1 jam.
+Klik ⚠️ atau tunggu. Hubungi admin jika lebih dari 1 jam (tombol **Stop Generating** untuk batch yang tanpa kemajuan >1 jam = TO-BE ETM-16911).
 
 **Jurnal outbound warning.**  
 Nilai persediaan 0 saat posting — buka panel **Out Journal** → tab **Warnings**, perbaiki akun/nilai stok.
@@ -248,5 +248,3 @@ Nilai persediaan 0 saat posting — buka panel **Out Journal** → tab **Warning
 | [Failed Ship](../supplychain-failed-ship/README.md) | Pengurang qty sebelum settle |
 | [Fiscal Period](../accounting-fiscal-period/README.md) | Periode terbuka untuk tanggal settle |
 | [Sales Platform](../omni-sales-platform/README.md) | Booking unmatched — tunggu Platform Order ID |
-
-
