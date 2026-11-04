@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-stock-remapping
 menu_name: "Stock Remapping"
-version: 2.1
-last_updated: 2026-08-04
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 related_docs:
@@ -22,6 +22,7 @@ related_docs:
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.2 | 2026-11-04 | QA - Yemima | ETM-17024: cek SKU Origin di transaksi Draft/Open (Addition, Deduction, Remapping lain) lewat `validateRemappingInput` untuk semua jalur store/update, termasuk Select Product. Lokasi = warehouse Stock ID, atau Warehouse Origin + child. Mutasi auto milik remapping yang sama dikecualikan. |
 | 2.1 | 2026-08-04 | QA - Yemima | Scope v2.1: batalkan lintas parent; Stock ID modal wajib beda dari Transfer; Unit Class + approve gate; import tanpa Unit |
 | 2.0 | 2026-07-30 | QA - Yemima | Rewrite AS-IS + delta SoT v2.0 (superseded) |
 
@@ -55,6 +56,24 @@ related_docs:
 | Unit Class | Tidak di-assert |
 | Approve | Generate Deduction→Addition; **tanpa** re-validate Unit Class / same-parent ulang secara eksplisit sebagai gate broken-data |
 | Import template | Headers: `SKU Origin`, `Remapped To SKU`, `Qty`, `Unit`, `Description` |
+| SKU Origin di transaksi terbuka | `validateRemappingInput` memanggil `validatProductInTransaction` di store dan update. Select Product (`bulkCreate`) masuk lewat `store`. Available Products (`bulkUse`) memanggil method yang sama dulu, lalu `bulkCreate`. Detail §2.1 |
+
+### 2.1 SKU Origin — transaksi terbuka (ETM-17024)
+
+`StockRemappingDetailController::validateRemappingInput` menolak sebelum baris dibuat atau diubah. Jalur: tambah manual dan update (termasuk inline edit SKU Origin) langsung; Select Product lewat `bulkCreate` → `store`; Available Products Use lewat `bulkUse` (cek yang sama, pesan yang sama) lalu `bulkCreate`.
+
+| Aturan | Detail |
+|--------|--------|
+| Lokasi | `item_stock_id` terisi → hanya `item_stocks.warehouse_id` baris itu. Kosong → `warehouse_origin` header + child (`WarehouseTree::newGetAllChilds`), lalu cek tiap gudang |
+| Konflik | Status `TS_DRAFT` / `TS_OPEN`: Stock Addition manual atau auto dari Stock Remapping lain; Stock Deduction; detail Origin Stock Remapping lain di `warehouse_origin` yang sama |
+| Bukan konflik | Stock Deduction / Addition otomatis yang referensinya menunjuk Stock Remapping ini (termasuk mutasi baris yang sedang diedit) |
+| Hasil gagal | `ValidationException`; baris baru tidak dibuat, perubahan baris tidak tersimpan |
+
+Pesan (tidak diubah):
+
+- `Location already in use for {SKU} in another open stock remapping. Select a different location to continue.`
+- `This location and SKU already exist in another row of this transaction.`
+- `{SKU} — is used in an open {Stock Addition|Stock Deduction|Stock Remapping}. Please finalize or remove it from that transaction to proceed..`
 
 ---
 
@@ -103,6 +122,7 @@ Checks (minimal):
 - eligible product (active, not random, COA, not parent)  
 - qty Base Unit ≤ available pada **Stock ID** (manual) / FIFO plan (import)  
 - **hapus** unique-check `product_remapped_to_id` per header  
+- SKU Origin belum dipakai di lokasi yang dicek pada transaksi Draft/Open lain (lihat §2.1; sudah live di `validateRemappingInput`, bukan hanya saran TO-BE)  
 
 ### 3.4 Import
 
@@ -132,6 +152,7 @@ Di `StockRemappingController@approve` **sebelum** approve Deduction/Addition:
 - Multiple details may share same `product_remapped_to_id`  
 - One detail ↔ one Origin Stock ID (manual path)  
 - Unit Class mismatch never reaches posted Deduction/Addition  
+- Origin SKU at a checked warehouse is not saved while another Draft/Open Stock Addition, Stock Deduction, or Stock Remapping uses it there, excluding this remapping's own generated mutations  
 
 ---
 
@@ -148,3 +169,5 @@ Lihat [requirement §12](./requirement.md#12-gap-registry): aktif **GAP-RM-03, 0
 | Requirement | [requirement.md](./requirement.md) |
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | User Guide | [user-guide.md](./user-guide.md) |
+
+

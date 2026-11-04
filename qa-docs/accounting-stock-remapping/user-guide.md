@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-stock-remapping
 menu_name: "Stock Remapping"
-version: 1.1
-last_updated: 2026-08-04
+version: 1.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 2.1
+source_version: 2.2
 ---
 
 # Panduan Pengguna — Stock Remapping
@@ -85,6 +85,8 @@ flowchart LR
 - Tidak bisa remap ke Single / BOM / Bundle di luar variant seinduk.  
 - Import: isi SKU Origin, Remapped To, Qty — **tanpa Unit**; sistem memecah otomatis jika qty melebihi satu batch.  
 - Jika approve ditolak karena Unit Class: perbaiki master product dulu.
+- Kalau kamu menambah atau mengubah SKU Origin (Select Product, Available Products, tambah manual, atau ganti SKU di baris) sementara SKU itu masih ada di Stock Addition, Stock Deduction, atau Stock Remapping lain yang belum selesai di lokasi yang sama, sistem menolak dan baris tidak tersimpan.
+- Pengurangan atau penambahan stok yang otomatis dari baris remapping ini sendiri tidak menghalangi.
 
 ---
 
@@ -105,6 +107,7 @@ flowchart LR
 - **"Remapped To tidak muncul."** Bukan variant seinduk / tidak eligible.  
 - **"Harga berubah-ubah dulu."** Perilaku lama (rata-rata); setelah update harus ikut batch yang dipilih.  
 - **"Import tanpa Unit."** Memang — qty = satuan dasar.
+- **"SKU ditolak, lokasi sudah dipakai."** Misalnya SKU `ABC-001` masih di Stock Deduction yang belum selesai, di gudang yang sama. Selesaikan atau hapus dari transaksi itu dulu. Pesannya bisa `ABC-001 — is used in an open Stock Deduction. Please finalize or remove it from that transaction to proceed..`
 
 ---
 
@@ -115,3 +118,5 @@ flowchart LR
 | [Knowledge Base](./knowledge-base.md) | Troubleshooting |
 | [Requirement](./requirement.md) | Aturan & AC |
 | [Technical](./technical.md) | Developer |
+
+

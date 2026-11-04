@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-stock-remapping
 menu_name: "Stock Remapping"
-version: 2.1
-last_updated: 2026-08-04
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [Stock Remapping, Stock Acak, Stock Conversion, remapping stok, RM, stock remapping]
@@ -23,6 +23,7 @@ aliases: [Stock Remapping, Stock Acak, Stock Conversion, remapping stok, RM, sto
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.2 | 2026-11-04 | QA - Yemima | ETM-17024: SKU Origin ditolak bila lokasi yang sama masih dipakai transaksi Draft/Open lain (Stock Addition manual atau auto dari remapping lain, Stock Deduction, Stock Remapping lain). Semua jalur tambah/ubah baris, termasuk Select Product, memakai pesan yang sama. Mutasi otomatis milik remapping ini tidak dihitung konflik. |
 | 2.1 | 2026-08-04 | QA - Yemima | Revisi scope: **batalkan** lintas parent + Identification Icon; eligibilitas tetap Variant 1 parent; duplicate Remapped To; Origin per Stock ID; Unit Base + Avl. Base Unit; Unit Class gate (inline/import/**approve**); import tanpa kolom Unit (qty Base Unit) + auto-split FIFO; Gap Registry di-sync |
 | 2.0 | 2026-07-30 | QA - Yemima | SoT v2.0 awal (lintas parent) — **superseded** oleh v2.1 |
 | 1.0 | 2026-07-09 | QA - Yemima | Initial QA doc |
@@ -53,6 +54,8 @@ flowchart LR
 
 **Dibatalkan dari draft SoT v2.0:** perluasan Remapped To ke Single/BOM/Bundle; kolom Identification Icon (warning lintas parent).
 
+**v2.2 (ETM-17024):** SKU Origin ditolak jika lokasi yang sama masih dipakai transaksi stok yang belum selesai. Lihat §8.4.
+
 ---
 
 ## 2. Status implementasi (AS-IS vs TO-BE v2.1)
@@ -66,6 +69,7 @@ flowchart LR
 | Unit Class match (inline / import / **approve**) | Block total | Belum ada | GAP-RM-05 |
 | Import tanpa Unit + auto-split FIFO | Wajib | Template masih ada Unit; 1 baris = 1 detail | GAP-RM-07 |
 | Identification Icon / lintas parent | **Out of scope** | Tidak ada (OK) | — (cancelled) |
+| SKU Origin di transaksi terbuka, lokasi sama | Ditolak; baris tidak disimpan | **Sudah** (ETM-17024) | — |
 | Release reserved per Stock ID | Ikut model Stock ID | Perlu pastikan | GAP-RM-03 |
 
 Header lifecycle, prefix `RM-`, sequencing Deduction→Addition, blok Random/Service/Asset: sudah live.
@@ -195,6 +199,7 @@ Mismatch → **block total** (bukan warning).
 | 2 | Random / inactive / Parent / COA invalid | Ditolak |
 | 3 | Remapped To beda parent | Ditolak (`does not belong to the same parent…`) |
 | 4 | Qty ≤ 0 / melebihi availability | Ditolak |
+| 5 | SKU Origin sudah dipakai di lokasi yang sama pada transaksi Draft/Open lain | Ditolak; baris tidak disimpan. Detail §8.4 |
 
 ### 8.2 Perubahan / tambahan v2.1
 
@@ -215,6 +220,41 @@ Sebelum generate Deduction/Addition, server **wajib** re-validate seluruh baris 
 - Origin/Remapped To masih eligible (active, bukan random, COA OK)  
 
 Satu baris gagal → approve gagal dengan pesan jelas (tidak partial-approve silent broken).
+
+### 8.4 SKU Origin di transaksi terbuka
+
+Berlaku saat baris detail **ditambah atau diubah**, lewat jalur mana pun:
+
+- **Select Product** / bulk-create
+- **Available Products** (Use)
+- tambah manual
+- ubah baris
+- inline edit SKU Origin
+
+Select Product memakai validasi dan pesan yang **sama** dengan Available Products. Kalau ditolak, **tidak ada baris baru yang tersimpan** (pada ubah baris, perubahan tidak tersimpan).
+
+SKU Origin ditolak jika SKU itu sudah dipakai di **lokasi yang sama** pada transaksi lain yang masih **Draft** atau **Open**:
+
+| Transaksi | Dihitung konflik? |
+|-----------|-------------------|
+| Stock Addition manual | Ya |
+| Stock Addition otomatis dari Stock Remapping **lain** | Ya |
+| Stock Deduction terbuka | Ya |
+| Stock Remapping lain (SKU Origin di lokasi yang sama) | Ya |
+| Stock Deduction atau Stock Addition otomatis milik remapping **ini** | Tidak |
+
+Lokasi yang dicek:
+
+- Baris memakai Stock ID → gudang Stock ID itu.
+- Baris tanpa Stock ID → Warehouse Origin beserta gudang anaknya.
+
+Pesan (teks yang sudah ada, tidak diubah):
+
+- Lokasi SKU Origin sudah dipakai Stock Remapping terbuka lain: `Location already in use for {SKU} in another open stock remapping. Select a different location to continue.`
+- Lokasi dan SKU yang sama sudah ada di baris lain transaksi ini: `This location and SKU already exist in another row of this transaction.`
+- SKU Origin sedang dipakai Stock Addition, Stock Deduction, atau Stock Remapping terbuka: `{SKU} — is used in an open {Stock Addition|Stock Deduction|Stock Remapping}. Please finalize or remove it from that transaction to proceed..`
+
+Contoh: SKU `ABC-001` masih ada di Stock Deduction berstatus Open di gudang yang sama. User menambah atau mengubah baris (jalur mana pun di atas) dengan SKU Origin `ABC-001` di lokasi itu. Server menolak, baris tidak tersimpan, pesan `ABC-001 — is used in an open Stock Deduction. Please finalize or remove it from that transaction to proceed..`
 
 ---
 
@@ -256,6 +296,7 @@ Satu baris gagal → approve gagal dengan pesan jelas (tidak partial-approve sil
 | SRM-06 | Import tanpa Unit; auto-split FIFO; tanpa kolom Stock ID di file |
 | SRM-07 | Tidak ada Identification Icon / warning lintas parent |
 | SRM-08 | Modal Available Product Stock Remapping breakdown Stock ID (bukan copy agregat menu Transfer/Picking) |
+| SRM-09 | Tambah atau ubah baris (Select Product, Available Products, manual, update, inline SKU Origin) ditolak jika SKU Origin sudah dipakai di lokasi yang sama pada Stock Addition terbuka (manual atau otomatis dari remapping lain), Stock Deduction terbuka, atau Stock Remapping terbuka lain. Baris tidak tersimpan. Mutasi otomatis milik remapping ini tidak dihitung. Pesan sama di semua jalur. |
 
 ---
 
@@ -285,6 +326,9 @@ A: Jaga-jaga broken data unit di master System Product yang baru kelihatan saat 
 **Q: Kenapa modal Available Product beda dari Transfer?**  
 A: Remapping butuh Unit Price & qty per **Stock ID**; menu lain boleh agregat.
 
+**Q: Kenapa SKU Origin ditolak padahal stoknya ada?**  
+A: SKU itu masih dipakai transaksi Draft/Open lain di lokasi yang sama (Stock Addition, Stock Deduction, atau Stock Remapping). Selesaikan atau hapus dari transaksi itu. Contoh: `ABC-001` ada di Stock Deduction Open, lalu baris remapping memakai SKU Origin yang sama di lokasi itu → ditolak, pesan `ABC-001 — is used in an open Stock Deduction. Please finalize or remove it from that transaction to proceed..` Pengurangan atau penambahan otomatis dari remapping ini sendiri bukan penghalang.
+
 ---
 
 ## Related Documents
@@ -294,3 +338,5 @@ A: Remapping butuh Unit Price & qty per **Stock ID**; menu lain boleh agregat.
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
 | User Guide | [user-guide.md](./user-guide.md) |
+
+

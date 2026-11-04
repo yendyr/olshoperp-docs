@@ -10,7 +10,7 @@ Menu **Stock Remapping** (Finance Accounting, prefix `RM-`) — remap identitas 
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **PM source:** Change card 2026-08-04 (revisi SoT v2.0)  
-**3 layer version:** 2.1 · **User-guide:** 1.1 (`source_version` 2.1)  
+**3 layer version:** 2.2 · **User-guide:** 1.2 (`source_version` 2.2)  
 **Maintenance owner:** QA — Yemima
 
 ---
@@ -37,6 +37,9 @@ Menu **Stock Remapping** (Finance Accounting, prefix `RM-`) — remap identitas 
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-04 10:15 | 2.2 | SKU Origin ditolak kalau lokasi yang sama masih dipakai transaksi stok yang belum selesai (Stock Addition, Stock Deduction, atau Stock Remapping lain). Berlaku untuk semua cara tambah atau ubah baris, termasuk Select Product. Kartu ETM-17024. |
 | 2026-08-04 | 2.1 | Revisi scope card: batalkan lintas parent + icon; Stock ID / Base Unit / duplicate / Unit Class+approve / import tanpa Unit |
 | 2026-07-30 | 2.0 | SoT v2.0 (lintas parent) — superseded |
 | 2026-07-09 | 1.0 | Initial docs |
+
+

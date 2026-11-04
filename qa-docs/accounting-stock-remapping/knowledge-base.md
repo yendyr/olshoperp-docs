@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-stock-remapping
 menu_name: "Stock Remapping"
-version: 2.1
-last_updated: 2026-08-04
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 audience: operator
@@ -77,7 +77,10 @@ flowchart TD
 | Remapped To tidak muncul | Bukan variant induk sama / inactive / random |
 | Approve gagal Unit Class | Perbaiki unit di master System Product, lalu coba lagi |
 | Qty ditolak | Melebihi Avl. Base Unit Stock ID itu |
+| SKU Origin ditolak: lokasi sudah dipakai, atau SKU ada di transaksi yang belum selesai | SKU itu masih ada di **Stock Addition**, **Stock Deduction**, atau **Stock Remapping** lain berstatus Draft/Open, di lokasi yang sama. Selesaikan atau hapus dari transaksi itu, lalu ulangi. Berlaku saat Select Product, Available Products, tambah manual, ubah baris, atau ganti SKU Origin. Pengurangan/penambahan yang dibuat otomatis oleh baris remapping ini sendiri bukan penghalang. |
 | Harga terlihat “aneh” (sebelum rilis) | Blended FIFO lama — setelah rilis harus ikut Stock ID |
+
+Contoh: SKU `ABC-001` masih ada di Stock Deduction yang statusnya Open, di gudang yang sama. Tambah atau ubah baris dengan SKU Origin itu → sistem menolak dan baris tidak tersimpan. Pesan: `ABC-001 — is used in an open Stock Deduction. Please finalize or remove it from that transaction to proceed..`
 
 ---
 
@@ -89,6 +92,9 @@ A: Supaya harga ikut batch yang benar, tidak digabung rata-rata.
 **Q: Kenapa cek Unit Class kalau biasanya sama?**  
 A: Kalau master product sempat salah unit, transaksi jangan sampai memposting data rusak.
 
+**Q: Kenapa SKU Origin ditolak padahal stoknya masih ada?**  
+A: SKU itu masih dipakai transaksi lain yang belum selesai di lokasi yang sama. Selesaikan Stock Addition, Stock Deduction, atau Stock Remapping itu dulu. Kalau pesannya bilang lokasi sudah dipakai remapping lain, pilih lokasi berbeda. Kalau SKU yang sama sudah ada di baris lain transaksi ini, jangan ulang di lokasi yang sama.
+
 ---
 
 ## Related Documents
@@ -98,3 +104,5 @@ A: Kalau master product sempat salah unit, transaksi jangan sampai memposting da
 | Requirement | [requirement.md](./requirement.md) |
 | Technical | [technical.md](./technical.md) |
 | User Guide | [user-guide.md](./user-guide.md) |
+
+
