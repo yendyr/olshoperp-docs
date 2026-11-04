@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.2
+version: 2.3
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -15,6 +15,7 @@ legacy_sources: []
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.3 | 2026-11-04 | QA - Yemima | **TO-BE** [ETM-17057](https://erpintegration.atlassian.net/browse/ETM-17057): tolak upload store milik company lain (V-24, tanpa batch); job baca file gagal → batch Failed dan antrean lanjut; batch macet bisa Delete atau Retry. AS-IS: diterima lalu macet di Validating dan menahan antrean semua company. **TO-BE** [ETM-16910](https://erpintegration.atlassian.net/browse/ETM-16910): Retry batch dan per baris tetap jalan setelah file asli terhapus (pakai baris Settlement, bukan file); Retry ditolak jika ada batch first-stage lain, dengan pesan jelas |
 | 2.2 | 2026-11-04 | QA - Yemima | **Definisi kolom panel Sales Invoice (§5.1):** Net Sales SO = total SO **sebelum PPN** (AS-IS deploy [ETM-16871](https://erpintegration.atlassian.net/browse/ETM-16871), 3 Nov 2026); **TO-BE** [ETM-17052](https://erpintegration.atlassian.net/browse/ETM-17052) Net Sales SI dan Difference SO-SI memakai dasar yang sama (sebelum PPN) + tooltip header; **GAP-SETU-02** |
 | 2.1 | 2026-10-29 | QA - Yemima | **AS-IS deploy** [ETM-16060](https://erpintegration.atlassian.net/browse/ETM-16060) antrean In Queue (1 generate global + jeda 10 menit); **TO-BE** [ETM-16910](https://erpintegration.atlassian.net/browse/ETM-16910) / [ETM-16911](https://erpintegration.atlassian.net/browse/ETM-16911); guard SI kosong [ETM-16895](https://erpintegration.atlassian.net/browse/ETM-16895) Done; tooltip [ETM-16894](https://erpintegration.atlassian.net/browse/ETM-16894) |
 | 2.0 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763): OC/OD dari SO tidak di-rebawa di SI settlement ke-2+; fee file tidak menumpuk baris order |
@@ -102,6 +103,7 @@ flowchart LR
 | A-11 | Tidak buat SI kosong (0 detail / Net Sales 0) saat sisa qty ≤0 tanpa OC/OD (ETM-16895 / V-12) | V-12 | F-03 |
 | A-12 | TO-BE antrean: FIFO eksplisit, Stop Queue, Delete blok saat generating, Retry vs batch aktif, retensi file 24 jam (ETM-16910) | §6.5 | — |
 | A-13 | TO-BE: batch macet auto-selesai (job failed + counter aman + pemantau) agar antrean tidak tertahan 1 hari (ETM-16911) | §6.5 | — |
+| A-14 | TO-BE: tolak upload store company lain (tanpa batch); job baca file gagal → batch Failed dan antrean lanjut; batch macet bisa Delete atau Retry (ETM-17057) | V-24, §6.5 | — |
 | A-10 | Export DataList, audit log, download file upload asli | — | F-16, F-17 |
 | A-11 | Download template import per platform | V-01 | F-18 |
 
@@ -323,6 +325,7 @@ Upload operasional **hanya CSV** (bukan Excel) karena risiko korupsi **Platform 
 | V-11 | SI Approved manual ada | Upload baris | **Mode adjustment** — tanpa detail SKU |
 | V-12 | Re-settlement / generate tanpa sisa qty & tanpa OC/OD | Follow-up / generate | Tolak baris — **jangan** buat SI header kosong Net Sales 0 (ETM-16895 Done: guard saat generate). Pesan arah: minimal OC/OD atau ada qty invoicable |
 | V-13 | Order milik store lain / platform file ≠ store terpilih | Per baris | *"File content mismatch..."* — 1 batch = 1 store; platform & format template mengikuti store |
+| V-24 | Store milik **company aktif** | Saat upload | **TO-BE ETM-17057** (keputusan Lead QA 4 Nov 2026): store yang dipilih harus milik company yang sedang aktif. Store company lain → tolak segera dengan pesan jelas; **tidak ada batch**. **AS-IS:** upload diterima (*"Data import is in progress. Please wait."*), lalu batch macet di Validating — lihat §6.5 |
 | V-14 | **Fiscal period** harus exist & **open** pada tanggal settle | Per baris | Settlement menimbulkan jurnal — tidak boleh di periode closed / belum ada |
 | V-15 | **Receiving Destination COA** terisi | Approve | *"Receiving Destination COA is not set"* |
 | V-16 | Smart AR: skip SI yang sudah punya `payment_details` | Approve generate AR | Hanya SI tanpa AR; jika semua sudah AR → tombol disabled |
@@ -464,7 +467,7 @@ Tombol **Approve** membuka `ApprovalDialog` dengan dua opsi:
 
 ---
 
-## 6.5 Antrean In Queue (ETM-16060 · follow-up 16910 / 16911)
+## 6.5 Antrean In Queue (ETM-16060 · follow-up 16910 / 16911 / 17057)
 
 **Acuan perilaku:** Skip Wave Process (antrian global, 1 aktif, delay 10 menit, unlimited file) — [ETM-16582](https://erpintegration.atlassian.net/browse/ETM-16582). Instant Settlement **tanpa** Processing Date; urutan = FIFO waktu masuk antrean.
 
@@ -487,6 +490,8 @@ Tombol **Approve** membuka `ApprovalDialog` dengan dua opsi:
 - File tidak terbaca saat giliran → batch **Failed** jelas; **tanpa** jeda 10 menit; antrean lanjut; tidak spam log tiap menit.
 - Urutan: `ORDER BY created_at, id`.
 - Retry: tolak jika ada batch first-stage aktif lain; izinkan jika tidak ada aktif **atau** Retry pada batch macet yang sendiri aktif; kunci sama dengan `settlement:dispatch` agar tidak 2 batch; setelah Retry selesai → jeda 10 menit lagi.
+- Retry batch dan Retry per baris tetap berfungsi setelah file upload asli terhapus (retensi 24 jam setelah status final), karena Retry memakai baris Settlement di database, bukan membaca file. Yang membaca file hanya validasi saat giliran dan tautan unduh file asli.
+- Retry ditolak selama ada batch lain di tahap first-stage, dengan pesan jelas. Contoh: "Another file is being processed. Please retry after it finishes."
 - `checkSettlementWithDetailExists`: scope ke file yang sedang divalidasi (bukan sisa baris file Failed lain).
 - **Stop Queue** hanya **In Queue** → Failed (dihentikan manual), tanpa jeda 10 menit.
 - **Delete:** (a) sebelum SI/OB → hapus baris saja; (b) setelah generate → revert penuh V-18; Delete In Queue = stop + jangan diproses lagi; **API tolak Delete saat generating** (termasuk macet).
@@ -499,6 +504,18 @@ Tombol **Approve** membuka `ApprovalDialog` dengan dua opsi:
 - Pemantau otomatis: first-stage tanpa kemajuan > N menit → auto-retry M× lalu Failed + notifikasi (usulan N=15, M=2, config).
 - Setelah macet selesai Failed → antrean lanjut (~10 menit), bukan tunggu abandoned 1 hari.
 - Ops: selesaikan batch gantung Merdian contoh ST-5UQ1MKYF / ST-5UQSSIWN.
+
+### TO-BE ETM-17057 (Error · belum di dev)
+
+Keputusan Lead QA 4 Nov 2026. Upload store milik company lain harus gagal di pintu, dan kegagalan baca file tidak boleh menggantung antrean.
+
+**AS-IS (Staging 4 Nov 2026):** file untuk store milik company lain, diunggah dari company yang sedang aktif, diterima (*"Data import is in progress. Please wait."*). Job baca ulang gagal karena store tidak ketemu; status tetap **Validating**. Delete 422 *"{kode} is still in progress"*. Retry *"Nothing to continue"*. Antrean Instant Settlement **semua company** tertahan sampai batch dianggap terbengkalai (1 hari). Contoh: company aktif Dev Staging, store Offline Store LUMI milik company lain, batch ST-5UYDF7JL tetap Validating sejak 09.49 WIB; 4 file lain tertahan Pending validation.
+
+**TO-BE:**
+
+1. Upload ditolak langsung dengan pesan jelas. Tidak ada batch.
+2. Jika job pembaca file tetap gagal karena sebab apa pun, status batch menjadi **Failed** dan antrean lanjut ke file berikutnya.
+3. Batch yang macet bisa **Delete** atau **Retry** oleh operator.
 
 ### Guard SI kosong (ETM-16895 · Done)
 
@@ -549,11 +566,11 @@ Dua file berisi SO sama tanpa OC/OD: file ke-2 tidak boleh menghasilkan SI detai
 | **SI / Out / AR counters** | Kolom masing-masing | Slideover hasil / log error per tipe | Klik angka error → log + retry |
 | **Progress Status / Progress** | 2 kolom | 5-bar upload & 4-bar approve | Polling `GET .../progress`; warning = retry |
 | **Approve** (✓) | Action | Buka ApprovalDialog → approve/reject AR flow | `can_approve` & belum semua SI punya AR |
-| **Delete** (🗑) | Action | Hard delete settlement + dokumen generate (rantai IS) | Permission `delete` **dan** eligible V-18 / §9. **TO-BE ETM-16910:** API **tolak** saat generating; In Queue = stop+hapus baris; sebelum SI/OB = hapus baris saja |
+| **Delete** (🗑) | Action | Hard delete settlement + dokumen generate (rantai IS) | Permission `delete` **dan** eligible V-18 / §9. **TO-BE ETM-16910:** API **tolak** saat generating; In Queue = stop+hapus baris; sebelum SI/OB = hapus baris saja. **TO-BE ETM-17057:** batch macet di Validating boleh di-Delete |
 | **Bulk Delete** | Toolbar (multi-select) | Hapus beberapa upload sekaligus | Semua selected harus eligible V-18; jika ada satu not eligible → tombol **tidak muncul** |
 | **ApprovalDialog** | Modal | **Approve** → lanjut AR; **Reject** → tolak pelunasan batch (tanpa AR) | Permission `approval`; progress upload harus `journals approved` |
 | **LogTable slideover** | Kanan layar | Daftar error per tipe | Dibuka dari angka merah di kolom SO/SI/Out/AR |
-| **Retry — batch** | (a) Ikon ⚠️ di progress bar; (b) Tombol di header LogTable slideover | `POST .../retry` — lanjutkan tahap job yang gagal/macet untuk **seluruh batch** | Muncul saat `stuck` atau error counter > 0 (kecuali SO Failed order) |
+| **Retry — batch** | (a) Ikon ⚠️ di progress bar; (b) Tombol di header LogTable slideover | `POST .../retry` — lanjutkan tahap job yang gagal/macet untuk **seluruh batch** | Muncul saat `stuck` atau error counter > 0 (kecuali SO Failed order). **AS-IS** Validating store company lain: *"Nothing to continue"*. **TO-BE ETM-17057:** batch macet bisa di-Retry |
 | **Retry — per settlement** | Tombol **Continue** di LogTable slideover | `POST .../retry/{settlement_id}` — retry generate/approve untuk **1 order** dalam batch | Kolom Action di log error SI/OB/journal (bukan log SO Failed) |
 | **ResultPanel** | Slideover kanan | Orders / Invoices / Outbounds / Receives | Klik angka biru di grid |
 | **JournalPanel** | Slideover kanan | Jurnal SI/OB + tab **Warnings** (outbound) | Klik SI Journal / Out Journal; Out Journal bisa tampilkan warnings |
@@ -817,6 +834,7 @@ Export DataList async, Audit log (`Log Data`), bulk approve guard — pola stand
 - **ETM-16895:** 2 file SO sama tanpa OC/OD → file ke-2 tidak boleh SI Net Sales 0.  
 - **ETM-16910 (setelah deploy):** Stop Queue hanya In Queue; Delete diblok saat generating; FIFO `created_at`; Retry ditolak saat ada batch aktif lain; retensi file 24 jam.  
 - **ETM-16911:** batch macet tidak menahan antrean 1 hari; counter jurnal tidak dobel.
+- **ETM-17057 (setelah deploy):** upload store company lain ditolak, tidak ada batch; kegagalan baca file → Failed dan antrean lanjut; batch macet bisa Delete dan Retry.
 
 ---
 

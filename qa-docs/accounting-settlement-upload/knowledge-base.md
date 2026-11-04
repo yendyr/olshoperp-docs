@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.2
+version: 2.3
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -78,6 +78,7 @@ flowchart LR
 ### Tidak Bisa
 - Partial success dalam 1 file — **semua order harus valid**
 - Upload tanpa pilih store
+- Upload untuk toko milik company lain (**TO-BE ETM-17057**). Saat ini file bisa masuk lalu macet di Validating dan menahan antrean semua company
 - Generate outbound **kedua kali** untuk order yang sama
 - Memaksa 2 file generate bersamaan (antrean global 1 slot)
 - Hapus settlement jika ada Sales Invoice yang sudah dilunasi **Customer Payment di luar** Instant Settlement (AR luar)
@@ -183,6 +184,7 @@ Sistem **tidak** memblokir upload jika ada selisih kecil; operator yang mengecek
 4. Urutan: yang lebih dulu di-upload lebih dulu diproses (FIFO; penegasan kode = TO-BE ETM-16910).
 5. Approve AR tetap kamu klik manual setelah jurnal upload siap.
 6. Kalau antrean “diam” lama: bisa ada batch macet di company lain (TO-BE pemantau ETM-16911).
+7. File untuk toko milik company lain harus ditolak saat upload (**TO-BE ETM-17057**). Saat ini file bisa masuk lalu macet di Validating dan menahan antrean semua company.
 
 ### 6.1 Upload settlement baru
 
@@ -276,6 +278,8 @@ Langkah:
 | Error generate/approve batch | Slideover **LogTable** — tombol retry di header |
 | Error 1 order saja | Slideover LogTable — tombol **Continue** per baris (kolom Action) |
 
+**Retry** batch dan **Continue** per baris tetap bisa setelah file asli terhapus (sekitar 24 jam sesudah selesai), karena sistem memakai data yang sudah tersimpan, bukan file itu. Kalau ada file lain yang sedang diproses, Retry ditolak dan pesannya meminta menunggu sampai selesai.
+
 ---
 
 ## 10. Relasi Menu (Ringkas)
@@ -316,6 +320,7 @@ Detail integrasi lengkap: [requirement.md §10](./requirement.md#10-relasi-menu-
 | *File does not match selected store* | File platform salah atau header tidak dikenali | Pastikan file dari platform yang sama dengan store; cek kolom wajib §5. **Shopee:** pakai CSV Penghasilan (header row 3, ada `Lihat berdasarkan`) — format Income lama ditolak |
 | File lama di In Queue, tidak mulai | Menunggu file aktif + jeda 10 menit (bisa company lain) | Normal; cek apakah ada batch generating di daftar |
 | Antrean “macet” berjam-jam | Batch stuck di first-stage (TO-BE ETM-16911) | Retry batch macet / hubungi admin; jangan spam upload tanpa cek |
+| Upload tampak sukses, batch diam di Validating, Delete ditolak (*masih in progress*), Retry *Nothing to continue*, antrean semua company berhenti | File untuk toko milik company lain. Contoh: company yang aktif Dev Staging, toko Offline Store LUMI milik company lain (**TO-BE ETM-17057**) | Jangan unggah toko di luar company yang sedang aktif. Setelah perbaikan: upload ditolak langsung (tidak ada batch); kalau pembacaan file tetap gagal, batch jadi gagal dan giliran lanjut; batch yang macet bisa dihapus atau di-retry |
 | Import macet, ikon ⚠️ | Queue/job lambat atau error background | Klik ⚠️ atau tunggu; hubungi admin jika >1 jam |
 | Stop Queue tidak ada | Belum deploy ETM-16910 | Tunggu fitur; jangan Delete saat generating (TO-BE diblok API) |
 | SI Net Sales 0 / detail kosong | Bug timing 2 file SO sama (ETM-16895) | Sudah diperbaiki — re-test; jangan pakai SI phantom |
@@ -335,6 +340,9 @@ Detail integrasi lengkap: [requirement.md §10](./requirement.md#10-relasi-menu-
 
 **Q: Kenapa file saya belum diproses padahal sudah upload?**  
 A: Karena antrean global (ETM-16060): hanya 1 file generate di semua company. Tunggu giliran + ±10 menit setelah file sebelumnya selesai.
+
+**Q: Kenapa antrean semua company berhenti setelah upload toko yang bukan milik company saya?**  
+A: **Saat ini** file itu bisa diterima (*Data import is in progress*) lalu macet di Validating. Hapus ditolak, ulang tidak ada aksi, dan antrean semua company berhenti sampai sekitar 1 hari. **TO-BE ETM-17057:** upload toko company lain ditolak langsung dan tidak ada batch. Kalau pembacaan file tetap gagal, batch jadi gagal supaya giliran lanjut. Batch yang macet bisa dihapus atau di-retry.
 
 **Q: Bisa Stop Queue / batalkan file yang menunggu?**  
 A: **TO-BE** ETM-16910 — Stop Queue hanya untuk **In Queue**. File yang sudah generating harus menunggu selesai (atau gagal). Saat ini tombol bisa belum muncul di Staging.
@@ -398,3 +406,5 @@ A: Order ID marketplace (terutama TikTok) angkanya panjang; Excel mengubah forma
 | Settlement Mapping | [../accounting-settlement-mapping/README.md](../accounting-settlement-mapping/README.md) |
 | Master Other Cost | [../omni-other-cost/requirement.md](../omni-other-cost/requirement.md) |
 | Master Other Discount | [../omni-other-discount/requirement.md](../omni-other-discount/requirement.md) |
+
+

@@ -2,7 +2,7 @@
 doc_type: technical
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.2
+version: 2.3
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -18,6 +18,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.3 | 2026-11-04 | TO-BE ETM-17057 (§1.1): tolak store company lain di `store()`; re-read gagal → `failed` dan antrean lanjut; Delete/Retry batch macet |
 | 2.2 | 2026-11-04 | Kolom panel SI Net Sales SO / Net Sales SI / Difference SO-SI (§9): AS-IS ETM-16871, TO-BE ETM-17052, GAP-SETU-02 |
 | 2.1 | 2026-10-29 | Antrean In Queue ETM-16060 (§1.1); follow-up ETM-16910/16911; guard SI kosong ETM-16895 |
 | 1.9 | 2026-10-22 | Cross-ref TO-BE ETM-16763: SI settlement tidak re-bawa OC/OD SO; fee file anti-duplikat — lihat requirement § + SI §5.3.1 |
@@ -53,7 +54,7 @@ flowchart TD
 
 **All-or-nothing:** gagal validasi → `failed`, tidak generate SI/OB.
 
-### 1.1 Antrean global (ETM-16060 AS-IS · follow-up 16910/16911)
+### 1.1 Antrean global (ETM-16060 AS-IS · follow-up 16910/16911/17057)
 
 | Komponen | Peran |
 |----------|--------|
@@ -62,9 +63,11 @@ flowchart TD
 | Observer / progress | Orkestrasi generate; **gap AS-IS:** path gagal jurnal harus set `progress` Failed agar antrean tidak tertahan |
 | FE Import tooltip / Stop Queue | **TO-BE** ETM-16910 / ETM-16894 (`pending-count` mungkin sudah ada BE) |
 
-**TO-BE ETM-16910:** `ORDER BY created_at, id`; Retry guard + lock vs dispatch; Stop Queue; Delete API block saat generating; retensi file 24 jam tanpa rewrite `updated_at`; reread file missing → Failed; scope `checkSettlementWithDetailExists` ke file aktif.
+**TO-BE ETM-16910:** `ORDER BY created_at, id`; Retry guard + lock vs dispatch; Stop Queue; Delete API block saat generating; retensi file 24 jam tanpa rewrite `updated_at`; reread file missing → Failed; scope `checkSettlementWithDetailExists` ke file aktif. Retry batch dan per baris memakai baris Settlement di DB setelah file asli terhapus (bukan baca file; baca file hanya validasi giliran dan tautan unduh). Retry ditolak saat first-stage lain aktif, contoh pesan "Another file is being processed. Please retry after it finishes."
 
 **TO-BE ETM-16911:** `failed()` pada job settlement; counter idempotent; pemantau stuck (N/M config); jangan andalkan abandoned 1 hari saja.
+
+**TO-BE ETM-17057** (belum di dev). **AS-IS:** `SettlementUploadLogic::store` memuat store lewat `Store::withoutCompanyScope()->find` tanpa membandingkan company store dengan company aktif. Store company lain lolos; respons *"Data import is in progress. Please wait."*; batch tercipta. `SettlementRereadExcelJob` memuat relasi `store` pada company pemilik batch, jadi store company lain null. `SettlementSheet::__construct` menuntut `Store|int`; null melempar type error. Catch job hanya `addOrderErrors("Failed to re-read settlement file, …")` dan tidak mengubah progress ke `failed` (`reread()` sudah men-set `validating`). `stuck` mengecualikan `VALIDATING_STATE`. Retry tidak punya cabang validating → *"Nothing to continue"* (`CONSIDERED_NOT_RETRIABLE` memuat validating). Delete yang diamati Staging 4 Nov 2026: 422 *"{kode} is still in progress"* (contoh ST-5UYDF7JL, company 13, store 71 milik company 153). `validating` ada di `INCOMPLETE_FIRST_STAGE_STATES`; `isAbandoned(false)` baru melepas slot setelah `updated_at` lebih dari 1 hari, sehingga antrean semua company tertahan. **TO-BE:** (1) tolak di upload, tanpa batch, pesan jelas; (2) kegagalan re-read apa pun → progress `failed` dan antrean lanjut; (3) batch macet boleh Delete dan Retry.
 
 **ETM-16895 Done:** guard generate — jangan insert SI jika detail kosong & tanpa OC/OD (sisa qty ≤0).
 
@@ -430,3 +433,5 @@ flowchart TB
 |-----|------|
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Requirement | [requirement.md](./requirement.md) |
+
+

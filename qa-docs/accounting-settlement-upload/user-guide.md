@@ -2,7 +2,7 @@
 doc_type: user-guide
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.2
+version: 2.3
 last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
@@ -10,7 +10,7 @@ source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 2.2
+source_version: 2.3
 ---
 
 # Panduan Pengguna — Instant Settlement
@@ -83,6 +83,7 @@ stateDiagram-v2
 
 - Upload banyak file = normal; jangan kira sistem “error” hanya karena masih In Queue.  
 - Antrean **lintas company**: file company lain bisa menahan giliranmu.  
+- **TO-BE:** toko milik company lain harus ditolak saat upload. Saat ini file itu bisa masuk lalu macet dan menahan antrean semua company sampai sekitar satu hari.  
 - Jangan Delete saat status generating (akan diblok API setelah ETM-16910).
 
 ---
@@ -126,6 +127,7 @@ Ditulis dari yang kamu alami di layar:
 
 - **Kalau 1 order di file gagal**, seluruh file batal. Tidak ada invoice/outbound sama sekali. Perbaiki order, lalu upload **file baru**.  
 - **Kalau kamu belum pilih store**, Import tidak jalan — pilih toko dulu.  
+- **TO-BE ETM-17057:** Kalau toko yang dipakai milik company lain (bukan company yang sedang aktif), upload ditolak langsung dengan pesan jelas. Tidak ada file yang masuk antrean. Saat ini file bisa terlihat sukses (*Data import is in progress*) lalu macet di validasi: Hapus ditolak, Ulang tidak ada aksi, dan antrean semua company berhenti sampai sekitar satu hari. Setelah perbaikan, kegagalan baca file membuat batch gagal supaya giliran lanjut, dan file yang macet bisa dihapus atau diulang.  
 - **Kalau kamu upload file toko lain** (atau header tidak dikenali), sistem menolak: file harus cocok dengan toko yang dipilih. **Satu file = satu toko.**  
 - **Kalau kamu upload Excel**, jangan. Order ID marketplace (terutama TikTok) bisa berubah jadi `1.23E+17` — order tidak ketemu, seluruh batch gagal. Simpan sebagai CSV.  
 - **Kalau order belum Shipped**, baris itu gagal dan menarik seluruh file.  
@@ -186,7 +188,7 @@ Ditulis dari yang kamu alami di layar:
 
 1. **Dana susulan:** upload file baru berisi Order ID yang sama. Settle pertama: outbound + invoice SKU. Settle berikutnya: hanya invoice adjustment.  
 2. **Hapus:** Delete (🗑) → konfirmasi (eligible: belum AR luar, atau AR hanya dari Approve Instant Settlement). Gudang tetap Shipped. Multi-select: semua baris harus eligible atau Delete massal tidak muncul.  
-3. Error generate (bukan SO Failed): buka log angka merah → **Retry** batch atau **Continue** per baris.
+3. Error generate (bukan SO Failed): buka log angka merah → **Retry** batch atau **Continue** per baris. Keduanya tetap bisa setelah file asli terhapus. Kalau ada file lain yang sedang diproses, Retry ditolak dan pesannya meminta menunggu sampai selesai.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -202,6 +204,9 @@ Order ID di Sales Platform masih `-`. File settlement tidak akan ketemu order it
 
 **Satu file = satu toko.**  
 File settlement Toko A tidak boleh di-upload saat dropdown Toko B. Pisahkan file per toko.
+
+**Toko milik company lain (perbaikan menyusul).**  
+Misalnya company yang sedang aktif Dev Staging, tetapi file untuk toko Offline Store LUMI milik company lain. Yang benar: upload ditolak langsung, tidak ada batch. Yang terjadi sekarang: layar bilang proses import berjalan, lalu file macet di validasi. Hapus ditolak, ulang tidak ada aksi, dan antrean Instant Settlement semua company berhenti sampai sekitar satu hari. Setelah perbaikan, batch yang gagal dibaca jadi gagal (giliran lanjut) dan file yang macet bisa dihapus atau diulang.
 
 **Smart AR.**  
 Kamu sudah buat AR manual untuk 10 dari 100 invoice di batch. Saat Approve, sistem hanya lunasi 90 sisanya. Satu AR, banyak referensi invoice. Kalau 100/100 sudah punya AR, tombol Approve mati.
@@ -243,3 +248,5 @@ Nilai persediaan 0 saat posting — buka panel **Out Journal** → tab **Warning
 | [Failed Ship](../supplychain-failed-ship/README.md) | Pengurang qty sebelum settle |
 | [Fiscal Period](../accounting-fiscal-period/README.md) | Periode terbuka untuk tanggal settle |
 | [Sales Platform](../omni-sales-platform/README.md) | Booking unmatched — tunggu Platform Order ID |
+
+
