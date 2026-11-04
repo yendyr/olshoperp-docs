@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 1.4
-last_updated: 2026-08-31
+version: 1.5
+last_updated: 2026-11-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.5
+source_version: 3.7
 owner: QA - Yemima
 status: review
 ---
@@ -102,6 +102,10 @@ stateDiagram-v2
 - Kalau kamu **Approve saat Draft** / import masih jalan, sistem menolak.  
 - Kalau qty nol/desimal, produk induk, atau lebih dari 100 baris SKU, sistem menolak.  
 - Kalau cell Excel berisi rumus, baris ditolak.  
+- Kalau kamu isi harga `10000.6789`, sistem baca **Rp 10.000,6789** (bukan ratusan juta). Qty 1.000 → total **Rp 10.000.678,90**.  
+- Kalau harga punya lebih dari 4 angka di belakang koma atau titik, baris ditolak. Pesan di log: harga SKU itu melebihi 4 angka desimal.  
+- Kalau kamu tulis `1.500` (titik dan tepat 3 angka di belakang, angka di depan pendek), sistem baca **seribu lima ratus**, bukan satu koma lima.  
+- Kalau jumlah tiap baris (dibulatkan ke rupiah) tidak sama dengan total pesanan — walau selisihnya 1 rupiah — pesanan **tidak jadi dibuat**.  
 - Kalau Non-Processed stok SKU kurang, **seluruh order** gagal — cek log SKU mana.  
 - Kalau Non-Processed kena akun yang sudah di-rekonsiliasi untuk tanggal itu, order digagalkan dengan pesan jelas.  
 - Kalau kamu mengira tagihan muncul saat Approve jalur Processed — tunggu outbound/settlement.  
@@ -120,7 +124,7 @@ stateDiagram-v2
 ### B. Import Processed
 
 1. Pastikan store = **Processed**.  
-2. Download template → isi tanpa rumus.  
+2. Download template → isi tanpa rumus. Harga boleh memakai titik atau koma sebagai desimal (contoh `10000.6789` = Rp 10.000,6789).  
 3. Klik **Import Processed** → pantau history/log.  
 4. Review SO Open → Approve → proses gudang.
 
@@ -142,12 +146,14 @@ Ikuti Point of Sales. Jalur Non-Processed penuh dari POS = requirement berikutny
 
 ## 7. Tips & Hal yang Sering Bikin Bingung
 
-- Template Excel **tidak berubah** — bedanya hanya tombol + mode store.  
+- Kolom template Excel tetap sama — bedanya jalur hanya tombol + mode store. Cara baca harga desimal ikut aturan di atas.  
 - Sheet 2 pakai satu kolom **Other Cost/Disc Code** — jangan duplikat kode antara master biaya dan diskon tambahan.  
 - Satu file bisa multi-store; tiap order dicek ke gudang proses **store-nya sendiri**.  
 - All Sales Order punya **tombol import yang sama**.  
 - Platform Order ID di General = referensi kamu, bukan nomor Shopee.  
-- Kalau harga jual sebelum pajak di bawah **Benchmark COGS**, order bisa punya Error Flag **Below Benchmark COGS** dan tidak ikut auto-approve — **approve manual tetap boleh**. Tanda itu mengikuti data baris SKU (snapshot); ubah master COGS tidak mengubah order lama sampai baris detail diganti.
+- Kalau harga jual sebelum pajak di bawah **Benchmark COGS**, order bisa punya Error Flag **Below Benchmark COGS** dan tidak ikut auto-approve — **approve manual tetap boleh**. Tanda itu mengikuti data baris SKU (snapshot); ubah master COGS tidak mengubah order lama sampai baris detail diganti.  
+- Harga `10000.6789` dengan qty 1.000 harus tampil **Rp 10.000.678,90**, bukan ratusan miliar. Lebih dari 4 angka di belakang koma ditolak.  
+- Dua baris pecahan **AKRCHRU** (qty 3, harga `3333.3333`) dan **AKRKAS** (qty 3, harga `6666.6667`) jumlahnya pas Rp 30.000, jadi pesanan itu lolos. Kalau total baris dan total pesanan beda, unggahan order itu gagal.
 
 ---
 

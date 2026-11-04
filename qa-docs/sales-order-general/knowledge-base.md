@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.5
-last_updated: 2026-08-31
+version: 3.7
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost Disc, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -92,7 +92,7 @@ flowchart TD
 
 Atur mode di **Omni → Store → Fulfillment Mode** dulu.
 
-### Template (tidak berubah)
+### Template (kolom sama)
 
 1. **Sheet 1** — tanggal, customer, store, referensi, kurir, tracking, SKU, qty, unit, harga.  
 2. **Sheet 2** (opsional) — kolom **Other Cost/Disc Code** + Amount (biaya atau diskon tambahan per nomor referensi order).
@@ -106,6 +106,17 @@ Atur mode di **Omni → Store → Fulfillment Mode** dulu.
 | Gabung 1 order | Customer + Store + Tanggal + Platform Order ID + Shipper + Tracking |
 | Store | Tipe **Others** + mode sesuai tombol |
 | Rumus Excel | Ditolak |
+
+Kolom template tetap sama. Cara baca **harga** berubah: titik atau koma bisa jadi desimal, bukan selalu ribuan.
+
+### Harga di Excel
+
+- `10000.6789` dibaca **Rp 10.000,6789** (bukan Rp 100.006.789). Qty 1000 → total **Rp 10.000.678,90**.
+- Kalau sel punya titik **dan** koma, tanda **terakhir** adalah desimal (misalnya `10.000,6789` dan `10,000.6789` sama-sama Rp 10.000,6789).
+- Satu titik dengan tepat 3 angka di belakang dan angka di depan pendek dibaca ribuan: `1.500` = 1500 (seribu lima ratus), `12.345` = 12345. `1234.567` tetap desimal (Rp 1.234,567).
+- Lebih dari 4 angka di belakang koma/titik **ditolak**. Di log: `Price for SKU [X] exceeds maximum allowed decimal places (maximum 4 decimal places).`
+- Sebelum pesanan jadi, sistem membandingkan jumlah tiap baris (sudah dibulatkan ke rupiah) dengan total header. Selisih 1 rupiah pun menggagalkan order. Log diawali `Rounding mismatch detected for Order`.
+- Contoh dua SKU: **AKRCHRU** qty 3 harga `3333.3333` dan **AKRKAS** qty 3 harga `6666.6667`. Kedua hitungan sama-sama Rp 30.000,00, jadi order ini **lolos**.
 
 ### Jika import gagal
 
@@ -127,6 +138,9 @@ Atur mode di **Omni → Store → Fulfillment Mode** dulu.
 | Sheet 2 cost/disc “aneh” / salah jadi biaya | Kode sama ada di Other Cost dan Other Discount | Ubah salah satu kode di master; re-import. Order harus gagal jika bentrok (aturan baru) |
 | Create langsung ke edit | By design | Lengkapi di halaman edit |
 | Ada tanda harga di bawah HPP / auto-approve gagal | Price Before VAT di bawah Benchmark COGS di line | Unhide kolom Price Before VAT + Benchmark; naikkan harga atau **approve manual**. Filter TO-BE: Error Flag **Below Benchmark COGS** |
+| Harga jadi ratusan juta setelah import | Titik di `10000.6789` dulu dianggap ribuan | Seharusnya Rp 10.000,6789. Qty 1000 → total Rp 10.000.678,90. Kalau masih meledak, kirim file ke support |
+| Baris ditolak “maximum 4 decimal places” | Harga punya lebih dari 4 angka di belakang koma/titik | Potong ke 4 angka desimal, lalu unggah ulang |
+| Order gagal “Rounding mismatch” | Jumlah baris (ke rupiah) tidak sama dengan total header, walau selisih 1 rupiah | Samakan harga/qty supaya kedua total cocok. Contoh AKRCHRU + AKRKAS di atas saat ini cocok (Rp 30.000) |
 
 ---
 
@@ -161,7 +175,8 @@ Detail: [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md
 
 **Bedanya dengan All Sales Order?** Satu layar general + marketplace; tombol import sama.  
 **POS ikut Non-Processed?** Belum — requirement berikutnya.  
-**Max detail?** 100 baris per pesanan.
+**Max detail?** 100 baris per pesanan.  
+**Harga `10000.6789`?** Dibaca Rp 10.000,6789, bukan ratusan juta. Lebih dari 4 angka desimal ditolak. `1.500` tetap seribu lima ratus.
 
 ## Referensi
 

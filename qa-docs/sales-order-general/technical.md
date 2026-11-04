@@ -2,8 +2,8 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.5
-last_updated: 2026-08-31
+version: 3.7
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulfillment Mode, Import Non-Processed, Other Cost/Disc Code, cogs-error, Manual COGS]
@@ -14,9 +14,10 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 **Type:** `type_sales_order = general`  
 **UI:** `/businessdevelopment/sales-order-general`  
 **API prefix:** `/api/omnichannel/sales-order/*`  
-**Behavior:** [requirement.md](./requirement.md) v3.4  
+**Behavior:** [requirement.md](./requirement.md) v3.7  
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB
 
+> **3.7 (2026-11-04):** Import Price decimal normalize + max 4 dp + rounding reconciliation — [requirement §6.3.4](./requirement.md); ETM-17055 (fe69fd3).  
 > **3.4 (2026-08-12):** TO-BE Benchmark COGS snapshot = effective Manual COGS — [requirement §8.2](./requirement.md#82-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14); GAP-SOG-15 / GAP-BM-14.  
 > **1.3 / 3.3 (2026-08-11):** TO-BE Error Flag Below Benchmark COGS — shared `ErrorFlag.vue` / `CanManageOrderDetailError` / `updateAutoApproveFlagForSalesOrder`; see [Benchmark technical §6.5–§6.6](../accounting-product-benchmark-price/technical.md#65-auto-approve-flag); GAP-SOG-14 / GAP-BM-13.
 
@@ -26,6 +27,7 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.7 | 2026-11-04 | Import Price: normalize dot/comma, reject more than 4 dp, reconcile 4-dp line vs 2-dp header before SO create; `hasOtherHeaderError` prefix `Column %` (ETM-17055) |
 | 3.4 | 2026-08-12 | TO-BE Benchmark COGS snapshot = effective Manual COGS; GAP-SOG-15 / GAP-BM-14 |
 | 1.3 | 2026-07-09 | Bundle / benchmark COGS file map |
 | 3.0 | 2026-07-22 | Rewrite SoT v1.0: file map, import AS-IS, invariants, failure modes |
@@ -188,6 +190,31 @@ Jika **keduanya** ketemu → selalu `type = cost`; tidak ada error. Unique code 
 
 **Invariant TO-BE:** INV-SOG-13 — Sheet 2 code must resolve to exactly one of {cost, discount} or the SO group fails.
 
+### 5.3 Price decimal, precision, rounding (ETM-17055)
+
+Same pre-step in `Modules/OmniChannel/Import/SalesOrderImportSheet1.php` (persist path) and `Modules/OmniChannel/Import/SalesOrderValidateDetailSheet.php` (validation path), then `parseNumber()` (precision 4; previously Sheet1 called `parseNumber($price, false)` → integer).
+
+| Shape | Pre-step |
+|-------|----------|
+| Exactly one `,` and one `.` | Last separator is decimal. If `.` is last, strip `,` and rewrite `.` to `,` so `parseNumber` keeps it (system decimal is `,`). If `,` is last, strip `.`. |
+| Exactly one `.` and no `,` | Treat as decimal (rewrite `.` to `,`) unless the fractional part is exactly 3 digits **and** the integer part is at most 3 digits — then leave the dot so `parseNumber` treats it as thousands (`1.500` → 1500, `12.345` → 12345, `1234.567` → 1234.567). |
+| Other shapes | Unchanged; `parseNumber` (multiple `.` = thousand separator `.`). |
+
+Precision guard (validation sheet only), before normalize: if the trailing group after the last `.` or `,` is longer than 4 digits, row fails with `Price for SKU [{sku}] exceeds maximum allowed decimal places (maximum 4 decimal places).`
+
+Reconciliation in `Modules/OmniChannel/Logics/SalesOrder/SalesOrderImportValidationLogic.php` (phase `VALIDATING`, before the SO is generated), over product detail rows:
+
+```text
+line_4 = round(qty * price, 4)
+accumulated = Σ round(line_4, 2)
+header = round(Σ line_4, 2)
+fail when abs(accumulated - header) > 0.0001
+```
+
+Log: `Rounding mismatch detected for Order [{platform_order_id}]: Accumulated row totals differ from header total by {diff}.` Order `is_valid = false`; no SO. Kasus C (AKRCHRU 3 × 3333.3333 and AKRKAS 3 × 6666.6667) is 30000.00 on both sides, so it passes. Kasus A: `10000.6789` × qty 1000 → unit 10000.6789; 2-dp money = 10000678.90.
+
+`hasOtherHeaderError()` matches import-log `message LIKE 'Column %'` (prefix). It no longer uses leading-wildcard `'%missing in%'`. Missing-column text is `Column {names} is/are missing in {sheet}`.
+
 ---
 
 ## 6. Invariants
@@ -209,13 +236,17 @@ Jika **keduanya** ketemu → selalu `type = cost`; tidak ada error. Unique code 
 | INV-SOG-11 | TO-BE: Non-Processed success → SO approved + not eligible for wave/processing |
 | INV-SOG-12 | TO-BE: Any SKU stock fail → entire order rolled back (no partial SO) |
 | INV-SOG-13 | TO-BE: Sheet 2 code matching both OtherCost and OtherDiscount → SO group fails (no silent prefer) |
+| INV-SOG-14 | Imported Price has at most 4 decimal places; a longer trailing fraction fails in VALIDATING and is not stored |
+| INV-SOG-15 | Per order, `abs(Σ round(round(qty*price, 4), 2) − round(Σ round(qty*price, 4), 2))` is at most `0.0001`, else the order fails in VALIDATING and no SO is created |
 
 ---
 
 ## 7. Validation Highlights
 
 - Header/detail/approve/import: inline di controller (lihat requirement §7).  
-- Import Sheet1: formula reject; fiscal period; store `PL_OTHER`; cross-chunk PO/tracking index.  
+- Import Sheet1: formula reject; fiscal period; store `PL_OTHER`; cross-chunk PO/tracking index; Price dot/comma normalize then `parseNumber` at 4 dp (ETM-17055).  
+- Import validate sheet: reject Price with more than 4 decimal places before parse.  
+- Import validation logic: rounding reconciliation (INV-SOG-15) in VALIDATING; `hasOtherHeaderError()` is `LIKE 'Column %'`.  
 - Import Sheet2: shared `Other Cost/Disc Code`; AS-IS prefers OtherCost when both match — TO-BE fail (GAP-SOG-13).  
 - Soft-deleted SO still can block platform order ID on re-import if query does not exclude trashed — GAP related.  
 - `bootImport` master lookup from **first chunk only** — risk for rows after chunk 500 (GAP capacity).
@@ -241,6 +272,7 @@ Jika **keduanya** ketemu → selalu `type = cost`; tidak ada error. Unique code 
 | HTTP timeout during parse | No jobs; history may stay `processing` until next upload (GAP-SOG-01/02) |
 | Concurrent approve | Cache lock ~60s |
 | Approve during import | Cache `so_general_import_{so_id}` |
+| Rounding mismatch (INV-SOG-15) | Order fails in VALIDATING; temp header `is_valid = false`; SO is not generated |
 | Job fails mid-order | Soft-delete SO if detail errors after header created; PO ID may remain “taken” |
 | Sheet2 error after Sheet1 | `parent->hasError` may not stop `finalize()` dispatch — verify/fix |
 | Multiple FinalizeJob | Race on `jobs_completed` without finalize flag |

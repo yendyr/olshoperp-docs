@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.6
-last_updated: 2026-10-22
+version: 3.7
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -19,7 +19,7 @@ aliases: [SO General, Dev Sales Order, sales order general, SO internal, import 
 
 Window gabungan: [All Sales Order](../all-sales-order/requirement.md). Platform independen: [Dev - Sales Platform](../omni-sales-platform/requirement.md).  
 Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).  
-**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (OC/OD SO → SI) · [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763)
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (OC/OD SO → SI) · [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) · [ETM-17055](https://erpintegration.atlassian.net/browse/ETM-17055) (desimal, presisi, pembulatan import)
 
 ---
 
@@ -27,6 +27,7 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.7 | 2026-11-04 | QA - Yemima | Import Price: titik/koma dibaca benar, maks. 4 desimal, pembulatan 4/2, rekonsiliasi sebelum SO dibuat (ETM-17055) |
 | 3.6 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE ETM-16762/16763: Other Cost/Discount di SO wajib jadi sumber carry ke SI |
 | 3.5 | 2026-08-31 | QA - Yemima | Status: pisahkan Rejected (editable) vs Closed vs Void; koreksi tabel editable |
 | 3.4 | 2026-08-12 | QA - Yemima | TO-BE snapshot **Benchmark COGS** = effective Manual COGS (§8.2 / GAP-BM-14 consumer) |
@@ -171,7 +172,7 @@ Endpoint: `POST omnichannel/sales-order/get?type=general` (ASO: `type=all`, engi
 | Product | Ya | Aktif, bukan PARENT, owned_by cocok; bundle header aktif |
 | Qty | Ya | > 0, bilangan bulat |
 | Unit | Ya | Primary/alt aktif |
-| Price | Ya | Numeric ≥ 0 |
+| Price | Ya | Numeric ≥ 0. Import Excel: paling banyak 4 angka desimal (§6.3.4) |
 | Sales Discount / Description | Tidak | Discount ≥ 0; desc max 150 |
 
 Max **100** detail per SO (`max_child`).
@@ -202,7 +203,7 @@ Set `approved`; simpan MA buffer & price history; lalu:
 
 Grouping 1 SO = Customer + Store + Transaction Date + Platform Order ID + Shipper Service Code + Tracking Number.
 
-Template & validasi baris order **tidak berubah** antar jalur. Bedanya: **tombol import** + gate **Fulfillment Mode** store ([Store](../omni-store-binding/requirement.md)).
+Kolom template sama antar jalur. Bedanya jalur: **tombol import** + gate **Fulfillment Mode** store ([Store](../omni-store-binding/requirement.md)). Harga desimal, presisi, dan rekonsiliasi pembulatan: §6.3.4.
 
 | Tombol UI | Gate store | Hasil sukses |
 |-----------|------------|--------------|
@@ -250,6 +251,36 @@ Kolom **Other Cost/Disc Code** dipakai bersama untuk master Other Cost **dan** O
 **Scope gagal:** order (grouping Platform Order ID / SO) yang memakai baris Sheet 2 ambigu tersebut gagal import; order lain dalam file yang valid boleh lanjut (selaras partial-per-order). AS-IS saat ini error Sheet 2 sering menandai sesi history failed secara luas — perbaikan behavior ikut GAP-SOG-13.
 
 Batasan: max 100 detail/SO; `.xlsx/.xls`; tanpa hard cap total baris; 1 batch aktif; approve diblokir selama import Processed; formula Excel ditolak. POS/manual Non-Processed auto = **out of scope** fase ini.
+
+#### 6.3.4 Harga desimal, presisi, dan rekonsiliasi pembulatan
+
+Berlaku untuk **Import Processed** dan **Import Non-Processed**, termasuk tombol yang sama di [All Sales Order](../all-sales-order/requirement.md). Kartu: [ETM-17055](https://erpintegration.atlassian.net/browse/ETM-17055).
+
+**Pemisah desimal (Price).** Kalau sel berisi koma dan titik, pemisah **terakhir** adalah desimal. Kalau hanya satu titik, itu desimal — kecuali tepat 3 digit mengikuti titik **dan** bagian bulat paling banyak 3 digit; itu ribuan (contoh `1.500` = 1500). Satu koma mengikuti pemisah desimal sistem (koma).
+
+| Price di Excel | Dibaca |
+|----------------|--------|
+| `10000.6789` | Rp 10.000,6789 (bukan Rp 100.006.789) |
+| `10.000,6789` atau `10,000.6789` | Rp 10.000,6789 (pemisah terakhir = desimal) |
+| `1.500` atau `12.345` | 1500 atau 12345 (satu titik, tepat 3 digit di belakang, bagian bulat paling banyak 3 digit) |
+| `1234.567` | Rp 1.234,567 (bagian bulat lebih dari 3 digit, jadi desimal) |
+
+**Kasus A:** Price `10000.6789`, qty 1000 → harga satuan Rp 10.000,6789. Nilai akhir 2 desimal = Grand Total Rp 10.000.678,90 (bukan Rp 100.006.789.000,00).
+
+**Presisi.** Price paling banyak 4 angka di belakang pemisah desimal. Lebih dari itu ditolak di fase validasi, sebelum SO dibuat: `Price for SKU [X] exceeds maximum allowed decimal places (maximum 4 decimal places).`
+
+**Pembulatan.** Harga satuan dan total baris memakai 4 desimal. Nilai akhir finansial (grand total) memakai 2 desimal.
+
+**Rekonsiliasi sebelum SO dibuat.** Sistem menjumlahkan total tiap baris yang sudah dibulatkan ke 2 desimal, lalu membandingkannya dengan total header (jumlah total baris 4 desimal, kemudian dibulatkan ke 2 desimal). Selisih — termasuk 1 rupiah — menggagalkan order di fase validasi. SO tidak dibuat. Log: `Rounding mismatch detected for Order [{platform_order_id}]: Accumulated row totals differ from header total by {diff}.`
+
+**Kasus C** (data uji; kedua sisi sama, jadi order ini lolos):
+
+| SKU | Qty | Price | Total baris 4 desimal | Dibulatkan 2 desimal |
+|-----|-----|-------|------------------------|----------------------|
+| AKRCHRU | 3 | 3333.3333 | 9999.9999 | 10000.00 |
+| AKRKAS | 3 | 6666.6667 | 20000.0001 | 20000.00 |
+
+Akumulasi baris = 30000.00. Header = 30000.00. Selisih 0 → tidak ditolak. Kalau kedua sisi beda, order gagal dengan log di atas.
 
 ### 6.4 Import detail per SO
 
@@ -326,6 +357,9 @@ ATS = On Hand − Outstanding SO − Reserved Out (recalculate async).
 | 33 | Non-Processed: stok kurang di hierarki WH process store | Rollback seluruh order + log per SKU (TO-BE) |
 | 34 | Non-Processed: COA jurnal OB/SI kena CBR Approved (overlap tanggal) | Rollback order + pesan lock (TO-BE) |
 | 35 | Sheet 2: **Other Cost/Disc Code** cocok di Other Cost **dan** Other Discount | **TO-BE:** order terkait gagal import + log jelas. **AS-IS:** diam-diam jadi cost (GAP-SOG-13) |
+| 36 | Price lebih dari 4 angka desimal | Baris ditolak di fase validasi: `Price for SKU [X] exceeds maximum allowed decimal places (maximum 4 decimal places).` |
+| 37 | Akumulasi total baris (2 desimal) beda dari total header (2 desimal), termasuk selisih 1 rupiah | Order gagal di fase validasi; SO tidak dibuat. Log: `Rounding mismatch detected for Order [{platform_order_id}]: Accumulated row totals differ from header total by {diff}.` |
+| 38 | Price `10000.6789` (satu titik, bukan pola ribuan) | Dibaca Rp 10.000,6789. Qty 1000 → Grand Total Rp 10.000.678,90 |
 
 ### 7.5 Void / Close / Delete
 
@@ -448,7 +482,13 @@ A: Tombol mengikuti **Fulfillment Mode** di master Store. Processed = jalur guda
 **Q: Sheet 2 — kode Other Cost dan Other Discount sama?**  
 A: Kolom template satu (`Other Cost/Disc Code`). Uniqueness hanya per master. **TO-BE:** jika kode cocok di keduanya, order gagal import (jangan tebak). **AS-IS:** sistem memilih cost — jangan andalkan ini (GAP-SOG-13). Hindari kode duplikat lintas Other Cost & Other Discount.
 
-**Q: Max import?**
+**Q: Harga `10000.6789` atau koma di import?**  
+A: Dibaca Rp 10.000,6789, bukan ratusan juta. Qty 1000 → Grand Total Rp 10.000.678,90. Paling banyak 4 angka desimal; lebih dari itu baris ditolak. `1.500` (titik + tepat 3 digit, bagian bulat pendek) tetap 1500. Detail §6.3.4 (ETM-17055).
+
+**Q: Dua baris pecahan AKRCHRU dan AKRKAS (3 × 3333.3333 dan 3 × 6666.6667)?**  
+A: Kedua cara hitung sama-sama Rp 30.000,00, jadi order lolos. Kalau akumulasi baris dan total header beda meski 1 rupiah, order gagal sebelum SO dibuat.
+
+**Q: Max import?**  
 A: 100 detail/SO; total baris tanpa hard cap tapi ~2.000 berisiko stuck (GAP-SOG-01).
 
 ---
