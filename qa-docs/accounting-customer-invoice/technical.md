@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 2.0
-last_updated: 2026-08-24
+version: 2.3
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [SI technical, customer invoice API, sales invoice code]
@@ -13,7 +13,7 @@ aliases: [SI technical, customer invoice API, sales invoice code]
 
 **API prefix:** `accounting/customer-invoice`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.0  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.3  
 **Source SoT:** [../_meta/sot/accounting-customer-invoice-source-of-truth.md](../_meta/sot/accounting-customer-invoice-source-of-truth.md) v1.0
 
 ---
@@ -107,6 +107,7 @@ sequenceDiagram
 | INV-SI-08 | Primary currency → exchange rate must be 1 |
 | INV-SI-09 | Other cost/discount outside product VAT base |
 | INV-SI-10 | Void × SI lifecycle details deferred outside this doc if not in SoT |
+| INV-SI-11 | Draft/Open, non-platform release on delete: `CustomerInvoiceDetailItemController::deleteCustomerInvoiceDetailItemRow` and `CustomerInvoiceController::deleteCustomerInvoice` include the header SO ref in the release ids; `prepared_to_invoice_quantity` drops by the row qty and is floored at 0; SO `transaction_status` becomes `approved` when no other detail still references that SO; `transaction_reference_id/class/text/url` are nulled (row delete: only if no detail remains for the header ref; header delete: nulled before the SI is destroyed) |
 
 ---
 
@@ -145,6 +146,7 @@ sequenceDiagram
 | SO type | General only |
 | Status out | **open** |
 | Journal | Intent: on SI approve; verify GAP-SI-02 residual Open journal call |
+| Already invoiced | `CustomerInvoiceImportSheet1` (`Modules/Accounting/Import/CustomerInvoiceImportSheet1.php`) `is_invoiced` requires `whereHas('customer_invoice_detail_items')` — a non-void SI with no detail rows does not block import |
 
 ---
 

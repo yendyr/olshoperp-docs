@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 1.1
-last_updated: 2026-08-31
+version: 1.2
+last_updated: 2026-11-04
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.0
+source_version: 2.3
 owner: QA - Yemima
 status: review
 ---
@@ -107,6 +107,7 @@ Setelah SI **di-approve**:
 - **Kalau invoice dari platform**, Reject/Delete tidak tersedia.  
 - **Kalau [import Excel](#sf-lingo:SF-IMP-01)**, isi Order Number **atau** Platform Order ID (salah satu); hanya SO internal/general; hasilnya status Open — Approve manual supaya jurnal jalan.  
 - **Kalau satu baris import rusak**, seluruh file gagal.
+- **Kalau kamu hapus baris barang, atau hapus seluruh Sales Invoice** yang masih Draft/Open (bukan dari platform), Sales Order yang terpakai kembali **Approved** dan bisa dipilih lagi di Select Product / Outstanding SO, atau di-import lagi. Invoice yang sudah tidak punya baris barang tidak menghalangi import.
 
 ---
 
@@ -162,6 +163,7 @@ Setelah SI **di-approve**:
 - **Harga di layar 10.000 (termasuk PPN)?** Angka yang kamu lihat tetap seperti di SO; sistem menghitung dasar sebelum PPN di belakang untuk jurnal.  
 - **Import platform?** Tidak boleh — hanya order internal/general ([Import](#sf-lingo:SF-IMP-01)).  
 - **Setelah Reject, status jadi Draft?** Normal — set Open lagi lalu Approve.
+- **SO tidak muncul lagi setelah baris atau invoice dihapus?** Seharusnya SO kembali Approved dan bisa dipakai lagi (pilih manual atau import). Kalau datanya sudah rusak sebelum perbaikan ini, sistem tidak memulihkan sendiri — laporkan ke QA.
 
 ---
 

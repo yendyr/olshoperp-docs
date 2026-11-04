@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 2.2
-last_updated: 2026-10-26
+version: 2.3
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, AR invoice]
@@ -17,7 +17,7 @@ aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, AR
 **UI route:** `/accounting/customer-invoice`  
 **SoT:** `_meta/sot/accounting-customer-invoice-source-of-truth.md` v1.0 (24 Agu 2026)  
 **Jira import:** [ETM-14976](https://erpintegration.atlassian.net/browse/ETM-14976)  
-**Related:** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) (carry OC/OD dari SO) · [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (sumber di SO) · [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807) (blok SI jika SO masih random)
+**Related:** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) (carry OC/OD dari SO) · [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (sumber di SO) · [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807) (blok SI jika SO masih random) · [ETM-17019](https://erpintegration.atlassian.net/browse/ETM-17019) (hapus baris/SI melepas SO)
 
 Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · [Credit Note](../accounting-credit-note/requirement.md)
 
@@ -27,6 +27,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.3 | 2026-11-04 | QA - Hazel (yemimadocs) | **TO-BE** [ETM-17019](https://erpintegration.atlassian.net/browse/ETM-17019): hapus baris detail / hapus SI melepas SO (qty prepared kembali, SO kembali Approved, Trx Ref. dikosongkan); SI tanpa detail tidak memblok import |
 | 2.2 | 2026-10-26 | QA - Yemima | **TO-BE** [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807): blok Use/create SI jika SO masih contain random SKU; warning icon + tooltip EN di modal outstanding |
 | 2.1 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763): OC/OD dari SO carry ke SI (sekali); manual = PO→PI; settlement anti-duplikat |
 | 1.0 | 2026-06-19 | QA - Yemima | Draft AS-IS codebase |
@@ -253,6 +254,17 @@ Create → default customer/currency/rate dari SI terakhir → Trx Date = NOW �
 6. `processed_to_invoice` ↑; `prepared` ↓; journal auto **Approved**.  
 7. Bayar di **Account Receive**.
 
+### 6.2a Hapus detail / hapus SI — TO-BE ETM-17019
+
+SI masih **Draft/Open** (bukan dari platform). Melepas SO supaya bisa dipakai lagi.
+
+| # | Aksi | Hasil |
+|---|------|--------|
+| 1 | Hapus satu baris detail | Qty prepared di baris Sales Order berkurang sebesar qty baris itu, tidak pernah di bawah 0 |
+| 2 | Tidak ada lagi baris SI yang merujuk SO itu | SO kembali status **Approved**; Trx Ref. di SI dikosongkan |
+| 3 | Hapus seluruh SI | Sama: qty prepared kembali, SO kembali **Approved** jika tidak ada detail SI lain yang masih memakai SO itu, Trx Ref. dikosongkan sebelum SI dihapus |
+| 4 | Setelah lepas | SO muncul lagi di Select Product / Outstanding SO dan bisa di-import lagi. Cek *already been invoiced* mengabaikan SI non-void yang tidak punya baris detail |
+
 ### 6.3 Journal on Approve
 
 | Sisi | COA | Amount |
@@ -284,7 +296,7 @@ SI dibuat sistem; sering auto-approved. Create manual **tidak** untuk order plat
 | Duplikat dalam file | Ditolak |
 | SO owned company, Approved/Processed | Else error |
 | Hanya **Sales Order General** | Platform: *Only internal orders are allowed* |
-| Belum di-invoice (non-void) | *already been invoiced* |
+| Belum di-invoice (non-void) | *already been invoiced* (SI tanpa baris detail tidak dihitung — TO-BE ETM-17019) |
 | Trx date ≥ SO date | Else error |
 | 1 row = 1 SI | Semua outstanding line SO di-Use |
 | Status setelah import | **OPEN** — **tidak** auto-approve |

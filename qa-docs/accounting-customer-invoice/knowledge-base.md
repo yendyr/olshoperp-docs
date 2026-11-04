@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 2.2
-last_updated: 2026-10-26
+version: 2.3
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, piutang]
@@ -116,6 +116,7 @@ Template **3 kolom:** Transaction Date · Order Number · Platform Order ID.
 |--------|----------------|
 | Tidak bisa Approve dari Draft | Ubah status ke **Open** dulu |
 | Outstanding kosong | SO belum approved, atau sisa sudah full prepared/processed |
+| SO tidak muncul lagi setelah baris/SI dihapus | TO-BE ETM-17019: seharusnya SO kembali Approved & bisa dipakai lagi (manual/import). Data yang terlanjur rusak sebelum fix tidak otomatis pulih — laporkan ke QA |
 | Approve gagal COA | AR Company/Store + Sales COA produk + Tax sales |
 | SI platform tidak bisa hapus/reject | Normal — dari platform |
 | Import gagal semua | Satu baris invalid menggagalkan batch; cek log |
