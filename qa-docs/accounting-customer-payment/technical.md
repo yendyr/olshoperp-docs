@@ -2,15 +2,15 @@
 doc_type: technical
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.3
-last_updated: 2026-10-22
+version: 2.5
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 ---
 
 # Account Receive — Technical
 
-**Behavior SoT:** [requirement.md](./requirement.md) v2.3  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.5  
 **Summary UI (TO-BE):** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644)  
 **CN deposit COA (TO-BE):** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)
 
@@ -21,6 +21,9 @@ status: review
 | Berkas | Peran |
 |---|---|
 | `Modules/Accounting/Http/Controllers/CustomerPaymentController.php` | Endpoint import, download template, progress, log, history; validasi sheet dan heading |
+| `Modules/Accounting/Http/Controllers/PaymentController.php` | Kolom datalist Description: cari dan urut; `description_raw` untuk ekspor (ETM-16991) |
+| `Modules/Accounting/Exports/CustomerPaymentExport.php` | Heading ekspor "Receive per {tanggal}" termasuk kolom Description |
+| `Modules/Accounting/Jobs/CustomerPaymentExportChunkJob.php` | Mengisi kolom Description dari deskripsi header dokumen |
 | `Modules/Accounting/Http/Controllers/CustomerPaymentDetailController.php` | Detail dokumen AR + jalur import detail lama |
 | `Modules/Accounting/Http/Controllers/CustomerPaymentDetailAdjustmentController.php` | Baris adjustment pada dokumen AR |
 | `Modules/Accounting/Exports/AccountReceiveTemplateExport.php` | Definisi tiga sheet + konstanta nama sheet |
@@ -48,7 +51,7 @@ status: review
 
 | Berkas | Peran |
 |---|---|
-| `olshoperp-frontend/src/pages/Accounting/AccountReceivable/Receive/DataList.vue` | Datalist, export, riwayat import |
+| `olshoperp-frontend/src/pages/Accounting/AccountReceivable/Receive/DataList.vue` | Datalist, export, riwayat import; kolom Description (ETM-16991) |
 | `olshoperp-frontend/src/pages/Accounting/AccountReceivable/Receive/ImportLog.vue` | Panel error hasil screening |
 | `olshoperp-frontend/src/pages/Accounting/AccountReceivable/Receive/Form.vue` | Form dokumen AR |
 | `olshoperp-frontend/src/pages/Accounting/AccountReceivable/Receive/DatalistDetail.vue` | Datalist detail invoice terlunasi |
@@ -124,6 +127,7 @@ sequenceDiagram
 ## 7. Frontend Behaviors
 
 - Datalist memuat panel riwayat import (`has_import_history`) dan komponen `ImportLog.vue` untuk menampilkan hasil screening.
+- Kolom **Description** di `DataList.vue` (deskripsi header) bisa dicari dan diurutkan lewat `PaymentController`. Ekspor daftar "Receive per {tanggal}" menulis kolom yang sama di `CustomerPaymentExport` dan `CustomerPaymentExportChunkJob` (ETM-16991).
 - Progress import di-poll lewat endpoint `import/progress`.
 - Modal Available Sales Invoice mengambil data dari endpoint outstanding invoice pada dokumen AR terkait.
 

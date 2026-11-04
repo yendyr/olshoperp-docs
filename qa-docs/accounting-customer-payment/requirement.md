@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.4
-last_updated: 2026-10-26
+version: 2.5
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 ---
@@ -20,6 +20,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.5 | 2026-11-04 | QA - Yemima | Daftar Account Receive menampilkan kolom Description per dokumen; bisa dicari dan diurut, dan ikut di file ekspor termasuk Receive per tanggal ([ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)) |
 | 2.4 | 2026-10-26 | QA - Yemima | Klarifikasi final ETM-16764: stamp COA = setting by asal CN (bukan historis jurnal CN) |
 | 2.3 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764): Payment Source CN stamp COA dari asal CN; GAP-AR-CN-COA |
 | 2.2 | 2026-10-19 | QA - Yemima | **TO-BE** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644): Section Summary read-only setelah Adjustment (header currency; Credit=+/Debit=−; CN terpisah; Total orange jika ≠ 0) |
@@ -114,6 +115,14 @@ Satu baris = satu selisih antara dana masuk dan nilai invoice.
 | Cash Bank Identification Row | Ya | Input user | Sama seperti Sheet 2 |
 
 **Identification Row** adalah nomor baris Excel fisik di sheet Bank Mutation — bukan nomor urut data. Inilah pengikat yang menentukan invoice dan adjustment mana milik mutasi bank mana.
+
+### 4.4 Datalist & Export
+
+Daftar Account Receive menampilkan kolom **Description**: teks deskripsi di header dokumen (bukan deskripsi baris jurnal atau baris invoice). Kolom ini bisa dicari dan diurutkan.
+
+Ekspor daftar memuat kolom Description yang sama, termasuk berkas berjudul **Receive per tanggal** (heading `OlshopERP | Receive per {tanggal}`).
+
+[ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)
 
 ## 5. How It Works
 

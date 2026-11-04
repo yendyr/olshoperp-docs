@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 1.1
-last_updated: 2026-10-19
+version: 1.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 source_docs:
   - requirement.md
   - knowledge-base.md
   - technical.md
-source_version: 2.2
+source_version: 2.5
 ---
 
 # Account Receive — User Guide
@@ -22,6 +22,8 @@ source_version: 2.2
 Tanpa pencatatan ini, tagihan akan terus terlihat belum lunas walaupun uangnya sudah masuk ke rekening. Menu ini yang menutup jarak antara mutasi rekening dan daftar piutang.
 
 Kalau dalam sehari ada puluhan pelunasan, Anda tidak perlu membuat dokumen satu per satu — tersedia fitur **Import** yang membaca satu file Excel dan membuat semua dokumennya sekaligus.
+
+Di daftar, kolom **Description** menampilkan deskripsi tiap dokumen. Anda bisa mencari dan mengurutkan kolom itu. Saat mengekspor daftar, termasuk berkas **Receive per tanggal**, deskripsi ikut tertulis di file.
 
 ## 2. Overview Flow & Proses Bisnis
 
