@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.1
-last_updated: 2026-10-29
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -15,6 +15,7 @@ legacy_sources: []
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.2 | 2026-11-04 | QA - Yemima | **Definisi kolom panel Sales Invoice (§5.1):** Net Sales SO = total SO **sebelum PPN** (AS-IS deploy [ETM-16871](https://erpintegration.atlassian.net/browse/ETM-16871), 3 Nov 2026); **TO-BE** [ETM-17052](https://erpintegration.atlassian.net/browse/ETM-17052) Net Sales SI dan Difference SO-SI memakai dasar yang sama (sebelum PPN) + tooltip header; **GAP-SETU-02** |
 | 2.1 | 2026-10-29 | QA - Yemima | **AS-IS deploy** [ETM-16060](https://erpintegration.atlassian.net/browse/ETM-16060) antrean In Queue (1 generate global + jeda 10 menit); **TO-BE** [ETM-16910](https://erpintegration.atlassian.net/browse/ETM-16910) / [ETM-16911](https://erpintegration.atlassian.net/browse/ETM-16911); guard SI kosong [ETM-16895](https://erpintegration.atlassian.net/browse/ETM-16895) Done; tooltip [ETM-16894](https://erpintegration.atlassian.net/browse/ETM-16894) |
 | 2.0 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763): OC/OD dari SO tidak di-rebawa di SI settlement ke-2+; fee file tidak menumpuk baris order |
 | 1.0 | 2026-06-23 | QA - Yemima | Konsolidasi requirement final (Juni 2026) + sinkronisasi AS-IS codebase backend & frontend |
@@ -364,11 +365,34 @@ flowchart LR
 | *(tidak ada label batch total di grid utama)* | — | `total_invoice`, `total_settlement` di DB upload | Agregat batch; lihat per-SI di panel |
 | **Other Costs** | ResultPanel → tab **Sales Invoice** (klik SI Success) | `other_cost_total_formatted` | Total other cost di SI hasil generate |
 | **Other Discounts** | ResultPanel → SI | `other_discount_total_formatted` | Total other discount di SI |
-| **Net Sales SO** | ResultPanel → SI | `reference_total_formatted` | `grand_total` Sales Order referensi |
-| **Net Sales SI** | ResultPanel → SI | `total_formatted` | `grand_total_after_vat` Sales Invoice |
-| **Difference SO-SI** | ResultPanel → SI | `difference_total_formatted` | Net Sales SO − Net Sales SI |
+| **Net Sales SO** | ResultPanel → SI | `reference_total_formatted` | Total Sales Order referensi **sebelum PPN** (`grand_total_before_vat`). **AS-IS** sejak [ETM-16871](https://erpintegration.atlassian.net/browse/ETM-16871) (deploy 3 Nov 2026); sebelumnya `grand_total` (sesudah PPN) |
+| **Net Sales SI** | ResultPanel → SI | `total_formatted` | **AS-IS:** `grand_total_after_vat` (sesudah PPN). **TO-BE** [ETM-17052](https://erpintegration.atlassian.net/browse/ETM-17052): `grand_total_before_vat` (**sebelum PPN**), dasar yang sama dengan Net Sales SO |
+| **Difference SO-SI** | ResultPanel → SI | `difference_total_formatted` | Net Sales SO − Net Sales SI. **AS-IS:** SO sebelum PPN − SI sesudah PPN, sehingga SI yang jumlahnya sama dengan SO tampil berselisih sebesar PPN (**GAP-SETU-02**). **TO-BE** ETM-17052: SO sebelum PPN − SI sebelum PPN; **0 = SI cocok dengan SO** |
 | **Settlement Total** | ResultPanel → SI | `settlement_total_formatted` | Nilai **Total Penghasilan dari file CSV** (`settlement.total_settlement`) |
-| **Difference Settlement-SI** | ResultPanel → SI | `settlement_difference_formatted` | Settlement Total − Net Sales SI — **alat rekonsiliasi** apakah nilai file match SI |
+| **Difference Settlement-SI** | ResultPanel → SI | `settlement_difference_formatted` | Settlement Total − total SI **sesudah PPN** (`grand_total_after_vat`) — **alat rekonsiliasi** apakah nilai file match SI. **Tidak berubah** oleh ETM-17052: tetap sesudah PPN, jadi setelah TO-BE nilainya **tidak sama** dengan Settlement Total − kolom Net Sales SI (sebelum PPN) |
+
+**Definisi kolom Sales Invoice (keputusan Lead QA, 4 Nov 2026 — TO-BE ETM-17052).** Net Sales SO, Net Sales SI, dan Difference SO-SI memakai **satu dasar: sebelum PPN**. Difference Settlement-SI tetap membandingkan dengan SI sesudah PPN.
+
+| Contoh | Net Sales SO | Net Sales SI (AS-IS) | Difference SO-SI (AS-IS) | Net Sales SI (TO-BE) | Difference SO-SI (TO-BE) |
+|--------|-------------:|---------------------:|-------------------------:|---------------------:|-------------------------:|
+| A — SO-5UQFBPYI (sebelum PPN 9.000, sesudah 9.900) / SI-5UVTIK8E (9.000) | 9.000 | 9.000 | 0 | 9.000 | 0 |
+| B — SO-5UQ2D9JT (sebelum PPN 180.180,18, sesudah 200.000) / SI-5UQ2H5TR (sebelum 180.180,18, sesudah 200.000) | 180.180,18 | 200.000 | −19.819,82 | 180.180,18 | 0 |
+| C — SO-5UXQIURO (sebelum PPN 150.000, total 155.000) / SI-5UXZKS3U (155.000) | 150.000 | 155.000 | −5.000 | 155.000 | −5.000 |
+
+Contoh C tetap selisih karena total SO memuat komponen lain selain PPN; selisih itu nyata dan dicek operator, bukan selisih karena beda dasar PPN. Ukuran di Staging (3 Nov 2026, 4.167 pasangan SO/SI settlement): selisih 0 pada rumus lama 2.850 (68,4%), AS-IS 2.998 (71,9%), definisi baru 3.034 (72,8%).
+
+**Tooltip header panel Sales Invoice (EN — TO-BE ETM-17052).** Saat ini ketiga header di atas belum punya tooltip (FE `ResultTable.vue`). Teks wajib mengikuti definisi baru:
+
+| Header | Tooltip |
+|--------|---------|
+| Net Sales SO | *Net Sales SO. Sales Order total before VAT.* |
+| Net Sales SI | *Net Sales SI. Sales Invoice total before VAT.* |
+| Difference SO-SI | *Difference SO-SI. Net Sales SO minus Net Sales SI, both before VAT. 0 means the invoice matches the order.* |
+| Difference Settlement-SI | *Difference Settlement-SI. Settlement Total minus Sales Invoice total after VAT. It is not Settlement Total minus Net Sales SI.* |
+
+| Gap ID | Deskripsi | Dampak | Status |
+|--------|-----------|--------|--------|
+| **GAP-SETU-02** | Difference SO-SI AS-IS membandingkan SO sebelum PPN dengan SI sesudah PPN (dasar berbeda) | 58 dari 4.167 pasangan Staging yang dulu 0 kini tampil selisih sebesar PPN | Open — [ETM-17052](https://erpintegration.atlassian.net/browse/ETM-17052) |
 
 > Validasi hard **Total Penghasilan = total_invoice** pernah direncanakan (`ImportSettlementJob` ~L473) tetapi **sengaja tidak aktif** — selisih wajar jika ada rounding platform; operator cek kolom **Difference Settlement-SI** di panel SI.
 

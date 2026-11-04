@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.1
-last_updated: 2026-10-29
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 related_docs:
@@ -18,6 +18,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.2 | 2026-11-04 | Kolom panel SI Net Sales SO / Net Sales SI / Difference SO-SI (§9): AS-IS ETM-16871, TO-BE ETM-17052, GAP-SETU-02 |
 | 2.1 | 2026-10-29 | Antrean In Queue ETM-16060 (§1.1); follow-up ETM-16910/16911; guard SI kosong ETM-16895 |
 | 1.9 | 2026-10-22 | Cross-ref TO-BE ETM-16763: SI settlement tidak re-bawa OC/OD SO; fee file anti-duplikat — lihat requirement § + SI §5.3.1 |
 | 1.7 | 2026-09-09 | Delete/Revert AR eligibility ETM-15886 |
@@ -309,6 +310,17 @@ Hotspots: `selectSheet`, `SettlementSheet` (header detection / chunk), `ImportSe
 Hard validation `total_invoice == total_settlement` **disabled** (commented `ImportSettlementJob` ~L473).
 
 **UI labels** (ResultPanel → `invoices`): `settlement_total_formatted`, `settlement_difference_formatted` — see requirement §5.1.
+
+**Kolom Net Sales / Difference** (`SettlementUploadController@invoices`; FE `Upload/components/ResultTable.vue`):
+
+| Kolom | AS-IS (ETM-16871, `02498f01e`) | TO-BE ETM-17052 (GAP-SETU-02) |
+|-------|-------------------------------|-------------------------------|
+| `reference_total_formatted` (+ filter) | `transaction_reference->grand_total_before_vat` | Tetap |
+| `total_formatted` (Net Sales SI) | `grand_total_after_vat` | `grand_total_before_vat` |
+| `difference_total_formatted` / `difference_total_export` | `transaction_reference->grand_total_before_vat - grand_total_after_vat` | `transaction_reference->grand_total_before_vat - grand_total_before_vat` |
+| `settlement_difference_formatted` | `settlement->total_settlement - grand_total_after_vat` | Tetap (sesudah PPN) |
+
+FE: header Net Sales SO / Net Sales SI / Difference SO-SI / Difference Settlement-SI belum punya tooltip; teks EN ada di requirement §5.1. `exportUsing` Net Sales SI (`grand_total_after_vat`) ikut diganti.
 
 ## 10. Outbound journal warnings vs stock validation
 

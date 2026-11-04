@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.1
-last_updated: 2026-10-29
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 2.1
+source_version: 2.2
 ---
 
 # Panduan Pengguna — Instant Settlement
@@ -172,7 +172,7 @@ Ditulis dari yang kamu alami di layar:
 ### Langkah 3 — Cek hasil
 
 1. Cek **SO Success**. Ada **SO Failed** (angka merah)? Klik untuk pesan error.  
-2. Klik angka biru **SI Success** untuk panel invoice: **Net Sales SO**, **Net Sales SI**, **Settlement Total**, **Difference Settlement-SI**.  
+2. Klik angka biru **SI Success** untuk panel invoice: **Net Sales SO**, **Net Sales SI**, **Difference SO-SI**, **Settlement Total**, **Difference Settlement-SI**. Net Sales SO dan Net Sales SI dihitung **sebelum PPN**; **Difference SO-SI = 0** berarti invoice cocok dengan order. **Difference Settlement-SI** dibandingkan dengan total invoice **sesudah PPN**.  
 3. Klik nama file untuk unduh ulang file yang kamu upload.
 
 ### Langkah 4 — Approve (atau Reject)

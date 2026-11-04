@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.1
-last_updated: 2026-10-29
+version: 2.2
+last_updated: 2026-11-04
 owner: QA - Yemima
 status: review
 audience: operator
@@ -161,10 +161,13 @@ Setelah upload sukses, klik angka **SI Success** → panel kanan menampilkan per
 
 | Label | Arti |
 |-------|------|
-| **Net Sales SO** | Total order asli |
-| **Net Sales SI** | Total invoice yang di-generate |
+| **Net Sales SO** | Total order asli **sebelum PPN** |
+| **Net Sales SI** | Total invoice yang di-generate. Setelah perbaikan yang sedang berjalan, tampil **sebelum PPN** (saat ini masih sesudah PPN) |
+| **Difference SO-SI** | Selisih total order dan total invoice, keduanya sebelum PPN. **0 berarti invoice cocok dengan order.** Saat ini angkanya masih bisa selisih sebesar PPN untuk invoice yang sebenarnya sama dengan order — perbaikan sudah terdaftar |
 | **Settlement Total** | Angka **Total Penghasilan dari file CSV** |
-| **Difference Settlement-SI** | Selisih file vs invoice — gunakan untuk rekonsiliasi |
+| **Difference Settlement-SI** | Selisih file vs total invoice **sesudah PPN** — gunakan untuk rekonsiliasi. Angkanya bukan selisih dari kolom Net Sales SI |
+
+**Contoh:** order bernilai 9.000 sebelum PPN (9.900 sesudah PPN), invoice-nya 9.000 → Net Sales SO 9.000, Net Sales SI 9.000, Difference SO-SI 0.
 
 Sistem **tidak** memblokir upload jika ada selisih kecil; operator yang mengecek kolom Difference.
 
