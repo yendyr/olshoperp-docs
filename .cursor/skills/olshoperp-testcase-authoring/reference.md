@@ -107,7 +107,7 @@ Data **tidak dihapus** setelah uji (selaras skill card-testing).
 
 - **Jangan** create/edit `qa-docs/**/test-cases/TC-*.md` untuk SoT baru (kebijakan 26 Okt 2026).
 - File markdown TC lama boleh dibaca untuk konteks historis; SoT aktif = **Jira**.
-- Requirement/KB/technical tetap read-only kecuali alur Yemima.
+- Requirement/KB/technical tetap read-only kecuali alur Yemima, atau Hazel + `yemimadocs` (rule `03` / charter §B).
 
 ---
 

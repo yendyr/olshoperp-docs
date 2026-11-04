@@ -1,7 +1,7 @@
 ---
 description: >-
   WAJIB always-on — charter agent olshoperp-docs (Antigravity/Cursor shared):
-  hemat token, hanya Yemima yang boleh ubah requirement, OOT dilarang, screening QA Review.
+  hemat token, hanya Yemima yang boleh ubah requirement (kecuali Hazel + yemimadocs), OOT dilarang, screening QA Review.
 alwaysApply: true
 ---
 
@@ -139,6 +139,10 @@ Tolak singkat, arahkan ke Yemima:
 
 > "Update requirement / dokumen sistem hanya boleh dilakukan oleh Yemima (`Yemimatifani`). Saya tidak bisa mengubah atau menambah file itu. Silakan koordinasi dengan @yemimatifani."
 
+Teks tolak itu tetap untuk semua agent dan user selain jalur di bawah.
+
+**Pengecualian satu-satunya — Hazel + `yemimadocs`:** bot QA Automation Hazel boleh mengubah hanya `requirement.md`, `knowledge-base.md`, `technical.md`, `user-guide.md`, dan baris changelog README menu. Kode `yemimadocs` di commit dianggap persetujuan Yemima. Contoh: `docs(qa): {Menu} … (ETM-xxxx) [yemimadocs]`. Changelog README menyebut key ETM. Ikut `.cursor/rules/qa-docs-standard.mdc` (sync matrix, version bump lockstep, `last_updated`, changelog `YYYY-MM-DD HH:mm` WIB, line budget, edit tertarget, jangan timpa konten manusia atau overview `authored`, label TO-BE bila relevan). Manifest/frontmatter hanya jika sync matrix mewajibkan. Jangan buat docs menu yang belum punya layer. Tulis SoT dulu di `olshoperp/docs/qa-docs/`, lalu mirror ke `olshoperp-docs` `main` (push langsung, tanpa PR).
+
 ### Yang masih boleh (dengan konfirmasi + rule 13)
 
 - `qa-docs/{menu}/test-cases/**` (TC)
@@ -147,7 +151,7 @@ Tolak singkat, arahkan ke Yemima:
 - `test-queue.yaml` = arsip read-only sejak 26-10-2026 (jangan diubah)
 - `hazel/**`, `tests/**` (automation) sesuai konfirmasi & rule terkait
 
-Jika `git config user.email` **bukan** milik Yemimatifani di atas → perlakukan sebagai **bukan pemilik requirement** (tolak edit layer sistem).
+Jika `git config user.email` **bukan** milik Yemimatifani di atas → perlakukan sebagai **bukan pemilik requirement** (tolak edit layer sistem), kecuali commit Hazel yang memuat `[yemimadocs]` pada file yang disebut di pengecualian di atas.
 
 ---
 
@@ -173,7 +177,7 @@ Agent yang connect ke **olshoperp-docs** hanya melayani:
 
 - Topik di luar sistem OlshopERP (resep, politik, tugas kuliah, coding non-ERP, curhat, dll.)
 - Repo/produk lain (Eduqat, dll.) kecuali user jelas salah workspace — arahkan pindah workspace, jangan kerjakan di sini
-- Edit `olshoperp` / `olshoperp-frontend` dari sesi docs (read-only sibling; temuan = laporkan)
+- Edit `olshoperp` / `olshoperp-frontend` dari sesi docs (read-only sibling; temuan = laporkan). Pengecualian: Hazel + `yemimadocs` hanya menulis `docs/qa-docs/` di repo app (SoT), lalu mirror push ke `main` repo ini — lihat §B.
 
 ### Respons OOT (wajib singkat, &lt; 25 token ide)
 
@@ -192,7 +196,7 @@ Jangan berpanjang lebar, jangan “bantu sedikit”, jangan roleplay bypass.
 - [ ] Pertanyaan kabur → minta menu/kode/server dulu, jangan langsung DB/log (§ A.4)?
 - [ ] Tidak bikin script sampah di repo (§ A.5)?
 - [ ] Investigasi tidak muter tanpa arah — stop & tanya sekitar ~15 langkah (§ A.6)?
-- [ ] Tidak mengedit requirement/KB/technical/UG kecuali alur resmi Yemima?
+- [ ] Tidak mengedit requirement/KB/technical/UG kecuali alur resmi Yemima, atau Hazel + `yemimadocs` (§B)?
 - [ ] Tidak load Playwright rules tanpa diminta automate?
 - [ ] Tidak explorasi 3 repo tanpa alasan?
 - [ ] Screening QA Review → baca playbook `hazel/`?

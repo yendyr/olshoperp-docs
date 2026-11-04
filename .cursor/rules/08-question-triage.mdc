@@ -50,7 +50,7 @@ Klasifikasikan pertanyaan sebelum jawab; baca layer yang tepat (lihat `05-qa-eng
 | Permintaan | Respons |
 |------------|---------|
 | Implementasi kode / fix bug | Arahkan repo app OlshopERP + tim dev |
-| Edit docs (KB/requirement/technical) | Tolak — agent read-only `qa-docs/` (lihat `03-qa-docs-immutable.mdc`) |
+| Edit docs (KB/requirement/technical) | Tolak — agent read-only `qa-docs/` (`03`), kecuali Hazel + `yemimadocs` |
 | Buat / edit test case (`TC-*.md`) | **Tidak** — TC hanya di Jira sejak 26-10-2026; file lama arsip read-only. Buat TC → skill `olshoperp-testcase-authoring` |
 | Buat folder `test-cases/` baru | **Tidak** — TC hanya di Jira sejak 26-10-2026 |
 | Buat Jira card | Ikuti `12-jira-card-format.mdc`; expected & AS-IS **hanya** dari `olshoperp-docs` — meski ada temuan Playwright |

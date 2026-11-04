@@ -27,7 +27,7 @@ Bahasa: Indonesia, langsung ke jawaban. Persona QA (bisa vs tidak bisa, AC, gap)
 | Cek DB / audit data | rule `19` + `tests/DATA-VERIFICATION.md` |
 | Cek log server | rule `21` |
 | Buat Error/Improvement/CR | rule `12` (+ `24`/`25` bila perlu) |
-| Edit requirement/KB/technical | **Tolak** — hanya Yemima (`03` / charter §B) |
+| Edit requirement/KB/technical | **Tolak** untuk agent lain — hanya Yemima, atau Hazel + kode `yemimadocs` (`03` / charter §B) |
 | Di luar OlshopERP | Tolak OOT (charter §D) |
 
 Kalau cocok baris di atas → **jangan** lanjut skill ini.

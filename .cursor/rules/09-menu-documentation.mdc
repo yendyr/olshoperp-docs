@@ -27,7 +27,7 @@ Urutan baca (wajib):
 ## Status doc
 
 - Hormati status: `pending` / `draft` / `review` — sebutkan tingkat keyakinan jika masih draft.
-- Agent **tidak** mengubah manifest atau frontmatter (read-only).
+- Agent **tidak** mengubah manifest atau frontmatter (read-only). Pengecualian: hanya Hazel + kode `yemimadocs`, dan hanya field yang sync matrix `qa-docs-standard` wajibkan (rule `03` / charter §B). Layer `requirement.md` / `knowledge-base.md` / `technical.md` / `user-guide.md` + changelog README ikut pengecualian yang sama; agent lain tetap tidak menulis.
 
 ## Modul terdaftar
 

@@ -78,6 +78,21 @@ Test Case **tidak pernah** ditransisikan ke Re-OPEN. Status akhirnya tetap **Don
 >
 > Kalau transition belum ada di workflow, minta Jira admin tambahkan dulu — jangan diakali dengan status lain yang mirip.
 
+## Docs Requirement — screening OTW DEV
+
+Pada setiap screening card berstatus **OTW DEV**, Hazel menilai docs menu. Berlaku untuk Improvement, Change Requirement, Story, Task, dan Error yang mengubah perilaku/requirement. Lewati Error yang hanya memulihkan perilaku yang sudah tertulis, dan perbaikan typo/wording.
+
+AC / Expected / TO-BE di description card = sumber kebenaran final, apa pun verdict kode (**PASS** atau **REWORK**). REWORK urusan dev. AC tidak dinegosiasikan kecuali Rachy memerintahkan ubah AC/Expected.
+
+1. Resolve slug lewat `lookup.tsv` (`docs/qa-docs/_meta/lookup.tsv` di repo app; `qa-docs/_meta/lookup.tsv` di repo ini). Baca README + layer yang relevan.
+2. Verdict: **UP-TO-DATE** / **OUTDATED** / **MISSING**.
+3. **OUTDATED** → Hazel mengupdate di bawah `yemimadocs` (rule `03`): tulis dulu `olshoperp/docs/qa-docs/` (SoT), mirror ke `olshoperp-docs` `main`, push langsung. Ikut `qa-docs-standard`.
+4. Menu tanpa layer docs sama sekali → **MISSING** saja. Jangan buat docs baru.
+5. Satu baris di pesan Telegram screening OTW DEV yang sudah ada — jangan notifikasi atau digest terpisah: `📄 Docs: up to date` / `📄 Docs: diupdate (commit xxx)` / `📄 Docs: MISSING`.
+6. Docs diubah lagi hanya jika Rachy memerintahkan ubah AC/Expected, atau ada screening card baru.
+
+Detail output: `hazel/qa-review-ac-code-screening.md`.
+
 ## Relasi rule lain
 
 - `12-jira-card-format.mdc` — format & custom field wajib tiap tipe card (dipakai saat create card Bug baru / clone).
@@ -87,3 +102,4 @@ Test Case **tidak pernah** ditransisikan ke Re-OPEN. Status akhirnya tetap **Don
 - `olshoperp/.cursor/rules/17-jira-testcase-status-transition.mdc` — urutan isi Actual Result → Test Result → Done.
 - `23-tc-screening-notify.mdc` — jalan **sebelum** rule ini, notify-only ke tim QA saat Test Case Done; rule ini baru relevan setelah Test Result = Failed final & diverifikasi manusia.
 - `24-plain-language-team-comms.mdc` — gaya bahasa wajib description card Bug baru & pesan Telegram.
+- `hazel/qa-review-ac-code-screening.md` — Docs Requirement pada screening OTW DEV (satu baris Telegram).

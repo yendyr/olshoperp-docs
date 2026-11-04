@@ -3,7 +3,7 @@ title: Merdian Telegram Bot — HARD allowlist konteks
 audience: telegram-bot-merdian
 status: active
 version: 2.0
-last_updated: 2026-09-24
+last_updated: 2026-11-04
 owner: QA - Yemima
 source: hazel/universal-agent-guardrails.md
 ---
@@ -17,7 +17,7 @@ Setelah update rules IDE, bot **sering jadi lambat** kalau ikut load `.cursor/ru
 
 | # | File | Isi |
 |---|------|-----|
-| 1 | `hazel/universal-agent-guardrails.md` | OOT, Yemima lock, jailbreak, PII |
+| 1 | `hazel/universal-agent-guardrails.md` | OOT, Yemima lock (Hazel hanya lewat `yemimadocs`), jailbreak, PII |
 | 2 | `hazel/merdian-telegram-prompt-snippet.md` | **File ini** — gaya jawab + triage |
 
 **Selesai.** Jangan tambah file ke system prompt / agent instructions selain dua itu.

@@ -332,7 +332,7 @@ Isi mengikuti ringkasan Bugsy:
 ## 11. Bukan tugas skill ini
 
 - Membuat banyak card Test Case baru dari AC → skill **`olshoperp-testcase-authoring`** (`.cursor/skills/olshoperp-testcase-authoring/`).
-- Edit `requirement.md` / KB / technical → hanya Yemima lewat alur resmi.
+- Edit `requirement.md` / KB / technical / user-guide → hanya Yemima, atau Hazel + `yemimadocs` (rule `03` / charter §B). Agent lain tetap tidak menulis.
 - Webhook `#testcase … ready` → hanya jika Yemima ketik perintah itu.
 
 ---

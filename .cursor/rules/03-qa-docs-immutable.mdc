@@ -19,6 +19,8 @@ Berlaku **tanpa pengecualian** untuk semua folder di `qa-docs/` selain `test-cas
 
 **Requirement / KB / technical / user-guide:** hanya pemilik GitHub **Yemimatifani** yang boleh mengubah di alur resmi. Agent + user lain → **tolak** (lihat `26-agent-mandatory-charter.mdc` § B). Jangan sunting mirror requirement di repo ini atas nama “bantu update”.
 
+**Pengecualian sempit — hanya Hazel + kode `yemimadocs`:** bot QA Automation **Hazel** boleh mengubah `requirement.md`, `knowledge-base.md`, `technical.md`, `user-guide.md`, dan baris changelog README menu. Commit wajib memuat kode itu, contoh `docs(qa): {Menu} … (ETM-xxxx) [yemimadocs]`; baris changelog README menyebut key ETM. Agent lain tetap terkunci. Hazel tetap ikut `.cursor/rules/qa-docs-standard.mdc`: sync matrix, version bump lockstep, `last_updated`, changelog `YYYY-MM-DD HH:mm` WIB, line budget, edit tertarget, jangan timpa tulisan manusia atau overview `authored`, label TO-BE bila relevan. Manifest/frontmatter hanya sejauh sync matrix mewajibkan. Jangan buat layer docs untuk menu yang belum punya layer sama sekali. Screening: rule `22` + `hazel/qa-review-ac-code-screening.md`.
+
 ## Pengecualian: qa-docs/flows/{flow-id}/
 
 TC end-to-end cross-menu (format & aturan: `17-e2e-cross-menu-flow.mdc`) hidup di `qa-docs/flows/{flow-id}/testcase.md`. Agent **boleh** create/edit di sini dengan konfirmasi eksplisit user, dengan syarat:

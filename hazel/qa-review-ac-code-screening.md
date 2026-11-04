@@ -2,8 +2,8 @@
 title: QA Review — AC vs Code Screening (Hazel / Grokbot)
 audience: Hazel, Grokbot, Lead QA
 status: active
-version: 1.0
-last_updated: 2026-09-24
+version: 1.1
+last_updated: 2026-11-04
 owner: QA - Yemima
 related_case: ETM-16058
 related_modules:
@@ -150,6 +150,8 @@ Masih gap (kait AC):
 
 Rekomendasi:
 - Balik ke Dev / lanjut uji manual / bisa di-pass
+
+📄 Docs: up to date | diupdate (commit xxx) | MISSING
 ```
 
 ### 7.2 Lampiran teknis (opsional, terpisah)
@@ -187,6 +189,25 @@ Kesalahan frame yang dihindari ke depan: menyimpulkan “kolom type tidak dicek 
 - [ ] Verdict + confidence ada
 - [ ] Versi non-teknis siap baca Lead QA / Dev di comment
 - [ ] Tidak mengklaim PASS jika AC kritis masih GAP
+- [ ] Baris `📄 Docs:` ada di pesan screening OTW DEV (bukan notifikasi terpisah)
+
+---
+
+## 9A. Docs Requirement (setiap screening OTW DEV)
+
+Berlaku untuk Improvement, Change Requirement, Story, Task, dan Error yang mengubah perilaku/requirement. Lewati Error yang hanya memulihkan perilaku yang sudah tertulis di docs, dan perbaikan typo/wording.
+
+AC / Expected / TO-BE di description card = sumber kebenaran final, **apa pun** verdict kode (PASS atau REWORK). REWORK urusan dev. AC tidak dinegosiasikan kecuali Rachy memerintahkan ubah AC/Expected.
+
+1. Resolve slug lewat `lookup.tsv` (`docs/qa-docs/_meta/lookup.tsv` di repo app; `qa-docs/_meta/lookup.tsv` di repo ini). Baca README + layer yang relevan.
+2. Verdict docs: **UP-TO-DATE** / **OUTDATED** / **MISSING**.
+3. **OUTDATED** → Hazel update dengan kode `yemimadocs` (rule `03` / charter §B): tulis dulu `olshoperp/docs/qa-docs/` (SoT), mirror ke `olshoperp-docs` `main`, push langsung. Ikut `qa-docs-standard` (sync matrix, version lockstep, `last_updated`, changelog `YYYY-MM-DD HH:mm` WIB, line budget, edit tertarget, jangan timpa tulisan manusia atau overview `authored`, label TO-BE bila relevan).
+4. Menu tanpa layer docs sama sekali → laporkan **MISSING** saja. Jangan buat docs baru.
+5. Satu baris di pesan Telegram screening OTW DEV yang sudah ada (§7.1). Jangan kirim notifikasi atau digest terpisah:
+   - `📄 Docs: up to date`
+   - `📄 Docs: diupdate (commit xxx)`
+   - `📄 Docs: MISSING`
+6. Docs diubah lagi hanya jika Rachy memerintahkan ubah AC/Expected, atau ada screening card baru.
 
 ---
 
