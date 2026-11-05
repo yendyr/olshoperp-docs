@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.4
+version: 1.5
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16314](https://erpintegration.atlassian.net/browse/ETM-16314)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar F)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §5, §7–9  
-**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data)
+**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (kolom Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data)
 
 ---
 
@@ -21,6 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5 | 2026-11-05 | **TO-BE** ETM-17071: kolom Images paling kiri (UI & logic sama System Product) |
 | 1.4 | 2026-11-05 | **TO-BE** ETM-17072: default hanya produk Aktif + switch Show archived data (sama dengan menu Product) |
 | 1.3 | 2026-10-28 | **TO-BE** ETM-16883/16884: User Set Margin (`-` non-manual), tooltip input/header/calc, Sync hanya category ber-platform, Update to Pricelist **stack** Manual Price (bukan overwrite); calc tetap untuk Applied Store Others/NULL |
 | 1.2 | 2026-10-28 | **TO-BE** ETM-16861 Manual Margin filter; cross-ref Max Value ETM-16835 |
@@ -60,6 +61,7 @@ Calc Final tetap untuk Applied Store **NULL** / **Others** (ETM-16884).
 | A-14 | Applied Store Others/NULL: Final tetap terhitung; Sync row+header hide; Sync All hanya category ber-platform | **TO-BE** ETM-16884 |
 | A-15 | Update to Pricelist + Manual Price: Final = Default + User Set Margin + Category tier; cell margin tetap nilai user | **TO-BE** ETM-16884 |
 | A-16 | Datalist default hanya SKU status **Aktif**. Switch **Show archived data** di toolbar: ON = SKU **Non Aktif** ikut tampil; OFF lagi = disembunyikan. Perilaku sama dengan menu Product | **TO-BE** ETM-17072 |
+| A-17 | Kolom **Images** paling kiri (sebelum Product/SKU): thumbnail 100×100 dari `getImageProduct()`; kosong → `-` di box 100×100; non-orderable / non-searchable; UI & logic sama System Product | **TO-BE** ETM-17071 |
 
 ---
 
@@ -86,6 +88,18 @@ Matching & percentage: final §2.2–2.5. Percentage dari **default price**; lal
 ## 4. DataList
 
 Kolom existing tetap (SKU/Name, Bound Stores, Default Price, Latest Sync, harga per store). Angka besar = **Final Price**; kecil di bawah = **User Set Margin**.
+
+### 4.0 Images (TO-BE · ETM-17071)
+
+| Item | Aturan |
+|------|--------|
+| Posisi | Paling kiri — sebelum kolom Product/SKU |
+| Sumber | `$product->getImageProduct()` (sama System Product) |
+| Single / Parent | Gambar primary produk |
+| Variant | Gambar variant; jika kosong → fallback primary parent |
+| UI | Box **100×100**, `object-cover`, `p-2`, `rounded-md` |
+| Kosong | Box 100×100 berisi `-` di tengah |
+| Sort / search | `orderable: false`, `searchable: false` |
 
 ### 4.1 Weight
 
@@ -216,6 +230,8 @@ Master & band lengkap: final §7.
 | GAP-PL-07 | User Set Margin UI + tooltips | **TO-BE** ETM-16883 |
 | GAP-PL-08 | Sync platform-only + stack Manual on Update | **TO-BE** ETM-16884 |
 | GAP-PL-09 | Others → Unit Price SO by store header | Future (out of scope 16884) |
+| GAP-PL-10 | Kolom Images di datalist | **TO-BE** ETM-17071 (BE `image_formatted` sudah ada; FE wire kolom) |
+| GAP-PL-11 | Default Aktif + Show archived | **TO-BE** ETM-17072 |
 
 ---
 

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.4
+version: 1.5
 last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.4"
+source_version: "1.5"
 owner: QA - Yemima
 status: review
 ---
@@ -75,5 +75,9 @@ Saat membuka daftar, yang tampil hanya produk **Aktif**.
 2. Matikan lagi untuk menyembunyikan SKU Non Aktif.
 
 Perilakunya sama dengan switch yang sama di menu Product. Switch ini hanya mengubah isi daftar, bukan status produk.
+
+## 8. Kolom Images (ETM-17071)
+
+Kolom **Images** di paling kiri daftar menampilkan thumbnail produk (sama System Product). Tanpa gambar → tanda `-`. Kolom ini tidak untuk sort atau search teks.
 
 Referensi: [knowledge-base.md](./knowledge-base.md) · [Category Price](../businessdevelopment-category-price/user-guide.md)

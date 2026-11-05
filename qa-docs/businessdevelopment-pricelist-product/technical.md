@@ -2,7 +2,7 @@
 doc_type: technical
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.4
+version: 1.5
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -21,7 +21,8 @@ related_docs:
 **TO-BE calc Max Value:** [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835).  
 **TO-BE UI margin/tooltips:** [ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883).  
 **TO-BE Sync + Manual stack on Update:** [ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884) · Applied Store Others Category: [ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882).  
-**TO-BE filter Aktif:** [ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072) — datalist `show_archived`, pola sama `ProductController` index.
+**TO-BE filter Aktif:** [ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072) — datalist `show_archived`, pola sama `ProductController` index.  
+**TO-BE kolom Images:** [ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071) — FE wire `image_formatted` (BE column sudah ada).
 
 ---
 
@@ -35,6 +36,7 @@ related_docs:
 | Log | old/new margin & final; Update from category id |
 | Category contains platform | TO-BE: drive Sync UI (bukan hanya `stores_count` produk) |
 | Last Update to Pricelist | TO-BE: waktu sukses terakhir per category → header tooltip |
+| `image_formatted` | TO-BE ETM-17071: HTML thumbnail 100×100 dari `getImageProduct()`; kosong → `-` |
 
 **UI display (ETM-16883):** jika `!is_edited` → render User Set Margin sebagai `-` (nilai calc tetap di breakdown tooltip / dipakai Final).
 
@@ -76,6 +78,7 @@ Untuk tiap tier snapshot di Category:
 | Weight sync (16668) | After DnW default change → recalc calculated rows + log |
 | Filter Manual Margin (16861) | `is_edited` any category; Yes/No dropdown |
 | Datalist Aktif (17072) | `PricelistController::index()` dan `showRowDatatable($id)`: `where products.status = 1` hanya jika request `show_archived` bukan true (`boolean('show_archived')`). FE `DataList.vue` mengirim `show_archived=true` lewat DataTablesV3 (`is_show_archived`, `show_archived`, `whenShowArchived`). Default OFF = hanya Aktif |
+| Images (17071) | BE: `datatableColumns` → `image_formatted` + whitelist. FE: tambah kolom di `originColumns` **sebelum** `product_formatted` (`orderable: false`, `searchable: false`). Referensi UI: System Product DataList Images |
 
 **Known behaviour (ETM-17072):** `updateBulkMarginPricelist` tetap hanya memproses produk Aktif (`status = 1`); tidak ikut switch. `export()` tetap `PricelistCategoryExport` (template category), tidak diubah.
 
@@ -95,6 +98,8 @@ Untuk tiap tier snapshot di Category:
 | G-08 | ETM-16883 FE `-` / tooltips / header Last Update to Pricelist |
 | G-09 | ETM-16884 UpdateToPricelistJob preserve `is_edited` + stack formula; Sync by platform flag |
 | G-10 | Future: Others pricelist → SO Unit Price by store header |
+| G-11 | ETM-17071 FE kolom Images (`image_formatted`) |
+| G-12 | ETM-17072 Show archived (sudah di BE/FE OTW DEV — verifikasi QA) |
 
 ---
 

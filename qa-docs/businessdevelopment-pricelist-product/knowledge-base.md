@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.4
+version: 1.5
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -14,6 +14,10 @@ aliases: [Pricelist Product, product pricelist, harga jual SKU, tier breakdown, 
 ## Apa itu
 
 Daftar harga jual per produk per **Category Price**. Angka besar = **Final Price**; angka kecil di bawah = **User Set Margin** (hanya jika kamu edit manual; kalau belum → tampil `-`).
+
+## Kolom Images (TO-BE ETM-17071)
+
+Kolom **Images** paling kiri di daftar — thumbnail produk sama seperti di System Product (kotak 100×100). Tidak ada gambar → tampil `-`. Tidak bisa di-sort / dicari lewat kolom ini.
 
 ## Alur
 
@@ -78,5 +82,6 @@ Switch ini hanya mengubah isi daftar, bukan mengaktifkan kembali produk.
 | Margin Weight = 0 / skipped | Isi weight DnW **default** di System Product |
 | Mau daftar yang diedit manual | Advanced Filter **Manual Margin** Equals **Yes** |
 | SKU Non Aktif tidak muncul | Nyalakan **Show archived data** di toolbar. Default daftar hanya Aktif |
+| Tidak ada kolom Images | Fitur TO-BE ETM-17071 — selaras System Product |
 
 Detail: [requirement.md](./requirement.md)
