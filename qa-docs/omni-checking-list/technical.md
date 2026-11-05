@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-checking-list
 menu_name: "Checking List"
-version: 1.0
-last_updated: 2026-09-29
+version: 1.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 audience: developer
@@ -95,7 +95,8 @@ Wireframe: https://claude.ai/artifact/WokXLb4E1JMVEvNAKgKjKk
 | `is_manual` / not from skip-wave/skip-processing | Show prompt |
 | Platform status contains `cancel` OR internal `void` | Trigger prompt |
 | Continue | Normal approve + TFs |
-| Void / Void & Recreate | No scrap/replace TF; call Sales Platform void flows |
+| Void / Void & Recreate | No scrap/replace TF; `CheckingListController::voidOnly` / `voidAndRecreate` call `SalesOrderApprovalController::approve` (`with_copy` false / true) |
+| Order still has an active Wave transfer detail | Same central void releases reserved (ETM-17110): `handleVoid` calls `WaveController::deleteDetailTransferWave` before `createTransferVoid`. Do not duplicate the stock rule here — [Sales Platform technical](../omni-sales-platform/technical.md) invariant 19 |
 
 ---
 
@@ -104,7 +105,8 @@ Wireframe: https://claude.ai/artifact/WokXLb4E1JMVEvNAKgKjKk
 - Change then approve → scrap + replace Approved; stock moved  
 - Partial replace beda rack → multiple rows / history entries  
 - Continue on cancelled order → TFs still approved  
-- Void → no new scrap/replace TF  
+- Void → no new scrap/replace TF
+- Void while the SO still has a Wave transfer detail → reserved released the same way as SO void (ETM-17110)  
 - Skip-wave CL → no cancel prompt  
 - FE mock/tests if completion-summary / header flags change shape  
 

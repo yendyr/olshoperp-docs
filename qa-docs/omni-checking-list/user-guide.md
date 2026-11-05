@@ -2,11 +2,13 @@
 doc_type: user-guide
 menu: omni-checking-list
 menu_name: "Checking List"
-version: 1.0
-last_updated: 2026-09-29
+version: 1.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 audience: end-user
+source_docs: [requirement.md, knowledge-base.md, technical.md]
+source_version: 1.1
 ---
 
 # Checking List — User Guide
@@ -47,7 +49,7 @@ Cara memakai **Checking List** untuk QC setelah picking.
 ## 4. Complete
 
 1. Klik **Complete & Next**.  
-2. Jika order cancel/void dan checking manual, pilih: lanjut Packing, atau Void (tanpa TF scrap/replace).  
+2. Jika order cancel/void dan checking manual, pilih: lanjut Packing, atau Void (tanpa TF scrap/replace). Kalau order itu masih di antrian gudang, stok yang ditahan ikut kembali bisa dijual, sama seperti void Sales Order.  
 3. Lihat ringkasan (TO-BE) lalu lanjut Packing / next order.
 
 ---

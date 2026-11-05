@@ -10,8 +10,8 @@ Route: `/businessdevelopment/all-sales-order`
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
-**User-guide:** v1.9 · `source_version` 1.15  
-**Version (3 layer):** 1.15 · **Last updated:** 2026-11-05 16:58
+**User-guide:** v1.10 · `source_version` 1.16  
+**Version (3 layer):** 1.16 · **Last updated:** 2026-11-05 17:05
 
 ## Peran vs dua menu sumber
 
@@ -28,6 +28,7 @@ Route: `/businessdevelopment/all-sales-order`
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.16 | 2026-11-05 17:05 | Catatan paritas: Void atau Void & Recreate pada order yang masih di Wave mengembalikan stok yang ditahan dan mengeluarkan order itu dari Wave, sama seperti Sales Platform dan Dev - Sales Order. Order lain yang masih aktif tidak ikut hilang (ETM-17110) |
 | 1.15 | 2026-11-05 16:58 | Paritas Sales Platform: Sales Order yang sudah void tidak boleh masih menahan stok reserved di Transfer Wave. Baris milik order void dilepas supaya stok kembali available. Order yang masih aktif tidak ikut terhapus (ETM-17109) |
 | 1.14 | 2026-11-05 15:06 | Export All (With Details dan Without Details) wajib isi judul file di dialog Export File Name sebelum unduh. Nama itu yang tampil di riwayat export dan jadi nama file. Export Active Page Only tetap langsung, tanpa dialog (ETM-16768) |
 | 1.11 | 2026-09-09 10:45 | Void vs Void & Recreate vs Recreate + anti auto-create sync (ETM-15859); paritas Dev - Sales Platform |

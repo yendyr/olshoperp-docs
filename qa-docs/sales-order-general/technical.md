@@ -2,7 +2,7 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.9
+version: 3.10
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -14,9 +14,10 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 **Type:** `type_sales_order = general`  
 **UI:** `/businessdevelopment/sales-order-general`  
 **API prefix:** `/api/omnichannel/sales-order/*`  
-**Behavior:** [requirement.md](./requirement.md) v3.9  
+**Behavior:** [requirement.md](./requirement.md) v3.10  
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB
 
+> **3.10 (2026-11-05):** Void while still in Wave releases reserved — [requirement §6.7 / §7.5](./requirement.md); ETM-17110 (`8ef9876`). Same `SalesOrderApprovalController::handleVoid` path as Sales Platform. Canonical call site: [Sales Platform technical](../omni-sales-platform/technical.md).  
 > **3.9 (2026-11-05):** Export All With/Without Details requires `export_filename` — [requirement §6.8](./requirement.md); ETM-16768. `SalesOrderController::exportExcelGeneral` + `SalesOrderGeneralExportExcelJob` (appends `.xlsx`). GAP-SOG-16 Open.  
 > **3.8 (2026-11-05):** Import Non-Processed approve+outbound locks `scm_item_stocks` and re-allocates FIFO — [requirement §6.3.2](./requirement.md); ETM-17081 / PR #6695 (`97ad324`).  
 > **3.7 (2026-11-04):** Import Price decimal normalize + max 4 dp + rounding reconciliation — [requirement §6.3.4](./requirement.md); ETM-17055 (fe69fd3).  
@@ -29,6 +30,7 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.10 | 2026-11-05 | Void in Wave: `handleVoid` → `WaveController::deleteDetailTransferWave` before `createTransferVoid` (ETM-17110). Stock effect lives in `ItemStockMutation::deleteTransferDetailRow` `is_wave` |
 | 3.9 | 2026-11-05 | Export All: `export_filename` required; `export_type` drives history action (ETM-16768). GAP-SOG-16 Open |
 | 3.8 | 2026-11-05 | Import Non-Processed: `validate(lock_stock: true)` + `getFulfillAfterFifo(lock_for_update: true)` inside the create transaction; FIFO re-allocate after wait (ETM-17081, PR #6695) |
 | 3.7 | 2026-11-04 | Import Price: normalize dot/comma, reject more than 4 dp, reconcile 4-dp line vs 2-dp header before SO create; `hasOtherHeaderError` prefix `Column %` (ETM-17055) |
@@ -267,6 +269,7 @@ Random SKU: `SalesOrderGenerateRandomLogic` calls `validateDetail` for details c
 | INV-SOG-15 | Per order, `abs(Σ round(round(qty*price, 4), 2) − round(Σ round(qty*price, 4), 2))` is at most `0.0001`, else the order fails in VALIDATING and no SO is created |
 | INV-SOG-16 | Import Non-Processed approve+outbound stock allocation under an active transaction uses `lock_stock` / `lockForUpdate`, so concurrent workers serialize on locked `item_stock` rows and re-allocate FIFO after the wait |
 | INV-SOG-17 | Export All With/Without Details stores a non-empty `sanitizeExportFileName(export_filename)` (max 150) on `omni_sales_order_export_files.file_name`, and `getExportActionName` prefers `export_type` over the file name |
+| INV-SOG-18 | TO-BE ETM-17110: Void or Void+Copy of a general (or platform) SO that still has an active Wave transfer detail calls `WaveController::deleteDetailTransferWave` after approve and before `createTransferVoid`. Reserved drops and available rises by the released base qty; the SO is no longer a wave member. Post-picking `createTransferVoid` still runs. No `WaveDetailSO` → no stock change |
 
 ---
 
@@ -322,6 +325,7 @@ Random SKU: `SalesOrderGenerateRandomLogic` calls `validateDetail` for details c
 | Settlement chain | Outbound → invoice → payment → journal if incomplete |
 | `is_instant_processing` | Scheduler skip-processing eligibility |
 | Void → Duplicate | Clone resets relations; new unique tracking / PO ID |
+| Void while still in Wave | `deleteDetailTransferWave` then `createTransferVoid` in the same `handleVoid` transaction. Reserved released; wave membership removed; post-picking void transfer unchanged (ETM-17110) |
 
 ---
 

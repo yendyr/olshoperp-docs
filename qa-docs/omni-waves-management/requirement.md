@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-waves-management
 menu_name: "Waves Management"
-version: 2.0
-last_updated: 2026-07-20
+version: 2.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [waves management, wave management, automated distribution, default waves, generate pick list wave]
@@ -26,6 +26,7 @@ aliases: [waves management, wave management, automated distribution, default wav
 | 1.0 | 2026-06-19 | QA - Yemima | Initial AS-IS draft (struktur lama) |
 | 1.1 | 2026-06-23 | QA - Yemima | Cross-ref Instant Settlement |
 | 2.0 | 2026-07-20 | QA - Yemima | Rewrite dari SoT v1.0 + verifikasi matching/revert/transfer/gaps |
+| 2.1 | 2026-11-05 | QA - Yemima | FAQ: Void Sales Order yang masih di wave mengeluarkan order dari wave dan melepas reserved. Aturan lengkap di Sales Platform / Dev - Sales Order (ETM-17110) |
 
 ---
 
@@ -338,6 +339,9 @@ A: SO = fulfillment order + distribusi priority. Transfer = dokumen transfer ext
 **Q: Transfer tidak muncul?**  
 A: Harus With Picking List + sudah approve, belum punya PL.
 
+**Q: Order hilang dari wave setelah di-Void?**  
+A (TO-BE · ETM-17110): Ya. Void Sales Order yang masih di wave mengeluarkan order itu dari wave dan mengembalikan stok yang ditahan. Aturan lengkap di [Dev - Sales Platform](../omni-sales-platform/requirement.md) dan [Dev - Sales Order](../sales-order-general/requirement.md).
+
 ---
 
 ## 11. Changelog (file)
@@ -345,3 +349,4 @@ A: Harus With Picking List + sudah approve, belum punya PL.
 | Version | Date | Changes |
 |---------|------|---------|
 | 2.0 | 2026-07-20 | Rewrite SoT v1.0 + AS-IS gaps WM-01…06 |
+| 2.1 | 2026-11-05 | FAQ void SO di wave melepas reserved (ETM-17110); kanonik Sales Platform |

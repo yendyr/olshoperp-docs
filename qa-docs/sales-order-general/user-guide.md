@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 1.7
+version: 1.8
 last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.9
+source_version: 3.10
 owner: QA - Yemima
 status: review
 ---
@@ -112,6 +112,7 @@ stateDiagram-v2
 - Kalau kamu mengira tagihan muncul saat Approve jalur Processed — tunggu outbound/settlement.  
 - POS memakai jalur Non-Processed otomatis: **belum** di fase ini.
 - Kalau kamu **Export All** (**With Details** atau **Without Details**) tanpa mengisi **File name**, sistem menolak dengan **File name is required.** **Export Active Page Only** tidak menanyakan nama.
+- Kalau kamu **Void** (atau **Void & Recreate**) order yang masih mengantri di gudang dan belum diambil, order keluar dari antrian itu dan stok yang ditahan kembali bisa dijual. Contoh: ditahan 2, tersedia 8 → setelah void ditahan 0, tersedia 10. Kalau barang sudah diambil, pembatalan setelah pengambilan tetap berjalan.
 
 ---
 
@@ -165,6 +166,7 @@ Ikuti Point of Sales. Jalur Non-Processed penuh dari POS = requirement berikutny
 - Harga `10000.6789` dengan qty 1.000 harus tampil **Rp 10.000.678,90**, bukan ratusan miliar. Lebih dari 4 angka di belakang koma ditolak.  
 - Dua baris pecahan **AKRCHRU** (qty 3, harga `3333.3333`) dan **AKRKAS** (qty 3, harga `6666.6667`) jumlahnya pas Rp 30.000, jadi pesanan itu lolos. Kalau total baris dan total pesanan beda, unggahan order itu gagal.
 - Kalau **Export** di dialog **Export File Name** ditolak, isi judul dulu. Contoh `Laporan SO 05/11` tersimpan `Laporan SO 05-11`.
+- **Void saat order masih di antrian gudang:** stok yang ditahan kembali bisa dijual, sebesar jumlah yang dilepas. Order tidak lagi ada di antrian itu.
 
 ---
 

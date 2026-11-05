@@ -2,8 +2,8 @@
 doc_type: README
 menu: omni-checking-list
 menu_name: "Checking List"
-version: 1.0
-last_updated: 2026-09-29
+version: 1.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 ---
@@ -18,7 +18,14 @@ Menu **checking / QC** setelah picking: set location → check items → optiona
 | **Sidebar** | Omni / Supply Chain › Processing › Checking List |
 | **Modul** | SupplyChain / OmniChannel |
 | **SoT** | [`_meta/sot/omni-checking-list-source-of-truth.md`](../_meta/sot/omni-checking-list-source-of-truth.md) v1.0 |
-| **Improvement** | [ETM-16138](https://erpintegration.atlassian.net/browse/ETM-16138) (UI/UX process + scrap/replace) |
+| **Improvement** | [ETM-16138](https://erpintegration.atlassian.net/browse/ETM-16138) (UI/UX process + scrap/replace) · [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110) (void di Wave melepas reserved) |
+
+## Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-11-05 16:55 | Saat Void di Checking List dan order masih di Wave, stok yang ditahan kembali bisa dijual, sama seperti void Sales Order (ETM-17110) |
+| 1.0 | 2026-09-29 | Initial Checking List: check, replace, Complete, Continue vs Void (ETM-16138) |
 | **Wireframe** | https://claude.ai/artifact/WokXLb4E1JMVEvNAKgKjKk |
 
 ## Layer docs

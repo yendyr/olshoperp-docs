@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-checking-list
 menu_name: "Checking List"
-version: 1.0
-last_updated: 2026-09-29
+version: 1.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 audience: operator
@@ -51,6 +51,8 @@ Bukan menu create transfer by scan tersendiri (Transfer Checking / Checking Proc
 ## Cancel / Void di Complete
 
 Hanya jika checking **manual** (bukan dari Skip Wave / Skip Processing). Sistem tanya: lanjut Packing, Void only, atau Void & Recreate SO.
+
+Kalau order yang di-void masih mengantri di Wave (masih punya baris Wave), stok yang ditahan ikut dilepas, sama seperti void Sales Order: order keluar dari Wave dan stok itu kembali bisa dijual (ETM-17110). Ini tidak membuat transfer scrap/replace, dan tidak mengubah pembatalan setelah barang diambil.
 
 ---
 

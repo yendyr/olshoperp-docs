@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-waves-management
 menu_name: "Waves Management"
-version: 2.0
-last_updated: 2026-07-20
+version: 2.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [waves management API, GenerateWaveJob, wave automation technical]
@@ -13,7 +13,7 @@ aliases: [waves management API, GenerateWaveJob, wave automation technical]
 
 **API prefix:** `omnichannel/wave` (+ SupplyChain wave transfer routes)  
 **Module:** `Modules/OmniChannel` + `Modules/SupplyChain` (transfer path)  
-**Behavior SoT:** [requirement.md](./requirement.md) v2.0  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.1  
 **Defaults:** MIX = `Wave::getDefaultWave()` (`id=1`); MIX-TF = `code=MIX-TF`
 
 ---
@@ -161,7 +161,8 @@ sequenceDiagram
 | INV-WM-04 | Satu company: max satu generate batch dan satu revert batch aktif |
 | INV-WM-05 | Matching SO = first hit only; order tidak di-split multi-wave |
 | INV-WM-06 | Transfer + PL selalu ke MIX-TF lalu picklist |
-| INV-WM-07 | Keanggotaan SO hanya pindah antar wave — tidak “hilang” dari `wave_detail_so` tanpa tujuan |
+| INV-WM-07 | Keanggotaan SO hanya pindah antar wave — tidak hilang dari `wave_detail_so` tanpa tujuan, kecuali Void SO yang masih di wave (INV-WM-08) |
+| INV-WM-08 | TO-BE ETM-17110: Void SO (platform atau general) yang masih punya detail TF Wave menghapus `wave_detail_so` SO itu dan melepas reserved (available naik sebesar qty yang dilepas). Bukan Revert. Panggilan dari `SalesOrderApprovalController::handleVoid` → `WaveController::deleteDetailTransferWave`. Kanonik: [Sales Platform technical](../omni-sales-platform/technical.md) |
 
 ---
 
@@ -237,4 +238,5 @@ Race lock company: `[VERIFY: CODEBASE]` selain `job_batches` name uniqueness.
 | Version | Date | Changes |
 |---------|------|---------|
 | 2.0 | 2026-07-20 | Rewrite SoT + file map transfer/automation/gaps |
+| 2.1 | 2026-11-05 | INV-WM-08: void SO removes that SO from `wave_detail_so` and releases reserved (ETM-17110) |
 | 1.0 | 2026-06-19 | Initial AS-IS draft |

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: omni-waves-management
 menu_name: "Waves Management"
-version: 1.0
-last_updated: 2026-07-20
+version: 1.1
+last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.0
+source_version: 2.1
 owner: QA - Yemima
 status: review
 ---
@@ -148,6 +148,7 @@ Pastikan:
 - **Minimum order** di list saat ini lebih ke informasi; belum menahan order sampai jumlah minimum terpenuhi.
 - **Angka di tab Transfer terasa aneh** — penamaan kolom sedang ditinjau; ikuti tooltip/konteks.
 - **Beda Unassign Wave vs sini** — Unassign = masuk Default Waves; sini = kelompokkan + picking list.
+- **Order hilang dari wave setelah di-Void** — memang begitu. Void Sales Order yang masih di wave mengeluarkan order itu dan mengembalikan stok yang ditahan.
 
 ---
 

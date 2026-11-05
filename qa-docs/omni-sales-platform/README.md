@@ -10,12 +10,13 @@ Menu **Dev - Sales Platform** (SO marketplace hasil sync). Route: `/omni/sales-o
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **SoT (6 file):** datalist · order-detail · sync-ingestion · sync-price-mapping · **booking v1.1** · approval-automation  
-**Version:** 1.16 · **User-guide:** v1.7 · `source_version` 1.16 · **Last updated:** 2026-11-05 16:58
+**Version:** 1.17 · **User-guide:** v1.8 · `source_version` 1.17 · **Last updated:** 2026-11-05 17:05
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.17 | 2026-11-05 17:05 | Void atau Void & Recreate pada order yang masih di Wave (belum diambil) mengeluarkan order itu dari Wave dan mengembalikan stok yang ditahan. Order lain yang masih aktif tidak ikut hilang. Berlaku dari form, daftar, Checking List, dan pembatalan otomatis marketplace. Void setelah barang diambil tetap seperti semula (ETM-17110) |
 | 1.16 | 2026-11-05 16:58 | Sales Order yang sudah void tidak boleh masih menahan stok reserved di Transfer Wave. Baris Wave milik order void dihapus lewat jalur yang benar supaya stok kembali available. Order yang masih aktif tidak ikut terhapus (ETM-17109) |
 | 1.15 | 2026-11-05 15:06 | Export All (With Details dan Without Details) wajib isi judul file di dialog Export File Name sebelum unduh. Nama itu yang tampil di riwayat export dan jadi nama file. Export Active Page Only tetap langsung, tanpa dialog (ETM-16768) |
 | 1.12 | 2026-10-02 | Reprice booking/sync in-place (ETM-16212); breakdown bundle Retail + before/after processing / late price (ETM-16216) |
@@ -29,8 +30,6 @@ Menu **Dev - Sales Platform** (SO marketplace hasil sync). Route: `/omni/sales-o
 | 1.4 | 2026-08-11 | TO-BE Auto Add VAT dari Store (`GAP-ST-VAT-01`); cross-ref Store §4.9 |
 | 1.3 | 2026-08-11 | TO-BE Error Flag **Below Benchmark COGS** (`cogs-error`); cross-ref GAP-BM-13 |
 | 1.2 | 2026-08-05 | Shopee unit price dari escrow (`discounted_price + shopee_discount`); GAP-SPR-01; KB/ops note understated price |
-| 1.1 | 2026-07-15 | GAP-BOOK-01 accepted residual (IS mitigasi); KB booking × tracking × settlement |
-| 1.0 | 2026-07-15 | Initial dari 6 SoT PM + verifikasi codebase; gap APR/SPL/SPD/BOOK/SYN; relasi return & failed ship |
 
 ## Related menus
 

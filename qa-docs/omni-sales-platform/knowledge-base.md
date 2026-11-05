@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.16
+version: 1.17
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -158,7 +158,14 @@ Edit field booking (Other Information) dilakukan dari **All Sales Order**, bukan
 | **Void & Recreate** | Void + buat SO platform baru dari marketplace (ex **Void & Clone**). |
 | **Recreate** | Di halaman **show** order yang sudah void — buat SO baru dari marketplace. |
 
-**(TO-BE · ETM-17109)** Order yang sudah **Void** tidak boleh masih menahan stok di Transfer Wave. Stok yang tadinya reserved harus kembali available. Yang dilepas hanya baris milik order yang sudah void. Order yang masih aktif di Wave jangan ikut dihapus. Contoh: SKU WASHBEL40-blue reserved 3 Pcs pada order yang sudah void — setelah dibersihkan, reserved habis dan 3 Pcs kembali available.
+**Order masih di antrian gudang (Wave) lalu di-Void (TO-BE · ETM-17109 / ETM-17110).** Berlaku order marketplace dan order internal. Kalau order masih di Wave dan belum diambil:
+
+- Baris order itu di Wave hilang. Order lain yang masih aktif jangan ikut dihapus.
+- Stok yang tadinya ditahan kembali bisa dijual, sebesar qty yang dilepas.
+- Berlaku **Void** dan **Void & Recreate**, dari form, daftar, Checking List, maupun pembatalan otomatis karena marketplace membatalkan order yang sudah disetujui.
+- Kalau barang sudah diambil, pembatalan setelah pengambilan tetap seperti biasa.
+
+Contoh data: SKU WASHBEL40-blue ditahan 3 Pcs pada order yang sudah void. Setelah dibersihkan, ditahan habis dan 3 Pcs kembali tersedia. Contoh proses: ditahan 2, tersedia 8 → setelah **Void**, ditahan 0 dan tersedia 10.
 
 Detail: [requirement §5.8](./requirement.md) · paritas [ASO §5.8](../all-sales-order/requirement.md).
 
@@ -203,7 +210,7 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 | Pecahan harga bundle random aneh / berubah setelah wave | Proporsi sempat pakai Benchmark / rebuild dari random | **TO-BE:** pecah pakai **Retail Price** random; setelah wave pakai **SKU asli** yang sudah dipilih (ETM-16216) |
 | Create membuka form lain | By design | Gunakan Sales Order internal untuk order manual |
 | **Export All** tidak jalan / **File name is required.** | Field **File name** di dialog **Export File Name** masih kosong | Isi nama, lalu klik **Export** lagi |
-| Setelah **Void**, stok SKU masih reserved | Order sudah void, tapi baris Transfer Wave-nya masih hidup | **TO-BE (ETM-17109):** bersihkan hanya baris Wave milik order yang sudah void, supaya reserved kembali available. Jangan hapus baris milik order yang masih aktif. Contoh: WASHBEL40-blue reserved 3 Pcs menjadi 0 |
+| Setelah **Void**, stok masih ditahan atau order masih di Wave | Baris Wave milik order void masih hidup | Bersihkan hanya baris order yang di-void supaya stok kembali bisa dijual (ETM-17109 / ETM-17110). Jangan hapus order yang masih aktif. Contoh: WASHBEL40-blue ditahan 3 Pcs menjadi 0. Kalau sudah diambil, itu jalur void setelah picking |
 
 ---
 
@@ -214,6 +221,7 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 **Kenapa Net Sales beda dengan invoice?** Biaya/diskon tambahan di SP tidak masuk Sales Invoice.  
 **Approve booking amount 0 apakah langsung jurnal 0?** Tidak. Settlement baru jalan setelah ada Platform Order ID (setelah **MATCHED**); biasanya amount sudah dari order yang sudah match.  
 **Export All minta nama file?** Ya, untuk **With Details** dan **Without Details**. Kosongkan **File name** → **File name is required.** **Export Active Page Only** tidak menanyakan nama.  
+**Void order yang masih di Wave?** Stok yang ditahan kembali bisa dijual, dan order keluar dari antrian Wave. Contoh: ditahan 2, tersedia 8 → setelah void ditahan 0, tersedia 10 (ETM-17110).  
 **Boleh Extract bundle booking yang Price masih 0?** Tidak. Sistem menolak sampai Price > 0 (sering setelah MATCHED / harga platform masuk).
 **Setelah order sudah pick/ship, sync harga boleh hapus baris detail?** Tidak. Sync hanya **ubah angka harga** di baris yang sama supaya dokumen gudang & Instant Settlement tidak putus (ETM-16212).
 **Harga header bundle booking baru masuk setelah order sudah di gudang — pecahannya pakai apa?** Pakai **detail final** yang sudah ada (SKU asli setelah Send to Default Waves), bukan seolah masih random. Pecah harga berbasis **Retail Price** komponen (bukan Benchmark COGS) — ETM-16216.

@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.9
+version: 3.10
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -81,6 +81,8 @@ flowchart TD
 
 > **Jangan samakan Closed dengan Void.** Close = menutup dokumen yang sudah disetujui; Void = membatalkan dokumen yang sudah disetujui (aturan & tombolnya beda).
 
+**Void saat order masih di antrian gudang (TO-BE · ETM-17110).** Kalau order masih di Wave dan belum diambil, **Void** atau **Void & Recreate** mengeluarkan order dari antrian itu. Stok yang tadinya ditahan kembali bisa dijual, sebesar qty yang dilepas. Contoh: ditahan 2, tersedia 8 → setelah void ditahan 0, tersedia 10. Kalau barang sudah diambil, pembatalan setelah pengambilan tetap seperti biasa.
+
 ---
 
 ## 4. Import Excel (operator)
@@ -148,6 +150,7 @@ Karakter yang tidak boleh di nama file diganti tanda minus. Contoh: `Laporan SO 
 |--------|---------------|--------|
 | Order gagal “mode” / fulfillment | Store Processed diunggah lewat Non-Processed (atau sebaliknya) | Samakan tombol dengan Fulfillment Mode store |
 | Setelah Approve belum masuk gudang | Setting tidak auto-wave | Unassign / Skip Wave di SCM |
+| Setelah Void, stok tetap ditahan atau order masih di Wave padahal belum diambil | Pelepasan dari Wave belum jalan | Seharusnya stok ditahan turun dan order keluar dari Wave (ETM-17110). Kalau sudah diambil, itu jalur void setelah picking |
 | Invoice tidak muncul setelah Approve (Processed) | Memang tidak saat Approve | Tunggu outbound / settlement |
 | Non-Processed gagal stok | Stok di hierarki gudang proses store kurang | Isi stok / kurangi qty / ganti store |
 | Non-Processed **No Stock Available** padahal stok gudang masih ada di batch lain | Dulu beberapa proses bisa mengambil batch masuk yang sama | Seharusnya order tetap berhasil jika total stok cukup; sistem memakai batch berikutnya. Kalau masih gagal, stok di semua batch memang kurang |
@@ -193,7 +196,8 @@ Detail: [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md
 **POS ikut Non-Processed?** Belum — requirement berikutnya.  
 **Max detail?** 100 baris per pesanan.  
 **Harga `10000.6789`?** Dibaca Rp 10.000,6789, bukan ratusan juta. Lebih dari 4 angka desimal ditolak. `1.500` tetap seribu lima ratus.  
-**Export All minta nama?** Ya, untuk **With Details** dan **Without Details**. Kosongkan **File name** → **File name is required.** **Export Active Page Only** tidak menanyakan nama.
+**Export All minta nama?** Ya, untuk **With Details** dan **Without Details**. Kosongkan **File name** → **File name is required.** **Export Active Page Only** tidak menanyakan nama.  
+**Void order yang masih di Wave?** Stok yang ditahan kembali bisa dijual, dan order keluar dari antrian. Contoh: ditahan 2, tersedia 8 → setelah void ditahan 0, tersedia 10 (ETM-17110).
 
 ## Referensi
 

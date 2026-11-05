@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-checking-list
 menu_name: "Checking List"
-version: 1.0
-last_updated: 2026-09-29
+version: 1.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [checking list, CL, replace defective, tf scrap]
@@ -25,6 +25,7 @@ Related: [Picking List](../omni-picking-list/requirement.md) · [Packing List](.
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-11-05 | QA - Yemima | §6: Void only / Void & Recreate saat order masih punya detail Wave melepas reserved sama seperti void Sales Order (ETM-17110). Aturan lengkap di Sales Platform |
 | 1.0 | 2026-09-29 | QA - Yemima | Initial AS-IS + TO-BE ETM-16138; keputusan open Q (check per-row, partial replace, Continue vs Void) |
 
 ---
@@ -116,6 +117,7 @@ Modal: defective SKU RO, qty, replacement rack+stock, reason, **preview 2 TF**. 
 | Manual + platform status contains `cancel` OR internal `void` | Prompt: Continue to Packing **vs** Void… |
 | Continue | Approve normal termasuk TF Scrap/Replace **tetap** digenerate/approve |
 | Void only / Void & Recreate | **Tidak** generate TF Scrap/Replace; stok terakhir = PL di outrack; Void & Recreate = Sales Platform flow |
+| Void only / Void & Recreate, order masih di Wave (masih ada detail transfer Wave) | **TO-BE · ETM-17110:** reserved dilepas sama seperti void Sales Order. Detail Wave order itu dihapus, reserved turun, available naik sebesar qty yang dilepas, order keluar dari Wave. Tidak membuat TF Scrap/Replace, dan tidak mengganti void setelah picking. Aturan lengkap: [Sales Platform §5.8](../omni-sales-platform/requirement.md) |
 
 ---
 
@@ -137,7 +139,8 @@ Jika `location_id` null dan belum approved → Set Location → process.
 - [ ] Check per-row; Complete tidak diblok unchecked  
 - [ ] Replace modal + preview TF; generate di change; approve di Complete  
 - [ ] Partial/beda lokasi sesuai §5.3  
-- [ ] Continue tetap TF; Void tanpa TF scrap/replace  
+- [ ] Continue tetap TF; Void tanpa TF scrap/replace
+- [ ] Void only / Void & Recreate saat order masih punya detail Wave: reserved dilepas sama seperti void Sales Order (ETM-17110)  
 - [ ] Cancel prompt hanya manual checking  
 - [ ] Completion Summary + history API/UI  
 - [ ] Set Location tetap jalan  

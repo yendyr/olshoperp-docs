@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.9
+version: 3.10
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -19,7 +19,7 @@ aliases: [SO General, Dev Sales Order, sales order general, SO internal, import 
 
 Window gabungan: [All Sales Order](../all-sales-order/requirement.md). Platform independen: [Dev - Sales Platform](../omni-sales-platform/requirement.md).  
 Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).  
-**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (OC/OD SO → SI) · [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) · [ETM-17055](https://erpintegration.atlassian.net/browse/ETM-17055) (desimal, presisi, pembulatan import) · [ETM-17081](https://erpintegration.atlassian.net/browse/ETM-17081) (alokasi stok Import Non-Processed aman saat proses bersamaan) · [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) (judul file Export All)
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (OC/OD SO → SI) · [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) · [ETM-17055](https://erpintegration.atlassian.net/browse/ETM-17055) (desimal, presisi, pembulatan import) · [ETM-17081](https://erpintegration.atlassian.net/browse/ETM-17081) (alokasi stok Import Non-Processed aman saat proses bersamaan) · [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) (judul file Export All) · [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110) (void di Wave melepas reserved)
 
 ---
 
@@ -27,6 +27,7 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.10 | 2026-11-05 | QA - Yemima | TO-BE §7.5 / §6.7: Void atau Void & Recreate saat SO masih di Wave (belum picking) menghapus detail Wave, reserved turun, available naik, SO keluar dari Wave. Jalur void setelah picking tidak diganti (ETM-17110) |
 | 3.9 | 2026-11-05 | QA - Yemima | Export All With/Without Details wajib judul file (dialog **Export File Name**); nama kosong ditolak; nama bersih jadi file unduhan dan baris riwayat. Export Active Page Only tanpa dialog. GAP-SOG-16 Open (ETM-16768) |
 | 3.8 | 2026-11-05 | QA - Yemima | Import Non-Processed: beberapa order SKU sama yang diproses bersamaan tetap berhasil jika stok gudang cukup; kunci baris stok lalu ambil batch masuk FIFO berikutnya (ETM-17081) |
 | 3.7 | 2026-11-04 | QA - Yemima | Import Price: titik/koma dibaca benar, maks. 4 desimal, pembulatan 4/2, rekonsiliasi sebelum SO dibuat (ETM-17055) |
@@ -319,8 +320,11 @@ Settlement General: CSV Order ID, Date, Total + OC/OD → outbound + invoice + p
 | Wave assign | Turun | Naik | — | Keluar outstanding |
 | Pick/Check/Pack | Pindah VH | — | — | — |
 | Outbound approve | — | Turun | Naik | — |
+| Void saat masih di Wave, belum picking (TO-BE · ETM-17110) | Naik sebesar qty yang dilepas | Turun sebesar qty yang dilepas | — | Keluar dari Wave |
 
 ATS = On Hand − Outstanding SO − Reserved Out (recalculate async).
+
+Void setelah picking tidak memakai baris ini: stok mengikuti jalur void setelah pengambilan barang. Pembersihan Wave hanya terjadi sebelum jalur itu, dan tidak menggantikannya. Aturan pintu void (platform dan general) ada di [Dev - Sales Platform §5.8](../omni-sales-platform/requirement.md).
 
 ### 6.8 Export All — judul file wajib (AS-IS · ETM-16768)
 
@@ -397,6 +401,8 @@ Paritas: [All Sales Order](../all-sales-order/requirement.md) · [Dev - Sales Pl
 - **Reject** dari open → status **rejected** (dokumen **masih bisa diedit**; form membuka sebagai Draft).
 - **Close Doc** dari approved → status **closed** (terkunci; bukan Void).
 - **Void Doc** dari approved → status **void** (bisa diblokir jika sudah terkait outbound/invoice); dari void bisa **Duplicate** (tracking/PO ID unik).
+- **TO-BE · [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110):** **Void** atau **Void & Recreate** (Void+Copy) saat order **masih di Wave** (masih ada detail transfer Wave aktif, belum picking) menghapus detail Wave SO itu, reserved turun, available naik sebesar qty yang dilepas, dan SO keluar dari Wave. Pintu yang sama dengan Sales Platform: form, datalist/bulk, Checking List **Void only** / **Void & Recreate**, dan auto-void order Approved karena cancel platform. Void setelah picking tetap jalan; pembersihan Wave tidak menggantinya.
+- **Contoh:** reserved 2, available 8, masih di Wave, belum picking. **Void** → reserved 0, available 10, order tidak lagi di Wave.
 
 Jangan menyamakan Closed dengan Void di docs atau UI.
 
@@ -512,6 +518,9 @@ A: Default tanpa auto-wave — jalankan Unassign Wave / Skip Wave Process.
 
 **Q: Kapan stok keluar / invoice?**  
 A: Stok fisik saat outbound approve. Invoice saat outbound/settlement/manual/POS — bukan saat approve SO.
+
+**Q: Void order yang masih di Wave — reserved bagaimana?**  
+A (TO-BE · ETM-17110): reserved turun dan available naik sebesar qty yang dilepas. Order keluar dari Wave. Contoh: reserved 2, available 8 → reserved 0, available 10. Berlaku **Void** dan **Void & Recreate**. Kalau sudah picking, jalur void setelah picking tetap berjalan. Detail [§6.7](#67-dampak-stok) / [§7.5](#75-void--close--delete) dan [Sales Platform §5.8](../omni-sales-platform/requirement.md).
 
 **Q: Store Shopee di import General?**  
 A: Tidak — harus General/Other.

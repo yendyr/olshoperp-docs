@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.16
+version: 1.17
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -17,7 +17,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 **SoT:** 6 file `omni-sales-platform-*-source-of-truth.md` (booking v1.1)  
 **Status:** AS-IS verified + PM SoT merge · lihat §Gaps  
 **Jira (edit detail TO-BE):** [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) · pasangan ASO [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748)  
-**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) — Additional Cost/Disc SO → SI · [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) (TikTok unit price) supersedes rumus [ETM-14808](https://erpintegration.atlassian.net/browse/ETM-14808) · [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) (judul file Export All) · [ETM-17109](https://erpintegration.atlassian.net/browse/ETM-17109) (void melepas reserved TF Wave; proses [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110))
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) — Additional Cost/Disc SO → SI · [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) (TikTok unit price) supersedes rumus [ETM-14808](https://erpintegration.atlassian.net/browse/ETM-14808) · [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) (judul file Export All) · [ETM-17109](https://erpintegration.atlassian.net/browse/ETM-17109) (data: void masih menahan reserved TF Wave) · [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110) (proses: void di Wave melepas reserved)
 
 ---
 
@@ -25,6 +25,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.17 | 2026-11-05 | QA - Yemima | TO-BE §5.8.1 / §6.9: Void atau Void & Recreate saat SO masih di Wave (belum picking) menghapus detail Wave milik SO itu, reserved turun, available naik, SO keluar dari Wave. Semua pintu void pusat. Jalur void setelah picking tidak diganti. SO lain yang belum void tidak dihapus (ETM-17110; data ETM-17109) |
 | 1.16 | 2026-11-05 | QA - Hazel (yemimadocs) | **TO-BE** §5.8.1 / §6.9 V-VR-07–08: SO void tidak menyisakan detail TF Wave aktif yang menahan reserved; hapus lewat jalur hapus detail TF Wave; SO yang belum void tidak dihapus — ETM-17109 (proses ETM-17110). GAP-SPD-02 |
 | 1.15 | 2026-11-05 | QA - Yemima | Export All With/Without Details wajib judul file (dialog **Export File Name**); nama kosong ditolak; nama bersih jadi file unduhan dan baris riwayat. Export Active Page Only tanpa dialog. GAP-SP-EX-01 Open (ETM-16768) |
 | 1.14 | 2026-10-26 | QA - Yemima | **TO-BE** [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805): TikTok unit price = `original_price − seller_discount` (supersede ETM-14808 `sale_price + platform_discount`); forward-only |
@@ -348,11 +349,23 @@ Paritas wajib di [All Sales Order §5.8](../all-sales-order/requirement.md#58-vo
 
 #### 5.8.1 Reserved Transfer Wave saat Void (TO-BE · ETM-17109)
 
-Sales Order yang sudah **void** tidak boleh masih punya baris detail Transfer Wave (TF Wave) yang aktif dan menahan stok reserved. Pembersihan memakai jalur hapus detail TF Wave yang benar, sehingga reserved kembali ke available. Baris detail TF Wave milik SO yang masih aktif (belum void) tidak boleh dihapus.
+Sales Order yang sudah **void** tidak boleh masih punya baris detail Transfer Wave (TF Wave) yang aktif dan menahan stok reserved. Baris detail TF Wave milik SO yang masih aktif (belum void) tidak boleh dihapus.
 
-Contoh: SO-XWRUXAUG sudah void, SKU WASHBEL40-blue masih reserved 3 Pcs di TF Wave. Setelah detail TF Wave milik SO itu dihapus, reserved kasus ini menjadi 0 dan available naik 3. SO lain yang masih di Wave tidak ikut terhapus.
+**Proses (TO-BE · [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110), AC final).** Berlaku SO **platform** dan **general**. **Void** atau **Void & Recreate** (Void+Copy / void clone) saat order **masih di Wave** — masih ada detail transfer Wave yang aktif, belum picking:
 
-Kartu data: [ETM-17109](https://erpintegration.atlassian.net/browse/ETM-17109). Kartu proses supaya kasus baru tidak terulang: [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110). Aturan akhir mengikuti AC ETM-17109.
+1. Sistem menghapus detail transfer Wave milik SO itu saja.
+2. Reserved turun; available naik sebesar qty yang dilepas.
+3. SO keluar dari Wave (bukan lagi anggota Wave aktif).
+
+Pintu yang sama, karena semua lewat void pusat: form Sales Platform dan Dev - Sales Order, datalist/bulk, Void+Copy, Checking List **Void only** / **Void & Recreate**, serta auto-void order **Approved** karena cancel/sync platform.
+
+Pembersihan Wave hanya tambahan **sebelum** transfer void pasca-picking. Jalur void setelah picking (termasuk ke gudang voided order) tidak diganti.
+
+**Contoh data (ETM-17109):** SO-XWRUXAUG sudah void, SKU WASHBEL40-blue masih reserved 3 Pcs di TF Wave. Setelah detail TF Wave milik SO itu dihapus, reserved kasus ini menjadi 0 dan available naik 3. SO lain yang masih di Wave tidak ikut terhapus.
+
+**Contoh proses:** SO Approved di Wave, reserved 2, available 8, belum picking. **Void** → detail Wave SO itu hilang, reserved 0, available 10, SO tidak lagi di Wave. Sama jika yang diklik **Void & Recreate**.
+
+Kartu data: [ETM-17109](https://erpintegration.atlassian.net/browse/ETM-17109). Kartu proses: [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110). AC proses mengikuti ETM-17110.
 
 ### 5.9 Export All — judul file wajib (AS-IS · ETM-16768)
 
@@ -511,8 +524,9 @@ Edit detail apa pun → `prevent_auto_approve = 1` (keluar auto-approve; approve
 | V-VR-04 | Recreate vs sync concurrent → order lock + re-check non-void | Max 1 SO non-void per ID |
 | V-VR-05 | **Recreate** hanya show + void + not editable | Tombol tidak muncul di Draft/Open editable |
 | V-VR-06 | Guard void existing (outbound/invoice) tetap | Void & Recreate tidak bypass |
-| V-VR-07 | SO **void** masih punya detail TF Wave aktif yang menahan reserved | Hapus hanya detail milik SO void lewat jalur hapus detail TF Wave; reserved turun dan available naik sesuai qty baris |
+| V-VR-07 | **Void** / **Void & Recreate** saat masih ada detail TF Wave aktif (belum picking), termasuk SO void yang detailnya masih hidup | Hapus hanya detail milik SO itu; reserved turun dan available naik sebesar qty yang dilepas; SO keluar dari Wave (ETM-17110; data ETM-17109) |
 | V-VR-08 | SO belum void / masih aktif di Wave | Detail TF Wave tidak dihapus |
+| V-VR-09 | Void setelah picking (sudah ada jalur voided order) | Pembersihan Wave tidak mengganti transfer void; jalur pasca-picking tetap |
 
 Kartu: [ETM-15859](https://erpintegration.atlassian.net/browse/ETM-15859) · Request ID `recvuGCojORk9E`. Reserved TF Wave: [ETM-17109](https://erpintegration.atlassian.net/browse/ETM-17109) · proses [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110) · §5.8.1.
 
@@ -675,6 +689,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 - [ ] **Edit detail TO-BE (ETM-15749 / §6.8):** DRAFT/OPEN add+Select Product; edit qty/price/disc/VAT; no delete (Extract OK); qty `gt:0`; sync lock + booking price 0/>0; baris manual aman; audit SKU+old/new; `prevent_auto_approve`
 - [ ] **Void / Recreate TO-BE (ETM-15859 / §5.8 / §6.9):** Void tanpa prefix + sync skip create; Void & Recreate / Recreate prefix + SO platform; lock race; paritas ASO
 - [ ] **Void + reserved TF Wave (TO-BE · ETM-17109 / §5.8.1):** SO void tidak menyisakan detail TF Wave aktif yang menahan reserved; pelepasan lewat hapus detail TF Wave (contoh WASHBEL40-blue reserved 3 Pcs menjadi 0); SO yang belum void tidak dihapus detailnya
+- [ ] **Void saat masih di Wave (ETM-17110 / §5.8.1 / §6.9):** detail Wave SO itu dihapus; reserved turun, available naik; SO keluar dari Wave. Void dan Void & Recreate, semua pintu void pusat. Jalur void setelah picking tidak berubah
 - [ ] Additional cost/disc tidak ke SI
 - [ ] Return bucket = SR dan/atau FS
 - [ ] **Export All** With Details dan Without Details membuka dialog **Export File Name**; nama kosong ditolak (**File name is required.**); nama terisi menjadi nama file unduhan (`.xlsx`, atau `.zip` bila terpecah) dan tampil di riwayat. **Export Active Page Only** tanpa dialog (ETM-16768 / §5.9)
@@ -685,6 +700,10 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 
 **Q: Setelah Void, kenapa sync kadang bikin order baru?**  
 A (AS-IS): ID sering di-prefix / void di-exclude → slot ID “kosong”. **TO-BE (ETM-15859):** Void **tanpa** prefix; sync skip create jika void+exact ID. Recreate hanya manual.
+
+**Q: Void order yang masih di Wave — stok reserved bagaimana?**  
+A (TO-BE · ETM-17110): reserved turun dan available naik sebesar qty yang dilepas. Order keluar dari Wave. Hanya baris milik order yang di-void. Berlaku **Void** dan **Void & Recreate**, dari form, daftar, Checking List, maupun pembatalan otomatis karena marketplace membatalkan order yang sudah Approved. Contoh proses: reserved 2 dan available 8 → setelah void reserved 0 dan available 10. Contoh data (ETM-17109): WASHBEL40-blue reserved 3 Pcs pada SO void menjadi 0. Kalau sudah picking, jalur void setelah picking tetap berjalan.
+
 **Q: Kenapa Create membuka form lain?**  
 A: SP hanya menampilkan hasil sync; create manual = Sales Order General.
 

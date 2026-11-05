@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.15
+version: 1.16
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -103,7 +103,7 @@ Detail: [requirement §5.7](./requirement.md) · [SP booking §3b](../omni-sales
 
 Jangan harap schedule sync “menghidupkan” order void. Detail: [requirement §5.8](./requirement.md) · ETM-15859.
 
-**(TO-BE · ETM-17109)** Order yang sudah void tidak boleh masih menahan stok di Transfer Wave. Reserved harus kembali available. Yang dibersihkan hanya baris milik order void — order yang masih aktif di Wave jangan ikut dihapus. Contoh: SKU reserved 3 Pcs pada order void kembali available setelah baris itu dibersihkan.
+**(TO-BE · ETM-17109 / ETM-17110)** Kalau order (marketplace atau internal) masih di antrian gudang dan belum diambil, **Void** atau **Void & Recreate** mengeluarkan order itu dari antrian dan mengembalikan stok yang ditahan. Yang dibersihkan hanya baris milik order yang di-void. Contoh: SKU ditahan 3 Pcs pada order void kembali tersedia. Aturan lengkap di Sales Platform dan Dev - Sales Order.
 
 ---
 

@@ -2,7 +2,7 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.16
+version: 1.17
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -15,7 +15,8 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
-> Changelog **1.16 (2026-11-05):** TO-BE void releases TF Wave reserved — [requirement §5.8.1](./requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109) / V-VR-07–08; ETM-17109 (process ETM-17110). Delete only active TF Wave details of a void SO via the TF Wave detail-delete path so reserved returns to available. Do not delete details of an SO that is not void. GAP-SPD-02 Open.  
+> Changelog **1.17 (2026-11-05):** Void while still in Wave — [requirement §5.8.1](./requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109); ETM-17110 (`8ef9876`). `handleVoid` calls `deleteDetailTransferWave` after approve, before `createTransferVoid`. Non-void SO details stay. Post-picking void transfer still runs.  
+> Changelog **1.16 (2026-11-05):** TO-BE void releases TF Wave reserved — [requirement §5.8.1](./requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109) / V-VR-07–08; ETM-17109 (process ETM-17110). Delete only active TF Wave details of a void SO via the TF Wave detail-delete path so reserved returns to available. Do not delete details of an SO that is not void. GAP-SPD-02 Open.
 > Changelog **1.15 (2026-11-05):** Export All With/Without Details requires `export_filename` — [requirement §5.9](./requirement.md); ETM-16768. `exportExcelPlatformDetails` / `exportExcelPlatformWithoutDetails`; `SalesOrderExportExcelJob` writes `.xlsx` up to 5000 rows, else `.zip`. GAP-SP-EX-01 Open.  
 > Changelog **1.13 (2026-10-26):** TO-BE TikTok unit price [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) — `original_price − seller_discount` (supersede ETM-14808); hotspot `OmniTikTokService` map line_item + `$price`. Forward-only.  
 > Changelog **1.12 (2026-10-02):** Reprice in-place (ETM-16212 / §6.10); bundle breakdown Retail + post-wave (ETM-16216 / §6.11). Touchpoints: `OmniShopeeService` `$converting_booking` path — **jangan** delete children + `pickBundleChildren` recreate; `SalesOrderDetailController::pickBundleChildren` — random harus `product->price` bukan `benchmarkPrice`.  
@@ -41,7 +42,9 @@ related_docs:
 | `Modules/OmniChannel/Jobs/SalesOrderExportExcelJob.php` | Final platform file: `.xlsx` if rows ≤ 5000, else `.zip` |
 | `Modules/OmniChannel/Entities/SalesOrderExportFile.php` | `omni_sales_order_export_files.file_name` + `export_type` |
 | `app/Helpers/MainHelper.php` | `sanitizeExportFileName`, `getExportActionName` (prefers `export_type`) |
-| `Modules/OmniChannel/Http/Controllers/SalesOrderApprovalController.php` | approve / void / unapprove |
+| `Modules/OmniChannel/Http/Controllers/SalesOrderApprovalController.php` | approve / void / unapprove; `handleVoid` calls `deleteDetailTransferWave` before `createTransferVoid` (ETM-17110) |
+| `Modules/OmniChannel/Http/Controllers/WaveController.php` | `deleteDetailTransferWave` — drop that SO's active Wave transfer details + wave membership |
+| `app/Helpers/SupplyChain/ItemStockMutation.php` | `deleteTransferDetailRow(..., is_wave: true)` — reserved down, available up |
 | `Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php` | Detail + `updateAutoApproveFlagForSalesOrder` + **`extractBundleDetails`** (price > 0) |
 | `Modules/OmniChannel/Http/Controllers/FailedSalesOrderController.php` | Failed Synchronize list + retry |
 | `Modules/OmniChannel/Http/Controllers/SalesOrderSyncLogController.php` | Log Data |
@@ -212,7 +215,8 @@ sequenceDiagram
 15. **Advance package without booking link:** `OmniShopeeService::storeSalesOrder` — jika `advance_package` dan order status masih sebelum gate yang disepakati / belum ter-link ke booking (**MATCHED**), return success skip (**bukan** Failed Sync) agar tidak materialisasi SO kedua saat webhook order_id tanpa `booking_sn`.
 16. **MATCHED:** `update_so_booking_fields` / convert path mengisi `platform_order_id` pada SO booking existing + escrow reprice (`converting_booking`).
 17. Export All With/Without Details: `sanitizeExportFileName(export_filename)` non-empty (max 150). History action uses `export_type` when set, not a parse of `file_name`.
-18. **TO-BE (ETM-17109 / GAP-SPD-02):** a void SO has no active TF Wave detail row holding reserved. Release is the TF Wave detail-delete path (reserved returns to available). Details of an SO that is not void are not deleted.
+18. **TO-BE (ETM-17109 / GAP-SPD-02):** a void SO has no active TF Wave detail row holding reserved. Release deletes only that SO's details. Details of an SO that is not void are not deleted.
+19. **Void while an active Wave transfer detail still exists (ETM-17110, `8ef9876`):** inside `handleVoid`'s transaction, after `$sales_order->approve($request, $sales_order)` and before `$this->createTransferVoid($sales_order)`, call `(new WaveController)->deleteDetailTransferWave($sales_order->id)`. The helper loads `WaveDetailSO`; if none, it returns and stock is unchanged. Otherwise each invisible Wave `TransferMutationDetail` for that SO is removed via `ItemStockMutation::deleteTransferDetailRow(..., is_wave: true)`, which does `reserved_quantity - transfer_quantity_in_base_unit` and `available_quantity +` the same qty, then the `WaveDetailSO` row is deleted. `createTransferVoid` (destination `PROCESS_GROUP_VOIDED_ORDER` / TFV) still runs after this call. Same path for `with_copy` true or false. Doors: `SalesOrderController::approve` (form SP/SOG, datalist/bulk, Void+Copy), Checking List `voidOnly` / `voidAndRecreate`, and auto-void of an **Approved** SO on platform cancel/sync (Shopee, Lazada, TikTok).
 
 ---
 
@@ -256,6 +260,7 @@ sequenceDiagram
 | Bulk Sync overlap | Cache lock | Message processing in progress |
 | Duplicate job | `preventDuplicateJob` | Skip |
 | Void leaves TF Wave detail (GAP-SPD-02) | Reserved stays; available does not rise | TO-BE: delete only that void SO's TF Wave details. Do not delete a non-void SO's details |
+| Void throws after wave detail delete | Same `DB::transaction` as approve and `createTransferVoid` | Rollback includes the wave-detail delete and the reserved release |
 
 ---
 
@@ -283,6 +288,7 @@ sequenceDiagram
 - [ ] Failed Sync retry deletes row
 - [ ] Instant Processing generates pipeline docs
 - [ ] Return bucket when only FS vs only SR vs both
+- [ ] Void or Void+Copy while the SO still has an active Wave transfer detail (not yet picking): wave detail and wave membership gone; reserved drops and available rises by the released qty (ETM-17110). Post-picking `createTransferVoid` still runs
 
 ---
 

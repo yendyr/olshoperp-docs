@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.9
+version: 1.10
 last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.15
+source_version: 1.16
 owner: QA - Yemima
 status: review
 ---
@@ -125,7 +125,7 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 2. Buka **show** order void → **Recreate** bila perlu SO baru dari marketplace.
 3. Atau **Void & Recreate** (ex Void & Clone) untuk void + recreate sekaligus.
 4. SO baru = tipe **platform**, bukan Sales Order General.
-5. **(TO-BE · ETM-17109)** Order yang sudah void tidak boleh masih menahan stok di Wave. Stok reserved harus kembali bisa dijual. Jangan hapus baris milik order yang masih aktif.
+5. Kalau order masih mengantri di gudang dan belum diambil, **Void** atau **Void & Recreate** mengeluarkan order itu dari antrian dan mengembalikan stok yang ditahan. Jangan hapus baris milik order yang masih aktif. Contoh: ditahan 2, tersedia 8 → setelah void ditahan 0, tersedia 10.
 
 ### F. Export All
 

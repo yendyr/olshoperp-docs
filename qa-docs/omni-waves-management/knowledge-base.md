@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-waves-management
 menu_name: "Waves Management"
-version: 2.0
-last_updated: 2026-07-20
+version: 2.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [waves management, automated distribution, default waves, revert wave, generate pick list]
@@ -128,3 +128,6 @@ A: Sengaja — generate dari wave hasil create user (atau jalur transfer di tab 
 
 **Q: Beda Unassign Wave vs Waves Management?**  
 A: Unassign Wave = kirim order ke Default Waves. Waves Management = kelompokkan dari Default Waves ke wave khusus + generate picking list.
+
+**Q: Order hilang dari wave setelah di-Void?**  
+A: Ya. Void Sales Order yang masih di wave mengeluarkan order itu dari wave dan mengembalikan stok yang ditahan supaya bisa dijual lagi (ETM-17110).
