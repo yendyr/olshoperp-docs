@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-stock-monitoring
 menu_name: "Dev - Stock Monitoring"
-version: 1.1
-last_updated: 2026-08-11
+version: 1.2
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 audience: operator
@@ -14,7 +14,7 @@ sections:
 
 # Dev - Stock Monitoring — Knowledge Base
 
-> **DRAFT** — v1.1 menambah catatan **Export All vs UI** (TO-BE perbaikan).
+> **DRAFT** — v1.2 menambah catatan link kode Sales Return di Inbound Ref. dan header detail. v1.1 menambah catatan **Export All vs UI** (TO-BE perbaikan).
 
 ## 1. Apa itu Dev - Stock Monitoring?
 
@@ -96,6 +96,7 @@ Menu **Dev - Stock Monitoring** menampilkan **item stock per warehouse** dengan 
 | "Export process is running" | Lock cache per user 600 detik | Tunggu export sebelumnya selesai |
 | Excel beda urutan / Last Move kurang lengkap | Export belum mirror UI (GAP-STMON-EXP-01) | TO-BE perbaikan — sementara bandingkan manual dengan kolom UI |
 | Availability negatif / anomali | Data mutation belum sync | Cek mutation approval & transfer in-transit |
+| Klik kode Sales Return (SR) di kolom **Inbound Ref.** atau di info transaksi header detail membuka halaman tidak ditemukan | Link dulu diarahkan ke halaman yang salah | Setelah perbaikan ETM-17069, link itu membuka halaman edit Sales Return |
 | 403 | Role tanpa viewAny ItemStockMonitoring | Update permission Gate |
 
 ## 6. FAQ
@@ -111,6 +112,9 @@ A: Controller sama (`StockMonitoringController`) tetapi path `accounting/stock-m
 
 **Q: Kenapa Export All tidak sama dengan tabel?**  
 A: AS-IS memang belum 1:1 (urutan kolom & Last Move). Perbaikan terdaftar di requirement §8 (`GAP-STMON-EXP-01`).
+
+**Q: Kode Sales Return (SR) di Inbound Ref. terbuka ke mana?**  
+A: Ke halaman edit Sales Return. Berlaku di kolom **Inbound Ref.** pada tabel dan di info transaksi pada header halaman detail. Misalnya stok masuk dari `SR-…`: klik kode itu membuka halaman Sales Return itu, bukan halaman tidak ditemukan.
 
 ## Related Documents
 

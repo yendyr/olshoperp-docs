@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-stock-monitoring
 menu_name: "Dev - Stock Monitoring"
-version: 1.1
-last_updated: 2026-08-11
+version: 1.2
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # Dev - Stock Monitoring — Technical Documentation
 
-> **DRAFT** — v1.1 TO-BE Export UI parity (`GAP-STMON-EXP-01`). AS-IS pipeline v1.0 tetap.
+> **DRAFT** — v1.2 link Inbound Ref Sales Return (ETM-17069). v1.1 TO-BE Export UI parity (`GAP-STMON-EXP-01`). AS-IS pipeline v1.0 tetap.
 
 **UI route:** `/supplychain/stock-monitoring`  
 **Detail route:** `/supplychain/stock-monitoring/{item_stock_id}`  
@@ -25,6 +25,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-11-05 | Link Inbound Ref Sales Return: `show()` cabang SR dan `inbound_ref_formatted` cabang `is_return_process == 1` ke `/supplychain/sales-returns/edit/{id}` — ETM-17069 |
 | 1.1 | 2026-08-11 | TO-BE export headings/map + last_move_warehouse; §5.1 |
 | 1.0 | 2026-06-19 | Initial AS-IS |
 ## 1. Architecture Overview
@@ -218,7 +219,38 @@ flowchart TD
 
 ---
 
-## 8. Related docs
+## 8. Inbound Ref link targets (ETM-17069)
+
+Dua permukaan. Keduanya memakai id mutasi inbound yang sama dengan transaksi Sales Return.
+
+### 8.1 Header detail — `StockMonitoringController::show()` → `reference_link_transaction`
+
+Prefix kode = teks sebelum `-` (`SR-…` → `SR`). Cabang Sales Return:
+
+| Kondisi | Target |
+|---------|--------|
+| Kode `SR` | `/supplychain/sales-returns/edit/{id}` |
+
+Sebelumnya cabang ini mengarah ke `/accounting/sales-return/edit/{id}` (404). Cabang lain di `show()` tidak diubah: transfer internal/eksternal, kode `IN`, kode `TF`, kode `AI` (adjustment addition `/supplychain/adjustment-addition/edit/{id}`).
+
+### 8.2 Kolom datalist — `ItemStockChecker::with_general_custom_column()` → `inbound_ref_formatted`
+
+Cabang pertama yang cocok dipakai. Cabang Sales Return baru diletakkan **setelah** inventory adjustment, **sebelum** `is_visible`.
+
+| Urutan | Kondisi | Target |
+|--------|---------|--------|
+| 1 | `transaction_reference_class` = Work Order | `/supplychain/other-inbound/edit/{id}` |
+| 2 | `is_inventory_adjustment == 1` | `/supplychain/adjustment-addition/edit/{id}` |
+| 3 | `is_return_process == 1` (Sales Return, kode SR) | `/supplychain/sales-returns/edit/{id}` |
+| 4 | `is_visible == 1` dan kode warehouse inbound memuat `FS` | `/supplychain/failed-ship/edit/{id}` |
+| 5 | `is_visible == 1` selain itu | `/supplychain/mutation-inbound/edit/{id}` |
+| 6 | Selain di atas | `/supplychain/transfer-inbound/edit/{transaction_reference_id}` |
+
+Sebelum cabang 3 ada, Sales Return jatuh ke cabang `is_visible` dan membuka halaman Mutation Inbound (404).
+
+`ItemStockChecker::usable_items()` dipakai bersama datalist stok lain, dan pada jalur default (bukan tombol Use, bukan `until_date`) memanggil `with_general_custom_column()`. Perubahan link Inbound Ref. ikut berlaku di jalur itu, termasuk `StockMonitoringController` (Stock Monitoring, Stock Monitoring Value, asset list) dan `ItemTransactionHistoryController` bila tanpa tombol Use. Pemanggil yang lewat `customColumn`, `with_use_button_custom_column`, atau `with_avail_stock` tidak memakai formatter ini.
+
+## 9. Related docs
 
 - [supplychain-real-stock/technical.md](../supplychain-real-stock/technical.md)
 - [accounting-stock-monitoring-value/technical.md](../accounting-stock-monitoring-value/technical.md)

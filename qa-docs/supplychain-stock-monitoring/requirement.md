@@ -2,20 +2,21 @@
 doc_type: requirement
 menu: supplychain-stock-monitoring
 menu_name: "Dev - Stock Monitoring"
-version: 1.1
-last_updated: 2026-08-11
+version: 1.2
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 ---
 
 # Dev - Stock Monitoring — Requirement Documentation
 
-> **DRAFT** — v1.1 menambahkan TO-BE **Export All parity dengan UI** (`GAP-STMON-EXP-01`). Draft AS-IS v1.0 (2026-06-19) tetap untuk bagian lain.
+> **DRAFT** — v1.2 menambah link Inbound Ref / header ke Sales Return (ETM-17069). v1.1 menambahkan TO-BE **Export All parity dengan UI** (`GAP-STMON-EXP-01`). Draft AS-IS v1.0 (2026-06-19) tetap untuk bagian lain.
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.2 | 2026-11-05 | QA - Yemima | Link Inbound Ref. dan header detail Sales Return (kode SR, `is_return_process = 1`) membuka `/supplychain/sales-returns/edit/{id}` — ETM-17069 |
 | 1.1 | 2026-08-11 | QA - Yemima | TO-BE Export All: urutan kolom = UI; Last Move Ref dipecah Transaction + Warehouse; parity N/A; shared dengan Stock Monitoring Value — `GAP-STMON-EXP-01` |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft (AS-IS) |
 
@@ -45,6 +46,7 @@ Stock Monitoring menampilkan item stock per warehouse via `ItemStockChecker::usa
 | A-14 | Virtual WH toggle | Double-click label + `with_virtual_processing` | Dev feature |
 | A-15 | Advanced filter | `advanced_filter=true` prop | SearchBuilder |
 | A-16 | **(TO-BE)** Export All kolom & data = mirror UI | Urutan + Last Move split — §8, `GAP-STMON-EXP-01` | Export parity |
+| A-17 | Link Sales Return di header dan Inbound Ref. | Klik kode `SR…` | URL `/supplychain/sales-returns/edit/{id}`, bukan 404 |
 
 ## 3. Validasi & Rules
 
@@ -69,6 +71,9 @@ Stock Monitoring menampilkan item stock per warehouse via `ItemStockChecker::usa
 | F-05 | Row link ke detail | `product_formatted` HTML links | `/supplychain/stock-monitoring/{id}` |
 | F-06 | Expired date columns | Optional render | Exp. Date / Exp. Status |
 | F-07 | Price columns | `with_price_column=true` | Hanya accounting mode |
+| F-08 | Link Inbound Ref / header ke Sales Return | Kolom **Inbound Ref.** pada datalist, dan kode transaksi pada header info halaman detail, bila referensi inbound adalah Sales Return (kode `SR…`, `scm_stock_mutations.is_return_process = 1`) | Hyperlink membuka `/supplychain/sales-returns/edit/{id}` |
+
+**Contoh (ETM-17069):** item stock yang masuk dari Sales Return `SR-…`. Di header detail (info transaksi) dan di kolom **Inbound Ref.**, klik kode itu membuka `/supplychain/sales-returns/edit/{id}` (id transaksi Sales Return yang sama). Sebelum perbaikan, header mengarah ke `/accounting/sales-return/edit/` dan kolom mengarah ke halaman Mutation Inbound — keduanya halaman tidak ditemukan.
 
 ## 5. Permission & Dependencies
 
