@@ -2,7 +2,7 @@
 doc_type: technical
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.14
+version: 1.15
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -19,8 +19,9 @@ related_docs:
 **UI:** `/businessdevelopment/all-sales-order`  
 **API list:** `businessdevelopment/all-sales-order`  
 **Shared Omni:** `omnichannel/sales-order/*` (`type=all` / general endpoints)  
-**Behavior:** [requirement.md](./requirement.md) v1.14 · import general → [SOG technical](../sales-order-general/technical.md)
+**Behavior:** [requirement.md](./requirement.md) v1.15 · import general → [SOG technical](../sales-order-general/technical.md)
 
+> **1.15 (2026-11-05):** TO-BE void releases TF Wave reserved — [requirement §5.8](./requirement.md#58-void--void--recreate--recreate-platform-order-to-be--etm-15859); kanonik [SP §5.8.1](../omni-sales-platform/requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109); ETM-17109 (process ETM-17110). GAP-ASO-10 / GAP-SPD-02 Open.  
 > **1.14 (2026-11-05):** Export All With/Without Details requires `export_filename` — [requirement §5.9](./requirement.md); ETM-16768. `sanitizeExportFileName` + `SalesOrderExportFile.export_type`. GAP-ASO-09 Open.  
 > **1.11 (2026-09-09):** Void / Void & Recreate / Recreate + sync gate — [requirement §5.8](./requirement.md); ETM-15859; kanonik SP.  
 > **1.10 (2026-09-08):** Unavailable Stock FIFO date = Processing Order Date; Last Checked Expected — [requirement §5.4a](./requirement.md); GAP-ASO-07 / GAP-UW-06.  
@@ -36,6 +37,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.15 | 2026-11-05 | TO-BE void TF Wave reserved release (ETM-17109); kanonik SP §5.8.1. GAP-ASO-10 Open |
 | 1.14 | 2026-11-05 | Export All: `export_filename` required; action column from `export_type` (ETM-16768). GAP-ASO-09 Open |
 | 1.11 | 2026-09-09 | Void / Recreate TO-BE (ETM-15859); defer prefix on Void; sync skip create on void+exact ID; order lock on recreate |
 | 1.10 | 2026-09-08 | §5.4a FIFO = POD via `getStockDate()`; Last Checked Expected vs `error_info.updated_at` (GAP-ASO-07) |
@@ -142,6 +144,7 @@ sequenceDiagram
 4. Booking field edits allowed via ASO form; Sales Platform list tetap read-oriented.
 5. Validasi approve tidak diimplementasikan ulang di ASO — delegate ke ApprovalController per tipe.
 6. Export All With/Without Details: `sanitizeExportFileName(export_filename)` non-empty (max 150). History action uses `export_type` when set (`with_details` / `without_details`), not a parse of `file_name`.
+7. **TO-BE (ETM-17109 / GAP-ASO-10):** same as SP invariant — a void SO has no active TF Wave detail holding reserved. Release is the TF Wave detail-delete path. Details of an SO that is not void are not deleted.
 
 ---
 
@@ -172,6 +175,7 @@ sequenceDiagram
 - GAP-ASO-01 Partial — tombol ada; residual Last Checked per-icon + O-01…O-03 + `in_progress` hardcode
 - GAP-ASO-07 — Last Checked Expected = `getStockDate()` (POD / now); AS-IS = `error_info.updated_at`
 - GAP-ASO-08 / GAP-SPD-01 — Void vs Recreate + sync anti auto-create (ETM-15859); touchpoints: approval/void path, platform sync services, FE show Recreate + rename Void & Clone
+- GAP-ASO-10 / GAP-SPD-02 — Void SO still holds reserved on active TF Wave details (ETM-17109 data / ETM-17110 process). Canonical: SP requirement §5.8.1
 - GAP-ASO-03 / GAP-BM-13 — Below Benchmark COGS Error Flag UX + filter
 - GAP-APR-01 (dampak baris platform)
 - Related: [omni-sales-platform technical §13](../omni-sales-platform/technical.md) · [sales-order-general](../sales-order-general/technical.md) · [Benchmark COGS technical §6.6](../accounting-product-benchmark-price/technical.md)

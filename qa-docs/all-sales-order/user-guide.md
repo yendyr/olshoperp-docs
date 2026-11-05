@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.8
+version: 1.9
 last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.14
+source_version: 1.15
 owner: QA - Yemima
 status: review
 ---
@@ -53,6 +53,8 @@ flowchart LR
 Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menambah status.
 
 **(TO-BE · ETM-15859)** Untuk order **platform**: **Void** membatalkan tanpa membuat order baru dari sync. Kalau perlu order marketplace hidup lagi, pakai **Recreate** (show, setelah void) atau **Void & Recreate**. Jangan mengandalkan sync terjadwal untuk “menghidupkan” order void.
+
+**(TO-BE · ETM-17109)** Order yang sudah void saat masih di Wave tidak boleh masih menahan stok. Stok itu harus kembali bisa dijual. Jangan ikut melepas order lain yang masih aktif. Contoh: satu SKU reserved 3 Pcs pada order void kembali available setelah dibersihkan.
 
 ---
 
@@ -123,6 +125,7 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 2. Buka **show** order void → **Recreate** bila perlu SO baru dari marketplace.
 3. Atau **Void & Recreate** (ex Void & Clone) untuk void + recreate sekaligus.
 4. SO baru = tipe **platform**, bukan Sales Order General.
+5. **(TO-BE · ETM-17109)** Order yang sudah void tidak boleh masih menahan stok di Wave. Stok reserved harus kembali bisa dijual. Jangan hapus baris milik order yang masih aktif.
 
 ### F. Export All
 

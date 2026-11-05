@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.14
+version: 1.15
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -27,6 +27,7 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.15 | 2026-11-05 | QA - Hazel (yemimadocs) | **TO-BE** §5.8 paritas SP: SO void tidak menyisakan detail TF Wave aktif yang menahan reserved; hapus lewat jalur hapus detail TF Wave; SO yang belum void tidak dihapus — ETM-17109 (proses ETM-17110). GAP-ASO-10 |
 | 1.14 | 2026-11-05 | QA - Yemima | Export All With/Without Details wajib judul file (dialog **Export File Name**); nama kosong ditolak; nama bersih jadi file unduhan dan baris riwayat. Export Active Page Only tanpa dialog. GAP-ASO-09 Open (ETM-16768) |
 | 1.13 | 2026-10-26 | QA - Yemima | Cross-ref TO-BE ETM-16805 TikTok unit price (kanonik SP §5.5) |
 | 1.12 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE ETM-16762/16763: OC/OD SO → SI (paritas SOG + SP) |
@@ -286,7 +287,11 @@ Sync lock, booking price `0` vs `> 0`, baris tanpa platform product id, audit, `
 
 **Contoh:** Void `260909J2MS4W14` → ID tetap; sync tidak create. User klik Recreate di show → row jadi `void-260909J2MS4W14` + SO baru dengan `260909J2MS4W14`.
 
-**GAP-ASO-08** · SP **GAP-SPD-01** → Decided (lihat gap registry).
+**Paritas reserved Transfer Wave (TO-BE · ETM-17109)**
+
+Baris yang di-void saat masih di Wave mengikuti [Dev - Sales Platform §5.8.1](../omni-sales-platform/requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109). SO yang sudah void tidak boleh menyisakan baris detail Transfer Wave aktif yang menahan reserved. Pelepasan lewat jalur hapus detail TF Wave, sehingga reserved kembali ke available. Detail milik SO yang belum void tidak dihapus. Contoh: WASHBEL40-blue reserved 3 Pcs pada SO void menjadi 0. Proses supaya tidak terulang: [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110).
+
+**GAP-ASO-08** · SP **GAP-SPD-01** → Decided (lihat gap registry). **GAP-ASO-10** · SP **GAP-SPD-02** → Open (TO-BE).
 
 ### 5.9 Export All — judul file wajib (AS-IS · ETM-16768)
 
@@ -364,6 +369,7 @@ flowchart TB
 | **GAP-ASO-05** | Verify Benchmark COGS column = effective Manual COGS snapshot (paritas SP/SOG) | Open (TO-BE) |
 | **GAP-ASO-06** | Paritas UI/API edit detail platform sebelum approve (ETM-15748) vs [SP §6.8](../omni-sales-platform/requirement.md) / ETM-15749 | Open (TO-BE) |
 | **GAP-ASO-08** | Void vs Void & Recreate vs Recreate + gate sync anti auto-create — [§5.8](#58-void--void--recreate--recreate-platform-order-to-be--etm-15859) · ETM-15859 · kanonik [SP GAP-SPD-01](../omni-sales-platform/requirement.md) | Open (TO-BE) |
+| **GAP-ASO-10** | Void SO masih menahan reserved di Transfer Wave — [§5.8](#58-void--void--recreate--recreate-platform-order-to-be--etm-15859) · ETM-17109 · proses ETM-17110 · kanonik [SP §5.8.1 / GAP-SPD-02](../omni-sales-platform/requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109) | Open (TO-BE) |
 | **GAP-APR-01** | Auto-approve cron mengabaikan toggle/delay — berdampak baris platform di ASO | Open — [SP gaps](../omni-sales-platform/requirement.md) |
 | **GAP-ASO-09** | Nama file export sama bisa saling menimpa file (belum unik per export) — [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) | Open |
 
@@ -381,6 +387,7 @@ flowchart TB
 - [ ] **Edit detail platform TO-BE (ETM-15748 / §5.6):** paritas penuh dengan SP §6.8 (add/replace, price/disc/VAT, no delete, sync lock)
 - [ ] **Log Data Pending Orders (ETM-15798 / §5.7):** tab + kolom Store / Platform Order ID|Trx Date / Message; hilang setelah MATCHED; pill **Unmatched Bookings**; paritas SP
 - [ ] **Void / Recreate TO-BE (ETM-15859 / §5.8):** Void tanpa prefix + sync tidak auto-create; Void & Recreate / Recreate prefix + SO platform baru; paritas ASO ↔ SP
+- [ ] **Void + reserved TF Wave (TO-BE · ETM-17109 / §5.8):** paritas SP §5.8.1 — SO void tidak menyisakan detail TF Wave aktif; reserved kembali available; SO yang belum void tidak dihapus detailnya
 - [ ] Doc folder terpisah dari SOG & SP
 - [ ] **Extract** bundle dari detail ASO ditolak jika Price header bundle ≤ 0; boleh jika > 0 (ETM-15732); pesan error price must be greater than zero
 - [ ] **Export All** With Details dan Without Details membuka dialog **Export File Name**; nama kosong ditolak (**File name is required.**); nama terisi menjadi nama file unduhan (`.xlsx`, atau `.zip` bila terpecah) dan tampil di riwayat. **Export Active Page Only** tanpa dialog (ETM-16768 / §5.9)

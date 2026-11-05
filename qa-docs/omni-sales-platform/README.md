@@ -10,12 +10,13 @@ Menu **Dev - Sales Platform** (SO marketplace hasil sync). Route: `/omni/sales-o
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **SoT (6 file):** datalist · order-detail · sync-ingestion · sync-price-mapping · **booking v1.1** · approval-automation  
-**Version:** 1.15 · **User-guide:** v1.6 · `source_version` 1.15 · **Last updated:** 2026-11-05 15:06
+**Version:** 1.16 · **User-guide:** v1.7 · `source_version` 1.16 · **Last updated:** 2026-11-05 16:58
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.16 | 2026-11-05 16:58 | Sales Order yang sudah void tidak boleh masih menahan stok reserved di Transfer Wave. Baris Wave milik order void dihapus lewat jalur yang benar supaya stok kembali available. Order yang masih aktif tidak ikut terhapus (ETM-17109) |
 | 1.15 | 2026-11-05 15:06 | Export All (With Details dan Without Details) wajib isi judul file di dialog Export File Name sebelum unduh. Nama itu yang tampil di riwayat export dan jadi nama file. Export Active Page Only tetap langsung, tanpa dialog (ETM-16768) |
 | 1.12 | 2026-10-02 | Reprice booking/sync in-place (ETM-16212); breakdown bundle Retail + before/after processing / late price (ETM-16216) |
 | 1.11 | 2026-09-09 10:45 | Void vs Void & Recreate vs Recreate + anti auto-create sync (ETM-15859); GAP-SPD-01 Decided |

@@ -2,12 +2,12 @@
 doc_type: user-guide
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.6
+version: 1.7
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 source_docs: [./requirement.md, ./knowledge-base.md, ./technical.md]
-source_version: 1.15
+source_version: 1.16
 ---
 
 # Panduan Pengguna — Dev - Sales Platform
@@ -177,6 +177,7 @@ Edit field booking (Other Information) dari **All Sales Order**, bukan dari list
 1. **Void** → batalkan; ID marketplace tetap; sync tidak bikin SO baru sendiri.
 2. Butuh order hidup lagi → **Recreate** di halaman show (hanya void), atau **Void & Recreate**.
 3. SO baru = tipe platform (bukan Sales Order General).
+4. **(TO-BE · ETM-17109)** Kalau order sudah void saat masih di Wave, stok yang ditahan harus kembali bisa dijual. Jangan ikut melepas order lain yang masih aktif. Contoh: satu SKU reserved 3 Pcs pada order void — setelah dibersihkan, 3 Pcs itu kembali available.
 
 ### Return
 

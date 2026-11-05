@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.15
+version: 1.16
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -158,6 +158,8 @@ Edit field booking (Other Information) dilakukan dari **All Sales Order**, bukan
 | **Void & Recreate** | Void + buat SO platform baru dari marketplace (ex **Void & Clone**). |
 | **Recreate** | Di halaman **show** order yang sudah void — buat SO baru dari marketplace. |
 
+**(TO-BE · ETM-17109)** Order yang sudah **Void** tidak boleh masih menahan stok di Transfer Wave. Stok yang tadinya reserved harus kembali available. Yang dilepas hanya baris milik order yang sudah void. Order yang masih aktif di Wave jangan ikut dihapus. Contoh: SKU WASHBEL40-blue reserved 3 Pcs pada order yang sudah void — setelah dibersihkan, reserved habis dan 3 Pcs kembali available.
+
 Detail: [requirement §5.8](./requirement.md) · paritas [ASO §5.8](../all-sales-order/requirement.md).
 
 ## 6. Auto-approve
@@ -201,6 +203,7 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 | Pecahan harga bundle random aneh / berubah setelah wave | Proporsi sempat pakai Benchmark / rebuild dari random | **TO-BE:** pecah pakai **Retail Price** random; setelah wave pakai **SKU asli** yang sudah dipilih (ETM-16216) |
 | Create membuka form lain | By design | Gunakan Sales Order internal untuk order manual |
 | **Export All** tidak jalan / **File name is required.** | Field **File name** di dialog **Export File Name** masih kosong | Isi nama, lalu klik **Export** lagi |
+| Setelah **Void**, stok SKU masih reserved | Order sudah void, tapi baris Transfer Wave-nya masih hidup | **TO-BE (ETM-17109):** bersihkan hanya baris Wave milik order yang sudah void, supaya reserved kembali available. Jangan hapus baris milik order yang masih aktif. Contoh: WASHBEL40-blue reserved 3 Pcs menjadi 0 |
 
 ---
 

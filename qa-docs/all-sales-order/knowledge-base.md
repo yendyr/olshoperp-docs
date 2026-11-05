@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.14
+version: 1.15
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -103,6 +103,8 @@ Detail: [requirement §5.7](./requirement.md) · [SP booking §3b](../omni-sales
 
 Jangan harap schedule sync “menghidupkan” order void. Detail: [requirement §5.8](./requirement.md) · ETM-15859.
 
+**(TO-BE · ETM-17109)** Order yang sudah void tidak boleh masih menahan stok di Transfer Wave. Reserved harus kembali available. Yang dibersihkan hanya baris milik order void — order yang masih aktif di Wave jangan ikut dihapus. Contoh: SKU reserved 3 Pcs pada order void kembali available setelah baris itu dibersihkan.
+
 ---
 
 ## 3. Troubleshooting
@@ -117,6 +119,7 @@ Jangan harap schedule sync “menghidupkan” order void. Detail: [requirement �
 | Last Checked di tooltip beda dari Processing Order Date | Residual tampilan (waktu job vs tanggal evaluasi) | Expected = POD / now — lihat §5.4a |
 | Ingin filter order harga di bawah HPP | TO-BE: advanced filter Error Flag **Below Benchmark COGS** (paritas Platform / Dev Sales Order) — [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md) |
 | Cek PPN otomatis order marketplace | TO-BE: baris **platform** ikut **Auto Add VAT (Platform Orders)** di Store — [Store KB](../omni-store-binding/knowledge-base.md); baris general tetap setting customer GC |
+| Setelah **Void**, stok masih reserved | **TO-BE (ETM-17109):** baris Transfer Wave milik order void masih hidup. Bersihkan hanya baris itu supaya stok kembali available. Jangan hapus baris order yang masih aktif |
 | Nilai Benchmark COGS di line | TO-BE: snapshot **COGS efektif** (Manual COGS jika aktif) — paritas SP/SOG |
 | Klik **Extract** pada bundle gagal / pesan price must be greater than zero | Price baris bundle masih **0** (sering pada **booking**). Tunggu harga terisi / order ID riil, lalu Extract lagi. Lihat [requirement §5.5](./requirement.md) |
 | Order ID Shopee sudah ada di Seller Center tapi tidak kelihatan di list SO | Sering Order ID advance package tanpa booking — di-hold sampai MATCHED. Cek **Log Data → Pending Orders** (TO-BE). Booking tanpa Order ID: pill **Unmatched Bookings**. |

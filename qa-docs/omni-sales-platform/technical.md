@@ -2,7 +2,7 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.15
+version: 1.16
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog **1.16 (2026-11-05):** TO-BE void releases TF Wave reserved — [requirement §5.8.1](./requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109) / V-VR-07–08; ETM-17109 (process ETM-17110). Delete only active TF Wave details of a void SO via the TF Wave detail-delete path so reserved returns to available. Do not delete details of an SO that is not void. GAP-SPD-02 Open.  
 > Changelog **1.15 (2026-11-05):** Export All With/Without Details requires `export_filename` — [requirement §5.9](./requirement.md); ETM-16768. `exportExcelPlatformDetails` / `exportExcelPlatformWithoutDetails`; `SalesOrderExportExcelJob` writes `.xlsx` up to 5000 rows, else `.zip`. GAP-SP-EX-01 Open.  
 > Changelog **1.13 (2026-10-26):** TO-BE TikTok unit price [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) — `original_price − seller_discount` (supersede ETM-14808); hotspot `OmniTikTokService` map line_item + `$price`. Forward-only.  
 > Changelog **1.12 (2026-10-02):** Reprice in-place (ETM-16212 / §6.10); bundle breakdown Retail + post-wave (ETM-16216 / §6.11). Touchpoints: `OmniShopeeService` `$converting_booking` path — **jangan** delete children + `pickBundleChildren` recreate; `SalesOrderDetailController::pickBundleChildren` — random harus `product->price` bukan `benchmarkPrice`.  
@@ -211,6 +212,7 @@ sequenceDiagram
 15. **Advance package without booking link:** `OmniShopeeService::storeSalesOrder` — jika `advance_package` dan order status masih sebelum gate yang disepakati / belum ter-link ke booking (**MATCHED**), return success skip (**bukan** Failed Sync) agar tidak materialisasi SO kedua saat webhook order_id tanpa `booking_sn`.
 16. **MATCHED:** `update_so_booking_fields` / convert path mengisi `platform_order_id` pada SO booking existing + escrow reprice (`converting_booking`).
 17. Export All With/Without Details: `sanitizeExportFileName(export_filename)` non-empty (max 150). History action uses `export_type` when set, not a parse of `file_name`.
+18. **TO-BE (ETM-17109 / GAP-SPD-02):** a void SO has no active TF Wave detail row holding reserved. Release is the TF Wave detail-delete path (reserved returns to available). Details of an SO that is not void are not deleted.
 
 ---
 
@@ -225,6 +227,7 @@ sequenceDiagram
 | Auto Add VAT **(TO-BE GAP-ST-VAT-01)** | Resolve dari `Store.auto_add_transaction_platform` saat detail create/sync + unit price set; **bukan** `Company.auto_add_transaction_customer` |
 | Benchmark COGS snapshot **(TO-BE GAP-BM-14)** | Line capture = **effective** COGS (Manual override jika aktif); shared dengan SOG/ASO |
 | Export All file name (ETM-16768) | Empty sanitized `export_filename` → `File name is required.` Stored name max 150. Action label from `export_type` |
+| Void TF Wave reserved **(TO-BE ETM-17109)** | Void SO: delete its active TF Wave details on the detail-delete path. Non-void SO: do not delete |
 
 ---
 
@@ -252,6 +255,7 @@ sequenceDiagram
 | Auto-approve exception | Job catch + clear lock | Next cron / error-approve |
 | Bulk Sync overlap | Cache lock | Message processing in progress |
 | Duplicate job | `preventDuplicateJob` | Skip |
+| Void leaves TF Wave detail (GAP-SPD-02) | Reserved stays; available does not rise | TO-BE: delete only that void SO's TF Wave details. Do not delete a non-void SO's details |
 
 ---
 
@@ -289,6 +293,7 @@ sequenceDiagram
 | GAP-APR-01 | `SalesOrderAutoApprove` ignores `OrderProcessSetting.auto_approve`; FE documents delay as ignored |
 | GAP-SPL-01 | Rejected omitted from carousel buckets |
 | GAP-SPD-01 | Void vs Recreate + sync anti auto-create (ETM-15859) — Decided TO-BE |
+| GAP-SPD-02 | Void SO still holds reserved on active TF Wave details — ETM-17109 data / ETM-17110 process. TO-BE: detail-delete path. See requirement §5.8.1 |
 | GAP-BOOK-01 | **Accepted residual:** jalur IS mitigated — null `platform_order_id` → no settlement match; approve SP no SI. Residual = manual SI amount 0 only. See requirement §3b |
 | GAP-BOOK-02 | **Design guard:** dual-path booking vs advance package tanpa `booking_sn` — skip create sampai MATCHED; pelanggaran = 2 SO 1 order_id (fatal UPFOS). See requirement §3b / invariants 14–16 |
 | GAP-SYN-01 | No Shopee skip-sync optimization |
