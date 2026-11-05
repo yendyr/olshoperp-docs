@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.13
-last_updated: 2026-10-26
+version: 1.15
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 audience: operator
@@ -74,6 +74,18 @@ Setelah perubahan **tersimpan**, sync marketplace **tidak** menimpa field itu la
 | **Log Data** | Riwayat batch sync (sukses/gagal/dilewati per toko). **TO-BE:** tab **Pending Orders** (Order ID di-hold menunggu MATCHED) + pill **Unmatched Bookings** (booking tanpa Order ID) — ETM-15798 / [ASO §5.7](../all-sales-order/requirement.md) |
 
 Ringkasan status di atas daftar (Sales Request → … → Complete / Return / Cancelled) saling eksklusif. Order **Rejected** saat ini tidak masuk ringkasan tersebut.
+
+### Export All — judul file
+
+**Export All** (**With Details** atau **Without Details**) meminta judul file dulu.
+
+1. Klik **Export All** → **With Details** atau **Without Details**.
+2. Dialog **Export File Name** terbuka. Field **File name** sudah terisi saran (boleh diganti, paling banyak 150 karakter). Contoh: `Dev - Sales Platform - With Details Export 05-11-2026_15.06.00`.
+3. Klik **Export**. Kalau field kosong, muncul **File name is required.** dan file tidak dibuat.
+4. Nama itu yang terunduh (file Excel, atau zip bila hasilnya dipecah) dan yang tampil di riwayat export. Kolom aksi mengikuti pilihan With/Without Details.
+5. **Export Active Page Only** tidak membuka dialog.
+
+Karakter yang tidak boleh di nama file diganti tanda minus. Contoh: `Laporan SO 05/11` tersimpan `Laporan SO 05-11`.
 
 ### Ikon proses gudang (Processing Status)
 
@@ -188,6 +200,7 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 | Detail order hilang / diganti ID setelah sync harga | Sync convert booking sempat **hapus+buat ulang** baris | **TO-BE:** sync hanya **edit harga** di baris yang sama (ETM-16212). Extract Bundle hanya sebelum masuk gudang |
 | Pecahan harga bundle random aneh / berubah setelah wave | Proporsi sempat pakai Benchmark / rebuild dari random | **TO-BE:** pecah pakai **Retail Price** random; setelah wave pakai **SKU asli** yang sudah dipilih (ETM-16216) |
 | Create membuka form lain | By design | Gunakan Sales Order internal untuk order manual |
+| **Export All** tidak jalan / **File name is required.** | Field **File name** di dialog **Export File Name** masih kosong | Isi nama, lalu klik **Export** lagi |
 
 ---
 
@@ -197,6 +210,7 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 **Apa beda Log Data dan API Data Log?** Log Data = batch sync toko; API Data Log = payload/detail di form order (mis. escrow Shopee).  
 **Kenapa Net Sales beda dengan invoice?** Biaya/diskon tambahan di SP tidak masuk Sales Invoice.  
 **Approve booking amount 0 apakah langsung jurnal 0?** Tidak. Settlement baru jalan setelah ada Platform Order ID (setelah **MATCHED**); biasanya amount sudah dari order yang sudah match.  
+**Export All minta nama file?** Ya, untuk **With Details** dan **Without Details**. Kosongkan **File name** → **File name is required.** **Export Active Page Only** tidak menanyakan nama.  
 **Boleh Extract bundle booking yang Price masih 0?** Tidak. Sistem menolak sampai Price > 0 (sering setelah MATCHED / harga platform masuk).
 **Setelah order sudah pick/ship, sync harga boleh hapus baris detail?** Tidak. Sync hanya **ubah angka harga** di baris yang sama supaya dokumen gudang & Instant Settlement tidak putus (ETM-16212).
 **Harga header bundle booking baru masuk setelah order sudah di gudang — pecahannya pakai apa?** Pakai **detail final** yang sudah ada (SKU asli setelah Send to Default Waves), bukan seolah masih random. Pecah harga berbasis **Retail Price** komponen (bukan Benchmark COGS) — ETM-16216.

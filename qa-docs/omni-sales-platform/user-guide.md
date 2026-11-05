@@ -2,12 +2,12 @@
 doc_type: user-guide
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.5
-last_updated: 2026-09-09
+version: 1.6
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 source_docs: [./requirement.md, ./knowledge-base.md, ./technical.md]
-source_version: 1.11
+source_version: 1.15
 ---
 
 # Panduan Pengguna — Dev - Sales Platform
@@ -120,6 +120,7 @@ Setelah order **Approved**:
 - **Kalau ada biaya/diskon tambahan** dari label akun platform, itu hanya info di SO — **tidak** ikut ke Sales Invoice. Wajar kalau Net Sales beda dengan nilai invoice.
 - **Kalau kamu atur “menit delay” auto-approve di Omni Setting**, jadwal harian sekitar **19:00** saat ini **tidak** mengikuti pengaturan itu. Auto-approve malam hari tetap jalan sesuai filter sistem.
 - **Kalau fitur Auto Add VAT sudah live**, isi pajak produk mengikuti **Auto Add VAT (Platform Orders)** di Store toko itu (Store → Accounting & Tax) — **bukan** setting customer di General Company. Order lama tidak diisi ulang otomatis.
+- **Kalau kamu Export All** (**With Details** atau **Without Details**) tanpa mengisi **File name**, sistem menolak dengan **File name is required.** **Export Active Page Only** tidak menanyakan nama.
 
 ---
 
@@ -135,6 +136,14 @@ Setelah order **Approved**:
    - **Order Synchronize Status** — hari ini: berapa order di platform vs sudah masuk sistem, per toko.
    - **Log Data** — riwayat batch sync (sukses/gagal/dilewati per toko). **TO-BE:** tab **Pending Orders** (Order ID di-hold menunggu MATCHED) + pill **Unmatched Bookings**. Beda dengan **API Data Log** di form order (isi payload, misalnya escrow Shopee).
 3. Perbaiki master (binding, COA, gudang, kurir) → sync/retry → approve.
+
+### Export All
+
+1. Klik **Export All** → **With Details** atau **Without Details**.
+2. Di dialog **Export File Name**, isi atau ubah **File name**. Saran sudah terisi, misalnya `Dev - Sales Platform - With Details Export 05-11-2026_15.06.00` (paling banyak 150 karakter).
+3. Klik **Export**. Kalau nama kosong, muncul **File name is required.**
+4. File yang terunduh memakai nama itu (Excel, atau zip bila hasilnya dipecah beberapa bagian). Nama yang sama tampil di riwayat export.
+5. **Export Active Page Only** tidak membuka dialog.
 
 ### Approve & proses gudang
 
@@ -183,6 +192,7 @@ Edit field booking (Other Information) dari **All Sales Order**, bukan dari list
 - **Tidak auto-approve** → ada error flag, harga di bawah Benchmark COGS, booking, atau order sudah ditandai cegah approve (misalnya setelah ganti produk). Perbaiki lalu approve manual.
 - **Create membuka form lain** → memang begitu. Order manual = Dev - Sales Order.
 - **Apa beda Log Data dan API Data Log?** Log Data = batch sync toko. API Data Log = detail di form order.
+- **Export All** minta judul file. Kosongkan **File name** → **File name is required.** Contoh `Laporan SO 05/11` tersimpan `Laporan SO 05-11`.
 
 **Contoh harga Shopee:** SKU tampil **25.900** di order detail marketplace, padahal harga seller **53.999** karena Shopee menanggung **28.099**. Sistem memakai data escrow supaya penjualan tidak mengecil salah. Order lama (sebelum perbaikan) bisa masih understated sampai di-sync ulang.
 

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.14
-last_updated: 2026-10-26
+version: 1.15
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package, Pending Orders, Unmatched Bookings, Void, Void & Recreate, Recreate]
@@ -17,7 +17,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 **SoT:** 6 file `omni-sales-platform-*-source-of-truth.md` (booking v1.1)  
 **Status:** AS-IS verified + PM SoT merge · lihat §Gaps  
 **Jira (edit detail TO-BE):** [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) · pasangan ASO [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748)  
-**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) — Additional Cost/Disc SO → SI · [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) (TikTok unit price) supersedes rumus [ETM-14808](https://erpintegration.atlassian.net/browse/ETM-14808)
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) — Additional Cost/Disc SO → SI · [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) (TikTok unit price) supersedes rumus [ETM-14808](https://erpintegration.atlassian.net/browse/ETM-14808) · [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) (judul file Export All)
 
 ---
 
@@ -25,6 +25,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.15 | 2026-11-05 | QA - Yemima | Export All With/Without Details wajib judul file (dialog **Export File Name**); nama kosong ditolak; nama bersih jadi file unduhan dan baris riwayat. Export Active Page Only tanpa dialog. GAP-SP-EX-01 Open (ETM-16768) |
 | 1.14 | 2026-10-26 | QA - Yemima | **TO-BE** [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805): TikTok unit price = `original_price − seller_discount` (supersede ETM-14808 `sale_price + platform_discount`); forward-only |
 | 1.13 | 2026-10-22 | QA - Yemima | TO-BE ETM-16762/16763: Additional Cost/Disc dari Labeling+Mapping **wajib** carry ke SI pertama (bukan info-only) |
 | 1.12 | 2026-10-02 | QA - Yemima | §6.10 reprice booking/sync = update in-place (no delete-reinsert) — ETM-16212; §6.11 breakdown Retail + before/after processing / late booking price — ETM-16216 |
@@ -344,6 +345,10 @@ flowchart TD
 
 Paritas wajib di [All Sales Order §5.8](../all-sales-order/requirement.md#58-void--void--recreate--recreate-platform-order-to-be--etm-15859). Related: [ETM-15823](https://erpintegration.atlassian.net/browse/ETM-15823) (bukan reopen).
 
+### 5.9 Export All — judul file wajib (AS-IS · ETM-16768)
+
+**Export All** → **With Details** atau **Without Details** membuka dialog **Export File Name** (field **File name**, tombol **Export**). Nama wajib, maks. 150 karakter, placeholder **Enter file name**, terisi saran seperti `Dev - Sales Platform - With Details Export 05-11-2026_15.06.00` (tanggal-jam `dd-mm-yyyy_HH.MM.SS`). Kosong → **File name is required.** di dialog dan di backend; file tidak dibuat. Karakter yang tidak boleh di nama file (kurang-dari, lebih-dari, titik dua, kutip, garis miring, garis miring terbalik, garis tegak, tanda tanya, bintang) diganti tanda minus; spasi berlebih dirapikan; hasil dipotong 150 karakter. Nama bersih itu yang diunduh (`.xlsx`, atau `.zip` bila dipecah beberapa bagian) dan yang tercantum di riwayat export. Kolom aksi riwayat mengikuti tipe export, bukan potongan nama file. **Export Active Page Only** tetap langsung, tanpa dialog. Contoh: `Laporan SO 05/11` tersimpan `Laporan SO 05-11`. Paritas [All Sales Order §5.9](../all-sales-order/requirement.md) · [Dev - Sales Order §6.8](../sales-order-general/requirement.md).
+
 ---
 
 ## 6. Validasi & Rules
@@ -547,6 +552,15 @@ Kanonik rumus umum: [System Product §11](../system-product/requirement.md#11-bu
 | V-BD-02 | Reprice post-wave | Update in-place pada SKU asli |
 | V-BD-03 | Late booking price | Alokasi ke detail final existing |
 
+### 6.12 Export All — judul file (ETM-16768)
+
+| ID | Rule | Efek |
+|----|------|------|
+| V-EXP-01 | Export All With/Without Details, **File name** kosong setelah dibersihkan | Tolak. Pesan **File name is required.** (dialog dan backend). File tidak dibuat |
+| V-EXP-02 | **File name** terisi | Nama bersih (maks. 150) jadi nama file unduhan dan baris riwayat export |
+
+**Export Active Page Only** tidak memakai V-EXP-01 / V-EXP-02.
+
 ---
 
 ## 7. Relasi Menu Lain
@@ -627,6 +641,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 | **GAP-ST-VAT-01** | Auto Add VAT order platform dari **Store** (bukan customer GC) — kanonik di [Store §4.9](../omni-store-binding/requirement.md#49-auto-add-vat-platform-orders--to-be-gap-st-vat-01) | Line platform sering tanpa VAT auto | Open (TO-BE) |
 | **GAP-BM-14** (consumer) | Snapshot Benchmark COGS = **effective** Manual COGS — [§6.6](#66-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14) | Capture masih rumus mentah | Open (TO-BE) |
 | **GAP-ED-01** | Edit detail sebelum approve + sync lock (add/replace SKU, price, disc, VAT; no delete) — [§6.8](#68-edit-detail-sebelum-approve--addreplace-sku-price-disc-vat-no-delete-sync-lock-to-be--etm-15749) · ETM-15749 | Form platform masih read-mostly; sync bisa timpa price | Open (TO-BE) |
+| **GAP-SP-EX-01** | Nama file export sama bisa saling menimpa file (belum unik per export) — [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) | Dua export berjudul sama belum dijamin file-nya terpisah | Open |
 
 **[VERIFY: CODEBASE] terbuka:** Start Date global vs store; Bulk Sync residual; Instant Processing timing vs Complete; Total Price composition; Invoice∪FS caps; bind-error owner mismatch; Buyer Name censor scope; TikTok NULL discount; auto-delete soft/hard.
 
@@ -649,6 +664,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 - [ ] **Void / Recreate TO-BE (ETM-15859 / §5.8 / §6.9):** Void tanpa prefix + sync skip create; Void & Recreate / Recreate prefix + SO platform; lock race; paritas ASO
 - [ ] Additional cost/disc tidak ke SI
 - [ ] Return bucket = SR dan/atau FS
+- [ ] **Export All** With Details dan Without Details membuka dialog **Export File Name**; nama kosong ditolak (**File name is required.**); nama terisi menjadi nama file unduhan (`.xlsx`, atau `.zip` bila terpecah) dan tampil di riwayat. **Export Active Page Only** tanpa dialog (ETM-16768 / §5.9)
 
 ---
 
@@ -670,3 +686,6 @@ A: Shopee sering kirim Order ID dulu **tanpa** Booking Number (jalur advance pac
 
 **Q: Approve booking amount 0 apakah langsung jurnal revenue 0?**  
 A: Tidak lewat jalur normal. Approve platform tidak auto-SI; Instant Settlement butuh `platform_order_id`. Setelah MATCHED, amount biasanya sudah dari order reguler.
+
+**Q: Export All minta judul file?**  
+A: Ya. **With Details** dan **Without Details** membuka dialog **Export File Name**. Kosongkan **File name** → **File name is required.** Saran awal boleh dipakai atau diganti (maks. 150 karakter). **Export Active Page Only** tidak menanyakan nama. Lihat §5.9 (ETM-16768).

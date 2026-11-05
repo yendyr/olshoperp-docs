@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.7
-last_updated: 2026-09-09
+version: 1.8
+last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.11
+source_version: 1.14
 owner: QA - Yemima
 status: review
 ---
@@ -84,6 +84,7 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 - Template Excel import **tidak berubah**.  
 - Di detail, tombol **Extract** pada SKU **bundle** hanya berhasil jika **Price** baris bundle **lebih dari 0**. Kalau masih 0 (sering di order booking), Extract ditolak sampai harga terisi.
 - **(TO-BE)** Order ID Shopee yang menunggu match ke booking → cek **Log Data → Pending Orders**. Booking tanpa Order ID → pill **Unmatched Bookings**.
+- Kalau kamu **Export All** (**With Details** atau **Without Details**) tanpa mengisi **File name**, sistem menolak dengan **File name is required.** **Export Active Page Only** tidak menanyakan nama.
 
 ---
 
@@ -123,6 +124,14 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 3. Atau **Void & Recreate** (ex Void & Clone) untuk void + recreate sekaligus.
 4. SO baru = tipe **platform**, bukan Sales Order General.
 
+### F. Export All
+
+1. Klik **Export All** → **With Details** atau **Without Details**.
+2. Di dialog **Export File Name**, isi atau ubah **File name**. Saran sudah terisi, misalnya `All Sales Order - With Details Export 05-11-2026_15.06.00` (paling banyak 150 karakter).
+3. Klik **Export**. Kalau nama kosong, muncul **File name is required.**
+4. File yang terunduh memakai nama itu (Excel, atau zip bila hasilnya dipecah beberapa bagian). Nama yang sama tampil di riwayat export.
+5. **Export Active Page Only** tidak membuka dialog.
+
 🎬 [Interactive demo akan ditambahkan di sini]
 
 ---
@@ -134,6 +143,7 @@ Mengikuti sumber: Draft → Open → Approved / Rejected / Void. ASO tidak menam
 - Platform Order ID di baris general ≠ nomor order marketplace.  
 - Error Flag **Below Benchmark COGS** (harga sebelum pajak di bawah HPP acuan) berlaku di ASO sama seperti di Sales Platform / Dev Sales Order — filter lewat label Error Flag; auto-approve bisa ditahan, approve manual tetap boleh.
 - **(TO-BE)** Setelah Void, sync **tidak** boleh bikin SO baru sendiri — pakai **Recreate** / **Void & Recreate** (ETM-15859).
+- Kalau **Export** di dialog **Export File Name** ditolak, isi **File name** dulu. Contoh `Laporan SO 05/11` tersimpan `Laporan SO 05-11` karena garis miring tidak boleh di nama file.
 
 ---
 

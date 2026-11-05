@@ -10,8 +10,8 @@ Route: `/businessdevelopment/all-sales-order`
 | Technical | [technical.md](./technical.md) | Developer | review |
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
-**User-guide:** v1.7 · `source_version` 1.11  
-**Version (3 layer):** 1.11 · **Last updated:** 2026-09-09 10:45
+**User-guide:** v1.8 · `source_version` 1.14  
+**Version (3 layer):** 1.14 · **Last updated:** 2026-11-05 15:06
 
 ## Peran vs dua menu sumber
 
@@ -28,6 +28,7 @@ Route: `/businessdevelopment/all-sales-order`
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.14 | 2026-11-05 15:06 | Export All (With Details dan Without Details) wajib isi judul file di dialog Export File Name sebelum unduh. Nama itu yang tampil di riwayat export dan jadi nama file. Export Active Page Only tetap langsung, tanpa dialog (ETM-16768) |
 | 1.11 | 2026-09-09 10:45 | Void vs Void & Recreate vs Recreate + anti auto-create sync (ETM-15859); paritas Dev - Sales Platform |
 | 1.10 | 2026-09-08 11:00 | Unavailable Stock FIFO memakai Processing Order Date; Last Checked Expected = tanggal evaluasi (GAP-ASO-07 / UW GAP-UW-06) |
 | 1.9 | 2026-09-04 14:20 | Log Data tab **Pending Orders** + pill **Unmatched Bookings** (booking dual-path visibility) — ETM-15798; paritas Dev - Sales Platform |

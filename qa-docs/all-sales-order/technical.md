@@ -2,8 +2,8 @@
 doc_type: technical
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.11
-last_updated: 2026-09-09
+version: 1.14
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 related_docs:
@@ -19,8 +19,9 @@ related_docs:
 **UI:** `/businessdevelopment/all-sales-order`  
 **API list:** `businessdevelopment/all-sales-order`  
 **Shared Omni:** `omnichannel/sales-order/*` (`type=all` / general endpoints)  
-**Behavior:** [requirement.md](./requirement.md) v1.11 · import general → [SOG technical](../sales-order-general/technical.md)
+**Behavior:** [requirement.md](./requirement.md) v1.14 · import general → [SOG technical](../sales-order-general/technical.md)
 
+> **1.14 (2026-11-05):** Export All With/Without Details requires `export_filename` — [requirement §5.9](./requirement.md); ETM-16768. `sanitizeExportFileName` + `SalesOrderExportFile.export_type`. GAP-ASO-09 Open.  
 > **1.11 (2026-09-09):** Void / Void & Recreate / Recreate + sync gate — [requirement §5.8](./requirement.md); ETM-15859; kanonik SP.  
 > **1.10 (2026-09-08):** Unavailable Stock FIFO date = Processing Order Date; Last Checked Expected — [requirement §5.4a](./requirement.md); GAP-ASO-07 / GAP-UW-06.  
 > **1.9 (2026-09-04):** Log Data tab **Pending Orders** + pill **Unmatched Bookings** — [requirement §5.7](./requirement.md); ETM-15798 (paritas SP).  
@@ -35,6 +36,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.14 | 2026-11-05 | Export All: `export_filename` required; action column from `export_type` (ETM-16768). GAP-ASO-09 Open |
 | 1.11 | 2026-09-09 | Void / Recreate TO-BE (ETM-15859); defer prefix on Void; sync skip create on void+exact ID; order lock on recreate |
 | 1.10 | 2026-09-08 | §5.4a FIFO = POD via `getStockDate()`; Last Checked Expected vs `error_info.updated_at` (GAP-ASO-07) |
 | 1.9 | 2026-09-04 | Log Data Pending Orders + Unmatched Bookings (ETM-15798); store hold orphans dual-path booking |
@@ -60,6 +62,9 @@ related_docs:
 | `.../Omni/SalesOrder/DatalistDetail.vue` | Detail platform (dipakai ASO form platform) |
 | Shared BE | `SalesOrderController::revalidateFlag` / `checkRevalidateFlag` · `CheckOrderFlagsJob` |
 | Shared BE extract | `SalesOrderDetailController::extractBundleDetails` — `bccomp($bundle_header->each_price, '0.0000', 4)` must be > 0 |
+| Export All ASO | `AllSalesOrderController::doExportExcelPlatform` — `sanitizeExportFileName($request->export_filename)`; empty → `File name is required.` |
+| Export file row | `SalesOrderExportFile` (`omni_sales_order_export_files.file_name`, `export_type`) |
+| Nama file | `app/Helpers/MainHelper.php` `sanitizeExportFileName`, `getExportActionName`, `handleExportExcelAllBatchCompletion` (1 part `.xlsx`, lebih dari 1 part `.zip`) |
 
 FE pills: `PillButtons.vue` dengan `type="all"`.
 
@@ -70,7 +75,8 @@ FE pills: `PillButtons.vue` dengan `type="all"`.
 | Method | Path | Notes |
 |--------|------|-------|
 | GET | `businessdevelopment/all-sales-order` | Datalist gabungan |
-| GET | `.../export-file` / `export-progress` | Export ASO |
+| GET | `.../export-file` / `export-progress` | Riwayat / progress export ASO |
+| POST | `businessdevelopment/all-sales-order/export-excel` | Export All. Body `export_filename` wajib untuk With/Without Details. **Export Active Page Only** tidak lewat gerbang ini |
 | GET | `omnichannel/sales-order/get` | Dipakai partial (failed_process filters) |
 | GET | `omnichannel/sales-order/filter-process-status?type=all` | Carousel buckets |
 | GET | `omnichannel/sales-order/pill-count?type=all` | Pill counters |
@@ -135,6 +141,7 @@ sequenceDiagram
 3. Create path tetap menghasilkan SO **general** (store Others / defaults).
 4. Booking field edits allowed via ASO form; Sales Platform list tetap read-oriented.
 5. Validasi approve tidak diimplementasikan ulang di ASO — delegate ke ApprovalController per tipe.
+6. Export All With/Without Details: `sanitizeExportFileName(export_filename)` non-empty (max 150). History action uses `export_type` when set (`with_details` / `without_details`), not a parse of `file_name`.
 
 ---
 
@@ -145,6 +152,7 @@ sequenceDiagram
 | `type="all"` pills | Counters gabungan |
 | Import history | Shared Omni SO General endpoints |
 | `from-all-sales-order` | Form flag untuk breadcrumb/back |
+| Export File Name dialog | **Export All** With/Without Details. **Export Active Page Only** skips the dialog |
 
 ---
 
@@ -160,6 +168,7 @@ sequenceDiagram
 
 ## 8. Known Issues
 
+- GAP-ASO-09 — same export title is not unique per export (ETM-16768). Open. Do not treat a colliding name as accepted behaviour
 - GAP-ASO-01 Partial — tombol ada; residual Last Checked per-icon + O-01…O-03 + `in_progress` hardcode
 - GAP-ASO-07 — Last Checked Expected = `getStockDate()` (POD / now); AS-IS = `error_info.updated_at`
 - GAP-ASO-08 / GAP-SPD-01 — Void vs Recreate + sync anti auto-create (ETM-15859); touchpoints: approval/void path, platform sync services, FE show Recreate + rename Void & Clone

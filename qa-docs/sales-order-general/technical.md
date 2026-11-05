@@ -2,7 +2,7 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.8
+version: 3.9
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -14,9 +14,10 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 **Type:** `type_sales_order = general`  
 **UI:** `/businessdevelopment/sales-order-general`  
 **API prefix:** `/api/omnichannel/sales-order/*`  
-**Behavior:** [requirement.md](./requirement.md) v3.8  
+**Behavior:** [requirement.md](./requirement.md) v3.9  
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB
 
+> **3.9 (2026-11-05):** Export All With/Without Details requires `export_filename` — [requirement §6.8](./requirement.md); ETM-16768. `SalesOrderController::exportExcelGeneral` + `SalesOrderGeneralExportExcelJob` (appends `.xlsx`). GAP-SOG-16 Open.  
 > **3.8 (2026-11-05):** Import Non-Processed approve+outbound locks `scm_item_stocks` and re-allocates FIFO — [requirement §6.3.2](./requirement.md); ETM-17081 / PR #6695 (`97ad324`).  
 > **3.7 (2026-11-04):** Import Price decimal normalize + max 4 dp + rounding reconciliation — [requirement §6.3.4](./requirement.md); ETM-17055 (fe69fd3).  
 > **3.4 (2026-08-12):** TO-BE Benchmark COGS snapshot = effective Manual COGS — [requirement §8.2](./requirement.md#82-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14); GAP-SOG-15 / GAP-BM-14.  
@@ -28,6 +29,7 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.9 | 2026-11-05 | Export All: `export_filename` required; `export_type` drives history action (ETM-16768). GAP-SOG-16 Open |
 | 3.8 | 2026-11-05 | Import Non-Processed: `validate(lock_stock: true)` + `getFulfillAfterFifo(lock_for_update: true)` inside the create transaction; FIFO re-allocate after wait (ETM-17081, PR #6695) |
 | 3.7 | 2026-11-04 | Import Price: normalize dot/comma, reject more than 4 dp, reconcile 4-dp line vs 2-dp header before SO create; `hasOtherHeaderError` prefix `Column %` (ETM-17055) |
 | 3.4 | 2026-08-12 | TO-BE Benchmark COGS snapshot = effective Manual COGS; GAP-SOG-15 / GAP-BM-14 |
@@ -87,6 +89,9 @@ flowchart LR
 | Config | `config/general.php` → `max_child`; `config/omni.php` → `approve_so.approve_with_validation` |
 | Non-Processed generate / validate | `Modules/OmniChannel/Logics/SalesOrder/SalesOrderImportGenerateLogic.php`, `SalesOrderValidationLogic.php`, `SalesOrderGenerateRandomLogic.php` |
 | FIFO stock lock | `app/Helpers/SupplyChain/WarehouseHelper.php` |
+| Export All | `SalesOrderController::exportExcelGeneral` — `sanitizeExportFileName`; empty → `File name is required.` |
+| Export jobs | `SalesOrderGeneralExportAllJob`, `SalesOrderGeneralExportExcelJob` (final `.xlsx`) |
+| Export row / action | `Modules/OmniChannel/Entities/SalesOrderExportFile.php` (`file_name`, `export_type`); `getExportActionName` in `app/Helpers/MainHelper.php` |
 
 ### Frontend
 
@@ -114,6 +119,8 @@ flowchart LR
 | GET | `omnichannel/sales-order/pill-count?type=…` | ASO/SP pills |
 | POST | `omnichannel/sales-order/{id}/approve` | Approve |
 | GET | `omnichannel/sales-order/export?type=general` | Template |
+| POST | `omnichannel/sales-order/export-excel` | Export All (`type` bukan `platform`). Body `export_filename` wajib untuk With/Without Details. **Export Active Page Only** tidak lewat gerbang ini |
+| GET | `omnichannel/sales-order/export-file` | Riwayat export menu `Sales Order`; kolom aksi dari `export_type` |
 
 ASO list: `businessdevelopment/all-sales-order/get?type=all` (shared column engine).
 
@@ -259,6 +266,7 @@ Random SKU: `SalesOrderGenerateRandomLogic` calls `validateDetail` for details c
 | INV-SOG-14 | Imported Price has at most 4 decimal places; a longer trailing fraction fails in VALIDATING and is not stored |
 | INV-SOG-15 | Per order, `abs(Σ round(round(qty*price, 4), 2) − round(Σ round(qty*price, 4), 2))` is at most `0.0001`, else the order fails in VALIDATING and no SO is created |
 | INV-SOG-16 | Import Non-Processed approve+outbound stock allocation under an active transaction uses `lock_stock` / `lockForUpdate`, so concurrent workers serialize on locked `item_stock` rows and re-allocate FIFO after the wait |
+| INV-SOG-17 | Export All With/Without Details stores a non-empty `sanitizeExportFileName(export_filename)` (max 150) on `omni_sales_order_export_files.file_name`, and `getExportActionName` prefers `export_type` over the file name |
 
 ---
 
@@ -269,6 +277,7 @@ Random SKU: `SalesOrderGenerateRandomLogic` calls `validateDetail` for details c
 - Import validate sheet: reject Price with more than 4 decimal places before parse.  
 - Import validation logic: rounding reconciliation (INV-SOG-15) in VALIDATING; `hasOtherHeaderError()` is `LIKE 'Column %'`.  
 - Import Non-Processed approve: `validate(lock_stock: true)` only inside the create transaction (INV-SOG-16, ETM-17081).  
+- Export All: `SalesOrderController::exportExcelGeneral` rejects empty `sanitizeExportFileName(export_filename)` with `File name is required.` Final download `{file_name}.xlsx` via `SalesOrderGeneralExportExcelJob`. History action from `export_type` (ETM-16768, INV-SOG-17).  
 - Import Sheet2: shared `Other Cost/Disc Code`; AS-IS prefers OtherCost when both match — TO-BE fail (GAP-SOG-13).  
 - Soft-deleted SO still can block platform order ID on re-import if query does not exclude trashed — GAP related.  
 - `bootImport` master lookup from **first chunk only** — risk for rows after chunk 500 (GAP capacity).
@@ -284,6 +293,7 @@ Random SKU: `SalesOrderGenerateRandomLogic` calls `validateDetail` for details c
 | ASO upload | Still `upload?type=general` |
 | Processing icons | `formatAvailabilityAndProcessStatus` (TransferSummary) |
 | Import UI | Dual actions: **Import Processed** / **Import Non-Processed** + history/log (Non-Processed progress TO-BE Skip Wave–like) |
+| Export File Name dialog | **Export All** With/Without Details sends `export_filename`. **Export Active Page Only** skips the dialog |
 
 ---
 
@@ -334,6 +344,7 @@ Random SKU: `SalesOrderGenerateRandomLogic` calls `validateDetail` for details c
 | GAP-SOG-13 | Sheet2: if both OtherCost & OtherDiscount match code → fail SO group (stop silent `$otherCost ?? $otherDiscount`) |
 | GAP-SOG-14 / GAP-BM-13 | `cogs-error` UX Below Benchmark COGS — shared ErrorFlag + prevent_auto_approve helper |
 | GAP-SOG-14 / GAP-BM-13 | `cogs-error` UX: `money-bill-trend-down`, filter label Below Benchmark COGS, FX primary helper shared with prevent_auto_approve |
+| GAP-SOG-16 | Same export title is not unique per export (ETM-16768). Open. Do not treat a colliding name as accepted behaviour |
 
 ---
 

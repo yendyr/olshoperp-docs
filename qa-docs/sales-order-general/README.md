@@ -11,13 +11,14 @@ Route: `/businessdevelopment/sales-order-general`
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **SoT:** busdev SO General v1.0 + Fulfillment Mode TO-BE  
-**User-guide:** v1.6 · `source_version` 3.8  
-**Version (3 layer):** 3.8 · **Last updated:** 2026-11-05 14:55
+**User-guide:** v1.7 · `source_version` 3.9  
+**Version (3 layer):** 3.9 · **Last updated:** 2026-11-05 15:06
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.9 | 2026-11-05 15:06 | Export All (With Details dan Without Details) wajib isi judul file di dialog Export File Name sebelum unduh. Nama itu yang tampil di riwayat export dan jadi nama file. Export Active Page Only tetap langsung, tanpa dialog (ETM-16768) |
 | 3.8 | 2026-11-05 14:55 | Import Non-Processed: beberapa order dengan SKU yang sama di satu unggahan tidak lagi gagal stok hanya karena proses berjalan bersamaan pada batch masuk yang sama. Sistem mengunci baris stok lalu memakai batch berikutnya yang masih ada (ETM-17081) |
 | 3.7 | 2026-11-04 15:40 | Import Excel: harga dengan titik atau koma dibaca sebagai harga yang benar (contoh 10000.6789 = Rp 10.000,6789). Lebih dari 4 angka desimal ditolak. Order gagal jika total baris tidak sama dengan total header, walau selisihnya 1 rupiah (ETM-17055) |
 | 3.5 | 2026-08-31 13:40 | Status Dev - Sales Order: Rejected tetap bisa diedit; Closed dan Void dipisah (bukan satu kelompok “tidak bisa diubah”) |

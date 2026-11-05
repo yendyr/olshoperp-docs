@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.13
-last_updated: 2026-10-26
+version: 1.15
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog **1.15 (2026-11-05):** Export All With/Without Details requires `export_filename` — [requirement §5.9](./requirement.md); ETM-16768. `exportExcelPlatformDetails` / `exportExcelPlatformWithoutDetails`; `SalesOrderExportExcelJob` writes `.xlsx` up to 5000 rows, else `.zip`. GAP-SP-EX-01 Open.  
 > Changelog **1.13 (2026-10-26):** TO-BE TikTok unit price [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) — `original_price − seller_discount` (supersede ETM-14808); hotspot `OmniTikTokService` map line_item + `$price`. Forward-only.  
 > Changelog **1.12 (2026-10-02):** Reprice in-place (ETM-16212 / §6.10); bundle breakdown Retail + post-wave (ETM-16216 / §6.11). Touchpoints: `OmniShopeeService` `$converting_booking` path — **jangan** delete children + `pickBundleChildren` recreate; `SalesOrderDetailController::pickBundleChildren` — random harus `product->price` bukan `benchmarkPrice`.  
 > Changelog **1.11 (2026-09-09):** Void / Void & Recreate / Recreate + sync gate — [requirement §5.8 / §6.9](./requirement.md); ETM-15859; GAP-SPD-01 Decided. Touchpoints: `SalesOrderApprovalController` void, rename Void & Clone → Void & Recreate, show Recreate, platform sync services (Shopee/TikTok/Lazada/…) skip create on void+exact ID, order lock.  
@@ -35,7 +36,10 @@ related_docs:
 
 | Path | Role |
 |------|------|
-| `Modules/OmniChannel/Http/Controllers/SalesOrderController.php` | Datalist, pills, sync, print, duplicate |
+| `Modules/OmniChannel/Http/Controllers/SalesOrderController.php` | Datalist, pills, sync, print, duplicate, Export All (`export_filename`) |
+| `Modules/OmniChannel/Jobs/SalesOrderExportExcelJob.php` | Final platform file: `.xlsx` if rows ≤ 5000, else `.zip` |
+| `Modules/OmniChannel/Entities/SalesOrderExportFile.php` | `omni_sales_order_export_files.file_name` + `export_type` |
+| `app/Helpers/MainHelper.php` | `sanitizeExportFileName`, `getExportActionName` (prefers `export_type`) |
 | `Modules/OmniChannel/Http/Controllers/SalesOrderApprovalController.php` | approve / void / unapprove |
 | `Modules/OmniChannel/Http/Controllers/SalesOrderDetailController.php` | Detail + `updateAutoApproveFlagForSalesOrder` + **`extractBundleDetails`** (price > 0) |
 | `Modules/OmniChannel/Http/Controllers/FailedSalesOrderController.php` | Failed Synchronize list + retry |
@@ -84,6 +88,8 @@ related_docs:
 | POST | `sales-order/{id}/approve` | Approve |
 | POST | `sales-order/{id}/sales-order-detail/{detailId}/extract-bundle` | Extract SKU bundle; **reject** if header `each_price` ≤ 0 (ETM-15733) |
 | POST | resource sync endpoints | Bulk / single sync |
+| POST | `sales-order/export-excel` (`type=platform`) | Export All. Body `export_filename` wajib untuk With/Without Details. **Export Active Page Only** tidak lewat gerbang ini |
+| GET | `sales-order/export-file` | Riwayat; menu `Sales Platform`; kolom aksi dari `export_type` |
 | GET/PUT | `order-automation-setting` | delay_time |
 | PATCH | `settings` | min_order_date dll. |
 
@@ -204,6 +210,7 @@ sequenceDiagram
 14. **Booking anti-dupe:** satu pesanan Shopee = satu `omni_sales_orders` row. Dedup by `booking_number` **atau** `platform_order_id` / `order_sn` → UPDATE, bukan INSERT kedua.
 15. **Advance package without booking link:** `OmniShopeeService::storeSalesOrder` — jika `advance_package` dan order status masih sebelum gate yang disepakati / belum ter-link ke booking (**MATCHED**), return success skip (**bukan** Failed Sync) agar tidak materialisasi SO kedua saat webhook order_id tanpa `booking_sn`.
 16. **MATCHED:** `update_so_booking_fields` / convert path mengisi `platform_order_id` pada SO booking existing + escrow reprice (`converting_booking`).
+17. Export All With/Without Details: `sanitizeExportFileName(export_filename)` non-empty (max 150). History action uses `export_type` when set, not a parse of `file_name`.
 
 ---
 
@@ -217,6 +224,7 @@ sequenceDiagram
 | checkExist | Skip auto-approve jika TransferMutationDetail sudah mereferensi SO details |
 | Auto Add VAT **(TO-BE GAP-ST-VAT-01)** | Resolve dari `Store.auto_add_transaction_platform` saat detail create/sync + unit price set; **bukan** `Company.auto_add_transaction_customer` |
 | Benchmark COGS snapshot **(TO-BE GAP-BM-14)** | Line capture = **effective** COGS (Manual override jika aktif); shared dengan SOG/ASO |
+| Export All file name (ETM-16768) | Empty sanitized `export_filename` → `File name is required.` Stored name max 150. Action label from `export_type` |
 
 ---
 
@@ -230,6 +238,7 @@ sequenceDiagram
 | Log Data | Slideover + Echo refresh counter |
 | Processing icons | HTML dari BE `availability_and_process_status_formatted` (`is_with_availability=false`) |
 | Create button | Redirect Sales Order General create |
+| Export File Name dialog | **Export All** With/Without Details. **Export Active Page Only** skips the dialog |
 
 ---
 
@@ -287,3 +296,4 @@ sequenceDiagram
 | GAP-SPR-01 | Escrow miss → price 0; historical SO understated until backfill/re-sync; legacy seeders `FixShopee*` still use `model_discounted_price` |
 | GAP-SP-RP-01 | Convert booking delete-reinsert children — ETM-16212 / requirement §6.10 |
 | GAP-SP-BD-01 | Random proportion uses benchmark AS-IS — ETM-16216 / requirement §6.11 · System Product §11.6 |
+| GAP-SP-EX-01 | Same export title is not unique per export (ETM-16768). Open. Do not treat a colliding name as accepted behaviour |

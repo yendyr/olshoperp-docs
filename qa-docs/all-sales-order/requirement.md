@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.13
-last_updated: 2026-10-26
+version: 1.14
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail, Pending Orders, Unmatched Bookings, Log Data, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, platform_order_id]
@@ -27,6 +27,7 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.14 | 2026-11-05 | QA - Yemima | Export All With/Without Details wajib judul file (dialog **Export File Name**); nama kosong ditolak; nama bersih jadi file unduhan dan baris riwayat. Export Active Page Only tanpa dialog. GAP-ASO-09 Open (ETM-16768) |
 | 1.13 | 2026-10-26 | QA - Yemima | Cross-ref TO-BE ETM-16805 TikTok unit price (kanonik SP §5.5) |
 | 1.12 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE ETM-16762/16763: OC/OD SO → SI (paritas SOG + SP) |
 | 1.11 | 2026-09-09 | QA - Yemima | TO-BE §5.8: **Void** vs **Void & Recreate** vs **Recreate**; anti auto-create sync; prefix `void-` / `void2-` — ETM-15859 (paritas SP) |
@@ -110,7 +111,7 @@ Filter carousel process status memakai `filter-process-status?type=all`.
 | Booking Other Info | Edit booking fields untuk unmatched booking | [SP booking](../omni-sales-platform/requirement.md) — manual edit di ASO, bukan form SP |
 | Detail — flag bundle | Ikon bundle + aksi **Extract** (tooltip *Extract Bundle Details*) | Shared `BundleRandomFlag.vue` · API `extract-bundle` — **§5.5** |
 | Import Excel | **Import Processed** + **Import Non-Processed** (TO-BE paritas SOG) | [SOG §6.3](../sales-order-general/requirement.md) |
-| Export | Export file ASO + opsi with/without details | Shared export engine |
+| Export | **Export All** With/Without Details wajib judul file (§5.9). **Export Active Page Only** langsung | Shared export engine · ETM-16768 |
 
 ---
 
@@ -287,6 +288,24 @@ Sync lock, booking price `0` vs `> 0`, baris tanpa platform product id, audit, `
 
 **GAP-ASO-08** · SP **GAP-SPD-01** → Decided (lihat gap registry).
 
+### 5.9 Export All — judul file wajib (AS-IS · ETM-16768)
+
+**Export All** dengan **With Details** atau **Without Details** tidak langsung mengunduh. Sistem membuka dialog **Export File Name**.
+
+| Elemen | Aturan |
+|--------|--------|
+| Field **File name** | Wajib. Maks. 150 karakter. Placeholder **Enter file name**. Terisi saran, contoh `All Sales Order - With Details Export 05-11-2026_15.06.00` (pola nama menu + **With Details Export** atau **Without Details Export** + tanggal-jam `dd-mm-yyyy_HH.MM.SS`) |
+| Tombol **Export** | Jalankan export memakai nama itu |
+| Nama kosong | Ditolak di dialog dan di backend: **File name is required.** File tidak dibuat |
+| Pembersihan | Karakter yang tidak boleh di nama file (kurang-dari, lebih-dari, titik dua, kutip, garis miring, garis miring terbalik, garis tegak, tanda tanya, bintang) diganti tanda minus. Spasi berlebih jadi satu spasi. Hasil dipotong 150 karakter |
+| Unduhan | Nama bersih itu menjadi nama file: `.xlsx` untuk satu bagian, `.zip` bila export dipecah beberapa bagian |
+| Riwayat export | File tercantum dengan nama itu. Kolom aksi mengikuti tipe export (**With Details** / **Without Details**), bukan diurai dari nama file |
+| **Export Active Page Only** | Tetap export langsung, tanpa dialog ini |
+
+**Contoh:** field dikosongkan lalu **Export** → **File name is required.** Isi `Laporan SO 05/11` → tersimpan `Laporan SO 05-11` (garis miring jadi `-`).
+
+Paritas: [Dev - Sales Order](../sales-order-general/requirement.md) · [Dev - Sales Platform](../omni-sales-platform/requirement.md).
+
 ---
 
 ## 6. Validasi
@@ -304,6 +323,8 @@ Validasi UI ASO-specific: permission `AllSalesOrder` / viewAny gabungan; fiscal/
 |----|------------------------|------|
 | V-EXT-01 | Extract bundle: `each_price` header **> 0** | Lanjut extract |
 | V-EXT-02 | Extract bundle: `each_price` **≤ 0** | Tolak + pesan price must be greater than zero |
+| V-EXP-01 | Export All With/Without Details, **File name** kosong setelah dibersihkan | Tolak. Pesan **File name is required.** (dialog dan backend). File tidak dibuat |
+| V-EXP-02 | **File name** terisi | Nama bersih (maks. 150) jadi nama file unduhan dan baris riwayat export |
 
 ---
 
@@ -344,6 +365,7 @@ flowchart TB
 | **GAP-ASO-06** | Paritas UI/API edit detail platform sebelum approve (ETM-15748) vs [SP §6.8](../omni-sales-platform/requirement.md) / ETM-15749 | Open (TO-BE) |
 | **GAP-ASO-08** | Void vs Void & Recreate vs Recreate + gate sync anti auto-create — [§5.8](#58-void--void--recreate--recreate-platform-order-to-be--etm-15859) · ETM-15859 · kanonik [SP GAP-SPD-01](../omni-sales-platform/requirement.md) | Open (TO-BE) |
 | **GAP-APR-01** | Auto-approve cron mengabaikan toggle/delay — berdampak baris platform di ASO | Open — [SP gaps](../omni-sales-platform/requirement.md) |
+| **GAP-ASO-09** | Nama file export sama bisa saling menimpa file (belum unik per export) — [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) | Open |
 
 ---
 
@@ -361,6 +383,7 @@ flowchart TB
 - [ ] **Void / Recreate TO-BE (ETM-15859 / §5.8):** Void tanpa prefix + sync tidak auto-create; Void & Recreate / Recreate prefix + SO platform baru; paritas ASO ↔ SP
 - [ ] Doc folder terpisah dari SOG & SP
 - [ ] **Extract** bundle dari detail ASO ditolak jika Price header bundle ≤ 0; boleh jika > 0 (ETM-15732); pesan error price must be greater than zero
+- [ ] **Export All** With Details dan Without Details membuka dialog **Export File Name**; nama kosong ditolak (**File name is required.**); nama terisi menjadi nama file unduhan (`.xlsx`, atau `.zip` bila terpecah) dan tampil di riwayat. **Export Active Page Only** tanpa dialog (ETM-16768 / §5.9)
 
 ---
 
@@ -377,3 +400,6 @@ A: Hanya di **All Sales Order** (bukan Dev Sales Platform list). Scope: order Ap
 
 **Q: Kenapa Extract bundle gagal padahal tombol muncul?**  
 A: Cek **Price** baris bundle. Jika masih **0** (umum pada booking), sistem menolak Extract sampai harga > 0. Lihat §5.5.
+
+**Q: Export All minta judul file?**  
+A: Ya. **With Details** dan **Without Details** membuka dialog **Export File Name**. Kosongkan **File name** → **File name is required.** Saran awal boleh dipakai atau diganti (maks. 150 karakter). **Export Active Page Only** tidak menanyakan nama. Lihat §5.9.

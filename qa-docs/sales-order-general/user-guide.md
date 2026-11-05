@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 1.6
+version: 1.7
 last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.8
+source_version: 3.9
 owner: QA - Yemima
 status: review
 ---
@@ -111,6 +111,7 @@ stateDiagram-v2
 - Kalau Non-Processed kena akun yang sudah di-rekonsiliasi untuk tanggal itu, order digagalkan dengan pesan jelas.  
 - Kalau kamu mengira tagihan muncul saat Approve jalur Processed — tunggu outbound/settlement.  
 - POS memakai jalur Non-Processed otomatis: **belum** di fase ini.
+- Kalau kamu **Export All** (**With Details** atau **Without Details**) tanpa mengisi **File name**, sistem menolak dengan **File name is required.** **Export Active Page Only** tidak menanyakan nama.
 
 ---
 
@@ -141,6 +142,14 @@ stateDiagram-v2
 
 Ikuti Point of Sales. Jalur Non-Processed penuh dari POS = requirement berikutnya.
 
+### E. Export All
+
+1. Klik **Export All** → **With Details** atau **Without Details**.
+2. Di dialog **Export File Name**, isi atau ubah **File name**. Saran sudah terisi, misalnya `Dev - Sales Order - With Details Export 05-11-2026_15.06.00` (paling banyak 150 karakter).
+3. Klik **Export**. Kalau nama kosong, muncul **File name is required.**
+4. File yang terunduh memakai nama itu. Nama yang sama tampil di riwayat export.
+5. **Export Active Page Only** tidak membuka dialog.
+
 🎬 [Interactive demo akan ditambahkan di sini]
 
 ---
@@ -155,6 +164,7 @@ Ikuti Point of Sales. Jalur Non-Processed penuh dari POS = requirement berikutny
 - Kalau harga jual sebelum pajak di bawah **Benchmark COGS**, order bisa punya Error Flag **Below Benchmark COGS** dan tidak ikut auto-approve — **approve manual tetap boleh**. Tanda itu mengikuti data baris SKU (snapshot); ubah master COGS tidak mengubah order lama sampai baris detail diganti.  
 - Harga `10000.6789` dengan qty 1.000 harus tampil **Rp 10.000.678,90**, bukan ratusan miliar. Lebih dari 4 angka di belakang koma ditolak.  
 - Dua baris pecahan **AKRCHRU** (qty 3, harga `3333.3333`) dan **AKRKAS** (qty 3, harga `6666.6667`) jumlahnya pas Rp 30.000, jadi pesanan itu lolos. Kalau total baris dan total pesanan beda, unggahan order itu gagal.
+- Kalau **Export** di dialog **Export File Name** ditolak, isi judul dulu. Contoh `Laporan SO 05/11` tersimpan `Laporan SO 05-11`.
 
 ---
 

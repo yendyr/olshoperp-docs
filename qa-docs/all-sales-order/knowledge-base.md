@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.11
-last_updated: 2026-09-09
+version: 1.14
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS, Extract bundle, Pending Orders, Unmatched Bookings, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate]
@@ -57,6 +57,19 @@ flowchart TD
 - Baris **platform** → aturan Sales Platform.  
 - Baris **general** → aturan Dev Sales Order (termasuk Fulfillment Mode).  
 - **Import Processed** / **Import Non-Processed**: template sama; store harus mode yang cocok. Detail: [Dev Sales Order KB](../sales-order-general/knowledge-base.md).
+- **Export All** (**With Details** / **Without Details**) minta judul file dulu. **Export Active Page Only** langsung.
+
+### Export All — judul file
+
+**Export All** meminta judul supaya file unduhan dan riwayat export mudah dikenali.
+
+1. Klik **Export All** → **With Details** atau **Without Details**.
+2. Dialog **Export File Name** terbuka. Field **File name** sudah terisi saran (boleh diganti, paling banyak 150 karakter). Contoh saran: `All Sales Order - With Details Export 05-11-2026_15.06.00`.
+3. Klik **Export**. Kalau field kosong, muncul **File name is required.** dan file tidak dibuat.
+4. Nama itu yang terunduh (file Excel, atau zip bila hasilnya dipecah) dan yang tampil di riwayat export. Kolom aksi di riwayat mengikuti pilihan With/Without Details.
+5. **Export Active Page Only** tidak membuka dialog.
+
+Karakter yang tidak boleh di nama file diganti tanda minus, dan spasi berlebih dirapikan. Contoh: `Laporan SO 05/11` tersimpan `Laporan SO 05-11`.
 
 ### Recheck failed process
 
@@ -108,6 +121,7 @@ Jangan harap schedule sync “menghidupkan” order void. Detail: [requirement �
 | Klik **Extract** pada bundle gagal / pesan price must be greater than zero | Price baris bundle masih **0** (sering pada **booking**). Tunggu harga terisi / order ID riil, lalu Extract lagi. Lihat [requirement §5.5](./requirement.md) |
 | Order ID Shopee sudah ada di Seller Center tapi tidak kelihatan di list SO | Sering Order ID advance package tanpa booking — di-hold sampai MATCHED. Cek **Log Data → Pending Orders** (TO-BE). Booking tanpa Order ID: pill **Unmatched Bookings**. |
 | Setelah Void, sync bikin SO baru (duplikat) | AS-IS residual. TO-BE (ETM-15859): Void tanpa prefix + gate sync; recreate hanya manual (**Recreate** / **Void & Recreate**) |
+| **Export All** tidak jalan / pesan **File name is required.** | Field **File name** di dialog **Export File Name** masih kosong. Isi nama, lalu klik **Export** lagi |
 
 ---
 

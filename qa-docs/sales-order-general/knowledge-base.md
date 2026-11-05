@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.8
+version: 3.9
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -37,6 +37,7 @@ Ada **dua jalur setelah import**, tergantung Fulfillment Mode store: masuk prose
 | Banyak order tanpa proses gudang | **Import Non-Processed** (store harus **Non Processed**) |
 | Kasir toko | Point of Sales (jalur Non-Processed POS = nanti) |
 | Lihat general + marketplace | **All Sales Order** (tombol import sama) |
+| Unduh semua order di daftar | **Export All** → isi judul file dulu (lihat bawah) |
 
 ---
 
@@ -129,6 +130,18 @@ Kolom template tetap sama. Cara baca **harga** berubah: titik atau koma bisa jad
 
 ---
 
+## 4b. Export All — judul file
+
+**Export All** (**With Details** atau **Without Details**) meminta judul file dulu, supaya unduhan dan riwayat export mudah dikenali.
+
+1. Klik **Export All** → **With Details** atau **Without Details**.
+2. Dialog **Export File Name** terbuka. Field **File name** sudah terisi saran (boleh diganti, paling banyak 150 karakter). Contoh: `Dev - Sales Order - With Details Export 05-11-2026_15.06.00`.
+3. Klik **Export**. Kalau field kosong, muncul **File name is required.** dan file tidak dibuat.
+4. Nama itu yang terunduh (file Excel, atau zip bila hasilnya dipecah) dan yang tampil di riwayat export.
+5. **Export Active Page Only** tidak membuka dialog — file langsung diproses.
+
+Karakter yang tidak boleh di nama file diganti tanda minus. Contoh: `Laporan SO 05/11` tersimpan `Laporan SO 05-11`.
+
 ## 5. Yang sering bikin bingung
 
 | Gejala | Penyebab umum | Solusi |
@@ -179,7 +192,8 @@ Detail: [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md
 **Bedanya dengan All Sales Order?** Satu layar general + marketplace; tombol import sama.  
 **POS ikut Non-Processed?** Belum — requirement berikutnya.  
 **Max detail?** 100 baris per pesanan.  
-**Harga `10000.6789`?** Dibaca Rp 10.000,6789, bukan ratusan juta. Lebih dari 4 angka desimal ditolak. `1.500` tetap seribu lima ratus.
+**Harga `10000.6789`?** Dibaca Rp 10.000,6789, bukan ratusan juta. Lebih dari 4 angka desimal ditolak. `1.500` tetap seribu lima ratus.  
+**Export All minta nama?** Ya, untuk **With Details** dan **Without Details**. Kosongkan **File name** → **File name is required.** **Export Active Page Only** tidak menanyakan nama.
 
 ## Referensi
 

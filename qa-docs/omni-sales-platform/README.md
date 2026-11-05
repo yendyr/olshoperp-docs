@@ -10,12 +10,13 @@ Menu **Dev - Sales Platform** (SO marketplace hasil sync). Route: `/omni/sales-o
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **SoT (6 file):** datalist · order-detail · sync-ingestion · sync-price-mapping · **booking v1.1** · approval-automation  
-**Version:** 1.12 · **User-guide:** v1.5 · `source_version` 1.11 · **Last updated:** 2026-10-02
+**Version:** 1.15 · **User-guide:** v1.6 · `source_version` 1.15 · **Last updated:** 2026-11-05 15:06
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.15 | 2026-11-05 15:06 | Export All (With Details dan Without Details) wajib isi judul file di dialog Export File Name sebelum unduh. Nama itu yang tampil di riwayat export dan jadi nama file. Export Active Page Only tetap langsung, tanpa dialog (ETM-16768) |
 | 1.12 | 2026-10-02 | Reprice booking/sync in-place (ETM-16212); breakdown bundle Retail + before/after processing / late price (ETM-16216) |
 | 1.11 | 2026-09-09 10:45 | Void vs Void & Recreate vs Recreate + anti auto-create sync (ETM-15859); GAP-SPD-01 Decided |
 | 1.10 | 2026-09-04 14:20 | Log Data tab **Pending Orders** + pill **Unmatched Bookings** (ETM-15798; kanonik ASO) |
