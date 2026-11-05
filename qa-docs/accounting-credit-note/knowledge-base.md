@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.4
-last_updated: 2026-11-04
+version: 1.5
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, nota kredit, customer credit, deposit credit note]
@@ -75,7 +75,7 @@ Cabang auto dari retur: lihat [Sales Return Approval](../accounting-sales-return
 | **Total Amount** | Jumlah semua baris Receiving Destination |
 | **Paid** | Sudah dipakai di Account Receive yang **sudah di-approve** |
 | **Outstanding** | Sisa = Total dikurangi Paid — inilah yang masih “tersisa” di list |
-| **Trx Ref** | Dokumen asal (Sales Invoice / Account Receive) jika CN tidak dibuat manual |
+| **Trx Ref** | Dokumen asal yang bisa diklik. Dari Sales Return Billed: nomor retur `SR-xxxxx` ke halaman Sales Return. Dari Account Receive (kelebihan bayar): nomor AR. Manual: kosong |
 | **Journal** | Muncul setelah CN di-approve |
 
 **Sisa yang masih bisa dipakai di AR** juga memperhitungkan AR yang masih draft/open (sedang dialokasikan tapi belum final). Kalau AR menolak karena melebihi sisa, turunkan amount atau selesaikan/batalkan alokasi lama dulu.
@@ -135,8 +135,8 @@ A: Retur **belum punya Sales Invoice** — sistem menyesuaikan sales/AR, bukan m
 **Q: Apa itu Remaining di footer fund?**  
 A: Sisa saldo CN yang masih bisa dialokasikan (setelah yang sudah/sedang dipakai di penerimaan).
 
-**Q: Kenapa Trx Ref kosong?**  
-A: CN dibuat manual tanpa dokumen asal.
+**Q: Isi kolom Trx Ref?**  
+A: Dari Sales Return Billed, nomor `SR-xxxxx` plus tautan ke dokumen retur. Dari Account Receive, nomor penerimaan itu. Dibuat manual, kolom kosong. Credit Note lama yang sudah menampilkan nomor Sales Invoice tidak berubah sendiri; yang baru dari retur billed menampilkan nomor Sales Return.
 
 **Field yang tidak perlu diurus operator:** ID internal, Data Owner, kolom tanggal tersembunyi untuk sort backend.
 

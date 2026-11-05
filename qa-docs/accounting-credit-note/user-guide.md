@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.3
-last_updated: 2026-11-04
+version: 1.4
+last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.4
+source_version: 1.5
 owner: QA - Yemima
 status: review
 ---
@@ -145,7 +145,7 @@ Kalau Credit Note dari **Sales Return Billed**, langkah approve manual sering ti
 ### C. Dari Sales Return Billed
 
 1. Selesaikan alur Sales Return sampai Finance **Complete** tipe billed ([jalur pembuatan](#sf-lingo:SF-CN-01)).
-2. Cek list Credit Note — biasanya sudah Approved dengan Trx Ref ke Sales Invoice.
+2. Cek list Credit Note — biasanya sudah Approved. Kolom **Trx Ref** menampilkan nomor Sales Return (`SR-xxxxx`) yang bisa diklik ke dokumen retur.
 3. Pakai di Account Receive jika saldo masih outstanding.
 
 🎬 [Interactive demo akan ditambahkan di sini]
@@ -157,6 +157,7 @@ Kalau Credit Note dari **Sales Return Billed**, langkah approve manual sering ti
 - **Bulk Use amount 0** itu normal — bukan bug; edit amount manual.
 - **Customer tidak muncul** biasanya karena inactive atau setting akun (termasuk Deposit) belum lengkap.
 - **Paid** di list = sudah dipakai di penerimaan yang sudah di-approve; **Outstanding** = sisa Total dikurangi Paid.
+- **Trx Ref:** dari retur billed = nomor Sales Return (`SR-xxxxx`, bisa diklik ke dokumen retur). Dari Account Receive = nomor penerimaan. Dibuat manual = kosong. Nota lama yang sudah menampilkan nomor faktur tidak berubah sendiri.
 - **Unbilled return** tidak membuat Credit Note — bedakan dengan **Billed**.
 - **Tidak bisa ubah customer** setelah ada baris fund — clear Receiving Destination dulu.
 - **Import gagal semua** karena satu baris salah: perbaiki Excel lalu upload ulang seluruh file.
@@ -177,4 +178,4 @@ Kalau Credit Note dari **Sales Return Billed**, langkah approve manual sering ti
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v1.0 — tanpa menambah fakta baru di luar sumber. Feature Map v1.0 ditautkan untuk Lingo.*
+*Derivatif dari requirement / knowledge-base / technical v1.5 — tanpa menambah fakta baru di luar sumber. Feature Map v1.0 ditautkan untuk Lingo.*

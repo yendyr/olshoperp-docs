@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.4
-last_updated: 2026-11-04
+version: 1.5
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [CN technical, credit note API, credit note code]
@@ -13,7 +13,7 @@ aliases: [CN technical, credit note API, credit note code]
 
 **API prefix:** `accounting/credit-note`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.2  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.5  
 **TO-BE deposit COA:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)
 
 ---
@@ -38,7 +38,7 @@ aliases: [CN technical, credit note API, credit note code]
 | Export jobs | `CreditNoteExportJob`, `CreditNoteDetailExportJob`, `CreditNoteDetailFundExportJob` |
 | Template | `Modules/Accounting/Exports/CreditNoteTemplateExport.php` |
 | Journal | `app/Helpers/Accounting/JournalProcess.php` → `creditNoteAutoJournal()` |
-| Auto from return | `app/Helpers/SupplyChain/ItemStockMutation.php` → `generateCreditNoteFromReturn()` |
+| Auto from return | `app/Helpers/SupplyChain/ItemStockMutation.php` → `generateCreditNoteFromReturn()` dan `generateCreditNoteAutoApprove()` — lihat §5.2 (text/url Sales Return; class tetap Customer Invoice) |
 | AR import → CN | `Modules/Accounting/Jobs/ReceiveImportPerMutationJob.php` → `createCreditNote()` |
 | Pricing helper | `app/Helpers/Accounting/PaymentPrice.php` (CN `grand_total` primarily from fund sum) |
 
@@ -155,10 +155,14 @@ sequenceDiagram
 
     SR->>ISM: approve path
     ISM->>ISM: group amounts by invoice + Sales COA
-    ISM->>PC: store CN (ref CustomerInvoice)
+    ISM->>PC: store CN (class CustomerInvoice; text/url Sales Return)
     ISM->>Fund: store funds (from_sales_return)
     ISM->>PC: approve (invert_journal if billed platform)
 ```
+
+**Trx Ref override (ETM-17070):** `generateCreditNoteFromReturn` dan `generateCreditNoteAutoApprove` tetap mengisi `transaction_reference_id` serta `transaction_reference_class` = `CustomerInvoice` (settlement dan COA). Keduanya meng-override tampilan: `transaction_reference_text` = kode Sales Return, `transaction_reference_url` = `{fe_url}/accounting/sales-return/edit/{return_id}`.
+
+`CreditNoteController` kolom `transaction_reference_formatted` memakai `transaction_reference_text` / `transaction_reference_url` bila terisi; kode dan URL morph hanya fallback saat text/url kosong. Filter kolom itu mencari `transaction_reference_text` dulu, lalu kode invoice/AR hanya jika text null. SearchBuilder kolom yang sama mencocokkan `transaction_reference_text`. Tidak ada perubahan frontend. Baris CN yang sudah menyimpan teks SI tidak di-backfill.
 
 ---
 
@@ -235,7 +239,7 @@ Detail messages: [requirement §7](./requirement.md).
 
 - Prefer feature tests around `PaymentController::approve` with `CreditNote` + fund fixtures.
 - Import: assert all-or-nothing and template header mismatch.
-- Return path: billed vs unbilled (CN vs no CN).
+- Return path: billed vs unbilled (CN vs no CN). CN baru dari return: `transaction_reference_text` = kode SR, URL = edit Sales Return, class tetap `CustomerInvoice`.
 - No dedicated CN print test expected until GAP-CN-01 resolved.
 
 ---

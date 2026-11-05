@@ -15,13 +15,14 @@ Menu **Credit Note** (Accounting / Account Receivable).
 **UI route:** `/accounting/credit-note`  
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-credit-note/`](../_meta/docs-hub/menus/accounting-credit-note/)  
 **SoT:** `accounting-credit-note-source-of-truth.md` v1.0 (17 Jul 2026)  
-**3 layer version:** 1.4 · **User-guide:** v1.2 · `source_version` 1.4 · **Feature Map:** 1.0 · **Last updated:** 2026-11-04  
-**Related Jira:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) · [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064)
+**3 layer version:** 1.5 · **User-guide:** v1.4 · `source_version` 1.5 · **Feature Map:** 1.0 · **Last updated:** 2026-11-05  
+**Related Jira:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) · [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) · [ETM-17070](https://erpintegration.atlassian.net/browse/ETM-17070)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5 | 2026-11-05 13:23 | Di daftar Credit Note, referensi transaksi dari retur yang sudah ditagih menampilkan nomor Sales Return dan bisa diklik ke dokumen retur itu (selaras Debit Note); ETM-17070 |
 | 1.4 | 2026-11-04 | CN dari SR billed = ada SI (bukan AR/payment); ETM-17064 |
 | 1.2 | 2026-10-22 | TO-BE ETM-16764: CN dari Sales Return → Deposit of Sales Return; consume AR ikut COA asal |
 | 1.1 | 2026-08-05 | TO-BE Receiving Destination free COA (GAP-CN-05); SF-DET-01 dual path; Help Center overview sync |
@@ -32,8 +33,8 @@ Menu **Credit Note** (Accounting / Account Receivable).
 
 | Menu | Link |
 |------|------|
-| Sales Invoice | [../accounting-customer-invoice/](../accounting-customer-invoice/) — trx ref / billed |
-| Sales Return Approval | [../accounting-sales-return/](../accounting-sales-return/) — auto-generate CN billed |
+| Sales Invoice | [../accounting-customer-invoice/](../accounting-customer-invoice/) — penentu billed |
+| Sales Return Approval | [../accounting-sales-return/](../accounting-sales-return/) — auto-generate CN billed; Trx Ref CN baru = nomor SR |
 | Sales Return (SC) | [../supplychain-sales-returns/](../supplychain-sales-returns/) — qty/nilai retur |
 | Account Receive | [../accounting-customer-payment/](../accounting-customer-payment/) — pakai CN sebagai deposit |
 | Debit Note (mirror AP) | [../accounting-debit-note/](../accounting-debit-note/) — klaim supplier; dipakai di Account Payment |

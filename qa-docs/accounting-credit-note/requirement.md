@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.4
-last_updated: 2026-11-04
+version: 1.5
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, credit note docs, nota kredit, customer deposit credit]
@@ -26,6 +26,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.5 | 2026-11-05 | QA - Yemima | Trx Ref CN baru dari Sales Return Billed = nomor `SR-xxxxx` + tautan edit Sales Return (bukan SI); CN lama tidak di-backfill; ETM-17070 |
 | 1.4 | 2026-11-04 | QA - Yemima | Trigger CN dari SR billed = **ada SI** (bukan payment/AR); parity PR→DN; ETM-17064 |
 | 1.3 | 2026-10-26 | QA - Yemima | Klarifikasi final ETM-16764: AR baca COA dari **setting** by asal CN (bukan historis dokumen/jurnal) |
 | 1.2 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764): CN dari Sales Return → Deposit of Sales Return; consume di AR ikut COA asal; GAP-CN-06 |
@@ -107,7 +108,7 @@ Field kritikal terkunci setelah ada Receiving Destination: Customer, Currency, E
 |-------|---------|--------|------------|
 | Trx Code \| Trx Date | Ya | Header | Prefix `CN`; auto jika kosong |
 | Customer | Ya | Company / Store | General vs Platform |
-| Trx Ref | Ya | Sales Invoice atau Account Receive | Kosong jika manual |
+| Trx Ref | Ya | Lihat aturan di bawah | Hyperlink jika ada dokumen asal |
 | Curr / Rate | Ya | Header | — |
 | Total Amount | Ya | Σ fund | §6.1 |
 | Paid | Ya | Σ deposit di AR Approved | §6.1 |
@@ -116,6 +117,17 @@ Field kritikal terkunci setelah ada Receiving Destination: Customer, Currency, E
 | Journal Code \| Date | Ya | Journal | Kosong sebelum approve |
 | Created by \| at | Ya | Audit | — |
 | Action | Ya | Privilege × status | Edit, Approve/Reject, Delete; Print di form — GAP-CN-01 |
+
+**Aturan Trx Ref (datalist):**
+
+| Jalur CN | Tampilan kolom Trx Ref |
+|----------|------------------------|
+| Manual (form) | Kosong |
+| Sales Return **Billed** — CN yang baru terbentuk | Nomor dokumen Sales Return (`SR-xxxxx`) + hyperlink ke halaman edit Sales Return terkait |
+| Overpay / import Account Receive | Nomor Account Receive + tautan ke dokumen AR |
+| CN lama dari Sales Return yang sudah menyimpan teks Sales Invoice | Tetap teks tersimpan (bisa `SI-xxxxx`); tidak diisi ulang |
+
+**Acceptance (ETM-17070):** Kolom TRX. REF pada datalist Credit Note menampilkan nomor dokumen Sales Return (`SR-xxxxx`) dengan hyperlink ke dokumen return terkait ketika CN tergenerate dari Sales Return Billed (konsisten dengan Debit Note yang menampilkan nomor Purchase Return `PT-xxxxx`). Berlaku untuk CN baru; baris yang sudah menyimpan teks SI tidak di-backfill.
 
 ### 4.2 Fitur datalist
 
@@ -237,6 +249,8 @@ credit_note_amount = harga_setelah_diskon_setelah_PPN * qty_return
 
 Dikelompokkan per invoice + per Sales COA produk → CN per invoice, fund per Sales COA. Status langsung **Approved** + jurnal (`invert_journal` untuk billed platform tertentu).
 
+**Trx Ref:** CN baru dari jalur ini menampilkan kode Sales Return (`SR-xxxxx`) dan tautan ke edit Sales Return. Aturan settlement dan COA tetap mengikuti Sales Invoice asal. CN yang sudah tersimpan dengan teks SI tidak diubah.
+
 **TO-BE fund type:** Sales COA (bukan Master Cash Bank) → simpan fund `type = COA` (bukan hardcode `Cash/Bank`). Rule: COA bound active Cash Bank → `Cash/Bank`; selain itu → `COA`.
 
 ### 6.7 Auto journal approve
@@ -347,8 +361,8 @@ Tidak ada cek balance detail-vs-source seperti Account Receive.
 
 ```mermaid
 flowchart TB
-    SI[Sales Invoice] -->|trx ref / billed| CN[Credit Note]
-    SR[Sales Return Approval] -->|complete billed| CN
+    SI[Sales Invoice] -->|penentu billed| CN[Credit Note]
+    SR[Sales Return Approval] -->|complete billed + Trx Ref SR| CN
     AR[Account Receive] -->|deposit / generate| CN
     CN -->|auto journal| JRN[Journal]
     ST[Store Binding] -->|Deposit COA| CN
@@ -358,8 +372,8 @@ flowchart TB
 
 | Menu | Peran |
 |------|-------|
-| Sales Invoice | Trx ref; penentu billed vs unbilled |
-| Sales Return Approval | Trigger auto CN + approve (billed) |
+| Sales Invoice | Penentu billed vs unbilled (baris retur sudah punya SI) |
+| Sales Return Approval | Trigger auto CN + approve (billed); Trx Ref CN baru = kode SR + tautan edit Sales Return |
 | Account Receive | Konsumen deposit CN; bisa generate CN dari overpay/import |
 | Journal | Output jurnal approve |
 | Store Binding / General Company | Actor + Deposit COA |
@@ -393,6 +407,9 @@ A: By design — edit manual sebelum approve.
 **Q: Beda CN manual vs auto?**  
 A: Manual/import = Open + approve. Return billed = Approved + jurnal langsung.
 
+**Q: Apa isi kolom Trx Ref?**  
+A: Dari Sales Return Billed (CN baru): nomor `SR-xxxxx` yang bisa diklik ke edit Sales Return. Dari kelebihan bayar Account Receive: nomor Account Receive. Manual: kosong. CN lama yang sudah menampilkan Sales Invoice tidak diubah otomatis.
+
 **Q: Customer tidak muncul?**  
 A: Harus aktif + COA (termasuk Deposit) lengkap.
 
@@ -414,5 +431,6 @@ A: **TO-BE** — Free COA picker di Receiving Destination (bukan COA yang sudah 
 
 | Tanggal | Versi | Perubahan |
 |---------|-------|-----------|
+| 5 Nov 2026 | 1.5 | Trx Ref CN baru dari Sales Return Billed = `SR-xxxxx` + tautan edit retur; ETM-17070 |
 | 5 Aug 2026 | 1.1 | TO-BE free COA Receiving Destination (D1–D14); GAP-CN-05 |
 | 17 Jul 2026 | 1.0 | Requirement awal dari SoT + verifikasi print/void/closed di codebase |
