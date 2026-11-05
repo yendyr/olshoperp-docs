@@ -38,7 +38,17 @@ flowchart TD
 |------|------|
 | **Select Variable Price** | Pasang tier (snapshot). Hanya Active yang belum dipasang. |
 | **Update from Master** | Timpa semua tier dari master terkini (edit lokal hilang). |
-| **Update to Pricelist** (merah) | Hitung ulang Final di Pricelist. Margin yang diedit manual di Pricelist **tidak dihapus**; Final = default + margin user + tier category (ETM-16884). Wajib centang persetujuan. Angka di dialog = jumlah produk aktif tanpa anak. Baris yang harganya tidak berubah tidak ditulis ulang. Waktu Last Update to Pricelist di header Pricelist tetap maju meski tidak ada baris yang berubah (ETM-17002). Update kedua pada category yang sama ditolak selagi yang pertama belum selesai. |
+| **Update to Pricelist** (merah) | Hitung ulang Final di Pricelist. Margin yang diedit manual **tidak dihapus**; Final = harga dasar + margin kamu + tier category (ETM-16884). Wajib centang persetujuan. Detail optimasi: bagian di bawah. |
+
+## Update to Pricelist (TO-BE ETM-17002)
+
+Angka di popup adalah jumlah produk yang benar-benar akan dihitung (produk aktif yang tidak punya produk anak), bukan jumlah baris yang sudah tersimpan. Kalimat bahwa margin manual tetap dipertahankan, dan centang persetujuan, tidak hilang.
+
+Selama proses jalan, halaman category menampilkan progres (berapa dari berapa, atau persen). Muat ulang halaman, angkanya tetap. Kalau Update category ini masih berjalan, klik Update lagi ditolak dengan pesan bahwa proses masih berjalan. Category lain tidak ketuker.
+
+Harga yang tidak berubah tidak ditulis ulang dan tidak menambah catatan di Log. Karena itu Sync berikutnya tidak mengirim ulang baris itu. Tooltip **Last Update to Pricelist** di header kolom category (menu Pricelist Product) tetap harus menunjuk waktu Update yang baru, meski tidak ada harga yang berubah.
+
+Contoh: HAWAT-Biru harga dasar 7.000, margin manual 2.000, tier category +5.500, Final 14.500. Tier naik jadi +6.500 → margin tetap 2.000, Final 15.500, satu catatan perubahan. Update lagi tanpa ubah apa pun → harga dan waktu ubah baris tetap, Sync tidak mengirim ulang, tooltip Last Update pindah ke waktu Update yang baru.
 
 ## Weight berubah di System Product (TO-BE ETM-16668)
 
@@ -60,7 +70,8 @@ Ubah weight DnW **default** di System Product → nilai Category/Pricelist yang 
 | Select kosong | Semua Active sudah dipasang, atau belum ada Variable Price Active |
 | Icon oranye di tier | Band sudah diedit lokal — Update from Master untuk samakan master |
 | Pricelist belum berubah | Belum Update to Pricelist / belum centang konfirmasi (kecuali auto weight default DnW — ETM-16668) |
-| Last Update to Pricelist tidak maju padahal baru klik Update dan 0 baris berubah | Bug vs TO-BE ETM-17002 — penanda category harus tetap maju |
-| Update kedua langsung ditolak | Normal jika Update pertama pada category yang sama belum selesai (ETM-17002) |
+| Update ditolak, proses masih jalan | Tunggu category itu selesai. Jangan klik dua kali |
+| Last Update di header masih jam lama padahal Update tanpa ubah harga sudah selesai | Seharusnya jam Update terbaru. Kalau tidak, penanda category belum tampil di tooltip (ETM-17002) |
+| Sync mengirim semua baris setelah Update tanpa ubah harga | Seharusnya 0 baris. Waktu ubah baris tidak boleh maju kalau harga sama |
 
 Detail: [requirement.md](./requirement.md) · Wireframe: https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89

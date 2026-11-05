@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16314](https://erpintegration.atlassian.net/browse/ETM-16314)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar F)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §5, §7–9  
-**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (kolom Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** (optimasi Update to Pricelist)
+**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** (optimasi Update to Pricelist) · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (kolom Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data)
 
 ---
 
@@ -21,7 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.6 | 2026-11-05 | **TO-BE** [ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002): Update to Pricelist melewati baris yang tidak berubah; penanda Last Update to Pricelist tetap maju; Sync 0 baris bila `updated_at` tidak maju; 1 log `update_to_pricelist` per baris yang berubah. Poin 5, 7, dan Poin 8 di luar scope |
+| 1.6 | 2026-11-05 | **TO-BE** ETM-17002: cross-ref optimasi Update to Pricelist (lewati baris tidak berubah, satu log, Last Update level category, Sync 0 baris). Rumus Manual ETM-16884 tidak berubah |
 | 1.5 | 2026-11-05 | **TO-BE** ETM-17071: kolom Images paling kiri (UI & logic sama System Product) |
 | 1.4 | 2026-11-05 | **TO-BE** ETM-17072: default hanya produk Aktif + switch Show archived data (sama dengan menu Product) |
 | 1.3 | 2026-10-28 | **TO-BE** ETM-16883/16884: User Set Margin (`-` non-manual), tooltip input/header/calc, Sync hanya category ber-platform, Update to Pricelist **stack** Manual Price (bukan overwrite); calc tetap untuk Applied Store Others/NULL |
@@ -58,12 +58,11 @@ Calc Final tetap untuk Applied Store **NULL** / **Others** (ETM-16884).
 | A-10 | Margin / nilai **manual** tidak tertimpa auto-recalc dari weight | **TO-BE** ETM-16668 |
 | A-11 | Advanced Filter **Manual Margin** Yes/No (Any category cell) | **TO-BE** ETM-16861 |
 | A-12 | Kosongkan/hapus input margin = **reset** Manual Price → cell `-`, Final ikut Category tier | **TO-BE** ETM-16883 |
-| A-13 | Header kolom category: tooltip summary tier + **Last Update to Pricelist** (sukses terakhir), label jelas | **TO-BE** ETM-16883 |
+| A-13 | Header kolom category: tooltip summary tier + **Last Update to Pricelist** = waktu Update terakhir yang selesai, termasuk bila 0 baris harga berubah (penanda level category, bukan hanya log per baris) | **TO-BE** ETM-16883 + ETM-17002 |
 | A-14 | Applied Store Others/NULL: Final tetap terhitung; Sync row+header hide; Sync All hanya category ber-platform | **TO-BE** ETM-16884 |
 | A-15 | Update to Pricelist + Manual Price: Final = Default + User Set Margin + Category tier; cell margin tetap nilai user | **TO-BE** ETM-16884 |
 | A-16 | Datalist default hanya SKU status **Aktif**. Switch **Show archived data** di toolbar: ON = SKU **Non Aktif** ikut tampil; OFF lagi = disembunyikan. Perilaku sama dengan menu Product | **TO-BE** ETM-17072 |
 | A-17 | Kolom **Images** paling kiri (sebelum Product/SKU): thumbnail 100×100 dari `getImageProduct()`; kosong → `-` di box 100×100; non-orderable / non-searchable; UI & logic sama System Product | **TO-BE** ETM-17071 |
-| A-18 | Update to Pricelist tidak menulis ulang baris yang margin, Final, manual flag, dan snapshot-nya sama. Last Update to Pricelist di header tetap maju meski 0 baris berubah. Sync sesudah itu memproses 0 baris | **TO-BE** ETM-17002 |
 
 ---
 
@@ -145,9 +144,7 @@ Calculation
 
 ### 4.3 Header kolom category (TO-BE · ETM-16883)
 
-Hover header: summary tier Category + label jelas **Last Update to Pricelist:** (waktu sukses terakhir Update to Pricelist untuk category itu — bukan sekadar `updated_at` master tanpa konteks).
-
-**TO-BE ETM-17002:** waktu ini adalah penanda **level category**. Wajib maju setiap Update to Pricelist selesai, termasuk ketika **0 baris** berubah. Bukan hanya mengikuti log `update_to_pricelist` per baris.
+Hover header: summary tier Category + label jelas **Last Update to Pricelist:** waktu Update to Pricelist terakhir yang selesai untuk category itu, **termasuk bila tidak ada harga yang berubah**. Bukan sekadar waktu ubah master, dan bukan hanya log per baris (baris yang dilewati tidak menulis log). Sumber yang benar: penanda level category. Saat ini tooltip masih membaca log per baris — [GAP-CP-08](../businessdevelopment-category-price/requirement.md).
 
 ### 4.4 Sync (TO-BE · ETM-16884)
 
@@ -157,6 +154,8 @@ Hover header: summary tier Category + label jelas **Last Update to Pricelist:** 
 | ≥1 platform (termasuk mix + Others) | Show* | Ya* |
 
 \*Eksekusi sync tetap syarat existing (produk bound ke platform). Calc Final tetap muncul untuk Others/NULL.
+
+Update tanpa perubahan harga **tidak** menaikkan waktu ubah baris, jadi Sync tidak memilih baris itu (0 baris). Aturan platform-only di tabel di atas tidak berubah. Detail: [Category §3.4](../businessdevelopment-category-price/requirement.md).
 
 ### 4.5 Advanced Filter — Manual Margin (TO-BE · ETM-16861)
 
@@ -195,6 +194,18 @@ Recalc baris category; konfirmasi keras di Category; log Pricelist (user + categ
 
 Dialog Category harus mencerminkan: manual override **tidak** dihapus; Final dapat berubah karena tier ditambahkan ke margin user (ETM-16884).
 
+**TO-BE ETM-17002** (rumah aturan: [Category §3.4](../businessdevelopment-category-price/requirement.md)):
+
+- Baris yang margin, Final, flag Manual, dan snapshot-nya sama tidak ditulis ulang: tidak ada log, waktu ubah tidak berubah.
+- Harga sama tetapi snapshot beda: hanya penunjuk snapshot yang diganti, tanpa log dan tanpa menaikkan waktu ubah.
+- Harga berubah: tepat 1 log **updated** / update_to_pricelist.
+- Baris baru: tepat 1 log **created** / update_to_pricelist (nilai lama 0). Tidak ada log manual palsu. Edit grid tetap log tipe **manual** supaya tooltip "Margin edited by" tetap benar.
+- Baris ganda: simpan yang Manual (atau yang pertama); sisanya hilang + 1 log **deleted** / duplicate.
+- Tooltip header **Last Update to Pricelist** wajib maju ke waktu Update yang selesai meski 0 baris berubah (A-13, GAP-CP-08).
+- Poin 8 (jangan simpan baris turunan) **bukan** perilaku sekarang.
+
+**Contoh:** HCD-1 Manual No, Default 30.000, tier +5.500 → Final **35.500**, cell `-`. HAWAT-Biru Manual Yes, Default 7.000, margin 2.000, tier naik ke +6.500 → cell tetap **2.000**, Final **15.500**, tepat 1 log updated. Update ulang tanpa ubah tier/Default → 0 log baru per baris; Sync 0 baris; tooltip Last Update tetap harus jam yang baru.
+
 ### 5.1 Auto-recalc dari System Product weight (TO-BE · ETM-16668)
 
 | Trigger | Recalc Pricelist? |
@@ -207,27 +218,6 @@ Dialog Category harus mencerminkan: manual override **tidak** dihapus; Final dap
 **Jangan override:** Manual Price (User Set Margin) tetap; Final mengikuti formula Manual di §3 bila applicable.  
 **Log:** wajib **Log Pricelist**.
 
-### 5.2 Optimasi tulis baris (TO-BE · ETM-17002)
-
-Harga yang ditulis **identik** dengan rumus sebelum optimasi (Manual stack ETM-16884 tidak berubah). Yang berubah adalah kapan baris ditulis.
-
-| Kondisi baris | Tulis DB | Log | `updated_at` baris |
-|---------------|----------|-----|---------------------|
-| Margin, Final, `is_edited`, dan snapshot sama | Tidak | Tidak | Tidak maju |
-| Harga (margin & Final) sama, hanya snapshot yang beda | Snapshot saja | Tidak | Tidak maju |
-| Dibuat atau angkanya berubah | Ya | Tepat **1** log, tipe `update_to_pricelist` | Maju |
-
-- Bulk create tidak boleh menambah log manual palsu dari event model.
-- Tulisan per chunk **500** produk per job.
-- Hanya produk **aktif tanpa anak**, company category itu.
-- Baris duplikat product + category yang sama dibersihkan; harga yang dipakai tetap hasil hitung yang sama.
-- Notifikasi selesai tetap ada, termasuk saat 0 baris berubah.
-- Snapshot yang tidak terpakai dibersihkan dan tidak mengubah Final / margin yang sudah benar.
-- Setelah Update yang tidak memajukan `updated_at` baris, **Sync memproses 0 baris**.
-- Update kedua pada category yang sama ditolak selagi yang pertama belum selesai.
-
-Poin 5, Poin 7, dan Poin 8 (keputusan Product) **di luar scope** — tidak didokumentasikan.
-
 ---
 
 ## 6. Contoh uji (wajib)
@@ -237,6 +227,8 @@ Poin 5, Poin 7, dan Poin 8 (keputusan Product) **di luar scope** — tidak didok
 | SKU-001 | 16.000 | 1.500 g | 8.500 | `-` (non-manual) | **24.500** |
 | SKU-002 | 22.500 | none | 7.500 | `-` | **30.000** |
 | Manual contoh | 10.000 | — | +1.500 setelah Update | **2.000** orange | **13.500** |
+| HAWAT-Biru | 7.000 | — | tier naik ke +6.500 | **2.000** orange | **15.500** |
+| HCD-1 | 30.000 | — | +5.500 | `-` | **35.500** |
 
 Master & band lengkap: final §7.
 
@@ -257,7 +249,7 @@ Master & band lengkap: final §7.
 | GAP-PL-09 | Others → Unit Price SO by store header | Future (out of scope 16884) |
 | GAP-PL-10 | Kolom Images di datalist | **TO-BE** ETM-17071 (BE `image_formatted` sudah ada; FE wire kolom) |
 | GAP-PL-11 | Default Aktif + Show archived | **TO-BE** ETM-17072 |
-| GAP-PL-12 | Update to Pricelist menulis ulang semua baris | **TO-BE** ETM-17002: lewati yang tidak berubah; penanda category tetap maju; Sync 0 baris |
+| GAP-PL-12 | Last Update saat 0 baris berubah | Ikut [GAP-CP-08](../businessdevelopment-category-price/requirement.md): tooltip header masih dari log per baris |
 
 ---
 

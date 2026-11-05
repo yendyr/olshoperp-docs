@@ -21,9 +21,9 @@ related_docs:
 **TO-BE calc Max Value:** [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835).  
 **TO-BE UI margin/tooltips:** [ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883).  
 **TO-BE Sync + Manual stack on Update:** [ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884) · Applied Store Others Category: [ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882).  
+**TO-BE optimasi Update:** [ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002) — skip baris tidak berubah, satu log, chunk 500, penanda Last Update. Detail job: [Category technical §5](../businessdevelopment-category-price/technical.md). Poin 8 (baris turunan tidak disimpan) bukan perilaku ini.  
 **TO-BE filter Aktif:** [ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072) — datalist `show_archived`, pola sama `ProductController` index.  
-**TO-BE kolom Images:** [ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071) — FE wire `image_formatted` (BE column sudah ada).  
-**TO-BE skip unchanged Update:** [ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002) — chunk 500; 1 log `update_to_pricelist` per baris yang berubah; category marker maju meski 0 baris. Poin 5, 7, dan Poin 8 di luar scope.
+**TO-BE kolom Images:** [ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071) — FE wire `image_formatted` (BE column sudah ada).
 
 ---
 
@@ -36,7 +36,7 @@ related_docs:
 | Weight display | Primary DnW (bukan kolom DB pricelist wajib) |
 | Log | old/new margin & final; Update from category id |
 | Category contains platform | TO-BE: drive Sync UI (bukan hanya `stores_count` produk) |
-| Last Update to Pricelist | TO-BE: waktu sukses terakhir per category → header tooltip. ETM-17002: penanda category wajib maju meski 0 baris `update_to_pricelist` |
+| Last Update to Pricelist | TO-BE: penanda category = `updated_at` snapshot tier yang dipakai run, di-set di akhir batch meski 0 baris berubah. Tooltip header saat ini masih `MAX(log.updated_at)` tipe `update_to_pricelist` (GAP-CP-08) |
 | `image_formatted` | TO-BE ETM-17071: HTML thumbnail 100×100 dari `getImageProduct()`; kosong → `-` |
 
 **UI display (ETM-16883):** jika `!is_edited` → render User Set Margin sebagai `-` (nilai calc tetap di breakdown tooltip / dipakai Final).
@@ -70,12 +70,12 @@ Untuk tiap tier snapshot di Category:
 
 | Area | TO-BE |
 |------|-------|
-| Update to Pricelist | Category job; branch on `is_edited` (stack vs full calc). ETM-17002: chunk 500 produk/job; skip UPDATE/log/`updated_at` bila margin, final, `is_edited`, dan snapshot sama; snapshot-only (tanpa log/`updated_at`) bila harga identik; tepat 1 log `update_to_pricelist` per baris created/updated; jangan log manual dari event model pada bulk create; lock tolak Update kedua category yang sama. Harga identik rumus pra-optimasi. Sync 0 baris bila `updated_at` tidak maju |
+| Update to Pricelist | Category job chunk 500; skip bila margin, Final, dan snapshot (4 dp) sama; snapshot-only tanpa log dan tanpa `updated_at`; harga beda = 1 log `updated`/`update_to_pricelist`. Insert baru lewat query builder, bukan event model. Branch `is_edited` (stack vs full calc) tetap ETM-16884 |
 | Inline edit | PATCH; set `is_edited`; hover tip Final vs User Set Margin berbeda |
 | Tooltip cell | Breakdown: Default / User Set Margin (manual) / Category tier / Final / Last Update to Pricelist |
-| Tooltip header category | Tier summary + `Last Update to Pricelist: …` |
+| Tooltip header category | Tier summary + `Last Update to Pricelist`. Harus baca penanda snapshot, bukan hanya log (GAP-CP-08) |
 | Sync visibility | `category.has_platform_store` (Applied Store contains platform); Sync All filter sama |
-| Sync action | Existing binding / platform product checks |
+| Sync action | Existing binding / platform product checks. Seleksi baris: `latest_sync` kosong atau `updated_at` lebih baru dari `latest_sync`. Update tanpa perubahan harga tidak menaikkan `updated_at`, jadi 0 baris |
 | Weight sync (16668) | After DnW default change → recalc calculated rows + log |
 | Filter Manual Margin (16861) | `is_edited` any category; Yes/No dropdown |
 | Datalist Aktif (17072) | `PricelistController::index()` dan `showRowDatatable($id)`: `where products.status = 1` hanya jika request `show_archived` bukan true (`boolean('show_archived')`). FE `DataList.vue` mengirim `show_archived=true` lewat DataTablesV3 (`is_show_archived`, `show_archived`, `whenShowArchived`). Default OFF = hanya Aktif |
@@ -96,12 +96,12 @@ Untuk tiap tier snapshot di Category:
 | G-05 | ETM-16668 auto-recalc DnW default |
 | G-06 | ETM-16861 filter Manual Margin |
 | G-07 | ETM-16835 max_value in contribution |
-| G-08 | ETM-16883 FE `-` / tooltips / header Last Update to Pricelist |
+| G-08 | ETM-16883 FE `-` / tooltips; header Last Update harus baca penanda category (GAP-CP-08 / ETM-17002), bukan hanya log |
 | G-09 | ETM-16884 UpdateToPricelistJob preserve `is_edited` + stack formula; Sync by platform flag |
 | G-10 | Future: Others pricelist → SO Unit Price by store header |
 | G-11 | ETM-17071 FE kolom Images (`image_formatted`) |
 | G-12 | ETM-17072 Show archived (sudah di BE/FE OTW DEV — verifikasi QA) |
-| G-13 | ETM-17002 skip unchanged rows + category Last Update marker + chunk 500 + lock |
+| G-13 | ETM-17002 skip-unchanged + satu log + chunk 500 (job di Category). Poin 8 bukan scope |
 
 ---
 

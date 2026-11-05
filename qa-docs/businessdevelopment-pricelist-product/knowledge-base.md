@@ -46,11 +46,13 @@ Ubah weight DnW **default** (atau ganti radio default) → Weight + Final Catego
 - Edit Final Price **atau** User Set Margin → keduanya **Manual Price**; angka margin **oranye**.
 - Hover atas: *Click to edit Final Price*. Hover bawah: *Click to edit User Set Margin*.
 - **Kosongkan / hapus** margin = **reset** → kembali `-`, Final ikut Category saja.
-- Header nama category: hover → ringkasan tier + **Last Update to Pricelist** (waktu sukses terakhir). Waktu itu tetap maju meski Update tidak mengubah satu pun baris (ETM-17002).
+- Header nama category: hover → ringkasan tier + **Last Update to Pricelist** (waktu Update terakhir yang selesai, termasuk kalau tidak ada harga yang berubah).
 
 ## Sync ke platform (TO-BE ETM-16884)
 
 Icon Sync (per baris & header kolom) hanya muncul jika Category punya minimal satu store **platform**. Category Applied Store kosong atau hanya **Others** → tidak ada Sync. **Sync All** hanya category ber-platform. Final tetap dihitung untuk Others / kosong.
+
+Update dari Category yang tidak mengubah harga tidak membuat Sync mengirim ulang baris itu.
 
 ## Produk Aktif / Non Aktif (TO-BE ETM-17072)
 
@@ -64,16 +66,11 @@ Di toolbar daftar ada switch **Show archived data** (tampilkan data arsip):
 
 Switch ini hanya mengubah isi daftar, bukan mengaktifkan kembali produk.
 
-## Update to Pricelist yang tidak mengubah angka (TO-BE ETM-17002)
-
-Kalau margin, Final, dan tanda manual sudah sama dengan hitungan baru, baris itu **tidak ditulis ulang** dan tidak masuk log. Harga yang berubah tetap memakai rumus lama: margin manual tidak dihapus.
-
-Waktu **Last Update to Pricelist** di header kolom category tetap maju, termasuk saat 0 baris berubah. Sync sesudah itu tidak memproses baris yang tidak berubah.
-
 ## Tips
 
 - Contoh non-manual: harga 16.000 + berat 1.500 g → Final **24.500**; User Set Margin `-`; pecahan di tooltip.
 - Contoh Manual + Update Category: Default 10.000, margin user +2.000, tier category +1.500 → Final **13.500**; cell margin tetap **2.000** oranye.
+- Contoh HAWAT-Biru: harga dasar 7.000, margin manual 2.000. Tier category naik dari +5.500 ke +6.500 → Final **15.500**, margin tetap 2.000. Update lagi tanpa perubahan → harga baris tetap, dan waktu **Last Update to Pricelist** di header harus jam Update yang baru.
 - Edit di Pricelist **tidak** mengubah Category / Variable Price.
 - **Advanced Filter → Manual Margin** (ETM-16861): **Yes** = ada Manual Price di baris; **No** = belum.
 
@@ -84,11 +81,12 @@ Waktu **Last Update to Pricelist** di header kolom category tetap maju, termasuk
 | Angka lama setelah ubah Variable Price | Belum Update to Category / Update to Pricelist |
 | User Set Margin masih angka padahal belum edit | Bug vs TO-BE ETM-16883 — seharusnya `-` |
 | Manual hilang setelah Update to Pricelist | Bug vs TO-BE ETM-16884 — margin user harus tetap; Final boleh berubah |
+| Last Update di header masih jam lama setelah Update tanpa ubah harga | Seharusnya jam Update terbaru (ETM-17002) |
+| Sync mengirim semua baris setelah Update tanpa ubah harga | Seharusnya tidak ada baris yang dikirim ulang |
 | Tidak ada icon Sync | Category tanpa store platform (NULL/Others) — normal |
 | Margin Weight = 0 / skipped | Isi weight DnW **default** di System Product |
 | Mau daftar yang diedit manual | Advanced Filter **Manual Margin** Equals **Yes** |
 | SKU Non Aktif tidak muncul | Nyalakan **Show archived data** di toolbar. Default daftar hanya Aktif |
 | Tidak ada kolom Images | Fitur TO-BE ETM-17071 — selaras System Product |
-| Last Update to Pricelist tidak maju setelah Update tanpa perubahan baris | Bug vs TO-BE ETM-17002 — penanda category harus tetap maju |
 
 Detail: [requirement.md](./requirement.md)

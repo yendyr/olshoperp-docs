@@ -21,7 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.6 | 2026-11-05 | **TO-BE** [ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002): Update to Pricelist menghitung jumlah produk aktif tanpa anak; lewati baris yang tidak berubah; penanda Last Update to Pricelist tetap maju meski 0 baris berubah; kunci tolak Update kedua pada category yang sama. Poin 5, Poin 7, dan Poin 8 (keputusan Product) di luar scope |
+| 1.6 | 2026-11-05 | **TO-BE** ETM-17002: Update to Pricelist melewatkan baris yang tidak berubah, satu log per baris, chunk 500, popup = jumlah produk, progres tahan refresh, kunci per category. Poin 5, 7, dan 8 di luar perilaku ini |
 | 1.5 | 2026-11-04 | **TO-BE** ETM-16882: tooltip Applied Store menyebut store platform dan Others Active (kalimat "Only platform stores can be selected" tidak dipakai); satu store hanya di satu Category Price; Category yang masih terikat store tidak bisa dihapus. Hapus saat store terikat sudah Inactive masih lolos — GAP-CP-07 (ETM-17053) |
 | 1.4 | 2026-10-28 | **TO-BE** ETM-16882: Applied Store = platform + Others **Active**; NULL OK; mix OK. Update to Pricelist: Manual Price di Pricelist **tidak** ditimpa (stack — ETM-16884). Catatan: membalik sebagian ETM-16666 |
 | 1.3 | 2026-10-28 | Cross-ref TO-BE ETM-16835: Max Value ikut snapshot band / edit lokal Percentage + hitung Pricelist |
@@ -65,7 +65,12 @@ flowchart LR
 | A-12 | Tooltip Applied Store menyebut store platform dan store Others Active. Kalimat lama "Only platform stores can be selected" tidak dipakai | **TO-BE** ETM-16882 (TC ETM-17030) |
 | A-13 | Satu store hanya boleh terikat ke satu Category Price. Pesan: "{nama store} has already been used. A store cannot be bound to multiple category prices." (contoh nama: Aeri's Store 2) | **TO-BE** ETM-16882 (TC ETM-17029) |
 | A-14 | Category Price yang masih terikat store tidak bisa dihapus, satu baris maupun banyak sekaligus. Pesan: "Category Price cannot be deleted because it is still bound to Store {nama}. Please unbind the store first." Berlaku juga bila store itu kemudian Inactive | **TO-BE** ETM-16882 (TC ETM-17028, ETM-17032) |
-| A-15 | Update to Pricelist: dialog menyebut jumlah **produk** aktif tanpa anak (bukan jumlah baris yang sudah ada); progress x dari N; checkbox Manual margin tetap; Update kedua pada category yang sama ditolak selagi yang pertama belum selesai | **TO-BE** ETM-17002 |
+| A-15 | Baris yang sudah ada: bandingkan margin, Final, Manual flag, dan snapshot tier setelah pembulatan 4 desimal. Semua sama: tidak ada UPDATE, tidak ada log, waktu ubah baris tidak berubah. Harga sama tetapi snapshot beda: hanya snapshot yang diganti (tanpa log, waktu ubah tidak naik). Harga berubah: UPDATE + tepat 1 log updated tipe update_to_pricelist | **TO-BE** ETM-17002 |
+| A-16 | Tooltip **Last Update to Pricelist** di header kolom category pada Pricelist Product menunjuk waktu Update terakhir yang selesai, termasuk bila 0 baris berubah. Sumbernya penanda level category, bukan hanya log per baris | **TO-BE** ETM-17002 |
+| A-17 | Setelah Update tanpa perubahan harga, Sync menemukan 0 baris karena waktu ubah baris tidak maju | **TO-BE** ETM-17002 |
+| A-18 | Baris baru dari Update: tepat 1 log created tipe update_to_pricelist (nilai lama 0). Tidak ada log manual palsu dari event model. Edit manual di grid tetap 1 log tipe manual | **TO-BE** ETM-17002 |
+| A-19 | Tulis massal; 500 produk per job; angka harga sama dengan rumus sebelum optimasi. Update kedua pada category yang sama ditolak dengan pesan jelas selama yang pertama berjalan | **TO-BE** ETM-17002 |
+| A-20 | Angka popup = produk yang akan diproses (aktif, tanpa produk anak), bukan jumlah baris yang sudah ada. Kalimat "Manual margins will be preserved" dan checkbox persetujuan tetap. Progres x dari N atau persen, tetap ada setelah muat ulang halaman | **TO-BE** ETM-17002 |
 
 ---
 
@@ -120,31 +125,55 @@ Dialog: *"All tiers will be replaced with the current Variable Price master. Any
 
 ### 3.4 Update to Pricelist
 
-Dialog keras: N baris Pricelist category akan dihitung ulang; **cannot be undone**. Checkbox *"I understand…"* wajib. Toast dengan N rows.
+Dialog keras + checkbox *"I understand…"* wajib (A-06). Kalimat **Manual margins will be preserved** tetap. Toast: proses berjalan di background.
 
-**TO-BE ETM-16884 (bukan overwrite Manual Price):**
-- Row **non-manual:** Final dari Category tier; cell User Set Margin di Pricelist tetap `-`.
-- Row **Manual Price:** User Set Margin **tidak** ditimpa; Final = Default + User Set Margin + Category tier.
-- Copy dialog harus mencerminkan perilaku ini (bukan “manual override tertimpa” secara absolut).
+**Angka di popup (TO-BE ETM-17002, A-20):** jumlah **produk yang akan diproses** — produk aktif yang tidak punya produk anak — bukan jumlah baris Pricelist yang sudah ada. Layar juga mendapat jumlah baris yang sudah ada dan perkiraan baris baru, supaya teks tidak menyesatkan (contoh lama: popup menulis 21 padahal yang diproses 15.963). Checkbox persetujuan tetap mengunci tombol sampai dicentang.
 
-Detail hitung & Sync: [Pricelist requirement](../businessdevelopment-pricelist-product/requirement.md).
+**Progres:** selama jalan, halaman category ini menampilkan x dari N (atau persen). Angka tidak mundur. Muat ulang halaman tidak menghilangkan progres. Selesai: N dari N plus tepat satu notifikasi *"Update to Pricelist for category {nama} has been completed."* Ada job gagal: tampilan dan notifikasi menyebut jumlah yang gagal.
 
-**TO-BE ETM-17002 (optimasi — harga hasil tetap sama dengan rumus ETM-16884):**
+**Kunci per category:** Update kedua untuk category yang sama ditolak selama yang pertama belum selesai. Pesan: *"Update to Pricelist for category '{nama}' is currently in progress. Please wait until it completes."* (atau *"Update to Pricelist is currently in progress. Please wait."* bila kunci klik bentrok). Category lain boleh jalan bersamaan, progresnya tidak tertukar. Pemicu otomatis dari Variable Price memakai kunci yang sama: category yang sedang berjalan tidak didispatch ulang; halaman category terkait tetap menampilkan progresnya.
 
-| Aturan | Expected |
-|--------|----------|
-| Angka di dialog | Jumlah **produk aktif tanpa anak** yang akan diproses, bukan jumlah baris Pricelist yang sudah ada. Progress: x dari N |
-| Checkbox | Tetap wajib. Teks bahwa **Manual margins will be preserved** tidak dihapus |
-| Baris tidak berubah | Margin, Final, `is_edited`, dan snapshot sama → tidak ada UPDATE, tidak ada log, `updated_at` baris tidak maju |
-| Harga sama, snapshot beda | Hanya snapshot yang diperbarui. Tidak ada log. `updated_at` baris tidak maju |
-| Last Update to Pricelist | Penanda **level category** tetap maju meski 0 baris berubah. Bukan hanya log `update_to_pricelist` per baris |
-| Setelah Update tanpa perubahan baris | Sync memproses **0** baris, karena `updated_at` baris tidak maju |
-| Log | Tepat **1** log per baris yang benar-benar dibuat atau diubah, tipe `update_to_pricelist`. Bulk create tidak boleh menulis log manual palsu dari event model |
-| Tulisan | Per chunk **500** produk per job. Harga yang ditulis identik dengan hitungan sebelum optimasi |
-| Update kedua | Category yang sama, selagi Update pertama belum selesai → ditolak |
-| Cakupan | Hanya produk aktif tanpa anak, company category itu. Manual stack, isolasi company, bersihkan duplikat, notifikasi selesai, dan bersihkan snapshot yang tidak terpakai tetap berlaku |
+**Lewati yang tidak berubah (A-15).** Untuk baris yang sudah ada, hitung dengan rumus yang sama, lalu bandingkan setelah pembulatan 4 desimal: margin, Final, flag Manual, dan snapshot tier.
 
-Poin 5, Poin 7, dan Poin 8 (keputusan Product) **di luar scope** kartu ini — tidak ada aturan tambahan untuk ketiganya di dokumen ini.
+| Kondisi | Tulisan | Log | Waktu ubah baris |
+|---------|---------|-----|------------------|
+| Keempatnya sama | Tidak ada UPDATE | Tidak ada | Tidak berubah |
+| Harga sama, snapshot beda | Hanya snapshot tier diganti | Tidak ada | Tidak naik |
+| Margin atau Final beda | UPDATE harga + snapshot | Tepat 1 log **updated** / update_to_pricelist | Naik |
+
+**Penanda Last Update (A-16):** tooltip **Last Update to Pricelist** di header kolom category (Pricelist Product) wajib menunjuk tanggal-jam Update terakhir yang **selesai**, juga saat 0 baris berubah. Log per baris saja tidak cukup, karena baris yang dilewati tidak menulis log. Perlu penanda level category (waktu selesai Update pada snapshot tier yang dipakai run itu).
+
+**Sync (A-17):** Sync hanya mengambil baris yang belum pernah di-sync atau waktu ubahnya lebih baru dari sync terakhir. Update tanpa perubahan harga tidak menaikkan waktu ubah, jadi Sync berikutnya menemukan **0 baris**.
+
+**Satu log per baris (A-18):**
+- Baris **baru:** tepat 1 log **created** / update_to_pricelist, nilai lama 0, nilai baru = hasil hitung, user = yang menjalankan Update. Event model tidak boleh menambah log tipe manual untuk baris yang dibuat Update.
+- Baris **berubah harga:** tepat 1 log **updated** / update_to_pricelist.
+- Baris **ganda** (category + produk sama): yang dipertahankan baris Manual, atau baris pertama bila tidak ada Manual; sisanya hilang dari grid dan tepat 1 log **deleted** / duplicate.
+- Edit manual di grid (ketik margin atau Final) tidak berubah: tetap 1 log tipe **manual**, karena tooltip "Margin edited by" membaca log itu. Waktu "Margin edited by" hanya berubah karena edit manual, bukan karena Update.
+- Log yang sudah ada tidak diubah dan tidak dihapus.
+
+**Tulis massal dan chunk (A-19):** baris baru, log, dan perubahan snapshot ditulis massal (bukan satu perintah Eloquent per produk). Satu job memproses **500** produk. Job gagal di tengah: transaksi job itu di-rollback (tidak ada baris setengah jadi); job lain tetap jalan; notifikasi gagal terkirim; Update ulang melengkapi sisa tanpa baris ganda.
+
+**Rumus harga tidak berubah (ETM-16884):**
+- **Manual = No:** Final = Default + semua tier, minimum 0. Cell User Set Margin tetap `-`.
+- **Manual = Yes:** margin tetap angka user; Final = Default + margin user + semua tier, minimum 0. Flag Manual tetap.
+
+**Contoh (Staging, category bertier +5.500):**
+
+| Kasus | Hasil |
+|-------|--------|
+| Update kedua, tier dan Default tidak berubah | 0 baris harga berubah, waktu ubah baris sama, 0 log baru per baris. Tooltip Last Update pindah ke waktu Update yang baru. Sync berikutnya 0 baris |
+| Harga sebuah produk sama, snapshot run ini beda (produk di luar band yang diubah) | Tidak ada log, waktu ubah tidak naik, snapshot baris menunjuk snapshot baru |
+| HAWAT-Biru, Manual Yes, Default 7.000, margin user 2.000, tier naik dari +5.500 ke +6.500 | Margin tetap **2.000**. Final **15.500**. Tepat 1 log updated |
+| HCD-1, Manual No, Default 30.000, tier +5.500 | Final **35.500**, cell `-`. Tier berubah dan harga ikut berubah: tepat 1 log |
+| Produk belum punya baris | 1 baris baru + tepat 1 log created / update_to_pricelist. Bukan dua log |
+| Hasil hitung negatif | Final **0**; tooltip menyebut Final disesuaikan ke 0 karena hasil negatif |
+
+**Yang tetap (regresi):** isolasi company (Update satu company tidak mengubah company lain); hanya produk aktif tanpa produk anak; pembersihan baris ganda + log duplicate; notifikasi selesai dan gagal ke user yang menjalankan; snapshot lama dibersihkan setelah batch selesai **tanpa** job gagal, dan tidak boleh ada baris yang menunjuk snapshot terhapus atau kosong (tooltip Calculation tetap pecah per tier). Aturan stack Manual ETM-16884 tidak berubah.
+
+**Di luar card — jangan dianggap perilaku sekarang:** antrean khusus (poin 5) dan lewati produk Default Price 0 (poin 7) tidak termasuk. Poin 8 (jangan simpan baris turunan; harga dihitung saat dibaca) menunggu keputusan Product.
+
+Detail tampilan Pricelist & Sync platform-only: [Pricelist requirement §4–§5](../businessdevelopment-pricelist-product/requirement.md).
 
 ### 3.5 Auto-recalc weight (TO-BE ETM-16668)
 
@@ -187,7 +216,7 @@ Category `SH-GARME` attach VP-AMT-RETAIL + VP-WGT-STD + VP-AMT-MKTPLACE → SKU-
 | GAP-CP-05 | Applied Store Others Active (ETM-16882) | Balik sebagian 16666; TC baru menggantikan TC-CP-002/003 |
 | GAP-CP-06 | Copy dialog Update to Pricelist vs Manual stack | Selaras ETM-16884 |
 | GAP-CP-07 | Hapus Category yang store-nya sudah Inactive (ETM-17053) | **TO-BE** ETM-16882 / TC ETM-17032: tetap tidak bisa dihapus selama masih terikat store. Kode sekarang hanya menolak jika store terikat masih **Active**, jadi Category dengan store Inactive masih bisa terhapus |
-| GAP-CP-08 | Update to Pricelist menulis ulang semua baris | **TO-BE** ETM-17002: lewati baris yang tidak berubah; penanda category tetap maju |
+| GAP-CP-08 | Last Update saat 0 baris berubah (ETM-17002 A-16) | Penanda category sudah di-set: waktu ubah snapshot tier yang dipakai run itu, di akhir batch, termasuk bila 0 baris harga berubah. Tooltip header Pricelist Product masih membaca waktu log per baris tipe update_to_pricelist, jadi Update tanpa log baru tidak menggeser tooltip. Tooltip wajib membaca penanda category |
 
 ---
 

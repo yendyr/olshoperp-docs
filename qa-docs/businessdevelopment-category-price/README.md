@@ -10,7 +10,7 @@ Menu **Category Price** (Business Development) — multi-tier Variable Price sna
 | User Guide | [user-guide.md](./user-guide.md) (v1.6) | Publish | review |
 | Test Cases | [test-cases/](./test-cases/) | QA | lihat README folder |
 
-**Jira:** [ETM-16313](https://erpintegration.atlassian.net/browse/ETM-16313) · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) · [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others) · Pricelist: [ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883) · [ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** (optimasi Update to Pricelist)  
+**Jira:** [ETM-16313](https://erpintegration.atlassian.net/browse/ETM-16313) · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) · [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others) · Pricelist: [ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883) · [ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)**  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89  
 **Final E2E:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md)  
 **3 layer:** 1.6 · **Last updated:** 2026-11-05  
@@ -20,7 +20,7 @@ Menu **Category Price** (Business Development) — multi-tier Variable Price sna
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.6 | 2026-11-05 16:24 | TO-BE ETM-17002: Update to Pricelist melewati baris yang tidak berubah; penanda Last Update to Pricelist tetap maju; dialog menghitung produk aktif tanpa anak |
+| 1.6 | 2026-11-05 16:27 | Update to Pricelist hanya menulis harga yang berubah, satu catatan per baris, progres tetap setelah muat ulang, dan Update kedua di category yang sama ditolak selagi yang pertama jalan (ETM-17002) |
 | 1.5 | 2026-11-04 09:28 | TO-BE ETM-16882: tooltip Applied Store menyebut store platform dan Others Active; satu store hanya untuk satu Category Price; Category yang masih terikat store tidak bisa dihapus. Kalau store yang terikat sudah Inactive, hapus masih lolos (ETM-17053) |
 | 1.4 | 2026-10-28 | TO-BE ETM-16882 Applied Store Others Active; Update to Pricelist selaras Manual stack ETM-16884 |
 | 1.3 | 2026-10-28 | Cross-ref TO-BE ETM-16835 Max Value |
