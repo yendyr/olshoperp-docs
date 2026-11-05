@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.3
-last_updated: 2026-10-28
+version: 1.4
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [Pricelist Product, product pricelist, harga jual SKU, tier breakdown, Manual Margin, User Set Margin]
@@ -48,6 +48,18 @@ Ubah weight DnW **default** (atau ganti radio default) → Weight + Final Catego
 
 Icon Sync (per baris & header kolom) hanya muncul jika Category punya minimal satu store **platform**. Category Applied Store kosong atau hanya **Others** → tidak ada Sync. **Sync All** hanya category ber-platform. Final tetap dihitung untuk Others / kosong.
 
+## Produk Aktif / Non Aktif (TO-BE ETM-17072)
+
+Saat dibuka, daftar **hanya menampilkan produk Aktif**. SKU Non Aktif tidak ikut, sama seperti menu Product.
+
+Di toolbar daftar ada switch **Show archived data** (tampilkan data arsip):
+
+- **Mati** (default) — hanya SKU **Aktif**.
+- **Nyala** — SKU **Non Aktif** ikut muncul.
+- Dimatikan lagi — SKU Non Aktif hilang dari daftar.
+
+Switch ini hanya mengubah isi daftar, bukan mengaktifkan kembali produk.
+
 ## Tips
 
 - Contoh non-manual: harga 16.000 + berat 1.500 g → Final **24.500**; User Set Margin `-`; pecahan di tooltip.
@@ -65,5 +77,6 @@ Icon Sync (per baris & header kolom) hanya muncul jika Category punya minimal sa
 | Tidak ada icon Sync | Category tanpa store platform (NULL/Others) — normal |
 | Margin Weight = 0 / skipped | Isi weight DnW **default** di System Product |
 | Mau daftar yang diedit manual | Advanced Filter **Manual Margin** Equals **Yes** |
+| SKU Non Aktif tidak muncul | Nyalakan **Show archived data** di toolbar. Default daftar hanya Aktif |
 
 Detail: [requirement.md](./requirement.md)

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.3
-last_updated: 2026-10-28
+version: 1.4
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 related_docs:
@@ -20,7 +20,8 @@ related_docs:
 **TO-BE filter:** [ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861).  
 **TO-BE calc Max Value:** [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835).  
 **TO-BE UI margin/tooltips:** [ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883).  
-**TO-BE Sync + Manual stack on Update:** [ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884) · Applied Store Others Category: [ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882).
+**TO-BE Sync + Manual stack on Update:** [ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884) · Applied Store Others Category: [ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882).  
+**TO-BE filter Aktif:** [ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072) — datalist `show_archived`, pola sama `ProductController` index.
 
 ---
 
@@ -74,6 +75,9 @@ Untuk tiap tier snapshot di Category:
 | Sync action | Existing binding / platform product checks |
 | Weight sync (16668) | After DnW default change → recalc calculated rows + log |
 | Filter Manual Margin (16861) | `is_edited` any category; Yes/No dropdown |
+| Datalist Aktif (17072) | `PricelistController::index()` dan `showRowDatatable($id)`: `where products.status = 1` hanya jika request `show_archived` bukan true (`boolean('show_archived')`). FE `DataList.vue` mengirim `show_archived=true` lewat DataTablesV3 (`is_show_archived`, `show_archived`, `whenShowArchived`). Default OFF = hanya Aktif |
+
+**Known behaviour (ETM-17072):** `updateBulkMarginPricelist` tetap hanya memproses produk Aktif (`status = 1`); tidak ikut switch. `export()` tetap `PricelistCategoryExport` (template category), tidak diubah.
 
 ---
 

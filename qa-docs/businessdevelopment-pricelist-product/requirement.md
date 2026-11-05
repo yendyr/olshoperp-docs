@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.3
-last_updated: 2026-10-28
+version: 1.4
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16314](https://erpintegration.atlassian.net/browse/ETM-16314)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar F)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §5, §7–9  
-**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price)
+**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data)
 
 ---
 
@@ -21,6 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-11-05 | **TO-BE** ETM-17072: default hanya produk Aktif + switch Show archived data (sama dengan menu Product) |
 | 1.3 | 2026-10-28 | **TO-BE** ETM-16883/16884: User Set Margin (`-` non-manual), tooltip input/header/calc, Sync hanya category ber-platform, Update to Pricelist **stack** Manual Price (bukan overwrite); calc tetap untuk Applied Store Others/NULL |
 | 1.2 | 2026-10-28 | **TO-BE** ETM-16861 Manual Margin filter; cross-ref Max Value ETM-16835 |
 | 1.1 | 2026-10-21 | **TO-BE** ETM-16668 auto-recalc weight; preserve manual |
@@ -58,6 +59,7 @@ Calc Final tetap untuk Applied Store **NULL** / **Others** (ETM-16884).
 | A-13 | Header kolom category: tooltip summary tier + **Last Update to Pricelist** (sukses terakhir), label jelas | **TO-BE** ETM-16883 |
 | A-14 | Applied Store Others/NULL: Final tetap terhitung; Sync row+header hide; Sync All hanya category ber-platform | **TO-BE** ETM-16884 |
 | A-15 | Update to Pricelist + Manual Price: Final = Default + User Set Margin + Category tier; cell margin tetap nilai user | **TO-BE** ETM-16884 |
+| A-16 | Datalist default hanya SKU status **Aktif**. Switch **Show archived data** di toolbar: ON = SKU **Non Aktif** ikut tampil; OFF lagi = disembunyikan. Perilaku sama dengan menu Product | **TO-BE** ETM-17072 |
 
 ---
 
@@ -149,6 +151,18 @@ Hover header: summary tier Category + label jelas **Last Update to Pricelist:** 
 | Scope v1 (**Any**) | Yes jika ≥1 category cell manual pada baris |
 
 Reset / clear margin → `is_edited = 0` → filter **No**.
+
+### 4.6 Filter Aktif / Non Aktif (TO-BE · ETM-17072)
+
+Datalist Pricelist memakai switch yang sama dengan menu Product.
+
+| Item | Aturan |
+|------|--------|
+| Default | Hanya produk/SKU status **Aktif** |
+| Switch | **Show archived data** di toolbar datalist |
+| ON | SKU **Non Aktif** ikut tampil bersama Aktif |
+| OFF lagi | SKU Non Aktif disembunyikan; daftar kembali hanya Aktif |
+| Bukan | Mengubah status produk; hanya filter tampilan daftar |
 
 ---
 

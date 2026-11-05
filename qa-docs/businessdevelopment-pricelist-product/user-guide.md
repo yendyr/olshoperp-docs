@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.3
-last_updated: 2026-10-28
+version: 1.4
+last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.3"
+source_version: "1.4"
 owner: QA - Yemima
 status: review
 ---
@@ -64,5 +64,16 @@ Peringatan **No weight**. Aturan berat di-skip. Isi weight di System Product (Dn
 ## 6. Weight berubah di System Product (ETM-16668)
 
 Ubah DnW **default** (atau ganti radio default) → Weight + Final by Weight di Pricelist ikut update. Manual oranye **tidak** berubah. Perubahan masuk **Log Pricelist**.
+
+---
+
+## 7. Produk Aktif dan Non Aktif (ETM-17072)
+
+Saat membuka daftar, yang tampil hanya produk **Aktif**.
+
+1. Di toolbar daftar, nyalakan **Show archived data** kalau perlu melihat SKU **Non Aktif**.
+2. Matikan lagi untuk menyembunyikan SKU Non Aktif.
+
+Perilakunya sama dengan switch yang sama di menu Product. Switch ini hanya mengubah isi daftar, bukan status produk.
 
 Referensi: [knowledge-base.md](./knowledge-base.md) · [Category Price](../businessdevelopment-category-price/user-guide.md)
