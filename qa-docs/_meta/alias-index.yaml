@@ -3,11 +3,11 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-10-30T08:08:30Z'
+generated: '2026-11-05T06:28:14Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
 menu_count: 133
-alias_count: 832
+alias_count: 834
 ambiguous_count: 28
 aliases:
   3pl: supplychain-delivery-order
@@ -839,7 +839,9 @@ aliases:
   so general: sales-order-general
   so general technical: sales-order-general
   so internal: sales-order-general
+  so p/l: accounting-sales-order-profit-loss
   so platform: omni-sales-platform
+  so profit loss: accounting-sales-order-profit-loss
   soapprovetowave: omni-unassign-wave
   sr:
     slugs:

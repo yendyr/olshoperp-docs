@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-trial-balance
 menu_name: "Trial Balance"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 audience: operator
@@ -14,85 +14,101 @@ sections:
 
 # Trial Balance — Knowledge Base
 
-> **DRAFT** — Dokumentasi AS-IS dari codebase (19 Juni 2026). Belum final review QA/PM.
+**Menu:** FA → Report → Trial Balance (`/accounting/trial-balance`)
+
+---
 
 ## 1. Apa itu Trial Balance?
 
 **Trial Balance** (Neraca Saldo) menampilkan ringkasan saldo debit/kredit per **Chart of Account (COA)** untuk periode yang dipilih. Laporan **read-only** — tidak ada create/edit/delete transaksi dari menu ini.
 
-**Menu:** FA → Report → Trial Balance (`/accounting/trial-balance`)
+Data bersumber dari journal berstatus **Approved**.
 
-Data bersumber dari journal berstatus **Approved**, dihitung oleh helper `JournalReport`.
+---
 
 ## 2. Glosarium
 
 | Istilah | Arti |
 |---------|------|
-| Beginning balance | Saldo awal periode (mutasi sebelum `start_date`) |
-| In-period | Mutasi debit/kredit antara `start_date` dan `end_date` |
-| Ending balance | Beginning + in-period per kolom debit/credit |
+| Beginning balance | Saldo awal periode (mutasi sebelum tanggal mulai) |
+| In-period | Mutasi debit/kredit di dalam periode |
+| Ending balance | Beginning + in-period (per sisi Debit/Credit) |
+| **Balance** (kolom baru) | Nilai net per grup — rumus tergantung tipe akun (Aktiva / Pasiva) |
 | COA class | Kelompok akun: Assets, Liabilities, Equity, Revenue, Expense, COGS, Other Revenue & Expenses |
-| Parent COA | Akun induk — saldo di-rollup dari anak via `JournalReport` parent helpers |
-| Current Profit/Loss | COA khusus laba rugi berjalan — perhitungan khusus di `JournalReport` |
+| Activa / Passiva | Sifat class akun di master COA Class (sistem: **Passiva**) |
+| Parent COA | Akun induk — saldo di-rollup dari anak |
+| Current Profit/Loss | COA khusus laba rugi berjalan |
 
-## 3. Yang Bisa / Tidak Bisa Dilakukan
+---
+
+## 3. Yang Bisa / Tidak Bisa
 
 ### Bisa
 
-- Pilih **periode** (date range) lalu **Apply**
-- Lihat 7 tabel terpisah per COA class (Assets, Liabilities, Equity, Revenues, Other Revenues & Expenses, Expenses, COGS)
-- Lihat hierarki COA (indentasi & bold untuk parent)
-- Footer total per tabel (via flag `trial_balance` di DataTables)
+- Pilih **periode** lalu **Apply**
+- Lihat 7 tabel per COA class
+- Lihat hierarki COA (indent + bold parent)
+- Lihat Debit & Credit per grup Beginning / In-Period / Ending
+- **(TO-BE ETM-17077)** Lihat kolom **Balance** di tiap grup
 
 ### Tidak Bisa
 
 - Buat / edit / hapus transaksi dari menu ini
-- Export Excel dari UI Trial Balance (tidak ada endpoint export di controller AS-IS)
-- Filter per COA individual di UI (hanya filter periode global)
+- Export Excel dari UI Trial Balance (belum ada)
+- Filter per COA individual di UI (hanya periode global)
+
+---
 
 ## 4. Kolom laporan
 
-Setiap tabel punya sub-header tiga blok:
+Setiap tabel punya tiga blok:
 
-| Blok | Kolom Debit | Kolom Credit |
-|------|-------------|--------------|
-| **Beginning Balance** | Debit awal | Credit awal |
-| **In-Period** | Mutasi debit periode | Mutasi credit periode |
-| **Ending Balance** | Debit akhir | Credit akhir |
+| Blok | Kolom (AS-IS) | + TO-BE |
+|------|---------------|---------|
+| **Beginning Balance** | Debit, Credit | **Balance** |
+| **In-Period** | Debit, Credit | **Balance** |
+| **Ending Balance** | Debit, Credit | **Balance** |
 
-Baris **CODE** dan **NAME** (COA); nama parent ditampilkan **bold** dengan indentasi.
+### Cara baca kolom Balance (ETM-17077)
+
+| Tipe akun (position) | Rumus Balance |
+|----------------------|---------------|
+| **Activa** (contoh: Assets, Expense, COGS) | Debit − Credit |
+| **Passiva** (contoh: Liabilities, Equity, Revenue) | Credit − Debit |
+
+Kalau hasilnya negatif, angka **tetap tampil minus** (bukan dipindah ke sisi lain).
+
+---
 
 ## 5. Cara Pakai
 
-1. Buka menu Trial Balance
-2. Pilih **Period** (range tanggal)
-3. Klik **Apply**
-4. Scroll per section COA class — bandingkan total footer Beginning vs Ending
-5. Untuk detail transaksi per akun → buka **General Ledger** dengan filter COA & periode sama
+1. Buka menu Trial Balance  
+2. Pilih **Period** → klik **Apply**  
+3. Scroll per section COA class  
+4. Bandingkan Debit/Credit/Balance antar Beginning vs Ending  
+5. Detail transaksi per akun → **General Ledger** (filter COA & periode sama)
+
+---
 
 ## 6. Troubleshooting
 
 | Gejala | Penyebab | Solusi |
 |--------|----------|--------|
-| Semua nol | Periode salah / belum Apply | Pilih periode & klik Apply |
-| Angka tidak sesuai GL | GL = baris transaksi; TB = agregasi | Normal; cross-check total per COA |
-| Parent & child double-count | Parent = rollup anak | Jangan jumlahkan parent + child manual |
-| COA tidak muncul | Tidak ada mutasi & bukan parent dengan anak | Cek COA master & journal approved |
+| Semua nol | Periode salah / belum Apply | Pilih periode & Apply |
+| Angka ≠ GL baris-per-baris | GL = transaksi; TB = agregasi | Normal; cek total per COA |
+| Parent + child double | Parent = rollup anak | Jangan jumlahkan parent + child |
+| Balance “terbalik” | Cek apakah akun Activa atau Passiva | Ikuti rumus §4 |
+| COA tidak muncul | Tidak ada mutasi / bukan parent relevan | Cek COA master & journal Approved |
+
+---
 
 ## 7. FAQ
 
-**Q: Apakah Trial Balance bisa mengubah jurnal?**  
-A: Tidak. Menu ini hanya laporan baca.
+**Q: Kenapa Balance Assets beda rumus dengan Liabilities?**  
+A: Assets = Activa (Debit − Credit); Liabilities = Passiva (Credit − Debit).
 
-**Q: Kenapa ada 7 tabel?**  
-A: Satu tabel per **COA class** master (7 class di seeder).
+**Q: Boleh minus?**  
+A: Ya — minus berarti sisi “lawan” lebih besar untuk tipe akun itu.
 
-**Q: Hubungan dengan Balance Sheet / P&L?**  
-A: Sumber data sama (journal approved); laporan lain menyajikan format berbeda.
-
-## Related Documents
-
-| Doc | Path |
-|-----|------|
-| Requirement | [requirement.md](./requirement.md) |
-| Technical | [technical.md](./technical.md) |
+**Q: Request user bilang Debit − Credit semua?**  
+A: Itu request awal; keputusan product memakai rumus by position (lihat ETM-17077).

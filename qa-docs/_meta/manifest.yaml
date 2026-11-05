@@ -1437,21 +1437,23 @@ menus:
     docs:
       knowledge-base:
         file: knowledge-base.md
-        status: pending
+        status: review
       requirement:
         file: requirement.md
-        status: pending
+        status: review
       technical:
         file: technical.md
-        status: pending
+        status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:
-      backend: []
-      frontend: []
+      backend:
+        - Modules/Accounting/Http/Controllers/SalesOrderProfitLossController.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/Report/SalesOrderProfitLoss/**/*
 
   accounting-sales-return:
     menu_name: "Sales Return"
@@ -1792,7 +1794,7 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: pending
+        status: review
     legacy_sources:
       []
     code_globs:

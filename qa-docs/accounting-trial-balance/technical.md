@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-trial-balance
 menu_name: "Trial Balance"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # Trial Balance — Technical Documentation
 
-> **DRAFT** — Dokumentasi AS-IS dari codebase (19 Juni 2026). Belum final review QA/PM.
+> v1.1 — AS-IS + TO-BE [ETM-17077](https://erpintegration.atlassian.net/browse/ETM-17077) kolom **Balance**.
 
 ## 1. Architecture Overview
 
@@ -114,6 +114,25 @@ Commented/disabled in `api.php`: `Route::resource('/trial-balance', ...)`, per-c
    - `ending_debit` / `ending_credit` (= beginning + in-period per side)
 6. Special branch if `coa_id == current_profit_loss_id`
 7. Parent COA uses `*Parent` helpers when `all_childs()->exists()`
+8. **TO-BE ETM-17077:** derive 3 Balance columns from Debit/Credit + `chart_of_account_class.position` (see §5.1)
+
+### 5.1 TO-BE — kolom Balance (ETM-17077)
+
+| Suggested column `data` | Source Debit/Credit | After UI column |
+|-------------------------|---------------------|-----------------|
+| `beginning_balance` (+ `_number` for footer) | beginning_debit / beginning_credit | after `beginning_credit` |
+| `in_period_balance` (+ `_number`) | in_period_debit / in_period_credit | after `in_period_credit` |
+| `ending_balance` (+ `_number`) | ending_debit / ending_credit | after `ending_credit` |
+
+```text
+position == 'Activa'  → balance = debit - credit
+position == 'Passiva' → balance = credit - debit
+# signed; negative stays negative
+```
+
+- Load `chart_of_account_class.position` on the COA query (already with class for filter).
+- FE `DataList.vue`: insert 3 columns titled **BALANCE** (or **Balance**); update `columnWithFooter` indices (currently `[2,3,4,5,6,7]` for 6 amount cols — becomes 9 amount cols).
+- Do **not** change JournalReport Debit/Credit helpers for this card — Balance is a presentation/derived field on TB response.
 
 ## 6. JournalReport methods used
 
