@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.5
+version: 1.6
 last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.5"
+source_version: "1.6"
 owner: QA - Yemima
 status: review
 ---
@@ -27,7 +27,7 @@ Daftar harga jual per produk. Angka besar = **Final Price**. Angka kecil = **Use
 1. Cek kolom **Weight** (dari System Product primary).
 2. Lihat **Final Price** (besar). **User Set Margin** tetap `-` kalau kamu belum edit manual.
 3. Arahkan mouse ke area margin → pecahan per tier (tooltip calculation).
-4. Arahkan mouse ke **nama kolom category** → ringkasan tier + waktu **Last Update to Pricelist**.
+4. Arahkan mouse ke **nama kolom category** → ringkasan tier + waktu **Last Update to Pricelist**. Waktu itu tetap maju setiap Update selesai, termasuk jika tidak ada harga yang berubah.
 
 Contoh: 16.000 + berat 1.500 g → Final **24.500**; User Set Margin `-`.
 
@@ -79,5 +79,9 @@ Perilakunya sama dengan switch yang sama di menu Product. Switch ini hanya mengu
 ## 8. Kolom Images (ETM-17071)
 
 Kolom **Images** di paling kiri daftar menampilkan thumbnail produk (sama System Product). Tanpa gambar → tanda `-`. Kolom ini tidak untuk sort atau search teks.
+
+## 9. Update yang tidak mengubah harga (ETM-17002)
+
+Kalau angka Final dan margin manual sudah sesuai, baris itu tidak ditulis ulang. Waktu **Last Update to Pricelist** di header kolom tetap maju. Sync sesudah itu tidak mengirim baris yang tidak berubah.
 
 Referensi: [knowledge-base.md](./knowledge-base.md) · [Category Price](../businessdevelopment-category-price/user-guide.md)

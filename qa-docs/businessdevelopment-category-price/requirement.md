@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.5
-last_updated: 2026-11-04
+version: 1.6
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16313](https://erpintegration.atlassian.net/browse/ETM-16313)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar D)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §4, §6–9  
-**Relates:** ETM-16312 · ETM-16314 · mirror validasi Percentage [ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569) · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others Active) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** / **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (dampak Pricelist)
+**Relates:** ETM-16312 · ETM-16314 · mirror validasi Percentage [ETM-16569](https://erpintegration.atlassian.net/browse/ETM-16569) · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others Active) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** / **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (dampak Pricelist) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** (optimasi Update to Pricelist)
 
 ---
 
@@ -21,6 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.6 | 2026-11-05 | **TO-BE** [ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002): Update to Pricelist menghitung jumlah produk aktif tanpa anak; lewati baris yang tidak berubah; penanda Last Update to Pricelist tetap maju meski 0 baris berubah; kunci tolak Update kedua pada category yang sama. Poin 5, Poin 7, dan Poin 8 (keputusan Product) di luar scope |
 | 1.5 | 2026-11-04 | **TO-BE** ETM-16882: tooltip Applied Store menyebut store platform dan Others Active (kalimat "Only platform stores can be selected" tidak dipakai); satu store hanya di satu Category Price; Category yang masih terikat store tidak bisa dihapus. Hapus saat store terikat sudah Inactive masih lolos — GAP-CP-07 (ETM-17053) |
 | 1.4 | 2026-10-28 | **TO-BE** ETM-16882: Applied Store = platform + Others **Active**; NULL OK; mix OK. Update to Pricelist: Manual Price di Pricelist **tidak** ditimpa (stack — ETM-16884). Catatan: membalik sebagian ETM-16666 |
 | 1.3 | 2026-10-28 | Cross-ref TO-BE ETM-16835: Max Value ikut snapshot band / edit lokal Percentage + hitung Pricelist |
@@ -64,6 +65,7 @@ flowchart LR
 | A-12 | Tooltip Applied Store menyebut store platform dan store Others Active. Kalimat lama "Only platform stores can be selected" tidak dipakai | **TO-BE** ETM-16882 (TC ETM-17030) |
 | A-13 | Satu store hanya boleh terikat ke satu Category Price. Pesan: "{nama store} has already been used. A store cannot be bound to multiple category prices." (contoh nama: Aeri's Store 2) | **TO-BE** ETM-16882 (TC ETM-17029) |
 | A-14 | Category Price yang masih terikat store tidak bisa dihapus, satu baris maupun banyak sekaligus. Pesan: "Category Price cannot be deleted because it is still bound to Store {nama}. Please unbind the store first." Berlaku juga bila store itu kemudian Inactive | **TO-BE** ETM-16882 (TC ETM-17028, ETM-17032) |
+| A-15 | Update to Pricelist: dialog menyebut jumlah **produk** aktif tanpa anak (bukan jumlah baris yang sudah ada); progress x dari N; checkbox Manual margin tetap; Update kedua pada category yang sama ditolak selagi yang pertama belum selesai | **TO-BE** ETM-17002 |
 
 ---
 
@@ -127,6 +129,23 @@ Dialog keras: N baris Pricelist category akan dihitung ulang; **cannot be undone
 
 Detail hitung & Sync: [Pricelist requirement](../businessdevelopment-pricelist-product/requirement.md).
 
+**TO-BE ETM-17002 (optimasi — harga hasil tetap sama dengan rumus ETM-16884):**
+
+| Aturan | Expected |
+|--------|----------|
+| Angka di dialog | Jumlah **produk aktif tanpa anak** yang akan diproses, bukan jumlah baris Pricelist yang sudah ada. Progress: x dari N |
+| Checkbox | Tetap wajib. Teks bahwa **Manual margins will be preserved** tidak dihapus |
+| Baris tidak berubah | Margin, Final, `is_edited`, dan snapshot sama → tidak ada UPDATE, tidak ada log, `updated_at` baris tidak maju |
+| Harga sama, snapshot beda | Hanya snapshot yang diperbarui. Tidak ada log. `updated_at` baris tidak maju |
+| Last Update to Pricelist | Penanda **level category** tetap maju meski 0 baris berubah. Bukan hanya log `update_to_pricelist` per baris |
+| Setelah Update tanpa perubahan baris | Sync memproses **0** baris, karena `updated_at` baris tidak maju |
+| Log | Tepat **1** log per baris yang benar-benar dibuat atau diubah, tipe `update_to_pricelist`. Bulk create tidak boleh menulis log manual palsu dari event model |
+| Tulisan | Per chunk **500** produk per job. Harga yang ditulis identik dengan hitungan sebelum optimasi |
+| Update kedua | Category yang sama, selagi Update pertama belum selesai → ditolak |
+| Cakupan | Hanya produk aktif tanpa anak, company category itu. Manual stack, isolasi company, bersihkan duplikat, notifikasi selesai, dan bersihkan snapshot yang tidak terpakai tetap berlaku |
+
+Poin 5, Poin 7, dan Poin 8 (keputusan Product) **di luar scope** kartu ini — tidak ada aturan tambahan untuk ketiganya di dokumen ini.
+
 ### 3.5 Auto-recalc weight (TO-BE ETM-16668)
 
 Saat **System Product** mengubah Dimensions & Weight **default** (edit row default atau ganti radio default), nilai di Category Price / Pricelist yang **dihitung dari weight** ikut dihitung ulang memakai tier Category **saat itu**.
@@ -168,6 +187,7 @@ Category `SH-GARME` attach VP-AMT-RETAIL + VP-WGT-STD + VP-AMT-MKTPLACE → SKU-
 | GAP-CP-05 | Applied Store Others Active (ETM-16882) | Balik sebagian 16666; TC baru menggantikan TC-CP-002/003 |
 | GAP-CP-06 | Copy dialog Update to Pricelist vs Manual stack | Selaras ETM-16884 |
 | GAP-CP-07 | Hapus Category yang store-nya sudah Inactive (ETM-17053) | **TO-BE** ETM-16882 / TC ETM-17032: tetap tidak bisa dihapus selama masih terikat store. Kode sekarang hanya menolak jika store terikat masih **Active**, jadi Category dengan store Inactive masih bisa terhapus |
+| GAP-CP-08 | Update to Pricelist menulis ulang semua baris | **TO-BE** ETM-17002: lewati baris yang tidak berubah; penanda category tetap maju |
 
 ---
 

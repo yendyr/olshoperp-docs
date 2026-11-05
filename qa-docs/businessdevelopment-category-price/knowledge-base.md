@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.5
-last_updated: 2026-11-04
+version: 1.6
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [Category Price, pricelist category, kategori harga, Variable Price Tiers, Max Value, Applied Store]
@@ -38,7 +38,7 @@ flowchart TD
 |------|------|
 | **Select Variable Price** | Pasang tier (snapshot). Hanya Active yang belum dipasang. |
 | **Update from Master** | Timpa semua tier dari master terkini (edit lokal hilang). |
-| **Update to Pricelist** (merah) | Hitung ulang Final di Pricelist. Margin yang diedit manual di Pricelist **tidak dihapus**; Final = default + margin user + tier category (ETM-16884). Wajib centang persetujuan. |
+| **Update to Pricelist** (merah) | Hitung ulang Final di Pricelist. Margin yang diedit manual di Pricelist **tidak dihapus**; Final = default + margin user + tier category (ETM-16884). Wajib centang persetujuan. Angka di dialog = jumlah produk aktif tanpa anak. Baris yang harganya tidak berubah tidak ditulis ulang. Waktu Last Update to Pricelist di header Pricelist tetap maju meski tidak ada baris yang berubah (ETM-17002). Update kedua pada category yang sama ditolak selagi yang pertama belum selesai. |
 
 ## Weight berubah di System Product (TO-BE ETM-16668)
 
@@ -60,5 +60,7 @@ Ubah weight DnW **default** di System Product → nilai Category/Pricelist yang 
 | Select kosong | Semua Active sudah dipasang, atau belum ada Variable Price Active |
 | Icon oranye di tier | Band sudah diedit lokal — Update from Master untuk samakan master |
 | Pricelist belum berubah | Belum Update to Pricelist / belum centang konfirmasi (kecuali auto weight default DnW — ETM-16668) |
+| Last Update to Pricelist tidak maju padahal baru klik Update dan 0 baris berubah | Bug vs TO-BE ETM-17002 — penanda category harus tetap maju |
+| Update kedua langsung ditolak | Normal jika Update pertama pada category yang sama belum selesai (ETM-17002) |
 
 Detail: [requirement.md](./requirement.md) · Wireframe: https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89

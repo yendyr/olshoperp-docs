@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.5
+version: 1.6
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -46,7 +46,7 @@ Ubah weight DnW **default** (atau ganti radio default) → Weight + Final Catego
 - Edit Final Price **atau** User Set Margin → keduanya **Manual Price**; angka margin **oranye**.
 - Hover atas: *Click to edit Final Price*. Hover bawah: *Click to edit User Set Margin*.
 - **Kosongkan / hapus** margin = **reset** → kembali `-`, Final ikut Category saja.
-- Header nama category: hover → ringkasan tier + **Last Update to Pricelist** (waktu sukses terakhir).
+- Header nama category: hover → ringkasan tier + **Last Update to Pricelist** (waktu sukses terakhir). Waktu itu tetap maju meski Update tidak mengubah satu pun baris (ETM-17002).
 
 ## Sync ke platform (TO-BE ETM-16884)
 
@@ -63,6 +63,12 @@ Di toolbar daftar ada switch **Show archived data** (tampilkan data arsip):
 - Dimatikan lagi — SKU Non Aktif hilang dari daftar.
 
 Switch ini hanya mengubah isi daftar, bukan mengaktifkan kembali produk.
+
+## Update to Pricelist yang tidak mengubah angka (TO-BE ETM-17002)
+
+Kalau margin, Final, dan tanda manual sudah sama dengan hitungan baru, baris itu **tidak ditulis ulang** dan tidak masuk log. Harga yang berubah tetap memakai rumus lama: margin manual tidak dihapus.
+
+Waktu **Last Update to Pricelist** di header kolom category tetap maju, termasuk saat 0 baris berubah. Sync sesudah itu tidak memproses baris yang tidak berubah.
 
 ## Tips
 
@@ -83,5 +89,6 @@ Switch ini hanya mengubah isi daftar, bukan mengaktifkan kembali produk.
 | Mau daftar yang diedit manual | Advanced Filter **Manual Margin** Equals **Yes** |
 | SKU Non Aktif tidak muncul | Nyalakan **Show archived data** di toolbar. Default daftar hanya Aktif |
 | Tidak ada kolom Images | Fitur TO-BE ETM-17071 — selaras System Product |
+| Last Update to Pricelist tidak maju setelah Update tanpa perubahan baris | Bug vs TO-BE ETM-17002 — penanda category harus tetap maju |
 
 Detail: [requirement.md](./requirement.md)

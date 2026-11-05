@@ -2,8 +2,8 @@
 doc_type: technical
 menu: businessdevelopment-category-price
 menu_name: "Category Price"
-version: 1.5
-last_updated: 2026-11-04
+version: 1.6
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 related_docs:
@@ -20,7 +20,8 @@ related_docs:
 **TO-BE weight sync:** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) — consumer dari System Product DnW default change (bukan endpoint Category baru).  
 **TO-BE Max Value:** [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835) — snapshot `max_value` dari Variable Price; mirror enable/disable + calc ke Pricelist.  
 **TO-BE Applied Store:** [ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882) — allow Active Others (+ platform); reverse partial ETM-16666 filter. Tooltip: platform + Others Active (drop "Only platform stores can be selected"). Satu store = satu category (`store()` / `update()`). Hapus (`destroy()`) menolak hanya store terikat `status = 1` — GAP-CP-07 / ETM-17053.  
-**TO-BE Update to Pricelist vs Manual:** [ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884) — preserve `is_edited` + stack formula (lihat Pricelist technical).
+**TO-BE Update to Pricelist vs Manual:** [ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884) — preserve `is_edited` + stack formula (lihat Pricelist technical).  
+**TO-BE optimasi Update:** [ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002) — skip unchanged rows, category marker, chunk 500, lock. Poin 5, 7, dan Poin 8 di luar scope.
 
 ---
 
@@ -45,7 +46,7 @@ Basic Information & DataList: tetap, kecuali **Applied Store** opsi store (ETM-1
 | DELETE | `…/pricelist-category/{id}/tiers/{tierId}` | Remove tier |
 | PATCH | `…/tiers/{tierId}/bands` | Edit lokal band |
 | POST | `…/pricelist-category/{id}/update-from-master` | Overwrite semua tier dari master |
-| POST | `…/pricelist-category/{id}/update-to-pricelist` | Recalc semua Pricelist rows category |
+| POST | `…/pricelist-category/{id}/update-to-pricelist` | Recalc Pricelist category. TO-BE ETM-17002: hitung produk aktif tanpa anak; tulis per chunk 500; kunci tolak panggilan kedua pada category yang sama; lewati baris yang margin/final/`is_edited`/snapshot-nya sama |
 
 Audit log Category: attach/remove/edit tier, Update from Master, Update to Pricelist.  
 Pricelist auto weight (ETM-16668): audit di **Log Pricelist**, bukan mengganti log Category.
@@ -58,7 +59,7 @@ Pricelist auto weight (ETM-16668): audit di **Log Pricelist**, bukan mengganti l
 |----------|---------|
 | Select Variable Price | Pola `PurchaseOrder/DatalistDetail` Select Product |
 | Tier accordion | Badge type; snapshot datetime; orange info jika dirty vs master |
-| Update to Pricelist | Tombol merah; checkbox gate; copy dialog selaras Manual stack (ETM-16884) |
+| Update to Pricelist | Tombol merah; checkbox gate; copy dialog selaras Manual stack (ETM-16884). TO-BE ETM-17002: N = jumlah produk aktif tanpa anak; progress x dari N; checkbox “Manual margins will be preserved” tetap |
 | Applied Store | Options: platform + Others Active; validate allow Others (ETM-16882). Tooltip menyebut platform dan Others Active. Store tidak eligible → "Store Field not found." Store sudah terpakai → "{nama} has already been used. A store cannot be bound to multiple category prices." |
 | Band lokal Percentage | Validasi Value `-9999…9999` + truncate 4dp (mirror Variable Price / ETM-16569, 16562); **Max Value** enable + rules ETM-16835 |
 
@@ -78,6 +79,7 @@ Pricelist auto weight (ETM-16668): audit di **Log Pricelist**, bukan mengganti l
 | G-08 | **ETM-16882** — reopen Applied Store Others Active (FE list + BE validation) |
 | G-09 | **ETM-16884** — UpdateToPricelistJob preserve manual + dialog copy |
 | G-10 | **ETM-17053 / GAP-CP-07** — `destroy()` hanya memblokir store terikat Active; store Inactive masih bisa menghapus Category |
+| G-11 | **ETM-17002** — skip write bila tidak berubah; penanda Last Update to Pricelist level category tetap maju; 1 log `update_to_pricelist` per baris yang benar-benar berubah; chunk 500; lock category |
 
 ---
 
