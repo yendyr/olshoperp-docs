@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-mutation-transfer-void
 menu_name: "Void Transfer"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 ---
@@ -23,11 +23,14 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-11-05 | QA - Yemima | Klarifikasi: TFV = pasca pick/check (voided_order). Void saat order **masih di Wave** ≠ TFV — cleanup detail TF Wave / lepas reserved → [SP §5.8.1](../omni-sales-platform/requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109) · ETM-17110 |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
 
 ## 1. Ringkasan Eksekutif
 
 Transfer stok dari virtual warehouse voided order kembali ke gudang fisik. `process_type = from void`, kode `TFV`, origin `process_group = voided_order`. Kode transaksi prefix **`TFV`**. Filter datalist: `type = tf internal` · `process_type = from void` · origin voided order virtual WH.
+
+**Bukan** jalur void order yang masih di Wave: di situ stok masih di TF Wave (reserved), belum di WH voided_order. Pelepasan reserved Wave → hapus detail TF Wave (TO-BE ETM-17110), **bukan** lewat menu TFV ini.
 
 ## 2. Acceptance Criteria (AS-IS)
 

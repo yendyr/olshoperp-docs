@@ -2,12 +2,12 @@
 doc_type: user-guide
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.8
+version: 1.7
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 source_docs: [./requirement.md, ./knowledge-base.md, ./technical.md]
-source_version: 1.17
+source_version: 1.16
 ---
 
 # Panduan Pengguna — Dev - Sales Platform
@@ -177,7 +177,7 @@ Edit field booking (Other Information) dari **All Sales Order**, bukan dari list
 1. **Void** → batalkan; ID marketplace tetap; sync tidak bikin SO baru sendiri.
 2. Butuh order hidup lagi → **Recreate** di halaman show (hanya void), atau **Void & Recreate**.
 3. SO baru = tipe platform (bukan Sales Order General).
-4. Kalau order masih di antrian gudang (belum diambil), **Void** atau **Void & Recreate** mengeluarkan order itu dari antrian dan mengembalikan stok yang ditahan. Jangan ikut melepas order lain yang masih aktif. Contoh: ditahan 2, tersedia 8 → setelah void ditahan 0, tersedia 10. Satu SKU yang ditahan 3 Pcs pada order yang sudah void juga kembali tersedia. Kalau barang sudah diambil, pembatalan setelah pengambilan tetap berjalan.
+4. **Kalau order masih di Wave** (belum picking): setelah void, stok yang tadi di-reserve **harus kembali bisa dipakai** (available). Kalau masih “terkunci”, itu belum sesuai aturan baru — laporkan ke tech/QA (perbaikan ETM-17110).
 
 ### Return
 
@@ -194,7 +194,6 @@ Edit field booking (Other Information) dari **All Sales Order**, bukan dari list
 - **Create membuka form lain** → memang begitu. Order manual = Dev - Sales Order.
 - **Apa beda Log Data dan API Data Log?** Log Data = batch sync toko. API Data Log = detail di form order.
 - **Export All** minta judul file. Kosongkan **File name** → **File name is required.** Contoh `Laporan SO 05/11` tersimpan `Laporan SO 05-11`.
-- **Void saat order masih mengantri di gudang:** stok yang ditahan kembali bisa dijual, dan order itu hilang dari antrian. Order lain yang masih aktif tidak ikut hilang. Contoh ditahan 2 dan tersedia 8 menjadi ditahan 0 dan tersedia 10.
 
 **Contoh harga Shopee:** SKU tampil **25.900** di order detail marketplace, padahal harga seller **53.999** karena Shopee menanggung **28.099**. Sistem memakai data escrow supaya penjualan tidak mengecil salah. Order lama (sebelum perbaikan) bisa masih understated sampai di-sync ulang.
 

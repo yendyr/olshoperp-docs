@@ -359,7 +359,7 @@ Sales Order yang sudah **void** tidak boleh masih punya baris detail Transfer Wa
 
 Pintu yang sama, karena semua lewat void pusat: form Sales Platform dan Dev - Sales Order, datalist/bulk, Void+Copy, Checking List **Void only** / **Void & Recreate**, serta auto-void order **Approved** karena cancel/sync platform.
 
-Pembersihan Wave hanya tambahan **sebelum** transfer void pasca-picking. Jalur void setelah picking (termasuk ke gudang voided order) tidak diganti.
+Pembersihan Wave hanya tambahan **sebelum** transfer void pasca-picking. Jalur void setelah picking (termasuk ke gudang voided order) tidak diganti. Beda menu: [Void Transfer (TFV)](../supplychain-mutation-transfer-void/requirement.md) untuk stok yang sudah di voided_order — bukan pengganti cleanup TF Wave.
 
 **Contoh data (ETM-17109):** SO-XWRUXAUG sudah void, SKU WASHBEL40-blue masih reserved 3 Pcs di TF Wave. Setelah detail TF Wave milik SO itu dihapus, reserved kasus ini menjadi 0 dan available naik 3. SO lain yang masih di Wave tidak ikut terhapus.
 

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-mutation-transfer-void
 menu_name: "Void Transfer"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 related_docs:

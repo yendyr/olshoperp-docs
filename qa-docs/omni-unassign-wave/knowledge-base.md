@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.4
-last_updated: 2026-09-28
+version: 1.5
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [unassign wave, send to default waves, default wave queue, send wave logs, failed process wave, processing order date, processing date, unavailable stock, last checked]
@@ -150,6 +150,7 @@ Buka **Log Data** untuk melihat histori kirim ke Default Wave: sukses/gagal, pes
 | Tidak bisa ubah Processing Order Date | Tanggal di periode akuntansi tertutup | Pilih tanggal di periode yang masih terbuka |
 | Order lama gagal padahal stok baru ada | Tanggal processing masih di tanggal order lama | Set **Processing Order Date** ke tanggal stok ready |
 | Angka pill Failed Process beda dengan jumlah baris filter | Perbedaan cakupan hitungan vs filter | Percaya isi tabel setelah filter; perbaikan konsistensi sudah terdaftar |
+| Order sudah void setelah Send tapi stok masih reserved | Void belum melepas reserve wave (AS-IS) | Eskalasi tech/QA — ETM-17110; data orphan ETM-17109 |
 
 ---
 
@@ -157,6 +158,9 @@ Buka **Log Data** untuk melihat histori kirim ke Default Wave: sukses/gagal, pes
 
 **Q: Apa bedanya Unassign Wave dengan Skip Wave Process?**  
 A: Unassign Wave = kirim ke Default Wave saja. Skip Wave Process = shortcut batch yang lanjut sampai shipped, tapi langkah wave-nya memakai aturan yang sama dan log-nya sama. Keduanya share **Processing Order Date**.
+
+**Q: Setelah Send, order di-void — stok harusnya ke mana?**  
+A: Harus kembali **available**. Kalau masih reserved, itu gap yang sedang diperbaiki (ETM-17110).
 
 **Q: Harus perbaiki semua error dulu baru boleh Send?**  
 A: Ya untuk error non-stok. Untuk stok, bisa coba Refresh dulu kalau stok fisik sudah cukup.

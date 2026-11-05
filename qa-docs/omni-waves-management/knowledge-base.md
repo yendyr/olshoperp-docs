@@ -115,6 +115,7 @@ Saat Create/Edit, isi aturan kelompok (nama, store wajib, label group, platform/
 | Tidak bisa hapus wave | Masih ada order di dalamnya, atau itu Default Waves | Revert dulu / jangan hapus Default |
 | Transfer tidak muncul | Belum approve, atau tanpa opsi picking list, atau sudah punya PL | Cek flag & status transfer |
 | Label angka di tab Transfer membingungkan | Penamaan kolom beda dari tab SO | Percaya tooltip/konteks; perbaikan label sudah terdaftar |
+| Order sudah void tapi stok masih reserved / masih “nempel” di wave | Void belum membersihkan reserve wave (AS-IS) | Eskalasi tech/QA — perbaikan di menu Sales Order (ETM-17110); jangan generate PL ulang untuk SO void |
 
 ---
 
@@ -122,6 +123,9 @@ Saat Create/Edit, isi aturan kelompok (nama, store wajib, label group, platform/
 
 **Q: Matikan toggle = order hilang dari wave?**  
 A: Tidak. Order tetap di wave sampai kamu **Revert** (atau distribusi memindahkan lagi setelah rules berubah dan toggle ON).
+
+**Q: Order void — stok harusnya ke mana?**  
+A: Harus kembali **available**. Kalau masih reserved setelah void di Wave, itu gap yang sedang diperbaiki (ETM-17110).
 
 **Q: Kenapa Generate Pick List tidak ada di Default Waves?**  
 A: Sengaja — generate dari wave hasil create user (atau jalur transfer di tab Transfer).

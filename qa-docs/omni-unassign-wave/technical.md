@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.4
-last_updated: 2026-09-28
+version: 1.5
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processing order date, processing date, FIFO stock date, Last Checked]
@@ -13,8 +13,10 @@ aliases: [unassign wave API, SOApproveToWave, send wave logs technical, processi
 
 **API prefix:** `omnichannel/unassign-wave`  
 **Module:** `Modules/OmniChannel`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.2  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.5  
 **Default wave:** `Wave::getDefaultWave()` → wave `id = 1` (cache `default_wave_1`)
+
+> **1.5 (2026-11-05):** Cross-ref void-on-Wave reserved release — [SP requirement §5.8.1](../omni-sales-platform/requirement.md) · ETM-17110 / GAP-UW-07. After successful Send, Wave TF details hold reserved; void must cleanup via SO approval path (not Unassign Wave itself).
 
 ---
 

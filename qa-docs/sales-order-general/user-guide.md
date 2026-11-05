@@ -68,7 +68,8 @@ stateDiagram-v2
 | **Closed** | Ditutup lewat **Close Doc** (setelah Approved) | Tidak |
 | **Void** | Dibatalkan lewat **Void Doc** (setelah Approved) | Tidak (bisa Duplicate) |
 
-> Closed dan Void **bukan** status yang sama — tombol dan artinya berbeda.
+> Closed dan Void **bukan** status yang sama — tombol dan artinya berbeda.  
+> **TO-BE:** Kalau order masih di Wave lalu di-Void, stok yang di-reserve harus kembali available (ETM-17110).
 
 ---
 

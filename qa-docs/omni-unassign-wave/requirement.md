@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-unassign-wave
 menu_name: "Unassign Wave"
-version: 1.4
-last_updated: 2026-09-28
+version: 1.5
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
-aliases: [unassign wave, unassign waves, send to default waves, default wave, send wave logs, processing order date, processing date, unavailable stock, last checked, FIFO invalid]
+aliases: [unassign wave, unassign waves, send to default waves, default wave, send wave logs, processing order date, processing date, unavailable stock, last checked, FIFO invalid, void wave reserved]
 ---
 
 # Unassign Wave — Requirement Documentation
@@ -23,6 +23,7 @@ aliases: [unassign wave, unassign waves, send to default waves, default wave, se
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.5 | 2026-11-05 | QA - Yemima | Cross-ref: setelah Send to Default Waves, void SO wajib lepas reserved (hapus detail TF Wave) — [SP §5.8.1](../omni-sales-platform/requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109) · ETM-17110 |
 | 1.4 | 2026-09-28 | QA - Yemima | Processing Date: default kosong = `now()` (bukan UI 23:59:59); align Skip Wave v1.4; field boleh clear |
 | 1.2 | 2026-09-08 | QA - Yemima | GAP-UW-04 **Decided**: cek stok FIFO / Error Flag / Refresh memakai Processing Order Date (NULL → now); GAP-UW-06 Last Checked tooltip harus = tanggal evaluasi stok (bukan wall-clock job) |
 | 1.1 | 2026-07-28 | QA - Yemima | TO-BE: Processing Order Date manual per company (shared Skip Wave); fiscal reject; supersede sumber tanggal order+10m / now |
@@ -309,6 +310,7 @@ flowchart TB
 | Product Binding | Selesaikan Bind error |
 | Shipping Service Binding | Selesaikan Shipping error |
 | Supply Chain Stock | Sumber Refresh Availability Stock |
+| Sales Order void (Platform / General) | **TO-BE:** setelah sukses Send, void SO → lepas reserved Wave ([SP §5.8.1](../omni-sales-platform/requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109) · ETM-17110) |
 
 ---
 
@@ -321,10 +323,14 @@ flowchart TB
 | GAP-UW-03 | Disable condition tombol Send belum sepenuhnya terdokumentasi di UI (AS-IS API: tolak jika bukan not in queue / setting off) | Test case QA perlu cover API + UI disable state | Open — sebagian terisi di §6.4 |
 | GAP-UW-04 | Error Flag / Refresh Availability Stock: acuan tanggal cek stok | Icon stock bisa “unavailable” meski stok physical already ada di tanggal lain | **Decided (2026-09-08):** cek stok memakai **Processing Order Date**; NULL → **now**. Lihat §5.1a |
 | GAP-UW-06 | Tooltip **Last Checked** pada Unavailable Stock menampilkan `error_info.updated_at` (wall-clock job), bukan tanggal evaluasi stok (POD / now) | Operator mengira cek memakai “hari ini” padahal FIFO memakai POD lama — Last Checked tampak tidak valid | Open — Expected di §5.1a |
+| GAP-UW-07 | (Cross-menu) Setelah Send, void SO tidak lepas reserved Wave — kanonik SP GAP-SPD-02 / ETM-17110 | Available tersumbat meski SO void | Open (tracked di SP/SOG/ASO) |
 
 ---
 
 ## 10. FAQ
+
+**Q: Setelah Send to Default Waves, order di-void — stok ke mana?**  
+A: **TO-BE:** reserved wajib kembali available (hapus detail TF Wave). AS-IS sering masih reserved — [SP §5.8.1](../omni-sales-platform/requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109) · ETM-17110.
 
 **Q: Kenapa order approved belum muncul?**  
 A: Cek belum ada qty outbound di detail, dan (untuk General) setting `process_to_wave` masih aktif.

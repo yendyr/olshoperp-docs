@@ -12,8 +12,8 @@ Menu **Unassign Wave** (SupplyChain / OmniChannel).
 | Capability Lingo | [capabilities/](./capabilities/) | Operator (modal cards) | review |
 
 **SoT:** `unassign-waves-source-of-truth.md` v1.0 (18 Jul 2026)  
-**User-guide:** v1.3 · `source_version` 1.4  
-**Version (3 layer):** **1.4** · **Last updated:** 2026-09-28  
+**User-guide:** v1.3 · `source_version` 1.5  
+**Version (3 layer):** **1.5** · **Last updated:** 2026-11-05 17:30  
 **Feature Map / Lingo:** v1.0 (2026-09-28)  
 **Help Center overview:** [overview.id.md](../_meta/docs-hub/menus/omni-unassign-wave/overview.id.md) · [overview.en.md](../_meta/docs-hub/menus/omni-unassign-wave/overview.en.md) (`authored` dari file user)
 
@@ -21,6 +21,7 @@ Menu **Unassign Wave** (SupplyChain / OmniChannel).
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.5 | 2026-11-05 17:30 | Cross-ref void setelah Send wajib lepas reserved (ETM-17110 / SP §5.8a); GAP-UW-07 [yemimadocs] |
 | hc-1.0 | 2026-10-11 19:05 | Help Center overview ID + EN: antrean Default Wave, 9 Error Flag, Processing Date + cek stok, Last Checked, Send Wave Logs, bulk vs single failure |
 | fm-1.0 | 2026-09-28 16:20 | Feature Map + 5 kartu Lingo (Send Wave, Processing Date, Error Flag, Refresh Stock, Send Wave Logs) |
 | 1.4 | 2026-09-28 11:08 | Processing Date: kosong → `now()` (bukan UI 23:59:59); align Skip Wave v1.4; API `supplychain/settings` |

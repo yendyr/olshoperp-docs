@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-mutation-transfer-void
 menu_name: "Void Transfer"
-version: 1.0
-last_updated: 2026-06-19
+version: 1.1
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 audience: operator
@@ -27,6 +27,8 @@ Transfer stok dari virtual warehouse voided order kembali ke gudang fisik. `proc
 | Tabel detail | `scm_transfer_mutation_details` + middle details |
 
 **Tujuan:** Mengembalikan stok order yang di-void dari lokasi voided order ke gudang operasional.
+
+**Catatan:** Menu ini untuk order yang stoknya **sudah** masuk area voided order (biasanya setelah picking/checking). Kalau order di-void **masih di Wave**, stok seharusnya langsung kembali available lewat pembersihan reserve wave — bukan lewat TFV (lihat perbaikan ETM-17110).
 
 ## 2. Glosarium
 
