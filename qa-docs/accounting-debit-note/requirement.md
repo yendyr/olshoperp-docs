@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.3
-last_updated: 2026-10-26
+version: 1.4
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [DN, debit note, nota debit, supplier deposit, klaim supplier]
@@ -28,6 +28,7 @@ Downstream: [Account Payment](../accounting-supplier-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.4 | 2026-11-05 | QA - Yemima | Gap baru dari uji Staging: GAP-DN-07 (halaman edit DN kosong bila data supplier tidak terbaca; latent, simulasi; ETM-17120) |
 | 1.3 | 2026-10-26 | QA - Yemima | Klarifikasi final ETM-16761: AP baca COA dari **setting** by asal DN (bukan historis dokumen/jurnal) |
 | 1.2 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761): consume DN di AP memakai COA deposit asal DN; GAP-DN-06 |
 | 1.0 | 2026-08-12 | QA - Yemima | Full 5-file dari SoT v1.0; Gap `GAP-DN-01..05`; relasi AP/PR/PI/CN |
@@ -313,6 +314,9 @@ A: Setelah **approved**, di Account Payment sebagai Debit Note source.
 **Q: Reject lalu apa?**  
 A: Save tanpa ubah status → **draft**; pilih **Open** → **open**.
 
+**Q: Halaman edit DN kosong (Currency, Exchange Rate, Description)?**  
+A: **GAP-DN-07** — supplier DN tidak terbaca dari company aktif, jadi isian header sesudahnya tidak terisi. Belum ada kasus nyata di Staging; data tetap ada di datalist. Jangan simpan ulang dari halaman itu; laporkan kode DN.
+
 ---
 
 ## 11. Gap Registry
@@ -325,6 +329,7 @@ A: Save tanpa ubah status → **draft**; pilih **Open** → **open**.
 | GAP-DN-04 | Validasi balance kas/bank di approve DN: non-blocker jika belum ada | Open |
 | GAP-DN-05 | Void/Closed deferred — belum definisi end user | Open — deferred |
 | GAP-DN-06 | AP consume DN selalu Deposit to Supplier (mismatch vs DN PR) | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) — asal DN → field setting (PR / Deposit to Supplier); bukan historis dokumen |
+| GAP-DN-07 | Halaman edit DN kosong (Transaction Reference / Reference Doc, Transaction Currency, Exchange Rate, Description) bila data supplier tidak terbaca dari company aktif — FE berhenti mengisi header. **Latent:** 0 dari 122 DN Staging kena; terbukti lewat simulasi respons. Dua kasus CN lain tidak terjadi di DN (tipe Store tersimpan Company; Description kosong dari Purchase Return: 0 dari 47). Mirror [GAP-CN-07](../accounting-credit-note/requirement.md) | Open — [ETM-17120](https://erpintegration.atlassian.net/browse/ETM-17120) |
 
 ---
 

@@ -14,8 +14,8 @@ Menu **Debit Note** (Accounting / Account Payable) — klaim/deposit ke supplier
 **PM source:** Debit Note Source of Truth **v1.0** (12 Agustus 2026)  
 **SoT:** [`_meta/sot/accounting-debit-note-source-of-truth.md`](../_meta/sot/accounting-debit-note-source-of-truth.md)  
 **UI route:** `/accounting/debit-note`  
-**3 layer version:** 1.2 · **User-guide:** 1.2 · **Feature Map:** 1.0 · **Last updated:** 2026-10-22  
-**Related Jira:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)  
+**3 layer version:** 1.4 · **User-guide:** 1.2 · **Feature Map:** 1.0 · **Last updated:** 2026-11-05  
+**Related Jira:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) · [ETM-17120](https://erpintegration.atlassian.net/browse/ETM-17120)  
 **Maintenance owner:** QA — Yemima
 
 **Help Center overview:** [ID](../_meta/docs-hub/menus/accounting-debit-note/overview.id.md) · [EN](../_meta/docs-hub/menus/accounting-debit-note/overview.en.md) (`authored` — not updated)
@@ -24,6 +24,7 @@ Menu **Debit Note** (Accounting / Account Payable) — klaim/deposit ke supplier
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-05 17:00 | 1.4 | Gap baru dari uji Staging: halaman edit DN kosong bila data supplier tidak terbaca (latent, terbukti lewat simulasi); ETM-17120. Versi 3 layer disamakan (sebelumnya requirement/KB 1.3, technical 1.2) |
 | 2026-10-22 | 1.2 | TO-BE ETM-16761: COA deposit saat DN dipakai di AP ikut asal DN (PR → Deposit of Purchase Return) |
 | 2026-09-02 ~16:30 | 1.1 | Supplier tampil **kode saja** di daftar/form/export (cari by nama+kode; nama boleh di Print). Parent ETM-15721 / ETM-15727 |
 | 2026-08-12 19:40 | HC 1.0 | Help Center overview ID + EN dari file authored user (Debit Note) |

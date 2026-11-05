@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.3
-last_updated: 2026-10-26
+version: 1.4
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 audience: operator
@@ -101,6 +101,7 @@ Saat retur billed ke PI disetujui, sistem buat DN status **Open** dengan baris *
 | Amount ditolak | Melebihi sisa saldo kas/bank | Kurangi amount atau pilih rekening lain |
 | Tidak bisa potong di AP | DN belum approved / beda supplier / outstanding 0 | Approve DN dulu; cek supplier & currency sama |
 | Export With Details kosong untuk DN PR | Bug export hanya baca fund | Pakai Without Details atau tunggu perbaikan |
+| Halaman edit DN kosong: Currency, Exchange Rate, Description (kadang Transaction Reference) | Supplier pada DN itu tidak bisa dibaca dari company yang sedang aktif (mis. milik company lain atau sudah dihapus). Belum ditemukan di data Staging; terdeteksi lewat uji simulasi | Lihat datanya di daftar Debit Note. Jangan simpan ulang dari halaman edit. Laporkan kode DN ke support/dev — perbaikan sudah terdaftar |
 
 ---
 

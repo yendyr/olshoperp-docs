@@ -2,7 +2,7 @@
 doc_type: technical
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.5
+version: 1.6
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -13,7 +13,7 @@ aliases: [CN technical, credit note API, credit note code]
 
 **API prefix:** `accounting/credit-note`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.5  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.6  
 **TO-BE deposit COA:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)
 
 ---
@@ -253,3 +253,5 @@ Detail messages: [requirement §7](./requirement.md).
 | GAP-CN-03 | Void/Closed via same approve endpoint Rule::in |
 | GAP-CN-04 | Destroy path shared with Payment — document deposit-in-use guards if/when hardened |
 | GAP-CN-05 | Free COA Receiving Destination + type `COA` + Sales Return classify + reconcile D11 — see requirement §5.2 / technical §4.1 |
+| GAP-CN-07 | **A:** `ItemStockMutation` (CN dari SR, SI tanpa customer + `store_id`) menyimpan aktor `Company` dengan id Store pada 3 CN lama (id 30); `PaymentController::show` memuat `actor` (morphTo, kena company scope) → `actor: null` bila company aktif tak melihatnya, sedangkan datalist memakai `Payment::company()` `withoutCompanyScope` (menampilkan nama lain). FE `stores/project/CreditNote/index.ts` `fetchHeader` membaca `data.data.actor.name` tanpa null-guard → TypeError tertelan `catch` → isian sesudahnya batal. **B:** `CreditNoteController::select2Customer` hanya `is_customer` + ≥3 COA tag `company-as-customer` (ETM-11634); fallback nilai terpilih memakai syarat sama. Mirror: DN GAP-DN-07 |
+| GAP-CN-08 | `app/Helpers/SupplyChain/ItemStockMutation.php`: kunci `'descripton'` (typo) di `generateCreditNoteAutoApprove` (±835) dan `generateCreditNoteFromReturn` (±1581) → `PaymentController::store` membaca `description`, jadi tidak tersimpan; `document_reference` tidak dikirim; `CreditNote/Header.vue` hanya punya Reference Doc (tanpa Transaction Reference seperti DN) |

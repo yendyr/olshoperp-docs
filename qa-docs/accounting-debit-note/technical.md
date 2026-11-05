@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.2
-last_updated: 2026-10-22
+version: 1.4
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # Debit Note — Technical Documentation
 
-> **Review** — AS-IS 2026-08-12 + supplier display 2026-09-02. Behavior: [requirement v1.2](./requirement.md).  
+> **Review** — AS-IS 2026-08-12 + supplier display 2026-09-02. Behavior: [requirement v1.4](./requirement.md).  
 > **Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15727](https://erpintegration.atlassian.net/browse/ETM-15727)  
 > **TO-BE consume COA:** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)
 
@@ -121,6 +121,10 @@ Post-approve: eligible sebagai deposit di `SupplierPayment` (same supplier/curre
 ## 7. Known Issues
 
 [requirement §11](./requirement.md#11-gap-registry).
+
+| GAP | Tech note |
+|-----|-----------|
+| GAP-DN-07 | FE `stores/project/DebitNote/index.ts` `fetchHeader` membaca `data.data.actor.name` tanpa null-guard (setelah `customerGroup`, sebelum `documentReference`/`currencyId`/`exchangeRate`/`description`); `PaymentController::show` memuat `actor` (morphTo, kena company scope) → `actor: null` bila supplier tak terlihat dari company aktif. Terbukti lewat simulasi respons pada DN-5UVT9025: Transaction Reference/Currency/Exchange Rate/Description kosong, Supplier tetap tampil karena ada di 25 pilihan pertama `select2Supplier`. Mirror: CN GAP-CN-07 |
 
 ---
 

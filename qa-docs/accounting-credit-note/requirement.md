@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.5
+version: 1.6
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -26,6 +26,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.6 | 2026-11-05 | QA - Yemima | Gap baru dari uji Staging: GAP-CN-07 (halaman edit CN kosong saat customer tidak terbaca; ETM-17108) dan GAP-CN-08 (CN dari Sales Return tanpa Description/Reference Doc; ETM-17111); §5.1 + FAQ merujuk |
 | 1.5 | 2026-11-05 | QA - Yemima | Trx Ref CN baru dari Sales Return Billed = nomor `SR-xxxxx` + tautan edit Sales Return (bukan SI); CN lama tidak di-backfill; ETM-17070 |
 | 1.4 | 2026-11-04 | QA - Yemima | Trigger CN dari SR billed = **ada SI** (bukan payment/AR); parity PR→DN; ETM-17064 |
 | 1.3 | 2026-10-26 | QA - Yemima | Klarifikasi final ETM-16764: AR baca COA dari **setting** by asal CN (bukan historis dokumen/jurnal) |
@@ -160,9 +161,9 @@ Field kritikal terkunci setelah ada Receiving Destination: Customer, Currency, E
 | Exchange Rate | Ya | 1 | — | Lebih dari 0 | — |
 | Transaction Currency | Ya | Primary/IDR | Currency aktif | Cash/Bank aktif untuk currency | — |
 | Store | Tidak | — | Store aktif | Multi-select | Reporting filter |
-| Customer | Ya | — | Company customer COA lengkap / Store Deposit COA | Aktif + COA lengkap | Group General / Platform |
-| Reference Doc | Tidak | — | Free text | — | Auto dari return/AR |
-| Description | Tidak | — | — | Max 150 | — |
+| Customer | Ya | — | Company customer COA lengkap / Store Deposit COA | Aktif + COA lengkap | Group General / Platform. Customer yang sudah tersimpan tapi tak terbaca / tak memenuhi syarat lagi: GAP-CN-07 |
+| Reference Doc | Tidak | — | Free text | — | Auto dari return/AR. CN dari Sales Return belum terisi: GAP-CN-08 |
+| Description | Tidak | — | — | Max 150 | CN dari Sales Return belum terisi: GAP-CN-08 |
 | Attachment | Tidak | — | — | Extensi standar upload | — |
 
 ### 5.2 Receiving Destination
@@ -393,6 +394,8 @@ flowchart TB
 | GAP-CN-04 | Validasi hapus CN yang sudah dipakai sebagai deposit AR belum terdokumentasi pesan/rule jelas | Risiko remaining funds tidak konsisten | Open |
 | GAP-CN-05 | **TO-BE:** Free COA Receiving Destination + fund type `COA` + Sales Return type fix + reconcile D11 — belum production | Equity/modal awal tidak bisa jadi destinasi CN; Sales Return salah label `Cash/Bank` | Open (locked requirement) |
 | GAP-CN-06 | CN dari Sales Return & consume AR selalu Customer's Deposit; Deposit of Sales Return idle | SET SR → Deposit of Sales Return; USE = setting by asal CN | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) |
+| GAP-CN-07 | Halaman edit CN kosong saat customer CN tidak terbaca. **A:** CN dari Sales Return menyimpan Store (platform) sebagai tipe Company (3 CN Staging, Agu–Nov 2025, id Store sama dengan id company milik tenant lain) → server tidak menemukan customer → Customer, Exchange Rate, Currency, Store, Reference Doc, Description kosong. **B:** customer aktif tapi COA customer kurang dari 3 tidak masuk daftar pilihan → hanya Customer kosong | Staging: 3 dari 89 CN Approved (A), 2 dari 1.027 CN Open (B); DN 0. Production belum dicek. Risiko: customer tampil kosong atau nama company lain; bukan efek approve | Open — [ETM-17108](https://erpintegration.atlassian.net/browse/ETM-17108); mirror DN: GAP-DN-07 |
+| GAP-CN-08 | CN auto dari Sales Return: Description dan Reference Doc tidak terisi (kunci isian salah ketik di pembuat CN). Asal CN hanya terlihat di kolom Trx Ref datalist, tidak di halaman edit | Staging: 43 dari 43 CN jenis ini (100%) kosong; CN dari Account Receive 0 dari 15 kosong Description. Isi persis Reference Doc belum didefinisikan (usulan: kode Sales Return, selaras ETM-17070) | Open — [ETM-17111](https://erpintegration.atlassian.net/browse/ETM-17111) |
 
 ---
 
@@ -413,6 +416,12 @@ A: Dari Sales Return Billed (CN baru): nomor `SR-xxxxx` yang bisa diklik ke edit
 **Q: Customer tidak muncul?**  
 A: Harus aktif + COA (termasuk Deposit) lengkap.
 
+**Q: Halaman edit CN kosong (Customer, Currency, Exchange Rate, Store)?**  
+A: **GAP-CN-07** — customer CN tidak terbaca dari company aktif (mis. customer tersimpan bertipe salah), jadi isian header sesudahnya tidak terisi; data tetap ada di datalist. Bukan akibat approve. Jangan simpan ulang dari halaman itu; laporkan dengan kode CN.
+
+**Q: Description / Reference Doc CN dari Sales Return kosong?**  
+A: **GAP-CN-08** — belum terisi otomatis untuk CN jenis ini; asal CN dilihat dari kolom Trx Ref di datalist.
+
 **Q: Paid vs Outstanding?**  
 A: Paid = terpakai di AR approved; Outstanding = Total − Paid.
 
@@ -431,6 +440,7 @@ A: **TO-BE** — Free COA picker di Receiving Destination (bukan COA yang sudah 
 
 | Tanggal | Versi | Perubahan |
 |---------|-------|-----------|
+| 5 Nov 2026 | 1.6 | GAP-CN-07 dan GAP-CN-08 dari uji Staging; ETM-17108, ETM-17111 |
 | 5 Nov 2026 | 1.5 | Trx Ref CN baru dari Sales Return Billed = `SR-xxxxx` + tautan edit retur; ETM-17070 |
 | 5 Aug 2026 | 1.1 | TO-BE free COA Receiving Destination (D1–D14); GAP-CN-05 |
 | 17 Jul 2026 | 1.0 | Requirement awal dari SoT + verifikasi print/void/closed di codebase |

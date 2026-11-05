@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.5
+version: 1.6
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -119,6 +119,9 @@ Customer, mata uang, kurs, dan tanggal transaksi **terkunci** begitu sudah ada b
 | Tidak bisa ubah customer/tanggal | Sudah ada fund | Hapus semua Receiving Destination |
 | Import gagal semua | Satu baris error membatalkan semua | Perbaiki Excel, upload ulang |
 | Customer tidak muncul | Inactive atau COA belum lengkap | Lengkapi setting di General Company / Store |
+| Halaman edit CN kosong: Customer, dan kadang Currency, Exchange Rate, Store, Reference Doc, Description | Customer pada CN itu tidak bisa dibaca dari company yang sedang aktif (mis. tercatat sebagai customer lain). Ditemukan pada sebagian kecil CN lama dari Sales Return; bukan karena approve | Lihat datanya di daftar Credit Note. Jangan simpan ulang dari halaman edit. Laporkan kode CN ke support/dev — perbaikan sudah terdaftar |
+| Hanya Customer yang kosong di halaman edit CN, isian lain terisi | Customer belum punya setting akuntansi customer yang lengkap (minimal 3 akun COA customer), jadi tidak masuk daftar pilihan | Minta admin melengkapi setting akuntansi customer itu di General Company; setelah lengkap, customer muncul di daftar pilihan |
+| Description dan Reference Doc kosong di CN dari Sales Return | Dua isian itu memang belum terisi otomatis untuk CN jenis ini | Lihat asal CN di kolom TRX. REF pada daftar Credit Note — perbaikan sudah terdaftar |
 | Tidak bisa hapus CN | Sudah Approved / Void / Closed | Hanya Draft, Open, Rejected yang boleh dihapus |
 | Print tidak jalan | Tombol ada, spesifikasi/API print belum siap | Laporkan ke support/dev — perbaikan sudah dicatat |
 

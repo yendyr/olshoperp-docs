@@ -5,7 +5,7 @@ menu_name: "Credit Note"
 version: 1.4
 last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.5
+source_version: 1.6
 owner: QA - Yemima
 status: review
 ---
@@ -156,6 +156,8 @@ Kalau Credit Note dari **Sales Return Billed**, langkah approve manual sering ti
 
 - **Bulk Use amount 0** itu normal — bukan bug; edit amount manual.
 - **Customer tidak muncul** biasanya karena inactive atau setting akun (termasuk Deposit) belum lengkap.
+- **Halaman edit kosong (Customer, Currency, Exchange Rate, Store)** pada sebagian kecil CN lama dari Sales Return: datanya tetap ada di daftar Credit Note. Jangan simpan ulang dari halaman itu; laporkan kode CN. Perbaikan sudah terdaftar.
+- **Description / Reference Doc kosong** di CN dari Sales Return itu memang belum terisi otomatis; lihat asal CN di kolom TRX. REF pada daftar.
 - **Paid** di list = sudah dipakai di penerimaan yang sudah di-approve; **Outstanding** = sisa Total dikurangi Paid.
 - **Trx Ref:** dari retur billed = nomor Sales Return (`SR-xxxxx`, bisa diklik ke dokumen retur). Dari Account Receive = nomor penerimaan. Dibuat manual = kosong. Nota lama yang sudah menampilkan nomor faktur tidak berubah sendiri.
 - **Unbilled return** tidak membuat Credit Note — bedakan dengan **Billed**.
