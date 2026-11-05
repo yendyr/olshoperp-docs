@@ -2,8 +2,8 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.7
-last_updated: 2026-11-04
+version: 3.8
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulfillment Mode, Import Non-Processed, Other Cost/Disc Code, cogs-error, Manual COGS]
@@ -14,9 +14,10 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 **Type:** `type_sales_order = general`  
 **UI:** `/businessdevelopment/sales-order-general`  
 **API prefix:** `/api/omnichannel/sales-order/*`  
-**Behavior:** [requirement.md](./requirement.md) v3.7  
+**Behavior:** [requirement.md](./requirement.md) v3.8  
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB
 
+> **3.8 (2026-11-05):** Import Non-Processed approve+outbound locks `scm_item_stocks` and re-allocates FIFO — [requirement §6.3.2](./requirement.md); ETM-17081 / PR #6695 (`97ad324`).  
 > **3.7 (2026-11-04):** Import Price decimal normalize + max 4 dp + rounding reconciliation — [requirement §6.3.4](./requirement.md); ETM-17055 (fe69fd3).  
 > **3.4 (2026-08-12):** TO-BE Benchmark COGS snapshot = effective Manual COGS — [requirement §8.2](./requirement.md#82-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14); GAP-SOG-15 / GAP-BM-14.  
 > **1.3 / 3.3 (2026-08-11):** TO-BE Error Flag Below Benchmark COGS — shared `ErrorFlag.vue` / `CanManageOrderDetailError` / `updateAutoApproveFlagForSalesOrder`; see [Benchmark technical §6.5–§6.6](../accounting-product-benchmark-price/technical.md#65-auto-approve-flag); GAP-SOG-14 / GAP-BM-13.
@@ -27,6 +28,7 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.8 | 2026-11-05 | Import Non-Processed: `validate(lock_stock: true)` + `getFulfillAfterFifo(lock_for_update: true)` inside the create transaction; FIFO re-allocate after wait (ETM-17081, PR #6695) |
 | 3.7 | 2026-11-04 | Import Price: normalize dot/comma, reject more than 4 dp, reconcile 4-dp line vs 2-dp header before SO create; `hasOtherHeaderError` prefix `Column %` (ETM-17055) |
 | 3.4 | 2026-08-12 | TO-BE Benchmark COGS snapshot = effective Manual COGS; GAP-SOG-15 / GAP-BM-14 |
 | 1.3 | 2026-07-09 | Bundle / benchmark COGS file map |
@@ -83,6 +85,8 @@ flowchart LR
 | History / log | `SalesOrderImportHistory`, `SalesOrderImportHistoryDetail`, `ImportSoLog` |
 | Temp import | `SalesOrderImportTemHeader`, `SalesOrderImportTemDetail` |
 | Config | `config/general.php` → `max_child`; `config/omni.php` → `approve_so.approve_with_validation` |
+| Non-Processed generate / validate | `Modules/OmniChannel/Logics/SalesOrder/SalesOrderImportGenerateLogic.php`, `SalesOrderValidationLogic.php`, `SalesOrderGenerateRandomLogic.php` |
+| FIFO stock lock | `app/Helpers/SupplyChain/WarehouseHelper.php` |
 
 ### Frontend
 
@@ -215,6 +219,22 @@ Log: `Rounding mismatch detected for Order [{platform_order_id}]: Accumulated ro
 
 `hasOtherHeaderError()` matches import-log `message LIKE 'Column %'` (prefix). It no longer uses leading-wildcard `'%missing in%'`. Missing-column text is `Column {names} is/are missing in {sheet}`.
 
+### 5.4 Import Non-Processed stock lock (ETM-17081)
+
+AS-IS for **Import Non-Processed** when queue workers share a SKU. Frontend unchanged. PR #6695, commit `97ad324`.
+
+`SalesOrderImportGenerateLogic::createWithoutProcessing` opens `DB::transaction`, then:
+
+`approveSalesOrder` → `SalesOrderValidationLogic::validate(lock_stock: true)` → `getFulfillAfterFifo(..., lock_for_update: true, reserved_quantities: allocated_stock_quantities)` in `app/Helpers/SupplyChain/WarehouseHelper.php`.
+
+Under that flag the helper `lockForUpdate()`s candidate `scm_item_stocks` (`SELECT ... FOR UPDATE`), subtracts in-transaction qty via `applyReservedQuantitiesToLockedStocks`, then allocates FIFO with `allocateFifoStocksFromLockedRows`. `generateOutbound` consumes those selected rows in the **same** transaction.
+
+`lock_for_update` defaults to `false`. Callers that omit it keep the previous read path. `validate(lock_stock: true)` and the helper both require an open transaction.
+
+If another worker already took the first inbound batch, the waiting worker re-reads the locked rows and takes the next FIFO batch that still has quantity. That fallback does not depend on MySQL 1644. The outbound stock update still maps trigger 1644 to `No Stock Available for SKU {sku}` when no batch remains.
+
+Random SKU: `SalesOrderGenerateRandomLogic` calls `validateDetail` for details created while locking is on, and merges those stocks into the selection. `getFifoProductRandomV2` receives `reserved_quantities` (and still locks its own candidate rows). Full `lock_for_update` on the import Non-Processed detail path is the main FIFO fulfill helper.
+
 ---
 
 ## 6. Invariants
@@ -238,6 +258,7 @@ Log: `Rounding mismatch detected for Order [{platform_order_id}]: Accumulated ro
 | INV-SOG-13 | TO-BE: Sheet 2 code matching both OtherCost and OtherDiscount → SO group fails (no silent prefer) |
 | INV-SOG-14 | Imported Price has at most 4 decimal places; a longer trailing fraction fails in VALIDATING and is not stored |
 | INV-SOG-15 | Per order, `abs(Σ round(round(qty*price, 4), 2) − round(Σ round(qty*price, 4), 2))` is at most `0.0001`, else the order fails in VALIDATING and no SO is created |
+| INV-SOG-16 | Import Non-Processed approve+outbound stock allocation under an active transaction uses `lock_stock` / `lockForUpdate`, so concurrent workers serialize on locked `item_stock` rows and re-allocate FIFO after the wait |
 
 ---
 
@@ -247,6 +268,7 @@ Log: `Rounding mismatch detected for Order [{platform_order_id}]: Accumulated ro
 - Import Sheet1: formula reject; fiscal period; store `PL_OTHER`; cross-chunk PO/tracking index; Price dot/comma normalize then `parseNumber` at 4 dp (ETM-17055).  
 - Import validate sheet: reject Price with more than 4 decimal places before parse.  
 - Import validation logic: rounding reconciliation (INV-SOG-15) in VALIDATING; `hasOtherHeaderError()` is `LIKE 'Column %'`.  
+- Import Non-Processed approve: `validate(lock_stock: true)` only inside the create transaction (INV-SOG-16, ETM-17081).  
 - Import Sheet2: shared `Other Cost/Disc Code`; AS-IS prefers OtherCost when both match — TO-BE fail (GAP-SOG-13).  
 - Soft-deleted SO still can block platform order ID on re-import if query does not exclude trashed — GAP related.  
 - `bootImport` master lookup from **first chunk only** — risk for rows after chunk 500 (GAP capacity).
@@ -273,6 +295,7 @@ Log: `Rounding mismatch detected for Order [{platform_order_id}]: Accumulated ro
 | Concurrent approve | Cache lock ~60s |
 | Approve during import | Cache `so_general_import_{so_id}` |
 | Rounding mismatch (INV-SOG-15) | Order fails in VALIDATING; temp header `is_valid = false`; SO is not generated |
+| Concurrent Non-Processed workers, same SKU (INV-SOG-16) | Lock candidate stock rows, allocate FIFO, then outbound in the same transaction. After a wait, take the next inbound batch with remaining qty. MySQL 1644 is not the fallback; it still becomes `No Stock Available for SKU` only when no batch remains |
 | Job fails mid-order | Soft-delete SO if detail errors after header created; PO ID may remain “taken” |
 | Sheet2 error after Sheet1 | `parent->hasError` may not stop `finalize()` dispatch — verify/fix |
 | Multiple FinalizeJob | Race on `jobs_completed` without finalize flag |

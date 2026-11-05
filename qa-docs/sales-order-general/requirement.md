@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.7
-last_updated: 2026-11-04
+version: 3.8
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -19,7 +19,7 @@ aliases: [SO General, Dev Sales Order, sales order general, SO internal, import 
 
 Window gabungan: [All Sales Order](../all-sales-order/requirement.md). Platform independen: [Dev - Sales Platform](../omni-sales-platform/requirement.md).  
 Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).  
-**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (OC/OD SO → SI) · [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) · [ETM-17055](https://erpintegration.atlassian.net/browse/ETM-17055) (desimal, presisi, pembulatan import)
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (OC/OD SO → SI) · [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) · [ETM-17055](https://erpintegration.atlassian.net/browse/ETM-17055) (desimal, presisi, pembulatan import) · [ETM-17081](https://erpintegration.atlassian.net/browse/ETM-17081) (alokasi stok Import Non-Processed aman saat proses bersamaan)
 
 ---
 
@@ -27,6 +27,7 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.8 | 2026-11-05 | QA - Yemima | Import Non-Processed: beberapa order SKU sama yang diproses bersamaan tetap berhasil jika stok gudang cukup; kunci baris stok lalu ambil batch masuk FIFO berikutnya (ETM-17081) |
 | 3.7 | 2026-11-04 | QA - Yemima | Import Price: titik/koma dibaca benar, maks. 4 desimal, pembulatan 4/2, rekonsiliasi sebelum SO dibuat (ETM-17055) |
 | 3.6 | 2026-10-22 | QA - Yemima | Cross-ref TO-BE ETM-16762/16763: Other Cost/Discount di SO wajib jadi sumber carry ke SI |
 | 3.5 | 2026-08-31 | QA - Yemima | Status: pisahkan Rejected (editable) vs Closed vs Void; koreksi tabel editable |
@@ -229,6 +230,14 @@ Alur: upload → history processing → validasi sinkron (+ gate Processed) → 
 8. UI progress: completion, %, log informatif (pola Skip Wave) — redesign UX.  
 9. SO sukses: **Approved** + tidak eligible Unassign/Skip Wave / processing (DEV TODO terkait).
 
+**Alokasi stok saat banyak order SKU sama (AS-IS, [ETM-17081](https://erpintegration.atlassian.net/browse/ETM-17081)).** Berlaku ketika satu unggahan punya beberapa order dengan SKU yang sama dan proses antrian berjalan bersamaan:
+
+1. Order yang stok fisiknya cukup di gudang proses harus tetap berhasil dibuat dan disetujui. Order tidak gagal dengan pesan **No Stock Available** selama masih ada stok di batch masuk lain.
+2. Pemilihan stok jalur ini aman saat proses berjalan bersamaan: baris stok dikunci selama persetujuan dan pembuatan barang keluar, di dalam transaksi database yang sama.
+3. Jika batch masuk pertama (urut FIFO) sudah habis diambil order lain, sistem menilai ulang dan mengambil batch masuk berikutnya yang masih tersedia. Order tidak langsung gagal.
+
+Contoh: dua order dalam satu file memakai SKU yang sama. Batch masuk pertama hanya cukup untuk order pertama. Order kedua tidak langsung gagal; sistem mengambil batch masuk berikutnya yang masih ada stok. Keduanya berhasil jika total stok gudang proses cukup.
+
 Sheet 1 headers (exact, case-sensitive): Transaction Date, Customer Code, Store Name, Platform Order ID, Shipper Service Code, Tracking Number, System Product SKU, Qty, Unit, Price.
 
 Sheet 2 headers (exact): **Platform Order ID**, **Other Cost/Disc Code**, **Amount**.
@@ -360,6 +369,7 @@ ATS = On Hand − Outstanding SO − Reserved Out (recalculate async).
 | 36 | Price lebih dari 4 angka desimal | Baris ditolak di fase validasi: `Price for SKU [X] exceeds maximum allowed decimal places (maximum 4 decimal places).` |
 | 37 | Akumulasi total baris (2 desimal) beda dari total header (2 desimal), termasuk selisih 1 rupiah | Order gagal di fase validasi; SO tidak dibuat. Log: `Rounding mismatch detected for Order [{platform_order_id}]: Accumulated row totals differ from header total by {diff}.` |
 | 38 | Price `10000.6789` (satu titik, bukan pola ribuan) | Dibaca Rp 10.000,6789. Qty 1000 → Grand Total Rp 10.000.678,90 |
+| 39 | Non-Processed: beberapa order SKU sama diproses bersamaan; batch FIFO pertama sudah diambil order lain, masih ada stok di batch berikutnya | Order tetap dibuat dan disetujui; sistem mengambil batch FIFO berikutnya. **No Stock Available** hanya jika stok di semua batch benar-benar kurang (ETM-17081) |
 
 ### 7.5 Void / Close / Delete
 
@@ -478,6 +488,9 @@ A: Tidak — harus General/Other.
 
 **Q: Import Processed vs Non-Processed?**  
 A: Tombol mengikuti **Fulfillment Mode** di master Store. Processed = jalur gudang seperti sekarang. Non-Processed = lewati gudang; sistem buat Outbound + Sales Invoice otomatis (setelah stok & COA lolos). Template Excel sama.
+
+**Q: Beberapa order Import Non-Processed SKU sama diproses bersamaan?**  
+A: Kalau total stok di gudang proses cukup, order yang cukup itu harus berhasil. Sistem tidak gagal hanya karena proses lain sudah mengambil batch masuk pertama; batch berikutnya yang masih ada stok dipakai. Pesan **No Stock Available** berarti stok di semua batch memang kurang (ETM-17081, §6.3.2).
 
 **Q: Sheet 2 — kode Other Cost dan Other Discount sama?**  
 A: Kolom template satu (`Other Cost/Disc Code`). Uniqueness hanya per master. **TO-BE:** jika kode cocok di keduanya, order gagal import (jangan tebak). **AS-IS:** sistem memilih cost — jangan andalkan ini (GAP-SOG-13). Hindari kode duplikat lintas Other Cost & Other Discount.

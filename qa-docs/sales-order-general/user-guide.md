@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 1.5
-last_updated: 2026-11-04
+version: 1.6
+last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.7
+source_version: 3.8
 owner: QA - Yemima
 status: review
 ---
@@ -107,6 +107,7 @@ stateDiagram-v2
 - Kalau kamu tulis `1.500` (titik dan tepat 3 angka di belakang, angka di depan pendek), sistem baca **seribu lima ratus**, bukan satu koma lima.  
 - Kalau jumlah tiap baris (dibulatkan ke rupiah) tidak sama dengan total pesanan — walau selisihnya 1 rupiah — pesanan **tidak jadi dibuat**.  
 - Kalau Non-Processed stok SKU kurang, **seluruh order** gagal — cek log SKU mana.  
+- Kalau kamu mengunggah banyak order **Import Non-Processed** dengan SKU yang sama sekaligus, dan total stok di gudang proses cukup, semua order itu harus berhasil. Sistem tidak gagal hanya karena beberapa proses mengambil batch stok yang sama. Kalau masih muncul **No Stock Available**, stok di semua batch memang kurang.  
 - Kalau Non-Processed kena akun yang sudah di-rekonsiliasi untuk tanggal itu, order digagalkan dengan pesan jelas.  
 - Kalau kamu mengira tagihan muncul saat Approve jalur Processed — tunggu outbound/settlement.  
 - POS memakai jalur Non-Processed otomatis: **belum** di fase ini.

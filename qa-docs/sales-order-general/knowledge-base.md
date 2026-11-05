@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.7
-last_updated: 2026-11-04
+version: 3.8
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost Disc, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -62,7 +62,8 @@ flowchart TD
 2. **Import Processed** — hasil **Open**; lanjut Approve → antrian gudang (sering perlu Unassign/Skip Wave).  
 3. **Import Non-Processed** — sistem cek stok di gudang proses **store order itu**; jika OK buat barang keluar + tagihan otomatis (tanpa wave–ship).  
 4. Store salah mode vs tombol → order itu gagal; order lain di file bisa lanjut.  
-5. Template Excel **sama** untuk kedua tombol.
+5. Template Excel **sama** untuk kedua tombol.  
+6. Banyak order SKU sama dalam satu unggahan Non-Processed: kalau total stok gudang proses cukup, semuanya harus berhasil. Sistem tidak gagal hanya karena beberapa proses berebut batch masuk yang sama.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -123,7 +124,8 @@ Kolom template tetap sama. Cara baca **harga** berubah: titik atau koma bisa jad
 1. Cek **Import History** / log (Non-Processed: log progress mirip Skip Wave).  
 2. Mismatch mode store ↔ tombol → ganti store/mode atau ganti tombol.  
 3. Non-Processed stok kurang → seluruh order gagal; lihat SKU mana yang kosong.  
-4. File sangat besar bisa stuck — pecah file (batasan sistem).
+4. Banyak order dengan SKU yang sama di **Import Non-Processed**: kalau total stok gudang proses cukup, semuanya harus berhasil. Sistem memakai batch masuk berikutnya bila batch pertama sudah diambil proses lain. Pesan **No Stock Available** berarti stok di semua batch memang kurang.  
+5. File sangat besar bisa stuck — pecah file (batasan sistem).
 
 ---
 
@@ -135,6 +137,7 @@ Kolom template tetap sama. Cara baca **harga** berubah: titik atau koma bisa jad
 | Setelah Approve belum masuk gudang | Setting tidak auto-wave | Unassign / Skip Wave di SCM |
 | Invoice tidak muncul setelah Approve (Processed) | Memang tidak saat Approve | Tunggu outbound / settlement |
 | Non-Processed gagal stok | Stok di hierarki gudang proses store kurang | Isi stok / kurangi qty / ganti store |
+| Non-Processed **No Stock Available** padahal stok gudang masih ada di batch lain | Dulu beberapa proses bisa mengambil batch masuk yang sama | Seharusnya order tetap berhasil jika total stok cukup; sistem memakai batch berikutnya. Kalau masih gagal, stok di semua batch memang kurang |
 | Sheet 2 cost/disc “aneh” / salah jadi biaya | Kode sama ada di Other Cost dan Other Discount | Ubah salah satu kode di master; re-import. Order harus gagal jika bentrok (aturan baru) |
 | Create langsung ke edit | By design | Lengkapi di halaman edit |
 | Ada tanda harga di bawah HPP / auto-approve gagal | Price Before VAT di bawah Benchmark COGS di line | Unhide kolom Price Before VAT + Benchmark; naikkan harga atau **approve manual**. Filter TO-BE: Error Flag **Below Benchmark COGS** |
