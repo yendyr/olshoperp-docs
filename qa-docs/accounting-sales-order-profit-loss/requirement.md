@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: accounting-sales-order-profit-loss
 menu_name: "Sales Order Profit Loss"
-version: 1.0
+version: 1.1
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -14,7 +14,7 @@ aliases: [SO P/L, sales order profit loss, SO profit loss]
 **Modul:** Finance & Accounting / Report  
 **UI route:** `/accounting/sales-order-profit-loss`  
 **Audience:** PM, QA  
-**Origin TO-BE kolom outbound:** [ETM-17074](https://erpintegration.atlassian.net/browse/ETM-17074)
+**TO-BE:** [ETM-17074](https://erpintegration.atlassian.net/browse/ETM-17074) kolom Outbound · [ETM-17073](https://erpintegration.atlassian.net/browse/ETM-17073) Export / Advanced Filter / Global Search (tabel per SO)
 
 ---
 
@@ -22,6 +22,7 @@ aliases: [SO P/L, sales order profit loss, SO profit loss]
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-11-05 | QA - Yemima | §5b TO-BE ETM-17073 (export/filter/search OrderTable); Relates 17074 |
 | 1.0 | 2026-11-05 | QA - Yemima | Initial SoT dari AS-IS kode + TO-BE ETM-17074 |
 
 ---
@@ -129,6 +130,27 @@ Jika implementasi memilih hanya “OT pertama”: dokumentasikan di technical + 
 
 ---
 
+## 5b. TO-BE — ETM-17073 (Export / Advanced Filter / Global Search di tabel per SO)
+
+**Target UI:** hanya **Daily Total P/L in Period per Store** (`OrderTable` / `daily-per-so`). Chart & tabel agregat harian / store / platform **out of scope**.
+
+### AS-IS (OrderTable)
+
+- `filter_column=false` — tidak ada Advanced Filter / Global Search toolbar
+- Tidak ada Export All / Active Page
+
+### Expected
+
+| ID | Kriteria |
+|----|----------|
+| SOPL-XF-01 | **Advanced Filter** untuk kolom yang tampil di tabel per SO |
+| SOPL-XF-02 | **Global Search** pada datalist tabel per SO |
+| SOPL-XF-03 | **Export All** — kolom file mengikuti UI; hormati periode + `storeIds` halaman + Advanced Filter/search aktif |
+| SOPL-XF-04 | **Export Active Page** — pola standar report Accounting (selaras Product Profit Loss) |
+| SOPL-XF-05 | Setelah ETM-17074 live: kolom Outbound ikut filter & export jika sudah di UI |
+
+---
+
 ## 6. Contoh kasus
 
 | # | Situasi | Expected |
@@ -140,7 +162,7 @@ Jika implementasi memilih hanya “OT pertama”: dokumentasikan di technical + 
 
 ---
 
-## 7. Acceptance Criteria (menu inti + ETM-17074)
+## 7. Acceptance Criteria (menu inti + TO-BE cards)
 
 | ID | Kriteria |
 |----|----------|
@@ -150,6 +172,7 @@ Jika implementasi memilih hanya “OT pertama”: dokumentasikan di technical + 
 | SOPL-04 | Formula P/L & % sesuai §1 |
 | SOPL-05 | Tabel per SO menampilkan Trx. Code (SO) + store + platform + metrik |
 | SOPL-06 | **TO-BE** SOPL-OB-01…05 (ETM-17074) |
+| SOPL-07 | **TO-BE** SOPL-XF-01…05 (ETM-17073) |
 
 ---
 
@@ -158,7 +181,7 @@ Jika implementasi memilih hanya “OT pertama”: dokumentasikan di technical + 
 | ID | Deskripsi | Status |
 |----|-----------|--------|
 | GAP-SOPL-01 | Display exact multi-OT (join koma vs first-only vs tooltip) | Open — verify saat implementasi ETM-17074 |
-| GAP-SOPL-02 | Judul UI "…per Store" pada tabel per SO membingungkan | Open — opsional rename (bukan scope 17074) |
+| GAP-SOPL-02 | Judul UI "…per Store" pada tabel per SO membingungkan | Open — opsional rename (bukan scope 17074/17073) |
 
 ---
 

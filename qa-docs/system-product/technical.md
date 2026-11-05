@@ -2,8 +2,8 @@
 doc_type: technical
 menu: system-product
 menu_name: "System Product"
-version: 2.6
-last_updated: 2026-10-22
+version: 2.7
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,6 +13,7 @@ related_docs:
 
 # System Product — Technical Documentation
 
+> **2.7 (2026-11-05):** TO-BE [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) — **Status Restock** Yes/No on `scm_products` (+ form Basic Information, datalist near Active, SearchBuilder). Default **Yes** on create (manual / import / Header BOM via `ProductController@store`). See [requirement §4.4](./requirement.md).  
 > **2.6 (2026-10-22):** TO-BE [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) — save/ganti DnW **default** → auto-recalc Pricelist/Category by Weight + Log Pricelist — [requirement §5.4](./requirement.md) · §7 di bawah.  
 > **2.5 (2026-10-02):** Bundle breakdown + random → Retail Price (TO-BE ETM-16216); AS-IS `pickBundleChildren` masih `benchmarkPrice` untuk `$is_random` — [requirement §11.6–§11.7](./requirement.md#116-random-sku-di-breakdown-bundle--retail-price-to-be--etm-16216).  
 > **2.4 (2026-09-01):** AS-IS **Product Image Sync** — `SyncProductImageJob`, `ExternalProductController@sync`, `scm_settings`, `is_synced` — [requirement §13.2](./requirement.md#132-product-image-sync-as-is--api-pull).

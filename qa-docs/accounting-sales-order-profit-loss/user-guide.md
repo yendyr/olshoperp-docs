@@ -2,11 +2,11 @@
 doc_type: user-guide
 menu: accounting-sales-order-profit-loss
 menu_name: "Sales Order Profit Loss"
-version: 1.0
+version: 1.1
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
-source_version: "requirement 1.0 / knowledge-base 1.0 / technical 1.0"
+source_version: "requirement 1.1 / knowledge-base 1.1 / technical 1.1"
 audience: publish
 ---
 
@@ -40,7 +40,10 @@ Di tabel detail order Anda melihat:
 - Nomor SO (**Trx. Code**), store, platform  
 - Qty, COGS, Total SO, Total SI, Total P/L, % P/L  
 
-**Segera hadir (ETM-17074):** kolom **Trx. Code Outbound** dan **Trx. Date Outbound** agar nomor & tanggal outbound terkait langsung terlihat di baris yang sama.
+**Segera hadir:**
+
+- **ETM-17074:** kolom **Trx. Code Outbound** & **Trx. Date Outbound**  
+- **ETM-17073:** Advanced Filter, Global Search, dan Export (All / Active Page) di tabel detail order yang sama  
 
 ---
 

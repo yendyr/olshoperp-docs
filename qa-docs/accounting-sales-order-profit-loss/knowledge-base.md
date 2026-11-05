@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: accounting-sales-order-profit-loss
 menu_name: "Sales Order Profit Loss"
-version: 1.0
+version: 1.1
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -10,6 +10,8 @@ audience: operator
 ---
 
 # Sales Order Profit Loss — Knowledge Base
+
+> **1.1:** TO-BE ETM-17073 — Export / Advanced Filter / Global Search di tabel per SO. ETM-17074 — kolom Outbound.
 
 **Route:** `/accounting/sales-order-profit-loss`  
 **Modul:** Accounting → Report
@@ -58,6 +60,15 @@ Di tabel yang menampilkan **nomor SO**, akan ditambah:
 Supaya operator langsung lihat referensi gudang tanpa buka menu Outbound terpisah.
 
 Belum outbound → kolom outbound kosong / `-`.
+
+## TO-BE (ETM-17073) — Export & filter di tabel per SO
+
+Di tabel yang sama (baris nomor SO):
+
+- **Advanced Filter** & **Global Search**  
+- **Export All** (+ **Export Active Page**, pola standar report) — kolom mengikuti tampilan UI  
+
+Chart dan tabel ringkasan harian/store/platform **belum** termasuk request ini.
 
 ---
 

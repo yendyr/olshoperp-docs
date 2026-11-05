@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.6
-last_updated: 2026-10-21
+version: 2.7
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
 audience: operator
@@ -12,6 +12,8 @@ sections:
 ---
 
 # System Product — Knowledge Base
+
+> **2.7:** TO-BE **Status Restock** (Yes/No) — ETM-17082. Tagging AS-IS (sudah ada di form & Pricelist); request “difungsikan tags” di-skip.
 
 ## 1. Apa itu System Product?
 
@@ -56,6 +58,7 @@ Import/export Excel **hanya** di menu System Product full.
 | **Images** | Foto utama produk |
 | **Product** | SKU, nama, satuan utama, harga retail |
 | **Type / Bundle / Active** | SINGLE / VARIANT / PARENT · apakah bundle · aktif/tidak |
+| **Status Restock** (TO-BE) | **Yes** / **No** — apakah produk perlu di-restock; filterable di Advanced Filter (ETM-17082) |
 | **Availability** | Stok bisa dipakai sekarang |
 | **On Hand** | Stok fisik di gudang |
 | **ATS** | Available to Sell — stok bersih untuk dijual |

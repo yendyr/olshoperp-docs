@@ -12,8 +12,8 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 | Capability cards | [capabilities/](./capabilities/) | Semua | draft |
 
 **Help Center:** [`_meta/docs-hub/menus/system-product/`](../_meta/docs-hub/menus/system-product/)  
-**3 layer:** v2.6 · **Technical:** v2.6 · **User Guide:** v1.3 (`source_version` 2.6) · **Feature Map:** v1.1  
-**Related Jira:** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) (DnW default → Pricelist weight sync)  
+**3 layer:** v2.7 · **Technical:** v2.7 · **User Guide:** v1.4 (`source_version` 2.7) · **Feature Map:** v1.1  
+**Related Jira:** [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) (Status Restock) · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) (DnW default → Pricelist weight sync)  
 **Maintenance owner:** QA — Yemima
 
 ---
@@ -22,6 +22,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-05 | 2.7 | TO-BE **Status Restock** Yes/No (ETM-17082) — form, default Yes, datalist, Advanced Filter; tags request di-skip |
 | 2026-10-22 | 2.6+ | Lengkapi ETM-16668: technical §7, UG v1.3, feature-map SF-SP-13, capability SF-SP-02, Help Center overview |
 | 2026-10-21 | 2.6 | §5.4 / KB: TO-BE ETM-16668 — save/ganti default DnW → auto-recalc Pricelist/Category by Weight + Log Pricelist |
 | 2026-10-02 | 2.5 | Bundle breakdown + Random: Retail Price (bukan Benchmark); before/after processing — ETM-16216; cross-ref reprice in-place ETM-16212 |

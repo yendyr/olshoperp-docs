@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: system-product
 menu_name: "System Product"
-version: 1.3
-last_updated: 2026-10-22
+version: 1.4
+last_updated: 2026-11-05
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.6
+source_version: 2.7
 owner: QA - Yemima
 status: review
 ---
@@ -100,7 +100,9 @@ Setelah SKU tersimpan:
 ### Langkah 1 — Basic Information
 
 1. Isi SKU, Nama, Sales Category, Product COA Group, Condition.
-2. SKU wajib unik; hindari segment `random`.
+2. **(TO-BE ETM-17082)** Set **Status Restock** Yes/No (di bawah Product Condition). Produk baru default **Yes** (termasuk import & create Header BOM).
+3. SKU wajib unik; hindari segment `random`.
+4. Opsional: **Tagging** (sudah ada di form).
 
 ### Langkah 2 — Unit & D&W
 

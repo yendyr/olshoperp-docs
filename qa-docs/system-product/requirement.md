@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.6
-last_updated: 2026-10-21
+version: 2.7
+last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
-aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant]
+aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant, Status Restock]
 ---
 
 # System Product — Requirement Documentation
@@ -21,6 +21,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 **PM sources:** User requirement (chat) · D&W artifact v1.0 (7 Mei 2026)
 
+> **Changelog 2.7 (2026-11-05):** §4.4 + §2.1 TO-BE [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) **Status Restock** Yes/No (form, default Yes, datalist, Advanced Filter). Bagian “difungsikan tags” di request **di-skip** (Tagging AS-IS sudah ada di System Product & Pricelist).  
 > **Changelog 2.6 (2026-10-21):** §5.4 — side effect TO-BE [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668): ubah DnW **default** → auto-recalc Pricelist/Category weight values + Log Pricelist.  
 > **Changelog 2.5 (2026-10-02):** §11.6–§11.7 — breakdown bundle + Random SKU wajib pakai **Retail Price** (bukan Benchmark COGS); sebelum vs sesudah processing; beda tujuan vs Benchmark COGS. Jira [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216). Cross-ref reprice in-place [ETM-16212](https://erpintegration.atlassian.net/browse/ETM-16212) / Sales Platform.
 
@@ -30,6 +31,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.7 | 2026-11-05 | QA - Yemima | §4.4 / §2.1 TO-BE Status Restock (ETM-17082); tags request di-skip (sudah AS-IS) |
 | 2.6 | 2026-10-21 | QA - Yemima | §5.4 TO-BE ETM-16668: save/ganti default DnW → sync weight ke Pricelist/Category + log |
 | 2.5 | 2026-10-02 | QA - Yemima | §11.6–§11.7 Retail Price untuk random di breakdown bundle; before/after processing; vs Benchmark COGS — ETM-16216 |
 | 1.0–1.2 | 2026-01–07 | QA - Yemima | Initial draft from legacy + partial PM |
@@ -90,12 +92,13 @@ Import history & bulk import **hanya** di menu full (`has_import_history = false
 | **Images** | Thumbnail 100×100 (`image_formatted`) |
 | **Product** (combined) | SKU (link edit), Name (excerpt 60), Primary Unit, **Price** (`Rp. {price}`) |
 | **Type / Bundle / Active** | Badge PARENT / SINGLE / VARIANT · Bundle Yes/No · Active boolean |
+| **Status Restock** (**TO-BE** ETM-17082) | **Yes** / **No** — di dekat / di bawah informasi Active; Advanced Filter Yes/No |
 | **Availability / On Hand / ATS** | Tiga angka stacked; cache 1 menit per product |
 | **Data Owner** | Public/Private badge, company name, Created/Updated `d-m-Y H:i:s`, Creator |
 
 **Tooltip harga:** ditampilkan untuk Single & Variant child; parent tetap bisa render `product.price` jika terisi.
 
-**Hidden SearchBuilder:** SKU, Name, Primary Unit, Price, Type, Bundle, Active, **BOM** (Header BoM `is_bom=1` — terpisah dari bundle), stock columns terpisah, timestamps.
+**Hidden SearchBuilder:** SKU, Name, Primary Unit, Price, Type, Bundle, Active, **Status Restock** (TO-BE), **BOM** (Header BoM `is_bom=1` — terpisah dari bundle), stock columns terpisah, timestamps.
 
 ### 2.2 Rumus stok (AS-IS — `Product.php`)
 
@@ -159,8 +162,9 @@ Urutan section (AS-IS):
 | **Sales Category** | Required; must exist |
 | **Product COA Group** | Required; active; `validateProductCoaGroup()` |
 | **Alias** | Array max 150 entries × 150 chars |
-| **Tagging** | Optional; auto-create by name jika belum ada |
+| **Tagging** | Optional; auto-create by name jika belum ada (AS-IS — sudah ada di form & muncul di Pricelist) |
 | **Product Condition** | Required: `Brand New` atau `Second-hand` |
+| **Status Restock** (**TO-BE** ETM-17082) | Radio **Yes** / **No**; UI di bawah Product Condition — lihat §4.4 |
 | **Brand** | Nullable — **tidak ada default dari config Shopee** (GAP-SP-02) |
 | **Random in SKU** | Ditolak: `"Random sku is not allowed"` |
 
@@ -172,10 +176,24 @@ Urutan section (AS-IS):
 | Product image | Placeholder default upload |
 | D&W profile | 1×1×1×1 cm/g pada primary unit |
 | Tax rows | Seed dari company `DefaultVat` (sales + purchase) |
+| **Status Restock** (**TO-BE**) | **Yes** — manual create, import, create Header BOM |
 
 ### 4.3 Primary unit default "Pieces"
 
 FE auto-select unit bernama **Pieces** dari select2 (heuristic), bukan flag `is_default_primary_unit` dari Master Unit API.
+
+### 4.4 Status Restock — TO-BE ([ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082))
+
+| ID | Kriteria |
+|----|----------|
+| SP-RS-01 | Field **Status Restock** radio **Yes** / **No** di **Basic Information**, di bawah **Product Condition** |
+| SP-RS-02 | Default **Yes** pada create: form manual, **import**, dan create via **Header BOM** |
+| SP-RS-03 | Kolom **Status Restock** di datalist dekat / di bawah informasi **Active** |
+| SP-RS-04 | Wajib bisa difilter (Advanced Filter Yes/No) dan dicari sesuai pola SearchBuilder kolom status lain |
+| SP-RS-05 | Edit Yes↔No tersimpan; datalist & filter mengikuti nilai tersimpan |
+| SP-RS-06 | Migrasi data existing: default **Yes** (selaras create), kecuali keputusan migrasi lain di PR |
+
+> Teks request “difungsikan Field tags” **di-skip** (2026-11-05): Tagging sudah tersedia AS-IS di System Product dan tampil di Pricelist — bukan gap / bukan pekerjaan ETM-17082.
 
 ---
 

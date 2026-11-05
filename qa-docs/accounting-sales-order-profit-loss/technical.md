@@ -2,7 +2,7 @@
 doc_type: technical
 menu: accounting-sales-order-profit-loss
 menu_name: "Sales Order Profit Loss"
-version: 1.0
+version: 1.1
 last_updated: 2026-11-05
 owner: QA - Yemima
 status: review
@@ -10,6 +10,8 @@ audience: developer
 ---
 
 # Sales Order Profit Loss — Technical Documentation
+
+> **1.1:** TO-BE [ETM-17073](https://erpintegration.atlassian.net/browse/ETM-17073) wire Advanced Filter / Global Search / Export on `OrderTable`; [ETM-17074](https://erpintegration.atlassian.net/browse/ETM-17074) outbound columns.
 
 **UI:** `/accounting/sales-order-profit-loss`  
 **Controller:** `Modules/Accounting/Http/Controllers/SalesOrderProfitLossController.php`  
@@ -108,3 +110,10 @@ olshoperp-frontend/src/pages/Accounting/Report/SalesOrderProfitLoss/**/*
 1. Reuse the same outbound eligibility as `getTotalHppQuery` (OT-%, SOD ref) so code/date tidak “asing” dari COGS.
 2. Jangan ubah formula P/L hanya untuk menambah kolom.
 3. Scope UI: **OrderTable / daily-per-so only** unless product expands later.
+
+## 7. Notes for implementers (ETM-17073)
+
+1. `OrderTable.vue`: set `filter_column=true` (+ Global Search via DataTablesV3 defaults); adjust `initial_dom` jika perlu slot search/export.
+2. Wire Export All / Active Page seperti **Product Profit Loss** (`ExportFileTable` + `EXPORT_OPTIONS_ALL_ACTIVE_PAGE`); hormati `datePeriod` / `storeIds` + SearchBuilder.
+3. `dailyPerSo` sudah punya `$ExportData` — lengkapi job/route export bila belum ada endpoint dedicated.
+4. Kolom Outbound (17074) harus ikut export/filter setelah FE columns ditambah.
