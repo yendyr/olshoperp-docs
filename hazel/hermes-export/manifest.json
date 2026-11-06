@@ -1,0 +1,44 @@
+{
+  "name": "olshoperp-hazel-otw-dev-pack",
+  "version": "1.0.0",
+  "exportedAt": "2026-11-06",
+  "purpose": "Hermes port of Hazel OTW DEV screening, callbacks, and server-update flows",
+  "skills": [
+    {
+      "id": "olshoperp-otw-dev-screening",
+      "path": "skills/olshoperp-otw-dev-screening/SKILL.md",
+      "triggers": ["jira.status.to=OTW DEV", "reopen-flow dry-run", "cek QA review"]
+    },
+    {
+      "id": "olshoperp-telegram-callback",
+      "path": "skills/olshoperp-telegram-callback/SKILL.md",
+      "triggers": ["telegram.callback_query", "rwk:", "rgc:"]
+    },
+    {
+      "id": "olshoperp-server-update",
+      "path": "skills/olshoperp-server-update/SKILL.md",
+      "triggers": [
+        "FRONTEND Server (Staging & Production/Tyas) Update FINISHED",
+        "BACKEND Server (Staging & Production/Tyas) Update FINISHED",
+        "mode-A tip origin/dev advance"
+      ]
+    }
+  ],
+  "references": [
+    "reference/flow-map.md",
+    "reference/ids-ledgers.md",
+    "reference/telegram-templates.md",
+    "../qa-review-ac-code-screening.md"
+  ],
+  "secrets": ["TELEGRAM_OERP_ASSIST_BOT_TOKEN"],
+  "jira": {
+    "cloudId": "44cc9820-3372-4c12-884c-698b1397173c",
+    "site": "erpintegration.atlassian.net",
+    "project": "ETM"
+  },
+  "telegram": {
+    "bot": "OERPAssistBot",
+    "chat_id": "-1001931573603",
+    "threads": { "screening": 6059, "serverUpdate": 46841 }
+  }
+}

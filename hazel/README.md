@@ -10,6 +10,7 @@ Bukan pengganti `.cursor/rules/` yang sudah twin ke `olshoperp` — folder ini u
 | [antigravity-session-hygiene.md](./antigravity-session-hygiene.md) | SOP sesi Antigravity — satu chat satu topik; A.1–A.6 |
 | [antigravity-token-usage-analysis.md](./antigravity-token-usage-analysis.md) | Playbook analisa token/usage — metrik + checklist rem + data wajib |
 | [qa-review-ac-code-screening.md](./qa-review-ac-code-screening.md) | Screening card **QA Review** (IDE / Hazel) — AC vs commit |
+| [hermes-export/](./hermes-export/) | **Port ke Hermes** — OTW DEV screening + TC create + Telegram/callback + Server Update |
 
 Charter IDE: `.cursor/rules/26-agent-mandatory-charter.mdc`.  
 Rule `20` = referensi IDE/red-team saja — **jangan** inject ke system prompt bot.
