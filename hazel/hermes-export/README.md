@@ -46,3 +46,4 @@ Diekstrak dari skill/routine Hazel (locked policies Sep–Nov 2026) + SoT di rep
 4. Cursor standby (sementara) = **tanpa tombol**; Hermes production = **dengan tombol** seperti skill asli.
 5. SoT format card / Request ID: `olshoperp-docs` `.cursor/rules/12-jira-card-format.mdc` (bukan twin AI yang tertinggal).
 6. Auto-TC matrix: skill `olshoperp-testcase-authoring` di repo docs.
+7. **Server Update Telegram** (thread 46841): ikuti template screenshot di `reference/telegram-templates.md` — Ready to test footer `@dapirdaa @Jeiniiii · cc @yemimatifani`; WARNING footer Dev+reporter + `cc @yendyrach`.

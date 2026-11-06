@@ -102,22 +102,116 @@ Basis: olshoperp@{sha7} · frontend@{sha7} · refresh {HH:MM WIB}
 
 ## Server Update (thread **46841**, NEVER 6059)
 
-Combine A/B/D in **one** message when applicable. Case **C** = own message, **no** `reply_to`; link screening: `https://t.me/c/1931573603/{screening_msg_id}`.
+SoT format dari pesan Hazel produksi (contoh ETM-17110 Ready to test · ETM-17109 WARNING, 2026-11).  
+`parse_mode=HTML`. Drop baris `[PREVIEW]`. Spasi: header → blank → card block(s) → blank antar section.  
+Combine **A/B/D** dalam **satu** pesan per deploy (hanya section yang relevan). **C** selalu **pesan terpisah**, **tanpa** `reply_to` (screening di topic 6059; cross-topic reply gagal).
+
+Link screening: `https://t.me/c/1931573603/{screening_msg_id}` (id dari reopen-flow ledger).
+
+### Mention rules (Server Update — locked dari screenshot)
+
+| Case | Footer mentions |
+|---|---|
+| **B Ready to test** / aman digeser QA Review | **Default tetap:** `@dapirdaa @Jeiniiii · cc @yemimatifani` |
+| **C WARNING** rework-deployed | `@{dev}` (assignee Jira → mapping Telegram) + `@{reporter}` (reporter Jira → mapping) + **`cc @yendyrach`** (default). Dedup jika reporter = yemimatifani sudah di baris. |
+| **A Done** | Ikuti pola B untuk QA mentions bila ada “Ready to deploy/Done” ke tim; Bugsy label rule bila ada. |
+| Tanpa mapping Dev/reporter | Tulis nama display + `Dev belum di mapping` / `Reporter belum di mapping` — **jangan tebak** username. |
+
+Dev di body card (baris 🛠) = assignee; **bukan** pengganti footer default B.
+
+---
+
+### B — QA Review · Ready to test (contoh ETM-17110)
+
+`{SIDE}` = `BACKEND` | `FRONTEND` | `BACKEND + FRONTEND`.
+
+```
+🚀 <b>Server Update · {SIDE}</b> · {HH:MM} WIB
+
+🧪 <b>Status: QA Review · Ready to test</b>
+
+• <a href="{jira_url}">{KEY}</a> — <b>{Summary}</b>
+  Hasil OTW DEV: PASS (confidence {sedang|tinggi}) · {backend|frontend}@{sha7}
+  Screening: <a href="https://t.me/c/1931573603/{screening_msg_id}">msg {screening_msg_id}</a> (topic 6059)
+  🛠 Dev: {Nama assignee} (@{dev_username})
+
+  <b>Yang perlu diuji:</b>
+  • {poin uji 1 dari Expected / AC — bahasa operasional}
+  • {poin uji 2}
+  • {poin uji 3 bila ada}
+
+  <b>Test Case ({n}):</b>
+<blockquote expandable>• <a href="{tc_url}">{TC1}</a> — {summary TC1}
+• <a href="{tc_url}">{TC2}</a> — {summary TC2}
+…</blockquote>
+
+@dapirdaa @Jeiniiii · cc @yemimatifani
+```
+
+- Satu card = satu blok `• KEY — …` (boleh beberapa card dalam pesan yang sama setelah header Status).
+- `Test Case (n):` hanya jika ada TC Relates / QA Test Case; kalau 0 → omit section (jangan tulis kosong).
+- Blockquote expandable untuk daftar TC (HTML Telegram).
+- Footer **selalu** tiga mention default di atas (bukan Dev).
+
+---
+
+### C — WARNING rework-deployed (contoh ETM-17109)
+
+Pesan **sendiri** (jangan digabung A/B/D).
+
+```
+⚠️ <b>WARNING: Card yg potensi RE-OPEN lolos ke production</b>
+
+• <a href="{jira_url}">{KEY}</a> · <b>{Summary}</b>
+Screening OTW DEV ({HH:MM} WIB, <a href="https://t.me/c/1931573603/{screening_msg_id}">msg {screening_msg_id}</a>) menyatakan <b>REWORK</b>, tapi commit {backend|frontend}@{sha7} sudah masuk Staging &amp; Production/Tyas.
+
+<b>Gap yang masih ada:</b>
+• {gap 1 kait AC}
+• {gap 2}
+
+<b>Risiko di Production:</b> {1–2 kalimat dampak bisnis/data}
+
+<b>Tindakan:</b> Dev perbaiki segera atau rollback · card ditahan di QA Review
+
+@{dev_username} @{reporter_username} cc @yendyrach
+```
+
+- `{dev_username}` ← `assignee.accountId` via `telegram-jira-mapping.json`
+- `{reporter_username}` ← `reporter.accountId` via mapping
+- `cc @yendyrach` **wajib** (default WARNING)
+
+---
 
 ### A — Done (PASS tinggi setelah deploy)
 
-Header Done + list card yang digeser sampai Done + basis SHA/waktu deploy WIB. Ikuti spacing: header, blank, card blocks. Drop `[PREVIEW]`. Apply Bugsy label rule (lihat ledger/ops).
+```
+🚀 <b>Server Update · {SIDE}</b> · {HH:MM} WIB
 
-### B — QA Review · Ready to test
+✅ <b>Status: Done</b>
 
-Cards stopped at QA Review + expandable blockquote daftar TC terkait bila ada.
+• <a href="{jira_url}">{KEY}</a> — <b>{Summary}</b>
+  Hasil OTW DEV: PASS (confidence tinggi) · {backend|frontend}@{sha7}
+  Screening: <a href="https://t.me/c/1931573603/{screening_msg_id}">msg {screening_msg_id}</a> (topic 6059)
+  🛠 Dev: {Nama} (@{dev_username})
 
-### C — WARNING rework-deployed
+@dapirdaa @Jeiniiii · cc @yemimatifani
+```
 
-REWORK tapi kode sudah ikut deploy; card di QA Review; link pesan screening REWORK.
+(Sesuaikan bila ada aturan Bugsy label — jangan sebut label teknis ke pembaca bila rule melarang.)
+
+---
 
 ### D — Menunggu repo lain
 
-Card menyentuh FE+BE; baru satu sisi yang deploy.
+```
+🚀 <b>Server Update · {SIDE_YANG_BARU}</b> · {HH:MM} WIB
 
-> **Hermes:** salin verbatim dari Hazel `/workspace/server-update-telegram-templates.md` bila masih ada di VM; section di atas = kontrak semantik (A/B/C/D) jika file belum di-port.
+⏳ <b>Status: Menunggu repo lain</b>
+
+• <a href="{jira_url}">{KEY}</a> — <b>{Summary}</b>
+  Sudah masuk tip/deploy: {frontend|backend}@{sha7}
+  Masih menunggu: {backend|frontend}
+  Card tetap <b>OTW DEV</b> sampai kedua repo ready.
+
+@dapirdaa @Jeiniiii · cc @yemimatifani
+```

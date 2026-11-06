@@ -41,13 +41,32 @@ Setiap poll: `git fetch` tip `origin/dev` FE+BE. Jika tip SHA berubah vs `lastTi
    - **REWORK** but code deployed → `rework-deployed` (stay QA Review + WARNING C)
 7. Per-card ledger statuses: `moved-qa-review` | `moved-done` | `rework-deployed` | `waiting-other-repo` | `no-commits` | `pending-access`
 
-## Telegram
+## Telegram (wajib ikuti template screenshot Hazel)
 
 - Bot Assist, HTML, chat `-1001931573603`, thread **`46841` only** (never 6059, never deploy-message thread).
-- Templates: `../../reference/telegram-templates.md` § Server Update (A/B/C/D). Exact spacing; drop `[PREVIEW]`; Bugsy label rule.
+- **Templates verbatim:** `../../reference/telegram-templates.md` § Server Update (A/B/C/D) — header `🚀 Server Update · {SIDE} · {HH:MM} WIB`, status line, card block, Yang perlu diuji, Test Case expandable, footer mentions.
 - Combine A/B/D for one deploy into **one** message (only sections that apply).
 - **C** always own message, **without** `reply_to`; link screening REWORK: `https://t.me/c/1931573603/{screening_msg_id}` from reopen-flow ledger.
 - Nothing moved and nothing waiting → **send nothing**.
+
+### Mention rules (jangan tertukar dengan screening 6059)
+
+| Case | Footer |
+|---|---|
+| **B Ready to test** / **A Done** / **D waiting** | `@dapirdaa @Jeiniiii · cc @yemimatifani` (**default tetap**, bukan Dev) |
+| **C WARNING** | `@{assignee→telegram}` `@{reporter→telegram}` `cc @yendyrach` (`@yendyrach` default WARNING) |
+
+- Baris `🛠 Dev: Nama (@user)` di body = info saja; footer B **tetap** QA trio.
+- Mapping: `telegram-jira-mapping.json` byAccountId. Tanpa mapping → jangan tebak.
+
+### Field per card block (B)
+
+1. Link KEY + summary bold  
+2. `Hasil OTW DEV: PASS (confidence …) · {side}@{sha7}`  
+3. `Screening: msg {id}` link ke topic 6059  
+4. Dev line  
+5. **Yang perlu diuji:** 2–4 bullet dari Expected/AC  
+6. **Test Case (n):** blockquote expandable daftar Relates TC (omit jika 0)
 
 ## Agent chat output
 
@@ -58,3 +77,4 @@ Only blockers (repo access, Jira errors) and any `rework-deployed` card. Otherwi
 - Re-screen AC
 - Print bot token
 - Post server-update notifs to thread 6059
+- Pakai footer mention screening (Dev/@yendyrach) untuk case Ready to test
