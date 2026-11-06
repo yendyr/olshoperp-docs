@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-trial-balance
 menu_name: "Trial Balance"
-version: 1.1
-last_updated: 2026-11-05
+version: 1.3
+last_updated: 2026-11-06
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # Trial Balance — Technical Documentation
 
-> v1.1 — AS-IS + TO-BE [ETM-17077](https://erpintegration.atlassian.net/browse/ETM-17077) kolom **Balance**.
+> v1.3 — AS-IS + TO-BE [ETM-17077](https://erpintegration.atlassian.net/browse/ETM-17077) kolom **Balance** · [ETM-17078](https://erpintegration.atlassian.net/browse/ETM-17078) Column Show & Hide · [ETM-17079](https://erpintegration.atlassian.net/browse/ETM-17079) export header Period.
 
 ## 1. Architecture Overview
 
@@ -92,13 +92,20 @@ Shared props: `trial_balance=true`, `pageLength=1000`, `with_default_columns=fal
 | Method | Path | Role |
 |--------|------|------|
 | GET | `/api/accounting/trial-balance/datalist` | DataTables JSON |
+| POST/GET | `/api/accounting/trial-balance/export-excel` (via controller `exportExcel`) | Queue export job |
+| GET | `/api/accounting/trial-balance/export-file` | Riwayat file export |
+| GET | `/api/accounting/trial-balance/export-progress` | Progress counter |
 
-**Query params:**
+**Query params (datalist):**
 
 | Param | Required | Description |
 |-------|----------|-------------|
 | `className` | Yes | COA class name filter |
 | `period` | No | `start,end` dates; default today |
+
+**Export (ETM-17079):** `exportExcel` parse `period` sama datalist → `TrialBalanceExportJob` → `TrialBalanceExport`. Header baris 1: `OlshopERP | Trial Balance Period {d-m-Y} - {d-m-Y}` (merge `A1:L1`, center). Kolom baris 2 mencakup Beginning/In Period/Ending **Balance**. Entity `TrialBalanceExportFile`.
+
+**Column Show & Hide (ETM-17078):** FE `ColumnVisibility.vue` di slot `#initial_dom_action` DataTablesV3 (Assets table). `columns[].select_name` label opsi (contoh `Beginning Balance - Debit`). `:tables="trialBalanceTables"` menyinkronkan visibilitas ke semua 7 DataTables di halaman. Komponen generic di `src/components/project/DataTables/components/`.
 
 Commented/disabled in `api.php`: `Route::resource('/trial-balance', ...)`, per-class legacy actions.
 

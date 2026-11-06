@@ -2,11 +2,11 @@
 doc_type: user-guide
 menu: accounting-trial-balance
 menu_name: "Trial Balance"
-version: 1.0
-last_updated: 2026-11-05
+version: 1.3
+last_updated: 2026-11-06
 owner: QA - Yemima
 status: review
-source_version: "requirement 1.1 / knowledge-base 1.1 / technical 1.1"
+source_version: "requirement 1.3 / knowledge-base 1.3 / technical 1.3"
 audience: publish
 ---
 
@@ -43,8 +43,20 @@ Angka boleh **minus** — artinya sisi lawan lebih besar untuk tipe akun itu.
 
 ---
 
+## Column Show & Hide (ETM-17078)
+
+Di toolbar daftar, buka **Column Show & Hide**. Centang/hilangkan kolom **Debit**, **Credit**, atau **Balance** untuk grup Beginning Balance, In-Period Transaction, dan Ending Balance. Perubahan berlaku ke semua tabel di halaman. Hanya mengatur tampilan, tidak mengubah angka.
+
+## Export Excel (ETM-17079)
+
+Setelah memilih **Period** dan **Apply**, export All Data menghasilkan file Excel. Baris pertama header menampilkan periode yang dipakai, misalnya:
+
+`OlshopERP | Trial Balance Period 01-11-2026 - 06-11-2026`
+
+Tanggal mengikuti filter Period saat export (format `dd-mm-yyyy`). Unduh dari riwayat export bila proses berjalan di background.
+
 ## Tips
 
 - Jangan jumlahkan baris parent + child (parent sudah ringkasan anak).  
 - Butuh transaksi per akun → buka **General Ledger**.  
-- Export Excel dari menu ini belum tersedia.
+- Cek header export untuk memastikan periode sesuai filter.

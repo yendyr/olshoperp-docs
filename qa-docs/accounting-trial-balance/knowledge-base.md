@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-trial-balance
 menu_name: "Trial Balance"
-version: 1.1
-last_updated: 2026-11-05
+version: 1.3
+last_updated: 2026-11-06
 owner: QA - Yemima
 status: review
 audience: operator
@@ -50,11 +50,12 @@ Data bersumber dari journal berstatus **Approved**.
 - Lihat hierarki COA (indent + bold parent)
 - Lihat Debit & Credit per grup Beginning / In-Period / Ending
 - **(TO-BE ETM-17077)** Lihat kolom **Balance** di tiap grup
+- Export Excel (All Data) — unduh lewat riwayat export; header file menampilkan periode filter (ETM-17079)
+- **Column Show & Hide** — tampilkan/sembunyikan Debit, Credit, Balance per grup (Beginning / In-Period / Ending) di semua tabel (ETM-17078)
 
 ### Tidak Bisa
 
 - Buat / edit / hapus transaksi dari menu ini
-- Export Excel dari UI Trial Balance (belum ada)
 - Filter per COA individual di UI (hanya periode global)
 
 ---
