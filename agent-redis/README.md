@@ -1,6 +1,6 @@
 ---
 doc_type: agent-redis
-version: 1.0
+version: 1.1
 last_updated: 2026-11-06
 owner: Platform / DevOps
 source_of_truth: olshoperp/docs/infra/agent-redis.md
@@ -11,7 +11,7 @@ source_of_truth: olshoperp/docs/infra/agent-redis.md
 Untuk agent yang **direct POST** ke webhook Redis Agent — read-only (Horizon / queue metrics).
 SoT deploy+ops: `olshoperp/docs/infra/agent-redis.md` (salinan ini di-sync ke sini).
 
-Webhook n8n/n9n; pola sama DB Agent & App Log Agent: `POST` + header `X-API-Key`, JSON body, error code eksplisit.
+Webhook n8n/n9n; pola sama DB Agent ke Redis yang dipakai Laravel Horizon / queue. Pola sama dengan DB Agent & App Log Agent: `POST` + header `X-API-Key`, JSON body, error code eksplisit.
 
 | | n8n (Tyas VPS) | n9n (Merdian VPS) |
 |--|----------------|-------------------|
@@ -25,7 +25,6 @@ Webhook n8n/n9n; pola sama DB Agent & App Log Agent: `POST` + header `X-API-Key`
 | Env API key | `DB_DEBUG_API_KEY` | `DB_DEBUG_API_KEY_MERDIAN` (fallback `DB_DEBUG_API_KEY`) |
 
 **Dilarang:** operasi write Redis lewat agent; hardcode API key / password di chat atau commit; mengandalkan password dari screenshot OCR (harus dari `.env` server).
-**Jangan** pakai script lokal untuk Redis — HTTP POST langsung saja.
 
 ---
 
@@ -98,6 +97,35 @@ redis-cli -h 172.18.0.1 -p 6379 -a "$PASS" --no-auth-warning PING
 ```
 
 **Catatan keamanan:** `172.18.0.1` hanya reachable dari Docker bridge host itu; tetap wajib `requirepass`. Jangan bind `0.0.0.0`.
+
+### 2.1b Password file untuk ZCARD (+ optional helper script)
+
+Node Redis n8n tidak support `ZCARD`. Agent memakai Code node yang baca:
+
+| Path di container | Isi |
+|-------------------|-----|
+| `/files/redis-agent.pass` | `REDIS_PASSWORD` (chmod 600, owner node uid 1000) |
+
+Host path: `/var/www/n8n-compose/local-files/redis-agent.pass` (volume `./local-files:/files`).
+
+```bash
+# Tyas/staging
+PASS=$(grep '^REDIS_PASSWORD=' /var/www/api/staging-olshoperp/.env | cut -d= -f2-)
+# Merdian: /var/www/merdian/olshoperp/.env
+printf '%s\n' "$PASS" > /var/www/n8n-compose/local-files/redis-agent.pass
+chown 1000:1000 /var/www/n8n-compose/local-files/redis-agent.pass
+chmod 600 /var/www/n8n-compose/local-files/redis-agent.pass
+```
+
+Di `compose.yaml` service `n8n`, wajib:
+
+```yaml
+- NODE_FUNCTION_ALLOW_BUILTIN=fs,net
+```
+
+(supaya Code node boleh `require('fs')` / `require('net')` — tanpa ini ZCARD gagal di runner). Lalu `docker compose up -d n8n`.
+
+Optional helper (debug manual): `/files/redis-zcard.js` — `node /files/redis-zcard.js 'queues:…:reserved'`.
 
 ### 2.2 Credential n8n / n9n
 
@@ -186,8 +214,8 @@ Full URL:
 | Field | Wajib | Keterangan |
 |-------|-------|------------|
 | `server` | ya | n8n: `tyas` \| `staging` · n9n: `merdian` |
-| `operation` | ya | alias `op` — hanya `get` \| `keys` \| `info` \| `llen` |
-| `key` | untuk `get` | nama key penuh |
+| `operation` | ya | alias `op` — hanya `get` \| `keys` \| `info` \| `llen` \| `zcard` |
+| `key` | untuk `get` / `zcard` | nama key penuh (`zcard` juga terima `list` sebagai alias) |
 | `keyPattern` / `pattern` | untuk `keys` | pola Redis `KEYS` |
 | `list` / `key` | untuk `llen` | nama list |
 | `keyType` | opsional (`get`) | di node saat ini fixed `automatic` |
@@ -200,9 +228,12 @@ Full URL:
 | `keys` | List key by pattern (**tanpa** values) |
 | `info` | `INFO` server |
 | `llen` | Panjang list |
+| `zcard` | Cardinality sorted set (mis. `queues:{name}:reserved`) |
 | `delete` `set` `incr` `pop` `push` `publish` | **`WRITE_FORBIDDEN`** (HTTP 400) |
 
-Lapisan keamanan: (1) Guard Code, (2) hanya node read di canvas, (3) idealnya Redis ACL read-only di server (belum wajib).
+Lapisan keamanan: (1) Guard Code, (2) hanya node read di canvas (+ ZCard RESP read-only), (3) idealnya Redis ACL read-only di server (belum wajib).
+
+**Catatan `zcard`:** node Redis n8n bawaan **tidak** punya ZCARD. Workflow memakai Code node + RESP TCP ke `172.18.0.1:6379`, password dari `/files/redis-agent.pass`. Butuh env compose `NODE_FUNCTION_ALLOW_BUILTIN=fs,net` (sudah dipasang di Tyas & Merdian).
 
 ### 3.4 Contoh curl
 
@@ -217,11 +248,17 @@ curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-redis-tyas" \
   -H "X-API-Key: ${DB_DEBUG_API_KEY}" \
   -d '{"server":"staging","operation":"keys","keyPattern":"olshoperp_horizon:snapshot:*"}'
 
-# Tyas — panjang antrean production
+# Tyas — panjang antrean production (list pending)
 curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-redis-tyas" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: ${DB_DEBUG_API_KEY}" \
   -d '{"server":"tyas","operation":"llen","list":"queues:olshoperp_production"}'
+
+# Tyas — reserved (sorted set)
+curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-redis-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: ${DB_DEBUG_API_KEY}" \
+  -d '{"server":"tyas","operation":"zcard","key":"queues:olshoperp_production:reserved"}'
 
 # Tyas — INFO
 curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-redis-tyas" \
@@ -250,6 +287,7 @@ curl -sS -X POST "https://n9n.olshoperp.com/webhook/agent-redis-merdian" \
 ```
 
 `llen` contoh: `"data": { "queues:olshoperp_production": 0 }`.  
+`zcard` contoh: `"data": { "queues:olshoperp_production:reserved": 0 }`.  
 `get` contoh: `"data": { "value": … }`.  
 `info`: objek hasil parse INFO (versi, memory, clients, …).
 
@@ -274,7 +312,8 @@ Setelah deploy/activate:
 1. Write deny: `operation=set` → `WRITE_FORBIDDEN` (cepat, &lt;1s).
 2. `operation=info` → `status=success` (&lt;2s). Jika hang &gt;15s: cek user credential = `default`, password dari `.env`, bind `172.18.0.1`, TCP dari container.
 3. `llen` ke `queues:{REDIS_QUEUE}` env itu → success (angka boleh 0).
-4. `keys` `olshoperp_horizon:*` atau `olshoperp_horizon:snapshot:*` → success (list boleh kosong di Merdian jika belum ada snapshot).
+4. `zcard` ke `queues:{REDIS_QUEUE}:reserved` → success (angka boleh 0).
+5. `keys` `olshoperp_horizon:*` atau `olshoperp_horizon:snapshot:*` → success (list boleh kosong di Merdian jika belum ada snapshot).
 
 ---
 
@@ -298,9 +337,11 @@ Setelah deploy/activate:
 {"server":"staging","operation":"keys","keyPattern":"olshoperp_horizon:supervisor:*"}
 {"server":"staging","operation":"keys","keyPattern":"olshoperp_horizon:metrics:*"}
 {"server":"tyas","operation":"llen","list":"queues:olshoperp_production"}
-{"server":"tyas","operation":"llen","list":"queues:olshoperp_production:reserved"}
+{"server":"tyas","operation":"zcard","key":"queues:olshoperp_production:reserved"}
 {"server":"staging","operation":"get","key":"olshoperp_horizon:<id-job>"}
 ```
+
+Pending = list (`llen`) · reserved/delayed Horizon = sorted set (`zcard`).
 
 Ini **bukan** pengganti dashboard `/horizon` (auth session). Untuk metrik time-series penuh tetap butuh snapshot Horizon + UI, atau `get` key metrik spesifik.
 
@@ -311,11 +352,11 @@ Ini **bukan** pengganti dashboard `/horizon` (auth session). Untuk metrik time-s
 SoT: `olshoperp/docs/infra/agent-redis.md`.
 File ini: salinan agent-facing di `olshoperp-docs/agent-redis/README.md`.
 
-Setelah ubah SoT di repo developer:
+Setelah ubah SoT:
 
 ```bash
 cp docs/infra/agent-redis.md ../olshoperp-docs/agent-redis/README.md
-# sesuaikan frontmatter source_of_truth; commit per repo jika diminta
+# sesuaikan frontmatter sync_to bila perlu; commit di masing-masing repo sesuai permintaan user
 ```
 
-Index terkait (developer): `docs/infra/README.md`, skill `.cursor/skills/n8n-olshoperp/SKILL.md`.
+Index terkait: `docs/infra/README.md`, skill `.cursor/skills/n8n-olshoperp/SKILL.md`.

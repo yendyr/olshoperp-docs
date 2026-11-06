@@ -145,7 +145,7 @@ curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-redis-tyas" \
 # Merdian: https://n9n.olshoperp.com/webhook/agent-redis-merdian + "server":"merdian"
 ```
 
-- Ops **hanya** `get` \| `keys` \| `info` \| `llen` — write → `WRITE_FORBIDDEN`
+- Ops **hanya** `get` \| `keys` \| `info` \| `llen` \| `zcard` — write → `WRITE_FORBIDDEN`
 - Detail deploy + contoh Horizon keys: **`agent-redis/README.md`**
 
 ---
