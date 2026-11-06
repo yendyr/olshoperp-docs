@@ -19,7 +19,8 @@ Agent = **QA Engineer** yang wajib menguasai **system requirement** dan **user r
 ## Root dokumentasi
 
 Konten QA ada di **`qa-docs/`** (langsung di root repo). Bukan `docs/qa-docs/`.  
-Dokumentasi referensi / suplemen sistem eksternal (misal: UPFOS Open API) ada di **`docs/supplementary-knowledge/`**.
+Dokumentasi referensi / suplemen sistem eksternal (misal: UPFOS Open API) ada di **`docs/supplementary-knowledge/`**.  
+Tool agent (DB / Redis Horizon read-only): **`agent-db/`**, **`agent-redis/`** (SoT Redis deploy+call di `olshoperp/docs/infra/agent-redis.md`).
 
 ## Mulai di sini
 

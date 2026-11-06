@@ -133,6 +133,21 @@ curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-db-tyas" \
 → Baca: `tests/DATA-VERIFICATION.md` · rule docs `19-database-data-verification.mdc` ·
 SoT teknis `olshoperp/.cursor/rules/19-database-debugger.mdc`
 
+### H2. "Cek antrean / metric Horizon di Redis" (read-only)
+
+```bash
+# Staging/Tyas — n8n; Merdian — n9n. Auth sama DB Agent (DB_DEBUG_API_KEY*).
+curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-redis-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $DB_DEBUG_API_KEY" \
+  -d '{"server":"staging","operation":"llen","list":"queues:olshoperp_staging"}'
+# Tyas: "server":"tyas" + list queues:olshoperp_production
+# Merdian: https://n9n.olshoperp.com/webhook/agent-redis-merdian + "server":"merdian"
+```
+
+- Ops **hanya** `get` \| `keys` \| `info` \| `llen` — write → `WRITE_FORBIDDEN`
+- Detail deploy + contoh Horizon keys: **`agent-redis/README.md`**
+
 ---
 
 ## Kalau TC-nya dijalankan manual (bukan Playwright)
