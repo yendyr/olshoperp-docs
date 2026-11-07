@@ -1,7 +1,7 @@
 ---
 doc_type: agent-redis
-version: 1.1
-last_updated: 2026-11-06
+version: 1.2
+last_updated: 2026-11-07
 owner: Platform / DevOps
 source_of_truth: olshoperp/docs/infra/agent-redis.md
 ---
@@ -214,10 +214,14 @@ Full URL:
 | Field | Wajib | Keterangan |
 |-------|-------|------------|
 | `server` | ya | n8n: `tyas` \| `staging` · n9n: `merdian` |
-| `operation` | ya | alias `op` — hanya `get` \| `keys` \| `info` \| `llen` \| `zcard` |
-| `key` | untuk `get` / `zcard` | nama key penuh (`zcard` juga terima `list` sebagai alias) |
+| `operation` | ya | alias `op` — `get` \| `keys` \| `info` \| `llen` \| `zcard` \| `zrangebyscore` |
+| `key` | untuk `get` / `zcard` / `zrangebyscore` | nama key penuh (juga terima `list` sebagai alias) |
 | `keyPattern` / `pattern` | untuk `keys` | pola Redis `KEYS` |
 | `list` / `key` | untuk `llen` | nama list |
+| `min` / `max` | opsional (`zrangebyscore`) | default `-inf` / `+inf` |
+| `withscores` / `withScores` | opsional (`zrangebyscore`) | default `true` |
+| `offset` | opsional (`zrangebyscore`) | default `0` |
+| `count` / `limit` | opsional (`zrangebyscore`) | default `100`, max `500` |
 | `keyType` | opsional (`get`) | di node saat ini fixed `automatic` |
 
 ### 3.3 Operasi yang diizinkan vs ditolak
@@ -229,11 +233,12 @@ Full URL:
 | `info` | `INFO` server |
 | `llen` | Panjang list |
 | `zcard` | Cardinality sorted set (mis. `queues:{name}:reserved`) |
+| `zrangebyscore` | Baca member sorted set by score range (+ optional WITHSCORES / LIMIT) |
 | `delete` `set` `incr` `pop` `push` `publish` | **`WRITE_FORBIDDEN`** (HTTP 400) |
 
-Lapisan keamanan: (1) Guard Code, (2) hanya node read di canvas (+ ZCard RESP read-only), (3) idealnya Redis ACL read-only di server (belum wajib).
+Lapisan keamanan: (1) Guard Code, (2) hanya node read di canvas (+ ZCard / ZRangeByScore RESP read-only), (3) idealnya Redis ACL read-only di server (belum wajib).
 
-**Catatan `zcard`:** node Redis n8n bawaan **tidak** punya ZCARD. Workflow memakai Code node + RESP TCP ke `172.18.0.1:6379`, password dari `/files/redis-agent.pass`. Butuh env compose `NODE_FUNCTION_ALLOW_BUILTIN=fs,net` (sudah dipasang di Tyas & Merdian).
+**Catatan `zcard` / `zrangebyscore`:** node Redis n8n bawaan **tidak** punya perintah ini. Workflow memakai Code node + RESP TCP ke `172.18.0.1:6379`, password dari `/files/redis-agent.pass`. Butuh env compose `NODE_FUNCTION_ALLOW_BUILTIN=fs,net` (sudah dipasang di Tyas & Merdian).
 
 ### 3.4 Contoh curl
 
@@ -254,11 +259,17 @@ curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-redis-tyas" \
   -H "X-API-Key: ${DB_DEBUG_API_KEY}" \
   -d '{"server":"tyas","operation":"llen","list":"queues:olshoperp_production"}'
 
-# Tyas — reserved (sorted set)
+# Tyas — reserved count (sorted set)
 curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-redis-tyas" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: ${DB_DEBUG_API_KEY}" \
   -d '{"server":"tyas","operation":"zcard","key":"queues:olshoperp_production:reserved"}'
+
+# Tyas — reserved members by score (WITHSCORES, max 20)
+curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-redis-tyas" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: ${DB_DEBUG_API_KEY}" \
+  -d '{"server":"tyas","operation":"zrangebyscore","key":"queues:olshoperp_production:reserved","min":"-inf","max":"+inf","count":20}'
 
 # Tyas — INFO
 curl -sS -X POST "https://n8n.olshoperp.com/webhook/agent-redis-tyas" \
@@ -288,6 +299,21 @@ curl -sS -X POST "https://n9n.olshoperp.com/webhook/agent-redis-merdian" \
 
 `llen` contoh: `"data": { "queues:olshoperp_production": 0 }`.  
 `zcard` contoh: `"data": { "queues:olshoperp_production:reserved": 0 }`.  
+`zrangebyscore` contoh:
+
+```json
+{
+  "key": "queues:olshoperp_production:reserved",
+  "min": "-inf",
+  "max": "+inf",
+  "withscores": true,
+  "offset": 0,
+  "count": 20,
+  "returned": 1,
+  "items": [{ "member": "{…payload…}", "score": "1730000000" }]
+}
+```
+
 `get` contoh: `"data": { "value": … }`.  
 `info`: objek hasil parse INFO (versi, memory, clients, …).
 
@@ -313,7 +339,8 @@ Setelah deploy/activate:
 2. `operation=info` → `status=success` (&lt;2s). Jika hang &gt;15s: cek user credential = `default`, password dari `.env`, bind `172.18.0.1`, TCP dari container.
 3. `llen` ke `queues:{REDIS_QUEUE}` env itu → success (angka boleh 0).
 4. `zcard` ke `queues:{REDIS_QUEUE}:reserved` → success (angka boleh 0).
-5. `keys` `olshoperp_horizon:*` atau `olshoperp_horizon:snapshot:*` → success (list boleh kosong di Merdian jika belum ada snapshot).
+5. `zrangebyscore` ke key yang sama → success (`items` boleh `[]`).
+6. `keys` `olshoperp_horizon:*` atau `olshoperp_horizon:snapshot:*` → success (list boleh kosong di Merdian jika belum ada snapshot).
 
 ---
 
@@ -338,10 +365,11 @@ Setelah deploy/activate:
 {"server":"staging","operation":"keys","keyPattern":"olshoperp_horizon:metrics:*"}
 {"server":"tyas","operation":"llen","list":"queues:olshoperp_production"}
 {"server":"tyas","operation":"zcard","key":"queues:olshoperp_production:reserved"}
+{"server":"tyas","operation":"zrangebyscore","key":"queues:olshoperp_production:reserved","count":20}
 {"server":"staging","operation":"get","key":"olshoperp_horizon:<id-job>"}
 ```
 
-Pending = list (`llen`) · reserved/delayed Horizon = sorted set (`zcard`).
+Pending = list (`llen`) · reserved/delayed Horizon = sorted set (`zcard` / `zrangebyscore`).
 
 Ini **bukan** pengganti dashboard `/horizon` (auth session). Untuk metrik time-series penuh tetap butuh snapshot Horizon + UI, atau `get` key metrik spesifik.
 
@@ -349,8 +377,8 @@ Ini **bukan** pengganti dashboard `/horizon` (auth session). Untuk metrik time-s
 
 ## 7. Sync dari SoT developer
 
-SoT: `olshoperp/docs/infra/agent-redis.md`.
-File ini: salinan agent-facing di `olshoperp-docs/agent-redis/README.md`.
+SoT file ini: `olshoperp/docs/infra/agent-redis.md`.  
+Salinan agent-facing: `olshoperp-docs/agent-redis/README.md`.
 
 Setelah ubah SoT:
 
