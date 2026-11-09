@@ -11,13 +11,14 @@ Route: `/businessdevelopment/sales-order-general`
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **SoT:** busdev SO General v1.0 + Fulfillment Mode TO-BE  
-**User-guide:** v1.8 · `source_version` 3.10  
-**Version (3 layer):** 3.10 · **Last updated:** 2026-11-05 16:55
+**User-guide:** v1.9 · `source_version` 3.11  
+**Version (3 layer):** 3.11 · **Last updated:** 2026-11-09 09:30
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.11 | 2026-11-09 09:30 | Export All: dua export dengan judul file sama sekarang tersimpan sebagai file terpisah, tidak saling menimpa. Contoh saran nama file mengikuti yang tampil di layar (Sales Order General - ...) (ETM-16769) |
 | 3.10 | 2026-11-05 16:55 | Void atau Void & Recreate pada order yang masih di Wave (belum diambil) mengeluarkan order dari Wave dan mengembalikan stok yang ditahan supaya bisa dijual lagi. Void setelah barang diambil tetap seperti semula (ETM-17110) |
 | 3.9 | 2026-11-05 15:06 | Export All (With Details dan Without Details) wajib isi judul file di dialog Export File Name sebelum unduh. Nama itu yang tampil di riwayat export dan jadi nama file. Export Active Page Only tetap langsung, tanpa dialog (ETM-16768) |
 | 3.8 | 2026-11-05 14:55 | Import Non-Processed: beberapa order dengan SKU yang sama di satu unggahan tidak lagi gagal stok hanya karena proses berjalan bersamaan pada batch masuk yang sama. Sistem mengunci baris stok lalu memakai batch berikutnya yang masih ada (ETM-17081) |

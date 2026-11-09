@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 1.8
-last_updated: 2026-11-05
+version: 1.9
+last_updated: 2026-11-09
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.10
+source_version: 3.11
 owner: QA - Yemima
 status: review
 ---
@@ -147,10 +147,11 @@ Ikuti Point of Sales. Jalur Non-Processed penuh dari POS = requirement berikutny
 ### E. Export All
 
 1. Klik **Export All** → **With Details** atau **Without Details**.
-2. Di dialog **Export File Name**, isi atau ubah **File name**. Saran sudah terisi, misalnya `Dev - Sales Order - With Details Export 05-11-2026_15.06.00` (paling banyak 150 karakter).
+2. Di dialog **Export File Name**, isi atau ubah **File name**. Saran sudah terisi, misalnya `Sales Order General - With Details Export 05-11-2026_15.06.00` (paling banyak 150 karakter).
 3. Klik **Export**. Kalau nama kosong, muncul **File name is required.**
 4. File yang terunduh memakai nama itu. Nama yang sama tampil di riwayat export.
-5. **Export Active Page Only** tidak membuka dialog.
+5. Dua export dengan judul yang sama tetap jadi dua file terpisah. Masing-masing baris riwayat mengunduh datanya sendiri.
+6. **Export Active Page Only** tidak membuka dialog.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -166,7 +167,7 @@ Ikuti Point of Sales. Jalur Non-Processed penuh dari POS = requirement berikutny
 - Kalau harga jual sebelum pajak di bawah **Benchmark COGS**, order bisa punya Error Flag **Below Benchmark COGS** dan tidak ikut auto-approve — **approve manual tetap boleh**. Tanda itu mengikuti data baris SKU (snapshot); ubah master COGS tidak mengubah order lama sampai baris detail diganti.  
 - Harga `10000.6789` dengan qty 1.000 harus tampil **Rp 10.000.678,90**, bukan ratusan miliar. Lebih dari 4 angka di belakang koma ditolak.  
 - Dua baris pecahan **AKRCHRU** (qty 3, harga `3333.3333`) dan **AKRKAS** (qty 3, harga `6666.6667`) jumlahnya pas Rp 30.000, jadi pesanan itu lolos. Kalau total baris dan total pesanan beda, unggahan order itu gagal.
-- Kalau **Export** di dialog **Export File Name** ditolak, isi judul dulu. Contoh `Laporan SO 05/11` tersimpan `Laporan SO 05-11`.
+- Kalau **Export** di dialog **Export File Name** ditolak, isi judul dulu. Contoh `Laporan SO 05/11` tersimpan `Laporan SO 05-11`. Dua export dengan judul sama tetap dua file terpisah; masing-masing baris riwayat mengunduh datanya sendiri.
 - **Void saat order masih di antrian gudang:** stok yang ditahan kembali bisa dijual, sebesar jumlah yang dilepas. Order tidak lagi ada di antrian itu.
 
 ---

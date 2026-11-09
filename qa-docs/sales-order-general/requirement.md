@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.10
-last_updated: 2026-11-05
+version: 3.11
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -19,7 +19,7 @@ aliases: [SO General, Dev Sales Order, sales order general, SO internal, import 
 
 Window gabungan: [All Sales Order](../all-sales-order/requirement.md). Platform independen: [Dev - Sales Platform](../omni-sales-platform/requirement.md).  
 Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).  
-**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (OC/OD SO → SI) · [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) · [ETM-17055](https://erpintegration.atlassian.net/browse/ETM-17055) (desimal, presisi, pembulatan import) · [ETM-17081](https://erpintegration.atlassian.net/browse/ETM-17081) (alokasi stok Import Non-Processed aman saat proses bersamaan) · [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) (judul file Export All) · [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110) (void di Wave melepas reserved)
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (OC/OD SO → SI) · [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) · [ETM-17055](https://erpintegration.atlassian.net/browse/ETM-17055) (desimal, presisi, pembulatan import) · [ETM-17081](https://erpintegration.atlassian.net/browse/ETM-17081) (alokasi stok Import Non-Processed aman saat proses bersamaan) · [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) (judul file Export All) · [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110) (void di Wave melepas reserved) · [ETM-16769](https://erpintegration.atlassian.net/browse/ETM-16769) (judul file Export All, Dev - Sales Order)
 
 ---
 
@@ -27,6 +27,7 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.11 | 2026-11-09 | QA - Yemima | Export All: setiap export disimpan terpisah per export, jadi dua export dengan judul sama tidak saling menimpa file. GAP-SOG-16 Closed. Contoh saran nama file disesuaikan dengan layar (ETM-16769, ETM-16768) |
 | 3.10 | 2026-11-05 | QA - Yemima | TO-BE §7.5 / §6.7: Void atau Void & Recreate saat SO masih di Wave (belum picking) menghapus detail Wave, reserved turun, available naik, SO keluar dari Wave. Jalur void setelah picking tidak diganti (ETM-17110) |
 | 3.9 | 2026-11-05 | QA - Yemima | Export All With/Without Details wajib judul file (dialog **Export File Name**); nama kosong ditolak; nama bersih jadi file unduhan dan baris riwayat. Export Active Page Only tanpa dialog. GAP-SOG-16 Open (ETM-16768) |
 | 3.8 | 2026-11-05 | QA - Yemima | Import Non-Processed: beberapa order SKU sama yang diproses bersamaan tetap berhasil jika stok gudang cukup; kunci baris stok lalu ambil batch masuk FIFO berikutnya (ETM-17081) |
@@ -326,17 +327,18 @@ ATS = On Hand − Outstanding SO − Reserved Out (recalculate async).
 
 Void setelah picking tidak memakai baris ini: stok mengikuti jalur void setelah pengambilan barang. Pembersihan Wave hanya terjadi sebelum jalur itu, dan tidak menggantikannya. Aturan pintu void (platform dan general) ada di [Dev - Sales Platform §5.8](../omni-sales-platform/requirement.md).
 
-### 6.8 Export All — judul file wajib (AS-IS · ETM-16768)
+### 6.8 Export All — judul file wajib (AS-IS · ETM-16768, ETM-16769)
 
 **Export All** dengan **With Details** atau **Without Details** tidak langsung mengunduh. Sistem membuka dialog **Export File Name**.
 
 | Elemen | Aturan |
 |--------|--------|
-| Field **File name** | Wajib. Maks. 150 karakter. Placeholder **Enter file name**. Terisi saran, contoh `Dev - Sales Order - With Details Export 05-11-2026_15.06.00` (pola nama menu + **With Details Export** atau **Without Details Export** + tanggal-jam `dd-mm-yyyy_HH.MM.SS`) |
+| Field **File name** | Wajib. Maks. 150 karakter. Placeholder **Enter file name**. Terisi saran, contoh `Sales Order General - With Details Export 05-11-2026_15.06.00` (pola **Sales Order General** + **With Details Export** atau **Without Details Export** + tanggal-jam `dd-mm-yyyy_HH.MM.SS`) |
 | Tombol **Export** | Jalankan export memakai nama itu |
 | Nama kosong | Ditolak di dialog dan di backend: **File name is required.** File tidak dibuat |
 | Pembersihan | Karakter yang tidak boleh di nama file (kurang-dari, lebih-dari, titik dua, kutip, garis miring, garis miring terbalik, garis tegak, tanda tanya, bintang) diganti tanda minus. Spasi berlebih jadi satu spasi. Hasil dipotong 150 karakter |
 | Unduhan | Nama bersih itu menjadi nama file: `.xlsx` untuk satu bagian, `.zip` bila export dipecah beberapa bagian |
+| Judul sama | Dua export dengan judul sama tetap tersimpan sebagai file terpisah. Masing-masing baris riwayat mengunduh datanya sendiri, tidak saling menimpa |
 | Riwayat export | File tercantum dengan nama itu. Kolom aksi mengikuti tipe export (**With Details** / **Without Details**), bukan diurai dari nama file |
 | **Export Active Page Only** | Tetap export langsung, tanpa dialog ini |
 
@@ -412,8 +414,9 @@ Jangan menyamakan Closed dengan Void di docs atau UI.
 |---|---|---|
 | 40 | Export All With/Without Details, **File name** kosong setelah dibersihkan | Tolak. Pesan **File name is required.** (dialog dan backend). File tidak dibuat |
 | 41 | **File name** terisi | Nama bersih (maks. 150) jadi nama file unduhan dan baris riwayat export |
+| 42 | Dua export berjudul sama | Disimpan terpisah per export; unduhan tiap baris riwayat berisi datanya sendiri |
 
-**Export Active Page Only** tidak memakai aturan 40–41.
+**Export Active Page Only** tidak memakai aturan 40–42.
 
 ---
 
@@ -498,7 +501,7 @@ Kanonik: [Benchmark COGS §6.5](../accounting-product-benchmark-price/requiremen
 | GAP-SOG-13 | Sheet 2 `Other Cost/Disc Code`: jika kode ada di Other Cost **dan** Other Discount, AS-IS pilih cost diam-diam; TO-BE order harus gagal import + pesan ambigu | Order bisa dapat cost padahal user maksud discount (atau sebaliknya); data keuangan salah tanpa sinyal | Open (TO-BE fix) |
 | GAP-SOG-14 | Error Flag Below Benchmark COGS (icon/tooltip/filter/detail) — shared dengan Platform/ASO; spec kanonik GAP-BM-13 | Ops sulit filter under-COGS di list General | Open (TO-BE) |
 | GAP-SOG-15 | Snapshot Benchmark COGS = effective Manual COGS (GAP-BM-14 consumer) | Capture masih rumus mentah | Open (TO-BE) |
-| GAP-SOG-16 | Nama file export sama bisa saling menimpa file (belum unik per export) — [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) | Dua export berjudul sama belum dijamin file-nya terpisah | Open |
+| GAP-SOG-16 | Nama file export sama bisa saling menimpa file (belum unik per export) — [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) — ditutup 2026-11-09: file disimpan per export (ETM-16769) | Dua export berjudul sama belum dijamin file-nya terpisah | Closed |
 
 ---
 
