@@ -1,17 +1,14 @@
 ---
 doc_type: agent-redis
-version: 1.2
-last_updated: 2026-11-07
+version: 1.3
+last_updated: 2026-11-09
 owner: Platform / DevOps
-source_of_truth: olshoperp/docs/infra/agent-redis.md
+sync_to: olshoperp-docs/agent-redis/README.md
 ---
 
 # Agent Redis — Horizon metrics (read-only)
 
-Untuk agent yang **direct POST** ke webhook Redis Agent — read-only (Horizon / queue metrics).
-SoT deploy+ops: `olshoperp/docs/infra/agent-redis.md` (salinan ini di-sync ke sini).
-
-Webhook n8n/n9n; pola sama DB Agent ke Redis yang dipakai Laravel Horizon / queue. Pola sama dengan DB Agent & App Log Agent: `POST` + header `X-API-Key`, JSON body, error code eksplisit.
+Webhook n8n/n9n untuk agentic **read-only** ke Redis yang dipakai Laravel Horizon / queue. Pola sama dengan DB Agent & App Log Agent: `POST` + header `X-API-Key`, JSON body, error code eksplisit.
 
 | | n8n (Tyas VPS) | n9n (Merdian VPS) |
 |--|----------------|-------------------|
@@ -23,6 +20,8 @@ Webhook n8n/n9n; pola sama DB Agent ke Redis yang dipakai Laravel Horizon / queu
 | Redis credential | `Redis Tyas Staging RO` | `Redis Merdian RO` |
 | Header Auth | sama DB Agent Tyas | sama DB Agent Merdian |
 | Env API key | `DB_DEBUG_API_KEY` | `DB_DEBUG_API_KEY_MERDIAN` (fallback `DB_DEBUG_API_KEY`) |
+
+**Mirror QA/docs:** [`olshoperp-docs/agent-redis/README.md`](../../../olshoperp-docs/agent-redis/README.md) (sibling repo).
 
 **Dilarang:** operasi write Redis lewat agent; hardcode API key / password di chat atau commit; mengandalkan password dari screenshot OCR (harus dari `.env` server).
 
@@ -97,6 +96,65 @@ redis-cli -h 172.18.0.1 -p 6379 -a "$PASS" --no-auth-warning PING
 ```
 
 **Catatan keamanan:** `172.18.0.1` hanya reachable dari Docker bridge host itu; tetap wajib `requirepass`. Jangan bind `0.0.0.0`.
+
+### 2.1a Systemd: Redis setelah Docker (wajib di Tyas & Merdian)
+
+**Masalah:** Setelah reboot terjadwal (~Minggu 01:00), `redis-server` sering start **sebelum** Docker bridge `172.18.0.1` ada → `bind: Cannot assign requested address` → exit 1 → `StartLimit` systemd → Redis mati sampai di-start manual. Horizon/queue/agent Redis ikut down.
+
+**Perbaikan:** drop-in unit — tunggu `docker.service`, plus `Restart=on-failure` dengan limit lebih longgar. **Tidak** mengubah `redis.conf`.
+
+Lakukan di **kedua** VPS (Tyas `76.13.184.23`, Merdian `187.52.127.149`).
+
+```bash
+# 1) Cek kondisi sekarang
+systemctl is-active redis-server
+systemctl is-active docker
+ip -4 addr show | grep 172.18.0.1
+grep '^bind' /etc/redis/redis.conf
+# harus: bind 127.0.0.1 172.18.0.1 -::1
+
+# 2) Drop-in
+mkdir -p /etc/systemd/system/redis-server.service.d
+cat > /etc/systemd/system/redis-server.service.d/wait-docker.conf <<'EOF'
+[Unit]
+# Tunggu Docker (bridge 172.18.0.1) sebelum Redis bind
+After=network-online.target docker.service docker.socket
+Wants=network-online.target docker.service
+
+[Service]
+# Kalau gagal (bind address belum ada), coba lagi
+Restart=on-failure
+RestartSec=10
+
+# Default systemd terlalu ketat (5x cepat → stop permanen)
+StartLimitIntervalSec=300
+StartLimitBurst=30
+EOF
+
+# 3) Apply + verifikasi
+systemctl daemon-reload
+systemctl cat redis-server | sed -n '1,80p'
+systemctl restart redis-server
+systemctl status redis-server --no-pager -l
+tail -20 /var/log/redis/redis-server.log
+# log harus: Ready to accept connections
+```
+
+**Tes opsional (simulasi race tanpa reboot penuh):**
+
+```bash
+systemctl stop docker
+systemctl start redis-server || true
+journalctl -u redis-server -n 20 --no-pager
+systemctl start docker
+sleep 15
+systemctl status redis-server --no-pager
+# Jika masih failed setelah Docker up:
+systemctl reset-failed redis-server
+systemctl start redis-server
+```
+
+**Catatan:** Setelah reboot, Redis boleh gagal 1–2x di awal; dengan drop-in ini harus recover sendiri setelah Docker membuat `172.18.0.1`. File drop-in: `/etc/systemd/system/redis-server.service.d/wait-docker.conf`.
 
 ### 2.1b Password file untuk ZCARD (+ optional helper script)
 
@@ -189,7 +247,7 @@ n8n menambah **Switch Server** (`tyas` / `staging`) sebelum switch op (satu cred
 
 ### 2.4 Setelah upgrade Redis / reinstall OS
 
-Ulangi §2.1 (bind). Credential & workflow biasanya tetap.
+Ulangi §2.1 (bind) **dan** §2.1a (drop-in systemd). Credential & workflow biasanya tetap.
 
 ---
 
@@ -350,6 +408,7 @@ Setelah deploy/activate:
 |--------|---------------|-----------|
 | Curl hang / 504 di op Redis; write deny tetap cepat | Password salah / user `""` → reconnectStrategy lama | User `default`; password dari `.env` server (hash-check vs clipboard) |
 | `ECONNREFUSED` 172.18.0.1:6379 dari container | Redis belum bind docker gateway | §2.1 |
+| Redis `inactive` / `failed` setelah reboot; log `bind: Cannot assign requested address` di `172.18.0.1` | Race: Redis start sebelum Docker bridge up → StartLimit | §2.1a (drop-in `wait-docker.conf`); sementara: `systemctl reset-failed redis-server && systemctl start redis-server` |
 | `INVALID_SERVER` | Body `server` salah host | n8n: tyas/staging; n9n: merdian |
 | Webhook 403 | API key salah | Pakai key Header Auth DB Agent instance itu |
 | Workflow inactive | Belum publish | Activate di UI / `activateWorkflow` MCP |
@@ -375,7 +434,7 @@ Ini **bukan** pengganti dashboard `/horizon` (auth session). Untuk metrik time-s
 
 ---
 
-## 7. Sync dari SoT developer
+## 7. Sync ke olshoperp-docs
 
 SoT file ini: `olshoperp/docs/infra/agent-redis.md`.  
 Salinan agent-facing: `olshoperp-docs/agent-redis/README.md`.
