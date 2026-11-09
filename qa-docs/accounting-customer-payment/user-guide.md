@@ -10,7 +10,7 @@ source_docs:
   - requirement.md
   - knowledge-base.md
   - technical.md
-source_version: 2.6
+source_version: 2.7
 ---
 
 # Account Receive — User Guide

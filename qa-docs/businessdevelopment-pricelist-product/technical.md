@@ -2,8 +2,8 @@
 doc_type: technical
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.6
-last_updated: 2026-11-05
+version: 1.7
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 related_docs:
@@ -23,7 +23,8 @@ related_docs:
 **TO-BE Sync + Manual stack on Update:** [ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884) · Applied Store Others Category: [ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882).  
 **TO-BE optimasi Update:** [ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002) — skip baris tidak berubah, satu log, chunk 500, penanda Last Update. Detail job: [Category technical §5](../businessdevelopment-category-price/technical.md). Poin 8 (baris turunan tidak disimpan) bukan perilaku ini.  
 **TO-BE filter Aktif:** [ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072) — datalist `show_archived`, pola sama `ProductController` index.  
-**TO-BE kolom Images:** [ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071) — FE wire `image_formatted` (BE column sudah ada).
+**AS-IS kolom Images:** [ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071) — FE `DataList` wire `image_formatted`.  
+**AS-IS Audit Log search:** [ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149) — `pricelistLogIndex` `filterColumn` untuk Platform / SKU / User; target respons &lt; 5 detik.
 
 ---
 
@@ -37,7 +38,7 @@ related_docs:
 | Log | old/new margin & final; Update from category id |
 | Category contains platform | TO-BE: drive Sync UI (bukan hanya `stores_count` produk) |
 | Last Update to Pricelist | TO-BE: penanda category = `updated_at` snapshot tier yang dipakai run, di-set di akhir batch meski 0 baris berubah. Tooltip header saat ini masih `MAX(log.updated_at)` tipe `update_to_pricelist` (GAP-CP-08) |
-| `image_formatted` | TO-BE ETM-17071: HTML thumbnail 100×100 dari `getImageProduct()`; kosong → `-` |
+| `image_formatted` | AS-IS ETM-17071: HTML thumbnail 100×100 dari `getImageProduct()`; kosong → `-` |
 
 **UI display (ETM-16883):** jika `!is_edited` → render User Set Margin sebagai `-` (nilai calc tetap di breakdown tooltip / dipakai Final).
 
@@ -79,7 +80,8 @@ Untuk tiap tier snapshot di Category:
 | Weight sync (16668) | After DnW default change → recalc calculated rows + log |
 | Filter Manual Margin (16861) | `is_edited` any category; Yes/No dropdown |
 | Datalist Aktif (17072) | `PricelistController::index()` dan `showRowDatatable($id)`: `where products.status = 1` hanya jika request `show_archived` bukan true (`boolean('show_archived')`). FE `DataList.vue` mengirim `show_archived=true` lewat DataTablesV3 (`is_show_archived`, `show_archived`, `whenShowArchived`). Default OFF = hanya Aktif |
-| Images (17071) | BE: `datatableColumns` → `image_formatted` + whitelist. FE: tambah kolom di `originColumns` **sebelum** `product_formatted` (`orderable: false`, `searchable: false`). Referensi UI: System Product DataList Images |
+| Images (17071) | **AS-IS** BE `image_formatted` + FE `DataList` kolom sebelum `product_formatted` (`orderable/searchable: false`) |
+| Audit Log search (17149) | **AS-IS** `pricelistLogIndex`: `filterColumn` Platform / SKU / User (+ Event/nominal); jaga query &lt; 5 detik |
 
 **Known behaviour (ETM-17072):** `updateBulkMarginPricelist` tetap hanya memproses produk Aktif (`status = 1`); tidak ikut switch. `export()` tetap `PricelistCategoryExport` (template category), tidak diubah.
 
@@ -99,9 +101,10 @@ Untuk tiap tier snapshot di Category:
 | G-08 | ETM-16883 FE `-` / tooltips; header Last Update harus baca penanda category (GAP-CP-08 / ETM-17002), bukan hanya log |
 | G-09 | ETM-16884 UpdateToPricelistJob preserve `is_edited` + stack formula; Sync by platform flag |
 | G-10 | Future: Others pricelist → SO Unit Price by store header |
-| G-11 | ETM-17071 FE kolom Images (`image_formatted`) |
+| G-11 | ETM-17071 Images — **Closed AS-IS** |
 | G-12 | ETM-17072 Show archived (sudah di BE/FE OTW DEV — verifikasi QA) |
 | G-13 | ETM-17002 skip-unchanged + satu log + chunk 500 (job di Category). Poin 8 bukan scope |
+| G-14 | ETM-17149 Audit Log Global Search — **Closed AS-IS** |
 
 ---
 

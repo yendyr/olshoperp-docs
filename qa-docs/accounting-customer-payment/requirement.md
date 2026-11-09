@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.6
+version: 2.7
 last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
@@ -14,12 +14,13 @@ status: review
 **UI route:** `/accounting/customer-payment`
 **Audience:** PM, Operations, QA, Support, Developer
 
-**Related Improvement:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) — COA deposit Credit Note ikut asal transaksi · Relates AP: [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761)
+**Related Improvement:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) — COA deposit Credit Note ikut asal transaksi · Relates AP: [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) · **[ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198)** (datalist memory / pagination)
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.7 | 2026-11-09 | QA - Yemima | **TO-BE** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198): datalist AR — hilangkan opsi 100 entries (maks 50), optimasi query/eager load, tooltip TRX. REF tidak boros memori |
 | 2.6 | 2026-11-09 | QA - Yemima | **AS-IS** [ETM-17102](https://erpintegration.atlassian.net/browse/ETM-17102): Select Invoice pada AR Draft/Open menambah baris Receiving Destination sebesar nilai invoice, dan section itu langsung menampilkan barisnya |
 | 2.5 | 2026-11-04 | QA - Yemima | Daftar Account Receive menampilkan kolom Description per dokumen; bisa dicari dan diurut, dan ikut di file ekspor termasuk Receive per tanggal ([ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)) |
 | 2.4 | 2026-10-26 | QA - Yemima | Klarifikasi final ETM-16764: stamp COA = setting by asal CN (bukan historis jurnal CN) |
@@ -124,6 +125,16 @@ Daftar Account Receive menampilkan kolom **Description**: teks deskripsi di head
 Ekspor daftar memuat kolom Description yang sama, termasuk berkas berjudul **Receive per tanggal** (heading `OlshopERP | Receive per {tanggal}`).
 
 [ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)
+
+#### Pagination & performa (TO-BE · ETM-17198)
+
+| Aturan | Detail |
+|--------|--------|
+| Opsi panjang halaman | **Maksimal 50** entries — opsi **100** dihapus dari datalist AR |
+| Load datalist | Query/eager load detail tidak boleh memicu *Allowed memory size exhausted* pada volume settlement besar |
+| Tooltip **TRX. REF** | Tidak me-load seluruh invoice detail berlebihan per baris |
+
+Saat card masih **To Do**, perilaku AS-IS production masih bisa error memori jika user menyimpan length=100 di LocalStorage.
 
 ## 5. How It Works
 
@@ -359,6 +370,7 @@ flowchart TB
 | GAP-AR-09 | Alur manual (create dokumen AR, insert Sales Invoice lewat modal Available Sales Invoice, bulk approve) belum punya sumber requirement tertulis, padahal sudah punya 9 test case aktif. | Missing Behavior | 9 TC berdiri tanpa acuan requirement | Open |
 | GAP-AR-SUMMARY-01 | Section Summary setelah Adjustment | Info total Piutang / Cash-Bank / CN / Adj / Total (header CCY; tanda Credit+/Debit−) | Belum ada di UI | **TO-BE** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) |
 | GAP-AR-CN-COA | CN Payment Source COA = setting by asal CN | Asal CN → field setting (SR → Deposit of Sales Return); bukan historis jurnal | Hardcode Customer's Deposit / store deposit on add/import | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) |
+| GAP-AR-MEM-01 | Datalist pagination 100 + eager load detail | Maks 50 entries; query/tooltip hemat memori | PHP memory exhausted @ 100 entries (prod) | **TO-BE** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) |
 
 ## 9. FAQ
 

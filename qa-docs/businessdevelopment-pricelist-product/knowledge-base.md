@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.6
-last_updated: 2026-11-05
+version: 1.7
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 aliases: [Pricelist Product, product pricelist, harga jual SKU, tier breakdown, Manual Margin, User Set Margin]
@@ -15,9 +15,13 @@ aliases: [Pricelist Product, product pricelist, harga jual SKU, tier breakdown, 
 
 Daftar harga jual per produk per **Category Price**. Angka besar = **Final Price**; angka kecil di bawah = **User Set Margin** (hanya jika kamu edit manual; kalau belum → tampil `-`).
 
-## Kolom Images (TO-BE ETM-17071)
+## Kolom Images (AS-IS ETM-17071)
 
 Kolom **Images** paling kiri di daftar — thumbnail produk sama seperti di System Product (kotak 100×100). Tidak ada gambar → tampil `-`. Tidak bisa di-sort / dicari lewat kolom ini.
+
+## Audit Log — Global Search (AS-IS ETM-17149)
+
+Di **Audit Log**, kotak Global Search bisa mencari Platform, System Product SKU, dan User (juga Event / angka harga). Cari sebagian kata atau exact — baris harus muncul. Muat tabel dan search harus cepat (&lt; 5 detik).
 
 ## Alur
 
@@ -87,6 +91,7 @@ Switch ini hanya mengubah isi daftar, bukan mengaktifkan kembali produk.
 | Margin Weight = 0 / skipped | Isi weight DnW **default** di System Product |
 | Mau daftar yang diedit manual | Advanced Filter **Manual Margin** Equals **Yes** |
 | SKU Non Aktif tidak muncul | Nyalakan **Show archived data** di toolbar. Default daftar hanya Aktif |
-| Tidak ada kolom Images | Fitur TO-BE ETM-17071 — selaras System Product |
+| Tidak ada kolom Images | Refresh / hard reload — kolom Images sudah AS-IS (ETM-17071) |
+| Global Search Audit Log kosong untuk Platform/SKU/User | Harusnya sudah jalan (ETM-17149). Coba kata lebih pendek; bila masih kosong → laporkan bug regresi |
 
 Detail: [requirement.md](./requirement.md)

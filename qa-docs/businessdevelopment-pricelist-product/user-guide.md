@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.6
-last_updated: 2026-11-05
+version: 1.7
+last_updated: 2026-11-09
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.6"
+source_version: "1.7"
 owner: QA - Yemima
 status: review
 ---
@@ -81,5 +81,9 @@ Perilakunya sama dengan switch yang sama di menu Product. Switch ini hanya mengu
 ## 8. Kolom Images (ETM-17071)
 
 Kolom **Images** di paling kiri daftar menampilkan thumbnail produk (sama System Product). Tanpa gambar → tanda `-`. Kolom ini tidak untuk sort atau search teks.
+
+## 9. Audit Log — cari Platform / SKU / User (ETM-17149)
+
+Buka **Audit Log**. Di Global Search, ketik nama platform, SKU produk, atau nama user — hasil harus muncul (boleh kata sebagian). Pencarian Event dan angka harga juga tetap jalan.
 
 Referensi: [knowledge-base.md](./knowledge-base.md) · [Category Price](../businessdevelopment-category-price/user-guide.md)

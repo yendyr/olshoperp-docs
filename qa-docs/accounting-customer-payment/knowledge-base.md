@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.6
+version: 2.7
 last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
@@ -16,6 +16,8 @@ audience: operator
 Menu **Account Receive** mencatat uang yang masuk dari customer dan mencocokkannya dengan tagihan (Sales Invoice) yang belum lunas. Satu dokumen bisa melunasi beberapa tagihan sekaligus.
 
 Di daftar, kolom **Description** menampilkan deskripsi header tiap dokumen. Kolom itu bisa dicari dan diurutkan, dan ikut tertulis di file ekspor daftar, termasuk **Receive per tanggal** ([ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)).
+
+**TO-BE (ETM-17198):** opsi tampil **100 baris** di daftar akan dihapus (maks **50**), supaya halaman tidak error memori saat dokumen settlement punya banyak detail.
 
 | Item | Nilai |
 |------|-------|

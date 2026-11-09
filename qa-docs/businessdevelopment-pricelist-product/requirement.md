@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.6
-last_updated: 2026-11-05
+version: 1.7
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16314](https://erpintegration.atlassian.net/browse/ETM-16314)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar F)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §5, §7–9  
-**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** (optimasi Update to Pricelist) · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (kolom Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data)
+**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** (optimasi Update to Pricelist) · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (kolom Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data) · **[ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149)** (Audit Log Global Search Platform/SKU/User)
 
 ---
 
@@ -21,6 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.7 | 2026-11-09 | **AS-IS** ETM-17071 kolom Images; **AS-IS** ETM-17149 Audit Log Global Search Platform / System Product SKU / User (+ performa < 5 detik) |
 | 1.6 | 2026-11-05 | **TO-BE** ETM-17002: cross-ref optimasi Update to Pricelist (lewati baris tidak berubah, satu log, Last Update level category, Sync 0 baris). Rumus Manual ETM-16884 tidak berubah |
 | 1.5 | 2026-11-05 | **TO-BE** ETM-17071: kolom Images paling kiri (UI & logic sama System Product) |
 | 1.4 | 2026-11-05 | **TO-BE** ETM-17072: default hanya produk Aktif + switch Show archived data (sama dengan menu Product) |
@@ -62,7 +63,8 @@ Calc Final tetap untuk Applied Store **NULL** / **Others** (ETM-16884).
 | A-14 | Applied Store Others/NULL: Final tetap terhitung; Sync row+header hide; Sync All hanya category ber-platform | **TO-BE** ETM-16884 |
 | A-15 | Update to Pricelist + Manual Price: Final = Default + User Set Margin + Category tier; cell margin tetap nilai user | **TO-BE** ETM-16884 |
 | A-16 | Datalist default hanya SKU status **Aktif**. Switch **Show archived data** di toolbar: ON = SKU **Non Aktif** ikut tampil; OFF lagi = disembunyikan. Perilaku sama dengan menu Product | **TO-BE** ETM-17072 |
-| A-17 | Kolom **Images** paling kiri (sebelum Product/SKU): thumbnail 100×100 dari `getImageProduct()`; kosong → `-` di box 100×100; non-orderable / non-searchable; UI & logic sama System Product | **TO-BE** ETM-17071 |
+| A-17 | Kolom **Images** paling kiri (sebelum Product/SKU): thumbnail 100×100 dari `getImageProduct()`; kosong → `-` di box 100×100; non-orderable / non-searchable; UI & logic sama System Product | **AS-IS** ETM-17071 |
+| A-18 | **Audit Log** Global Search bisa filter kolom Platform, System Product SKU, dan User (parsial & exact), selain Event/nominal yang sudah jalan; muat/search responsif **&lt; 5 detik** | **AS-IS** ETM-17149 |
 
 ---
 
@@ -90,7 +92,7 @@ Matching & percentage: final §2.2–2.5. Percentage dari **default price**; lal
 
 Kolom existing tetap (SKU/Name, Bound Stores, Default Price, Latest Sync, harga per store). Angka besar = **Final Price**; kecil di bawah = **User Set Margin**.
 
-### 4.0 Images (TO-BE · ETM-17071)
+### 4.0 Images (AS-IS · ETM-17071)
 
 | Item | Aturan |
 |------|--------|
@@ -101,6 +103,19 @@ Kolom existing tetap (SKU/Name, Bound Stores, Default Price, Latest Sync, harga 
 | UI | Box **100×100**, `object-cover`, `p-2`, `rounded-md` |
 | Kosong | Box 100×100 berisi `-` di tengah |
 | Sort / search | `orderable: false`, `searchable: false` |
+
+### 4.0b Audit Log — Global Search (AS-IS · ETM-17149)
+
+Global Search di modal/tabel **Audit Log** memfilter seluruh kolom yang tampil, termasuk yang dari relasi:
+
+| Kolom UI | Filter |
+|----------|--------|
+| Platform | `pricelist_category_name_formatted` via `whereHas` category name |
+| System Product SKU | `product_sku_formatted` via `whereHas` product sku |
+| User | `user_name_formatted` via `whereHas` user name/username |
+| Event / nominal | Sudah jalan sebelumnya |
+
+Parsial maupun exact match wajib menemukan baris. Pemuatan awal, pagination, dan search wajib **&lt; 5 detik**.
 
 ### 4.1 Weight
 
@@ -247,9 +262,10 @@ Master & band lengkap: final §7.
 | GAP-PL-07 | User Set Margin UI + tooltips | **TO-BE** ETM-16883 |
 | GAP-PL-08 | Sync platform-only + stack Manual on Update | **TO-BE** ETM-16884 |
 | GAP-PL-09 | Others → Unit Price SO by store header | Future (out of scope 16884) |
-| GAP-PL-10 | Kolom Images di datalist | **TO-BE** ETM-17071 (BE `image_formatted` sudah ada; FE wire kolom) |
+| GAP-PL-10 | Kolom Images di datalist | **Closed AS-IS** ETM-17071 (FE `image_formatted` wired) |
 | GAP-PL-11 | Default Aktif + Show archived | **TO-BE** ETM-17072 |
 | GAP-PL-12 | Last Update saat 0 baris berubah | Ikut [GAP-CP-08](../businessdevelopment-category-price/requirement.md): tooltip header masih dari log per baris |
+| GAP-PL-13 | Audit Log Global Search Platform/SKU/User | **Closed AS-IS** ETM-17149 (`filterColumn` + performa) |
 
 ---
 

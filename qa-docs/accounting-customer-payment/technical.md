@@ -2,7 +2,7 @@
 doc_type: technical
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.6
+version: 2.7
 last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
@@ -10,9 +10,10 @@ status: review
 
 # Account Receive — Technical
 
-**Behavior SoT:** [requirement.md](./requirement.md) v2.5  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.7  
 **Summary UI (TO-BE):** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644)  
-**CN deposit COA (TO-BE):** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)
+**CN deposit COA (TO-BE):** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)  
+**Datalist memory / pagination (TO-BE):** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) — max page length 50; trim eager load + TRX. REF tooltip
 
 ## 1. File Map
 
