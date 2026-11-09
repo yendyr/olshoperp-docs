@@ -3,11 +3,11 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-11-05T06:28:14Z'
+generated: '2026-11-09T03:32:56Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
 menu_count: 133
-alias_count: 834
+alias_count: 838
 ambiguous_count: 28
 aliases:
   3pl: supplychain-delivery-order
@@ -856,6 +856,7 @@ aliases:
   sr gudang: supplychain-sales-returns
   sr warehouse: supplychain-sales-returns
   ssm: omni-stock-shortage-monitoring
+  status restock: system-product
   stock acak: accounting-stock-remapping
   stock addition: supplychain-adjustment-addition
   stock addition approval: accounting-adjustment-inbound
@@ -1002,6 +1003,7 @@ aliases:
   transfer summary: omni-process-summary
   transfer void: supplychain-mutation-transfer-void
   trial balance: accounting-trial-balance
+  unable to delete product already has existing relations: system-product
   unassign wave: omni-unassign-wave
   unassign wave api: omni-unassign-wave
   unassign waves: omni-unassign-wave
@@ -1025,6 +1027,7 @@ aliases:
     by_slug:
       omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
       all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  update variant product: system-product
   upload order to wave and ship: omni-skip-wave-process
   upload skip wave: omni-skip-wave-process
   user (gate): gate-user
@@ -1064,6 +1067,7 @@ aliases:
       omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
       all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
   void transfer: supplychain-mutation-transfer-void
+  void wave reserved: omni-unassign-wave
   vp: businessdevelopment-variable-price
   warehouse binding: omni-warehouse-binding
   warehouse layout: supplychain-warehouse-layout

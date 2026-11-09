@@ -2,18 +2,18 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.7
-last_updated: 2026-11-05
+version: 2.9
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
-aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant, Status Restock]
+aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant, Status Restock, Unable to delete Product already has existing relations, Update Variant Product]
 ---
 
 # System Product — Requirement Documentation
 
 **Modul:** Supply Chain Management (SCM) / Master Data  
 **Audience:** PM, Operations, QA, Support, Developer  
-**Status:** AS-IS verified against codebase per 2026-07-05
+**Status:** AS-IS re-verified against codebase per 2026-11-09 (GAP audit — SoT `olshoperp/docs/qa-docs`); leftover residual [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) dicatat 2026-11-09
 
 **UI route (full):** `/supplychain/product`  
 **API base (full):** `{VITE_API_URL}supplychain/product`  
@@ -21,9 +21,11 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 **PM sources:** User requirement (chat) · D&W artifact v1.0 (7 Mei 2026)
 
-> **Changelog 2.7 (2026-11-05):** §4.4 + §2.1 TO-BE [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) **Status Restock** Yes/No (form, default Yes, datalist, Advanced Filter). Bagian “difungsikan tags” di request **di-skip** (Tagging AS-IS sudah ada di System Product & Pricelist).  
-> **Changelog 2.6 (2026-10-21):** §5.4 — side effect TO-BE [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668): ubah DnW **default** → auto-recalc Pricelist/Category weight values + Log Pricelist.  
-> **Changelog 2.5 (2026-10-02):** §11.6–§11.7 — breakdown bundle + Random SKU wajib pakai **Retail Price** (bukan Benchmark COGS); sebelum vs sesudah processing; beda tujuan vs Benchmark COGS. Jira [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216). Cross-ref reprice in-place [ETM-16212](https://erpintegration.atlassian.net/browse/ETM-16212) / Sales Platform.
+> **Changelog 2.9 (2026-11-09 10:30 WIB):** §6.3.2 + GAP-SP-18 residual — UI expand leftover diblok `Unable to delete…` ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)); **Import Update Variant Product tidak** dikembangkan leftover (tetap boleh tolak tipe beda + child berelasi).  
+> **Changelog 2.8 (2026-11-09):** §13.0 AS-IS [ETM-17180](https://erpintegration.atlassian.net/browse/ETM-17180) — tombol **Import** terkunci per company selama import lain masih jalan (disabled + spinner + label).  
+> **Changelog 2.7 (2026-11-05):** §4.4 + §2.1 [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) **Status Restock** Yes/No. Tags request di-skip.  
+> **Changelog 2.6 (2026-10-21):** §5.4 [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668): ubah DnW **default** → auto-recalc Pricelist/Category weight + Log Pricelist.  
+> **Changelog 2.5 (2026-10-02):** §11.6–§11.7 Retail Price untuk Random di breakdown bundle — [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216).
 
 ---
 
@@ -31,7 +33,9 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 2.7 | 2026-11-05 | QA - Yemima | §4.4 / §2.1 TO-BE Status Restock (ETM-17082); tags request di-skip (sudah AS-IS) |
+| 2.9 | 2026-11-09 10:30 WIB | QA - Yemima | Leftover residual UI [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); import Update Variant **out of scope** leftover; GAP-SP-18 → Partial Open |
+| 2.8 | 2026-11-09 | QA - Yemima | §13.0 kunci import bersamaan per company (ETM-17180); AC #15 |
+| 2.7 | 2026-11-05 | QA - Yemima | §4.4 / §2.1 Status Restock (ETM-17082); tags request di-skip (sudah AS-IS) |
 | 2.6 | 2026-10-21 | QA - Yemima | §5.4 TO-BE ETM-16668: save/ganti default DnW → sync weight ke Pricelist/Category + log |
 | 2.5 | 2026-10-02 | QA - Yemima | §11.6–§11.7 Retail Price untuk random di breakdown bundle; before/after processing; vs Benchmark COGS — ETM-16216 |
 | 1.0–1.2 | 2026-01–07 | QA - Yemima | Initial draft from legacy + partial PM |
@@ -92,13 +96,13 @@ Import history & bulk import **hanya** di menu full (`has_import_history = false
 | **Images** | Thumbnail 100×100 (`image_formatted`) |
 | **Product** (combined) | SKU (link edit), Name (excerpt 60), Primary Unit, **Price** (`Rp. {price}`) |
 | **Type / Bundle / Active** | Badge PARENT / SINGLE / VARIANT · Bundle Yes/No · Active boolean |
-| **Status Restock** (**TO-BE** ETM-17082) | **Yes** / **No** — di dekat / di bawah informasi Active; Advanced Filter Yes/No |
+| **Status Restock** (**AS-IS** ETM-17082) | **Yes** / **No** — di dekat / di bawah informasi Active; Advanced Filter Yes/No |
 | **Availability / On Hand / ATS** | Tiga angka stacked; cache 1 menit per product |
 | **Data Owner** | Public/Private badge, company name, Created/Updated `d-m-Y H:i:s`, Creator |
 
 **Tooltip harga:** ditampilkan untuk Single & Variant child; parent tetap bisa render `product.price` jika terisi.
 
-**Hidden SearchBuilder:** SKU, Name, Primary Unit, Price, Type, Bundle, Active, **Status Restock** (TO-BE), **BOM** (Header BoM `is_bom=1` — terpisah dari bundle), stock columns terpisah, timestamps.
+**Hidden SearchBuilder:** SKU, Name, Primary Unit, Price, Type, Bundle, Active, **Status Restock** (AS-IS), **BOM** (Header BoM `is_bom=1` — terpisah dari bundle), stock columns terpisah, timestamps.
 
 ### 2.2 Rumus stok (AS-IS — `Product.php`)
 
@@ -164,7 +168,7 @@ Urutan section (AS-IS):
 | **Alias** | Array max 150 entries × 150 chars |
 | **Tagging** | Optional; auto-create by name jika belum ada (AS-IS — sudah ada di form & muncul di Pricelist) |
 | **Product Condition** | Required: `Brand New` atau `Second-hand` |
-| **Status Restock** (**TO-BE** ETM-17082) | Radio **Yes** / **No**; UI di bawah Product Condition — lihat §4.4 |
+| **Status Restock** (**AS-IS** ETM-17082) | Radio **Yes** / **No**; UI di bawah Product Condition — lihat §4.4 |
 | **Brand** | Nullable — **tidak ada default dari config Shopee** (GAP-SP-02) |
 | **Random in SKU** | Ditolak: `"Random sku is not allowed"` |
 
@@ -176,22 +180,22 @@ Urutan section (AS-IS):
 | Product image | Placeholder default upload |
 | D&W profile | 1×1×1×1 cm/g pada primary unit |
 | Tax rows | Seed dari company `DefaultVat` (sales + purchase) |
-| **Status Restock** (**TO-BE**) | **Yes** — manual create, import, create Header BOM |
+| **Status Restock** (**AS-IS**) | **Yes** — manual create, import, create Header BOM |
 
 ### 4.3 Primary unit default "Pieces"
 
 FE auto-select unit bernama **Pieces** dari select2 (heuristic), bukan flag `is_default_primary_unit` dari Master Unit API.
 
-### 4.4 Status Restock — TO-BE ([ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082))
+### 4.4 Status Restock — AS-IS ([ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) Done)
 
-| ID | Kriteria |
-|----|----------|
-| SP-RS-01 | Field **Status Restock** radio **Yes** / **No** di **Basic Information**, di bawah **Product Condition** |
-| SP-RS-02 | Default **Yes** pada create: form manual, **import**, dan create via **Header BOM** |
-| SP-RS-03 | Kolom **Status Restock** di datalist dekat / di bawah informasi **Active** |
-| SP-RS-04 | Wajib bisa difilter (Advanced Filter Yes/No) dan dicari sesuai pola SearchBuilder kolom status lain |
-| SP-RS-05 | Edit Yes↔No tersimpan; datalist & filter mengikuti nilai tersimpan |
-| SP-RS-06 | Migrasi data existing: default **Yes** (selaras create), kecuali keputusan migrasi lain di PR |
+| ID | Kriteria | Status |
+|----|----------|--------|
+| SP-RS-01 | Field **Status Restock** radio **Yes** / **No** di **Basic Information**, di bawah **Product Condition** | **AS-IS** |
+| SP-RS-02 | Default **Yes** pada create: form manual, **import**, dan create via **Header BOM** (`is_restock` default 1 di `ProductController@store`) | **AS-IS** |
+| SP-RS-03 | Kolom **Status Restock** di datalist dekat / di bawah informasi **Active** | **AS-IS** |
+| SP-RS-04 | Difilter (Advanced Filter Yes/No) + SearchBuilder `status_restock_formatted` | **AS-IS** |
+| SP-RS-05 | Edit Yes↔No tersimpan; datalist & filter mengikuti nilai tersimpan | **AS-IS** |
+| SP-RS-06 | Data existing tanpa nilai → treat sebagai **Yes** (`?? 1`) | **AS-IS** |
 
 > Teks request “difungsikan Field tags” **di-skip** (2026-11-05): Tagging sudah tersedia AS-IS di System Product dan tampil di Pricelist — bukan gap / bukan pekerjaan ETM-17082.
 
@@ -216,7 +220,7 @@ Variant child → mengikuti konfigurasi unit parent (tidak edit sendiri)
 | Qty conversion | Selalu **1**; field disabled di FE |
 | Base unit | Auto dari unit class primary; disabled |
 | Lock jika transaksi | `primary_unit_disabled` dari API; BE: `'Primary unit cannot be updated because product has relation to transaction'` |
-| Scope `checkTransaction()` | PR, PO, BoM, inbound, outbound — **tidak termasuk SO/assembly/transfer** (GAP-SP-11) |
+| Scope `checkTransaction()` | PR, PO, BoM, inbound, outbound, **SO**, **Transfer**, **Work Order** (FG + BoM), **Platform binding** — AS-IS (GAP-SP-11 **Closed** 2026-11-09) |
 
 ### 5.3 Alternate Unit
 
@@ -227,7 +231,7 @@ Variant child → mengikuti konfigurasi unit parent (tidak edit sendiri)
 
 - Filter unit: same unit class dengan primary (`/{stock_unit_id}/select2-unit`)  
 - Base unit rate harus = 1; alternate ≠ primary  
-- **Qty conversion field:** FE **selalu disabled** (`:disabled="true"`) — GAP-SP-15 vs PM "manual jika rate NULL"
+- **Qty conversion field:** FE `:disabled="rate_disabled \|\| …"` — bila rate master unit **NULL**, field bisa diedit (GAP-SP-14 **Closed** 2026-11-09; bukan hard-disable permanen)
 
 ### 5.4 D&W Profile per unit (modal Edit Unit)
 
@@ -249,7 +253,7 @@ Variant child → mengikuti konfigurasi unit parent (tidak edit sendiri)
 
 **Default values D&W baru:** L=W=H=Weight=**1**; label dari master yang `Set as Primary` ON (artifact AC6). UI min weight **1** (0 hampir tidak terjadi); weight 0/kosong tetap = **No weight** di Pricelist (untuk TC).
 
-#### Side effect → Pricelist / Category Price (TO-BE · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668))
+#### Side effect → Pricelist / Category Price (AS-IS · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) Done)
 
 Setelah **save** perubahan Dimensions & Weight:
 
@@ -303,7 +307,7 @@ Upload foto auto-trigger saat edit via `POST {menuBaseUrl}/{id}/detail`.
 | Variant edit modal | SKU, retail price, stock, min order qty, wholesale, D&W profiles, `is_random` |
 | Master source | [Master Variant / Variant Group](../supplychain-variant/requirement.md) |
 
-#### 6.3.1 TO-BE — Default Variant on create / import (`GAP-SP-17`)
+#### 6.3.1 AS-IS — Default Variant on create / import (`GAP-SP-17` Closed · ETM-15512 Done)
 
 Prasyarat: [Master Variant GAP-VAR-01](../supplychain-variant/requirement.md#6-to-be--set-as-default-system-product-gap-var-01)  
 (Master Default ON hanya valid dengan **tepat 1 opsi**; create master + Default ON **tidak** inject `random` — lihat MV §6.2).
@@ -331,11 +335,9 @@ Prasyarat: [Master Variant GAP-VAR-01](../supplychain-variant/requirement.md#6-t
 | SKU dipakai sebagai **Parent** di row lain | **Skip** auto-default |
 | Semua Default OFF di master | Single tetap mungkin |
 
-#### 6.3.2 TO-BE — Expand Variant Groups: soft delete vs leftover (`GAP-SP-18`)
+#### 6.3.2 AS-IS (intended) — Expand Variant Groups: soft delete vs leftover (`GAP-SP-18` Partial · ETM-15495 / ETM-15512 Done · residual [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215))
 
-**AS-IS pain:** `Cannot add variant, Product already have relations` hard-block; tanpa relasi child sering soft delete + regenerate (ID baru).
-
-**TO-BE — tidak ada auto-rename.** Dua cabang:
+Hard-block `Cannot add variant, Product already have relations` **sudah dicabut** (dikomentari). Jalur intended UI: FE kirim `check_leftover=1` → BE `has_leftover` → **confirmation popup** → soft-delete vs leftover. **Tidak ada auto-rename.**
 
 | Child lama | Soft delete obsolete? | Generate kombinasi baru | Hasil |
 |------------|------------------------|-------------------------|--------|
@@ -343,8 +345,6 @@ Prasyarat: [Master Variant GAP-VAR-01](../supplychain-variant/requirement.md#6-t
 | **Punya relasi** (stok **bukan** syarat; relasi saja cukup) | **Tidak** | Ya — **semua** kombinasi baru | Leftover Active under same parent + SKU baru |
 
 Relasi pengunci soft delete (minimal): PR, PO, inbound, outbound, transfer, SO, WO, platform binding, **BOM header & detail**, **bundle header & detail** (+ existing `haveRelations`).
-
-**UX:** sebelum save expand yang menghasilkan leftover → **confirmation popup** menjelaskan behaviour.
 
 **Leftover:** tetap Active child di bawah parent yang sama; user boleh Inactive jika memenuhi rule inactive existing; rename manual OK; stok remap manual (Stock Remapping).
 
@@ -361,7 +361,13 @@ SKUPENSIL-biru-pikacu     ← new
 SKUPENSIL-hijau-pikacu    ← new
 ```
 
-**Known residual:** rename SKU AS-IS mixed (SO `detail_sku_name` bisa tetap string lama) — bukan cascade rewrite di scope ini.
+**Residual UI (Open — [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215), bukti Merdian/WNA `KACALOS-(PARENT)` 2026-11):**  
+Saat **Save All** menambah variant type/group baru sedangkan child lama sudah berelasi, sistem sering menampilkan `Unable to delete, Product already has existing relations.`, **popup leftover tidak muncul**, perubahan **tidak tersimpan**. Guard “jangan hapus opsi berelasi” berjalan **sebelum** precheck leftover — expand tertahan. **Expected fix (UI only):** expand + child berelasi → popup leftover → simpan sukses (bukan error delete).
+
+**Import Update Variant Product — OUT OF SCOPE leftover (keputusan 2026-11-09):**  
+Import **tidak** dikembangkan untuk leftover. Jika child berelasi dan tipe/group baru **berbeda** dari existing, import **boleh tetap menolak** (`Cannot add variant options because variant types don't match…`). Operator menambah tipe baru lewat **edit UI** setelah ETM-17215 fixed. Pesan import lebih jelas (arahkan ke UI) = opsional, card terpisah.
+
+**Known residual lain:** rename SKU AS-IS mixed (SO `detail_sku_name` bisa tetap string lama) — bukan cascade rewrite di scope ini.
 
 ### 6.4 Product Bundle Configuration
 
@@ -587,15 +593,29 @@ Saat **Send to Default Waves** / fulfillment: child random diganti **SKU asli** 
 | Product Bundle | **5000** | `supplychain/bill-of-material-header/import` |
 | Insert Random | **5000** | variant random template → `InsertProductRandomImport` |
 | Alternative Unit | **5000** | static xlsx `/files/` |
-| Update Variant Product | **5000** | static xlsx |
+| Update Variant Product | **5000** | static xlsx · **AS-IS:** tolak expand tipe beda jika child berelasi (`variant types don't match`). **Bukan** leftover — keputusan 2026-11-09 / §6.3.2 |
 | Bulk Update VAT | **5000** | static xlsx |
-| **Import Product Images** (TO-BE) | **1000** | template `Template Import Product Images.xlsx` · job download GDrive + store primary image |
+| **Import Product Images** (AS-IS) | **1000** | template `Template Import Product Images.xlsx` · `ProductImageImport` + `ProductImageImportJob` |
 
 **SKU on import:** consistently scoped `where('sku')->where('owned_by', $company_id)`.
 
 Logs: `import-log`, `import-history`.
 
-### 13.1 Import Product Images (TO-BE)
+### 13.0 Kunci import bersamaan per company (ETM-17180)
+
+Satu company hanya satu import produk yang masih berjalan. Kunci ini mengikuti company, jadi User 2 di company yang sama ikut terkunci; company lain tidak terpengaruh.
+
+| Perilaku | Rule |
+|----------|------|
+| Tombol **Import** | Selama import lain di company yang sama masih aktif, tombol di layar User 2 **disabled** (`cursor-not-allowed`). Upload tidak bisa dimulai dari tombol itu |
+| Label | Spinner + status tahapan yang sedang berjalan: **Import on Queue...**, **Importing... X%**, atau **Importing...** |
+| Cegah bentrok | User 2 ditolak sejak awal (tidak memilih file), supaya tidak ada benturan data |
+| Safety net | Jika upload **New Product** tetap terkirim, sistem menolak. Pesan memuat `Please wait, other import is being process` |
+| Known limitation | Status dicek saat menu dibuka atau panel Import dibuka. Tidak ada pembaruan live selama panel dibiarkan diam. **Bukan TO-BE** — penolakan backend tetap jaring pengaman |
+
+**Contoh:** User 1 sedang import New Product. User 2 membuka System Product di company yang sama → tombol Import terkunci + spinner. User 2 tidak bisa mengunggah sampai import User 1 selesai.
+
+### 13.1 Import Product Images (AS-IS · GAP-SP-16 Closed · ETM-15529 Done)
 
 **Entry:** opsi baru di dropdown **Import** existing (bukan tombol terpisah) · label **Import Product Images**.
 
@@ -708,7 +728,7 @@ FE poll status setiap **2 detik** sampai `completed` atau `failed`; toast menamp
 | Fitur | Metode |
 |-------|--------|
 | Upload manual (Product Details → Photos) | File binary → storage |
-| Import Product Images (§13.1 TO-BE) | Excel + GDrive → replace primary |
+| Import Product Images (§13.1 AS-IS) | Excel + GDrive → replace primary |
 | **Product Image Sync (§13.2 AS-IS)** | API pull path by SKU |
 
 ---
@@ -753,8 +773,9 @@ FE poll status setiap **2 detik** sampai `completed` atau `failed`; toast menamp
 10. D&W Platform Default global — pilih di unit A uncheck unit B  
 11. Import new product max 5000 rows dengan progress bar  
 12. Foto max 10, video max 5 (format BE mp4/mov)  
-13. **Import Product Images:** GDrive public → replace primary only; duplicate SKU rows rejected; max 1000; partial success  
-14. **Product Image Sync:** URL+key terisi → tombol queue job → status `completed`; baris `is_synced=true` mengikuti response API; gambar manual (`is_synced=false`) tetap
+13. **Import Product Images:** GDrive public → replace primary only; duplicate SKU rows rejected; max 1000; partial success
+14. **Product Image Sync:** URL+key terisi → tombol sync job → status `completed`; baris `is_synced=true` mengikuti response API; gambar manual (`is_synced=false`) tetap
+15. **Kunci import bersamaan (ETM-17180):** import lain di company yang sama masih aktif, lalu User 2 membuka menu atau panel Import → tombol Import disabled (`cursor-not-allowed`) + spinner + label **Import on Queue...** / **Importing... X%** / **Importing...**; User 2 tidak bisa mulai upload. Panel yang dibiarkan diam tidak memperbarui label sendiri (known limitation, bukan TO-BE)
 
 ---
 
@@ -790,58 +811,77 @@ PO/PR Without PR: System Product **active**, Single/Variant child, punya COA gro
 
 ## 19. Gaps — PM/Artifact vs AS-IS Codebase
 
-| ID | Topik | Ekspektasi PM/Artifact | AS-IS | Status |
-|----|-------|------------------------|-------|--------|
-| **GAP-SP-01** | SKU unique per owner | Unique dalam `owned_by` | Create: global check tanpa `owned_by` | **Bug** |
-| **GAP-SP-02** | Brand default Shopee | Default dari config | Nullable optional only | **Not implemented** |
-| **GAP-SP-03** | Bundle qty rule wording | "qty > 2" | qty **> 1** (≥2) | **Wording differs — AS-IS OK** |
-| **GAP-SP-04** | Video format | mkv + mp4 | BE: **mp4, mov** only | **Mismatch FE/BE** |
-| **GAP-SP-05** | Photo min 300×300 | Enforced | UI text only | **Not enforced BE** |
-| **GAP-SP-06** | Variant max 3 types | Enforced | FE only, no BE validation | **Partial** |
-| **GAP-SP-07** | Warranty policy max 30 | Max 30 chars | No validation | **Not implemented** |
-| **GAP-SP-08** | Parent stock datalist | Shows `-` | BE returns numeric | **UI expectation gap** |
-| **GAP-SP-09** | All D&W table + summary | Artifact AC3–AC4 sections | Modal per unit only | **Partial implement** |
-| **GAP-SP-10** | BOM flag on SP form | BOM toggle | Separate BoM menu | **By design** |
-| **GAP-SP-11** | Transaction lock scope | All transactions | Misses SO, assembly, transfer | **Incomplete scope** |
-| **GAP-SP-12** | Bundle pricing basis | Price Before VAT proporsi (PM) | `pickBundleChildren` ✓ · deprecated path retail gross | **Partial — verify coefficient/DPP UI** |
-| **GAP-SP-13** | manifest code_globs | Accurate FE path | Stale `SupplyChain/Product` | **Doc drift** |
-| **GAP-SP-14** | Qty conversion manual | Manual when master rate NULL | FE always disabled | **Behavior differs** |
-| **GAP-SP-15** | Route menu KB | `/supplychain/system-product` | Actual `/supplychain/product` | **Doc drift** |
-| **GAP-SP-16** | Import Product Images | Dropdown + GDrive public URL → replace primary (max 1000) | Belum ada di `PRODUCT_IMPORT_OPTIONS` / import pipeline | **TO-BE / not implemented** |
-| **GAP-SP-17** | Default Variant create/import | Parent `SKU-(PARENT)` + child = user SKU saat Master Default ON | Belum ada | **TO-BE** — §6.3.1 |
-| **GAP-SP-18** | Expand groups soft-delete vs leftover | Soft delete only zero-relation; related → leftover + new combos + confirm; no auto-rename | Hard-block add variant if relations | **TO-BE** — §6.3.2 |
+> **Audit 2026-11-09** — sumber: tip `olshoperp` (`ProductController`, `ProductSpecificationController`, `ProductVariantController`, `ProductDetailController`, `ProductImageImport`, FE `SCM/master/Product`, `manifest.yaml`). Mirror docs **bukan** sumber.
 
-### 19.1 GAP-SP-09 — D&W UI sections (detail)
+### 19.0 Ringkas status
 
-Artifact (7 Mei 2026) mensyaratkan tiga section: Unit Configuration ✅, **D&W Default Configuration** (summary cards), **All D&W Configurations** (flat editable table). AS-IS: D&W dikelola **hanya** di modal Edit Unit per primary/alternate. Operator tidak punya single-page view semua D&W lintas unit tanpa buka modal satu per satu.
+| Bucket | ID |
+|--------|----|
+| **Open** (masih gap nyata) | GAP-SP-01, 02, 04, 05, 06, 07, 08, 09, **18** (residual UI leftover) |
+| **Closed 2026-11-09** (kode/docs sudah selaras) | GAP-SP-11, 13, 14, 15, 16, 17 |
+| **Confirmed OK / by design** | GAP-SP-03, 10, 12 (basis Price Before VAT + `->price`; residual UI/ETM-16216 di bawah). Import Update Variant **tanpa** leftover = **by design** (bukan gap aktif) |
 
-### 19.2 GAP-SP-12 — Bundle pricing (detail)
+### 19.1 Tabel — masih Open
 
-**Keputusan PM (2026-07-05):** Basis proporsi = **Price Before VAT**, bukan retail gross atau margin formula. Canonical code: `pickBundleChildren()` (~L1480).
+| ID | Topik | Ekspektasi PM/Artifact | AS-IS (2026-11-09) | Status |
+|----|-------|------------------------|--------------------|--------|
+| **GAP-SP-01** | SKU unique per owner | Unique dalam `owned_by` | UI create (`$with_auth=true`): `Product::where('sku')` **tanpa** `owned_by`. Import/`!$with_auth` sudah scoped company | **Bug — Open** |
+| **GAP-SP-02** | Brand default Shopee | Default dari config | `brand_id` nullable; tidak ada default config | **Not implemented — Open** |
+| **GAP-SP-04** | Video format | FE copy: mkv + mp4 | BE `mimes:mp4,mov` (`ProductDetailController`) | **Mismatch FE/BE — Open** |
+| **GAP-SP-05** | Photo min 300×300 | Enforced | UI text recommended only; BE tidak validasi dimensi | **Not enforced — Open** |
+| **GAP-SP-06** | Variant max 3 types | Enforced end-to-end | FE tampilkan add jika `Object.keys(variant_options).length <= 2`; **BE tidak** validasi max 3 | **Partial — Open** |
+| **GAP-SP-07** | Warranty policy max 30 | Max 30 chars | Tidak ada `max:30` di store/update | **Not implemented — Open** |
+| **GAP-SP-08** | Parent stock datalist | Tooltip: parent tampil `-` | BE `availability_on_hand_ats_formatted` selalu numerik untuk semua tipe termasuk PARENT | **UI expectation gap — Open** |
+| **GAP-SP-09** | All D&W table + summary | Artifact AC3–AC4 di main form | Hanya modal Edit Unit per primary/alternate | **Partial — Open** |
+| **GAP-SP-18** | Expand leftover (UI) | Expand + child berelasi → confirm leftover → simpan (ETM-15495) | Path leftover ada, tetapi Save All tambah type/group sering error `Unable to delete, Product already has existing relations.` — popup tidak muncul ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); bukti WNA/`KACALOS`). Import Update Variant **tidak** di-scope leftover | **Partial — Open residual** |
 
-**Sisa verifikasi QA:**
+### 19.2 Tabel — Closed / OK (audit 2026-11-09)
 
-| Item | Expected TO-BE | Cek |
-|------|----------------|-----|
-| Coefficient DPP vs Price Before VAT | Berbeda (÷1.11 vs DPP dari VAT/12%) | Modal Detail Bundle |
-| Exclude VAT grand total | Boleh > Bundle Price | Scenario B simulasi |
-| Deprecated path | Tidak dipanggil | `pickChildsForSalesOrder()` marked `@deprecated` |
-| Snapshot setelah approve/sync | Nilai lock | [SO §10.4](../sales-order-general/requirement.md#104-data-integrity--snapshot) |
+| ID | Topik | Keputusan / bukti kode | Status |
+|----|-------|------------------------|--------|
+| **GAP-SP-03** | Bundle qty wording | AS-IS qty **> 1** (≥2) — accepted | **OK** |
+| **GAP-SP-10** | BOM pada form SP | BoM menu terpisah — by design | **OK** |
+| **GAP-SP-11** | Transaction lock scope | `checkTransaction()` sekarang cek PR, PO, BoM, inbound, outbound, **SO**, **Transfer**, **WO** (FG+BoM), **ProductBinding** | **Closed** |
+| **GAP-SP-12** | Bundle pricing basis | `SalesOrderDetailController::pickBundleChildren` pakai `$child_product->price` + jalur Price Before VAT. Residual: coefficient/DPP UI + card [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216) (RE-OPEN) bila path lain masih Benchmark | **Basis OK — residual monitor** |
+| **GAP-SP-13** | manifest `code_globs` | Sudah `olshoperp-frontend/src/pages/SCM/master/Product/**/*` | **Closed** |
+| **GAP-SP-14** | Qty conversion manual | FE `rate_disabled` kondisional; master rate NULL → bisa edit (bukan hard `disabled=true`) | **Closed** |
+| **GAP-SP-15** | Route menu | Docs/README sudah `/supplychain/product` | **Closed** |
+| **GAP-SP-16** | Import Product Images | `PRODUCT_IMPORT_OPTIONS` + `ProductImageImport` (max 1000) + job; ETM-15529 Done | **Closed → AS-IS §13.1** |
+| **GAP-SP-17** | Default Variant create/import | `ProductController@store` + Default Variant → `SKU-(PARENT)` + child; ETM-15512 Done | **Closed → AS-IS §6.3.1** |
+| ~~**GAP-SP-18**~~ | Expand leftover | Hard-block dicabut + path leftover di-ship (ETM-15495) — **tapi** residual UI [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) → pindah **Open** §19.1 | **Reopened Partial 2026-11-09** |
+
+### 19.3 GAP-SP-09 — D&W UI sections (detail — masih Open)
+
+Artifact (7 Mei 2026) mensyaratkan tiga section: Unit Configuration ✅, **D&W Default Configuration** (summary cards), **All D&W Configurations** (flat editable table). AS-IS: D&W dikelola **hanya** di modal Edit Unit per primary/alternate.
+
+### 19.4 GAP-SP-12 — Bundle pricing (detail)
+
+**Keputusan PM (2026-07-05):** Basis proporsi = **Price Before VAT**. Canonical: `pickBundleChildren()` memakai `$child_product->price` lalu hitung before-VAT.
+
+**Residual QA (bukan reopen basis proporsi):**
+
+| Item | Expected | Cek |
+|------|----------|-----|
+| Coefficient DPP vs Price Before VAT | Berbeda (÷1.11 vs DPP VAT/12%) | Modal Detail Bundle |
+| [ETM-16216](https://erpintegration.atlassian.net/browse/ETM-16216) | Random child = Retail Price di semua path breakdown | Card RE-OPEN — verifikasi path selain `pickBundleChildren` |
+| Snapshot setelah approve/sync | Nilai lock | [SO §10.4](../sales-order-general/requirement.md) |
 
 ---
 
-## 20. Dev Follow-ups (non-blocking QA)
+## 20. Dev Follow-ups (non-blocking QA) — hanya Open
 
 | ID | Item | File hint |
 |----|------|-----------|
-| **DEV-SP-01** | Scope SKU unique create ke `owned_by` | `ProductController@store` L754–766 |
-| **DEV-SP-02** | Align video FE copy (mkv) vs BE (mov) | `FormProductComponent.vue`, `ProductDetailController` |
+| **DEV-SP-01** | Scope SKU unique create ke `owned_by` (atau putuskan global by design) | `ProductController@store` sku closure |
+| **DEV-SP-02** | Align video FE copy (mkv) vs BE (`mp4,mov`) | `FormProductComponent.vue`, `ProductDetailController` |
 | **DEV-SP-03** | BE validate variant max 3 types | `ProductVariantController@store` |
 | **DEV-SP-04** | Implement All D&W table + summary per artifact | `FormProductComponent.vue` |
-| **DEV-SP-05** | Extend `checkTransaction()` ke SO/assembly/transfer | `ProductController` L2468+ |
-| **DEV-SP-06** | Fix manifest + technical FE paths | `manifest.yaml`, `technical.md` |
-| **DEV-SP-07** | Photo dimension validation BE | `ProductDetailController@store` |
-| **DEV-SP-08** | Enable qty conversion edit when master rate NULL | `FormProductComponent.vue` L1002 |
+| **DEV-SP-07** | Photo dimension validation BE (jika PM tetap enforce) | `ProductDetailController@store` |
+| **DEV-SP-09** | Warranty policy `max:30` (jika PM tetap enforce) | store/update validation |
+| **DEV-SP-10** | Parent stock display `-` vs numeric (selaraskan tooltip FE / BE) | datalist stock column |
+| **DEV-SP-11** | UI expand leftover residual — jangan treat tambah group sebagai hapus opsi berelasi; pastikan popup + save ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) | `ProductSpecificationController` + `FormProductComponent` Save All / `check_leftover` |
+
+~~DEV-SP-05~~ Closed (checkTransaction sudah luas). ~~DEV-SP-06~~ Closed (manifest path OK). ~~DEV-SP-08~~ Closed (rate_disabled kondisional).
 
 ---
 
@@ -849,19 +889,29 @@ Artifact (7 Mei 2026) mensyaratkan tiga section: Unit Configuration ✅, **D&W D
 
 | ID | Severity | Stakeholder | Pertanyaan | AS-IS impact | Keputusan needed |
 |----|----------|-------------|------------|--------------|------------------|
-| **P-SP-01** | 🔴 **Highest** | **Dev + QA** | **SKU create harus unique per Data Owner?** (GAP-SP-01) | Dua company bisa bentrok SKU yang sama saat create; update/import sudah scoped | Fix create validation atau memang global unique by design? |
-| **P-SP-02** | 🟢 **Resolved** | **PM** | **Bundle pricing — basis Price Before VAT** (GAP-SP-12) | Dokumentasi & `pickBundleChildren` aligned; QA verify coefficient/DPP + snapshot | Monitor modal UI + HPP validation ETM-12890/12947 |
-| **P-SP-03** | 🔴 **Major** | **PM + Dev** | **Deploy section All D&W + summary cards?** (GAP-SP-09) | Artifact Ready for Dev; operator tidak lihat global D&W defaults di main form | Prioritas implement vs accept modal-only? |
-| **P-SP-04** | 🟡 Medium | **Ops** | Brand default Shopee (GAP-SP-02) | Manual pilih brand setiap create | Perlu config `config/shopee` default brand_id? |
-| **P-SP-05** | 🟡 Medium | **Dev** | Perluas lock transaksi ke SO? (GAP-SP-11) | Primary unit masih bisa diubah meski sudah ada SO | Extend `checkTransaction()` scope? |
-| **P-SP-06** | 🟡 Medium | **End user** | Parent variant tampilkan `-` di stok? (GAP-SP-08) | Tooltip vs angka backend | FE override display untuk PARENT? |
-| **P-SP-07** | 🟡 Medium | **Dev + QA** | **Import Product Images** (GAP-SP-16) | Bulk primary image dari GDrive public belum ada | Ship §13.1 + throttle job |
+| **P-SP-01** | 🔴 **Highest** | **Dev + QA** | **SKU create unique per Data Owner?** (GAP-SP-01) | UI create masih global; update/import sudah scoped | Fix create **atau** dokumentasikan global unique by design |
+| **P-SP-02** | 🟢 **Resolved** | **PM** | Bundle pricing Price Before VAT (GAP-SP-12) | `pickBundleChildren` pakai retail `price` | Monitor ETM-16216 + coefficient UI |
+| **P-SP-03** | 🔴 **Major** | **PM + Dev** | Deploy All D&W + summary cards? (GAP-SP-09) | Modal-only | Prioritas implement vs accept modal-only |
+| **P-SP-04** | 🟡 Medium | **Ops** | Brand default Shopee (GAP-SP-02) | Manual pilih brand | Perlu default config? |
+| **P-SP-06** | 🟡 Medium | **End user** | Parent stok tampil `-`? (GAP-SP-08) | Tooltip janji `-`; BE numerik | Override FE atau ubah tooltip |
+| **P-SP-08** | 🟡 Medium | **Dev** | Align video mime FE/BE (GAP-SP-04) | FE sebut mkv; BE mp4/mov | Samakan copy atau terima mov |
+| **P-SP-09** | 🟢 Low | **PM** | Enforce photo 300×300 & warranty max 30? (GAP-SP-05/07) | Recommended / unbounded | Enforce BE atau ubah PM ke soft rule |
+| **P-SP-10** | 🔴 **Highest** | **Dev + QA** | UI leftover expand residual (GAP-SP-18 / [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) | Save All tambah type + child berelasi → `Unable to delete…`, data tidak simpan | Fix UI leftover; **jangan** kerjakan leftover di Import Update Variant sekarang |
 
-**Confirmed OK (bukan pending):**
+**Closed dari pending (audit 2026-11-09):**
 
-- **GAP-SP-03** — Bundle qty ≥2 or multi-line ✓  
-- **GAP-SP-10** — BoM menu terpisah dari bundle toggle ✓  
-- **D&W moved from Shipping** — implemented ✓
+- **P-SP-05** (GAP-SP-11) — `checkTransaction` sudah mencakup SO/Transfer/WO/binding  
+- **P-SP-07** (GAP-SP-16) — Import Product Images sudah live  
+
+**Confirmed OK / keputusan scope:**
+
+- **GAP-SP-03** — Bundle qty ≥2 ✓  
+- **GAP-SP-10** — BoM menu terpisah ✓  
+- **GAP-SP-17** — Default Variant create/import ✓  
+- **GAP-SP-18** — leftover path **di-ship**, residual UI **Open** (ETM-17215); Import Update Variant **tanpa** leftover = **by design** (2026-11-09)  
+- **D&W moved from Shipping** ✓  
+- **Status Restock** (ETM-17082) ✓  
+- **DnW default → Pricelist** (ETM-16668) ✓  
 
 ---
 

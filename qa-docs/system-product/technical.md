@@ -2,8 +2,8 @@
 doc_type: technical
 menu: system-product
 menu_name: "System Product"
-version: 2.7
-last_updated: 2026-11-05
+version: 2.9
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,10 +13,13 @@ related_docs:
 
 # System Product — Technical Documentation
 
-> **2.7 (2026-11-05):** TO-BE [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) — **Status Restock** Yes/No on `scm_products` (+ form Basic Information, datalist near Active, SearchBuilder). Default **Yes** on create (manual / import / Header BOM via `ProductController@store`). See [requirement §4.4](./requirement.md).  
-> **2.6 (2026-10-22):** TO-BE [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) — save/ganti DnW **default** → auto-recalc Pricelist/Category by Weight + Log Pricelist — [requirement §5.4](./requirement.md) · §7 di bawah.  
-> **2.5 (2026-10-02):** Bundle breakdown + random → Retail Price (TO-BE ETM-16216); AS-IS `pickBundleChildren` masih `benchmarkPrice` untuk `$is_random` — [requirement §11.6–§11.7](./requirement.md#116-random-sku-di-breakdown-bundle--retail-price-to-be--etm-16216).  
-> **2.4 (2026-09-01):** AS-IS **Product Image Sync** — `SyncProductImageJob`, `ExternalProductController@sync`, `scm_settings`, `is_synced` — [requirement §13.2](./requirement.md#132-product-image-sync-as-is--api-pull).
+> **2.9 (2026-11-09 10:30 WIB):** GAP-SP-18 residual UI leftover [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); Import Update Variant **out of scope** leftover. Lihat [requirement §6.3.2](./requirement.md) / §19.
+> **2.8 (2026-11-09):** AS-IS [ETM-17180](https://erpintegration.atlassian.net/browse/ETM-17180) — kunci import bersamaan per company. Lihat §11.3 / [requirement §13.0](./requirement.md).
+> **2.8b (audit tip):** Status Restock, Import Product Images, Default create, `checkTransaction` luas, DnW→Pricelist — lihat [requirement §19](./requirement.md).
+> **2.7 (2026-11-05):** [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) **Status Restock** — [requirement §4.4](./requirement.md).
+> **2.6 (2026-10-22):** [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) DnW default → Pricelist weight — [requirement §5.4](./requirement.md) · §7.
+> **2.5 (2026-10-02):** Bundle random Retail Price (ETM-16216) — [requirement §11.6](./requirement.md).
+> **2.4 (2026-09-01):** **Product Image Sync** AS-IS — [requirement §13.2](./requirement.md).
 
 ## 1. Architecture Overview
 
@@ -177,7 +180,7 @@ Index formats cache 1 minute:
 
 **Platform/Trx global exclusivity:** enforced in FE modal + BE on save.
 
-### Side effect → Pricelist (TO-BE · ETM-16668)
+### Side effect → Pricelist (AS-IS · ETM-16668)
 
 Setelah save perubahan D&W di `ProductDnWController`:
 
@@ -243,13 +246,13 @@ Random lines: `SalesOrderDetailRandom` created for random children ~L1596–1617
 `ProductController@importExcel` L3173–3245:
 
 - Max **5000** rows L3190–3196 (default product imports)  
-- Types (AS-IS): `new`, `update`, `bundle`, `insert_random`, `insert_alternative_unit`, `update_variant_product`, `bulk_update_vat`  
+- Types (AS-IS): `new`, `update`, `bundle`, `insert_random`, `insert_alternative_unit`, `update_variant_product`, `bulk_update_vat`, **`product_images`**  
 - SKU scoped: `where('sku')->where('owned_by', $company_id)` in import classes  
 - Progress/history endpoints for UI polling  
 
 Import disabled on general/inventory datalists: `has_import_history = false`.
 
-### 11.1 Import Product Images (TO-BE · GAP-SP-16)
+### 11.1 Import Product Images (AS-IS · GAP-SP-16 Closed)
 
 | Item | Spec |
 |------|------|
@@ -266,33 +269,39 @@ Import disabled on general/inventory datalists: `has_import_history = false`.
 
 Suggested classes: `ImportProductImagesImport` + `ImportProductImagesJob` (or equivalent under SupplyChain Import/Jobs).
 
-### 11.2 Default Variant create/import/expand (TO-BE · GAP-SP-17 / GAP-SP-18)
+### 11.2 Default Variant create/import/expand (GAP-SP-17 Closed · GAP-SP-18 Partial · [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215))
 
-| Area | Touch points (AS-IS → extend) |
+| Area | Touch points |
 |------|-------------------------------|
 | Master Default | `scm_variants.is_default` (GAP-VAR-01) — create+default+1 option **skips** `random` inject in `VariantOptionController` |
 | Create | `ProductController@store` + specification/variant store — if default ON and not enabling single path: create parent `sku-(PARENT)`, child `sku`, attach default variant/option |
-| Import | `ProductImport` — Single-eligible rows apply same; skip explicit variant / parent-used SKUs |
-| Expand block | `ProductSpecificationController` L102–104 hard-block — **remove/replace** with soft-delete vs leftover |
+| Import New (auto-default) | `ProductImport` — Single-eligible rows apply same; skip explicit variant / parent-used SKUs |
+| Expand intended | Hard-block `Cannot add variant, Product already have relations` **commented out**. FE `check_leftover=1` → BE `has_leftover` → leftover popup. Soft-delete only zero-relation children (`ProductVariantController::deleteVariant`) |
+| Expand residual (**Open**) | `ProductSpecificationController` — guard `Unable to delete, Product already has existing relations.` (option_ids related vs `$request->option`) runs **before** `check_leftover`. FE `saveAll` empty `catch` on precheck. Expand + related child can abort without leftover popup — [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) |
+| Import Update Variant | `UpdateVariantProductImport` — if children `haveRelations` and variant types **don't match** → reject row (`Existing: … New: …`). **Out of scope** leftover (keputusan 2026-11-09); do not implement leftover in this import on ETM-17215 |
 | Soft delete gate | `haveRelations()` / `ProductVariantController::checkRelations` — relation-only (not stock-only) |
 | Naming | Omit default option segment when building child SKU from Default-origin products |
-| FE | `FormProductComponent.vue` — confirm OFF→Single; confirm expand leftover; hide Default column in variant datatable |
+| FE | `FormProductComponent.vue` — confirm OFF→Single; confirm expand leftover; `allOptions` / FormData `option[]` must retain related Default options when adding a new group |
+
+
+### 11.3 Kunci import bersamaan per company (AS-IS · ETM-17180)
+
+- `ProductController@getProgress` (`GET /api/supplychain/product/progress`): baris `job_batches` `name = product_import-{company_id}` dengan `finished_at` null → message `Importing`, data `percent` + `import_progress` (1 desimal; `0` jika `total_jobs` 0) dan `on_queue` (`pending_jobs === total_jobs`). Company dari `getToken()->company_id`.
+- `cekJobExpires`: cek `product_import-{company_id}` dan legacy `product_import`. Umur lebih dari `config('general.job.batch.timeout')` menit (saat ini `30`) → set `finished_at` pada kedua nama yang belum selesai. Di dalam window method mengembalikan `Please wait, other import is being process`; `importExcel` tidak memakai return itu.
+- Safety net upload (type `new`): `ProductImport::import_validation` menolak batch unfinished itu dan mencatat `Please wait, other import is being process.` `importExcel` lalu mengembalikan `Import failed. <br> ` ditambah pesan itu.
+- FE `DatalistProductComponent.vue`: `handleLoadingUpload(0)` saat mount dan saat drawer Import dibuka; `isLoadingImport`; poll 2 detik (`importPoller`, di-clear on unmount). `ImportFileActionButtons.vue` mengganti dropdown Import dengan tombol disabled `cursor-not-allowed` + spinner + label `Import on Queue...` / `Importing... X%` / `Importing...`. Known limitation (bukan TO-BE): status dicek saat buka menu / buka drawer, bukan push live saat drawer idle. Folder komponen shared `[VERIFY: CODEBASE]`.
 
 ---
 
 ## 12. Transaction Immutability
 
-`ProductController::checkTransaction()` L2468+ — returns false (locked) if product has:
-
-- PR detail, PO detail, BoM detail, inbound detail, outbound detail  
-
-**Not checked:** SO, assembly, transfer internal.
+`ProductController::checkTransaction()` — AS-IS (GAP-SP-11 Closed): locks when product appears on PR, PO, BoM, inbound, outbound, **SO**, **Transfer**, **WO** (FG+BoM), **platform binding**.
 
 Fields affected:
 
 - `can_update_sku`  
 - `primary_unit_disabled`  
-- Alternate unit `haveRelations()`  
+- Alternate unit `haveRelations()` 
 
 ---
 
@@ -303,7 +312,7 @@ Fields affected:
 | `config('upload.size.video')` | 20480 KB |
 | `config('upload.size.image')` | 512 KB (used elsewhere; **product photo UI** uses **20 MB** — Import Product Images follows **20 MB**) |
 | Product photo max (FE) | 20 MB — `FormProductComponent.vue` |
-| Import Product Images max rows | **1000** (TO-BE) |
+| Import Product Images max rows | **1000** (AS-IS) |
 | `Product::COND_NEW` | `'Brand New'` |
 | `Product::COND_SECOND` | `'Second-hand'` |
 | `Product::INSURANCE_REQUIRED/OPTIONAL` | Shipping insurance |
@@ -317,7 +326,7 @@ Fields affected:
 2. **D&W:** set Platform Default on alternate unit → verify global uncheck on primary  
 3. **Bundle:** activate with 1×qty2 vs 2×qty1 vs invalid 1×qty1; verify Accounting & Tax accordion **hidden** when bundle ON (`FormProductComponent.vue` `!enable_bundle`)  
 4. **Variant:** 3 types FE block; BE accepts 4th if API called directly (regression)  
-5. **Create SKU duplicate:** test same SKU different `owned_by` (GAP-SP-01)  
+5. **Create SKU duplicate:** test same SKU different `owned_by` (GAP-SP-01 — masih Open)  
 6. **Video:** upload mp4 ✓, mkv ✗, mov ✓  
 7. **Import:** 5001 rows rejected (standard imports)  
 8. **Import Product Images:** 1001 rows rejected; unpublic GDrive English error; duplicate SKU rows skipped; primary-only replace  
@@ -352,7 +361,9 @@ Distribusi harga bundle di **Sales Order** (bukan di System Product form):
 | Reprice in-place (no delete) | [omni-sales-platform requirement](../omni-sales-platform/requirement.md) · [ETM-16212](https://erpintegration.atlassian.net/browse/ETM-16212) |
 | Canonical BE | `SalesOrderDetailController::pickBundleChildren()` (OmniChannel) |
 
-**AS-IS `pickBundleChildren` (gap):**
+**AS-IS `pickBundleChildren` (2026-11-09):** memakai `$child_product->price` (Retail). Residual ETM-16216 bila path lain masih Benchmark — monitor.
+
+**Catatan historis (sebelum fix):**
 
 ```php
 if ($is_random) {

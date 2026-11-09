@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.7
-last_updated: 2026-11-05
+version: 2.9
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 audience: operator
@@ -13,7 +13,9 @@ sections:
 
 # System Product — Knowledge Base
 
-> **2.7:** TO-BE **Status Restock** (Yes/No) — ETM-17082. Tagging AS-IS (sudah ada di form & Pricelist); request “difungsikan tags” di-skip.
+> **2.9:** Leftover expand di **edit UI** masih residual ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) — tambah tipe varian + child sudah dipakai transaksi bisa error *Unable to delete…* dan data tidak tersimpan. **Import Update Variant Product** tidak mendukung leftover (tetap boleh ditolak). Detail: [requirement §6.3.2](./requirement.md).  
+> **2.8:** Tombol **Import** terkunci (spinner + status) selama import lain di company yang sama masih berjalan — ETM-17180. Tunggu selesai sebelum upload.  
+> **2.8:** GAP audit — Status Restock, Import Product Images, Default/leftover Variant, DnW→Pricelist = **AS-IS**. Open residual lain: SKU create scope, video mime, D&W summary, parent stock tooltip (§19).
 
 ## 1. Apa itu System Product?
 
@@ -58,7 +60,7 @@ Import/export Excel **hanya** di menu System Product full.
 | **Images** | Foto utama produk |
 | **Product** | SKU, nama, satuan utama, harga retail |
 | **Type / Bundle / Active** | SINGLE / VARIANT / PARENT · apakah bundle · aktif/tidak |
-| **Status Restock** (TO-BE) | **Yes** / **No** — apakah produk perlu di-restock; filterable di Advanced Filter (ETM-17082) |
+| **Status Restock** (AS-IS) | **Yes** / **No** — apakah produk perlu di-restock; filterable di Advanced Filter (ETM-17082) |
 | **Availability** | Stok bisa dipakai sekarang |
 | **On Hand** | Stok fisik di gudang |
 | **ATS** | Available to Sell — stok bersih untuk dijual |
@@ -114,7 +116,7 @@ Setiap satuan punya **profil D&W** (bisa lebih dari satu):
 
 **Shipping section:** hanya **asuransi pengiriman** (Required/Optional). D&W **tidak ada** di sana lagi.
 
-**TO-BE ETM-16668:** ubah weight pada profil DnW **default** (atau ganti radio default) → harga/margin Category by Weight di **Pricelist** ikut terhitung ulang otomatis + masuk Log Pricelist. Ubah DnW non-default saja → Pricelist tidak berubah. Detail: [Pricelist Product](../businessdevelopment-pricelist-product/knowledge-base.md).
+**AS-IS ETM-16668:** ubah weight pada profil DnW **default** (atau ganti radio default) → harga/margin Category by Weight di **Pricelist** ikut terhitung ulang otomatis + masuk Log Pricelist. Ubah DnW non-default saja → Pricelist tidak berubah. Detail: [Pricelist Product](../businessdevelopment-pricelist-product/knowledge-base.md).
 
 ---
 
@@ -136,7 +138,15 @@ Setiap satuan punya **profil D&W** (bisa lebih dari satu):
 
 Hanya **child** yang muncul di PO/SO/inbound.
 
-**TO-BE — Default Variant** (jika Master Variant punya Default ON): create/import Single otomatis jadi Variant — parent `SKU-(PARENT)`, child = kode yang Anda ketik. Menambah group baru: child tanpa relasi boleh diganti (soft delete); yang sudah dipakai transaksi **tetap ada** (kelebihan) + kombinasi baru digenerate — konfirmasi dulu. Detail: [requirement §6.3.1–§6.3.2](./requirement.md#631-to-be--default-variant-on-create--import-gap-sp-17).
+**AS-IS — Default Variant** (jika Master Variant punya Default ON): create/import Single otomatis jadi Variant — parent `SKU-(PARENT)`, child = kode yang Anda ketik.
+
+**Menambah tipe/group varian baru (edit produk):**
+- Child **belum** dipakai transaksi → kombinasi lama boleh diganti.
+- Child **sudah** dipakai transaksi (PO/SO/dll.) → seharusnya muncul **konfirmasi**: SKU lama tetap (kelebihan) + kombinasi baru dibuat; stok **tidak** pindah sendiri.
+- **Sekarang (residual):** sering muncul error *Unable to delete, Product already has existing relations.*, konfirmasi tidak muncul, data tidak tersimpan — sedang diperbaiki ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)).
+- **Import Update Variant Product:** **tidak** dipakai untuk menambah tipe baru pada produk yang child-nya sudah bertransaksi (akan ditolak). Pakai **edit di layar** setelah perbaikan, bukan import.
+
+Detail: [requirement §6.3.1–§6.3.2](./requirement.md).
 
 ### Bundle
 
@@ -191,7 +201,7 @@ Hanya dari menu **System Product** full:
 | Product Bundle | Import resep bundle |
 | Insert Random | Tambah opsi random ke variant |
 | Alternative Unit | Bulk satuan alternatif |
-| Update Variant | Bulk update variant |
+| Update Variant | Bulk update opsi/varian **tipe yang sama**. **Tidak** untuk menambah tipe/group baru bila child sudah dipakai transaksi (akan ditolak) — pakai edit di layar (leftover) setelah perbaikan ETM-17215 |
 | Bulk Update VAT | Update pajak massal |
 | **Import Product Images** | Bulk set/ganti **gambar default** dari link Google Drive publik |
 
@@ -264,6 +274,9 @@ Fitur **terpisah** dari Import Product Images dan upload manual. Dipakai saat co
 | Sync Product Images — API key rejected | Token salah / expired | Minta token baru ke tim infra (ability `external-product:read`) |
 | Sync Product Images — thumbnail broken | Path tersalin tapi file tidak ada di storage company ini | Pastikan shared storage / file ada di path yang sama |
 | Sync Product Images — SKU tidak berubah | SKU tidak ada di response API sumber | Cek SKU active + cocok di sistem sumber |
+| Tombol Import terkunci / spinner status | Import lain di company yang sama masih jalan (ETM-17180) | Tunggu selesai; jangan force refresh untuk membuka tombol sebelum selesai |
+| Save All setelah tambah tipe varian baru → *Unable to delete, Product already has existing relations.* | Child lama sudah dipakai transaksi; konfirmasi kelebihan belum muncul (sedang diperbaiki) | Jangan hapus PO/child. Catat parent SKU + screenshot. Tunggu perbaikan ETM-17215; jangan pakai Import Update Variant untuk kasus ini |
+| Import Update Variant ditolak *variant types don't match* | Menambah tipe berbeda sementara child sudah berelasi | **Expected** untuk import. Tambah tipe lewat **edit produk** (bukan import) setelah leftover UI diperbaiki |
 
 ---
 
@@ -288,7 +301,7 @@ A: Tidak. Hanya mengganti foto **default**. Foto lain di gallery tetap.
 A: Tidak untuk Import Product Images v1 — hanya **Google Drive publik**. (Product Image Sync pakai API internal, bukan link Drive.)
 
 **Q: Beda Import Product Images vs Sync Product Images?**  
-A: **Import** = Excel + link GDrive → ganti foto default (TO-BE). **Sync** = tombol datalist → tarik path dari API eksternal by SKU (AS-IS, sudah ada di production codebase).
+A: **Import** = Excel + link GDrive → ganti foto default (AS-IS). **Sync** = tombol datalist → tarik path dari API eksternal by SKU (AS-IS).
 
 **Q: Sync Product Images menghapus foto upload manual?**  
 A: **Tidak.** Hanya baris bertanda sync (`is_synced`) yang di-update/hapus oleh job.

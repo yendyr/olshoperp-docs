@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: system-product
 menu_name: "System Product"
-version: 1.4
-last_updated: 2026-11-05
+version: 1.6
+last_updated: 2026-11-09
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.7
+source_version: 2.9
 owner: QA - Yemima
 status: review
 ---
@@ -77,7 +77,7 @@ Setelah SKU tersimpan:
 2. Single/Child bisa dipilih di PR/PO/inbound/outbound.
 3. Bundle bisa dijual di Sales Order (stok dipotong per komponen).
 4. Platform Default D&W dipakai saat sync marketplace.
-5. **TO-BE ETM-16668:** ubah weight pada D&W **default** (atau ganti radio default) → nilai by Weight di **Pricelist / Category** ikut terhitung ulang + masuk Log Pricelist (input manual tidak tertimpa).
+5. **AS-IS ETM-16668:** ubah weight pada D&W **default** (atau ganti radio default) → nilai by Weight di **Pricelist / Category** ikut terhitung ulang + masuk Log Pricelist (input manual tidak tertimpa).
 
 ---
 
@@ -88,10 +88,12 @@ Setelah SKU tersimpan:
 - Kalau tidak bisa inactive, pastikan Availability & ATS = 0 di semua gudang.
 - Kalau primary unit terkunci, SKU sudah dipakai transaksi—buat SKU baru bila perlu ganti satuan.
 - Kalau dimensi salah di marketplace, cek **Platform Default** D&W.
-- Kalau ubah weight D&W **non-default**, Pricelist **tidak** berubah sampai baris itu jadi default (TO-BE ETM-16668).
-- Kalau video gagal upload, gunakan format **mp4** (BE terima mp4/mov).
+- Kalau ubah weight D&W **non-default**, Pricelist **tidak** berubah sampai baris itu jadi default (ETM-16668).
+- Kalau video gagal upload, gunakan format **mp4** (BE terima mp4/mov; FE masih sebut mkv — GAP-SP-04).
 - Kalau section Accounting & Tax hilang, itu karena bundle aktif—pajak per komponen.
-- Kalau SKU duplicate saat create, cek Data Owner (scope create masih global — GAP-SP-01).
+- Kalau SKU duplicate saat create, cek lintas company — create UI masih cek SKU **global** (GAP-SP-01 Open).
+- Kalau rekan di company yang sama sedang import produk, tombol **Import** di layar kamu terkunci (tidak bisa diklik) dan menampilkan spinner plus status seperti **Import on Queue...** atau **Importing...**. Tunggu sampai selesai sebelum upload.
+- Kalau **Save All** setelah menambah tipe varian baru muncul *Unable to delete, Product already has existing relations.* dan data tidak tersimpan: child lama biasanya sudah dipakai transaksi; konfirmasi “SKU lama tetap” sedang diperbaiki (ETM-17215). Jangan hapus PO/child. Jangan pakai **Import Update Variant** untuk menambah tipe baru pada kasus itu — import memang menolak.
 
 ---
 
@@ -100,7 +102,7 @@ Setelah SKU tersimpan:
 ### Langkah 1 — Basic Information
 
 1. Isi SKU, Nama, Sales Category, Product COA Group, Condition.
-2. **(TO-BE ETM-17082)** Set **Status Restock** Yes/No (di bawah Product Condition). Produk baru default **Yes** (termasuk import & create Header BOM).
+2. Set **Status Restock** Yes/No (di bawah Product Condition). Produk baru default **Yes** (termasuk import & create Header BOM) — ETM-17082.
 3. SKU wajib unik; hindari segment `random`.
 4. Opsional: **Tagging** (sudah ada di form).
 
@@ -109,7 +111,7 @@ Setelah SKU tersimpan:
 1. Atur [Unit Configuration & D&W per unit](#sf-lingo:SF-SP-02).
 2. Tambah alternate unit + konversi bila perlu.
 3. Set **Platform Default** dan **Trx Default** (global) di profil yang benar.
-4. **TO-BE:** weight di baris D&W **default** mempengaruhi Pricelist by Weight otomatis setelah simpan (ETM-16668) — tidak perlu Update to Pricelist hanya untuk ganti weight.
+4. Weight di baris D&W **default** mempengaruhi Pricelist by Weight otomatis setelah simpan (ETM-16668) — tidak perlu Update to Pricelist hanya untuk ganti weight.
 
 ### Langkah 3 — Tipe khusus (opsional)
 
@@ -140,7 +142,7 @@ Gambar hasil sync ditandai di backend sebagai sync otomatis; foto yang pernah di
 
 - **Bundle vs BOM:** Bundle = paket jual di SO; BOM = resep produksi di [Bill of Material](../bill-of-material/).
 - **D&W di mana:** di **Unit Configuration** (per satuan), bukan Shipping lagi.
-- **Weight → Pricelist (TO-BE ETM-16668):** hanya D&W **default**; cek Log Pricelist setelah ubah weight. Detail: [Pricelist Product](../businessdevelopment-pricelist-product/).
+- **Weight → Pricelist (ETM-16668):** hanya D&W **default**; cek Log Pricelist setelah ubah weight. Detail: [Pricelist Product](../businessdevelopment-pricelist-product/).
 - **Platform/Trx Default global:** pilih di satu unit otomatis lepas di unit lain.
 - **Stok bundle:** ikut komponen paling sedikit.
 - **Import massal:** hanya di menu full — kebanyakan tipe max 5000 baris; **Import Product Images** max **1000**.

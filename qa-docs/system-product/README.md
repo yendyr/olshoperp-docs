@@ -12,8 +12,8 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 | Capability cards | [capabilities/](./capabilities/) | Semua | draft |
 
 **Help Center:** [`_meta/docs-hub/menus/system-product/`](../_meta/docs-hub/menus/system-product/)  
-**3 layer:** v2.7 · **Technical:** v2.7 · **User Guide:** v1.4 (`source_version` 2.7) · **Feature Map:** v1.1  
-**Related Jira:** [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) (Status Restock) · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) (DnW default → Pricelist weight sync)  
+**3 layer:** v2.9 · **Technical:** v2.9 · **User Guide:** v1.6 (`source_version` 2.9) · **Feature Map:** v1.1  
+**Related Jira:** [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) · [ETM-17180](https://erpintegration.atlassian.net/browse/ETM-17180) · [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) · [ETM-15512](https://erpintegration.atlassian.net/browse/ETM-15512) · [ETM-15495](https://erpintegration.atlassian.net/browse/ETM-15495) · [ETM-15529](https://erpintegration.atlassian.net/browse/ETM-15529)  
 **Maintenance owner:** QA — Yemima
 
 ---
@@ -22,7 +22,9 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 
 | Date | Version | Changes |
 |------|---------|---------|
-| 2026-11-05 | 2.7 | TO-BE **Status Restock** Yes/No (ETM-17082) — form, default Yes, datalist, Advanced Filter; tags request di-skip |
+| 2026-11-09 10:30 | 2.9 | Leftover residual UI [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); GAP-SP-18 Partial Open; Import Update Variant **tanpa** leftover (by design) |
+| 2026-11-09 10:40 | 2.8 | Tombol Import terkunci selama import lain di company yang sama masih berjalan (ETM-17180) |
+| 2026-11-05 | 2.7 | **Status Restock** Yes/No (ETM-17082) — form, default Yes, datalist, Advanced Filter; tags request di-skip |
 | 2026-10-22 | 2.6+ | Lengkapi ETM-16668: technical §7, UG v1.3, feature-map SF-SP-13, capability SF-SP-02, Help Center overview |
 | 2026-10-21 | 2.6 | §5.4 / KB: TO-BE ETM-16668 — save/ganti default DnW → auto-recalc Pricelist/Category by Weight + Log Pricelist |
 | 2026-10-02 | 2.5 | Bundle breakdown + Random: Retail Price (bukan Benchmark); before/after processing — ETM-16216; cross-ref reprice in-place ETM-16212 |
@@ -59,9 +61,9 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 - **Pending major:** SKU create scope per owner (P-SP-01), All D&W UI sections (P-SP-03)  
 - **Bundle pricing (v2.1):** proporsi **Price Before VAT** — lihat requirement §11 + [sales-order-general §10](../sales-order-general/requirement.md#10-product-bundle--proporsi-harga-price-before-vat)
 - Import Excel **hanya** menu System Product full (max **5000** rows; **Import Product Images** max **1000**)
-- **Import Product Images (TO-BE):** GDrive public → replace **primary** only · GAP-SP-16
+- **Import Product Images (AS-IS):** GDrive public → replace **primary** only · GAP-SP-16 Closed
 - **Product Image Sync (AS-IS):** tombol datalist + API pull path · setting General Setting → Application · lihat requirement §13.2
-- **Default Variant (TO-BE):** Master Default ON → create/import `SKU-(PARENT)` + child; expand = soft-delete vs leftover · GAP-SP-17/18 · prasyarat MV: create Default ON **tanpa** inject `random` · [Master Variant](../supplychain-variant/)
+- **Default Variant:** create/import `SKU-(PARENT)` + child · GAP-SP-17 Closed · expand leftover **intended** AS-IS tapi residual UI Open ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) / GAP-SP-18 Partial) · Import Update Variant **tidak** leftover · prasyarat MV: Default ON **tanpa** inject `random` · [Master Variant](../supplychain-variant/)
 
 ---
 
