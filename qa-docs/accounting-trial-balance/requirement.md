@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-trial-balance
 menu_name: "Trial Balance"
-version: 1.3
-last_updated: 2026-11-06
+version: 1.4
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Accounting  
 **Menu UI:** FA → Report → Trial Balance (`/accounting/trial-balance`)  
 **Audience:** PM, QA, Support, Developer  
-**TO-BE kolom Balance:** [ETM-17077](https://erpintegration.atlassian.net/browse/ETM-17077)  
+**AS-IS kolom Balance:** [ETM-17077](https://erpintegration.atlassian.net/browse/ETM-17077)
 **AS-IS export period header:** [ETM-17079](https://erpintegration.atlassian.net/browse/ETM-17079)  
 **AS-IS Column Show & Hide:** [ETM-17078](https://erpintegration.atlassian.net/browse/ETM-17078)
 
@@ -27,6 +27,7 @@ status: review
 | 1.1 | 2026-11-05 | QA - Yemima | TO-BE ETM-17077: kolom **Balance** per grup; rumus Activa/Passiva; minus tampil minus |
 | 1.2 | 2026-11-06 | QA - Yemima | **AS-IS** ETM-17079: header export Excel tampilkan Period filter; tutup GAP-TB-01 (export sudah ada) |
 | 1.3 | 2026-11-06 | QA - Yemima | **AS-IS** ETM-17078: Column Show & Hide Debit/Credit/Balance × 3 grup |
+| 1.4 | 2026-11-09 | QA - Yemima | **AS-IS** ETM-17077: kolom Balance per grup (Activa/Passiva, minus tetap minus); Reset Column Show & Hide mengembalikan semua kolom angka |
 
 ---
 
@@ -34,10 +35,9 @@ status: review
 
 Trial Balance adalah laporan **read-only** yang menampilkan saldo debit/kredit per COA untuk periode tanggal. UI memuat **7 tabel DataTables** — satu per COA class. Backend `TrialBalanceController@index` memfilter COA by `className` dan menghitung saldo via `JournalReport`. Entity `TrialBalance` hanya untuk policy; tidak ada tabel transaksi trial balance.
 
-**AS-IS:** tiap grup Beginning / In-Period / Ending hanya Debit + Credit.  
-**TO-BE (ETM-17077):** tiap grup menambah kolom **Balance** setelah Credit, dihitung dari position COA class.  
-**AS-IS export (ETM-17079):** file Excel export menampilkan periode filter di baris header.  
-**AS-IS Column Show & Hide (ETM-17078):** user bisa tampilkan/sembunyikan Debit, Credit, Balance per grup di semua section tabel.
+**AS-IS (ETM-17077):** tiap grup Beginning / In-Period / Ending punya Debit, Credit, lalu **Balance**. Rumus Debit/Credit tidak berubah; Balance turunan dari pasangan grup itu menurut position COA class.
+**AS-IS export (ETM-17079):** file Excel export menampilkan periode filter di baris header. Period kosong memakai hari ini (awal = akhir).
+**AS-IS Column Show & Hide (ETM-17078):** user bisa tampilkan/sembunyikan Debit, Credit, Balance per grup di semua section tabel. Reset mengembalikan semua kolom angka. Sembunyi kolom tidak mengubah angka.
 
 ---
 
@@ -58,7 +58,7 @@ Trial Balance adalah laporan **read-only** yang menampilkan saldo debit/kredit p
 | A-09 | Tidak ada CRUD endpoint aktif | Resource route commented | api.php |
 | A-10 | Footer total per tabel | `trial_balance=true` flag | DataTablesV3 |
 
-### 2.2 TO-BE — ETM-17077 (kolom Balance)
+### 2.2 AS-IS — ETM-17077 (kolom Balance)
 
 | ID | Kriteria |
 |----|----------|
@@ -87,7 +87,8 @@ Trial Balance adalah laporan **read-only** yang menampilkan saldo debit/kredit p
 | TB-COL-02 | Dapat show/hide **Debit**, **Credit**, **Balance** untuk grup **Beginning Balance**, **In-Period Transaction**, **Ending Balance** |
 | TB-COL-03 | Label opsi memakai nama grup + jenis kolom (contoh: `Beginning Balance - Debit`) |
 | TB-COL-04 | Perubahan visibilitas diterapkan ke **semua** 7 section tabel COA class di halaman |
-| TB-COL-05 | Hanya mengubah tampilan UI — tidak mengubah rumus / nilai perhitungan |
+| TB-COL-05 | Hanya mengubah tampilan UI — tidak mengubah rumus / nilai perhitungan / isi export |
+| TB-COL-06 | Reset / default mengembalikan semua kolom angka (Debit, Credit, Balance di ketiga grup) |
 
 ---
 
@@ -125,7 +126,7 @@ Trial Balance adalah laporan **read-only** yang menampilkan saldo debit/kredit p
 | F-03 | COA hierarchy display | `coa_name` column | Indent + bold parent |
 | F-04 | Numeric columns for footer | `*_number` hidden columns | Sum in footer |
 | F-05 | Read-only | No create route | No mutations |
-| F-06 | **TO-BE** kolom Balance × 3 grup | ETM-17077 | §2.2 |
+| F-06 | **AS-IS** kolom Balance × 3 grup | ETM-17077 | §2.2 |
 | F-07 | **AS-IS** Export Excel + header Period | ETM-17079 | §2.3 |
 | F-08 | **AS-IS** Column Show & Hide | ETM-17078 | §2.4 |
 
@@ -169,7 +170,7 @@ flowchart TB
 
 Kolom **credit** paralel dengan helper `*Credit*`.
 
-### 4.3 Formula kolom Balance (TO-BE ETM-17077)
+### 4.3 Formula kolom Balance (AS-IS ETM-17077)
 
 Untuk setiap grup \(G \in \{\text{Beginning}, \text{In-Period}, \text{Ending}\}\):
 
@@ -220,9 +221,9 @@ Contoh: Activa Debit=30, Credit=100 → Balance = **−70** (tampil minus).
 
 | ID | Deskripsi | Status |
 |----|-----------|--------|
-| GAP-TB-01 | Export Excel Trial Balance | **Closed** — export ada; header Period = ETM-17079 |
+| GAP-TB-01 | Export Excel Trial Balance | **Closed** — export ada; header Period = ETM-17079. Klaim lama "tidak ada export" sudah tidak berlaku; baris histori changelog tidak dihapus |
 | GAP-TB-02 | Entity `TrialBalance` kosong — hanya policy | Note |
-| GAP-TB-03 | Footer sum untuk kolom Balance (signed) — pastikan FE `columnWithFooter` ikut indeks baru | Open saat implementasi 17077 |
+| GAP-TB-03 | Footer sum kolom Balance (signed). Backend sudah mengirim angka Balance bertanda untuk Beginning, In-Period, dan Ending. Indeks footer di layar belum dicek ulang pada pembaruan ini | Open — sisa cek tampilan footer |
 
 ---
 

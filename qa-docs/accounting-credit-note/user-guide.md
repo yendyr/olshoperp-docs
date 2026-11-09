@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.4
-last_updated: 2026-11-05
+version: 1.5
+last_updated: 2026-11-09
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.6
+source_version: 1.7
 owner: QA - Yemima
 status: review
 ---
@@ -146,7 +146,8 @@ Kalau Credit Note dari **Sales Return Billed**, langkah approve manual sering ti
 
 1. Selesaikan alur Sales Return sampai Finance **Complete** tipe billed ([jalur pembuatan](#sf-lingo:SF-CN-01)).
 2. Cek list Credit Note — biasanya sudah Approved. Kolom **Trx Ref** menampilkan nomor Sales Return (`SR-xxxxx`) yang bisa diklik ke dokumen retur.
-3. Pakai di Account Receive jika saldo masih outstanding.
+3. Buka halaman edit. **Reference Doc** berisi nomor Sales Return itu, dan **Description** berisi keterangan "Auto generated from Sales Return" diikuti nomor yang sama. Misalnya retur SR-5UZ70DBV mengisi Reference Doc SR-5UZ70DBV.
+4. Pakai di Account Receive jika saldo masih outstanding.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
@@ -157,7 +158,7 @@ Kalau Credit Note dari **Sales Return Billed**, langkah approve manual sering ti
 - **Bulk Use amount 0** itu normal — bukan bug; edit amount manual.
 - **Customer tidak muncul** biasanya karena inactive atau setting akun (termasuk Deposit) belum lengkap.
 - **Halaman edit kosong (Customer, Currency, Exchange Rate, Store)** pada sebagian kecil CN lama dari Sales Return: datanya tetap ada di daftar Credit Note. Jangan simpan ulang dari halaman itu; laporkan kode CN. Perbaikan sudah terdaftar.
-- **Description / Reference Doc kosong** di CN dari Sales Return itu memang belum terisi otomatis; lihat asal CN di kolom TRX. REF pada daftar.
+- **Description / Reference Doc** pada Credit Note baru dari Sales Return sudah terisi nomor retur. Kalau keduanya kosong, nota itu dibuat sebelum perbaikan — lihat asal di kolom Trx Ref. Nota lama tidak terisi sendiri.
 - **Paid** di list = sudah dipakai di penerimaan yang sudah di-approve; **Outstanding** = sisa Total dikurangi Paid.
 - **Trx Ref:** dari retur billed = nomor Sales Return (`SR-xxxxx`, bisa diklik ke dokumen retur). Dari Account Receive = nomor penerimaan. Dibuat manual = kosong. Nota lama yang sudah menampilkan nomor faktur tidak berubah sendiri.
 - **Unbilled return** tidak membuat Credit Note — bedakan dengan **Billed**.
@@ -180,4 +181,4 @@ Kalau Credit Note dari **Sales Return Billed**, langkah approve manual sering ti
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v1.5 — tanpa menambah fakta baru di luar sumber. Feature Map v1.0 ditautkan untuk Lingo.*
+*Derivatif dari requirement / knowledge-base / technical v1.7 — tanpa menambah fakta baru di luar sumber. Feature Map v1.0 ditautkan untuk Lingo.*

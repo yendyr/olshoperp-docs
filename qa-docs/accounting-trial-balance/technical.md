@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-trial-balance
 menu_name: "Trial Balance"
-version: 1.3
-last_updated: 2026-11-06
+version: 1.4
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # Trial Balance — Technical Documentation
 
-> v1.3 — AS-IS + TO-BE [ETM-17077](https://erpintegration.atlassian.net/browse/ETM-17077) kolom **Balance** · [ETM-17078](https://erpintegration.atlassian.net/browse/ETM-17078) Column Show & Hide · [ETM-17079](https://erpintegration.atlassian.net/browse/ETM-17079) export header Period.
+> v1.4 — AS-IS [ETM-17077](https://erpintegration.atlassian.net/browse/ETM-17077) kolom **Balance** · [ETM-17078](https://erpintegration.atlassian.net/browse/ETM-17078) Column Show & Hide · [ETM-17079](https://erpintegration.atlassian.net/browse/ETM-17079) export header Period.
 
 ## 1. Architecture Overview
 
@@ -115,31 +115,33 @@ Commented/disabled in `api.php`: `Route::resource('/trial-balance', ...)`, per-c
 2. Parse `period` → `$start_date`, `$end_date` (default: today)
 3. Query `ChartOfAccount` where class name = `className`, with `coaTree` for hierarchy
 4. Order by parsed COA code segments (numeric hierarchy)
-5. For each row, compute 6 amount pairs via `JournalReport`:
-   - `beginning_debit` / `beginning_credit`
-   - `in_period_debit` / `in_period_credit`
-   - `ending_debit` / `ending_credit` (= beginning + in-period per side)
-6. Special branch if `coa_id == current_profit_loss_id`
-7. Parent COA uses `*Parent` helpers when `all_childs()->exists()`
-8. **TO-BE ETM-17077:** derive 3 Balance columns from Debit/Credit + `chart_of_account_class.position` (see §5.1)
+5. For each row, compute Debit/Credit via `JournalReport`, then derive Balance (ETM-17077):
+   - `beginning_debit` / `beginning_credit` / `beginning_balance`
+   - `in_period_debit` / `in_period_credit` / `in_period_balance`
+   - `ending_debit` / `ending_credit` / `ending_balance` (ending Debit/Credit = beginning + in-period per side)
+6. Special branch if `coa_id == current_profit_loss_id` — Balance memakai Debit/Credit baris itu
+7. Parent COA uses `*Parent` helpers when `all_childs()->exists()` — Balance memakai Debit/Credit hasil rollup, rollup tidak diubah
+8. Each balance field also has a `*_number` twin for numeric use (footer). See §5.1
 
-### 5.1 TO-BE — kolom Balance (ETM-17077)
+### 5.1 AS-IS — kolom Balance (ETM-17077)
 
-| Suggested column `data` | Source Debit/Credit | After UI column |
-|-------------------------|---------------------|-----------------|
-| `beginning_balance` (+ `_number` for footer) | beginning_debit / beginning_credit | after `beginning_credit` |
-| `in_period_balance` (+ `_number`) | in_period_debit / in_period_credit | after `in_period_credit` |
-| `ending_balance` (+ `_number`) | ending_debit / ending_credit | after `ending_credit` |
+`TrialBalanceController` datalist, setelah pasangan Debit/Credit grup yang sama. Position dibaca dari `chart_of_account_class.position` (sudah di-load pada query COA).
+
+| Column `data` | Source Debit/Credit | UI order |
+|---------------|---------------------|----------|
+| `beginning_balance` + `beginning_balance_number` | beginning debit / credit | after beginning credit |
+| `in_period_balance` + `in_period_balance_number` | in-period debit / credit | after in-period credit |
+| `ending_balance` + `ending_balance_number` | ending debit / credit | after ending credit |
 
 ```text
 position == 'Activa'  → balance = debit - credit
 position == 'Passiva' → balance = credit - debit
-# signed; negative stays negative
+# signed; negative stays negative (no abs, no swap to the other side)
 ```
 
-- Load `chart_of_account_class.position` on the COA query (already with class for filter).
-- FE `DataList.vue`: insert 3 columns titled **BALANCE** (or **Balance**); update `columnWithFooter` indices (currently `[2,3,4,5,6,7]` for 6 amount cols — becomes 9 amount cols).
-- Do **not** change JournalReport Debit/Credit helpers for this card — Balance is a presentation/derived field on TB response.
+- JournalReport Debit/Credit helpers tidak diubah untuk kartu ini. Balance hanya turunan di response Trial Balance.
+- Export (ETM-17079) menulis kolom Beginning / In Period / Ending Balance di baris judul kedua. Header baris pertama tetap periode filter.
+- Indeks footer di `DataList.vue` tidak dicek ulang pada pembaruan ini (repo frontend tidak tersedia). Lihat GAP-TB-03.
 
 ## 6. JournalReport methods used
 

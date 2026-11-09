@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-trial-balance
 menu_name: "Trial Balance"
-version: 1.3
-last_updated: 2026-11-06
+version: 1.4
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 audience: operator
@@ -33,7 +33,7 @@ Data bersumber dari journal berstatus **Approved**.
 | Beginning balance | Saldo awal periode (mutasi sebelum tanggal mulai) |
 | In-period | Mutasi debit/kredit di dalam periode |
 | Ending balance | Beginning + in-period (per sisi Debit/Credit) |
-| **Balance** (kolom baru) | Nilai net per grup — rumus tergantung tipe akun (Aktiva / Pasiva) |
+| **Balance** | Nilai net per grup — cara hitung tergantung tipe akun (Aktiva / Pasiva) |
 | COA class | Kelompok akun: Assets, Liabilities, Equity, Revenue, Expense, COGS, Other Revenue & Expenses |
 | Activa / Passiva | Sifat class akun di master COA Class (sistem: **Passiva**) |
 | Parent COA | Akun induk — saldo di-rollup dari anak |
@@ -48,10 +48,9 @@ Data bersumber dari journal berstatus **Approved**.
 - Pilih **periode** lalu **Apply**
 - Lihat 7 tabel per COA class
 - Lihat hierarki COA (indent + bold parent)
-- Lihat Debit & Credit per grup Beginning / In-Period / Ending
-- **(TO-BE ETM-17077)** Lihat kolom **Balance** di tiap grup
-- Export Excel (All Data) — unduh lewat riwayat export; header file menampilkan periode filter (ETM-17079)
-- **Column Show & Hide** — tampilkan/sembunyikan Debit, Credit, Balance per grup (Beginning / In-Period / Ending) di semua tabel (ETM-17078)
+- Lihat Debit, Credit, dan **Balance** per grup Beginning / In-Period / Ending
+- Export Excel (All Data) — unduh lewat riwayat export; header file menampilkan periode filter. Period kosong memakai tanggal hari ini (ETM-17079)
+- **Column Show & Hide** — sembunyikan atau tampilkan Debit, Credit, dan Balance per grup di semua tabel. Reset / default mengembalikan semua kolom angka. Menyembunyikan kolom tidak mengubah angka (ETM-17078)
 
 ### Tidak Bisa
 
@@ -64,11 +63,11 @@ Data bersumber dari journal berstatus **Approved**.
 
 Setiap tabel punya tiga blok:
 
-| Blok | Kolom (AS-IS) | + TO-BE |
-|------|---------------|---------|
-| **Beginning Balance** | Debit, Credit | **Balance** |
-| **In-Period** | Debit, Credit | **Balance** |
-| **Ending Balance** | Debit, Credit | **Balance** |
+| Blok | Kolom |
+|------|--------|
+| **Beginning Balance** | Debit, Credit, **Balance** |
+| **In-Period** | Debit, Credit, **Balance** |
+| **Ending Balance** | Debit, Credit, **Balance** |
 
 ### Cara baca kolom Balance (ETM-17077)
 

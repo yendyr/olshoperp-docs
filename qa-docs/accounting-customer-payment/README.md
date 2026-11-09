@@ -25,13 +25,14 @@ Menu **Account Receive** (Accounting).
 | Test Case Library | `/test-case-library?menu=accounting-customer-payment` |
 
 **Open CR:** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) — Summary section setelah Adjustment (sibling AP [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643))  
-**Layer version:** requirement **2.5** · user-guide **1.2** · **Last updated:** 2026-11-04  
-**Related Jira:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) · [ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)
+**Layer version:** requirement **2.6** · user-guide **1.3** · **Last updated:** 2026-11-09 08:59
+**Related Jira:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) · [ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991) · [ETM-17102](https://erpintegration.atlassian.net/browse/ETM-17102)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.6 | 2026-11-09 08:59 | Setelah memilih tagihan di dokumen yang masih bisa diubah, Receiving Destination terisi sendiri dengan jumlah tagihan itu (ETM-17102) |
 | 2.5 | 2026-11-04 09:28 | Daftar Account Receive menampilkan kolom Description per dokumen; bisa dicari dan diurut, dan ikut di file ekspor termasuk Receive per tanggal (ETM-16991) |
 | 2.3 | 2026-10-22 | TO-BE ETM-16764: Payment Source CN stamp COA dari asal CN (SR → Deposit of Sales Return) |
 | 2.2 | 2026-10-19 | TO-BE ETM-16644: Section Summary (header CCY, CN terpisah, tanda Credit+/Debit−, Total orange jika ≠ 0) |

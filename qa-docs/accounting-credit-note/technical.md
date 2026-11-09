@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.6
-last_updated: 2026-11-05
+version: 1.7
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 aliases: [CN technical, credit note API, credit note code]
@@ -13,7 +13,7 @@ aliases: [CN technical, credit note API, credit note code]
 
 **API prefix:** `accounting/credit-note`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.6  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.7
 **TO-BE deposit COA:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)
 
 ---
@@ -162,7 +162,9 @@ sequenceDiagram
 
 **Trx Ref override (ETM-17070):** `generateCreditNoteFromReturn` dan `generateCreditNoteAutoApprove` tetap mengisi `transaction_reference_id` serta `transaction_reference_class` = `CustomerInvoice` (settlement dan COA). Keduanya meng-override tampilan: `transaction_reference_text` = kode Sales Return, `transaction_reference_url` = `{fe_url}/accounting/sales-return/edit/{return_id}`.
 
-`CreditNoteController` kolom `transaction_reference_formatted` memakai `transaction_reference_text` / `transaction_reference_url` bila terisi; kode dan URL morph hanya fallback saat text/url kosong. Filter kolom itu mencari `transaction_reference_text` dulu, lalu kode invoice/AR hanya jika text null. SearchBuilder kolom yang sama mencocokkan `transaction_reference_text`. Tidak ada perubahan frontend. Baris CN yang sudah menyimpan teks SI tidak di-backfill.
+`CreditNoteController` kolom `transaction_reference_formatted` memakai `transaction_reference_text` / `transaction_reference_url` bila terisi; kode dan URL morph hanya fallback saat text/url kosong. Filter kolom itu mencari `transaction_reference_text` dulu, lalu kode invoice/AR hanya jika text null. SearchBuilder kolom yang sama mencocokkan `transaction_reference_text`. Tidak ada perubahan frontend untuk Trx Ref. Baris CN yang sudah menyimpan teks SI tidak di-backfill.
+
+**Description + Reference Doc (ETM-17111):** `generateCreditNoteAutoApprove` dan `generateCreditNoteFromReturn` mengirim `description` = `Auto generated from Sales Return {kode}` dan `document_reference` = kode Sales Return (bukan kunci `descripton`). Keduanya tampil di header edit sebagai Description dan Reference Doc. Tidak ada pengisian ulang baris CN yang sudah tersimpan.
 
 ---
 
@@ -254,4 +256,4 @@ Detail messages: [requirement §7](./requirement.md).
 | GAP-CN-04 | Destroy path shared with Payment — document deposit-in-use guards if/when hardened |
 | GAP-CN-05 | Free COA Receiving Destination + type `COA` + Sales Return classify + reconcile D11 — see requirement §5.2 / technical §4.1 |
 | GAP-CN-07 | **A:** `ItemStockMutation` (CN dari SR, SI tanpa customer + `store_id`) menyimpan aktor `Company` dengan id Store pada 3 CN lama (id 30); `PaymentController::show` memuat `actor` (morphTo, kena company scope) → `actor: null` bila company aktif tak melihatnya, sedangkan datalist memakai `Payment::company()` `withoutCompanyScope` (menampilkan nama lain). FE `stores/project/CreditNote/index.ts` `fetchHeader` membaca `data.data.actor.name` tanpa null-guard → TypeError tertelan `catch` → isian sesudahnya batal. **B:** `CreditNoteController::select2Customer` hanya `is_customer` + ≥3 COA tag `company-as-customer` (ETM-11634); fallback nilai terpilih memakai syarat sama. Mirror: DN GAP-DN-07 |
-| GAP-CN-08 | `app/Helpers/SupplyChain/ItemStockMutation.php`: kunci `'descripton'` (typo) di `generateCreditNoteAutoApprove` (±835) dan `generateCreditNoteFromReturn` (±1581) → `PaymentController::store` membaca `description`, jadi tidak tersimpan; `document_reference` tidak dikirim; `CreditNote/Header.vue` hanya punya Reference Doc (tanpa Transaction Reference seperti DN) |
+| GAP-CN-08 | **Closed (ETM-17111).** Histori: kunci `'descripton'` di `ItemStockMutation` membuat `description` tidak tersimpan dan `document_reference` tidak dikirim. Sekarang kedua method mengirim `description` dan `document_reference` = kode return. Halaman edit memakai field Reference Doc yang sudah ada; tidak ditambah field Transaction Reference baru di dokumen ini |
