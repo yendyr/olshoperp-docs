@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.10
-last_updated: 2026-11-05
+version: 3.11
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost Disc, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -137,10 +137,11 @@ Kolom template tetap sama. Cara baca **harga** berubah: titik atau koma bisa jad
 **Export All** (**With Details** atau **Without Details**) meminta judul file dulu, supaya unduhan dan riwayat export mudah dikenali.
 
 1. Klik **Export All** → **With Details** atau **Without Details**.
-2. Dialog **Export File Name** terbuka. Field **File name** sudah terisi saran (boleh diganti, paling banyak 150 karakter). Contoh: `Dev - Sales Order - With Details Export 05-11-2026_15.06.00`.
+2. Dialog **Export File Name** terbuka. Field **File name** sudah terisi saran (boleh diganti, paling banyak 150 karakter). Contoh: `Sales Order General - With Details Export 05-11-2026_15.06.00`.
 3. Klik **Export**. Kalau field kosong, muncul **File name is required.** dan file tidak dibuat.
 4. Nama itu yang terunduh (file Excel, atau zip bila hasilnya dipecah) dan yang tampil di riwayat export.
-5. **Export Active Page Only** tidak membuka dialog — file langsung diproses.
+5. Dua export dengan judul sama tetap jadi dua file terpisah di riwayat export; masing-masing mengunduh datanya sendiri.
+6. **Export Active Page Only** tidak membuka dialog — file langsung diproses.
 
 Karakter yang tidak boleh di nama file diganti tanda minus. Contoh: `Laporan SO 05/11` tersimpan `Laporan SO 05-11`.
 
