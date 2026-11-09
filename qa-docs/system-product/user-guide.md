@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: system-product
 menu_name: "System Product"
-version: 1.6
+version: 1.7
 last_updated: 2026-11-09
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.9
+source_version: 2.10
 owner: QA - Yemima
 status: review
 ---
@@ -94,6 +94,8 @@ Setelah SKU tersimpan:
 - Kalau SKU duplicate saat create, cek lintas company — create UI masih cek SKU **global** (GAP-SP-01 Open).
 - Kalau rekan di company yang sama sedang import produk, tombol **Import** di layar kamu terkunci (tidak bisa diklik) dan menampilkan spinner plus status seperti **Import on Queue...** atau **Importing...**. Tunggu sampai selesai sebelum upload.
 - Kalau **Save All** setelah menambah tipe varian baru muncul *Unable to delete, Product already has existing relations.* dan data tidak tersimpan: child lama biasanya sudah dipakai transaksi; konfirmasi “SKU lama tetap” sedang diperbaiki (ETM-17215). Jangan hapus PO/child. Jangan pakai **Import Update Variant** untuk menambah tipe baru pada kasus itu — import memang menolak.
+- Ukuran foto **300×300** di petunjuk form = **rekomendasi** saja (bukan penolakan otomatis).
+- Brand bersifat opsional; tidak ada isi otomatis dari Shopee.
 
 ---
 

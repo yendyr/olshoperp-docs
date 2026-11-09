@@ -2,7 +2,7 @@
 doc_type: technical
 menu: system-product
 menu_name: "System Product"
-version: 2.9
+version: 2.10
 last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
@@ -13,6 +13,7 @@ related_docs:
 
 # System Product — Technical Documentation
 
+> **2.10 (2026-11-09 10:52 WIB):** GAP-SP-02/05/07 Closed; GAP-SP-08 parent variant `-` vs Bundle numeric ([ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231)); photo UI recommendation-only.  
 > **2.9 (2026-11-09 10:30 WIB):** GAP-SP-18 residual UI leftover [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); Import Update Variant **out of scope** leftover. Lihat [requirement §6.3.2](./requirement.md) / §19.
 > **2.8 (2026-11-09):** AS-IS [ETM-17180](https://erpintegration.atlassian.net/browse/ETM-17180) — kunci import bersamaan per company. Lihat §11.3 / [requirement §13.0](./requirement.md).
 > **2.8b (audit tip):** Status Restock, Import Product Images, Default create, `checkTransaction` luas, DnW→Pricelist — lihat [requirement §19](./requirement.md).

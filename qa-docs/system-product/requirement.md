@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.9
+version: 2.10
 last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
@@ -13,7 +13,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 **Modul:** Supply Chain Management (SCM) / Master Data  
 **Audience:** PM, Operations, QA, Support, Developer  
-**Status:** AS-IS re-verified against codebase per 2026-11-09 (GAP audit — SoT `olshoperp/docs/qa-docs`); leftover residual [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) dicatat 2026-11-09
+**Status:** AS-IS re-verified against codebase per 2026-11-09 (GAP audit — SoT `olshoperp/docs/qa-docs`); leftover residual [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); parent stock [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231)
 
 **UI route (full):** `/supplychain/product`  
 **API base (full):** `{VITE_API_URL}supplychain/product`  
@@ -21,6 +21,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 **PM sources:** User requirement (chat) · D&W artifact v1.0 (7 Mei 2026)
 
+> **Changelog 2.10 (2026-11-09 10:52 WIB):** Tutup GAP-SP-02/05/07 (by design / soft rule); GAP-SP-08 clarify parent variant `-` vs **Bundle tetap angka** + card [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231); foto UI teks = recommendation only.  
 > **Changelog 2.9 (2026-11-09 10:30 WIB):** §6.3.2 + GAP-SP-18 residual — UI expand leftover diblok `Unable to delete…` ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)); **Import Update Variant Product tidak** dikembangkan leftover (tetap boleh tolak tipe beda + child berelasi).  
 > **Changelog 2.8 (2026-11-09):** §13.0 AS-IS [ETM-17180](https://erpintegration.atlassian.net/browse/ETM-17180) — tombol **Import** terkunci per company selama import lain masih jalan (disabled + spinner + label).  
 > **Changelog 2.7 (2026-11-05):** §4.4 + §2.1 [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) **Status Restock** Yes/No. Tags request di-skip.  
@@ -33,6 +34,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.10 | 2026-11-09 10:52 WIB | QA - Yemima | Close SP-02/05/07; SP-08 parent variant vs Bundle + [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231); foto recommendation-only copy |
 | 2.9 | 2026-11-09 10:30 WIB | QA - Yemima | Leftover residual UI [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); import Update Variant **out of scope** leftover; GAP-SP-18 → Partial Open |
 | 2.8 | 2026-11-09 | QA - Yemima | §13.0 kunci import bersamaan per company (ETM-17180); AC #15 |
 | 2.7 | 2026-11-05 | QA - Yemima | §4.4 / §2.1 Status Restock (ETM-17082); tags request di-skip (sudah AS-IS) |
@@ -169,7 +171,7 @@ Urutan section (AS-IS):
 | **Tagging** | Optional; auto-create by name jika belum ada (AS-IS — sudah ada di form & muncul di Pricelist) |
 | **Product Condition** | Required: `Brand New` atau `Second-hand` |
 | **Status Restock** (**AS-IS** ETM-17082) | Radio **Yes** / **No**; UI di bawah Product Condition — lihat §4.4 |
-| **Brand** | Nullable — **tidak ada default dari config Shopee** (GAP-SP-02) |
+| **Brand** | Nullable, **opsional** — **by design** tidak ada default Shopee (end user: tidak ambil brand dari Shopee; GAP-SP-02 **Closed**) |
 | **Random in SKU** | Ditolak: `"Random sku is not allowed"` |
 
 ### 4.2 Default on create (backend)
@@ -283,7 +285,7 @@ Hitung memakai **tier Category Price terkini**. Nilai Category / Pricelist yang 
 
 | Media | FE | BE |
 |-------|----|----|
-| **Photos** | Max **10**; `.jpg/.jpeg/.png`; UI text min **300×300** px; max file 20 MB | Max 10 images; **tidak validasi dimensi** (GAP-SP-05) |
+| **Photos** | Max **10**; `.jpg/.jpeg/.png`; UI: **recommended** min **300×300** px (optimal 700×700) — **not enforced**; max file 20 MB | Max 10 images; no dimension validation (GAP-SP-05 **Closed** — soft recommendation) |
 | **Video** | Max **5**; UI copy `.mkv` dan `.mp4` | `mimes:mp4,mov`; max `config('upload.size.video')` = **20480 KB** (GAP-SP-04) |
 
 Upload foto auto-trigger saat edit via `POST {menuBaseUrl}/{id}/detail`.
@@ -419,7 +421,7 @@ Import **tidak** dikembangkan untuk leftover. Jika child berelasi dan tipe/group
 |-------|-----|---------|
 | Hazardous | Yes/No radio, default `"No"` | `hazardous` nullable |
 | Warranty | Select2 master warranty | `warranty_id` nullable |
-| Warranty policy | Free text | **No max length** (GAP-SP-07 — PM expected max 30) |
+| Warranty policy | Free text | **No max length** — **by design** (GAP-SP-07 **Closed**; tidak enforce max 30) |
 | Pre-order | Toggle + days | `pre_order`; field disabled saat toggle off |
 
 ---
@@ -631,7 +633,7 @@ Satu company hanya satu import produk yang masih berjalan. Kunci ini mengikuti c
 | Duplicate SKU in file | Semua baris dengan SKU yang muncul >1× **ditolak**; SKU unik tetap diproses (**partial success**) |
 | Format | JPG / JPEG / PNG |
 | Max size | Sama validasi foto existing UI → **20 MB** |
-| Dimensi 300×300 | **Recommended only** — tidak di-enforce (selaras BE manual / GAP-SP-05) |
+| Dimensi 300×300 | **Recommended only** — UI copy recommendation; tidak di-enforce (GAP-SP-05 **Closed**) |
 | Max rows | **1.000** / file (lebih ketat dari import product lain karena download GDrive) |
 | Queue | Dedicated / throttled job (delay antar download) agar tidak menekan import menu lain |
 | Partial success | Baris valid commit; gagal tercatat di import log |
@@ -817,23 +819,20 @@ PO/PR Without PR: System Product **active**, Single/Variant child, punya COA gro
 
 | Bucket | ID |
 |--------|----|
-| **Open** (masih gap nyata) | GAP-SP-01, 02, 04, 05, 06, 07, 08, 09, **18** (residual UI leftover) |
-| **Closed 2026-11-09** (kode/docs sudah selaras) | GAP-SP-11, 13, 14, 15, 16, 17 |
-| **Confirmed OK / by design** | GAP-SP-03, 10, 12 (basis Price Before VAT + `->price`; residual UI/ETM-16216 di bawah). Import Update Variant **tanpa** leftover = **by design** (bukan gap aktif) |
+| **Open** (masih gap nyata) | GAP-SP-01, 04, 06, 08, 09, **18** (residual UI leftover) |
+| **Closed 2026-11-09** (kode/docs sudah selaras) | GAP-SP-11, 13, 14, 15, 16, 17 · **02 / 05 / 07** (keputusan 2026-11-09 10:52) |
+| **Confirmed OK / by design** | GAP-SP-03, 10, 12 (basis Price Before VAT + `->price`; residual UI/ETM-16216 di bawah). Import Update Variant **tanpa** leftover = **by design**. Brand opsional tanpa default Shopee (SP-02). Foto 300×300 soft recommendation (SP-05). Warranty policy unbounded (SP-07). |
 
 ### 19.1 Tabel — masih Open
 
 | ID | Topik | Ekspektasi PM/Artifact | AS-IS (2026-11-09) | Status |
 |----|-------|------------------------|--------------------|--------|
 | **GAP-SP-01** | SKU unique per owner | Unique dalam `owned_by` | UI create (`$with_auth=true`): `Product::where('sku')` **tanpa** `owned_by`. Import/`!$with_auth` sudah scoped company | **Bug — Open** |
-| **GAP-SP-02** | Brand default Shopee | Default dari config | `brand_id` nullable; tidak ada default config | **Not implemented — Open** |
-| **GAP-SP-04** | Video format | FE copy: mkv + mp4 | BE `mimes:mp4,mov` (`ProductDetailController`) | **Mismatch FE/BE — Open** |
-| **GAP-SP-05** | Photo min 300×300 | Enforced | UI text recommended only; BE tidak validasi dimensi | **Not enforced — Open** |
-| **GAP-SP-06** | Variant max 3 types | Enforced end-to-end | FE tampilkan add jika `Object.keys(variant_options).length <= 2`; **BE tidak** validasi max 3 | **Partial — Open** |
-| **GAP-SP-07** | Warranty policy max 30 | Max 30 chars | Tidak ada `max:30` di store/update | **Not implemented — Open** |
-| **GAP-SP-08** | Parent stock datalist | Tooltip: parent tampil `-` | BE `availability_on_hand_ats_formatted` selalu numerik untuk semua tipe termasuk PARENT | **UI expectation gap — Open** |
-| **GAP-SP-09** | All D&W table + summary | Artifact AC3–AC4 di main form | Hanya modal Edit Unit per primary/alternate | **Partial — Open** |
-| **GAP-SP-18** | Expand leftover (UI) | Expand + child berelasi → confirm leftover → simpan (ETM-15495) | Path leftover ada, tetapi Save All tambah type/group sering error `Unable to delete, Product already has existing relations.` — popup tidak muncul ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); bukti WNA/`KACALOS`). Import Update Variant **tidak** di-scope leftover | **Partial — Open residual** |
+| **GAP-SP-04** | Video format | **mkv + mp4 + mov** | FE copy vs BE `mimes:mp4,mov` — [ETM-17227](https://erpintegration.atlassian.net/browse/ETM-17227) | **Mismatch FE/BE — Open** |
+| **GAP-SP-06** | Variant max 3 types | Enforced end-to-end | FE batasi add; **BE tidak** validasi max 3 — [ETM-17226](https://erpintegration.atlassian.net/browse/ETM-17226) | **Partial — Open** |
+| **GAP-SP-08** | Parent variant stock datalist | **Parent variant** (`-(PARENT)`): kolom stok `-`. **Bundle:** tetap **angka** (carry komponen). Single/child: angka | BE numerik juga untuk PARENT; tooltip vs angka mismatch — [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231) | **Open** |
+| **GAP-SP-09** | All D&W table + summary | Artifact AC3–AC4 di main form | Hanya modal Edit Unit per primary/alternate | **Partial — Open** (ditunda) |
+| **GAP-SP-18** | Expand leftover (UI) | Expand + child berelasi → confirm leftover → simpan (ETM-15495) | Path leftover ada, tetapi Save All tambah type/group sering error `Unable to delete…` — [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) | **Partial — Open residual** |
 
 ### 19.2 Tabel — Closed / OK (audit 2026-11-09)
 
@@ -848,7 +847,10 @@ PO/PR Without PR: System Product **active**, Single/Variant child, punya COA gro
 | **GAP-SP-15** | Route menu | Docs/README sudah `/supplychain/product` | **Closed** |
 | **GAP-SP-16** | Import Product Images | `PRODUCT_IMPORT_OPTIONS` + `ProductImageImport` (max 1000) + job; ETM-15529 Done | **Closed → AS-IS §13.1** |
 | **GAP-SP-17** | Default Variant create/import | `ProductController@store` + Default Variant → `SKU-(PARENT)` + child; ETM-15512 Done | **Closed → AS-IS §6.3.1** |
-| ~~**GAP-SP-18**~~ | Expand leftover | Hard-block dicabut + path leftover di-ship (ETM-15495) — **tapi** residual UI [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) → pindah **Open** §19.1 | **Reopened Partial 2026-11-09** |
+| **GAP-SP-02** | Brand default Shopee | End user: brand opsional; tidak ambil default dari Shopee | Nullable, no default config | **Closed — by design 2026-11-09** |
+| **GAP-SP-05** | Photo min 300×300 | Soft recommendation only (bukan enforce) | UI copy recommendation; BE no dimension check | **Closed — soft rule 2026-11-09** |
+| **GAP-SP-07** | Warranty policy max 30 | Tidak di-enforce (biarkan unbounded) | No `max:30` | **Closed — by design 2026-11-09** |
+| ~~**GAP-SP-18**~~ | Expand leftover | Hard-block dicabut + path leftover di-ship (ETM-15495) — residual UI [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) → **Open** §19.1 | **Reopened Partial 2026-11-09** |
 
 ### 19.3 GAP-SP-09 — D&W UI sections (detail — masih Open)
 
@@ -876,9 +878,9 @@ Artifact (7 Mei 2026) mensyaratkan tiga section: Unit Configuration ✅, **D&W D
 | **DEV-SP-02** | Align video FE copy (mkv) vs BE (`mp4,mov`) | `FormProductComponent.vue`, `ProductDetailController` |
 | **DEV-SP-03** | BE validate variant max 3 types | `ProductVariantController@store` |
 | **DEV-SP-04** | Implement All D&W table + summary per artifact | `FormProductComponent.vue` |
-| **DEV-SP-07** | Photo dimension validation BE (jika PM tetap enforce) | `ProductDetailController@store` |
-| **DEV-SP-09** | Warranty policy `max:30` (jika PM tetap enforce) | store/update validation |
-| **DEV-SP-10** | Parent stock display `-` vs numeric (selaraskan tooltip FE / BE) | datalist stock column |
+| **DEV-SP-10** | Parent **variant** stock display `-` (Bundle tetap angka) — [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231) | datalist / `availability_on_hand_ats_formatted` |
+
+~~DEV-SP-07~~ Closed (foto soft recommendation). ~~DEV-SP-09~~ Closed (warranty unbounded by design).
 | **DEV-SP-11** | UI expand leftover residual — jangan treat tambah group sebagai hapus opsi berelasi; pastikan popup + save ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) | `ProductSpecificationController` + `FormProductComponent` Save All / `check_leftover` |
 
 ~~DEV-SP-05~~ Closed (checkTransaction sudah luas). ~~DEV-SP-06~~ Closed (manifest path OK). ~~DEV-SP-08~~ Closed (rate_disabled kondisional).
@@ -892,11 +894,11 @@ Artifact (7 Mei 2026) mensyaratkan tiga section: Unit Configuration ✅, **D&W D
 | **P-SP-01** | 🔴 **Highest** | **Dev + QA** | **SKU create unique per Data Owner?** (GAP-SP-01) | UI create masih global; update/import sudah scoped | Fix create **atau** dokumentasikan global unique by design |
 | **P-SP-02** | 🟢 **Resolved** | **PM** | Bundle pricing Price Before VAT (GAP-SP-12) | `pickBundleChildren` pakai retail `price` | Monitor ETM-16216 + coefficient UI |
 | **P-SP-03** | 🔴 **Major** | **PM + Dev** | Deploy All D&W + summary cards? (GAP-SP-09) | Modal-only | Prioritas implement vs accept modal-only |
-| **P-SP-04** | 🟡 Medium | **Ops** | Brand default Shopee (GAP-SP-02) | Manual pilih brand | Perlu default config? |
-| **P-SP-06** | 🟡 Medium | **End user** | Parent stok tampil `-`? (GAP-SP-08) | Tooltip janji `-`; BE numerik | Override FE atau ubah tooltip |
-| **P-SP-08** | 🟡 Medium | **Dev** | Align video mime FE/BE (GAP-SP-04) | FE sebut mkv; BE mp4/mov | Samakan copy atau terima mov |
-| **P-SP-09** | 🟢 Low | **PM** | Enforce photo 300×300 & warranty max 30? (GAP-SP-05/07) | Recommended / unbounded | Enforce BE atau ubah PM ke soft rule |
-| **P-SP-10** | 🔴 **Highest** | **Dev + QA** | UI leftover expand residual (GAP-SP-18 / [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) | Save All tambah type + child berelasi → `Unable to delete…`, data tidak simpan | Fix UI leftover; **jangan** kerjakan leftover di Import Update Variant sekarang |
+| **P-SP-06** | 🔴 **Highest** | **Dev + QA** | Parent **variant** stok `-` (GAP-SP-08 / [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231)); **Bundle tetap angka** | PARENT masih numerik | Fix display parent variant only |
+| **P-SP-08** | 🟡 High | **Dev** | Video mkv+mp4+mov ([ETM-17227](https://erpintegration.atlassian.net/browse/ETM-17227) / GAP-SP-04) | FE vs BE mismatch | Terima mkv+mp4+mov |
+| **P-SP-10** | 🔴 **Highest** | **Dev + QA** | UI leftover expand residual (GAP-SP-18 / [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) | Save All tambah type + child berelasi → `Unable to delete…` | Fix UI leftover; jangan leftover di Import Update Variant |
+
+**Closed pending (2026-11-09 10:52):** P-SP-04 (SP-02 by design) · P-SP-09 (SP-05/07 soft / unbounded)
 
 **Closed dari pending (audit 2026-11-09):**
 

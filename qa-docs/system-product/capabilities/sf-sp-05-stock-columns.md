@@ -37,7 +37,7 @@ Angka di-cache 1 menit per produk; refresh setelah transaksi.
 ## Catatan
 
 - **Bundle:** angka = komponen paling sedikit (**lowest denominator**). Contoh: butuh 2 A + 1 B, stok A=10 B=3 → bundle max 3.
-- **Parent variant:** tooltip menyebut `-`; backend tetap menghitung angka (GAP-SP-08).
+- **Parent variant** (`-(PARENT)`): expected stok `-` (GAP-SP-08 / ETM-17231 — Open). **Bundle:** tetap angka (carry komponen) — jangan disamakan dengan parent variant.
 - Cache bisa membuat angka tampak tertunda hingga 1 menit.
 
 ## Contoh

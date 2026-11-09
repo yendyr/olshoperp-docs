@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.9
+version: 2.10
 last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
@@ -13,8 +13,9 @@ sections:
 
 # System Product — Knowledge Base
 
-> **2.9:** Leftover expand di **edit UI** masih residual ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) — tambah tipe varian + child sudah dipakai transaksi bisa error *Unable to delete…* dan data tidak tersimpan. **Import Update Variant Product** tidak mendukung leftover (tetap boleh ditolak). Detail: [requirement §6.3.2](./requirement.md).  
-> **2.8:** Tombol **Import** terkunci (spinner + status) selama import lain di company yang sama masih berjalan — ETM-17180. Tunggu selesai sebelum upload.  
+> **2.10:** Brand opsional (tanpa default Shopee). Ukuran foto 300×300 = **rekomendasi saja**. Parent variant di datalist seharusnya stok `-` (sedang diperbaiki); **Bundle tetap angka**.  
+> **2.9:** Leftover expand di **edit UI** masih residual ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) — tambah tipe varian + child sudah dipakai transaksi bisa error *Unable to delete…*. Import Update Variant tidak leftover.  
+> **2.8:** Tombol **Import** terkunci selama import lain di company yang sama masih berjalan — ETM-17180.  
 > **2.8:** GAP audit — Status Restock, Import Product Images, Default/leftover Variant, DnW→Pricelist = **AS-IS**. Open residual lain: SKU create scope, video mime, D&W summary, parent stock tooltip (§19).
 
 ## 1. Apa itu System Product?
@@ -126,7 +127,7 @@ Setiap satuan punya **profil D&W** (bisa lebih dari satu):
 
 | Media | Batas |
 |-------|-------|
-| Foto | Max **10**; JPG/PNG; disarankan min 300×300 px |
+| Foto | Max **10**; JPG/PNG; **rekomendasi** min 300×300 px (optimal 700×700) — tidak ditolak jika lebih kecil |
 | Video | Max **5**; upload **mp4** (sistem terima mp4/mov) |
 
 ### Variant
