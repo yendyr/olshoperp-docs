@@ -81,6 +81,8 @@ Kalau perlu menulis **script sekali pakai** (dump DOM, cek API, reproduksi bug):
 Itu buku lengkap (UI valid, data uji, DB, credential, Jira, Telegram, log).  
 Jangan load banyak rules — skill sudah ringkas.
 
+Agent lain mengambil alih (kuota habis, sesi putus, atau penguji di luar lingkungan semula): baca [`docs/qa/bugsy-agent-handoff.md`](../docs/qa/bugsy-agent-handoff.md). Manual itu kontrak input, output, dan konflik SOP. Skill di atas tetap buku uji.
+
 Ringkas:
 - TC dokumentasi = **Jira saja** (sejak 26 Okt 2026); jangan buat `TC-*.md` baru untuk ini
 - Dilarang `tests/scripts/` → probe di `tests/scratch/` / `check-*` tanpa tag; regresi → `@ETM-xxxxx`
