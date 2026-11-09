@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.5
-last_updated: 2026-11-04
+version: 2.6
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 audience: operator
@@ -85,6 +85,15 @@ Dalam satu baris, isi **salah satu** saja — Debit atau Credit, tidak boleh dua
 | Upload ditolak karena ada proses lain | Hanya boleh ada satu proses import berjalan | Tunggu sampai import sebelumnya selesai |
 | Pembayaran pakai deposit ditolak | Credit Note belum disetujui, saldonya kurang, atau pemiliknya beda dengan customer di tagihan | Pastikan CN sudah Approved, saldo mencukupi, dan customernya sama |
 | Muncul permintaan mengatur akun deposit customer | Akun deposit customer belum diisi di data perusahaan atau data store | Lengkapi dulu pengaturan akun deposit customer tersebut |
+| Tagihan masuk ke detail, Receiving Destination tetap kosong | Section tujuan penerimaan belum selesai dimuat ulang, atau tagihan tidak punya kas/bank tertaut | Tunggu sebentar lalu cek lagi. Kalau tetap kosong, catat kode dokumen dan tagihannya |
+
+## Memilih tagihan di dokumen yang sudah ada
+
+Pada dokumen Account Receive yang masih **Draft** atau **Open**, field **Select Invoice** (pilih tagihan di bagian detail) memasukkan tagihan ke tabel detail. Bagian **Receiving Destination** ikut terisi baris penerimaan dengan jumlah yang sama, lalu tampilannya disegarkan. Anda tidak perlu memuat ulang halaman.
+
+**Misalnya** tagihan 105.000. Setelah tagihan itu dipilih, cek Receiving Destination: ada baris dengan jumlah 105.000.
+
+Akun pada baris itu mengikuti kas/bank yang tertaut di tagihan.
 
 ## Relasi Instant Settlement
 
@@ -110,5 +119,7 @@ Dalam satu baris, isi **salah satu** saja — Debit atau Credit, tidak boleh dua
 **Sheet ketiga wajib diisi?** Tidak. Isi hanya kalau ada selisih antara uang masuk dan nilai tagihan.
 
 **Apa section Summary? (TO-BE ETM-16644)** Setelah Adjustment — ringkasan Piutang, Cash/Bank, Credit Note (sumber + yang terbentuk), Adj Debit/Credit, Total dalam currency header. Total sebaiknya 0; kalau tidak, angka Total berwarna orange (peringatan visual saja).
+
+**Setelah pilih invoice di dokumen yang sudah ada, apa yang harus dicek?** Receiving Destination. Jumlahnya harus sama dengan tagihan yang baru masuk, misalnya 105.000.
 
 **Detail lengkap ada di mana?** Lihat [requirement.md](./requirement.md) untuk aturan rinci dan [user-guide.md](./user-guide.md) untuk panduan langkah.

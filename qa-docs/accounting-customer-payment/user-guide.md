@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 1.2
-last_updated: 2026-11-04
+version: 1.3
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 source_docs:
   - requirement.md
   - knowledge-base.md
   - technical.md
-source_version: 2.5
+source_version: 2.6
 ---
 
 # Account Receive — User Guide
@@ -83,6 +83,13 @@ Pastikan hal-hal ini sudah siap:
 8. Perbaiki semua yang dilaporkan, lalu upload ulang.
 9. Setelah berhasil, dokumen muncul di daftar berstatus **Open**. Periksa lalu **Approve**.
 
+### Memilih tagihan di dokumen yang sudah ada
+
+1. Buka Account Receive yang masih **Draft** atau **Open**.
+2. Di bagian detail, pilih tagihan lewat **Select Invoice**.
+3. Cek **Receiving Destination**. Harus ada baris dengan jumlah yang sama dengan tagihan itu. Misalnya tagihan 105.000, baris penerimaan juga 105.000.
+4. Anda tidak perlu memuat ulang halaman. Kalau barisnya belum muncul, tunggu sebentar lalu cek lagi.
+
 ### Mengisi penanda pengikat
 
 Kolom penanda di sheet kedua dan ketiga meminta **nomor baris Excel** dari sheet pertama — angka yang terlihat di sisi kiri layar Excel, bukan nomor urut data Anda.
@@ -114,6 +121,8 @@ Dalam satu baris isi salah satu saja — Debit atau Credit, tidak boleh dua-duan
 **"Kenapa muncul keluhan input dikenali sebagai dua hal sekaligus?"** Ada kode akun bank dan nomor deposit yang kebetulan persis sama. Ubah salah satu penamaannya.
 
 **"Dokumen AR muncul sendiri, dari mana?"** Kalau Anda menyetujui batch di menu Instant Settlement, sistem otomatis membuat dokumen pelunasan untuk tagihan hasil batch itu. Tagihan yang sudah Anda lunasi manual tidak akan dibuatkan lagi. Tanggal AR mengikuti tanggal Sales Invoice (semua SI di batch harus hari yang sama); jam AR mengambil jam SI paling akhir di batch.
+
+**"Saya sudah pilih invoice, kenapa Receiving Destination kosong?"** Tunggu section itu selesai dimuat ulang, lalu cek lagi. Jumlahnya harus sama dengan tagihan yang baru dipilih.
 
 ## 8. Referensi
 

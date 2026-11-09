@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.5
-last_updated: 2026-11-04
+version: 2.6
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 ---
@@ -71,6 +71,7 @@ status: review
 | GET | `accounting/customer-payment/import-history-detail/{historyId}` | `CustomerPaymentController@importHistoryDetail` |
 | GET | `accounting/customer-payment/{payment}/outstanding-customer-invoice` | `CustomerPaymentController@outstanding_customer_invoice` |
 | GET | `accounting/customer-payment/{payment}/select2-outstanding-invoice` | `CustomerPaymentController@select2OutstandingCustomerInvoice` |
+| POST | `accounting/customer-payment/{payment}/bulk-select` | `CustomerPaymentDetailController@bulkSelectStore` |
 
 ## 3. Database Key Tables
 
@@ -130,6 +131,7 @@ sequenceDiagram
 - Kolom **Description** di `DataList.vue` (deskripsi header) bisa dicari dan diurutkan lewat `PaymentController`. Ekspor daftar "Receive per {tanggal}" menulis kolom yang sama di `CustomerPaymentExport` dan `CustomerPaymentExportChunkJob` (ETM-16991).
 - Progress import di-poll lewat endpoint `import/progress`.
 - Modal Available Sales Invoice mengambil data dari endpoint outstanding invoice pada dokumen AR terkait.
+- **Select Invoice (ETM-17102):** `DatalistDetail.vue` memanggil `POST .../bulk-select`. `PaymentDetailController::bulkSelectStore` membuat detail dengan `is_full_amount = 1` dan amount = `invoice_remaining_after_vat`, lewat `store()`. Di `store()`, bila Sales Invoice punya `cash_bank`, transaksi yang sama membuat baris fund Cash/Bank (`PaymentDetailFundController::store`) dengan `fund_amount` = amount detail. `Form.vue` harus memuat ulang section Receiving Destination setelah response sukses supaya baris baru tidak tertinggal di tampilan lama. Nama key komponen Vue tidak dicek ulang pada pembaruan ini.
 
 ## 8. Failure Modes & Transaction Boundary
 

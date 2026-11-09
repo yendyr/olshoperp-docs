@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.5
-last_updated: 2026-11-04
+version: 2.6
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 ---
@@ -20,6 +20,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.6 | 2026-11-09 | QA - Yemima | **AS-IS** [ETM-17102](https://erpintegration.atlassian.net/browse/ETM-17102): Select Invoice pada AR Draft/Open menambah baris Receiving Destination sebesar nilai invoice, dan section itu langsung menampilkan barisnya |
 | 2.5 | 2026-11-04 | QA - Yemima | Daftar Account Receive menampilkan kolom Description per dokumen; bisa dicari dan diurut, dan ikut di file ekspor termasuk Receive per tanggal ([ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)) |
 | 2.4 | 2026-10-26 | QA - Yemima | Klarifikasi final ETM-16764: stamp COA = setting by asal CN (bukan historis jurnal CN) |
 | 2.3 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764): Payment Source CN stamp COA dari asal CN; GAP-AR-CN-COA |
@@ -193,6 +194,20 @@ Saat user Approve batch Instant Settlement, sistem membentuk satu dokumen AR per
 
 AR manual tidak ikut terhapus saat settlement di-Reject, dan justru memblokir Delete settlement bila terhubung ke invoice hasil upload. Detail alur bulk ada di [Instant Settlement](../accounting-settlement-upload/requirement.md).
 
+### 5.9 Select Invoice pada dokumen Draft atau Open (ETM-17102)
+
+Pada Account Receive yang masih bisa diubah (Draft atau Open), field **Select Invoice** di Detail Account Receive memasukkan Sales Invoice ke tabel detail. Sistem ikut menambah baris di **Receiving Destination** dengan Amount sama dengan nilai invoice yang masuk. Select Invoice memakai sisa tagihan penuh. Section Receiving Destination disegarkan setelah pilihan berhasil, sehingga baris itu terlihat tanpa memuat ulang halaman.
+
+Akun pada baris itu adalah kas/bank yang tertaut di Sales Invoice.
+
+**Contoh.** Sales Invoice senilai Rp105.000 ditambahkan lewat Select Invoice pada dokumen Account Receive yang masih Draft. Detail Account Receive memuat invoice itu, dan Receiving Destination memuat baris dengan Amount Rp105.000.
+
+| ID | Kriteria |
+|----|----------|
+| AR-SEL-01 | Select Invoice pada AR Draft/Open memasukkan Sales Invoice ke Detail Account Receive |
+| AR-SEL-02 | Receiving Destination mendapat baris dengan Amount sama dengan nilai invoice yang masuk |
+| AR-SEL-03 | Baris itu tampil di Receiving Destination tanpa memuat ulang halaman |
+
 ## 6. Validasi
 
 Format pesan: `Row {baris} at Sheet {nomor sheet}: {Kolom} {pesan}`. Nomor sheet mengikuti urutan sheet fisik di file.
@@ -358,6 +373,8 @@ flowchart TB
 **Bisa bayar pakai deposit customer?** Bisa. Isi nomor Credit Note di kolom COA Bank Account, dengan syarat CN sudah Approved dan saldonya cukup.
 
 **Apa section Summary? (TO-BE ETM-16644)** Ringkasan read-only setelah Adjustment: Piutang, Cash/Bank, Credit Note, Adj Debit/Credit, Total — semua dalam currency header. Total ideal 0; jika ≠ 0 teks Total berwarna orange (info saja).
+
+**Setelah Select Invoice, apa yang harus muncul di Receiving Destination?** Baris penerimaan dengan jumlah yang sama dengan tagihan yang baru masuk. Misalnya tagihan Rp105.000, Amount di Receiving Destination juga Rp105.000, tanpa memuat ulang halaman.
 
 ## Related Documents
 
