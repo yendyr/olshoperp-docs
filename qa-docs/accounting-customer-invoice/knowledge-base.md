@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 2.3
-last_updated: 2026-11-04
+version: 2.4
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, piutang]
@@ -105,8 +105,24 @@ Template **3 kolom:** Transaction Date · Order Number · Platform Order ID.
 | Approve | Post jurnal + kunci dokumen (hanya Open) |
 | Reject | Tolak Open (bukan platform) |
 | Delete | Hapus draft/open/rejected non-platform |
-| Import / Export | Excel + log |
+| Import | Excel saldo awal + log |
+| Export | **Without Details** / **With Details**: isi judul file dulu (§7b). **Export Active Page Only**: langsung, tanpa dialog |
 | Print | Semua status |
+
+---
+
+## 7b. Export — judul file
+
+**Export Without Details** dan **Export With Details** meminta judul file dulu, supaya unduhan dan riwayat export mudah dikenali.
+
+1. Di daftar Sales Invoice, klik **Export** → **Export Without Details** atau **Export With Details**.
+2. Dialog **Export File Name** terbuka. Field **File name** sudah terisi saran (boleh diganti, paling banyak 150 karakter). Contoh: `Sales Invoice - With Details Export 09-11-2026_10.51.00`.
+3. Klik **Export**. Kalau field kosong, muncul **File name is required.** dan file tidak dibuat.
+4. Nama itu yang terunduh (file Excel, atau zip bila hasilnya dipecah) dan yang tampil di riwayat export. Bagian di dalam zip memakai judul itu plus rentang baris.
+5. Dua export dengan judul sama tetap jadi dua file terpisah di riwayat export; masing-masing mengunduh datanya sendiri.
+6. **Export Active Page Only** tidak membuka dialog — file langsung diproses.
+
+Karakter yang tidak boleh di nama file diganti tanda minus. Spasi berlebih dirapikan. Contoh: `Laporan SI 09/11` tersimpan `Laporan SI 09-11`.
 
 ---
 
@@ -121,6 +137,7 @@ Template **3 kolom:** Transaction Date · Order Number · Platform Order ID.
 | SI platform tidak bisa hapus/reject | Normal — dari platform |
 | Import gagal semua | Satu baris invalid menggagalkan batch; cek log |
 | Rejected jadi Draft setelah Save | Normal — set Open lagi lalu Approve |
+| **Export** tidak jalan / pesan **File name is required.** | Field **File name** di dialog **Export File Name** masih kosong. Isi nama, lalu klik **Export** lagi |
 
 ---
 
@@ -144,6 +161,9 @@ A: Saat SI **Approve** (bukan saat import berhenti di Open).
 **Q: Customer Create dari mana?**  
 A: Company General as customer + AR COA + SO outstanding — bukan store platform.
 
+**Q: Export minta nama file?**  
+A: Ya, untuk **Export Without Details** dan **Export With Details**. Kosongkan **File name** → **File name is required.** Saran awal boleh dipakai atau diganti (paling banyak 150 karakter). Contoh `Laporan SI 09/11` tersimpan `Laporan SI 09-11`. Dua export berjudul sama tetap dua file. **Export Active Page Only** tidak menanyakan nama.
+
 ---
 
 ## Kamus singkat
@@ -166,3 +186,4 @@ A: Company General as customer + AR COA + SO outstanding — bukan store platfor
 | User Guide | [user-guide.md](./user-guide.md) |
 | Account Receive | [../accounting-customer-payment/knowledge-base.md](../accounting-customer-payment/knowledge-base.md) |
 | Credit Note | [../accounting-credit-note/knowledge-base.md](../accounting-credit-note/knowledge-base.md) |
+

@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 1.2
-last_updated: 2026-11-04
+version: 1.3
+last_updated: 2026-11-09
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.3
+source_version: 2.4
 owner: QA - Yemima
 status: review
 ---
@@ -108,6 +108,7 @@ Setelah SI **di-approve**:
 - **Kalau [import Excel](#sf-lingo:SF-IMP-01)**, isi Order Number **atau** Platform Order ID (salah satu); hanya SO internal/general; hasilnya status Open — Approve manual supaya jurnal jalan.  
 - **Kalau satu baris import rusak**, seluruh file gagal.
 - **Kalau kamu hapus baris barang, atau hapus seluruh Sales Invoice** yang masih Draft/Open (bukan dari platform), Sales Order yang terpakai kembali **Approved** dan bisa dipilih lagi di Select Product / Outstanding SO, atau di-import lagi. Invoice yang sudah tidak punya baris barang tidak menghalangi import.
+- **Kalau kamu Export** (**Without Details** atau **With Details**) tanpa mengisi **File name**, sistem menolak dengan **File name is required.** **Export Active Page Only** tidak menanyakan nama.
 
 ---
 
@@ -152,6 +153,16 @@ Setelah SI **di-approve**:
 | Terima bayar | **Account Receive** |
 | Cetak | **Print** |
 | Koreksi | **Credit Note** / Sales Return (sesuai kebijakan) |
+| Unduh daftar | **Export** — lihat Langkah 6 |
+
+### Langkah 6 — Export daftar
+
+1. Di daftar Sales Invoice, klik **Export** → **Export Without Details** atau **Export With Details**.
+2. Di dialog **Export File Name**, isi atau ubah **File name**. Saran sudah terisi, misalnya `Sales Invoice - With Details Export 09-11-2026_10.51.00` (paling banyak 150 karakter).
+3. Klik **Export**. Kalau nama kosong, muncul **File name is required.**
+4. File yang terunduh memakai nama itu (Excel, atau zip bila hasilnya dipecah). Nama yang sama tampil di riwayat export.
+5. Dua export dengan judul yang sama tetap jadi dua file terpisah. Masing-masing baris riwayat mengunduh datanya sendiri.
+6. **Export Active Page Only** tidak membuka dialog.
 
 ---
 
@@ -164,6 +175,7 @@ Setelah SI **di-approve**:
 - **Import platform?** Tidak boleh — hanya order internal/general ([Import](#sf-lingo:SF-IMP-01)).  
 - **Setelah Reject, status jadi Draft?** Normal — set Open lagi lalu Approve.
 - **SO tidak muncul lagi setelah baris atau invoice dihapus?** Seharusnya SO kembali Approved dan bisa dipakai lagi (pilih manual atau import). Kalau datanya sudah rusak sebelum perbaikan ini, sistem tidak memulihkan sendiri — laporkan ke QA.
+- Kalau **Export** di dialog **Export File Name** ditolak, isi judul dulu. Contoh `Laporan SI 09/11` tersimpan `Laporan SI 09-11`. Dua export dengan judul sama tetap dua file terpisah; masing-masing baris riwayat mengunduh datanya sendiri.
 
 ---
 
@@ -180,4 +192,5 @@ Setelah SI **di-approve**:
 
 ---
 
-*Derivatif dari requirement / knowledge-base / technical v2.0 — Feature Map v1.0 ditautkan untuk Lingo.*
+*Derivatif dari requirement / knowledge-base / technical v2.4 — Feature Map v1.0 ditautkan untuk Lingo.*
+

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-invoice
 menu_name: "Sales Invoice"
-version: 2.3
-last_updated: 2026-11-04
+version: 2.4
+last_updated: 2026-11-09
 owner: QA - Yemima
 status: review
 aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, AR invoice]
@@ -17,7 +17,7 @@ aliases: [SI, sales invoice, customer invoice, faktur jual, tagihan customer, AR
 **UI route:** `/accounting/customer-invoice`  
 **SoT:** `_meta/sot/accounting-customer-invoice-source-of-truth.md` v1.0 (24 Agu 2026)  
 **Jira import:** [ETM-14976](https://erpintegration.atlassian.net/browse/ETM-14976)  
-**Related:** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) (carry OC/OD dari SO) · [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (sumber di SO) · [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807) (blok SI jika SO masih random) · [ETM-17019](https://erpintegration.atlassian.net/browse/ETM-17019) (hapus baris/SI melepas SO)
+**Related:** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) (carry OC/OD dari SO) · [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) (sumber di SO) · [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807) (blok SI jika SO masih random) · [ETM-17019](https://erpintegration.atlassian.net/browse/ETM-17019) (hapus baris/SI melepas SO) · [ETM-16771](https://erpintegration.atlassian.net/browse/ETM-16771) (judul file export)
 
 Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · [Credit Note](../accounting-credit-note/requirement.md)
 
@@ -27,6 +27,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.4 | 2026-11-09 | QA - Hazel (yemimadocs) | **AS-IS** [ETM-16771](https://erpintegration.atlassian.net/browse/ETM-16771): Export With/Without Details wajib judul file (dialog **Export File Name**); nama kosong ditolak; nama bersih jadi file unduhan dan baris riwayat; tiap export disimpan terpisah. Export Active Page Only tanpa dialog |
 | 2.3 | 2026-11-04 | QA - Hazel (yemimadocs) | **TO-BE** [ETM-17019](https://erpintegration.atlassian.net/browse/ETM-17019): hapus baris detail / hapus SI melepas SO (qty prepared kembali, SO kembali Approved, Trx Ref. dikosongkan); SI tanpa detail tidak memblok import |
 | 2.2 | 2026-10-26 | QA - Yemima | **TO-BE** [ETM-16807](https://erpintegration.atlassian.net/browse/ETM-16807): blok Use/create SI jika SO masih contain random SKU; warning icon + tooltip EN di modal outstanding |
 | 2.1 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763): OC/OD dari SO carry ke SI (sekali); manual = PO→PI; settlement anti-duplikat |
@@ -131,7 +132,7 @@ stateDiagram-v2
 
 ### 4.2 Toolbar
 
-Global Search · Advanced Filter (SearchBuilder) · **Create** (auto-save dari last saved) · Show deleted · Column show/hide · Export without/with detail (async) · **Import** template 3 kolom (§6.5).
+Global Search · Advanced Filter (SearchBuilder) · **Create** (auto-save dari last saved) · Show deleted · Column show/hide · **Export Without Details** / **Export With Details** (async, judul file wajib — §6.7) · **Export Active Page Only** (tanpa dialog) · **Import** template 3 kolom (§6.5).
 
 ### 4.3 Action per baris
 
@@ -313,6 +314,28 @@ SI dibuat sistem; sering auto-approved. Create manual **tidak** untuk order plat
 | 3 | Rejected → buka form | Radio **draft**; Save → draft; set Open lagi sebelum Approve |
 | 4 | Import 1 SO General valid | SI **Open**; journal setelah Approve manual |
 | 5 | Import SO platform | Ditolak — hanya internal/general |
+| 6 | Export With/Without Details, **File name** dikosongkan | **File name is required.** File tidak dibuat |
+| 7 | Isi `Laporan SI 09/11` lalu **Export** | Tersimpan `Laporan SI 09-11` (garis miring jadi tanda minus) |
+| 8 | Dua export berjudul sama | Dua file terpisah; masing-masing baris riwayat mengunduh datanya sendiri |
+
+### 6.7 Export All — judul file wajib (AS-IS · ETM-16771)
+
+**Export Without Details** dan **Export With Details** (export semua baris, async) tidak langsung mengunduh. Sistem membuka dialog **Export File Name**.
+
+| Elemen | Aturan |
+|--------|--------|
+| Field **File name** | Wajib. Maks. 150 karakter. Placeholder **Enter file name**. Terisi saran, contoh `Sales Invoice - With Details Export 09-11-2026_10.51.00` (pola **Sales Invoice** + **With Details Export** atau **Without Details Export** + tanggal-jam `dd-mm-yyyy_HH.MM.SS`) |
+| Tombol **Export** | Jalankan export memakai nama itu |
+| Nama kosong | Ditolak di dialog dan di backend: **File name is required.** File tidak dibuat |
+| Pembersihan | Karakter yang tidak boleh di nama file (kurang-dari, lebih-dari, titik dua, kutip, garis miring, garis miring terbalik, garis tegak, tanda tanya, bintang, dan karakter kontrol) diganti tanda minus. Spasi berlebih jadi satu spasi. Titik atau spasi di awal dan akhir nama dihapus. Hasil dipotong 150 karakter |
+| Unduhan | Nama bersih itu menjadi nama file: `.xlsx` untuk satu bagian, `.zip` bila export dipecah beberapa bagian. Tiap bagian di dalam zip memakai nama bersih plus rentang baris, pola `nama {awal} - {akhir}.xlsx` |
+| Judul sama | Dua export dengan judul sama tetap tersimpan sebagai file terpisah (satu folder per export). Masing-masing baris riwayat mengunduh datanya sendiri, tidak saling menimpa. Nama file akhir tidak ditambah stempel waktu |
+| Riwayat export | File tercantum dengan nama itu di daftar Export File. Kolom aksi mengikuti tipe export (**With Details** / **Without Details**), bukan diurai dari nama file |
+| **Export Active Page Only** | Tetap export langsung, tanpa dialog ini |
+
+**Contoh:** field dikosongkan lalu **Export** → **File name is required.** Isi `Laporan SI 09/11` → tersimpan `Laporan SI 09-11`.
+
+Paritas: [Dev - Sales Order](../sales-order-general/requirement.md) · [All Sales Order](../all-sales-order/requirement.md) · [Dev - Sales Platform](../omni-sales-platform/requirement.md).
 
 ---
 
@@ -334,6 +357,11 @@ SI dibuat sistem; sering auto-approved. Create manual **tidak** untuk order plat
 | Reject/Delete platform | *…from the platform* |
 | Import header salah | Template mismatch |
 | Import SO platform | *Only internal orders are allowed* |
+| Export With/Without Details, **File name** kosong setelah dibersihkan | Tolak. Pesan **File name is required.** (dialog dan backend). File tidak dibuat |
+| **File name** terisi | Nama bersih (maks. 150) jadi nama file unduhan dan baris riwayat export. Bagian zip: `nama {awal} - {akhir}.xlsx` |
+| Dua export berjudul sama | Disimpan terpisah per export; unduhan tiap baris riwayat berisi datanya sendiri. Nama akhir tidak ditambah stempel waktu |
+
+**Export Active Page Only** tidak memakai tiga baris export di atas.
 
 ---
 
@@ -374,7 +402,8 @@ SI dibuat sistem; sering auto-approved. Create manual **tidak** untuk order plat
 5. Import SO General → SI Open; Approve → journal.  
 6. Import SO platform → ditolak.  
 7. Fiscal closed → create/approve gagal.  
-8. Rejected → Save → draft; Open + Approve ulang.
+8. Rejected → Save → draft; Open + Approve ulang.  
+9. **Export With Details** dan **Export Without Details** membuka dialog **Export File Name**; nama kosong ditolak (**File name is required.**); nama terisi menjadi nama file unduhan (`.xlsx`, atau `.zip` bila terpecah) dan tampil di riwayat. Dua export berjudul sama tidak saling menimpa. **Export Active Page Only** tanpa dialog (ETM-16771 / §6.7).
 
 ---
 
@@ -395,6 +424,9 @@ A: Ya (approve normal). Import: SI Open dulu; journal setelah Approve SI (intent
 **Q: Customer manual dari mana?**  
 A: General Company as customer + AR COA + SO general outstanding — bukan store platform.
 
+**Q: Export daftar minta nama file?**  
+A: Ya. **Export With Details** dan **Export Without Details** membuka dialog **Export File Name**. Kosongkan **File name** → **File name is required.** Saran awal boleh dipakai atau diganti (maks. 150 karakter). Contoh `Laporan SI 09/11` tersimpan `Laporan SI 09-11`. Dua export berjudul sama tetap dua file. **Export Active Page Only** tidak menanyakan nama. Lihat §6.7 (ETM-16771).
+
 ---
 
 ## Related Documents
@@ -407,3 +439,4 @@ A: General Company as customer + AR COA + SO general outstanding — bukan store
 | SoT | [../_meta/sot/accounting-customer-invoice-source-of-truth.md](../_meta/sot/accounting-customer-invoice-source-of-truth.md) |
 | Account Receive | [../accounting-customer-payment/requirement.md](../accounting-customer-payment/requirement.md) |
 | Credit Note | [../accounting-credit-note/requirement.md](../accounting-credit-note/requirement.md) |
+
