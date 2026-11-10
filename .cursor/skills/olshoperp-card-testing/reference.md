@@ -12,11 +12,12 @@ Akun uji khusus: `tests/TEST-ACCOUNTS.md` (di repo docs; tidak dimirror ke Help 
 ## A. Jira (site ETM saja)
 
 - Site: `https://erpintegration.atlassian.net` — `cloudId` `44cc9820-3372-4c12-884c-698b1397173c` (bukan eduqat).
-- Failed TC / RE-OPEN detail operasional: **SKILL.md §3–§4** (ringkas dari rule reopen).
+- Failed TC / RE-OPEN detail operasional: **SKILL.md §3–§4** (ringkas dari rule reopen). Matriks cakupan, cek deploy, GET baca-ulang, satu Error/akar: **SKILL.md §2–§3**.
 - Auth: `JIRA_EMAIL` + `JIRA_API_TOKEN` (basic auth; `tools/jira.sh` pakai curl `-K -`).
 - Issue type id: Error `10033`, Test Case `10051`, Improvement `10088`, Change Requirement `10048`.
 - Field (**Test Case saja**): Test Result `customfield_10202` `{"value":"Passed|Failed"}` — **jangan** pakai `Blocked` sebagai hasil final; Actual Result `customfield_10203` (ADF). Non-TC: hasil di **komentar** (field Actual tidak tampil).
-- Menu `customfield_10429`, Request ID `customfield_10495` (HARD rule `12`: hanya Lark `rec…` atau `none`; **dilarang** `REQ-…` / `-`), Story Points `customfield_10043`. Setelah create card: verifikasi GET di rule `12`. Sebelum TC → Done: Actual Result + Test Result wajib terisi, kalau belum jangan transisi.
+- Menu `customfield_10429`, Request ID `customfield_10495` (HARD rule `12`: hanya Lark `rec…` atau `none`; **dilarang** `REQ-…` / `-`), Story Points `customfield_10043`. Setelah create card: verifikasi GET di rule `12`. Sebelum TC → Done: Actual Result + Test Result wajib terisi **lalu GET baca-ulang**; belum / beda → jangan transisi / jangan klaim selesai.
+- **GET field minimal** (jangan dump changelog): `summary`, `issuetype`, `status`, `assignee`, `description`, `labels`, `customfield_10429`, `customfield_10495`, `customfield_10043`, `issuelinks`; untuk TC tambah `customfield_10203`, `customfield_10202`; plus komentar terbaru bila perlu. `GET` tanpa custom field sering terlihat seolah Request ID kosong — jangan simpulkan kosong sebelum baca `customfield_10495`.
 - **Transisi:** pakai **peta status di bawah langsung** (dipetakan 28-10-2026 dari card ETM nyata). `GET issue/{key}/transitions` **hanya jika** call gagal. **Id beda per tipe** — jangan campur TC vs non-TC.
 
 ### Peta status ETM (28-10-2026)
@@ -102,12 +103,14 @@ Playwright untuk uji card → **SKILL.md §7** (tidak ada skill `olshoperp-playw
 - **Merdian:** tanpa kode `yemimamerdian` → **tolak**. **Dengan kode** → **wajib lanjut** di `merdian.olshoperp.com`, termasuk **isi login akun uji** di SKILL §6 (bukan “password production”).
 - Tyas/Merdian = target QA resmi (live tenant, read-only). Heuristik hostname `staging`/`qa`/`sandbox` **tidak berlaku**.
 - Dilarang: “hanya manusia yang boleh login”, minta `merdian-staging`, Claude-in-Chrome sebagai syarat — jika gate sudah lolos.
-- Helper session: `tests/helpers/company-access.ts` — `prepareSession`, `switchCompanyByCode`.
-- Kontrak komponen: **`tests/ui-components.md`** + helper `tests/helpers/shared/`.
+- Helper session: `tests/helpers/company-access.ts` — `prepareSession`, `switchCompanyByCode`. Isolasi sesi/akun: **SKILL.md §6**.
+- File sesi: `tests/.auth/{companyCode}.json` (gitignore). Path sama per company code → agent berbeda bisa saling timpa; prefer akun khusus + folder kerja terpisah. `OLSHOP_REFRESH_AUTH=1` paksa login ulang.
+- Default company di kode tidak seragam (`prepareSession`/global-setup sering `lumicharmsid`; `env-config` staging `defaultCompany` = FAT) → selalu `switchCompanyByCode` lalu baca ulang.
+- Kontrak komponen: **`tests/ui-components.md`** + helper `tests/helpers/shared/`. Triase gagal: `test-results/**/error-context.md` dulu.
 - Probe sekali pakai: `tests/scratch/` atau `tests/specs/check-*.spec.ts` **tanpa** tag `@ETM`/`@FLOW` — hapus setelah selesai.
-- Regresi: `tests/specs/...` bertag `@ETM-xxxxx`.
+- Regresi: `tests/specs/...` bertag `@ETM-xxxxx`. Uji ubah data: `--retries=0 --workers=1`.
 - **Dilarang** `tests/scripts/`.
-- Contoh run probe: `npx playwright test path/ke/file.spec.ts --project=authenticated --reporter=line`.
+- Contoh run probe: `npx playwright test path/ke/file.spec.ts --project=authenticated --reporter=line --retries=0`.
 - Base URL: `OLSHOP_BASE_URL` atau host sesuai server (staging / tyas / merdian).
 
 ---
@@ -116,26 +119,30 @@ Playwright untuk uji card → **SKILL.md §7** (tidak ada skill `olshoperp-playw
 
 - Grup OlshopERP: chat id `-1001931573603` (`t.me/c/1931573603`), thread/topik `51478`.
 - Bot: `TELEGRAM_BOT_TOKEN` di `.env` olshoperp.
-- `parse_mode=HTML`, mention `@yemimatifani`.
-- Isi: judul → hasil → ✅/❌ per poin Expected → catatan → kode data uji → link Jira/evidence (lihat SKILL.md §10).
-- Batch ≥3: satu pesan ringkasan; update via `editMessageText`.
+- `parse_mode=HTML`, mention `@yemimatifani`. Escape `& < >`. Pecah >4096 di batas antar card.
+- Isi: judul → hasil → ✅/❌/⏸ per poin Expected → catatan → kode data uji → link Jira/evidence (lihat SKILL.md §10).
+- Interim “sedang diuji” dulu; batch ≥3: satu pesan ringkasan; update via `editMessageText`.
 
 ---
 
 ## F. Drive
 
-Default **tidak dipakai**. Hanya jika Yemima minta: folder root Temuan Bugsy (id di instruksi sesi lama); prefer bukti di environment + Jira.
+Default **tidak dipakai**. Hanya jika Yemima minta: folder [Temuan Bugsy](https://drive.google.com/drive/folders/167QtP9hNLYjDibgRL6DVd9nbgEDJ2dgU) (subfolder per key); prefer bukti di environment + Jira. Jangan klaim “sudah di Drive” tanpa id file yang terbaca kembali.
 
 ---
 
-## G. Template komentar non-TC
+## G. Template komentar non-TC / situasi
 
 ```
-Hasil test: LULUS / GAGAL (<satu kalimat>)
-<tanggal, jam> WIB · <Staging|Tyas> · company <X> · login <akun> · data <kode/URL>
-Hasil per Expected: …
+Hasil test: LULUS / GAGAL / BELUM KE-DEPLOY / TIDAK BISA DIUJI (<satu kalimat>)
+<tanggal, jam> WIB · <Staging|Tyas|Merdian> · company <X> · login <akun> · data <kode/URL>
+Build FE/BE: <stamp atau tidak tersedia>
+Hasil per Expected (matriks): …
 Catatan: …
 ```
+
+Belum ke-deploy: sebut stamp + commit yang dibandingkan; Jira TC tetap TESTING PROGRESS; tanpa Failed/Error.  
+Gagal aplikasi: sebut Error key + Relates + origin RE-OPEN/clone sesuai jalur.
 
 ---
 

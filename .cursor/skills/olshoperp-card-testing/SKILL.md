@@ -25,15 +25,18 @@ Jangan buat/update/renumber markdown TC untuk card baru.
 
 ## 0. Satu kalimat alur
 
-Baca card → pastikan data uji ada → geser status Testing Progress → uji UI sesuai Expected
-→ isi Actual lalu Test Result (atau komentar untuk non-TC) → Telegram ringkas → Done / tindak lanjut Failed.
+Baca card → (bila uji **fix**) cek stamp build → pastikan data uji ada → matriks cakupan Expected
+→ geser Testing Progress → uji UI → isi Actual lalu Test Result (atau komentar non-TC)
+→ **GET baca-ulang** → Telegram ringkas → Done / tindak lanjut Failed.
 
 ---
 
 ## 1. Hemat sesi
 
 - Satu sesi chat ≈ satu card (atau satu batch kecil yang jelas).
-- Ambil Jira dengan `fields=` seperlunya — jangan dump changelog penuh.
+- Batch: baca semua card dulu (field minimal) → kelompokkan **menu → company → akun**; login/switch sekali per kelompok. Jangan paralel dua company pada akun yang sama.
+- Ambil Jira dengan `fields=` seperlunya — jangan dump changelog penuh. Field minimal: lihat [reference.md](reference.md) §A.
+- Anggaran praktik ~**20–30 menit** per card/kelompok yang sedang dipegang. Habis sementara cakupan belum lengkap → stop rapi, catat poin mana belum (bukan Passed), jangan ulang sampel dingin / login berulang.
 - Balasan ke user: singkat + keputusan yang dia perlu ambil. Detail panjang → komentar Jira.
 - Credential / API key / password: **jangan** cetak di chat, komentar, atau commit.
 
@@ -41,7 +44,7 @@ Baca card → pastikan data uji ada → geser status Testing Progress → uji UI
 
 ## 2. Jenis card → alur mana
 
-`GET issue/{key}` → lihat issuetype + status + komentar terbaru.
+`GET issue/{key}` → lihat issuetype + status + komentar terbaru (+ field di reference §A).
 
 | Jenis | Alur |
 |-------|------|
@@ -50,20 +53,46 @@ Baca card → pastikan data uji ada → geser status Testing Progress → uji UI
 
 Perintah “test card ini” = izin uji + catat hasil. Tidak perlu minta izin ulang per langkah.
 
+### Matriks cakupan (wajib sebelum klaim selesai)
+
+Sebelum klik, salin tiap poin Expected/AC ke baris. Isi hanya dari yang benar-benar dijalankan:
+
+| # | Poin Expected (kutipan pendek) | Data | Hasil | Catatan |
+|---|--------------------------------|------|-------|---------|
+| 1 | … | kode / belum | lulus / gagal / belum / tidak bisa diuji | … |
+
+- Hasil akhir mengikuti matriks, bukan kesan umum. **Cakupan sebagian ≠ Passed** — TC tetap TESTING PROGRESS, Test Result kosong; non-TC: komentar sebut poin yang belum.
+- Expected bersyarat (“jika ada X / jika tidak …”) → uji **kedua** cabang + sebut data tiap cabang.
+- Expected card mencurigakan vs requirement → **STOP**, laporkan; jangan “perbaiki” Expected diam-diam.
+
+### Cek build / deploy (sebelum menilai **fix**)
+
+Bukan syarat setiap cek kosmetik. Bila card mengklaim commit/fix tertentu:
+
+1. Catat stamp **FE** dan **BE** yang benar-benar terlihat di UI/header respons. Tidak terlihat → tulis `tidak tersedia` (bukan mengarang hash).
+2. Stamp ada + commit fix **belum** di build → **bukan Failed**, **bukan** card Error. TC tetap **TESTING PROGRESS**. Lapor “fix belum ke-deploy” + stamp.
+3. Stamp `tidak tersedia` ≠ “belum ter-deploy”. Kalau seluruh card = “apakah fix ini sudah benar” dan stamp tidak bisa dicek → stop + lapor; jangan tebak.
+
+### Triase sebelum bilang gagal aplikasi
+
+Urutan: (1) `test-results/**/error-context.md` bila Playwright gagal → (2) jebakan `tests/ui-components.md` → (3) company aktif, role akun, kepemilikan data (403 / “You do not have access…” sering salah company/role, bukan bug) → (4) baru temuan produk bila langkah+data+company+role sudah benar dan UI menyimpang dari Expected.
+
 ---
 
 ## 3. Alur Test Case
 
-1. **TESTING PROGRESS dulu** (sebelum klik uji) — pakai id/nama status di [reference.md](reference.md) §A (peta 28-10-2026). `GET .../transitions` **hanya jika** panggilan transisi gagal. Gagal dengan pesan "Tolong Input Field Notion Page Terlebih Dahulu" = field **Menu** (`customfield_10429`) kosong: `PUT issue/{key}` isi dari `[Nama Menu]` di judul card, lalu ulangi transisi. Exit code curl tetap 0 walau gagal, jadi baca isi respons.
-2. Pastikan **data uji** (§5). Tidak ada data → **STOP**, bilang ke prompter; jangan ganti data diam-diam. TC dikembalikan ke **Not Execute** (lihat “Blocked” jenis (a) di langkah 6).
-3. Uji sesuai **Steps + Expected** di description card (sumber kebenaran = Jira, bukan markdown repo).
-4. Isi **Actual Result** (company, akun, data + URL, hasil per Expected, angka eksak) → baru **Test Result** (**Passed** / **Failed** saja) → komentar bila perlu → **Done**. Jangan isi Test Result `Blocked`. Sebelum Done, Actual Result + Test Result wajib terisi (rule `12`); belum → jangan transisi, laporkan.
-5. **Test Case tidak punya status RE-OPEN** — tetap Done; hasil ada di Test Result.
-6. **Failed** → langsung (tanpa tanya lagi): card **Error** baru + Done TC:
+1. Bila yang diuji adalah **fix**: cek build (§2). Belum ke-deploy → stop di TESTING PROGRESS (bukan Failed).
+2. **TESTING PROGRESS dulu** (sebelum klik uji) — pakai id/nama status di [reference.md](reference.md) §A (peta 28-10-2026). `GET .../transitions` **hanya jika** panggilan transisi gagal. Gagal dengan pesan "Tolong Input Field Notion Page Terlebih Dahulu" = field **Menu** (`customfield_10429`) kosong: `PUT issue/{key}` isi dari `[Nama Menu]` di judul card, lalu ulangi transisi. Exit code curl tetap 0 walau gagal, jadi baca isi respons.
+3. Pastikan **data uji** (§5). Tidak ada data → **STOP**, bilang ke prompter; jangan ganti data diam-diam. TC dikembalikan ke **Not Execute** (lihat “Blocked” jenis (a) di langkah 7).
+4. Isi **matriks cakupan** (§2). Uji sesuai **Steps + Expected** di description card (sumber kebenaran = Jira, bukan markdown repo). Triase (§2) sebelum Failed.
+5. Isi **Actual Result** (company, akun, data + URL, hasil **per baris matriks**, angka eksak) → baru **Test Result** (**Passed** / **Failed** saja) → komentar bila perlu. Jangan isi Test Result `Blocked`. **GET baca-ulang** Actual + Test Result (nilai yang terbaca harus cocok). Baru **Done**. Belum terisi / GET beda → jangan klaim selesai, laporkan. Cakupan sebagian → jangan isi Passed / jangan Done.
+6. **Test Case tidak punya status RE-OPEN** — tetap Done; hasil ada di Test Result.
+7. **Failed** → langsung (tanpa tanya lagi): card **Error** baru + Done TC:
    - Relates ke **TC ini** + ke **origin** (Improvement/CR/Story yang dilink).
    - Assignee Error = **assignee origin** (bukan tester).
    - Origin Improvement/CR → **RE-OPEN tanpa clone**, lalu Error baru di atas.
    - Request ID / Menu Name / Story Points / labels pada Error baru ikut HARD rule `12` (salin hanya Lark `rec…`; **jangan** salin `REQ-…` / `-` / kosong → else `none`). Setelah create, verifikasi GET di rule `12` sebelum lanjut.
+   - **Satu Error per akar penyebab.** Beberapa TC gagal karena akar yang sama → satu Error, Relates ke semua TC itu (+ origin). Jangan dobel Error untuk akar yang sama; cek dulu Error yang sudah ada.
    - Jangan Done-kan origin yang masih gagal tanpa tindak lanjut ini.
 
    **“Blocked” ada dua jenis (keputusan Yemima 28-10-2026):**
@@ -76,8 +105,8 @@ Site Jira: **hanya ETM** (`erpintegration.atlassian.net`). Jangan eduqat.
 
 ## 4. Alur non–Test Case (Error / Improvement / CR)
 
-1. Uji sesuai Expected di description. Bukti di **komentar Jira** — field Actual/Test Result **tidak tampil** di tipe card ini.
-2. **Lulus** → komentar bukti → transisi ke Done (lewat QA Review bila ada; id di reference §A; `GET transitions` hanya bila gagal).
+1. Uji sesuai Expected di description (+ matriks §2). Bukti di **komentar Jira** — field Actual/Test Result **tidak tampil** di tipe card ini. Bila uji fix: cek deploy (§2) dulu.
+2. **Lulus** (semua poin matriks) → komentar bukti → transisi ke Done (lewat QA Review bila ada; id di reference §A; `GET transitions` hanya bila gagal). Cakupan sebagian → komentar sebut poin belum; **jangan** klaim lulus penuh (Done hanya jika user meminta Done pada cakupan itu).
 3. **Gagal** → jangan Done. Ikuti jalur:
    - **Error / Bug origin:** RE-OPEN origin → **Clone** origin → judul clone `RE-OPEN [Menu] - {desc}`. Copy Menu / Story Points / labels. Request ID HARD rule `12` (salin hanya `rec…`; **jangan** wariskan `REQ-…` → else `none`). Assignee clone = assignee origin. Setelah create/clone, verifikasi GET di rule `12`. Retest berikutnya = **clone**, bukan origin yang sudah RE-OPEN.
    - **Improvement / Change Requirement / Story / Task:** RE-OPEN origin **tanpa** clone → buat card **Error baru** (format lengkap: Summary, Environment, Precondition, Steps, Expected, Actual di *description*, Additional Context) → Relates ke origin (+ TC penemu jika ada) → assignee = assignee origin. Request ID HARD rule `12` (`rec…` atau `none`), Menu Name, Story Points, labels wajib; setelah create verifikasi GET di rule `12`.
@@ -115,8 +144,23 @@ Setelah run di **staging**, data yang dibuat untuk uji **tidak dihapus** (kecual
 3. Draft otomatis saat buka create PO/SO juga dibiarkan, beri jejak yang sama bila bisa diedit.
 4. **Actual Result** (card TC) **atau komentar** (non-TC) + Telegram menyebut **kode data** yang dipakai/dibuat (+ skenario bila tanpa card).
 5. Tyas/Merdian tetap **no create** (§6) — aturan simpan ini terutama untuk staging.
+6. Label `need-data` / menunggu Moira: pakai **kode yang tertulis di komentar** card (`TD-…` / `TDB-…`). Jangan mengarang kode. Jangan panggil webhook Moira sendiri. Belum ada data siap dan tidak diminta membuat → Not Execute / lapor “menunggu data”.
 
----
+### Setting bersama (konfigurasi / flag / harga acuan yang dipakai orang lain)
+
+Bila TC mengubah setting bersama:
+
+1. Baca nilai asli dari UI **sebelum** diubah → catat.
+2. Jalankan langkah uji.
+3. Kembalikan ke nilai asli.
+4. Muat ulang; nilai di layar harus sama dengan asli.
+5. Tulis asli / sementara / setelah pulih di Actual atau komentar.
+
+Gagal pulih → **STOP**, tulis blocker (setting, asli, sekarang, dampak). Card **bukan** Passed.
+
+### Sync marketplace
+
+**Jangan** klik Sync per baris, Sync header, atau Sync All yang mendorong harga/stok ke marketplace, kecuali pesan yang sama secara eksplisit mengizinkan dorongan itu. Melihat tombol ≠ izin. Filter / buka baris / export yang tidak mendorong ke toko boleh bila itu Expected.
 
 ---
 
@@ -206,7 +250,19 @@ Coba / pakai berurutan: **153 (lumicharmsid)** → **112 (FAT)** → **13 (DEV-S
 
 - Kalau prompter bilang company tertentu (mis. “Dev Staging” / Lumielle / TANRISE) → **ikuti itu**, jangan ikut urutan di atas.
 - Allowlist lain (bila diminta): Lumielle `810`, TANRISE `3`, HUAWEI `915` — lihat [reference.md](reference.md) §D.
-- Selalu **switch company eksplisit** (`switchCompanyByCode`). Gejala salah company: API 404 / “You do not have access…”.
+- Selalu **switch company eksplisit** (`switchCompanyByCode`), lalu baca ulang company aktif. Jangan asumsikan default login = 153 (`env-config` staging defaultCompany = FAT 112; `prepareSession`/global-setup sering `lumicharmsid`).
+- Gejala salah company: API 404 / “You do not have access…”.
+
+### Isolasi sesi & akun (anti-tabrak)
+
+Company aktif disimpan **per user di server**, bukan hanya file lokal.
+
+- Jangan paralel dua company pada **akun yang sama** (termasuk dua mesin).
+- Jangan pakai akun/sesi Moira, Hazel, atau agent lain; jangan geser company milik mereka.
+- `tests/.auth/{companyCode}.json` = cookie/token; **satu path per company code**, bukan per akun → dua agent yang sama-sama `lumicharmsid` saling timpa. Isolasi: checkout/folder kerja terpisah **atau** akun OlshopERP berbeda per agent; di satu checkout jangan paralel.
+- Prefer `OLSHOP_TEST_EMAIL` / `OLSHOP_TEST_PASSWORD` (akun khusus agent ini) agar tidak jatuh ke fallback akun bersama di helper. Dua agent pada akun bersama = saling timpa company aktif.
+- `workers: 1` di Playwright **tidak** melindungi dua agent berbagi akun. `OLSHOP_REFRESH_AUTH=1` hanya bila kamu akan mengganti file sesi itu dan tidak ada worker lain yang memakainya.
+- Selesai run: hapus file sesi yang **run ini** buat bila yakin tidak dipakai worker lain. Jangan cetak isi `.auth` ke chat/log.
 
 ### Tyas & Merdian — boleh vs tidak
 
@@ -305,7 +361,7 @@ Pakai hanya jika gejala = error server, job gagal, atau user minta cek log — b
 - **Jira = detail.** Actual/komentar: waktu, server, company, akun, data (kode + URL), hasil per Expected.
 - **Bukti utama = data di environment** bertanda `QA ETM-xxxxx` — bukan Drive (Drive hanya jika Yemima minta).
 
-### Telegram (wajib)
+### Telegram (wajib bila sesi meminta laporan Telegram / alur uji card standar)
 
 | | Nilai |
 |---|---|
@@ -314,17 +370,17 @@ Pakai hanya jika gejala = error server, job gagal, atau user minta cek log — b
 | Bot | token dari `.env` → `TELEGRAM_BOT_TOKEN` |
 | Format | HTML, mention `@yemimatifani` |
 
-Isi mengikuti ringkasan Bugsy:
-
 1. **Judul** — `ETM-xxxxx — [Menu] …` + server/company singkat  
-2. **Hasil** — LULUS / GAGAL / sementara  
-3. **✅ / ❌ per poin** Expected (3–5 baris)  
-4. **Catatan singkat**  
+2. **Hasil** — LULUS / GAGAL / sementara / belum ke-deploy / tidak bisa diuji  
+3. **✅ / ❌ / ⏸ per poin** Expected (ikut matriks; 3–5 baris)  
+4. **Catatan singkat** (stamp build bila relevan)  
 5. **Kode data uji** (dan URL bila ada)  
-6. **Link evidence** (Jira browse + status)  
-7. Penutup: dijalankan agent atas permintaan Yemima · `cc @yemimatifani`
+6. **Link evidence** (Jira browse + status yang sudah dibaca ulang)  
+7. Penutup: dijalankan agent atas permintaan Yemima · `cc @yemimatifani` (bila pengirim lain: cc `@username` pengirim)
 
-- Batch ≥3 card: **satu** pesan ringkasan (jumlah ✅/❌/⏸ + satu baris per card); edit pesan yang sama untuk update sementara → final.
+- Kirim **interim** dulu (“sedang diuji”, key + company) agar batch panjang tidak diam; lalu final.
+- Batch ≥3 card: **satu** pesan ringkasan (jumlah ✅/❌/⏸ + satu baris per card); update via `editMessageText`.
+- Escape HTML: `&` → `&amp;`, `<` → `&lt;`, `>` → `&gt;`. Teks >4096 karakter: pecah di **batas antar card**, bukan di tengah satu card.
 - Jangan kirim password / API key di Telegram.
 
 ---
@@ -340,6 +396,12 @@ Isi mengikuti ringkasan Bugsy:
 ## 12. Jebakan yang sudah terjadi (jangan ulangi)
 
 - Testing Progress digeser **setelah** tes → salah.
+- Failed padahal fix belum di build / stamp tidak dicek → salah (harusnya TESTING PROGRESS + lapor belum ke-deploy).
+- Passed padahal matriks masih ada poin “belum” → salah.
+- Setting bersama diubah lalu tidak dipulihkan / gagal pulih disembunyikan → salah.
+- Klik Sync marketplace tanpa izin di pesan → salah.
+- Dobel card Error untuk akar penyebab yang sama → salah.
+- Klaim Done tanpa GET baca-ulang Actual/Test Result/status → salah.
 - Telegram ditahan sampai “sempurna” → kirim sementara dulu.
 - Ubah fixture “jangan dihapus” tanpa baca catatan.
 - Ctrl+A di Mac → nilai lama tersimpan lagi.
@@ -358,13 +420,17 @@ Isi mengikuti ringkasan Bugsy:
 
 ## 13. Checklist sebelum bilang “selesai”
 
-- [ ] Status Jira benar (Progress → Actual → Result → Done / atau komentar non-TC)
-- [ ] Expected di card tercakup di Actual (angka eksak)
+- [ ] Status Jira benar (Progress → Actual → Result → Done / atau komentar non-TC) — **GET baca-ulang** cocok
+- [ ] Matriks cakupan: tiap poin Expected punya hasil; **bukan** Passed pada cakupan sebagian
+- [ ] Uji fix: stamp FE/BE tertulis atau `tidak tersedia`; belum ke-deploy → TESTING PROGRESS (bukan Failed/Error)
 - [ ] Data jejak `QA-AUTO-` / `QA ETM-…` bila buat di staging; **tidak dihapus**
-- [ ] Failed → Error + Relates + assignee origin (+ RE-OPEN jalur benar)
+- [ ] Setting bersama yang diubah sudah dipulihkan + dibaca ulang (atau blocker tertulis)
+- [ ] Sync marketplace tidak diklik kecuali diizinkan di pesan
+- [ ] Failed → Error + Relates + assignee origin (+ RE-OPEN jalur benar); **satu Error per akar**
 - [ ] Blocked jenis (a) di luar aplikasi → TC tetap Not Execute, lapor saja (tanpa Test Result / Error); jenis (b) error aplikasi → Failed
-- [ ] Passed bukan dari MCP-only
-- [ ] Telegram terkirim
+- [ ] Passed bukan dari MCP-only; triase company/role/selector sudah dicek
+- [ ] Company/akun/sesi tidak menabrak Moira/agent lain; `.auth` tidak dicetak
+- [ ] Telegram terkirim (interim + final bila batch) atau alasan tidak kirim tertulis
 - [ ] Probe/scratch dibersihkan; tidak ada file di `tests/scripts/`
 - [ ] Tidak ada secret di chat/komentar
 - [ ] Merdian: ada kode `yemimamerdian` bila diuji di situ
