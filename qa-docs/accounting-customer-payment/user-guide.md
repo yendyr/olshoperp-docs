@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 1.3
-last_updated: 2026-11-09
+version: 1.7
+last_updated: 2026-11-11
 owner: QA - Yemima
 status: review
 source_docs:
   - requirement.md
   - knowledge-base.md
   - technical.md
-source_version: 2.7
+source_version: 2.13
 ---
 
 # Account Receive — User Guide
@@ -56,17 +56,19 @@ Pastikan hal-hal ini sudah siap:
 
 - Dokumen yang baru dibuat berstatus **Open** — sudah tercatat, tapi belum masuk pembukuan.
 - Setelah Anda **Approve**, pembukuan terbarui dan tagihan resmi berkurang.
-- Kalau ada kelebihan bayar yang Anda tandai sebagai deposit, sistem membuatkan Credit Note baru atas nama customer tersebut untuk dipakai di transaksi berikutnya.
+- Kalau ada kelebihan bayar yang Anda tandai sebagai deposit (`CREDIT NOTE` di sheet ketiga), sistem membuatkan Credit Note baru **langsung setelah import** (status Open) atas nama customer tersebut untuk dipakai di transaksi berikutnya.
 
 🎬 [Interactive demo akan ditambahkan di sini]
 
 ## 5. Yang Perlu Diperhatikan
 
-- **Summary (TO-BE ETM-16644):** Setelah section Adjustment di form Show/Edit, ada panel ringkasan read-only (Piutang, Cash/Bank, Credit Note, Adj, Total) dalam mata uang header. Total sebaiknya 0,00; jika tidak, angka Total berwarna orange (peringatan visual saja).
+- **Summary:** Setelah section Adjustment di form Show/Edit, ada panel ringkasan read-only (Piutang, Cash/Bank, Credit Note, Adj, Total) dalam mata uang header. Total sebaiknya 0,00; jika tidak, angka Total berwarna orange (peringatan visual saja). Detail aturan: card [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644).
+- **Approve:** Tombol Approve muncul hanya jika status **Open**. Create/autosave saat ini masih **Draft** — ubah ke Open dulu (nanti default Open: [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325)). Setelah Approve, muncul **Approval Log** dan sistem membuat **Journal** yang tertaut ke dokumen AR ini.
 - **Satu transaksi bank, satu dokumen.** Kalau di rekening ada tiga transfer masuk, tulis tiga baris — meski banknya sama dan tanggalnya sama. Sistem tetap membuat tiga dokumen terpisah.
 - **Satu kesalahan membatalkan seluruh file.** Ini disengaja, supaya tidak ada file yang masuk separuh dan menyisakan pelunasan menggantung.
 - **Satu transaksi bank hanya untuk satu customer.** Tagihan milik beberapa customer tidak boleh digabung dalam satu baris uang masuk.
 - **Hasil import belum masuk pembukuan.** Selalu ada tahap Approve setelahnya.
+- **Jangan hapus Credit Note hasil kelebihan bayar** sebelum Account Receive terkait di-Approve. Kalau dihapus, Approve akan ditolak, dan Anda tidak bisa membuat Credit Note itu lagi dari form edit Account Receive — kembalikan Credit Note-nya atau ulang import.
 - **Hanya boleh ada satu proses import berjalan.** Kalau ditolak karena ada proses lain, tunggu sampai selesai.
 
 ## 6. Langkah-Langkah (Step by Step)
@@ -108,11 +110,15 @@ Dalam satu baris isi salah satu saja — Debit atau Credit, tidak boleh dua-duan
 
 ## 7. Tips & Hal yang Sering Bikin Bingung
 
-**"Tagihan 500.000, uang masuk 550.000."** Ketik `CREDIT NOTE` di sheet ketiga dengan Credit 50.000. Tagihan lunas 500.000 dan customer punya deposit 50.000 untuk dipakai lain kali.
+**"Tagihan 500.000, uang masuk 550.000."** (Import) Ketik `CREDIT NOTE` di sheet ketiga dengan Credit 50.000. Tagihan lunas 500.000 dan customer punya deposit 50.000 untuk dipakai lain kali.
 
-**"Tagihan 500.000, uang masuk cuma 493.500."** Isi kode akun biaya di sheet ketiga dengan Debit 6.500. Tagihan tetap dianggap lunas penuh, selisih 6.500 tercatat sebagai biaya.
+**"Tagihan 500.000, uang masuk cuma 493.500."** (Import) Isi kode akun biaya di sheet ketiga dengan Debit 6.500. Tagihan tetap dianggap lunas penuh, selisih 6.500 tercatat sebagai biaya.
 
-**"Kenapa angkanya dibilang tidak cocok?"** Jumlah tagihan di sheet kedua ditambah selisih di sheet ketiga harus sama persis dengan uang masuk di sheet pertama, dihitung per nomor penanda. Pesan yang muncul menyebutkan baris mana yang timpang.
+**"Tagihan 1.000.000, uang masuk bank cuma 990.000 karena admin bank."** (Form edit — Adjustment Debit) Di Detail isi pelunasan 1.000.000. Di Receiving Destination isi bank 990.000. Di Adjustment pilih akun biaya admin bank, isi **Debit** 10.000, simpan. Customer tetap lunas penuh; 10.000 jadi biaya internal. Jangan turunkan Paid Amount jadi 990.000 — itu membuat seolah masih ada sisa piutang.
+
+**"Tagihan 1.000.000, uang masuk 1.010.000 dan kelebihan mau jadi pendapatan (bukan deposit)."** (Form edit — Adjustment Credit) Detail 1.000.000; Receiving Destination 1.010.000; Adjustment **Credit** 10.000 ke akun pendapatan. Balance: 1.000.000 + 10.000 = 1.010.000. Kalau kelebihan mau jadi deposit customer, pakai import `CREDIT NOTE`, bukan Adjustment form.
+
+**"Kenapa angkanya dibilang tidak cocok?"** Per nomor penanda, hitung seperti ini: **uang masuk (sheet 1) = total bayar tagihan (sheet 2) + selisih (sheet 3)**. Di sheet 3, angka di kolom **Credit** menambah total; angka di kolom **Debit** mengurangi. Contoh: uang 550.000, tagihan 500.000, Credit Note 50.000 → cocok. Kalau uang 550.000 dan tagihan 500.000 tanpa sheet 3 → sistem bilang timpang. Pesan error menyebut baris mana yang bermasalah.
 
 **"Tagihan ini kelihatan belum dibayar, kenapa ditolak?"** Kemungkinan ada dokumen pelunasan lain yang masih Open dan sudah memesan sebagian nilainya. Pesan yang muncul menyebutkan nilai yang tertahan itu.
 

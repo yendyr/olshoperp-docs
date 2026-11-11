@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.7
-last_updated: 2026-11-09
+version: 2.13
+last_updated: 2026-11-11
 owner: QA - Yemima
 status: review
 audience: operator
@@ -17,7 +17,7 @@ Menu **Account Receive** mencatat uang yang masuk dari customer dan mencocokkann
 
 Di daftar, kolom **Description** menampilkan deskripsi header tiap dokumen. Kolom itu bisa dicari dan diurutkan, dan ikut tertulis di file ekspor daftar, termasuk **Receive per tanggal** ([ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)).
 
-**TO-BE (ETM-17198):** opsi tampil **100 baris** di daftar akan dihapus (maks **50**), supaya halaman tidak error memori saat dokumen settlement punya banyak detail.
+Di daftar, pilihan jumlah baris per halaman: **10 / 20 / 50** (tidak ada 100) — supaya halaman tidak error memori saat banyak dokumen settlement ber-detail besar ([ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198)).
 
 | Item | Nilai |
 |------|-------|
@@ -71,21 +71,47 @@ Sheet ini dipakai kalau uang yang masuk tidak persis sama dengan nilai tagihan.
 
 Dalam satu baris, isi **salah satu** saja — Debit atau Credit, tidak boleh dua-duanya.
 
-**Contoh kelebihan bayar:** tagihan 500.000, uang masuk 550.000. Ketik `CREDIT NOTE` dengan Credit 50.000. Hasilnya tagihan lunas 500.000 dan customer punya deposit 50.000 untuk dipakai lain kali.
+**Contoh kelebihan bayar:** tagihan 500.000, uang masuk 550.000. Ketik `CREDIT NOTE` dengan Credit 50.000. Hasilnya tagihan lunas 500.000 dan customer punya deposit 50.000 untuk dipakai lain kali. Credit Note deposit itu langsung muncul setelah import (status Open) — tidak menunggu Approve Account Receive.
+
+**Jangan hapus Credit Note hasil kelebihan bayar** selama Account Receive terkait masih Open dan belum di-Approve. Kalau dihapus di menu Credit Note, dokumen deposit itu benar-benar hilang dari daftar transaksi Credit Note (bukan cuma lepas dari layar edit AR), dan Approve Account Receive akan ditolak. Membuat ulang deposit itu dari form edit Account Receive **tidak bisa** — section Adjustment hanya untuk akun biaya/pendapatan, bukan untuk membuat Credit Note baru. Yang bisa: kembalikan (restore) Credit Note yang terhapus, atau batalkan dan ulang import.
 
 **Contoh kekurangan bayar:** tagihan 500.000, uang masuk 493.500. Isi kode akun biaya dengan Debit 6.500. Tagihan tetap dianggap lunas penuh 500.000, selisih 6.500 tercatat sebagai biaya.
+
+## Adjustment di form Create/Edit (bukan import)
+
+Pakai section **Adjustment** di halaman edit dokumen kalau uang di bank tidak sama dengan nilai tagihan yang Anda lunaskan, tapi customer tetap dianggap bayar penuh (atau sebaliknya ada kelebihan yang diakui pendapatan).
+
+- Pilih **akun** (hanya akun paling bawah / tidak punya anak; semua jenis akun boleh, asal aktif).
+- Isi **Debit atau Credit** saja — jangan keduanya. Satuan mata uang mengikuti header dokumen.
+- **Deskripsi** menjelaskan kenapa ada selisih (ikut ke jurnal). Saat ini sistem masih mewajibkan diisi.
+- **Tidak** bisa membuat Credit Note deposit dari sini — itu hanya lewat import dengan teks `CREDIT NOTE`.
+
+**Contoh Debit — potongan admin bank.** Tagihan 1.000.000; uang masuk rekening 990.000. Di Detail isi bayar tagihan 1.000.000. Di Receiving Destination isi bank 990.000. Di Adjustment isi Debit 10.000 ke akun biaya admin bank. Tagihan customer lunas; 10.000 jadi biaya perusahaan.
+
+**Contoh Credit — transfer lebih, diakui pendapatan.** Tagihan 1.000.000; uang masuk 1.010.000 dan kelebihan 10.000 tidak mau jadi deposit. Detail 1.000.000; Receiving Destination 1.010.000; Adjustment Credit 10.000 ke akun pendapatan. Angka balance: 1.000.000 + 10.000 = 1.010.000.
+
+## Approve dokumen (manual)
+
+1. Status harus **Open** (hasil create/autosave saat ini masih **Draft** — ubah dulu ke Open; nanti TO-BE autosave langsung Open).
+2. Ada tagihan di Detail **dan** sumber dana di Receiving Destination.
+3. Angka Receiving Destination harus balance dengan Detail + Adjustment (lihat Summary di bawah form).
+4. Periode pembukuan tanggal AR harus terbuka; akun bank tidak sedang terkunci rekonsiliasi.
+5. Jangan hapus Credit Note hasil overpayment import sebelum Approve.
+
+Kalau lolos: status **Approved**, muncul di **Approval Log**, dan sistem membuat **Journal** yang tertaut ke nomor AR ini (bisa dibuka dari kolom Journal di daftar).
 
 ## Troubleshooting
 
 | Gejala | Penyebab | Solusi |
 |---|---|---|
 | Seluruh file ditolak padahal cuma satu baris salah | Sistem memang membatalkan semuanya kalau ada satu kesalahan, supaya tidak ada pelunasan yang masuk separuh | Buka panel **Import Log**, perbaiki semua baris yang dilaporkan sekaligus, lalu upload ulang |
-| Muncul keluhan angka tidak cocok | Total tagihan di sheet kedua ditambah selisih di sheet ketiga tidak sama dengan uang masuk di sheet pertama | Jumlahkan ulang per nomor baris pengikat; pesan errornya menyebut baris mana yang timpang |
+| Muncul keluhan angka tidak cocok | Per nomor baris pengikat: uang masuk (sheet 1) harus = total bayar tagihan (sheet 2) **ditambah** selisih di sheet 3. Di sheet 3, angka Credit menambah, angka Debit mengurangi | Jumlahkan ulang per nomor pengikat. Contoh: uang 550.000, tagihan 500.000, Credit Note 50.000 → cocok. Lupa isi sheet 3 → sistem bilang timpang |
 | Tagihan ditolak karena melebihi sisa, padahal terlihat belum dibayar | Ada dokumen pelunasan lain yang masih Open dan sudah memesan sebagian nilainya | Cek dokumen AR lain untuk tagihan itu; pesan errornya menyebutkan nilai yang tertahan |
 | Kode bank ditolak walau ada di master | Akun atau data banknya sedang nonaktif | Aktifkan kembali akun bank tersebut lalu ulangi |
 | Muncul keluhan input dikenali sebagai dua hal sekaligus | Ada kode akun bank dan nomor Credit Note yang kebetulan persis sama | Ubah salah satu penamaannya |
 | Upload ditolak karena ada proses lain | Hanya boleh ada satu proses import berjalan | Tunggu sampai import sebelumnya selesai |
 | Pembayaran pakai deposit ditolak | Credit Note belum disetujui, saldonya kurang, atau pemiliknya beda dengan customer di tagihan | Pastikan CN sudah Approved, saldo mencukupi, dan customernya sama |
+| Approve AR gagal karena Credit Note kelebihan bayar sudah dihapus | Deposit yang terbentuk dari import kelebihan bayar dihapus di menu Credit Note sebelum AR di-Approve | Kembalikan Credit Note itu (restore), atau batalkan AR dan ulang import. Jangan coba buat Credit Note baru dari form edit AR — tidak tersedia |
 | Muncul permintaan mengatur akun deposit customer | Akun deposit customer belum diisi di data perusahaan atau data store | Lengkapi dulu pengaturan akun deposit customer tersebut |
 | Tagihan masuk ke detail, Receiving Destination tetap kosong | Section tujuan penerimaan belum selesai dimuat ulang, atau tagihan tidak punya kas/bank tertaut | Tunggu sebentar lalu cek lagi. Kalau tetap kosong, catat kode dokumen dan tagihannya |
 

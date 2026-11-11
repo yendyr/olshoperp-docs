@@ -24,14 +24,21 @@ Menu **Account Receive** (Accounting).
 | Route UI | `/accounting/customer-payment` |
 | Test Case Library | `/test-case-library?menu=accounting-customer-payment` |
 
-**Open CR:** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) — Summary section setelah Adjustment (sibling AP [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643))  
-**Layer version:** requirement **2.7** · user-guide **1.3** · **Last updated:** 2026-11-09 11:40
-**Related Jira:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) · [ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991) · [ETM-17102](https://erpintegration.atlassian.net/browse/ETM-17102) · [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198)
+**Open CR:** [ETM-17298](https://erpintegration.atlassian.net/browse/ETM-17298) — jam import AR 23:59:00  
+**Open Improvement:** [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325) — autosave create default Open · [ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326) — audit log readable (Qudum, High)  
+**Layer version:** requirement **2.13** · user-guide **1.7** · **Last updated:** 2026-11-11 15:20
+**Related Jira:** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) · [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) · [ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991) · [ETM-17102](https://erpintegration.atlassian.net/browse/ETM-17102) · [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) · [ETM-17298](https://erpintegration.atlassian.net/browse/ETM-17298) · [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325) · [ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.13 | 2026-11-11 15:20 | Approve validations §6.4.1; jurnal Approve §5.11; audit TO-BE §5.12 / ETM-17326; ETM-17325 autosave Open; Description Adjustment wajib ikut kode |
+| 2.12 | 2026-11-11 14:50 | §5.10 Adjustment form manual + contoh Debit/Credit; FE Single Use copywriting Receive |
+| 2.11 | 2026-11-11 10:25 | AS-IS sync: Summary ETM-16644, CN-COA ETM-16764, MEM ETM-17198 closed; GAP-AR-09 tetap Open (docs alur manual) |
+| 2.10 | 2026-11-11 10:20 | TO-BE ETM-17298: jam import AR 23:59:00 (CN overpayment 23:59:10 same day); GAP-AR-03 → Open TO-BE; GAP-AR-08 closed (bukan gap — relates Instant Settlement) |
+| 2.9 | 2026-11-11 10:15 | Locked AS-IS GAP-AR-03..06; GAP-AR-07 closed (copy/lock AR sudah benar); matching amount diperjelas di UG/KB |
+| 2.8 | 2026-11-11 10:07 | Locked AS-IS GAP-AR-01 (heading template live) + GAP-AR-02 (CN saat import Open; hapus CN blokir Approve; no regenerate dari edit AR) |
 | 2.7 | 2026-11-09 11:40 | TO-BE ETM-17198: datalist maks 50 entries + optimasi memori [yemimadocs] |
 | 2.6 | 2026-11-09 08:59 | Setelah memilih tagihan di dokumen yang masih bisa diubah, Receiving Destination terisi sendiri dengan jumlah tagihan itu (ETM-17102) |
 | 2.5 | 2026-11-04 09:28 | Daftar Account Receive menampilkan kolom Description per dokumen; bisa dicari dan diurut, dan ikut di file ekspor termasuk Receive per tanggal (ETM-16991) |

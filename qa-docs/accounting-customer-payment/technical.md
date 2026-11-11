@@ -2,18 +2,19 @@
 doc_type: technical
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.7
-last_updated: 2026-11-09
+version: 2.13
+last_updated: 2026-11-11
 owner: QA - Yemima
 status: review
 ---
 
 # Account Receive — Technical
 
-**Behavior SoT:** [requirement.md](./requirement.md) v2.7  
-**Summary UI (TO-BE):** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644)  
-**CN deposit COA (TO-BE):** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)  
-**Datalist memory / pagination (TO-BE):** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) — max page length 50; trim eager load + TRX. REF tooltip
+**Behavior SoT:** [requirement.md](./requirement.md) v2.13  
+**Summary UI (AS-IS Done):** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) — `summary` endpoint + FE `Summary.vue`  
+**CN deposit COA (AS-IS Done):** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) — resolve setting by asal CN (`PaymentDetailFundController`, import `createFund`)  
+**Datalist memory / pagination (AS-IS Done):** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) — FE `pageLengths=[10,20,50]`; trim eager load + TRX. REF tooltip  
+**Autosave default Open (TO-BE):** [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325) — AS-IS `PaymentController::store` masih `TS_DRAFT`
 
 ## 1. File Map
 
@@ -22,7 +23,9 @@ status: review
 | Berkas | Peran |
 |---|---|
 | `Modules/Accounting/Http/Controllers/CustomerPaymentController.php` | Endpoint import, download template, progress, log, history; validasi sheet dan heading |
-| `Modules/Accounting/Http/Controllers/PaymentController.php` | Kolom datalist Description: cari dan urut; `description_raw` untuk ekspor (ETM-16991) |
+| `Modules/Accounting/Http/Controllers/PaymentController.php` | Store/update/approve AR; datalist Description (ETM-16991); default create `TS_DRAFT` (TO-BE Open ETM-17325) |
+| `app/Helpers/Accounting/JournalProcess.php` | `customerPaymentAutoJournal` — jurnal Approve AR |
+| `Modules/Accounting/Entities/PaymentDetail*.php` | `auditIdentifier` + `transformAudit` (COA → code\|name) |
 | `Modules/Accounting/Exports/CustomerPaymentExport.php` | Heading ekspor "Receive per {tanggal}" termasuk kolom Description |
 | `Modules/Accounting/Jobs/CustomerPaymentExportChunkJob.php` | Mengisi kolom Description dari deskripsi header dokumen |
 | `Modules/Accounting/Http/Controllers/CustomerPaymentDetailController.php` | Detail dokumen AR + jalur import detail lama |
@@ -139,7 +142,7 @@ sequenceDiagram
 - Import bersifat all-or-nothing: bila `ImportReceiveLog` berisi entri apa pun saat `ImportReceiveFinalValidationJob` berjalan, riwayat ditandai gagal dan `ReceiveImportJob` tidak pernah di-dispatch — tidak ada dokumen tertulis sebagian.
 - Exception di validasi akhir dicatat sebagai `Something went wrong: {pesan}`, riwayat ditandai gagal, lalu exception dilempar ulang supaya job masuk failed queue.
 - Berkas upload dihapus pada tahap validasi akhir.
-- Penguncian sesi memakai kombinasi cache lock dan pengecekan `ImportReceive` yang belum `ended_at`. Cache key alur AR memakai penanda milik AP — lihat GAP-AR-07.
+- Penguncian sesi: cache `import/ar/{company}` + cek `ImportReceive` yang belum `ended_at`. Pesan penolakan & notifikasi memakai nama Account Receive / Receive (GAP-AR-07 closed). AP terpisah: `import/ap/{company}`.
 - Pembentukan dokumen berjalan per baris mutasi di job terpisah; kegagalan satu job tidak otomatis merollback dokumen dari baris mutasi lain yang sudah selesai.
 
 ## 9. Data Lifecycle
@@ -150,11 +153,12 @@ sequenceDiagram
 | Dokumen AR dibentuk | `transaction_status = open` | `prepared_to_payment_amount` invoice bertambah |
 | AR di-Approve | `transaction_status = approved` | Nilai pindah dari prepared ke `processed_to_payment_amount`, jurnal terbentuk |
 | AR di-Reject atau Void | status berubah | Alokasi dilepas dari invoice |
-| Adjustment `CREDIT NOTE` | Credit Note baru status open | Tertaut ke dokumen AR lewat `transaction_reference_id` |
+| Adjustment `CREDIT NOTE` (import) | Credit Note baru status open | Tertaut ke dokumen AR lewat `transaction_reference_id` + `transaction_reference_class = CustomerPayment`; nilai CN dipotong dari `grand_total` + fund AR saat create |
+| Hapus CN hasil generate (AR masih Open) | CN soft-deleted (`SemiHardDeletes`) | Approve AR ditolak: cek `CreditNote::onlyTrashed()` by `transaction_reference_id` AR — pesan di requirement §6.4.1. `PaymentDetailAdjustmentController::store` **tidak** membuat CN (hanya COA) |
 
-## 10. Summary panel (TO-BE · ETM-16644)
+## 10. Summary panel (AS-IS · ETM-16644 Done)
 
-FE read-only block after Adjustment accordion (Show + Edit). Mirror AP ETM-16643 with **inverted** journal sign rule.
+FE read-only block after Adjustment accordion (Show + Edit). Mirror AP ETM-16643 with **inverted** journal sign rule. Total orange memakai nilai yang sudah dibulatkan 2 desimal.
 
 | Aggregate | Formula note |
 |-----------|--------------|
@@ -166,27 +170,56 @@ FE read-only block after Adjustment accordion (Show + Edit). Mirror AP ETM-16643
 
 Sign rule AR: journal **Cr → +**, **Dr → −**. See [requirement §6.5](./requirement.md).
 
-## 11. Tests & QA Notes
+## 11. Approve + Journal (AS-IS)
+
+**Approve gate:** `PaymentController::approve` → `approvePayment` → `JournalProcess::customerPaymentAutoJournal`. Urutan validasi & pesan: [requirement §6.4.1](./requirement.md).
+
+**Journal header**
+
+| Field | Value |
+|---|---|
+| `description` | ≤5 SI unik: `Payment for invoice(s) number: {codes}`; >5: `Payment for {N} invoices`; tanpa detail: `Auto-Journal from {AR code}` |
+| `transaction_reference_*` | id = Payment AR; class `Payment`; text `Payment from Customer`; url FE edit AR |
+| Status akhir | `TS_APPROVED` + Approval: `Auto Approve Journal Generated by System from Payment from Customer {code}.` |
+
+**COA mapping (detail)**
+
+| Sisi | Sumber COA |
+|---|---|
+| Cr AR | Company customer → `company_coa_name('Account Receivable COA')`; Store → `store.account_receivable_coa` fallback company owner |
+| Dr Cash/Bank | `payment_detail_funds.coa_id` (dari Cash/Bank dipilih) |
+| Dr Deposit/CN | `payment_detail_deposits.coa_id` (stamp saat pakai CN — SR → Deposit of Sales Return; regular → Customer Deposit) |
+| Dr/Cr Adjustment | `payment_detail_adjustments.coa_id` + deskripsi baris digabung ke desc detail |
+| Exchange / Cash Diff | Company `Exchange Diff. COA` / `Cash Diff. COA` (wajib terkonfigurasi atau throw) |
+
+Detail line default desc: `Auto-Journal from Payment from Customer: {AR code}. Customer Name: {name}`.
+
+**Audit (AS-IS):** Auditable pada detail entities; identifier sering `coa_id` (sudah di-transform ke teks COA). Gap UX readable → requirement §5.12 TO-BE [ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326).
+
+## 12. Tests & QA Notes
 
 - Test case aktif menu ini ada di `test-cases/` — mencakup bulk approve dan insert Sales Invoice, belum mencakup alur import multi-sheet (lihat GAP-AR-09).
 - Assertion pesan error wajib mengikuti string di §6 requirement, bukan string di raw requirement lama.
 - Fixture import sebaiknya memakai template hasil endpoint `import/template` supaya nama sheet dan heading selalu sinkron.
-- **TO-BE ETM-16644:** Summary after Adjustment; header CCY; CN split; Total orange when ≠ 0; signs opposite of AP.
+- Summary (ETM-16644 Done): after Adjustment; header CCY; CN split; Total orange when ≠ 0 (rounded 2dp); signs opposite of AP.
+- Adjustment form select2: `customer-payment-adjustment/select2-coa` → `ChartOfAccountController::select2Child` (leaf/active, all classes; exclude CBR-locked COA by payment date). Store: debit XOR credit; `description` **required** max 150; unique `coa_id` per payment. Import Sheet 3 tetap filter class Expense/Revenue/Other Revenue & Expenses (+ `CREDIT NOTE`).
+- Single Use modal FE labels (Receive wording): `SingleUseModal.vue` + `OutstandingCustomerInvoice.vue`.
 
-## 12. Known Issues
+## 13. Known Issues
 
 | GAP | Ringkas |
 |---|---|
-| GAP-AR-01 | Nama kolom template di requirement raw berbeda dengan heading resmi |
-| GAP-AR-02 | Credit Note dibentuk saat import, bukan setelah Approve |
-| GAP-AR-03 | Jam transaksi 23:59:59, bukan 00:00:00 |
-| GAP-AR-04 | Matching amount ikut menghitung Sheet 3 |
-| GAP-AR-05 | Class COA adjustment lebih luas dari requirement raw |
-| GAP-AR-06 | Pesan error tidak identik dengan requirement raw |
-| GAP-AR-07 | Cache lock dan pesan penolakan memakai penanda Account Payment |
-| GAP-AR-08 | Requirement raw §7 sebenarnya milik menu Instant Settlement |
-| GAP-AR-09 | Alur manual belum punya sumber requirement |
-| GAP-AR-SUMMARY-01 | Summary section TO-BE ETM-16644 |
-| GAP-AR-CN-COA | CN Payment Source stamp COA dari **setting** by asal CN (SR → Deposit of Sales Return) — TO-BE ETM-16764; bukan historis jurnal; fix di `PaymentDetailFundController` + `ReceiveImportPerMutationJob::createFund` |
+| GAP-AR-01 | **Closed — Locked AS-IS:** heading template = file unduhan live (§4 requirement) |
+| GAP-AR-02 | **Closed — Locked AS-IS:** CN overpayment saat import (Open); hapus CN blokir Approve; no regenerate dari edit AR |
+| GAP-AR-03 | **TO-BE ETM-17298:** jam import AR 23:59:00 (AS-IS masih 23:59:59); CN = AR + 10s → 23:59:10 same day |
+| GAP-AR-04 | **Closed — Locked AS-IS:** match Sheet 1 = Sheet 2 + Sheet 3 (Dr−/Cr+) |
+| GAP-AR-05 | **Closed — Locked AS-IS:** Expense / Revenue / Other Revenue & Expenses (+ CREDIT NOTE) |
+| GAP-AR-06 | **Closed — Locked AS-IS:** assert string ikut requirement §6 |
+| GAP-AR-07 | **Closed — Fixed:** cache `ar` + copy Account Receive (bukan AP) |
+| GAP-AR-08 | **Closed — Bukan gap:** raw §7 = Instant Settlement; AR hanya relates §5.8 |
+| GAP-AR-09 | **Open (docs):** alur manual / bulk approve belum satu paket requirement |
+| GAP-AR-SUMMARY-01 | **Closed — AS-IS:** ETM-16644 Done |
+| GAP-AR-CN-COA | **Closed — AS-IS:** ETM-16764 Done (`PaymentDetailFundController` + import `createFund`) |
+| GAP-AR-MEM-01 | **Closed — AS-IS:** ETM-17198 Done (max 50) |
 
 Detail lengkap: [requirement §8](./requirement.md).

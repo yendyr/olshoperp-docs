@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.7
-last_updated: 2026-11-09
+version: 2.13
+last_updated: 2026-11-11
 owner: QA - Yemima
 status: review
 ---
@@ -14,12 +14,18 @@ status: review
 **UI route:** `/accounting/customer-payment`
 **Audience:** PM, Operations, QA, Support, Developer
 
-**Related Improvement:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) — COA deposit Credit Note ikut asal transaksi · Relates AP: [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761) · **[ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198)** (datalist memory / pagination)
+**Related Improvement:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) (Done) · [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) (Done) · [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) (Done — Summary) · **[ETM-17298](https://erpintegration.atlassian.net/browse/ETM-17298)** (jam import 23:59:00) · **[ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325)** (autosave default Open) · **[ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326)** (audit log readable)
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.13 | 2026-11-11 | QA - Yemima | **AS-IS** validasi Approve AR lengkap (§6.4.1); jurnal Approve (§5.11); audit log gap + TO-BE readable (§5.12 / [ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326)); TO-BE autosave Open [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325); Description Adjustment locked wajib ikut kode |
+| 2.12 | 2026-11-11 | QA - Yemima | **AS-IS** §5.10 Adjustment form manual (COA child semua class; Debit/Credit contoh admin bank & pendapatan lebih bayar); copy Single Use modal → Receive wording (FE) |
+| 2.11 | 2026-11-11 | QA - Yemima | **AS-IS sync:** GAP-AR-SUMMARY-01 / GAP-AR-CN-COA / GAP-AR-MEM-01 closed (ETM-16644, 16764, 17198 Done + kode selaras); klarifikasi GAP-AR-09 tetap Open (docs alur manual) |
+| 2.10 | 2026-11-11 | QA - Yemima | **TO-BE** [ETM-17298](https://erpintegration.atlassian.net/browse/ETM-17298): jam import AR **23:59:00** (bukan 23:59:59) agar CN overpayment +10s = 23:59:10 hari yang sama; GAP-AR-03 dibuka kembali sebagai TO-BE; GAP-AR-08 closed — bukan gap, relates Instant Settlement saja |
+| 2.9 | 2026-11-11 | QA - Yemima | **AS-IS locked:** GAP-AR-03 (jam 23:59:59) · GAP-AR-04 (matching Sheet 1 = Sheet 2 + Sheet 3) · GAP-AR-05 (class COA Adjustment) · GAP-AR-06 (katalog pesan §6) · GAP-AR-07 closed (copy/lock AR sudah benar di kode) |
+| 2.8 | 2026-11-11 | QA - Yemima | **AS-IS locked:** GAP-AR-01 (heading template = file unduhan live) · GAP-AR-02 (CN overpayment terbentuk saat import, status Open) + aturan hapus CN vs Approve AR |
 | 2.7 | 2026-11-09 | QA - Yemima | **TO-BE** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198): datalist AR — hilangkan opsi 100 entries (maks 50), optimasi query/eager load, tooltip TRX. REF tidak boros memori |
 | 2.6 | 2026-11-09 | QA - Yemima | **AS-IS** [ETM-17102](https://erpintegration.atlassian.net/browse/ETM-17102): Select Invoice pada AR Draft/Open menambah baris Receiving Destination sebesar nilai invoice, dan section itu langsung menampilkan barisnya |
 | 2.5 | 2026-11-04 | QA - Yemima | Daftar Account Receive menampilkan kolom Description per dokumen; bisa dicari dan diurut, dan ikut di file ekspor termasuk Receive per tanggal ([ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)) |
@@ -62,7 +68,9 @@ flowchart LR
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Open: Import / create
+    [*] --> Draft: Create autosave (AS-IS)
+    [*] --> Open: Import
+    Draft --> Open: Ubah status
     Open --> Approved: Approve
     Open --> Rejected: Reject
     Approved --> Void: Void
@@ -72,12 +80,15 @@ stateDiagram-v2
 
 | Status | Arti | Dampak ke outstanding invoice |
 |---|---|---|
-| Open | Dokumen sudah ada, menunggu review Finance | Menambah nilai prepared — outstanding invoice ikut berkurang walau belum Approved |
-| Approved | Sudah disetujui, jurnal terbentuk | Pindah dari prepared ke processed |
+| Draft | Create/autosave manual (AS-IS) — belum siap approve | Belum mengunci alokasi seperti Open bila belum ada detail |
+| Open | Siap review / Approve | Detail SI menambah prepared — outstanding ikut berkurang |
+| Approved | Sudah disetujui, jurnal terbentuk + Approval Log | Pindah dari prepared ke processed |
 | Rejected | Ditolak approver | Alokasi dilepas |
 | Void | Dibatalkan setelah Approved | Alokasi dilepas |
 
-Hasil import selalu masuk sebagai **Open** — memberi ruang Finance memeriksa sebelum Approve.
+**Tombol Approve/Reject** hanya muncul saat status **Open** (plus privilege).  
+Hasil **import** selalu **Open**.  
+**TO-BE [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325):** create/autosave manual juga default **Open** (bukan Draft).
 
 ## 4. Form & Field — Template Import
 
@@ -89,7 +100,7 @@ Satu baris = satu dokumen AR yang akan dibentuk.
 
 | Kolom | Wajib | Sumber | Validasi |
 |---|---|---|---|
-| Date | Ya | Input user | Divalidasi terhadap fiscal period; jam disimpan 23:59:59 |
+| Date | Ya | Input user | Divalidasi terhadap fiscal period; jam disimpan **23:59:59** (AS-IS). **TO-BE [ETM-17298](https://erpintegration.atlassian.net/browse/ETM-17298):** jam **23:59:00** supaya CN overpayment (+10 detik → 23:59:10) tetap di tanggal kalender yang sama |
 | COA Bank Account | Ya | Chart of Account / Credit Note | Kode COA Cash/Bank aktif atau nomor Credit Note; tipe dideteksi otomatis |
 | Amount | Ya | Input user | Angka positif; wajib sama dengan akumulasi Sheet 2 + Sheet 3 untuk baris yang sama |
 | Description | Tidak | Input user | Kosong berarti deskripsi dibuat otomatis |
@@ -126,15 +137,15 @@ Ekspor daftar memuat kolom Description yang sama, termasuk berkas berjudul **Rec
 
 [ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)
 
-#### Pagination & performa (TO-BE · ETM-17198)
+#### Pagination & performa (AS-IS · ETM-17198 Done)
 
 | Aturan | Detail |
 |--------|--------|
-| Opsi panjang halaman | **Maksimal 50** entries — opsi **100** dihapus dari datalist AR |
-| Load datalist | Query/eager load detail tidak boleh memicu *Allowed memory size exhausted* pada volume settlement besar |
+| Opsi panjang halaman | **10 / 20 / 50** — opsi **100** tidak tersedia |
+| Load datalist | Eager load detail dibatasi; tidak boleh *Allowed memory size exhausted* pada volume settlement besar |
 | Tooltip **TRX. REF** | Tidak me-load seluruh invoice detail berlebihan per baris |
 
-Saat card masih **To Do**, perilaku AS-IS production masih bisa error memori jika user menyimpan length=100 di LocalStorage.
+Jika LocalStorage browser masih menyimpan length=100 dari versi lama, UI memaksa ke opsi yang valid (maks 50).
 
 ## 5. How It Works
 
@@ -166,18 +177,20 @@ Kolom COA Bank Account menerima dua jenis input dan sistem mendeteksi sendiri ti
 
 Pembayaran via Credit Note menuntut CN sudah Approved, saldo outstanding CN mencukupi, tanggal pembayaran tidak lebih awal dari tanggal CN, currency CN primary, dan customer invoice sama dengan pemilik CN.
 
-**COA deposit CN (TO-BE [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)):**
+**COA deposit CN (AS-IS · [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) Done):**
 
-| Aspek | AS-IS | TO-BE |
-|-------|-------|-------|
-| Stamp `payment_detail_deposits.coa_id` (manual / import / clearing) | Selalu Customer's Deposit / store deposit | Identifikasi **asal CN** → baca **setting** (bukan COA dokumen/jurnal CN): Sales Return → **Deposit of Sales Return**; regular → Customer's Deposit / store deposit |
-| Jurnal AR approve | Debit `coa_id` tersimpan | Tidak berubah — pastikan stamp benar dari resolve setting |
+Saat Payment Source = Credit Note (UI / clearing / import), sistem **identifikasi asal CN** lalu baca COA dari **setting** (bukan menyalin COA dokumen/jurnal CN):
+
+| Asal CN | Field setting |
+|---------|---------------|
+| Sales Return (billed) | **Deposit of Sales Return** |
+| Regular (manual / overpay AR) | **Customer's Deposit** / store deposit |
 
 Satu Account Receive boleh campur beberapa CN beda asal → baris GL boleh beda akun. Setting diganti setelah CN Approve → ikut setting saat consume. Detail: [Credit Note §6.7–6.8.1](../accounting-credit-note/requirement.md).
 
 ### 5.4 Adjustment — kelebihan dan kekurangan bayar
 
-**Overpayment jadi Credit Note.** Dana masuk 550.000 untuk SI-001 senilai 500.000. Sheet 3 diisi Account Code `CREDIT NOTE`, kolom Credit 50.000. Sistem membentuk AR pelunasan SI-001 plus Credit Note baru senilai 50.000 atas nama customer invoice tersebut.
+**Overpayment jadi Credit Note.** Dana masuk 550.000 untuk SI-001 senilai 500.000. Sheet 3 diisi Account Code `CREDIT NOTE`, kolom Credit 50.000. Sistem membentuk AR pelunasan SI-001 plus Credit Note baru senilai 50.000 atas nama customer invoice tersebut. CN itu terbentuk **saat import selesai** (bukan menunggu Approve AR), berstatus **Open**, dan tertaut ke dokumen AR sebagai referensi transaksi. Nilai CN dipotong dari grand total dan amount Cash/Bank dokumen AR.
 
 **Overpayment ke akun pendapatan.** Sama seperti di atas, tapi Account Code diisi kode COA pendapatan — kelebihan langsung diakui ke akun itu tanpa membentuk CN.
 
@@ -185,9 +198,24 @@ Satu Account Receive boleh campur beberapa CN beda asal → baris GL boleh beda 
 
 Nilai grand total dokumen AR dihitung dari amount mutasi dikurangi nilai adjustment bertipe Credit Note.
 
+**Hapus Credit Note hasil overpayment (AR masih Open).**
+
+| Aturan | Perilaku |
+|---|---|
+| Hapus CN di menu Credit Note | Dokumen CN dihapus di level transaksi Credit Note (soft delete) — bukan sekadar lepas dari layar edit AR |
+| Approve AR setelah CN itu dihapus | Ditolak. Pesan: `Approval Failed. Total receive is not balanced because the generated Credit Note has been deleted` |
+| Buat ulang CN dari form edit AR | **Tidak bisa.** Section Adjustment hanya menerima COA Expense / Revenue / Other Revenue & Expenses. Teks `CREDIT NOTE` dan pembentukan dokumen CN hanya lewat **import** Sheet 3 |
+| CN baru manual di menu Credit Note | Tidak menggantikan CN overpayment yang sudah dihapus untuk keperluan Approve AR ini — blokir tetap berlaku selama CN hasil generate yang soft-deleted masih tertaut ke AR tersebut |
+
+Jalan keluar operasional: **restore** CN yang dihapus, atau batalkan/ulang alur AR + import (bukan regenerate dari Adjustment).
+
 ### 5.5 Matching amount
 
-Amount di sheet Bank Mutation harus sama dengan akumulasi baris terkait di sheet Detail ditambah nilai adjustment di sheet Adjustment (Debit dihitung negatif, Credit positif). Ketimpangan dilaporkan lengkap dengan nomor sheet dan baris yang timpang.
+Per nomor baris pengikat (Identification Row): **Amount Sheet 1 = Σ Invoice Paid Amount (Sheet 2) + nilai Sheet 3**. Di Sheet 3, **Debit dihitung negatif**, **Credit dihitung positif** (termasuk baris `CREDIT NOTE`).
+
+**Contoh.** Sheet 1 baris 5 Amount 550.000. Sheet 2: SI-001 bayar 500.000 (pengikat 5). Sheet 3: `CREDIT NOTE` Credit 50.000 (pengikat 5). Rumus: 500.000 + 50.000 = 550.000 → cocok. Tanpa Sheet 3, 500.000 ≠ 550.000 → Amount Mismatch.
+
+Ketimpangan dilaporkan lengkap dengan nomor sheet dan baris yang timpang (pesan §6.4).
 
 ### 5.6 Outstanding check dengan akumulasi
 
@@ -218,6 +246,66 @@ Akun pada baris itu adalah kas/bank yang tertaut di Sales Invoice.
 | AR-SEL-01 | Select Invoice pada AR Draft/Open memasukkan Sales Invoice ke Detail Account Receive |
 | AR-SEL-02 | Receiving Destination mendapat baris dengan Amount sama dengan nilai invoice yang masuk |
 | AR-SEL-03 | Baris itu tampil di Receiving Destination tanpa memuat ulang halaman |
+
+### 5.10 Adjustment pada form Create/Edit (manual)
+
+Section **Adjustment** menyeimbangkan dokumen AR bila uang masuk (Receiving Destination) tidak sama dengan nilai piutang yang dilunasi (Detail), tanpa mengubah niat pelunasan penuh ke customer.
+
+| Field | Wajib | Aturan |
+|---|---|---|
+| Account (COA) | Ya | Opsi select2: COA **aktif**, **bukan parent** (child/leaf saja), **semua class** (tidak dibatasi Expense/Revenue seperti Sheet import). COA yang sedang terkunci Cash Bank Reconcile Approved pada tanggal AR dikeluarkan dari daftar. Satu COA hanya boleh sekali per dokumen AR |
+| Debit | Salah satu | Mata uang = currency header AR. Tidak boleh terisi bersamaan dengan Credit; nilai harus > 0 |
+| Credit | Salah satu | Sama seperti Debit |
+| Description | Ya | Freetext max 150 (wajib). Ikut ke deskripsi baris jurnal / GL |
+| Save | — | Menambah baris ke tabel Adjustment |
+| Delete baris | — | Menghapus baris Adjustment; grand total / Summary ikut berubah |
+
+**Bukan** jalur pembentukan Credit Note overpayment — teks `CREDIT NOTE` hanya di **import** Sheet 3 (§5.4).
+
+**Contoh Debit — biaya admin bank dipotong di transfer.** SI 1.000.000; uang masuk rekening 990.000 (10.000 admin bank). Detail Paid Amount = 1.000.000; Receiving Destination Cash/Bank = 990.000; Adjustment Debit 10.000 ke akun biaya admin bank. Piutang customer lunas penuh; 10.000 menjadi beban internal. Balance: 990.000 + 10.000 = 1.000.000.
+
+**Contoh Credit — uang masuk lebih, diakui pendapatan (bukan deposit CN).** SI 1.000.000; transfer masuk 1.010.000 (kelebihan 10.000 mau diakui pendapatan, bukan Credit Note). Detail Paid Amount = 1.000.000; Receiving Destination = 1.010.000; Adjustment Credit 10.000 ke akun pendapatan / other income. Balance: 1.000.000 + 10.000 = 1.010.000.
+
+Kolom tabel Adjustment: Account Code \| Account Name · Debit · Credit · Amount in {header currency} · Description · Action Delete.
+
+### 5.11 Jurnal saat Approve Account Receive (AS-IS)
+
+Setelah Approve lolos validasi (§6.4.1), sistem membentuk **satu Journal** lewat `customerPaymentAutoJournal`, lalu **auto-approve** journal tersebut.
+
+| Aspek header Journal | Nilai |
+|---|---|
+| Tanggal | = tanggal transaksi AR |
+| Description (header) | Jika ≤5 SI: `Payment for invoice(s) number: {kode SI, …}`. Jika >5 SI: `Payment for {N} invoices`. Tanpa detail: `Auto-Journal from {kode AR}` |
+| Transaction reference | `transaction_reference_id` = id AR; class Payment; text **Payment from Customer**; URL edit AR (`/accounting/customer-payment/edit/{id}`) — **ya, journal mereferensikan dokumen AR** |
+| Status akhir | **Approved** (auto) + baris Approval Log journal: Auto Approve by System |
+
+| Sisi jurnal | COA yang dipakai |
+|---|---|
+| **Credit — Piutang** | Customer **General Company** → setting company **Account Receivable COA**. Customer **Store/platform** → COA AR di Store Binding, fallback Account Receivable COA company owner |
+| **Debit — Cash/Bank** | `coa_id` baris Receiving Destination tipe Cash/Bank (dari master Cash/Bank yang dipilih) |
+| **Debit — Credit Note (deposit)** | `coa_id` yang sudah di-stamp di baris deposit saat pakai CN (§5.3 / ETM-16764): CN dari Sales Return → **Deposit of Sales Return**; CN regular → **Customer's Deposit** / store deposit |
+| **Debit/Credit — Adjustment** | COA yang diisi user di section Adjustment (+ deskripsi baris adjustment digabung ke desc detail) |
+| Exchange Diff / Cash Diff | Setting company **Exchange Diff. COA** / **Cash Diff. COA** bila ada selisih kurs/kas pada detail |
+
+Deskripsi baris detail default: `Auto-Journal from Payment from Customer: {kode AR}. Customer Name: {nama}`.
+
+### 5.12 Audit Log transaksi AR
+
+**AS-IS:** Audit memakai jejak create/update/delete pada header Payment + relasi detail (detail SI, funds/deposits, adjustments, attachment). Identifier teknis sering menampilkan `coa_id` / `transaction_reference_id` (sebagian sudah di-transform ke teks COA).
+
+**Gap (dari review UX):** banyak peristiwa kurang / terlalu teknis / terlalu lengkap saat edit satu section — user bingung.
+
+**TO-BE [ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326)** (Qudum, High):
+
+| Aturan | Ideal |
+|---|---|
+| Scope per peristiwa | Hanya field yang berubah di **section** yang diedit (Basic / Detail / Receiving Destination / Adjustment), bukan dump seluruh dokumen |
+| Label | Nama UI (Customer, Paid Amount, Cash/Bank Label), bukan nama kolom DB / class PHP |
+| Identifier baris | Kode SI / kode CN / Label Cash Bank / Account Code+Name — bukan hanya id numerik |
+| Sembunyikan | `owned_by`, `is_all_company`, `status` flag internal, foreign amount mentah bila user input di header CCY, UUID/class morph |
+| Wajib tercatat | Create header; ubah status Draft↔Open; tambah/ubah/hapus Detail, Receiving Destination, Adjustment; Approve / Reject / Void; Soft-delete dokumen |
+
+Setelah Approve, **Approval Log** terpisah di halaman AR menampilkan riwayat Approve/Reject/Void (bukan menggantikan Audit Log).
 
 ## 6. Validasi
 
@@ -285,11 +373,28 @@ Format pesan: `Row {baris} at Sheet {nomor sheet}: {Kolom} {pesan}`. Nomor sheet
 | Amount tidak cocok | `Amount Mismatch: Total at Sheet 1 Row X ({nilai}) does not match total in Sheet 2 and Sheet 3 ({nilai}).` |
 | Import lain sedang berjalan | `Import Transaction for Account Receive is currently being processed by another session.` |
 
-## 6.5 Section Summary (TO-BE · ETM-16644)
+### 6.4.1 Approve dokumen AR
+
+Prasyarat UI: status **Open** + privilege Approve. Urutan cek di backend (AS-IS):
+
+| # | Kondisi | Pesan / efek |
+|---|---|---|
+| 1 | Approval detail import sedang berjalan untuk dokumen ini | `Updating process is in progress. Please wait a moment.` |
+| 2 | Fiscal period tertutup / tidak valid untuk tanggal AR | Pesan dari `validate_fiscal_period` |
+| 3 | COA Cash/Bank di Receiving Destination terkunci Cash Bank Reconcile Approved pada tanggal AR | Pesan dari `validate_cash_bank_reconcile_lock` |
+| 4 | Status bukan Open / tidak `can_approve` | `This payment doesn't have any detail data.` *(copy generik — status/privilege)* |
+| 5 | Ada CN overpayment soft-deleted yang masih tertaut ke AR ini | `Approval Failed. Total receive is not balanced because the generated Credit Note has been deleted` |
+| 6 | Belum ada baris Detail **atau** belum ada Receiving Destination (Cash/Bank maupun Credit Note) | `Complete the receiving destination section to approve this transaction.` |
+| 7 | Total Receiving Destination ≠ total Detail + Adjustment (rumus balance) | `Approval Failed. Total Payment Source must be equal to Total Payment Detail.` |
+| 8 | Gagal membentuk / menyimpan jurnal (setting COA hilang, dll.) | Pesan dari JournalProcess (mis. `Please Configure Company/Store "Account Receivable COA" in: …`, Exchange Diff / Cash Diff belum dikonfigurasi) |
+
+Lolos → status **Approved**, Approval Log terisi, outstanding SI: prepared ↓ processed ↑, jurnal Approved terbentuk (§5.11).
+
+## 6.5 Section Summary (AS-IS · ETM-16644 Done)
 
 Section **Summary** read-only di form **Show** dan **Edit**, posisi **setelah** accordion **Adjustment** (sebelum Approval Log / Audit).
 
-**Card:** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) · sibling AP [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643)
+**Card:** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) Done · sibling AP [ETM-16643](https://erpintegration.atlassian.net/browse/ETM-16643) · TC terkait (ETM-16685–16689, 16715–16719) Done
 
 ### Aturan konversi & tampilan
 
@@ -359,18 +464,18 @@ flowchart TB
 
 | ID | Deskripsi | Type | Dampak | Status |
 |---|---|---|---|---|
-| GAP-AR-01 | Nama kolom template. Requirement raw: "Payment Source", "Identification Row", "Identification Bank Mutation Row", dan kolom "Currency" di Sheet 1. Codebase: heading resmi "COA Bank Account", "Cash Bank Identification Row" di Sheet 2 dan 3, dan tidak ada kolom Currency — currency diturunkan dari COA atau CN. | Contradiction | Test case dan panduan user yang memakai nama kolom raw akan gagal di template asli | Pending Decision — Yemima |
-| GAP-AR-02 | Waktu pembentukan Credit Note. Requirement raw: CN ter-generate setelah Approve AR. Codebase: CN dibuat saat proses import selesai, langsung berstatus Open dan tertaut ke dokumen AR. | Contradiction | Expected result TC overpayment berbeda total | Pending Decision — Yemima |
-| GAP-AR-03 | Jam pada tanggal transaksi. Requirement raw: jam otomatis 00:00:00. Codebase: tanggal disimpan dengan jam 23:59:59. | Contradiction | Berpengaruh ke batas fiscal period dan urutan dokumen di tanggal yang sama | Pending Decision — Yemima |
-| GAP-AR-04 | Matching amount. Requirement raw: hanya membandingkan akumulasi Sheet 2 dengan Amount Sheet 1. Codebase: adjustment Sheet 3 ikut dihitung (Debit negatif, Credit positif). | Contradiction | File dengan adjustment akan dinilai timpang bila mengikuti rumus raw | Pending Decision — Yemima |
-| GAP-AR-05 | Class COA adjustment. Requirement raw: hanya Expense dan Pendapatan. Codebase: Expense, Revenue, dan Other Revenue & Expenses; COA induk dan COA nonaktif juga ditolak. | Contradiction | Batas uji negatif berbeda | Pending Decision — Yemima |
-| GAP-AR-06 | Pesan error. Sebagian besar pesan di requirement raw tidak sama persis dengan pesan di kode — lihat §6. | Contradiction | TC yang mengassert string raw akan fail | Pending Decision — Yemima |
-| GAP-AR-07 | Penguncian proses import di alur Account Receive memakai penanda milik Account Payment, dan tiga pesan penolakannya menyebut "Account Payment". | Missing Behavior | Import AR dan AP berpotensi saling mengunci; pesan ke user menyebut menu yang salah | Open |
-| GAP-AR-08 | Requirement raw §7 (Smart Settlement Adjustment, Failed Ship, Hard Delete Protection) sebenarnya menjelaskan perilaku menu Instant Settlement, bukan menu ini. | Unverified | Berisiko dobel dokumentasi dan salah rumah fakta | Open |
-| GAP-AR-09 | Alur manual (create dokumen AR, insert Sales Invoice lewat modal Available Sales Invoice, bulk approve) belum punya sumber requirement tertulis, padahal sudah punya 9 test case aktif. | Missing Behavior | 9 TC berdiri tanpa acuan requirement | Open |
-| GAP-AR-SUMMARY-01 | Section Summary setelah Adjustment | Info total Piutang / Cash-Bank / CN / Adj / Total (header CCY; tanda Credit+/Debit−) | Belum ada di UI | **TO-BE** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) |
-| GAP-AR-CN-COA | CN Payment Source COA = setting by asal CN | Asal CN → field setting (SR → Deposit of Sales Return); bukan historis jurnal | Hardcode Customer's Deposit / store deposit on add/import | **TO-BE** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) |
-| GAP-AR-MEM-01 | Datalist pagination 100 + eager load detail | Maks 50 entries; query/tooltip hemat memori | PHP memory exhausted @ 100 entries (prod) | **TO-BE** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) |
+| GAP-AR-01 | Nama kolom template Excel import. Raw memakai "Payment Source" / "Identification Row" / kolom Currency; template live memakai "COA Bank Account" / "Cash Bank Identification Row" tanpa Currency (§4). | Contradiction | TC/panduan pakai nama raw gagal di file unduhan | **Closed — Locked AS-IS** (Yemima 2026-11-11): ikut heading file template existing |
+| GAP-AR-02 | Waktu pembentukan CN overpayment. Raw: setelah Approve AR. Live: saat import selesai, status Open, tertaut AR. Hapus CN → Approve AR ditolak; tidak bisa regenerate dari edit AR (§5.4, §6.4.1). | Contradiction | Expected TC overpayment + skenario hapus CN | **Closed — Locked AS-IS** (Yemima 2026-11-11): ikut codebase + aturan hapus CN didokumentasikan |
+| GAP-AR-03 | Jam tanggal transaksi import. Live AS-IS: **23:59:59**; CN overpayment = AR + 10 detik → bisa loncat ke hari berikutnya. **TO-BE:** AR **23:59:00** → CN **23:59:10** hari yang sama. | Contradiction → Change | Fiscal period / tanggal CN vs AR | **Open — TO-BE** [ETM-17298](https://erpintegration.atlassian.net/browse/ETM-17298) (Yemima 2026-11-11; assignee Ahmad Dlomiri) |
+| GAP-AR-04 | Matching amount. Raw: Sheet 1 vs Sheet 2 saja. Live: Sheet 1 = Sheet 2 + Sheet 3 (Debit −, Credit +) — §5.5. | Contradiction | File bertadjustment salah dinilai timpang jika ikut raw | **Closed — Locked AS-IS** (Yemima 2026-11-11) |
+| GAP-AR-05 | Class COA Adjustment. Raw: Expense & Pendapatan saja. Live: Expense, Revenue, Other Revenue & Expenses; tolak parent & nonaktif; plus teks `CREDIT NOTE` — §4.3 / §6.3. | Contradiction | Batas uji negatif berbeda | **Closed — Locked AS-IS** (Yemima 2026-11-11) |
+| GAP-AR-06 | Teks pesan error. Raw ≠ string kode. Katalog resmi = §6 (kode). | Contradiction | TC assert string raw fail | **Closed — Locked AS-IS** (Yemima 2026-11-11): TC/UG ikut §6 |
+| GAP-AR-07 | Dulu: cache lock AR memakai penanda AP + pesan "Account Payment". **AS-IS sekarang:** cache `import/ar/{company}`; pesan & notifikasi menyebut Account Receive / Receive. | Missing Behavior | — | **Closed — Fixed** (sudah benar di kode; tidak perlu ubah copy lagi) |
+| GAP-AR-08 | Raw §7 (Smart Settlement / Failed Ship / Hard Delete) milik Instant Settlement — bukan gap perilaku AR. Cukup **relates** lewat §5.8; detail di docs Instant Settlement. | N/A (salah klasifikasi) | — | **Closed — Bukan gap** (Yemima 2026-11-11): relates Instant Settlement saja |
+| GAP-AR-09 | SoT awal fokusat **Import** multi-sheet. Alur **manual** (create AR dari form, modal Available Sales Invoice / Select Invoice, bulk approve) sudah ada di app + TC arsip, tapi requirement tertulis belum lengkap sebagai satu paket (sebagian sudah: §5.9 Select Invoice / ETM-17102). | Missing Behavior (docs) | TC/manual tanpa acuan lengkap di requirement | **Open** — backlog tulis requirement alur manual (bukan bug produk) |
+| GAP-AR-SUMMARY-01 | Section Summary setelah Adjustment | Ada di UI (Show/Edit); aturan §6.5 | — | **Closed — AS-IS** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) Done |
+| GAP-AR-CN-COA | CN Payment Source COA = setting by asal CN | SR → Deposit of Sales Return; regular → Customer's Deposit / store | — | **Closed — AS-IS** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) Done |
+| GAP-AR-MEM-01 | Datalist pagination & memori | Maks 50; load/tooltip hemat | — | **Closed — AS-IS** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) Done |
 
 ## 9. FAQ
 
@@ -384,7 +489,9 @@ flowchart TB
 
 **Bisa bayar pakai deposit customer?** Bisa. Isi nomor Credit Note di kolom COA Bank Account, dengan syarat CN sudah Approved dan saldonya cukup.
 
-**Apa section Summary? (TO-BE ETM-16644)** Ringkasan read-only setelah Adjustment: Piutang, Cash/Bank, Credit Note, Adj Debit/Credit, Total — semua dalam currency header. Total ideal 0; jika ≠ 0 teks Total berwarna orange (info saja).
+**CN overpayment dari import sudah dihapus — kenapa Approve AR gagal?** Sistem mendeteksi CN generate yang soft-deleted masih tertaut ke AR itu dan menolak Approve. Restore CN tersebut, atau ulang alur AR; jangan harap bisa buat CN overpayment ulang dari section Adjustment di edit AR.
+
+**Apa section Summary?** Ringkasan read-only setelah Adjustment: Piutang, Cash/Bank, Credit Note, Adj Debit/Credit, Total — semua dalam currency header. Total ideal 0; jika ≠ 0 teks Total berwarna orange (info saja). Lihat §6.5.
 
 **Setelah Select Invoice, apa yang harus muncul di Receiving Destination?** Baris penerimaan dengan jumlah yang sama dengan tagihan yang baru masuk. Misalnya tagihan Rp105.000, Amount di Receiving Destination juga Rp105.000, tanpa memuat ulang halaman.
 
