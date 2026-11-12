@@ -2,7 +2,7 @@
 doc_type: technical
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.5
+version: 2.6
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -71,6 +71,8 @@ Journal auto-approved (system user 0).
 `accounting_type` on `omni_sales_returns`. Not tied to AR/`processed_to_payment_amount`.
 
 **Known code gap (GAP-SR-16):** `JournalProcess::stockSalesReturnAutoJournal` still calls `processSalesReturnInvoice` for `unbilled`. Since commit `d40ec8e` (ETM-17064, 10 Nov 2026) the amount is read from `SalesOrderDetail->each_price_after_discount_after_vat`, an attribute that does not exist on that model, so the amount is 0 and the Sales/AR rows are skipped (journal rows with 0 are not inserted). Result today is correct by accident; the branch should be removed so it cannot come back when the attribute is added. Before ETM-17064 the amount came from the Sales Invoice detail (old definition: unbilled = SI exists but unpaid).
+
+**Classification windows (GAP-SR-16, see supplychain-sales-returns requirement §7.4):** `accounting_type` is set once in `SalesReturnLogic::store` from `invoiced_quantity` (`prepared_to_invoice_quantity` + `processed_to_invoice_quantity`, per SO line) and is not recomputed at approve. `validateDetails` rejects creation while any line has `prepared_to_invoice_quantity > 0` (`has pending invoice, please complete it first`), so an Open SI never lands in either type. Remaining exposure: an SI approved after an Unbilled return was created, and Unbilled returns created before ETM-17064 (old definition) that are still Open. Both complete with no Sales/AR reversal and no CN. Staging 12 Nov 2026: 18 Open Unbilled returns linked to an approved SI.
 
 **Known bug (code AS-IS — [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) / GAP-SR-13):**
 

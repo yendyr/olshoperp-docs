@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.5
+version: 2.6
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -61,6 +61,10 @@ Sama seperti Purchase Return: yang menentukan adalah **sudah ada invoice penjual
 | **Billed** | Barang retur **sudah punya Sales Invoice** | **Credit Note** otomatis + jurnal (mirip Debit Note di Purchase Return billed) |
 
 **Contoh:** dua SKU di satu order, keduanya sudah punya SI; satu SI sudah dilunasi, satu belum ada penerimaan. Keduanya tetap **Billed**.
+
+**SI yang masih Open:** retur tidak bisa dibuat selama ada SI Open pada order itu (`has pending invoice, please complete it first`). Approve atau hapus SI-nya dulu.
+
+**Retur Unbilled lama:** retur yang dibuat sebelum 10 Nov 2026 memakai definisi lama (SI sudah ada, belum dibayar), jadi bisa bertipe Unbilled padahal SI-nya sudah approve. Jurnalnya tidak membalik Sales/AR. Ini gap yang masih terbuka (GAP-SR-16), lihat requirement.
 
 ---
 

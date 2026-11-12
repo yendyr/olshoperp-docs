@@ -2,7 +2,7 @@
 doc_type: technical
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.5
+version: 2.6
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -215,6 +215,8 @@ Default join: full outbound (`processed_to_out_quantity = sales_order_quantity_i
 | `billed` | Sales Invoice **exists** | Credit Note + AR (mirror PR → Debit Note) |
 
 Constants: `OmniSalesReturn::TYPE_ACCOUNTING_BILLED`, `TYPE_ACCOUNTING_UNBILLED`.
+
+Type is set once in `SalesReturnLogic::store` from `invoiced_quantity` (`prepared_to_invoice_quantity` + `processed_to_invoice_quantity`) and not recomputed at approve; `validateDetails` rejects creation while `prepared_to_invoice_quantity > 0`. Windows where an approved SI coexists with an Unbilled return: GAP-SR-16, requirement §7.4.
 
 Credit Note: `generateCreditNoteFromReturn` in approve path.
 
