@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.7
+version: 2.8
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -158,7 +158,7 @@ A: **Billed** = barang retur **sudah punya Sales Invoice (SI)** → generate Cre
 A: Kalau SI-nya masih Open (belum approve), sistem menolak dengan pesan `has pending invoice, please complete it first`. Approve atau hapus SI-nya dulu, baru buat retur. Retur lalu menjadi Billed (SI approve) atau Unbilled (SI dihapus).
 
 **Q: Kenapa ada retur Unbilled yang SI-nya sudah approve?**
-A: Retur lama (dibuat sebelum 10 Nov 2026) memakai definisi lama: Unbilled = SI sudah ada tetapi belum dibayar. Tipe retur tidak dihitung ulang saat Complete, jadi retur lama yang masih Open tetap Unbilled. Complete belum menolaknya, dan jurnalnya tidak membalik Sales/AR. Gap terbuka: GAP-SR-16 (requirement §7.4).
+A: Retur lama (dibuat sebelum 10 Nov 2026) memakai definisi lama: Unbilled = SI sudah ada tetapi belum dibayar. Tipe retur tidak dihitung ulang saat Complete, jadi retur lama yang masih Open tetap Unbilled. Complete belum menolaknya, dan jurnalnya tidak membalik Sales/AR. Gap terbuka: GAP-SR-16 (requirement §7.4, card ETM-17365).
 
 **Q: Sync platform untuk apa?**  
 A: Update status retur dari marketplace (refund/cancelled) ke datalist pill.

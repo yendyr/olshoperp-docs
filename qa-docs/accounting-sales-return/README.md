@@ -14,7 +14,7 @@ Menu **Sales Return** di modul **Finance Accounting** — review harga/COGS dan 
 **UI route:** `/accounting/sales-return`  
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-sales-return/`](../_meta/docs-hub/menus/accounting-sales-return/)  
 **Canonical E2E:** [supplychain-sales-returns/](../supplychain-sales-returns/)  
-**3 layer version:** 2.7 · **User-guide:** v1.4 · `source_version` 2.7 · **Feature Map:** 1.0 · **Last updated:** 2026-11-12
+**3 layer version:** 2.8 · **User-guide:** v1.4 · `source_version` 2.8 · **Feature Map:** 1.0 · **Last updated:** 2026-11-12
 
 **Maintenance owner:** QA — Yemima
 
@@ -24,6 +24,7 @@ Menu **Sales Return** di modul **Finance Accounting** — review harga/COGS dan 
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-12 | 2.8 | GAP-SR-16: contoh angka yang jelas (retur dulu lalu SI = piutang 48.000; SI dulu lalu retur Unbilled lama = 50.000), pembanding Purchase Return, Failed Ship vs retur pada qty SI. Gate di Complete dilacak di ETM-17365 |
 | 2026-11-12 | 2.7 | Koreksi GAP-SR-16: jalur pembuat SI setelah retur ada sudah mengurangi qty retur; yang terbukti adalah Complete tanpa gate status SI sehingga retur Unbilled lama ber-SI approved (18 di Staging) bisa di-Complete tanpa pembalik Sales/AR. Deskripsi header SR tidak bisa diedit lewat aplikasi |
 | 2026-11-12 | 2.6 | GAP-SR-16 dilengkapi kronologi dan skenario: SI Open ditolak saat Create Return; retur Unbilled tanpa pembalik Sales/AR bila SI approve setelah retur dibuat atau retur lama (definisi lama) masih Open. Staging: 64 dari 66 retur Unbilled (97,0%) bertaut SI approved, 18 Open. Docs saja, belum ada card Jira. User-guide tidak berubah konten (hanya `source_version`) |
 | 2026-11-12 | 2.5 | Jurnal retur Unbilled (belum ada SI) hanya Return Inventory / COGS, tanpa jurnal Sales/AR dan tanpa Credit Note; selaras Purchase Return Unbilled. Gap kode GAP-SR-16 (ETM-17064, TC ETM-17291) |

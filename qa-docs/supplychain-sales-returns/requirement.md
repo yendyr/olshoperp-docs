@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.7
+version: 2.8
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -32,6 +32,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.8 | 2026-11-12 | QA - Yemima | GAP-SR-16: tambah contoh angka yang tidak ambigu (urutan retur dulu lalu SI = piutang 48.000; SI dulu lalu retur Unbilled lama = piutang tetap 50.000), pembanding Purchase Return end to end (Billed/Unbilled dipilih di header, qty dibagi per qty, Supplier Invoice dikurangi qty retur, approve tanpa cek status invoice), dan penjelasan Failed Ship vs retur pada qty SI. Gate di Complete dilacak di card ETM-17365 (Error, Highest, Alvin) |
 | 2.7 | 2026-11-12 | QA - Yemima | Koreksi GAP-SR-16 (SCM §7.4): jalur pembuat SI setelah retur ada (daftar baris SI, impor SI, auto-generate SI, impor Settlement) sudah mengurangi qty yang diretur, jadi skenario SI baru approve setelah retur Unbilled dibuat hanya mungkin lewat API langsung. Yang terbukti: Complete tidak punya gate status SI, sehingga retur Unbilled lama yang SI-nya sudah approve (18 di Staging) bisa di-Complete tanpa pembalik Sales/AR. Deskripsi header SR tidak bisa diedit lewat aplikasi (update hanya menerima transaction_date) |
 | 2.6 | 2026-11-12 | QA - Yemima | GAP-SR-16 dilengkapi kronologi dan skenario (SCM §7.4): SI yang masih Open ditolak saat Create Return, sehingga tidak masuk Billed maupun Unbilled. Retur Unbilled tidak punya pembalik Sales/AR bila SI baru approved setelah retur dibuat, atau bila retur lama (definisi lama, dibuat sebelum 10 Nov 2026) masih Open. Staging 12 Nov 2026: 64 dari 66 retur Unbilled (97,0%) bertaut SI approved, 18 di antaranya masih Open. Dicatat sebagai gap docs; belum ada card Jira. ETM-17064 / ETM-17291 |
 | 2.5 | 2026-11-12 | QA - Yemima | Jurnal retur Unbilled (belum ada SI) hanya mengembalikan sisi barang: Return Inventory (D) / COGS (K) (+ Expense / Inventory bila Lost). Tanpa Sales (D) / AR (K): belum ada penjualan atau piutang yang tercatat untuk dibalik. Parity Purchase Return Unbilled (Unbilled Goods (D) / Persediaan (K), tanpa Hutang Usaha dan Debit Note). GAP-SR-16: cabang kode jurnal Sales/AR untuk Unbilled masih ada tetapi bernilai 0. Docs lama menyebut Sales/AR (definisi Unbilled lama = SI belum dibayar). ETM-17064 / TC ETM-17291 |
@@ -314,7 +315,7 @@ Setelah save qty → status tetap **open** → menunggu Finance. Tidak ada Compl
 
 ### 7.4 GAP-SR-16 — Kronologi dan skenario (Unbilled vs status Sales Invoice)
 
-**Status:** gap dicatat di docs (keputusan QA 12 Nov 2026); belum ada card Jira. Diverifikasi dari kode `origin/dev` (12 Nov 2026) dan data Staging (baca saja).
+**Status:** gap dicatat di docs (keputusan QA 12 Nov 2026). Gate di Complete dilacak di card [ETM-17365](https://erpintegration.atlassian.net/browse/ETM-17365) (Error, Highest, Alvin). Pembuangan cabang kode Sales/AR (DEV-SR-09) belum punya card. Diverifikasi dari kode `origin/dev` (12 Nov 2026) dan data Staging (baca saja).
 
 **Aturan klasifikasi di kode**
 
@@ -351,6 +352,32 @@ Setelah save qty → status tetap **open** → menunggu Finance. Tidak ada Compl
 - 18 retur Unbilled Open yang SI-nya sudah approve dibuat 30 Apr–4 Nov 2026. Contoh: SR-5UYFKQ24 (SO-5UYF6TAH), SR-5U9O0HSD (SO-5U1VSXC7), SR-5TWF1RTE (SO-96884IAB), SR-5TR81R6K (SO-5TR7MQ2W), SR-5TP16YE1 (SO-5TNWUJ5C).
 - SI dibuat setelah retur: 0 dari 107. SI Open pada baris retur: 0 dari 107.
 - Reproduksi: ambil `omni_sales_returns` (+ `omni_sales_return_details.order_detail_id`) yang punya `stock_mutation_id`, lalu bandingkan dengan `omni_sales_order_details.processed_to_invoice_quantity` / `prepared_to_invoice_quantity` / `sales_order_quantity_in_base_unit` dan `accounting_customer_invoice_detail_items.created_at`.
+
+**Contoh angka (ilustrasi)**
+
+SO 25 pcs, harga Rp 2.000 per pcs (total Rp 50.000), HPP Rp 1.200 per pcs. Yang diretur: 1 pcs.
+
+| Urutan kejadian | Jurnal | Piutang akhir | Benar? |
+|-----------------|--------|---------------|--------|
+| A. Retur Unbilled 1 pcs dulu, SI kemudian | Retur: Persediaan 1.200 (D) / HPP 1.200 (K). SI hanya untuk sisa 24 pcs: Piutang 48.000 (D) / Penjualan 48.000 (K) | 48.000 | Ya. Ini jalur normal sekarang dan sama dengan Purchase Return |
+| B. SI 25 pcs dulu, lalu retur Unbilled lama 1 pcs di-Complete (S6) | SI: Piutang 50.000 (D) / Penjualan 50.000 (K). Retur: Persediaan 1.200 (D) / HPP 1.200 (K), tanpa Credit Note | 50.000 | Tidak. Seharusnya 48.000; selisih 2.000 (nilai jual 1 pcs yang kembali) menggantung sebagai piutang yang tidak akan dibayar |
+| C. SI 25 pcs dulu, lalu retur Billed 1 pcs | SI: Piutang 50.000 / Penjualan 50.000. Retur: Persediaan 1.200 / HPP 1.200 dan Credit Note 2.000 (D) / AR (K) | 48.000 | Ya |
+
+SI hanya mengambil sisa pada urutan A karena qty SI = qty SO − Failed Ship − retur − yang sudah di-invoice (`SalesOrderDetail::invoicableQuantityInBaseUnit`). Selisih pada urutan B hanya terjadi bila retur Unbilled dibuat setelah SI approve, yaitu data lama (S6).
+
+**Pembanding Purchase Return (alur sudah settle)**
+
+| Aspek | Purchase Return | Sales Return |
+|-------|-----------------|--------------|
+| Billed / Unbilled | Dipilih user di header (`type_billed`, wajib). Detail Billed diambil dari baris Supplier Invoice berstatus Approved / Processed / Complete. Detail Unbilled diambil dari baris inbound yang masih punya sisa | Otomatis per baris SO saat Create Return: `invoiced_quantity` > 0 → Billed, selain itu Unbilled |
+| Pembagian qty | Per qty. Unbilled hanya boleh mengambil qty yang belum di-invoice (invoice Open ikut dihitung sebagai terpakai). Billed maksimal qty baris invoice dikurangi retur Billed sebelumnya | Per baris SO (biner): ada SI berapa pun, seluruh qty retur baris itu masuk Billed |
+| Sisi invoice | Supplier Invoice hanya boleh mengambil sisa. Pesan: `Invoice Qty must not exceed Inbound Qty after deducting Returned Qty` | SI mengambil sisa lewat `invoicable_quantity_in_base_unit` (daftar pilihan baris, impor SI, auto-generate SI, impor Settlement). Pemanggilan API langsung tambah/ubah item SI tidak mengurangi qty retur |
+| Prasyarat | Barang sudah diterima dan ada stok di gudang retur | SO sudah outbound. Bila belum: `has not been processed to outbound, please use Failed Ship` |
+| Gate saat approve | Tidak ada cek status invoice (yang dicek: maksimal detail, detail ada, periode fiskal, Deposit of Purchase Return COA). Perlindungan ada di hitungan qty dua sisi | Tidak ada cek status SI. Gate usulan dilacak di [ETM-17365](https://erpintegration.atlassian.net/browse/ETM-17365) |
+| Jurnal Unbilled | Unbilled Goods COA (D) / Persediaan (K), tanpa Hutang Usaha dan Debit Note | Return Inventory (D) / COGS (K), tanpa Sales/AR dan tanpa Credit Note |
+| Jurnal Billed | Hutang Usaha (D) / Persediaan (K) + Debit Note | Credit Note (D) / AR (K) + Return Inventory (D) / COGS (K) |
+
+**Failed Ship dan retur pada qty SI:** Failed Ship dipakai untuk SO yang belum outbound; retur hanya bisa dibuat setelah outbound. Keduanya mengurangi qty yang boleh di-SI. Pengurangan qty retur bukan validasi khusus Instant Settlement: rumus yang sama dipakai semua jalur pembuat SI, dan sepadan dengan Supplier Invoice di Purchase Return yang dikurangi qty retur.
 
 **Dampak cabang kode Sales/AR (DEV-SR-09)**
 
@@ -530,7 +557,7 @@ Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/
 | GAP-SR-13 | Definisi Billed/Unbilled | Billed = ada SI; Unbilled = belum SI (parity PR) | Code memakai `processed_to_payment_amount > 0` | **Open** [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) |
 | GAP-SR-14 | Export hormati Show/Hide Column | Kolom tersembunyi tidak ada di header maupun sel Excel (TC-OPL-16144-02) | Backend tidak menerima/menyaring `hidden_columns` / `visible_columns` | **TO-BE** [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067) |
 | GAP-SR-15 | Dokumen tanpa detail: kolom detail `-` | Semua kolom detail `-` (kontrak ETM-10609) | Teks (SKU, nama, varian, unit) `-`; angka harga/qty `0` | **TO-BE** [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067) |
-| GAP-SR-16 | Jurnal Unbilled tanpa Sales/AR | Unbilled (belum ada SI) hanya Return Inventory (D) / COGS (K); parity Purchase Return Unbilled | Kode masih punya cabang Sales (D) / AR (K) untuk Unbilled; sejak ETM-17064 nilainya 0 sehingga baris tidak tertulis (hasil benar karena kebetulan). Akibat nyata: retur Unbilled lama yang SI-nya sudah approve tidak punya pembalik Sales/AR dan tidak punya CN, dan Complete tidak menolaknya (tidak ada gate status SI); Staging 12 Nov: 64 dari 66 retur Unbilled (97,0%), 18 masih Open. Kronologi: §7.4 | **Open** (dicatat sebagai gap docs; belum ada card Jira) |
+| GAP-SR-16 | Jurnal Unbilled tanpa Sales/AR | Unbilled (belum ada SI) hanya Return Inventory (D) / COGS (K); parity Purchase Return Unbilled | Kode masih punya cabang Sales (D) / AR (K) untuk Unbilled; sejak ETM-17064 nilainya 0 sehingga baris tidak tertulis (hasil benar karena kebetulan). Akibat nyata: retur Unbilled lama yang SI-nya sudah approve tidak punya pembalik Sales/AR dan tidak punya CN, dan Complete tidak menolaknya (tidak ada gate status SI); Staging 12 Nov: 64 dari 66 retur Unbilled (97,0%), 18 masih Open. Kronologi: §7.4 | **Open** (gate di Complete: [ETM-17365](https://erpintegration.atlassian.net/browse/ETM-17365); pembuangan cabang kode: dicatat di docs, belum ada card) |
 
 ---
 
@@ -546,7 +573,7 @@ Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/
 | DEV-SR-06 | Bulk multi-order create | New API + FE selection |
 | DEV-SR-07 | Export buang kolom yang di-hide | GAP-SR-14 — terima dan saring kolom Show/Hide |
 | DEV-SR-08 | Baris tanpa detail: angka jadi `-` | GAP-SR-15 — jangan tulis 0 pada kolom detail |
-| DEV-SR-09 | Buang cabang jurnal Sales/AR pada retur Unbilled | GAP-SR-16 — jurnal Unbilled cukup Return Inventory / COGS. Belum ada card; keputusan penanganan S5/S6 dulu (§7.4) |
+| DEV-SR-09 | Buang cabang jurnal Sales/AR pada retur Unbilled | GAP-SR-16 — jurnal Unbilled cukup Return Inventory / COGS. Belum ada card. Gate di Complete: [ETM-17365](https://erpintegration.atlassian.net/browse/ETM-17365) |
 
 ---
 

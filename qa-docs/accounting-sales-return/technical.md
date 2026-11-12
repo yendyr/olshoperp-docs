@@ -2,7 +2,7 @@
 doc_type: technical
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.7
+version: 2.8
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -72,7 +72,7 @@ Journal auto-approved (system user 0).
 
 **Known code gap (GAP-SR-16):** `JournalProcess::stockSalesReturnAutoJournal` still calls `processSalesReturnInvoice` for `unbilled`. Since commit `d40ec8e` (ETM-17064, 10 Nov 2026) the amount is read from `SalesOrderDetail->each_price_after_discount_after_vat`, an attribute that does not exist on that model, so the amount is 0 and the Sales/AR rows are skipped (journal rows with 0 are not inserted). Result today is correct by accident; the branch should be removed so it cannot come back when the attribute is added. Before ETM-17064 the amount came from the Sales Invoice detail (old definition: unbilled = SI exists but unpaid).
 
-**Classification windows (GAP-SR-16, see supplychain-sales-returns requirement §7.4):** `accounting_type` is set once in `SalesReturnLogic::store` from `invoiced_quantity` (`prepared_to_invoice_quantity` + `processed_to_invoice_quantity`, per SO line) and is not recomputed at approve. `validateDetails` rejects creation while any line has `prepared_to_invoice_quantity > 0` (`has pending invoice, please complete it first`), so an Open SI never lands in either type. `SalesReturnLogic::approve` and `ItemStockMutation::approveReturn` have no SI-status gate (checks: fiscal period, at least one qty, warehouse, active product, COA group, Return Expense COA, `can_approve`). Remaining exposure: Unbilled returns created before ETM-17064 (old definition) that are still Open and linked to an approved SI; they complete with no Sales/AR reversal and no CN. Staging 12 Nov 2026: 18 such returns. An SI created after the return is blocked on the normal paths (SI line picker/import/auto-generate/Settlement import all subtract returned qty via `invoicable_quantity_in_base_unit`); only direct API calls to `CustomerInvoiceDetailItemController` store/update skip that check.
+**Classification windows (GAP-SR-16, see supplychain-sales-returns requirement §7.4):** `accounting_type` is set once in `SalesReturnLogic::store` from `invoiced_quantity` (`prepared_to_invoice_quantity` + `processed_to_invoice_quantity`, per SO line) and is not recomputed at approve. `validateDetails` rejects creation while any line has `prepared_to_invoice_quantity > 0` (`has pending invoice, please complete it first`), so an Open SI never lands in either type. `SalesReturnLogic::approve` and `ItemStockMutation::approveReturn` have no SI-status gate (checks: fiscal period, at least one qty, warehouse, active product, COA group, Return Expense COA, `can_approve`). Remaining exposure: Unbilled returns created before ETM-17064 (old definition) that are still Open and linked to an approved SI; they complete with no Sales/AR reversal and no CN. Staging 12 Nov 2026: 18 such returns. An SI created after the return is blocked on the normal paths (SI line picker/import/auto-generate/Settlement import all subtract returned qty via `invoicable_quantity_in_base_unit`); only direct API calls to `CustomerInvoiceDetailItemController` store/update skip that check. Gate at approve is tracked in ETM-17365; Purchase Return comparison in supplychain-sales-returns requirement §7.4.
 
 **Known bug (code AS-IS — [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) / GAP-SR-13):**
 
