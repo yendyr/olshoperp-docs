@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.6
+version: 2.7
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -32,6 +32,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.7 | 2026-11-12 | QA - Yemima | Koreksi GAP-SR-16 (SCM §7.4): jalur pembuat SI setelah retur ada (daftar baris SI, impor SI, auto-generate SI, impor Settlement) sudah mengurangi qty yang diretur, jadi skenario SI baru approve setelah retur Unbilled dibuat hanya mungkin lewat API langsung. Yang terbukti: Complete tidak punya gate status SI, sehingga retur Unbilled lama yang SI-nya sudah approve (18 di Staging) bisa di-Complete tanpa pembalik Sales/AR. Deskripsi header SR tidak bisa diedit lewat aplikasi (update hanya menerima transaction_date) |
 | 2.6 | 2026-11-12 | QA - Yemima | GAP-SR-16 dilengkapi kronologi dan skenario (SCM §7.4): SI yang masih Open ditolak saat Create Return, sehingga tidak masuk Billed maupun Unbilled. Retur Unbilled tidak punya pembalik Sales/AR bila SI baru approved setelah retur dibuat, atau bila retur lama (definisi lama, dibuat sebelum 10 Nov 2026) masih Open. Staging 12 Nov 2026: 64 dari 66 retur Unbilled (97,0%) bertaut SI approved, 18 di antaranya masih Open. Dicatat sebagai gap docs; belum ada card Jira. ETM-17064 / ETM-17291 |
 | 2.5 | 2026-11-12 | QA - Yemima | Jurnal retur Unbilled (belum ada SI) hanya mengembalikan sisi barang: Return Inventory (D) / COGS (K) (+ Expense / Inventory bila Lost). Tanpa Sales (D) / AR (K): belum ada penjualan atau piutang yang tercatat untuk dibalik. Parity Purchase Return Unbilled (Unbilled Goods (D) / Persediaan (K), tanpa Hutang Usaha dan Debit Note). GAP-SR-16: cabang kode jurnal Sales/AR untuk Unbilled masih ada tetapi bernilai 0. Docs lama menyebut Sales/AR (definisi Unbilled lama = SI belum dibayar). ETM-17064 / TC ETM-17291 |
 | 2.4 | 2026-11-04 | QA - Yemima | Export All: tanpa rincian 1 baris per dokumen; dengan rincian 1 baris per SKU. Harga/COGS menu gudang = 0. Dokumen tanpa detail tetap 1 baris (angka masih 0, kontrak `-` = GAP-SR-15). Kolom Show/Hide belum dihormati (GAP-SR-14 / ETM-17067) |
@@ -322,7 +323,7 @@ Setelah save qty → status tetap **open** → menunggu Finance. Tidak ada Compl
 | Create Return (`SalesReturnLogic::store`) | Tiap baris SO dinilai dari `invoiced_quantity` = `prepared_to_invoice_quantity` (SI sudah dibuat tetapi belum approve, status Open) + `processed_to_invoice_quantity` (SI sudah approve). Nilai > 0 → baris **Billed**; 0 → **Unbilled**. Satu SO yang sebagian barisnya sudah ber-SI menghasilkan dua dokumen retur (Billed dan Unbilled). Penilaian per **baris SO**, bukan per qty. |
 | Pengaman SI Open (`validateDetails`) | Pembuatan retur **ditolak** bila ada baris SO dengan `prepared_to_invoice_quantity` > 0: `<SO> has pending invoice, please complete it first`. Jadi SI yang masih Open tidak pernah menjadi Billed maupun Unbilled. Retur baru bisa dibuat setelah SI di-approve (→ Billed) atau dihapus (→ Unbilled). |
 | Tipe tersimpan | `omni_sales_returns.accounting_type` diisi **sekali** saat Create Return. Tidak dihitung ulang saat Complete. |
-| Complete (`stockSalesReturnAutoJournal`) | Jurnal mengikuti **tipe tersimpan**, bukan status SI pada saat Complete. Billed → Credit Note + jurnal sisi barang. Unbilled → hanya Return Inventory (D) / COGS (K). |
+| Complete (`SalesReturnLogic::approve` → `ItemStockMutation::approveReturn` → `stockSalesReturnAutoJournal`) | **Tidak ada gate status SI.** Yang dicek hanya: periode fiskal, minimal satu qty, gudang tujuan, produk aktif, COA group, Return Expense COA (bila ada Lost), dan `can_approve`. Jurnal mengikuti **tipe tersimpan**, bukan status SI pada saat Complete. Billed → Credit Note + jurnal sisi barang. Unbilled → hanya Return Inventory (D) / COGS (K). |
 
 **Skenario berurutan**
 
@@ -332,8 +333,8 @@ Setelah save qty → status tetap **open** → menunggu Finance. Tidak ada Compl
 | S2 | Billed normal | 1) SI sudah approve. 2) Create Return → Billed. 3) Complete. | Credit Note otomatis + jurnal sisi barang. | Benar, bukan gap |
 | S3 | SI masih Open saat Create Return | 1) SI dibuat (mis. hasil Instant Settlement), status Open. 2) User Create Return. 3) Sistem menolak. 4) SI di-approve lalu Create Return lagi → Billed; atau SI dihapus lalu Create Return → Unbilled. | Tidak ada baris yang masuk dua tipe sekaligus. | Aman menurut kode; belum diuji langsung di aplikasi |
 | S4 | SO campuran | 1) SO punya dua baris: A sudah SI approved, B belum SI. 2) Create Return. | Dua dokumen: Billed (A) dan Unbilled (B), masing-masing dijurnal sesuai tipe. | Sesuai desain. Catatan: bila SI baru mencakup sebagian qty satu baris (mis. 3 dari 5), seluruh qty retur baris itu masuk Billed dan nilai CN dihitung harga SI × qty retur, bisa melebihi qty yang benar-benar di-SI. Staging: 0 retur kasus ini |
-| S5 | SI muncul **setelah** retur Unbilled dibuat | 1) Hari 1: Create Return pada SO tanpa SI → Unbilled (Open). 2) Hari 2: SI dibuat dan di-approve untuk baris SO yang sama. 3) Hari 3: Complete. | Tipe tetap Unbilled → jurnal hanya Return Inventory / COGS, tanpa CN. Penjualan (K) / Piutang (D) dari SI **tidak dibalik**: penjualan dan piutang lebih besar dari seharusnya sebesar nilai barang yang diretur. | **Gap (potensi)**. Jalur SI yang tidak mengecek retur: impor Settlement (`ImportSettlementJob` tidak punya pengecekan retur); tambah item SI manual lewat API menghitung sisa qty tanpa mengurangi qty retur. Daftar pilihan baris SI manual memakai `invoicable()` yang sudah mengurangi qty retur. Staging: 0 retur kasus ini; belum direproduksi |
-| S6 | Retur Unbilled **lama** (definisi lama) masih Open | 1) 30 Apr–4 Nov 2026: Create Return pada SO yang SI-nya sudah approve (belum dibayar) → saat itu disebut Unbilled. 2) 10 Nov 2026 16:05: ETM-17064 (`d40ec8e`) mengubah definisi (Unbilled = belum ada SI); harga jurnal Sales/AR tidak lagi dibaca dari SI. 3) Retur lama itu di-Complete sekarang. | Tipe tersimpan tetap Unbilled → jurnal hanya Return Inventory / COGS (nilai Sales/AR = 0), tanpa CN. Sales/AR dari SI approved **tidak dibalik**. Sebelum 10 Nov retur seperti ini dibalik lewat jurnal retur. | **Gap (data transisi)**; terbukti ada di Staging: 18 retur |
+| S5 | SI muncul **setelah** retur Unbilled dibuat | 1) Hari 1: Create Return pada SO tanpa SI → Unbilled (Open). 2) Hari 2: SI dibuat dan di-approve untuk baris SO yang sama. 3) Hari 3: Complete. | Bila terjadi: tipe tetap Unbilled → jurnal hanya Return Inventory / COGS, tanpa CN. Penjualan (K) / Piutang (D) dari SI **tidak dibalik** karena Complete tidak mengecek SI. | **Tertutup di jalur normal.** Daftar pilihan baris SI (`invoicable()`), impor SI, auto-generate SI, dan impor Settlement (lewat `CustomerInvoiceHelper::extractOrderDetails`) semuanya mengurangi qty yang sudah diretur (`invoicable_quantity_in_base_unit`); impor Settlement juga menolak SO yang punya SI atau Outbound pending. Satu celah: pemanggilan API langsung tambah/ubah item SI (`CustomerInvoiceDetailItemController`) hanya menghitung sisa qty invoice, tanpa mengurangi qty retur. Staging: 0 retur kasus ini; belum direproduksi |
+| S6 | Retur Unbilled **lama** (definisi lama) masih Open | 1) 30 Apr–4 Nov 2026: Create Return pada SO yang SI-nya sudah approve (belum dibayar) → saat itu disebut Unbilled. 2) 10 Nov 2026 16:05: ETM-17064 (`d40ec8e`) mengubah definisi (Unbilled = belum ada SI); harga jurnal Sales/AR tidak lagi dibaca dari SI. 3) Retur lama itu di-Complete sekarang. | Tipe tersimpan tetap Unbilled → jurnal hanya Return Inventory / COGS (nilai Sales/AR = 0), tanpa CN. Sales/AR dari SI approved **tidak dibalik**. Sebelum 10 Nov retur seperti ini dibalik lewat jurnal retur. | **Gap (data transisi)**; terbukti ada di Staging: 18 retur. Complete tidak menolaknya karena tidak ada gate status SI. Deskripsi header SR tidak bisa diedit lewat aplikasi (`SalesReturnController::update` hanya meneruskan `transaction_date`), jadi penandaan data hanya bisa lewat patch data oleh Dev |
 
 **Data Staging (12 Nov 2026, 107 retur berdokumen, baca saja)**
 
@@ -353,13 +354,13 @@ Setelah save qty → status tetap **open** → menunggu Finance. Tidak ada Compl
 
 **Dampak cabang kode Sales/AR (DEV-SR-09)**
 
-| Kondisi kode | Retur Unbilled baru tanpa SI (S1) | Retur dengan SI sudah approve (S5, S6) |
+| Kondisi kode | Retur Unbilled baru tanpa SI (S1) | Retur dengan SI sudah approve (S6; S5 hanya lewat API langsung) |
 |--------------|-----------------------------------|----------------------------------------|
 | Sekarang: cabang jalan, harga dibaca dari atribut yang tidak ada → 0 | Benar (kebetulan) | Tidak ada pembalik Sales/AR |
 | Atribut harga "diperbaiki" tanpa mengubah desain | **Salah**: Sales (D) / AR (K) tertulis dengan harga SO padahal tidak pernah ada SI | Pembalik muncul, tetapi harganya dari SO, bukan dari SI |
 | Cabang dibuang | Benar (disengaja) | Tetap tanpa pembalik; perlu keputusan di bawah |
 
-**Keputusan yang belum ada (untuk S5 dan S6):** apakah tipe dihitung ulang saat Complete (SI sudah approve → perlakukan sebagai Billed + CN), atau Complete diblokir dengan pesan, atau retur lama dibatalkan lalu dibuat ulang. Belum diputuskan; di luar lingkup ETM-17064 / ETM-17291.
+**Keputusan yang belum ada (untuk S6, dan S5 bila ada jalur API langsung):** Create Return sudah punya gate SI Open, tetapi Complete belum punya gate SI. Pilihan: (a) gate di Complete yang menolak retur Unbilled bila ada baris yang SI-nya sudah approve, dengan pesan yang jelas; (b) tipe dihitung ulang saat Complete (SI sudah approve → perlakukan sebagai Billed + CN); (c) retur lama dibatalkan lalu dibuat ulang. Belum diputuskan; di luar lingkup ETM-17064 / ETM-17291.
 
 ---
 
@@ -529,7 +530,7 @@ Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/
 | GAP-SR-13 | Definisi Billed/Unbilled | Billed = ada SI; Unbilled = belum SI (parity PR) | Code memakai `processed_to_payment_amount > 0` | **Open** [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) |
 | GAP-SR-14 | Export hormati Show/Hide Column | Kolom tersembunyi tidak ada di header maupun sel Excel (TC-OPL-16144-02) | Backend tidak menerima/menyaring `hidden_columns` / `visible_columns` | **TO-BE** [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067) |
 | GAP-SR-15 | Dokumen tanpa detail: kolom detail `-` | Semua kolom detail `-` (kontrak ETM-10609) | Teks (SKU, nama, varian, unit) `-`; angka harga/qty `0` | **TO-BE** [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067) |
-| GAP-SR-16 | Jurnal Unbilled tanpa Sales/AR | Unbilled (belum ada SI) hanya Return Inventory (D) / COGS (K); parity Purchase Return Unbilled | Kode masih punya cabang Sales (D) / AR (K) untuk Unbilled; sejak ETM-17064 nilainya 0 sehingga baris tidak tertulis (hasil benar karena kebetulan). Akibat nyata: retur Unbilled yang SI-nya sudah approve (retur lama, atau SI baru approve setelah retur dibuat) tidak punya pembalik Sales/AR dan tidak punya CN; Staging 12 Nov: 64 dari 66 retur Unbilled (97,0%), 18 masih Open. Kronologi: §7.4 | **Open** (dicatat sebagai gap docs; belum ada card Jira) |
+| GAP-SR-16 | Jurnal Unbilled tanpa Sales/AR | Unbilled (belum ada SI) hanya Return Inventory (D) / COGS (K); parity Purchase Return Unbilled | Kode masih punya cabang Sales (D) / AR (K) untuk Unbilled; sejak ETM-17064 nilainya 0 sehingga baris tidak tertulis (hasil benar karena kebetulan). Akibat nyata: retur Unbilled lama yang SI-nya sudah approve tidak punya pembalik Sales/AR dan tidak punya CN, dan Complete tidak menolaknya (tidak ada gate status SI); Staging 12 Nov: 64 dari 66 retur Unbilled (97,0%), 18 masih Open. Kronologi: §7.4 | **Open** (dicatat sebagai gap docs; belum ada card Jira) |
 
 ---
 
