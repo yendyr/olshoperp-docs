@@ -8,8 +8,8 @@ scope: menu
 summary: >-
   Credit Note bisa dibuat manual, diimpor, otomatis dari Sales Return Billed,
   atau terkait kelebihan bayar Account Receive — status awal berbeda per jalur.
-version: 1.2
-last_updated: 2026-11-04
+version: 1.3
+last_updated: 2026-11-12
 status: review
 ---
 
@@ -40,7 +40,7 @@ Credit Note (CN) bisa muncul dari beberapa jalur. Yang berbeda: apakah kamu haru
 
 ## Catatan
 
-- Return **Unbilled** (**belum punya SI**) **tidak** membuat CN — itu jalur jurnal sales/AR lain.
+- Return **Unbilled** (**belum punya SI**) **tidak** membuat CN; jurnalnya hanya persediaan dan HPP, tanpa jurnal penjualan/piutang.
 - CN dari retur billed sering tidak perlu approve manual.
 - Trx Ref kosong = biasanya dibuat manual tanpa dokumen asal.
 

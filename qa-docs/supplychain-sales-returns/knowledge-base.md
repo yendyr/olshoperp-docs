@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.4
-last_updated: 2026-11-04
+version: 2.5
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 audience: operator
@@ -152,7 +152,7 @@ A: Normal. Misalnya order dua SKU: SKU A Restock 2, SKU B Restock 0, Broken 0, L
 A: Saat Finance approve: rusak → transfer ke scrap WH; hilang → stock deduction + jurnal expense.
 
 **Q: Apa beda Billed vs Unbilled?**
-A: **Billed** = barang retur **sudah punya Sales Invoice (SI)** → generate Credit Note (sama pola Purchase Return → Debit Note). **Unbilled** = **belum punya SI** → jurnal sales/AR saja. Bukan dari status bayar AR.
+A: **Billed** = barang retur **sudah punya Sales Invoice (SI)** → generate Credit Note (sama pola Purchase Return → Debit Note). **Unbilled** = **belum punya SI** → tanpa Credit Note; jurnal hanya mengembalikan persediaan dan HPP (tidak ada jurnal penjualan atau piutang karena belum ada invoice). Bukan dari status bayar AR.
 
 **Q: Sync platform untuk apa?**  
 A: Update status retur dari marketplace (refund/cancelled) ke datalist pill.

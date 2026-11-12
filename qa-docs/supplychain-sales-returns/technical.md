@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.4
-last_updated: 2026-11-04
+version: 2.5
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 related_docs:
@@ -211,7 +211,7 @@ Default join: full outbound (`processed_to_out_quantity = sales_order_quantity_i
 
 | Type | Condition | Journal path |
 |------|-----------|--------------|
-| `unbilled` | No Sales Invoice yet for the line/SKU | Sales + AR reversal (no CN) |
+| `unbilled` | No Sales Invoice yet for the line/SKU | Inventory-side journal only (Return Inventory / COGS); no Sales/AR reversal, no CN |
 | `billed` | Sales Invoice **exists** | Credit Note + AR (mirror PR → Debit Note) |
 
 Constants: `OmniSalesReturn::TYPE_ACCOUNTING_BILLED`, `TYPE_ACCOUNTING_UNBILLED`.

@@ -9,8 +9,8 @@ summary: >-
   Billed = sudah ada Sales Invoice (SI); Unbilled = belum ada SI.
   Tidak berhubungan dengan AR/payment. Billed → Credit Note (parity Purchase Return → Debit Note).
   TO-BE ETM-16764: CN memakai Deposit of Sales Return. Fix code ETM-17064.
-version: 1.2
-last_updated: 2026-11-04
+version: 1.3
+last_updated: 2026-11-12
 status: review
 ---
 
@@ -26,7 +26,7 @@ Setiap Sales Return punya tipe akuntansi yang menentukan dampak Finance saat [Co
 
 | Type | Kapan | Dampak Finance saat Complete |
 |------|-------|------------------------------|
-| **Unbilled** | SKU/baris **belum punya Sales Invoice** | Jurnal penyesuaian Sales & AR (bukan Credit Note) |
+| **Unbilled** | SKU/baris **belum punya Sales Invoice** | Jurnal hanya persediaan dan HPP (Return Inventory / COGS); tanpa jurnal Sales & AR, tanpa Credit Note |
 | **Billed** | SKU/baris **sudah punya Sales Invoice** | **Credit Note** otomatis (**Deposit of Sales Return** TO-BE) + jurnal — mirror Debit Note di Purchase Return billed |
 
 Campuran SI sudah dilunasi AR + SI belum ada AR dalam satu order → selama keduanya punya SI, keduanya **Billed**.
@@ -36,7 +36,7 @@ Campuran SI sudah dilunasi AR + SI belum ada AR dalam satu order → selama kedu
 1. Saat review SR, kenali apakah baris retur sudah punya **Sales Invoice** (bukan status AR).
 2. Complete seperti biasa.
 3. **Billed:** cek menu [Credit Note](../accounting-credit-note/) — biasanya sudah Approved + Trx Ref.
-4. **Unbilled:** jangan mengharapkan Credit Note; cek jurnal sales/AR.
+4. **Unbilled:** jangan mengharapkan Credit Note; jurnal hanya berisi Return Inventory (Debit) dan COGS (Kredit), tanpa Sales/AR.
 
 ## Catatan
 
@@ -52,7 +52,7 @@ Campuran SI sudah dilunasi AR + SI belum ada AR dalam satu order → selama kedu
 |---------|------|------------------|
 | SI sudah ada (meski AR belum ada), customer retur | Billed | CN; **TO-BE** akun Deposit of Sales Return |
 | SI sudah ada dan sudah dilunasi AR, customer retur | Billed | CN; sama |
-| Belum ada SI sama sekali | Unbilled | Jurnal sales/AR; tanpa CN |
+| Belum ada SI sama sekali | Unbilled | Jurnal Return Inventory / COGS saja; tanpa Sales/AR dan tanpa CN |
 
 ## Lihat juga
 

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.4
-last_updated: 2026-11-04
+version: 2.5
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 ---
@@ -24,6 +24,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.5 | 2026-11-12 | Jurnal retur Unbilled (belum ada SI) hanya mengembalikan sisi barang: Return Inventory (D) / COGS (K) (+ Expense / Inventory bila Lost). Tanpa Sales (D) / AR (K): belum ada penjualan atau piutang yang tercatat untuk dibalik. Parity Purchase Return Unbilled (Unbilled Goods (D) / Persediaan (K), tanpa Hutang Usaha dan Debit Note). GAP-SR-16: cabang kode jurnal Sales/AR untuk Unbilled masih ada tetapi bernilai 0. Docs lama menyebut Sales/AR (definisi Unbilled lama = SI belum dibayar). ETM-17064 / TC ETM-17291 |
 | 2.4 | 2026-11-04 | Export All sama dengan menu gudang: tanpa rincian 1 baris per dokumen, dengan rincian 1 baris per SKU. Menu Finance mengisi harga/COGS. Angka dokumen tanpa detail masih 0 (kontrak `-`, GAP-SR-15). Kolom Show/Hide belum dihormati (GAP-SR-14 / ETM-17067) |
 | 2.3 | 2026-11-04 | Minimal satu qty lebih dari 0 dicek di level dokumen saat Complete, bukan per baris saat save (ETM-17054) |
 | 2.2 | 2026-11-04 | **Billed = sudah ada SI**; **Unbilled = belum ada SI** (bukan status AR/payment). Parity Purchase Return → Debit Note. Gap code [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) |
@@ -93,9 +94,13 @@ Satu baris SKU 0/0/0 tetap boleh disimpan (retur parsial). Save detail hanya men
 
 ### 4.1 Jurnal (`JournalProcess::stockSalesReturnAutoJournal`)
 
-**UNBILLED:** Sales (D)/AR (K) · Return Inventory (D)/COGS (K) · Expense (D)/Inventory (K) if Lost
+**UNBILLED:** Return Inventory (D)/COGS (K) · Expense (D)/Inventory (K) if Lost. **Tanpa** Sales (D)/AR (K).
 
 **BILLED:** Credit Note (D)/AR (K) · Return Inventory (D)/COGS (K) · Expense if Lost
+
+**Kenapa Unbilled tanpa Sales/AR:** belum ada Sales Invoice, jadi belum ada penjualan atau piutang yang tercatat dan perlu dibalik. Yang dibalik hanya sisi barang (outbound: HPP / Persediaan). Pola sama dengan Purchase Return: **Unbilled** = Unbilled Goods (D) / Persediaan (K) tanpa Hutang Usaha dan tanpa Debit Note; **Billed** = Hutang Usaha (D) / Persediaan (K) + Debit Note. Contoh Staging: jurnal retur Unbilled sampai 9 Nov 2026 (mis. GL-EAFDXUYFLQ4W, GL-EAFE411P5332, GL-EAKP0CS5RGEU) masih memuat Penjualan Produk (D) / Piutang Usaha (K); jurnal SR-5V10Z5K7 (GL-EAMIDFM6LEYK, 11 Nov 2026) hanya Return Inventory 2.000 (D) / HPP 2.000 (K).
+
+**GAP-SR-16 (Open):** kode `stockSalesReturnAutoJournal` masih memanggil cabang Sales/AR untuk Unbilled. Sejak [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) harganya dibaca dari Sales Order lewat atribut yang tidak ada di model, nilainya 0, sehingga baris tidak tertulis. Hasil sekarang benar tetapi kebetulan; cabang itu perlu dibuang. Detail: [supplychain-sales-returns §7.3](../supplychain-sales-returns/requirement.md).
 
 ### 4.2 Credit Note (billed)
 
@@ -119,7 +124,7 @@ Definisi wajib **konsisten dengan Purchase Return** (Billed = sudah ada invoice 
 
 | Type | Set when | Finance impact |
 |------|----------|----------------|
-| `unbilled` | SKU/baris **belum punya Sales Invoice (SI)** | Jurnal sales/AR reversal (tanpa Credit Note) |
+| `unbilled` | SKU/baris **belum punya Sales Invoice (SI)** | Jurnal sisi barang saja: Return Inventory (D) / COGS (K). Tanpa Sales/AR dan tanpa Credit Note |
 | `billed` | SKU/baris **sudah punya SI** | Credit Note + AR adjustment (parity PR billed → Debit Note → jurnal) |
 
 **Contoh:** satu SO punya dua SI — satu sudah dilunasi AR, satu belum ada AR. Keduanya punya SI → **keduanya Billed** (bukan dipecah karena status payment).
@@ -143,7 +148,7 @@ Finance harus aware: SR open lebih lama dari duration bisa auto-approved tanpa m
 1. Complete button hanya di `/accounting/sales-return`, tidak di SCM edit
 2. Kolom Order/Return Price & COGS tampil dengan `with_price=1`
 3. Approve billed (ada SI) → Credit Note ter-create — termasuk SI yang belum ada AR
-4. Approve unbilled (belum ada SI) → jurnal sales/AR, bukan CN
+4. Approve unbilled (belum ada SI) → jurnal hanya Return Inventory (D) / COGS (K), tanpa Sales/AR dan tanpa CN (parity Purchase Return Unbilled; ETM-17291)
 5. Definisi Billed/Unbilled tidak memakai status payment/AR (parity Purchase Return; ETM-17064)
 6. Lost qty tanpa Return Expense COA → approve blocked
 7. COGS return value = average outbound (bukan latest stock date)

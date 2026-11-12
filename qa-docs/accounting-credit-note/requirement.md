@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.7
-last_updated: 2026-11-09
+version: 1.8
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, credit note docs, nota kredit, customer deposit credit]
@@ -26,6 +26,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.8 | 2026-11-12 | QA - Yemima | Penjelasan retur Unbilled di KB dan capability disamakan: tanpa CN dan tanpa jurnal penjualan/piutang (hanya persediaan dan HPP); lihat Sales Return v2.5 (ETM-17291) |
 | 1.7 | 2026-11-09 | QA - Yemima | **AS-IS** ETM-17111: CN baru dari Sales Return mengisi Description dan Reference Doc (kode retur). GAP-CN-08 ditutup untuk CN baru; CN lama tidak diisi ulang |
 | 1.6 | 2026-11-05 | QA - Yemima | Gap baru dari uji Staging: GAP-CN-07 (halaman edit CN kosong saat customer tidak terbaca; ETM-17108) dan GAP-CN-08 (CN dari Sales Return tanpa Description/Reference Doc; ETM-17111); §5.1 + FAQ merujuk |
 | 1.5 | 2026-11-05 | QA - Yemima | Trx Ref CN baru dari Sales Return Billed = nomor `SR-xxxxx` + tautan edit Sales Return (bukan SI); CN lama tidak di-backfill; ETM-17070 |

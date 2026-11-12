@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 1.3
-last_updated: 2026-11-04
+version: 1.4
+last_updated: 2026-11-12
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.4
+source_version: 2.5
 owner: QA - Yemima
 status: review
 ---
@@ -103,7 +103,7 @@ Dialog ringkasan “Sales Return Processed” + print summary **belum** tersedia
 - **Kalau ada Lost tanpa Return Expense COA**, Complete ditolak — lengkapi master produk dulu.
 - **Kalau kamu mencari tombol Complete di menu SCM**, tidak ada — hanya di `/accounting/sales-return`.
 - **Kalau barang retur sudah punya Sales Invoice (SI)**, retur **Billed** → akan ada Credit Note (meski AR belum ada); jangan kaget.
-- **Kalau belum punya SI sama sekali**, **Unbilled** → tanpa Credit Note; jurnal sales/AR.
+- **Kalau belum punya SI sama sekali**, **Unbilled** → tanpa Credit Note; jurnal hanya mengembalikan persediaan dan HPP (tidak ada jurnal penjualan atau piutang karena belum ada invoice).
 - **Billed/Unbilled tidak dari status bayar AR** — sama pola Purchase Return (ada/tidak ada invoice).
 - **Kalau auto-approve aktif**, SR open lama bisa selesai tanpa klik manual — pantau antrian open.
 - **Kalau kamu mengharapkan Reject**, tombol/endpoint belum aktif.

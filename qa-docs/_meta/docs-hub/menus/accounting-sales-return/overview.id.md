@@ -3,8 +3,8 @@ doc_type: docs-hub-menu-overview
 menu_slug: accounting-sales-return
 menu_name: Sales Return (Finance)
 lang: id
-version: 1.0
-last_updated: 2026-10-26
+version: 1.1
+last_updated: 2026-11-12
 status: review
 audience: help-center
 source_type: derived
@@ -74,7 +74,7 @@ flowchart LR
 2. Finance buka dokumen yang sama di `/accounting/sales-return`.  
 3. Review kolom Price/COGS.  
 4. Klik **Complete**.  
-5. Jika Billed → cek Credit Note; jika Unbilled → jurnal sales/AR saja.
+5. Jika Billed → cek Credit Note; jika Unbilled → tidak ada CN; jurnal hanya persediaan dan HPP (tanpa jurnal penjualan/piutang).
 
 ## Status transaksi
 

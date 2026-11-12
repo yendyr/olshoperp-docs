@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.7
-last_updated: 2026-11-09
+version: 1.8
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, nota kredit, customer credit, deposit credit note]
@@ -37,7 +37,7 @@ CN bisa muncul dari:
 
 | ✅ Pakai CN jika | ❌ Jangan mengandalkan CN jika |
 |------------------|-------------------------------|
-| Customer punya kelebihan / kredit yang harus dicatat | Return **Unbilled** (invoice belum dibayar) — itu jurnal sales/AR, bukan CN |
+| Customer punya kelebihan / kredit yang harus dicatat | Return **Unbilled** (belum punya Sales Invoice) — tidak ada CN dan tidak ada jurnal penjualan/piutang, hanya jurnal persediaan dan HPP |
 | Mau memakai saldo kredit di Account Receive berikutnya | Deposit COA customer/store belum diisi — approve akan gagal |
 | Cash/Bank untuk mata uang CN sudah ada di master (wajib create) | Mau campur rekening beda mata uang dengan header CN (jalur Cash/Bank) |
 | **(TO-BE)** Perlu destinasi Equity / COA non-kas (modal awal, dll.) | Pilih COA yang sudah terikat Cash/Bank atau Deposit customer di free picker — harus lewat Cash/Bank / dilarang Deposit |
@@ -133,7 +133,7 @@ Customer, mata uang, kurs, dan tanggal transaksi **terkunci** begitu sudah ada b
 A: Manual/import perlu kamu approve. Dari return **Billed**, sistem langsung approve + jurnal. **TO-BE ETM-16764:** CN dari Sales Return memakai akun **Deposit of Sales Return**; CN manual memakai **Customer's Deposit**. Saat dipakai di Account Receive, sistem baca lagi **setting by asal CN** (bukan menyalin COA historis dari jurnal CN).
 
 **Q: Unbilled return kenapa tidak ada CN?**  
-A: Retur **belum punya Sales Invoice** — sistem menyesuaikan sales/AR, bukan membuat deposit customer. (Billed = sudah ada SI, bukan “sudah bayar AR”.)
+A: Retur **belum punya Sales Invoice**, jadi belum ada penjualan atau piutang yang perlu dibalik. Jurnalnya hanya mengembalikan persediaan dan HPP, dan tidak ada deposit customer. (Billed = sudah ada SI, bukan “sudah bayar AR”.)
 
 **Q: Apa itu Remaining di footer fund?**  
 A: Sisa saldo CN yang masih bisa dialokasikan (setelah yang sudah/sedang dipakai di penerimaan).

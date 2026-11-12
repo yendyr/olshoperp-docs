@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.4
-last_updated: 2026-11-04
+version: 2.5
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 ---
@@ -32,6 +32,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.5 | 2026-11-12 | QA - Yemima | Jurnal retur Unbilled (belum ada SI) hanya mengembalikan sisi barang: Return Inventory (D) / COGS (K) (+ Expense / Inventory bila Lost). Tanpa Sales (D) / AR (K): belum ada penjualan atau piutang yang tercatat untuk dibalik. Parity Purchase Return Unbilled (Unbilled Goods (D) / Persediaan (K), tanpa Hutang Usaha dan Debit Note). GAP-SR-16: cabang kode jurnal Sales/AR untuk Unbilled masih ada tetapi bernilai 0. Docs lama menyebut Sales/AR (definisi Unbilled lama = SI belum dibayar). ETM-17064 / TC ETM-17291 |
 | 2.4 | 2026-11-04 | QA - Yemima | Export All: tanpa rincian 1 baris per dokumen; dengan rincian 1 baris per SKU. Harga/COGS menu gudang = 0. Dokumen tanpa detail tetap 1 baris (angka masih 0, kontrak `-` = GAP-SR-15). Kolom Show/Hide belum dihormati (GAP-SR-14 / ETM-17067) |
 | 2.3 | 2026-11-04 | QA - Yemima | Baris SKU Restock+Lost+Broken = 0 tetap tersimpan; cek minimal satu qty hanya saat Complete (ETM-17054) |
 | 2.2 | 2026-11-04 | QA - Yemima | Billed = ada SI / Unbilled = belum SI (bukan AR); GAP-SR-13 / ETM-17064 |
@@ -302,7 +303,7 @@ Setelah save qty → status tetap **open** → menunggu Finance. Tidak ada Compl
 
 | Type | Jurnal |
 |------|--------|
-| **UNBILLED** | J1: Sales (D) / AR (K) · J2: Return Inventory (D) / COGS (K) · J3: Expense (D) / Inventory (K) if Lost |
+| **UNBILLED** | J1: Return Inventory (D) / COGS (K) · J2: Expense (D) / Inventory (K) if Lost. **Tanpa** Sales (D) / AR (K): belum ada SI (GAP-SR-16) |
 | **BILLED** | J1: **Credit Note** (D) / AR (K) · J2: Return Inventory (D) / COGS (K) · J3: Expense if Lost |
 
 **Credit Note (billed):** auto jika baris **sudah punya SI** → `generateCreditNoteFromReturn` (parity Purchase Return billed → Debit Note). **Bukan** syarat payment/AR. Gap code: GAP-SR-13 / [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064). Lihat [Credit Note](../accounting-credit-note/README.md).
@@ -477,6 +478,7 @@ Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/
 | GAP-SR-13 | Definisi Billed/Unbilled | Billed = ada SI; Unbilled = belum SI (parity PR) | Code memakai `processed_to_payment_amount > 0` | **Open** [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) |
 | GAP-SR-14 | Export hormati Show/Hide Column | Kolom tersembunyi tidak ada di header maupun sel Excel (TC-OPL-16144-02) | Backend tidak menerima/menyaring `hidden_columns` / `visible_columns` | **TO-BE** [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067) |
 | GAP-SR-15 | Dokumen tanpa detail: kolom detail `-` | Semua kolom detail `-` (kontrak ETM-10609) | Teks (SKU, nama, varian, unit) `-`; angka harga/qty `0` | **TO-BE** [ETM-17067](https://erpintegration.atlassian.net/browse/ETM-17067) |
+| GAP-SR-16 | Jurnal Unbilled tanpa Sales/AR | Unbilled (belum ada SI) hanya Return Inventory (D) / COGS (K); parity Purchase Return Unbilled | Kode masih punya cabang Sales (D) / AR (K) untuk Unbilled; sejak ETM-17064 nilainya 0 sehingga baris tidak tertulis (hasil benar karena kebetulan) | **Open** (menunggu card Dev) |
 
 ---
 
@@ -492,6 +494,7 @@ Canonical SP: [omni-sales-platform/requirement.md §7.1](../omni-sales-platform/
 | DEV-SR-06 | Bulk multi-order create | New API + FE selection |
 | DEV-SR-07 | Export buang kolom yang di-hide | GAP-SR-14 — terima dan saring kolom Show/Hide |
 | DEV-SR-08 | Baris tanpa detail: angka jadi `-` | GAP-SR-15 — jangan tulis 0 pada kolom detail |
+| DEV-SR-09 | Buang cabang jurnal Sales/AR pada retur Unbilled | GAP-SR-16 — jurnal Unbilled cukup Return Inventory / COGS |
 
 ---
 

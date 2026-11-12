@@ -3,8 +3,8 @@ doc_type: docs-hub-menu-overview
 menu_slug: supplychain-sales-returns
 menu_name: Sales Return (SCM)
 lang: id
-version: 1.0
-last_updated: 2026-10-26
+version: 1.1
+last_updated: 2026-11-12
 status: review
 audience: help-center
 source_type: derived
@@ -21,7 +21,7 @@ notes: Help Center landing. Terpisah dari layer QA.
 * **Restock / Broken / Lost:** Kondisi barang dan perlakuan stok berikutnya.
 * **Return WH / CCTV Location:** Gudang tujuan dan lokasi kamera proses.
 * **Sales Return Platform:** Daftar retur marketplace refund/cancelled.
-* **Billed / Unbilled:** Billed = sudah ada SI → Credit Note; Unbilled = belum ada SI → jurnal sales/AR (bukan dari status bayar AR).
+* **Billed / Unbilled:** Billed = sudah ada SI → Credit Note; Unbilled = belum ada SI → tanpa Credit Note, jurnal hanya persediaan dan HPP (bukan dari status bayar AR).
 
 ## Kapan dipakai
 

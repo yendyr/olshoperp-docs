@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.7
-last_updated: 2026-11-09
+version: 1.8
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 aliases: [CN technical, credit note API, credit note code]

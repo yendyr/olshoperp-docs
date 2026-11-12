@@ -13,13 +13,14 @@ Menu **Sales Return** — operasi gudang; shared API dengan Finance.
 
 **UI gudang:** `/supplychain/sales-returns` · **Finance:** `/accounting/sales-return`  
 **Help Center:** [`_meta/docs-hub/menus/supplychain-sales-returns/`](../_meta/docs-hub/menus/supplychain-sales-returns/)  
-**3 layer:** v2.4 · **User Guide:** v1.3 (`source_version` 2.4) · **Feature Map:** v1.0  
+**3 layer:** v2.5 · **User Guide:** v1.4 (`source_version` 2.5) · **Feature Map:** v1.0  
 **Maintenance owner:** QA — Yemima
 
 ## Changelog
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-12 | 2.5 | Jurnal retur Unbilled (belum ada SI) hanya Return Inventory / COGS, tanpa jurnal Sales/AR; selaras Purchase Return Unbilled. GAP-SR-16 (ETM-17064, TC ETM-17291) |
 | 2026-11-04 16:37 | 2.4 | Export All: tanpa rincian satu baris per dokumen, dengan rincian satu baris per SKU. Di menu gudang harga dan HPP tertulis 0. Dokumen tanpa SKU tetap satu baris, tetapi angka rincian masih 0 bukan tanda strip. Kolom yang disembunyikan di daftar masih ikut ke Excel (ETM-17067) |
 | 2026-11-04 13:30 | 2.3 | Baris SKU yang Restock, Lost, dan Broken-nya nol tetap tersimpan. Syarat minimal satu qty hanya dicek saat Finance menyelesaikan dokumen (ETM-17054) |
 | 2026-11-04 | 2.2 | Billed = ada SI / Unbilled = belum SI; GAP-SR-13 / ETM-17064 |

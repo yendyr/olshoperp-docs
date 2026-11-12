@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.4
-last_updated: 2026-11-04
+version: 2.5
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 audience: operator
@@ -57,7 +57,7 @@ Sama seperti Purchase Return: yang menentukan adalah **sudah ada invoice penjual
 
 | Type | Kapan | Dampak finance |
 |------|-------|----------------|
-| **Unbilled** | Barang retur **belum punya Sales Invoice** | Jurnal penyesuaian Sales & AR (tanpa Credit Note) |
+| **Unbilled** | Barang retur **belum punya Sales Invoice** | Jurnal hanya mengembalikan persediaan dan HPP (Return Inventory / COGS). Tidak ada jurnal Sales & AR karena belum ada invoice, dan tanpa Credit Note |
 | **Billed** | Barang retur **sudah punya Sales Invoice** | **Credit Note** otomatis + jurnal (mirip Debit Note di Purchase Return billed) |
 
 **Contoh:** dua SKU di satu order, keduanya sudah punya SI; satu SI sudah dilunasi, satu belum ada penerimaan. Keduanya tetap **Billed**.

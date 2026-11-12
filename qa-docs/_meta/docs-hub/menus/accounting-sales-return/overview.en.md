@@ -3,8 +3,8 @@ doc_type: docs-hub-menu-overview
 menu_slug: accounting-sales-return
 menu_name: Sales Return (Finance)
 lang: en
-version: 1.0
-last_updated: 2026-10-26
+version: 1.1
+last_updated: 2026-11-12
 status: review
 audience: help-center
 source_type: derived
@@ -74,7 +74,7 @@ flowchart LR
 2. Finance opens the same document on `/accounting/sales-return`.  
 3. Review Price/COGS columns.  
 4. Click **Complete**.  
-5. If Billed → verify Credit Note; if Unbilled → expect sales/AR journals only.
+5. If Billed → verify Credit Note; if Unbilled → no Credit Note; the journal only returns inventory and COGS (no sales/AR lines).
 
 ## Transaction states
 

@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.4
-last_updated: 2026-11-04
+version: 2.5
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 related_docs:
@@ -66,9 +66,11 @@ Journal auto-approved (system user 0).
 | Type | Condition | Path |
 |------|-----------|------|
 | `billed` | Sales Invoice **exists** for the return line/SKU | Credit Note + journal (mirror PR → Debit Note) |
-| `unbilled` | **No** Sales Invoice yet | Sales/AR journal only (no CN) |
+| `unbilled` | **No** Sales Invoice yet | Inventory-side journal only: Return Inventory (D) / COGS (K), plus Expense / Inventory if Lost. No Sales/AR lines, no CN |
 
 `accounting_type` on `omni_sales_returns`. Not tied to AR/`processed_to_payment_amount`.
+
+**Known code gap (GAP-SR-16):** `JournalProcess::stockSalesReturnAutoJournal` still calls `processSalesReturnInvoice` for `unbilled`. Since commit `d40ec8e` (ETM-17064, 10 Nov 2026) the amount is read from `SalesOrderDetail->each_price_after_discount_after_vat`, an attribute that does not exist on that model, so the amount is 0 and the Sales/AR rows are skipped (journal rows with 0 are not inserted). Result today is correct by accident; the branch should be removed so it cannot come back when the attribute is added. Before ETM-17064 the amount came from the Sales Invoice detail (old definition: unbilled = SI exists but unpaid).
 
 **Known bug (code AS-IS — [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) / GAP-SR-13):**
 
@@ -118,7 +120,7 @@ Selects open platform returns older than `open_to_approve_duration`, dispatches 
 1. Complete from accounting route only
 2. `with_price=1` columns populated
 3. Billed path → Credit Note row in DB
-4. Unbilled path → no CN, sales/AR journal lines
+4. Unbilled path → no CN, journal has only Return Inventory / COGS lines (no Sales/AR)
 5. Lost without Return Expense COA → 422 on approve
 6. Tax reversal via `customer_invoice_detail_taxes` pivot
 7. SKU row 0/0/0 saves; approve 422 only when every detail qty is 0 (ETM-17054)

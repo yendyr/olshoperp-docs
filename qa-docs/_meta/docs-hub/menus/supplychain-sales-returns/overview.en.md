@@ -3,8 +3,8 @@ doc_type: docs-hub-menu-overview
 menu_slug: supplychain-sales-returns
 menu_name: Sales Return (SCM)
 lang: en
-version: 1.0
-last_updated: 2026-10-26
+version: 1.1
+last_updated: 2026-11-12
 status: review
 audience: help-center
 source_type: derived
@@ -21,7 +21,7 @@ notes: Help Center landing. Separate from QA layers.
 * **Restock / Broken / Lost:** Item condition and downstream stock treatment.
 * **Return WH / CCTV Location:** Required warehouse destination and processing camera location.
 * **Sales Return Platform:** Marketplace refund/cancelled return list.
-* **Billed / Unbilled:** Billed = SI already exists → Credit Note; Unbilled = no SI yet → sales/AR journal (not based on AR payment).
+* **Billed / Unbilled:** Billed = SI already exists → Credit Note; Unbilled = no SI yet → no Credit Note, journal only returns inventory and COGS (not based on AR payment).
 
 ## When to use
 

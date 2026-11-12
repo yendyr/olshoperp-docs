@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 1.3
-last_updated: 2026-11-04
+version: 1.4
+last_updated: 2026-11-12
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 2.4
+source_version: 2.5
 owner: QA - Yemima
 status: review
 ---
@@ -80,7 +80,7 @@ Setelah gudang menyimpan qty:
 1. SR tetap **Open**.
 2. Finance mereview Price/COGS dan klik **Complete**.
 3. Restock masuk Return Warehouse; Broken ke scrap; Lost menjadi deduction.
-4. Return **Billed** (sudah ada SI) menghasilkan Credit Note; **Unbilled** (belum ada SI) memakai jurnal sales/AR — bukan dari status bayar AR.
+4. Return **Billed** (sudah ada SI) menghasilkan Credit Note; **Unbilled** (belum ada SI) tidak membuat Credit Note dan jurnalnya hanya mengembalikan persediaan dan HPP (tanpa jurnal penjualan atau piutang) — bukan dari status bayar AR.
 
 ---
 

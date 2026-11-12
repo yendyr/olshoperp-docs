@@ -15,13 +15,14 @@ Menu **Credit Note** (Accounting / Account Receivable).
 **UI route:** `/accounting/credit-note`  
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-credit-note/`](../_meta/docs-hub/menus/accounting-credit-note/)  
 **SoT:** `accounting-credit-note-source-of-truth.md` v1.0 (17 Jul 2026)  
-**3 layer version:** 1.7 · **User-guide:** v1.5 · `source_version` 1.7 · **Feature Map:** 1.0 · **Last updated:** 2026-11-09 08:59
+**3 layer version:** 1.8 · **User-guide:** v1.5 · `source_version` 1.8 · **Feature Map:** 1.0 · **Last updated:** 2026-11-12
 **Related Jira:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) · [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) · [ETM-17070](https://erpintegration.atlassian.net/browse/ETM-17070) · [ETM-17108](https://erpintegration.atlassian.net/browse/ETM-17108) · [ETM-17111](https://erpintegration.atlassian.net/browse/ETM-17111)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.8 | 2026-11-12 | Penjelasan retur Unbilled disamakan dengan Sales Return v2.5: tanpa CN dan tanpa jurnal penjualan/piutang (ETM-17291) |
 | 1.7 | 2026-11-09 08:59 | Credit Note baru dari Sales Return mengisi keterangan asal dan nomor retur di halaman edit; nota yang sudah ada tidak diisi ulang (ETM-17111) |
 | 1.6 | 2026-11-05 17:00 | Gap baru dari uji Staging: halaman edit CN kosong saat customer tidak terbaca (ETM-17108), dan CN dari Sales Return tanpa Description/Reference Doc (ETM-17111); penjelasan awam di KB + user-guide |
 | 1.5 | 2026-11-05 13:23 | Di daftar Credit Note, referensi transaksi dari retur yang sudah ditagih menampilkan nomor Sales Return dan bisa diklik ke dokumen retur itu (selaras Debit Note); ETM-17070 |
