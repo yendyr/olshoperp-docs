@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.8
-last_updated: 2026-09-02
+version: 3.9
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 aliases: [PI, purchase invoice, supplier invoice, faktur beli, tagihan supplier, hutang supplier]
@@ -60,7 +60,8 @@ flowchart TD
 
 - **Create / header:** isi Supplier (**tampil kode saja** — bisa cari by nama atau kode), Tanggal, Mata Uang, Kurs. Opsional: **Supplier's Reference** (nomor faktur/dokumen supplier), **Due Date** (isi manual — belum otomatis dari termin supplier). **TO-BE:** **Supplier's Invoice Amount** = total nominal di invoice fisik supplier (opsional) — jika diisi, selisih vs Net sistem masuk Cash Diff saat approve. Saat Create, sistem bisa auto-simpan draft; Supplier sering terisi dari PI terakhir Anda. Jika belum pernah punya PI, isi field wajib (termasuk Supplier) manual dulu. Nama supplier **tidak** muncul di daftar/detail/export; hanya di **Print**.
 - **Status Open:** wajib sebelum Approve (bukan Draft).
-- **Inbound Transaction:** pakai **Bulk Use** (banyak baris sekaligus) atau **Single Use** (isi qty per baris lewat modal). Hanya barang dari inbound **Approved** yang muncul.
+- **Inbound Transaction:** pakai **Bulk Use** (banyak baris sekaligus), **Single Use** (isi qty per baris lewat modal), atau **Group View → Use** (satu inbound penuh). Hanya barang dari inbound **Approved** yang muncul.
+- **Batas baris SKU (segera / TO-BE):** maksimal **500** baris produk per PI — sama dengan batas Purchase Order, supaya satu inbound sampai 500 SKU tidak harus dipecah jadi banyak invoice. Biaya/diskon tambahan tidak dihitung ke batas itu. Saat ini di sistem belum dibatasi; setelah perbaikan, Bulk/Group View yang melebihi sisa slot akan ditolak seluruhnya (bukan masuk sebagian).
 - **Additional Cost / Discount:** otomatis ikut dari PO saat SKU ditambah — hapus baris yang ingin ditunda ke PI berikutnya.
 - **Panel Total:** cek **Net Purchase Invoice** sebelum approve. **TO-BE:** jika Supplier's Invoice Amount diisi, cek juga **Invoice Diff**.
 - **Setelah Approve:** lanjut **Account Payment** untuk pelunasan (pakai **Allocate Full Amount** bila ada sisa sen); jika ada retur setelah PI approved, pakai Purchase Return tipe **Billed** (hasilnya **Debit Note**).
@@ -75,11 +76,14 @@ Panel ini menampilkan barang dari PO yang inbound-nya sudah disetujui — hanya 
 |-------|------------|
 | **Bulk Use** (pilih banyak baris sekaligus) | Centang baris → Bulk Use; qty default = seluruh sisa |
 | **Single Use** (isi qty per baris) | Klik baris → modal → Quantity to Invoice → Save |
+| **Group View → Use** | Pakai seluruh sisa satu nomor inbound sekaligus |
 | **Already Prepared** | Sisa qty 0 tapi masih dipesan transaksi belum final — tunggu proses selesa |
 
 **Sisa qty yang bisa ditagih** = qty barang masuk dikurangi yang sudah/sedang ditagih dan yang sudah/sedang diretur (hitungan di unit dasar; tampilan bisa unit lain seperti Box).
 
 Pesan umum: qty melebihi sisa → kurangi; baris sudah di PI ini → pilih baris lain; mata uang asing kedua berbeda → tidak diizinkan.
+
+**TO-BE — batas 500 baris SKU:** kalau PI sudah penuh / pilihan membuat total melebihi 500, sistem menolak aksi (Bulk atau Group View) sekaligus. Alasan angka 500: selaras PO; kalau dibatasi 100, inbound 500 SKU harus dipecah jadi banyak PI — merepotkan. Import detail PI saat ini tidak ada; kalau nanti ada, ikut aturan batas yang sama.
 
 ---
 
@@ -131,7 +135,7 @@ Begitu Anda menambah SKU dari suatu PO, **semua** biaya/diskon PO itu otomatis m
 
 Jika ada baris pajak dengan setting coefficient, angka Total Products bisa terlihat lebih kecil dari hitungan DPP “penuh” — itu disengaja agar total akhir sesuai aturan PPN yang berlaku.
 
-**Konsistensi:** selisih besar (~0,03+) antara kolom DPP/VAT vs tippy Totals = bug precision (Path A/B) — laporkan. **Pengecualian known behavior:** jumlah **manual** DPP + VAT di layar bisa **+0,01** dibanding **Net / Invoice Total** — pembulatan tampilan 2 desimal; hutang mengikuti Net. Audit detail → export 4 desimal (rencana).
+**Konsistensi:** selisih besar (~0,03+) antara kolom DPP/VAT vs tippy Totals = bug precision (Path A/B) — laporkan. **Pengecualian known behavior:** jumlah **manual** DPP + VAT di layar bisa **+0,01** dibanding **Net / Invoice Total** — pembulatan tampilan 2 desimal; hutang mengikuti Net. File Excel tidak menambah desimal uang: kolom uang tetap 2 desimal seperti di layar.
 
 **1 sen vs harga × qty:** jika hanya breakdown UI yang “lebih” 1 sen → normal. Jika **Net** sendiri beda dari harga×qty → escalate. Untuk mencocokkan invoice **fisik** supplier → **TO-BE** field **Supplier's Invoice Amount** (Basic Information).
 
@@ -169,10 +173,11 @@ Setelah **approve PI**, sistem menjurnal: clear **Unbilled Goods** (dari Inbound
 | Hanya lihat kode supplier, bukan nama | Kebijakan tampilan code-only (semua role) | Cari tetap boleh by nama; nama hanya di **Print** |
 | Outstanding kosong / qty 0 | Sudah full tagih atau retur | Cek PI/return lain untuk SKU yang sama |
 | Approve gagal | COA Unbilled Goods / Tax / AP kosong, atau tidak ada detail | Lengkapi Product COA Group; pastikan ada baris |
+| Bulk / Group View ditolak (TO-BE) | Jumlah baris SKU akan melebihi 500 | Kurangi pilihan atau buat PI baru untuk sisa inbound |
 | Cost dari PO tidak muncul lagi | SKU PO sudah full invoice/return | Koordinasi sebelum closing; lihat FAQ cost stuck |
 | Tidak bisa 2 foreign currency | Aturan sistem | Satu PI = max 1 asing + lokal |
 | Σ DPP detail ≠ Total DPP tippy (besar, ~0,03+) | Bug precision / data lama | Escalate QA/dev |
-| Jumlah manual DPP+VAT = Net +0,01 | Known behavior UI (rounding tie) | Normal jika Net tetap pas; audit → export 4dp (TO-BE) |
+| Jumlah manual DPP+VAT = Net +0,01 | Known behavior UI (rounding tie) | Normal jika Net tetap pas. File Excel untuk uang tetap 2 desimal seperti layar |
 | Net / Invoice Total ≠ harga×qty | Bug backend (bukan known UI) | Escalate |
 | Nominal cost tidak bisa diubah | Sumber dari PO | By design — locked |
 | Mau void PI approved | Fitur belum tersedia | Koordinasi manual dengan tim terkait |
@@ -203,7 +208,10 @@ A: Nomor faktur pajak / dokumen dari supplier (opsional); tampil di daftar sebag
 A: Total **nominal** di invoice fisik supplier (bukan nomor dokumen). Opsional. Jika diisi dan beda dari Net sistem, selisih (Invoice Diff) masuk jurnal **Cash Diff. COA** + tambahan hutang saat approve. Jika kosong, tidak ada pembanding. Pastikan Cash Diff. COA sudah di-set di Internal Company. **Bukan** untuk menutup selisih 1 sen jumlah manual DPP+VAT di layar (itu known behavior tampilan).
 
 **Q: Jumlah DPP + VAT di layar beda 1 sen dari Net?**  
-A: Known behavior UI. Contoh: 38.000 × 25 → DPP 855.855,86 + VAT 94.144,15 = 950.000,01 di kalkulator, Net tetap **950.000,00**. Acuan hutang = **Net**. Export 4 desimal (rencana) untuk audit.
+A: Known behavior UI. Contoh: 38.000 × 25 → DPP 855.855,86 + VAT 94.144,15 = 950.000,01 di kalkulator, Net tetap **950.000,00**. Acuan hutang = **Net**. Di file Excel, kolom uang ikut 2 desimal seperti layar (bukan 4 desimal).
+
+**Q: Angka di file Excel export kok beda?**  
+A: Export dari daftar (**With Details** / **Without Details**) dan dari halaman detail harus sama dengan angka di layar. **Kurs:** `1` atau `1.00`, bukan `1.0000`. **Uang** (harga satuan, total sebelum PPN, PPN, total sesudah PPN, Total, Grand Total, laba/rugi kurs): dua desimal, bukan empat. **Quantity** harus tetap utuh, misalnya `1.570` tidak dipotong `1.57`. Pemotongan Quantity ke dua desimal masih terjadi — perbaikan sudah tercatat.
 
 **Q: Bisa void PI approved?**  
 A: Belum. Fitur belum matang. Jika salah approve, koordinasikan secara manual.

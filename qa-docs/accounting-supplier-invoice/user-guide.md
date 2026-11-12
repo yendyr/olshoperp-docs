@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 1.6
-last_updated: 2026-09-02
+version: 1.8
+last_updated: 2026-11-12
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 3.8
+source_version: 3.9
 owner: QA - Yemima
 status: review
 ---
@@ -129,6 +129,7 @@ Ditulis dari sudut pandang yang kamu alami di layar:
 - **Kalau periode fiskal sudah tutup**, Approve gagal.
 - **Kalau dua orang approve di waktu yang sama**, salah satu dapat pesan proses sedang berjalan.
 - **(TO-BE) Kalau net sistem beda sen dengan invoice fisik supplier**, isi **Supplier's Invoice Amount** di Basic Information. Selisih (Invoice Diff) akan masuk jurnal Cash Diff + tambahan hutang saat approve. Kalau dikosongkan, tidak ada pembanding.
+- **(TO-BE) Kalau Bulk / Group View membuat total baris produk melebihi 500**, sistem menolak seluruh pilihan. Batas 500 diselaraskan dengan Purchase Order agar satu inbound besar tidak wajib dipecah hanya karena batas invoice lebih kecil.
 - **Kalau bayar di Account Payment dan ada sisa sen**, pakai **Allocate Full Amount** (sistem payment tidak menerima input desimal).
 
 ---
@@ -169,6 +170,8 @@ Ditulis dari sudut pandang yang kamu alami di layar:
 2. Centang baris yang mau ditagih.
 3. Klik **Bulk Use** — qty default = seluruh sisa.
 4. Simpan.
+
+> **TO-BE (batas 500 baris SKU):** satu PI maksimal 500 baris produk — sama dengan Purchase Order, supaya satu inbound sampai 500 SKU tidak harus dipecah banyak invoice. Biaya/diskon tambahan tidak dihitung. Bulk / Group View yang melebihi sisa slot akan ditolak seluruhnya.
 
 **Cara teliti — per baris (Single Use):**
 
@@ -241,6 +244,7 @@ Pastikan angka masuk akal sebelum approve:
   - Contoh: harga **38.000**, qty **25** → DPP **855.855,86** + VAT **94.144,15** = **950.000,01** di kalkulator, tapi **Net = 950.000,00**.
   - Sama jika harga **40.000** + diskon **5%** (jadi 38.000) + qty **25**.
   - Selisih besar (~0,03+) kolom vs tippy = laporkan (bug).
+- **Angka di file Excel** (daftar **With Details**, **Without Details**, atau export dari halaman detail) harus sama dengan di layar. Kurs tampil `1` atau `1.00`, bukan `1.0000`. Kolom uang (harga, sebelum PPN, PPN, sesudah PPN, Total, Grand Total, laba/rugi kurs) dua desimal, bukan empat. Quantity harus tetap utuh, misalnya `1.570`, tidak dipotong `1.57`. Pemotongan Quantity ke dua desimal masih terjadi — perbaikan sudah tercatat.
 - **Net / Invoice Total beda dari harga × qty?** Laporkan — tidak normal. **(TO-BE)** Cocokkan invoice fisik lewat **Supplier's Invoice Amount**.
 - **Setelah approve PI**, jurnal otomatis: tutup Unbilled Goods (dari Inbound) + catat PPN + hutang supplier. PPN **belum** ada di jurnal terima barang.
 

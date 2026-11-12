@@ -48,7 +48,7 @@ Proposal: [`_meta/proposals/feature-map-and-capability-lingo.md`](../_meta/propo
 | SF-LOG-02 | [Audit Log](#sf-lingo:SF-LOG-02) | shared | AS-IS | stub | shared · approval-audit-log | — | slice |
 | SF-PRT-01 | Print PI | menu | AS-IS | missing | Route / GAP-PI-01 — belum card | — | pending |
 | SF-ATT-01 | Attachment | menu | AS-IS | missing | Field Basic Info — belum card | — | pending |
-| SF-IMP-01 | Import | — | N/A | — | PI tidak punya import | — | — |
+| SF-IMP-01 | Import | — | N/A | — | PI tidak punya import; bila ditambah nanti wajib ikut max 500 SKU (ETM-17338) | — | — |
 
 **Siap Lingo (ada card):** shared search/filter/show-deleted/column/export/log + **DPP & VAT di detail** + Single/Bulk Use, Partial invoicing, Net PI, Supplier's Invoice Amount.  
 **Backlog card:** Bulk datalist actions, Print, Attachment.

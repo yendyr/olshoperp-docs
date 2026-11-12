@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.7
-last_updated: 2026-09-02
+version: 3.9
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 aliases: [PI, purchase invoice, purchase invoice docs, supplier invoice, faktur beli, tagihan supplier]
@@ -36,6 +36,8 @@ Downstream: [Account Payment](../accounting-supplier-payment/requirement.md)
 | 3.5 | 2026-07-27 | QA - Yemima | Feature Map dipindah ke layer/tab `feature-map.md`; label UI = Lingo click; auto-highlight lintas layer |
 | 3.6 | 2026-07-27 | QA - Yemima | Rounding SoT **final**: GAP-PI-05 Accepted (UI-only); Invoice Total/jurnal exact; export 4dp TO-BE (GAP-PI-07) |
 | 3.7 | 2026-09-02 | QA - Yemima | Supplier display **code-only** (ETM-15724 / parent ETM-15721): UI+export tanpa name; print boleh name; tanpa field Name di Basic Info |
+| 3.8 | 2026-11-09 | QA - Hazel (yemimadocs) | Export Excel format angka selaras UI ([ETM-17224](https://erpintegration.atlassian.net/browse/ETM-17224)): uang `#,##0.00`; Exchange Rate `1` / `1.00`; Quantity presisi sistem **TO-BE** (contoh `1.570`). GAP-PI-07 superseded/closed |
+| 3.9 | 2026-11-12 | QA - Yemima | **TO-BE** max **500** baris detail SKU per PI di semua pintu ([ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338)) — selaras PO; GAP-PI-08 |
 
 ---
 
@@ -48,6 +50,7 @@ Purchase Invoice (PI) adalah dokumen pengakuan **Account Payable** ke supplier a
 | No double invoicing | Outstanding qty = inbound − prepared/processed invoice − prepared/processed return |
 | Harga & tax dari PO | Line price/tax di-copy dari PO — tidak edit manual DPP |
 | Partial invoicing | Bulk/single per SKU; Additional Cost/Disc bisa ditunda (remove baris) |
+| Max baris detail SKU | **TO-BE** maks **500** baris SKU per PI — selaras PO ([ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338) / §5.2a) |
 | Multi-currency | Max 1 foreign currency + local per PI (satu rule untuk SKU & cost/disc) |
 | AP recognition | Approve → jurnal Dr Unbilled Goods + Tax + Cost / Cr AP + Disc |
 | Selisih vs invoice fisik supplier | **TO-BE:** field **Supplier's Invoice Amount** → Invoice Diff → Cash Diff. COA + AP (§5.1b) |
@@ -196,7 +199,32 @@ Modal menampilkan SKU dari PO yang inbound-nya sudah approved.
 **Aksi insert:**
 - **Single Use** — modal qty (default = outstanding, editable, tidak boleh melebihi outstanding)
 - **Bulk Use** — multi-select; qty default = seluruh outstanding per baris
+- **Group View → Use** — memasukkan seluruh baris outstanding satu Inbound sekaligus
 - Outstanding 0 tapi masih ada Prepared → Action teks **"Already Prepared"**; baris hilang dari modal setelah full Processed
+
+### 5.2a Max baris detail SKU — **TO-BE** ([ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338))
+
+**Keputusan (12 Nov 2026):** batas **500** baris detail **SKU/produk** aktif per Purchase Invoice — **selaras** batas PO ([PO §5.6](../supplychain-purchase-order/requirement.md) / ETM-17323). Usulan screening awal 100 **ditolak**: detail PI bersumber dari outstanding Inbound (dari PO); Inbound/PO bisa sampai 500 SKU. Batas PI 100 akan memaksa pecah minimal ~5 PI untuk satu inbound 500 SKU — menyusahkan user. Partial invoicing tetap boleh, tapi tidak boleh dipaksa hanya karena batas PI lebih kecil dari PO.
+
+| Yang dihitung ke kuota 500 | Tidak dihitung |
+|----------------------------|----------------|
+| Baris detail SKU aktif (hasil Use dari inbound) | Additional Cost / Discount (termasuk auto dari PO); Detail Other (COA bebas) |
+| — | Edit qty / field baris yang sudah ada (tidak menambah jumlah baris) |
+
+**AS-IS:** belum ada batas — Group View / Bulk bisa mengisi PI tanpa limit.
+
+**TO-BE — wajib di semua pintu (server + kunci per dokumen):**
+
+| Pintu | Aturan |
+|-------|--------|
+| Single Use | Tolak bila aktif + 1 > 500 |
+| Bulk Use / pilih banyak | Hitung `existing + dipilih` dulu; melebihi sisa → **tolak seluruh pilihan**; simpan **satu transaksi** (semua atau tidak sama sekali) |
+| Group View → Use | Hitung kandidat dulu; `existing + kandidat` > 500 → **tolak seluruh Use** |
+| Import detail / job (jika ada) | **AS-IS:** PI belum punya Import Detail (Feature Map SF-IMP-01 = N/A). Jika ditambah nanti → cek sebelum baris masuk; file/job melebihi sisa → tolak seluruhnya; antrean ganda tidak boleh tembus 500 (pola ETM-17323) |
+| Proses tanpa sesi login | Validasi tetap jalan |
+| Request bersamaan | Kunci per PI saat cek + insert |
+
+Pesan error mengikuti pola PO (sebut existing, selected, maksimum 500).
 
 **Outstanding qty (base unit):**
 
@@ -243,7 +271,16 @@ Tampilan mengikuti primary unit; validasi selalu di base unit.
 - **Net / Invoice Total / kredit AP jurnal** = backend exact. **Tidak** boleh menyimpang karena rounding tie UI.
 - Σ manual kolom DPP+VAT UI 2dp boleh **+0,01** vs Total baris — **known behavior** (GAP-PI-05 Accepted), selaras [PO §9.2](../supplychain-purchase-order/requirement.md#92-rounding-tie--selisih-tampilan-ui-saja-final--accepted).
 - Path A vs Path B (~0,03 detail ≠ tippy) tetap defect (GAP-PI-04 Resolved display).
-- Export DPP/VAT **4dp** — GAP-PI-07 TO-BE.
+
+**Export Excel — format angka ([ETM-17224](https://erpintegration.atlassian.net/browse/ETM-17224)):**
+
+Berlaku untuk export datalist **With Details**, **Without Details**, dan export dari halaman detail. Format angka harus sama dengan tampilan sistem dan export menu OlshopERP lain. Keputusan lama “export DPP/VAT 4 desimal” (GAP-PI-07) **tidak berlaku lagi**.
+
+| Kolom | Format | Contoh |
+|-------|--------|--------|
+| Exchange Rate | 2 desimal | `1` atau `1.00`, bukan `1.0000` |
+| Quantity | Presisi sistem (**TO-BE** — file saat ini masih 2 desimal) | `1.570`, bukan dipotong `1.57` |
+| Unit Price, Total Before VAT, VAT Amount, Total After VAT, Total, Grand Total, Exchange Gain/Loss | Uang `#,##0.00` (2 desimal) | bukan 4 desimal |
 
 **Warisan dari PO:** PI **tidak menghitung ulang** DPP/VAT dari harga mentah kecuali fallback saat harga PO kosong — lihat [PO §9](../supplychain-purchase-order/requirement.md#91-variable--presisi-sot-27-jul-2026).
 
@@ -297,6 +334,8 @@ Kasus **diff < 0:** lihat **P-PI-SIA-01** (belum dikunci).
 
 Eligible qty = qty inbound approved, dikurangi yang sudah/sedang ditagih dan retur. Qty di PI draft = **Prepared**; setelah approve → **Processed**. Sisa outstanding untuk PI berikutnya turun sesuai qty yang sudah diproses.
 
+**Catatan vs max 500 (TO-BE §5.2a):** satu PO/Inbound sampai 500 SKU boleh masuk **satu** PI. Di atas 500 SKU outstanding → user pecah ke PI berikutnya (partial per dokumen), bukan karena batas 100.
+
 Card + contoh: [capabilities/sf-pi-01](./capabilities/sf-pi-01-partial-invoicing.md).
 
 ### 6.2 SF-PI-02 Multi-unit
@@ -343,6 +382,7 @@ Pakai Purchase Return tipe **Billed** (bukan Unbilled). Tidak potong AP langsung
 | 5 | Qty inbound full processed di Return Unbilled | SKU tidak bisa lagi di PI |
 | 6 | Approve tanpa ≥1 detail, atau Product COA kosong | Approve gagal |
 | 7 | Amount cost/disc sumber PO | Non-editable — tidak bisa over-bill secara struktural |
+| 8 | **TO-BE** Tambah baris SKU sehingga total aktif > 500 (Single / Bulk / Group View / import-job) | Ditolak seluruh aksi; pesan sebut batas 500 ([ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338) / §5.2a) |
 
 ---
 
@@ -381,7 +421,8 @@ flowchart TB
 | GAP-PI-04 | (Historis) DPP detail = `qty × each_dpp` float vs Totals = `each_dpp_after_discount` 4dp × qty → selisih ~0,03 | Detail ≠ section Totals | **Resolved display** (ETM-15313) — pastikan data lama / layar outstanding tidak masih Path A |
 | GAP-PI-05 | Σ manual DPP+VAT UI 2dp vs Invoice Total — UI round independen → +0,01 pada tie (warisan PO) | Persepsi visual; hutang/jurnal tidak kena | **Accepted — known behavior** (27 Jul 2026); selaras GAP-PO-09 |
 | GAP-PI-06 | Field Supplier's Invoice Amount + post Cash Diff / AP | Operator bandingkan invoice fisik vs net sistem | **TO-BE** — §5.1b / §5.6b; implementasi belum ada |
-| GAP-PI-07 | Export DPP/VAT pakai 4 desimal (masih 2dp seperti UI) | Audit/rekonsiliasi kurang presisi | **TO-BE** — selaras GAP-PO-10; UI tetap 2dp |
+| GAP-PI-07 | (Historis) Export DPP/VAT 4 desimal supaya audit lebih presisi | Requirement diganti: uang export 2 desimal | **Superseded / closed** oleh [ETM-17224](https://erpintegration.atlassian.net/browse/ETM-17224) — uang `#,##0.00`; Exchange Rate 2 desimal (`1` / `1.00`); Quantity menjaga presisi sistem (contoh `1.570`) **TO-BE** |
+| GAP-PI-08 | Belum ada batas baris detail SKU; Group View / Bulk bisa isi PI tanpa limit (inbound bisa >> 500) | PI sangat besar / risiko partial insert; usulan 100 ditolak karena memaksa pecah tagihan vs PO 500 | **TO-BE Open** — max **500** di semua pintu, selaras PO ([ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338) / §5.2a) |
 
 ### 9.1 Pending Items — belum matang
 
@@ -432,6 +473,12 @@ A: Jika pajak coefficient true, DPP terakumulasi versi coefficient (lebih kecil)
 
 **Q: Total baris beda 0,01 dari Unit×Qty?**  
 A: Jika yang beda adalah **jumlah manual DPP+VAT di layar** vs Total/Net → **known behavior UI** (GAP-PI-05 / [PO §9.2](../supplychain-purchase-order/requirement.md#92-rounding-tie--selisih-tampilan-ui-saja-final--accepted)). Jika **Invoice Total / Net** sendiri ≠ harga×qty → escalate (bug). Jurnal mengikuti Net backend.
+
+**Q: Berapa maksimal baris SKU dalam satu PI?**  
+A: **TO-BE** **500** baris detail SKU aktif — sama dengan PO ([ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338) / §5.2a). Cost/disc tambahan tidak dihitung. AS-IS belum dibatasi. Satu inbound 500 SKU boleh satu PI; di atas 500 → pecah PI.
+
+**Q: Format angka di file Excel export?**  
+A: Sama dengan layar, untuk datalist **With Details**, **Without Details**, dan export dari halaman detail. Exchange Rate `1` atau `1.00` (bukan `1.0000`). Kolom uang (Unit Price, Total Before VAT, VAT Amount, Total After VAT, Total, Grand Total, Exchange Gain/Loss) `#,##0.00`, bukan 4 desimal. Quantity menjaga presisi sistem, contoh `1.570` tidak dipotong `1.57` (**TO-BE** — file saat ini masih 2 desimal). Lihat §5.4. GAP-PI-07 superseded oleh ETM-17224.
 
 **Q: Bagaimana mencatat total invoice fisik supplier yang beda sen dengan net sistem?**  
 A: **TO-BE** — isi **Supplier's Invoice Amount** di Basic Information (§5.1b). Selisih (Invoice Diff) masuk jurnal Cash Diff. COA + tambahan AP saat approve. Jika field kosong, tidak ada pembanding.

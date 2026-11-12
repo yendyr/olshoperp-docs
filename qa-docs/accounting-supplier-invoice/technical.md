@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.6
-last_updated: 2026-09-02
+version: 3.9
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 aliases: [PI technical, supplier invoice API, purchase invoice code]
@@ -13,7 +13,7 @@ aliases: [PI technical, supplier invoice API, purchase invoice code]
 
 **API prefix:** `accounting/supplier-invoice`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v3.7 · [Feature Map](./feature-map.md) · [capabilities/](./capabilities/)  
+**Behavior SoT:** [requirement.md](./requirement.md) v3.9 · [Feature Map](./feature-map.md) · [capabilities/](./capabilities/)  
 **Rounding SoT:** [../_meta/dpp-vat-rounding-calculation.md](../_meta/dpp-vat-rounding-calculation.md) (**27 Jul 2026** final)  
 **Supplier display:** parent [ETM-15721](https://erpintegration.atlassian.net/browse/ETM-15721) · child [ETM-15724](https://erpintegration.atlassian.net/browse/ETM-15724)
 
@@ -69,9 +69,9 @@ aliases: [PI technical, supplier invoice API, purchase invoice code]
 | POST | `accounting/supplier-invoice/{id}/approve` | Approve / Reject (`AS_APPROVED`, `AS_REJECTED`; `AS_VOID` still in Rule::in — **immature**, see §9) |
 | GET | `…/{id}/outstanding-invoice` | Outstanding flat |
 | GET | `…/{id}/outstanding-invoice-group` | Outstanding grouped |
-| POST | `…/supplier-invoice-detail-item` | Add line |
-| POST | `…/supplier-invoice-detail-item-bulk` | Bulk add |
-| POST | `…/supplier-invoice-detail-item/create/group` | Group add |
+| POST | `…/supplier-invoice-detail-item` | Add line (Single Use) — **TO-BE** enforce max 500 SKU ([ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338)) |
+| POST | `…/supplier-invoice-detail-item-bulk` / `…/bulk` | Bulk add — **TO-BE** pre-check count + single TX; reject all if `existing + selected > 500` |
+| POST | `…/supplier-invoice-detail-item/create/group` / `…/group` | Group View Use (entire inbound outstanding) — **TO-BE** pre-check; reject all if over 500 |
 | GET | `…/{id}/print` | Print — `[VERIFY: CODEBASE]` vs SoT GAP-PI-01 Resolved (method still typed `PurchaseOrder` + PO PDF view) |
 | GET | `select2/supplier` | Supplier dropdown (inbound ref any status) |
 
@@ -139,7 +139,7 @@ aliases: [PI technical, supplier invoice API, purchase invoice code]
 
 **Rounding tie (GAP-PI-05 Accepted / GAP-PO-09):** UI round independen DPP+VAT ke 2dp → Σ manual bisa **+0,01**. **Invoice Total / Net / jurnal** mengikuti backend accumulate **4dp** (exact). Jangan ubah kalkulasi untuk menutup selisih visual.
 
-**Export (TO-BE GAP-PI-07):** DPP/VAT export = **4dp** (selaras GAP-PO-10).
+**Export number format (ETM-17224, requirement §5.4):** With Details, Without Details, dan export halaman detail (`SupplierInvoiceController::exportDetailAction`) lewat `Modules/Accounting/Exports/SupplierInvoiceExportMainSheet.php`. Expected: uang (Unit Price, Total Before VAT, VAT Amount, Total After VAT, Total, Grand Total, Exchange Gain/Loss) `#,##0.00`, bukan 4dp; Exchange Rate (kolom I) `1` atau `1.00`, bukan `1.0000`. `columnFormats()` memakai `FORMAT_NUMBER_COMMA_SEPARATED1` pada kolom uang dan kurs itu. Quantity (With Details, kolom U, `invoice_quantity`) **TO-BE** presisi sistem (contoh `1.570`); AS-IS `dev` kolom itu masih format 2dp yang sama, jadi `1.570` tampil `1.57`. GAP-PI-07 (export DPP/VAT 4dp) **superseded / closed**.
 
 **Coefficient tax:** DPP coefficient ke Total Products jika `coefficient` true.
 
@@ -219,6 +219,7 @@ Bukan Exchange Diff (kurs). Jangan campur dengan `exchange_gain_local_currency` 
 | INV-PI-04 | PO-sourced OC/OD: amount & label immutable; `expense_coa_id` + description mutable until approved |
 | INV-PI-05 | At approve: `expense_coa` is leaf (no children), active, `owned_by == PI.owned_by` |
 | INV-PI-06 | `prepared_to_payment + processed_to_payment ≤ grand_total_after_vat` |
+| INV-PI-07 | **TO-BE** ([ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338) / GAP-PI-08): active `supplier_invoice_detail_items` count ≤ **500** per PI; enforced on **every** insert path (store / bulkStore / store_group / future import-job); lock per invoice; OC/OD & Detail Other **out of** quota |
 
 ---
 
@@ -230,6 +231,7 @@ Bukan Exchange Diff (kurs). Jangan campur dengan `exchange_gain_local_currency` 
 | Fiscal closed / empty detail / missing Product COA | Pre-TX or mid journal | Error; approve TX rolled back if inside transaction |
 | Exception mid-`approveSupplierInvoice` | Single TX | Full rollback |
 | OC/OD PO stuck (GAP-PI-02) | Product | If SKU fully processed in invoice/return before all PO costs billed, options may not reappear — `[VERIFY: CODEBASE]` for exact filter |
+| Detail over 500 SKU (**TO-BE**) | Detail store / bulk / group / import | Reject **before** insert; bulk/group must not partially commit past cap (AS-IS: no cap — `store_group` loops all outstanding inbound lines; `bulkStore` calls `store` per id without pre-count) |
 | Void path | Immature | `can_void` / VoidDialog / `AS_VOID` still in code; datalist often `render_void: false`. **Not** a supported user flow (Pending Items SoT) |
 | Print | Route exists | `[VERIFY: CODEBASE]` vs SoT Resolved — `@print` still loads PO DomPDF view |
 
@@ -272,6 +274,7 @@ Supplier select2: inbound reference **any** status — intentional quirk (GAP-PI
 |------|----------|
 | Unique code / fiscal | Store-update / approve |
 | Qty ≤ invoiceBalance (base) | Detail store/update |
+| **TO-BE** active SKU lines ≤ 500 (all doors) | Detail `store` / `bulkStore` / `store_group` (+ import/job if added); message pattern like PO max-500; no Import Detail AS-IS (SF-IMP-01 N/A) |
 | Currency lock one foreign | Detail + OC/OD store `[VERIFY: CODEBASE]` exact message path |
 | Header lock if details exist | Update request |
 | PO OC/OD amount locked | `checkInvalidModified` |
@@ -321,6 +324,7 @@ Active + leaf only; **no** class filter; company scope.
 | Coefficient | Total Products uses coefficient DPP |
 | Payment bridge | Approve payment updates `processed_to_payment` |
 | Print | Assert correct PI view name (SoT says fixed; verify against current `@print`) |
+| Export number format | With/Without Details + detail page: Exchange Rate `1`/`1.00`; money `#,##0.00`; Quantity keeps system precision (TO-BE — column U still 2dp) — ETM-17224 |
 
 ---
 
@@ -336,7 +340,7 @@ Active + leaf only; **no** class filter; company scope.
 | Pending Processed/Closed | Not set from payment on PI header |
 | GAP-PI-06 | Supplier's Invoice Amount + Cash Diff journal — **TO-BE** (req §5.1b / §5.6b) |
 | GAP-PI-05 | UI Σ DPP+VAT +0,01 — **Accepted** known behavior (27 Jul) |
-| GAP-PI-07 | Export DPP/VAT 4dp — **TO-BE** |
+| GAP-PI-07 | Export DPP/VAT 4dp — **superseded / closed** (ETM-17224): money 2dp `#,##0.00`; Exchange Rate 2dp; Quantity system precision **TO-BE** |
 
 Full registry: [requirement §9](./requirement.md#9-gap-registry).
 
