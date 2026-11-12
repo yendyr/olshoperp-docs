@@ -14,7 +14,7 @@ Menu **Sales Return** di modul **Finance Accounting** — review harga/COGS dan 
 **UI route:** `/accounting/sales-return`  
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-sales-return/`](../_meta/docs-hub/menus/accounting-sales-return/)  
 **Canonical E2E:** [supplychain-sales-returns/](../supplychain-sales-returns/)  
-**3 layer version:** 3.0 · **User-guide:** v1.4 · `source_version` 3.0 · **Feature Map:** 1.0 · **Last updated:** 2026-11-12
+**3 layer version:** 3.1 · **User-guide:** v1.4 · `source_version` 3.1 · **Feature Map:** 1.0 · **Last updated:** 2026-11-12
 
 **Maintenance owner:** QA — Yemima
 
@@ -24,6 +24,7 @@ Menu **Sales Return** di modul **Finance Accounting** — review harga/COGS dan 
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-12 | 3.1 | Penjelasan end to end retur order platform: pemilik Store, akun Deposit of Sales Return per jenis order, contoh nyata Staging, keputusan terbuka slot di Store (SCM §7.5) |
 | 2026-11-12 | 3.0 | Koreksi jurnal retur Billed: jurnal retur hanya Return Inventory / COGS, Credit Note dokumen terpisah dengan jurnal Sales COA (D) / Deposit of Sales Return (K), AR turun saat CN dipakai di Account Receive. Contoh nyata SR-5V116RYM / CN-5V11936P |
 | 2026-11-12 | 2.9 | GAP-SR-16: contoh fiktif diganti dua dokumen nyata Staging (SO-4NBJN4UH retur lama selesai; SO-5U1VSXC7 retur lama masih Open, Piutang Rp 11.853.408 tidak terbalik bila di-Complete) |
 | 2026-11-12 | 2.8 | GAP-SR-16: contoh angka yang jelas (retur dulu lalu SI = piutang 48.000; SI dulu lalu retur Unbilled lama = 50.000), pembanding Purchase Return, Failed Ship vs retur pada qty SI. Gate di Complete dilacak di ETM-17365 |

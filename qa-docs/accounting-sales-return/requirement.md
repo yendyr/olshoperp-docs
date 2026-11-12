@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 3.0
+version: 3.1
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -24,6 +24,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.1 | 2026-11-12 | Tambah SCM §7.5: retur order platform dari setting Store sampai jurnal, termasuk dua jenis pemilik Store (owned_by vs Default Owner Data), larangan ganti owner setelah ada transaksi, tabel akun Deposit of Sales Return per jenis order (customer general memakai slot customer; platform memakai slot company pemilik transaksi; Store tidak punya slot), contoh nyata Staging (CN-5V11936P; Store 30 / SO-698ACD90) dan keputusan terbuka slot Deposit of Sales Return di Store |
 | 3.0 | 2026-11-12 | Koreksi jurnal retur Billed: jurnal retur hanya Return Inventory (D) / COGS (K); Credit Note adalah dokumen terpisah (otomatis Approved) dengan jurnal sendiri Sales COA (D) / Deposit of Sales Return (K), bukan "Credit Note (D) / AR (K)"; piutang turun saat CN dipakai di Account Receive, bukan saat Complete. Contoh nyata Billed: SO-5V1113IU / SR-5V116RYM / CN-5V11936P. Catatan: hapus SR Unbilled lama tidak mengembalikan prepared_to_amount_return di SI |
 | 2.9 | 2026-11-12 | GAP-SR-16 (SCM §7.4): contoh angka fiktif (25 pcs) diganti dua dokumen nyata Staging dengan jurnal tiap tahap: SO-4NBJN4UH (retur lama sudah Complete, Penjualan dan Piutang terbalik, benar) dan SO-5U1VSXC7 (retur lama masih Open; bila di-Complete sekarang Piutang Rp 11.853.408 tidak terbalik). Tambah catatan: belum ada contoh nyata 'retur dulu, SI kemudian' |
 | 2.8 | 2026-11-12 | GAP-SR-16: tambah contoh angka yang tidak ambigu (urutan retur dulu lalu SI = piutang 48.000; SI dulu lalu retur Unbilled lama = piutang tetap 50.000), pembanding Purchase Return end to end (Billed/Unbilled dipilih di header, qty dibagi per qty, Supplier Invoice dikurangi qty retur, approve tanpa cek status invoice), dan penjelasan Failed Ship vs retur pada qty SI. Gate di Complete dilacak di card ETM-17365 (Error, Highest, Alvin) |
@@ -112,6 +113,8 @@ Satu baris SKU 0/0/0 tetap boleh disimpan (retur parsial). Save detail hanya men
 Auto jika baris retur **Billed** (SKU/baris **sudah punya Sales Invoice**) → `generateCreditNoteFromReturn` — mirror generate **Debit Note** pada Purchase Return billed, sampai penjurnalan.
 
 **Bukan** syarat “invoice sudah ada Account Receive / `processed_to_payment_amount > 0`”.
+
+**Akun deposit per jenis order:** customer general memakai slot customer lalu company; order platform (aktor Store) memakai slot company pemilik transaksi, bukan setting Store. Penjelasan dan contoh end to end: [supplychain-sales-returns §7.5](../supplychain-sales-returns/requirement.md).
 
 **COA deposit (TO-BE [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764)):** Approve CN dari SR billed → Credit **Deposit of Sales Return** (bukan Customer's Deposit). Saat CN dipakai di Account Receive, Debit harus ke akun **yang sama**.
 

@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 3.0
+version: 3.1
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -32,6 +32,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.1 | 2026-11-12 | QA - Yemima | Tambah SCM §7.5: retur order platform dari setting Store sampai jurnal, termasuk dua jenis pemilik Store (owned_by vs Default Owner Data), larangan ganti owner setelah ada transaksi, tabel akun Deposit of Sales Return per jenis order (customer general memakai slot customer; platform memakai slot company pemilik transaksi; Store tidak punya slot), contoh nyata Staging (CN-5V11936P; Store 30 / SO-698ACD90) dan keputusan terbuka slot Deposit of Sales Return di Store |
 | 3.0 | 2026-11-12 | QA - Yemima | Koreksi jurnal retur Billed: jurnal retur hanya Return Inventory (D) / COGS (K); Credit Note adalah dokumen terpisah (otomatis Approved) dengan jurnal sendiri Sales COA (D) / Deposit of Sales Return (K), bukan "Credit Note (D) / AR (K)"; piutang turun saat CN dipakai di Account Receive, bukan saat Complete. Contoh nyata Billed: SO-5V1113IU / SR-5V116RYM / CN-5V11936P. Catatan: hapus SR Unbilled lama tidak mengembalikan prepared_to_amount_return di SI |
 | 2.9 | 2026-11-12 | QA - Yemima | GAP-SR-16 (SCM §7.4): contoh angka fiktif (25 pcs) diganti dua dokumen nyata Staging dengan jurnal tiap tahap: SO-4NBJN4UH (retur lama sudah Complete, Penjualan dan Piutang terbalik, benar) dan SO-5U1VSXC7 (retur lama masih Open; bila di-Complete sekarang Piutang Rp 11.853.408 tidak terbalik). Tambah catatan: belum ada contoh nyata 'retur dulu, SI kemudian' |
 | 2.8 | 2026-11-12 | QA - Yemima | GAP-SR-16: tambah contoh angka yang tidak ambigu (urutan retur dulu lalu SI = piutang 48.000; SI dulu lalu retur Unbilled lama = piutang tetap 50.000), pembanding Purchase Return end to end (Billed/Unbilled dipilih di header, qty dibagi per qty, Supplier Invoice dikurangi qty retur, approve tanpa cek status invoice), dan penjelasan Failed Ship vs retur pada qty SI. Gate di Complete dilacak di card ETM-17365 (Error, Highest, Alvin) |
@@ -414,6 +415,73 @@ Catatan data: dari 135 baris SO yang punya retur berdokumen, 113 (83,7%) diretur
 | Cabang dibuang | Benar (disengaja) | Tetap tanpa pembalik; perlu keputusan di bawah |
 
 **Keputusan yang belum ada (untuk S6, dan S5 bila ada jalur API langsung):** Create Return sudah punya gate SI Open, tetapi Complete belum punya gate SI. Pilihan: (a) gate di Complete yang menolak retur Unbilled bila ada baris yang SI-nya sudah approve, dengan pesan yang jelas; (b) tipe dihitung ulang saat Complete (SI sudah approve → perlakukan sebagai Billed + CN); (c) retur lama dibatalkan lalu dibuat ulang. Belum diputuskan; di luar lingkup ETM-17064 / ETM-17291.
+
+### 7.5 Order platform: dari setting Store sampai jurnal retur (end to end)
+
+Retur dari order **platform** memperlakukan akun Deposit of Sales Return berbeda dari order **general**. Aturannya bergantung pada pemilik data transaksi, bukan pada pelanggan. Bagian ini menjelaskan alurnya dari setting Store. Diverifikasi dari kode `origin/dev` dan data Staging 12 Nov 2026 (baca saja).
+
+**A. Dua pemilik pada Store**
+
+| Field | Arti | Dipakai untuk |
+|-------|------|---------------|
+| `owned_by` | Pemilik record Store | Penentu siapa yang melihat record Store |
+| `default_company_owner` (Default Owner Data) | Company tempat semua order Store masuk | Owner order, SI, retur, Credit Note, dan jurnal. Pilihan COA di form Store juga difilter company ini. Di kode: `Store::dataOwnerId` = `default_company_owner`, bila kosong `owned_by` |
+
+- **Owner tidak bisa diganti setelah ada transaksi.** Bila Default Owner Data diubah dan company pemilik lama sudah punya Sales Order (atau binding shipping service), simpan ditolak: `Default Owner Data cannot be changed because it is already related to transactions.` Pengecekannya luas: semua Sales Order milik company lama, tidak hanya order Store itu. Dengan begitu satu Store tidak berpindah owner di tengah jalan; order lama dan baru selalu satu company.
+- Data Staging: 167 dari 167 Store punya `owned_by` sama dengan `default_company_owner`; 590.806 dari 590.806 order platform punya owner yang sama dengan Store-nya.
+- Order, SI, dan retur hanya terlihat saat login sebagai company pemilik data itu. Retur hanya bisa diproses di company tersebut.
+
+Contoh perpindahan owner (ditolak sistem): Store A diset Default Owner Data = ABC. 1 Nov, order-001 masuk sebagai milik ABC. 2 Nov, Default Owner Data diubah ke GHI. Karena ABC sudah punya Sales Order, perubahan ditolak, jadi order-002 tidak pernah masuk sebagai milik GHI. Perpindahan hanya bisa dilakukan sebelum company lama punya Sales Order.
+
+**B. Setting COA yang ada di Store**
+
+| Setting di form Store | Dipakai untuk |
+|-----------------------|---------------|
+| Account Receivable COA | Mencatat piutang order platform |
+| Customer's Deposit COA (`deposit_coa_id`) | Credit Note biasa (manual atau kelebihan bayar Account Receive) dengan aktor Store |
+
+Store **tidak punya** setting Deposit of Sales Return. Keputusan ETM-16764: "company owner; store tidak punya slot kedua". Alasan tidak punya slot tidak tercatat di card.
+
+**C. Akun Deposit of Sales Return untuk Credit Note dari retur Billed**
+
+Berlaku di jurnal Credit Note saat Complete dan saat Credit Note dipakai di Account Receive.
+
+| Jenis order | Aktor Credit Note | Akun diambil dari | Bukti Staging |
+|-------------|-------------------|-------------------|---------------|
+| General | Company (customer) | Slot "Deposit of Sales Return" milik customer. Bila kosong, slot milik company aktif | CN-5V11936P: customer CV Mitra Solusi Prima (id 18) → 4-40103 Retur Penjualan. Slot company 13 (2-20104 Uang Muka Penjualan) tidak dipakai |
+| Platform | Store (SI tanpa customer, hanya store) | Slot milik company aktif / pemilik transaksi. Store tidak membaca slot sendiri | Slot per company: company 13 → 2-20104 Uang Muka Penjualan; company 112 → 2-106 Credit memo Return; company 153 → 2-20125 Uang Muka Retur Penjualan. Customer's Deposit COA Store 30 (2-20105-01 Hutang Gaji) tidak dipakai |
+| Purchase Return (pembanding) | Company (supplier) | Slot "Deposit of Purchase Return" milik supplier saja, tanpa fallback | Slot kosong → error `Please Configure Company "Deposit of Purchase Return COA" in: <supplier>` |
+
+- Company aktif = company yang sedang login (`getToken()->company_id`); bila tidak ada, owner Credit Note (diisi dari owner SI). Dalam praktik sama dengan pemilik transaksi, karena retur hanya bisa diproses di company itu. Kode jalur ini tidak membaca setting owner Store sama sekali.
+- Hasilnya untuk order platform: akun Deposit of Sales Return **satu per company pemilik**, tidak berbeda per Store. Antar company bisa berbeda akun.
+- Slot company kosong → Complete gagal dan dibatalkan seluruhnya: `Please Configure Company "Deposit of Sales Return" in: <nama Store>`.
+- Credit Note biasa (bukan dari retur) memakai Customer's Deposit: customer general → slot company; aktor Store → `deposit_coa_id` Store. Penentunya adalah jenis acuan Credit Note (acuan CustomerInvoice = dari retur).
+
+**D. Contoh end to end order platform (Staging)**
+
+Store 30 "TK-Sandbox Tiktok - WH Seruni" (TikTok): `owned_by` dan Default Owner Data = company 13; Account Receivable COA 1-11003 Piutang Lainnya; Customer's Deposit COA 2-20105-01 Hutang Gaji. Slot company 13: Deposit of Sales Return = 2-20104 Uang Muka Penjualan.
+
+| Tanggal | Dokumen | Jurnal |
+|---------|---------|--------|
+| 10 Feb 2026 | SO-698ACD90 (platform order 582541843554273061) masuk dari Store 30, owner company 13: 4 pcs × Rp 225.000 = Rp 900.000, HPP Rp 10.000 per pcs | Belum ada |
+| 11 Feb 2026 | Outbound OT-698ACE7F | HPP 40.000 (D) / Persediaan Barang 40.000 (K), GL-698ACE80 |
+| 11 Feb 2026 | SI-698ACE7E, Approved, tanpa customer (hanya Store 30), dibayar Rp 896.020 | Piutang Usaha 896.020 (D), Biaya Komisi Platform 3.980 (D), Biaya Pengiriman 9.500 (D dan K), Penjualan Produk 900.000 (K), GL-698ACE7F |
+| Simulasi (hitungan dari kode, belum dijalankan): 1 pcs diretur, login company 13 | SO sudah ber-SI Approved, jadi retur Billed. Aktor Credit Note = Store 30 | Jurnal retur: Persediaan Barang Tidak Dijual (Return Inventory COA produk) 10.000 (D) / HPP 10.000 (K). Credit Note otomatis Approved: Penjualan Produk 225.000 (D) / 2-20104 Uang Muka Penjualan (slot company 13) 225.000 (K) |
+| Hasil | | SI sudah dibayar penuh, jadi Credit Note menjadi saldo deposit Rp 225.000 pada 2-20104. Saldo dipakai di Account Receive (2-20104 (D) / Piutang (K)) |
+
+Catatan:
+- Baris SO-698ACD90 sendiri sudah punya retur (data lama: 1 pcs Approved dan 4 pcs Open pada SR-5T1NZBCP), jadi tidak bisa diretur lagi; angkanya dipakai hanya untuk simulasi.
+- Belum ada retur Billed order platform yang Complete di Staging. Hanya ada satu Credit Note berakun Store (CN-698ACF84, 10 Feb 2026, jurnal 2-20104 di kedua sisi); asalnya tidak terverifikasi dari retur.
+
+**E. Keputusan terbuka: slot Deposit of Sales Return di Store**
+
+Usulan QA (12 Nov 2026), belum diputuskan: tambahkan setting Deposit of Sales Return di form Store, seperti Customer's Deposit COA.
+
+| | Sekarang (slot company saja) | Usulan (slot di Store) |
+|---|------------------------------|------------------------|
+| Konsep | Platform: satu akun per company pemilik; customer general: slot customer lalu company | Platform mengikuti entitas pelanggannya (Store), sejajar Purchase Return yang membaca slot supplier |
+| Ketergantungan sesi | Memakai company aktif sebagai penentu | Akun terkunci di Store; opsi COA sudah difilter Default Owner Data |
+| Dampak perubahan | Tidak ada | Kolom dan field baru di form Store, isi awal untuk 167 Store, perubahan pembacaan akun di jurnal Credit Note (`JournalProcess`), `PaymentDetailFundController` (dua blok), `ReceiveImportPerMutationJob`, dan `ReceiveValidateBankMutationSheet`. Credit Note lama yang masih bersaldo sudah terjurnal ke slot company, jadi pemakaiannya di Account Receive perlu konsisten |
 
 ---
 

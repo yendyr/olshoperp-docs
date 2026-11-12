@@ -13,13 +13,14 @@ Menu **Sales Return** — operasi gudang; shared API dengan Finance.
 
 **UI gudang:** `/supplychain/sales-returns` · **Finance:** `/accounting/sales-return`  
 **Help Center:** [`_meta/docs-hub/menus/supplychain-sales-returns/`](../_meta/docs-hub/menus/supplychain-sales-returns/)  
-**3 layer:** v3.0 · **User Guide:** v1.4 (`source_version` 3.0) · **Feature Map:** v1.0  
+**3 layer:** v3.1 · **User Guide:** v1.4 (`source_version` 3.1) · **Feature Map:** v1.0  
 **Maintenance owner:** QA — Yemima
 
 ## Changelog
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-11-12 | 3.1 | §7.5 baru: retur order platform dari setting Store sampai jurnal, akun Deposit of Sales Return per jenis order, contoh nyata Staging, keputusan terbuka slot di Store |
 | 2026-11-12 | 3.0 | Koreksi jurnal retur Billed (§7.3, §7.4): Credit Note dokumen terpisah, Sales COA (D) / Deposit of Sales Return (K); contoh nyata Kasus 4 SR-5V116RYM / CN-5V11936P; catatan hapus SR Unbilled lama |
 | 2026-11-12 | 2.9 | GAP-SR-16 (§7.4): contoh fiktif diganti dua dokumen nyata Staging dengan jurnal tiap tahap; catatan belum ada contoh nyata retur dulu lalu SI |
 | 2026-11-12 | 2.8 | GAP-SR-16 (§7.4): contoh angka yang jelas, pembanding Purchase Return end to end, Failed Ship vs retur pada qty SI. Gate di Complete dilacak di ETM-17365 |
