@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.13
-last_updated: 2026-11-11
+version: 2.14
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 ---
@@ -20,6 +20,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.14 | 2026-11-12 | QA - Yemima | **AS-IS** alur manual lengkap dari narasi QA: Datalist (§4.4), Create/autosave + Basic Info (§5.0), Detail / Available SI / Single Use (§5.9), Receiving Destination (§5.9.1); **GAP-AR-09 Closed** |
 | 2.13 | 2026-11-11 | QA - Yemima | **AS-IS** validasi Approve AR lengkap (§6.4.1); jurnal Approve (§5.11); audit log gap + TO-BE readable (§5.12 / [ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326)); TO-BE autosave Open [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325); Description Adjustment locked wajib ikut kode |
 | 2.12 | 2026-11-11 | QA - Yemima | **AS-IS** §5.10 Adjustment form manual (COA child semua class; Debit/Credit contoh admin bank & pendapatan lebih bayar); copy Single Use modal → Receive wording (FE) |
 | 2.11 | 2026-11-11 | QA - Yemima | **AS-IS sync:** GAP-AR-SUMMARY-01 / GAP-AR-CN-COA / GAP-AR-MEM-01 closed (ETM-16644, 16764, 17198 Done + kode selaras); klarifikasi GAP-AR-09 tetap Open (docs alur manual) |
@@ -41,7 +42,7 @@ status: review
 
 **Account Receive** (AR receipt) mencatat penerimaan pembayaran dari customer dan mengalokasikannya ke Sales Invoice yang masih outstanding. Satu dokumen AR bisa melunasi banyak invoice.
 
-Dokumen AR lahir dari tiga jalur: input manual, **Import multi-sheet** (satu file Excel menghasilkan banyak dokumen sekaligus), dan generate otomatis saat Approve Instant Settlement. Jalur mana pun menghasilkan dokumen berstatus Open yang tetap perlu Approve manual sebelum jurnal terbentuk.
+Dokumen AR lahir dari tiga jalur: **input manual** (§4.4 datalist, §5.0–5.9.1 create/edit), **Import multi-sheet** (§4–§5.1), dan generate otomatis saat Approve Instant Settlement (§5.8). Import & Instant Settlement lahir **Open**; create/autosave manual AS-IS masih **Draft** (TO-BE Open: ETM-17325). Jurnal terbentuk setelah **Approve**.
 
 ```mermaid
 flowchart LR
@@ -129,13 +130,37 @@ Satu baris = satu selisih antara dana masuk dan nilai invoice.
 
 **Identification Row** adalah nomor baris Excel fisik di sheet Bank Mutation — bukan nomor urut data. Inilah pengikat yang menentukan invoice dan adjustment mana milik mutasi bank mana.
 
-### 4.4 Datalist & Export
+### 4.4 Datalist (UI manual)
 
-Daftar Account Receive menampilkan kolom **Description**: teks deskripsi di header dokumen (bukan deskripsi baris jurnal atau baris invoice). Kolom ini bisa dicari dan diurutkan.
+**URL:** `/accounting/customer-payment`  
+**Scope data:** hanya transaksi AR milik **company yang sedang login** (tidak menampilkan AR company lain).
 
-Ekspor daftar memuat kolom Description yang sama, termasuk berkas berjudul **Receive per tanggal** (heading `OlshopERP | Receive per {tanggal}`).
+**Fitur toolbar:** Global Search · Advanced Filter · Show Deleted Data · Column Show/Hide · Export · Import · Button **Create**.
 
-[ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991)
+| Kolom | Default visible | Isi |
+|---|---|---|
+| ID | Tidak | ID internal transaksi AR di OlshopERP |
+| Trx Date | Tidak | Tanggal transaksi AR (header) |
+| Trx Code \| Trx Date | Ya | Kode AR generate sistem + tanggal header yang diinput user |
+| Customer | Ya | Nama **General Company** as customer, atau **Store platform** jika SI dari order platform |
+| Trx Ref | Ya | Kode Sales Invoice yang dilunasi. Jika >1 SI: tampil `{kode SI}...(+N)` dengan **N = jumlah referensi SI** (contoh `...(+20)` bila ≥20). Hover menampilkan daftar kode SI |
+| Curr | Ya | Currency header AR |
+| Rate | Ya | Exchange rate header AR |
+| Total Amount | Ya | Nilai **Piutang** dari section Summary (§6.5) |
+| Trx Status | Ya | Draft / Open / Rejected / Approved / Void |
+| Journal | Ya | Journal hasil Approve — **hanya terisi setelah AR Approved** |
+| Description | Ya | Description header AR (cari & urut; ikut export termasuk **Receive per tanggal**) — [ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991) |
+| Data Owner | Tidak | Nama internal company owner = company user saat create |
+| Created By \| Created At | Ya | User & waktu create |
+
+| Action | Muncul bila |
+|---|---|
+| Edit | Status **bukan** Approved / Void |
+| Show | Status Approved / Void |
+| Delete | Status **bukan** Approved / Void |
+| Approve / Reject | Status **Open** (+ privilege) |
+| Void | Status **Approved** |
+| Print | Semua status |
 
 #### Pagination & performa (AS-IS · ETM-17198 Done)
 
@@ -148,6 +173,24 @@ Ekspor daftar memuat kolom Description yang sama, termasuk berkas berjudul **Rec
 Jika LocalStorage browser masih menyimpan length=100 dari versi lama, UI memaksa ke opsi yang valid (maks 50).
 
 ## 5. How It Works
+
+### 5.0 Create / Edit manual — Basic Information
+
+Create AR memakai **autosave berdasarkan last data** yang pernah tersimpan untuk user/company. Jika belum ada last data, autosave tidak jalan — user mengisi field wajib satu per satu hingga dokumen tersimpan; setelah itu autosave bisa dipakai.
+
+| Field | Wajib | Aturan |
+|---|---|---|
+| Transaction Code | — | Generate sistem setelah dokumen tersimpan |
+| Transaction Date | Ya | Default = hari ini **jika** fiscal period hari ini aktif. Jika fiscal period hari ini tidak aktif, autosave tidak jalan — user wajib pilih tanggal dalam fiscal period terbuka |
+| Customer | Ya | Dua grouping: **General** (company yang recognize as customer) · **Platform** (master Store aktif) |
+| Reference Doc | Tidak | Nomor referensi lain terkait transaksi |
+| Transaction Currency | Ya | Default = primary currency master |
+| Exchange Rate | Ya | Default **1**, editable |
+| Description | Tidak | Freetext opsional |
+
+**Status create/autosave (AS-IS):** **Draft**. Tombol Approve/Reject baru setelah status **Open**. **TO-BE [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325):** default **Open**.
+
+Halaman create/edit punya section: Basic Information · Detail Account Receive (§5.9) · Receiving Destination (§5.9.1) · Adjustment (§5.10) · Summary (§6.5) · Approval Log / Audit (§5.12).
 
 ### 5.1 Alur import
 
@@ -233,19 +276,91 @@ Saat user Approve batch Instant Settlement, sistem membentuk satu dokumen AR per
 
 AR manual tidak ikut terhapus saat settlement di-Reject, dan justru memblokir Delete settlement bila terhubung ke invoice hasil upload. Detail alur bulk ada di [Instant Settlement](../accounting-settlement-upload/requirement.md).
 
-### 5.9 Select Invoice pada dokumen Draft atau Open (ETM-17102)
+### 5.9 Detail Account Receive (form manual)
 
-Pada Account Receive yang masih bisa diubah (Draft atau Open), field **Select Invoice** di Detail Account Receive memasukkan Sales Invoice ke tabel detail. Sistem ikut menambah baris di **Receiving Destination** dengan Amount sama dengan nilai invoice yang masuk. Select Invoice memakai sisa tagihan penuh. Section Receiving Destination disegarkan setelah pilihan berhasil, sehingga baris itu terlihat tanpa memuat ulang halaman.
+Section Detail dipakai pada AR yang masih bisa diubah (**Draft** / **Open**).
 
-Akun pada baris itu adalah kas/bank yang tertaut di Sales Invoice.
+#### 5.9.0 Cara memasukkan Sales Invoice
 
-**Contoh.** Sales Invoice senilai Rp105.000 ditambahkan lewat Select Invoice pada dokumen Account Receive yang masih Draft. Detail Account Receive memuat invoice itu, dan Receiving Destination memuat baris dengan Amount Rp105.000.
+| Cara | Perilaku |
+|---|---|
+| **Select Invoice** (dropdown) | Memasukkan SI ke detail dengan **sisa outstanding penuh**. Sistem ikut menambah baris **Receiving Destination** Amount = nilai invoice (kas/bank tertaut SI). Section RD disegarkan tanpa reload halaman — [ETM-17102](https://erpintegration.atlassian.net/browse/ETM-17102) |
+| **Available Sales Invoice** (modal) | Daftar SI eligible lebih detail; partial via **Single Use** atau bulk checkbox (full outstanding) |
+
+**Kolom modal Available Sales Invoice**
+
+| Kolom | Isi |
+|---|---|
+| Trx Code \| Trx Date | Kode & tanggal Sales Invoice |
+| Trx Ref | Nomor Sales Order |
+| Rate | Rate SI |
+| Total | Total SI |
+| Outstanding | Sisa SI setelah yang sudah terbayar (AR Approved) |
+| Status | **Prepared** = nilai SI di AR belum Approved; **Processed** = nilai SI di AR sudah Approved |
+| Created By \| Created At | Pembuat SI |
+| Action | **Single Use** → modal partial amount |
+
+**Single Use modal**
+
+- Input amount dalam **currency header AR** (label dinamis, bukan hardcode IDR).
+- **Allocate Full Amount (Clearing):** isi = seluruh remaining/outstanding SI (hingga desimal), dikonversi ke currency header bila beda.
+- Save → baris masuk ke Detail Account Receive.
+- Copy UI memakai wording **Receive** (bukan Payment): judul *Use this to Receive Process*, Prepared/Processed to Receive, Amount to Receive, Receive/Header Exchange Rate — FE `SingleUseModal.vue` + `OutstandingCustomerInvoice.vue`.
+
+**Bulk checkbox** di Available SI: default amount = **all outstanding** per SI terpilih; langsung masuk Detail.
+
+**Tabel Detail di form AR**
+
+| Kolom | Aturan |
+|---|---|
+| Trx Code | Kode Sales Invoice |
+| Total Invoice | Total SI |
+| Paid Amount | Inline edit; tidak boleh melebihi outstanding |
+| Action Delete | Hapus baris SI dari detail → **prepared** SI dikembalikan (decrement); outstanding bergerak. **Receiving Destination tidak ikut terhapus otomatis** (AS-IS kode) — user hapus/sesuaikan RD manual bila perlu |
+| Footer | SUM Paid Amount |
 
 | ID | Kriteria |
 |----|----------|
-| AR-SEL-01 | Select Invoice pada AR Draft/Open memasukkan Sales Invoice ke Detail Account Receive |
-| AR-SEL-02 | Receiving Destination mendapat baris dengan Amount sama dengan nilai invoice yang masuk |
-| AR-SEL-03 | Baris itu tampil di Receiving Destination tanpa memuat ulang halaman |
+| AR-SEL-01 | Select Invoice pada AR Draft/Open memasukkan SI ke Detail |
+| AR-SEL-02 | Receiving Destination mendapat baris Amount = nilai invoice (Select Invoice) |
+| AR-SEL-03 | Baris RD tampil tanpa reload halaman |
+| AR-DET-01 | Single Use partial / Allocate Full memasukkan SI ke Detail |
+| AR-DET-02 | Bulk checkbox Available SI memakai full outstanding per SI |
+| AR-DET-03 | Hapus Detail mengembalikan prepared SI |
+
+### 5.9.1 Receiving Destination (form manual)
+
+Section ini mencatat **ke mana uang diterima**: Cash/Bank dan/atau pelunasan memakai **Credit Note** (deposit customer).
+
+#### Select Cash/Bank
+
+Modal list master Cash/Bank **aktif**:
+
+| Kolom | Isi |
+|---|---|
+| Type | Cash atau Bank |
+| Label | Label name master Cash/Bank |
+| Bank Name \| Acc Number | Dari master Cash/Bank |
+| Balance | Dari jurnal pada COA yang terpasang di Cash/Bank itu: **Debit menambah**, **Credit mengurangi** balance |
+
+#### Select Credit Note
+
+Modal list CN yang sudah **difilter**:
+
+- Customer = customer header AR  
+- Currency = currency header AR (wajib sama)
+
+| Kolom | Isi |
+|---|---|
+| Trx Code \| Trx Date | Kode & tanggal CN |
+| Trx Ref | Referensi asal CN; `-` jika tidak ada |
+| Curr / Rate | Currency & rate CN |
+| Total Amount | Amount CN |
+| Used Status | **Prepared** = dipakai di AR belum Approved; **Processed** = dipakai di AR sudah Approved |
+| Remaining Balance | Total − (prepared + processed used) |
+| Created By | User & waktu create CN |
+
+Stamp COA saat pakai CN: §5.3 / ETM-16764 (SR → Deposit of Sales Return; regular → Customer's Deposit / store).
 
 ### 5.10 Adjustment pada form Create/Edit (manual)
 
@@ -472,7 +587,7 @@ flowchart TB
 | GAP-AR-06 | Teks pesan error. Raw ≠ string kode. Katalog resmi = §6 (kode). | Contradiction | TC assert string raw fail | **Closed — Locked AS-IS** (Yemima 2026-11-11): TC/UG ikut §6 |
 | GAP-AR-07 | Dulu: cache lock AR memakai penanda AP + pesan "Account Payment". **AS-IS sekarang:** cache `import/ar/{company}`; pesan & notifikasi menyebut Account Receive / Receive. | Missing Behavior | — | **Closed — Fixed** (sudah benar di kode; tidak perlu ubah copy lagi) |
 | GAP-AR-08 | Raw §7 (Smart Settlement / Failed Ship / Hard Delete) milik Instant Settlement — bukan gap perilaku AR. Cukup **relates** lewat §5.8; detail di docs Instant Settlement. | N/A (salah klasifikasi) | — | **Closed — Bukan gap** (Yemima 2026-11-11): relates Instant Settlement saja |
-| GAP-AR-09 | SoT awal fokusat **Import** multi-sheet. Alur **manual** (create AR dari form, modal Available Sales Invoice / Select Invoice, bulk approve) sudah ada di app + TC arsip, tapi requirement tertulis belum lengkap sebagai satu paket (sebagian sudah: §5.9 Select Invoice / ETM-17102). | Missing Behavior (docs) | TC/manual tanpa acuan lengkap di requirement | **Open** — backlog tulis requirement alur manual (bukan bug produk) |
+| GAP-AR-09 | Alur **manual** (datalist, create/autosave, Basic Info, Detail / Available SI / Single Use, Receiving Destination, Adjustment, Approve/jurnal/Summary) belum tertulis lengkap — SoT awal fokusat Import. | Missing Behavior (docs) | TC/manual tanpa acuan | **Closed — AS-IS** (Yemima 2026-11-12): narasi QA masuk §4.4, §5.0, §5.9–5.9.1 (+ §5.10–5.12 / §6.4.1 / §6.5 sudah ada). Bulk approve datalist = aksi Approve per baris status Open; detail bulk-approve multi-select belum dipaket terpisah |
 | GAP-AR-SUMMARY-01 | Section Summary setelah Adjustment | Ada di UI (Show/Edit); aturan §6.5 | — | **Closed — AS-IS** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) Done |
 | GAP-AR-CN-COA | CN Payment Source COA = setting by asal CN | SR → Deposit of Sales Return; regular → Customer's Deposit / store | — | **Closed — AS-IS** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) Done |
 | GAP-AR-MEM-01 | Datalist pagination & memori | Maks 50; load/tooltip hemat | — | **Closed — AS-IS** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) Done |
@@ -494,6 +609,10 @@ flowchart TB
 **Apa section Summary?** Ringkasan read-only setelah Adjustment: Piutang, Cash/Bank, Credit Note, Adj Debit/Credit, Total — semua dalam currency header. Total ideal 0; jika ≠ 0 teks Total berwarna orange (info saja). Lihat §6.5.
 
 **Setelah Select Invoice, apa yang harus muncul di Receiving Destination?** Baris penerimaan dengan jumlah yang sama dengan tagihan yang baru masuk. Misalnya tagihan Rp105.000, Amount di Receiving Destination juga Rp105.000, tanpa memuat ulang halaman.
+
+**Create manual pakai autosave?** Ya, berdasarkan last data. Belum ada last data → isi field wajib dulu (tanggal harus dalam fiscal period aktif). AS-IS status hasil create = Draft; TO-BE Open (ETM-17325).
+
+**Hapus baris Detail SI — RD ikut hilang?** Tidak otomatis (AS-IS). Prepared SI dikembalikan; sesuaikan Receiving Destination manual jika perlu.
 
 ## Related Documents
 

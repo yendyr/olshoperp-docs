@@ -2,15 +2,15 @@
 doc_type: technical
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.13
-last_updated: 2026-11-11
+version: 2.14
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 ---
 
 # Account Receive — Technical
 
-**Behavior SoT:** [requirement.md](./requirement.md) v2.13  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.14  
 **Summary UI (AS-IS Done):** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) — `summary` endpoint + FE `Summary.vue`  
 **CN deposit COA (AS-IS Done):** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) — resolve setting by asal CN (`PaymentDetailFundController`, import `createFund`)  
 **Datalist memory / pagination (AS-IS Done):** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) — FE `pageLengths=[10,20,50]`; trim eager load + TRX. REF tooltip  
@@ -217,7 +217,7 @@ Detail line default desc: `Auto-Journal from Payment from Customer: {AR code}. C
 | GAP-AR-06 | **Closed — Locked AS-IS:** assert string ikut requirement §6 |
 | GAP-AR-07 | **Closed — Fixed:** cache `ar` + copy Account Receive (bukan AP) |
 | GAP-AR-08 | **Closed — Bukan gap:** raw §7 = Instant Settlement; AR hanya relates §5.8 |
-| GAP-AR-09 | **Open (docs):** alur manual / bulk approve belum satu paket requirement |
+| GAP-AR-09 | **Closed — AS-IS:** alur manual §4.4 / §5.0 / §5.9–5.9.1 (narasi QA 2026-11-11/12) |
 | GAP-AR-SUMMARY-01 | **Closed — AS-IS:** ETM-16644 Done |
 | GAP-AR-CN-COA | **Closed — AS-IS:** ETM-16764 Done (`PaymentDetailFundController` + import `createFund`) |
 | GAP-AR-MEM-01 | **Closed — AS-IS:** ETM-17198 Done (max 50) |

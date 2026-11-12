@@ -26,13 +26,14 @@ Menu **Account Receive** (Accounting).
 
 **Open CR:** [ETM-17298](https://erpintegration.atlassian.net/browse/ETM-17298) — jam import AR 23:59:00  
 **Open Improvement:** [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325) — autosave create default Open · [ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326) — audit log readable (Qudum, High)  
-**Layer version:** requirement **2.13** · user-guide **1.7** · **Last updated:** 2026-11-11 15:20
+**Layer version:** requirement **2.14** · user-guide **1.8** · **Last updated:** 2026-11-12 08:40
 **Related Jira:** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) · [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) · [ETM-16991](https://erpintegration.atlassian.net/browse/ETM-16991) · [ETM-17102](https://erpintegration.atlassian.net/browse/ETM-17102) · [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) · [ETM-17298](https://erpintegration.atlassian.net/browse/ETM-17298) · [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325) · [ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.14 | 2026-11-12 08:40 | Alur manual lengkap (datalist/create/detail/RD) dari narasi QA; GAP-AR-09 Closed |
 | 2.13 | 2026-11-11 15:20 | Approve validations §6.4.1; jurnal Approve §5.11; audit TO-BE §5.12 / ETM-17326; ETM-17325 autosave Open; Description Adjustment wajib ikut kode |
 | 2.12 | 2026-11-11 14:50 | §5.10 Adjustment form manual + contoh Debit/Credit; FE Single Use copywriting Receive |
 | 2.11 | 2026-11-11 10:25 | AS-IS sync: Summary ETM-16644, CN-COA ETM-16764, MEM ETM-17198 closed; GAP-AR-09 tetap Open (docs alur manual) |

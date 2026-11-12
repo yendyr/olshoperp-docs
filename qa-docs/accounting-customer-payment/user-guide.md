@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 1.7
-last_updated: 2026-11-11
+version: 1.8
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 source_docs:
   - requirement.md
   - knowledge-base.md
   - technical.md
-source_version: 2.13
+source_version: 2.14
 ---
 
 # Account Receive — User Guide
@@ -85,12 +85,22 @@ Pastikan hal-hal ini sudah siap:
 8. Perbaiki semua yang dilaporkan, lalu upload ulang.
 9. Setelah berhasil, dokumen muncul di daftar berstatus **Open**. Periksa lalu **Approve**.
 
+### Mencatat lewat Create manual
+
+1. Di daftar Account Receive, klik **Create**.
+2. Isi **Basic Information**: Customer (General atau Platform), tanggal (harus di periode pembukuan aktif), currency/rate, description opsional. Sistem bisa mengisi otomatis dari data terakhir Anda.
+3. Di **Detail**, pilih tagihan lewat **Select Invoice** atau **Available Sales Invoice** (Single Use untuk sebagian, atau centang banyak untuk outstanding penuh).
+4. Di **Receiving Destination**, pilih **Cash/Bank** dan/atau **Credit Note** customer yang sama & currency sama.
+5. Kalau uang masuk tidak persis sama dengan tagihan (mis. admin bank), isi **Adjustment**.
+6. Cek **Summary** di bawah. Ubah status ke **Open** jika masih Draft, lalu **Approve**.
+
 ### Memilih tagihan di dokumen yang sudah ada
 
 1. Buka Account Receive yang masih **Draft** atau **Open**.
-2. Di bagian detail, pilih tagihan lewat **Select Invoice**.
-3. Cek **Receiving Destination**. Harus ada baris dengan jumlah yang sama dengan tagihan itu. Misalnya tagihan 105.000, baris penerimaan juga 105.000.
+2. Di bagian detail, pilih tagihan lewat **Select Invoice** atau modal **Available Sales Invoice**.
+3. Cek **Receiving Destination**. Setelah Select Invoice, biasanya ada baris dengan jumlah yang sama dengan tagihan (mis. 105.000). Untuk Available SI partial, sesuaikan sumber dana manual.
 4. Anda tidak perlu memuat ulang halaman. Kalau barisnya belum muncul, tunggu sebentar lalu cek lagi.
+5. Hapus baris Detail mengembalikan sisa tagihan yang “dipakai”; baris Cash/Bank di Receiving Destination tidak ikut hilang otomatis — sesuaikan sendiri jika perlu.
 
 ### Mengisi penanda pengikat
 

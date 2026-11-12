@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.13
-last_updated: 2026-11-11
+version: 2.14
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 audience: operator
@@ -89,6 +89,16 @@ Pakai section **Adjustment** di halaman edit dokumen kalau uang di bank tidak sa
 **Contoh Debit — potongan admin bank.** Tagihan 1.000.000; uang masuk rekening 990.000. Di Detail isi bayar tagihan 1.000.000. Di Receiving Destination isi bank 990.000. Di Adjustment isi Debit 10.000 ke akun biaya admin bank. Tagihan customer lunas; 10.000 jadi biaya perusahaan.
 
 **Contoh Credit — transfer lebih, diakui pendapatan.** Tagihan 1.000.000; uang masuk 1.010.000 dan kelebihan 10.000 tidak mau jadi deposit. Detail 1.000.000; Receiving Destination 1.010.000; Adjustment Credit 10.000 ke akun pendapatan. Angka balance: 1.000.000 + 10.000 = 1.010.000.
+
+## Create manual (singkat)
+
+1. Dari daftar → **Create**. Autosave jalan jika sudah pernah ada last data; kalau belum, isi field wajib (Customer, tanggal dalam fiscal period aktif, dll.) sampai tersimpan.
+2. Status awal create saat ini **Draft** — ubah ke **Open** sebelum Approve (nanti bisa langsung Open).
+3. Isi **Detail** (Select Invoice / Available Sales Invoice / Single Use), **Receiving Destination** (Cash/Bank dan/atau Credit Note), **Adjustment** bila ada selisih admin bank / pendapatan.
+4. Cek **Summary** di bawah (Total ideal 0,00).
+5. Setelah **Open** → **Approve**.
+
+Daftar menampilkan Total Amount dari nilai Piutang Summary; kolom Journal hanya terisi setelah Approved. Data daftar = company login saja.
 
 ## Approve dokumen (manual)
 
