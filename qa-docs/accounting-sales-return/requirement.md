@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.9
+version: 3.0
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -24,6 +24,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.0 | 2026-11-12 | Koreksi jurnal retur Billed: jurnal retur hanya Return Inventory (D) / COGS (K); Credit Note adalah dokumen terpisah (otomatis Approved) dengan jurnal sendiri Sales COA (D) / Deposit of Sales Return (K), bukan "Credit Note (D) / AR (K)"; piutang turun saat CN dipakai di Account Receive, bukan saat Complete. Contoh nyata Billed: SO-5V1113IU / SR-5V116RYM / CN-5V11936P. Catatan: hapus SR Unbilled lama tidak mengembalikan prepared_to_amount_return di SI |
 | 2.9 | 2026-11-12 | GAP-SR-16 (SCM §7.4): contoh angka fiktif (25 pcs) diganti dua dokumen nyata Staging dengan jurnal tiap tahap: SO-4NBJN4UH (retur lama sudah Complete, Penjualan dan Piutang terbalik, benar) dan SO-5U1VSXC7 (retur lama masih Open; bila di-Complete sekarang Piutang Rp 11.853.408 tidak terbalik). Tambah catatan: belum ada contoh nyata 'retur dulu, SI kemudian' |
 | 2.8 | 2026-11-12 | GAP-SR-16: tambah contoh angka yang tidak ambigu (urutan retur dulu lalu SI = piutang 48.000; SI dulu lalu retur Unbilled lama = piutang tetap 50.000), pembanding Purchase Return end to end (Billed/Unbilled dipilih di header, qty dibagi per qty, Supplier Invoice dikurangi qty retur, approve tanpa cek status invoice), dan penjelasan Failed Ship vs retur pada qty SI. Gate di Complete dilacak di card ETM-17365 (Error, Highest, Alvin) |
 | 2.7 | 2026-11-12 | Koreksi GAP-SR-16 (SCM §7.4): jalur pembuat SI setelah retur ada (daftar baris SI, impor SI, auto-generate SI, impor Settlement) sudah mengurangi qty yang diretur, jadi skenario SI baru approve setelah retur Unbilled dibuat hanya mungkin lewat API langsung. Yang terbukti: Complete tidak punya gate status SI, sehingga retur Unbilled lama yang SI-nya sudah approve (18 di Staging) bisa di-Complete tanpa pembalik Sales/AR. Deskripsi header SR tidak bisa diedit lewat aplikasi (update hanya menerima transaction_date) |
@@ -100,7 +101,7 @@ Satu baris SKU 0/0/0 tetap boleh disimpan (retur parsial). Save detail hanya men
 
 **UNBILLED:** Return Inventory (D)/COGS (K) · Expense (D)/Inventory (K) if Lost. **Tanpa** Sales (D)/AR (K).
 
-**BILLED:** Credit Note (D)/AR (K) · Return Inventory (D)/COGS (K) · Expense if Lost
+**BILLED:** jurnal retur: Return Inventory (D)/COGS (K) · Expense (D)/Inventory (K) if Lost. **Credit Note** otomatis Approved sebagai dokumen terpisah dengan jurnal sendiri: Sales COA (D) / Deposit of Sales Return (K). Contoh nyata Staging: SR-5V116RYM (GL-EAMJ1K6TXIDS: Persediaan 200.000 (D) / HPP 200.000 (K)) dan CN-5V11936P (GL-EAMJ1KCSLEMY: Penjualan Produk 200.000 (D) / Retur Penjualan 200.000 (K)). Piutang (AR) turun saat CN dipakai di Account Receive, bukan saat Complete
 
 **Kenapa Unbilled tanpa Sales/AR:** belum ada Sales Invoice, jadi belum ada penjualan atau piutang yang tercatat dan perlu dibalik. Yang dibalik hanya sisi barang (outbound: HPP / Persediaan). Pola sama dengan Purchase Return: **Unbilled** = Unbilled Goods (D) / Persediaan (K) tanpa Hutang Usaha dan tanpa Debit Note; **Billed** = Hutang Usaha (D) / Persediaan (K) + Debit Note. Contoh Staging: jurnal retur Unbilled sampai 9 Nov 2026 (mis. GL-EAFDXUYFLQ4W, GL-EAFE411P5332, GL-EAKP0CS5RGEU) masih memuat Penjualan Produk (D) / Piutang Usaha (K); jurnal SR-5V10Z5K7 (GL-EAMIDFM6LEYK, 11 Nov 2026) hanya Return Inventory 2.000 (D) / HPP 2.000 (K).
 
@@ -129,7 +130,7 @@ Definisi wajib **konsisten dengan Purchase Return** (Billed = sudah ada invoice 
 | Type | Set when | Finance impact |
 |------|----------|----------------|
 | `unbilled` | SKU/baris **belum punya Sales Invoice (SI)** | Jurnal sisi barang saja: Return Inventory (D) / COGS (K). Tanpa Sales/AR dan tanpa Credit Note |
-| `billed` | SKU/baris **sudah punya SI** | Credit Note + AR adjustment (parity PR billed → Debit Note → jurnal) |
+| `billed` | SKU/baris **sudah punya SI** | Jurnal retur sisi barang + Credit Note otomatis (Sales COA (D) / Deposit of Sales Return (K)); AR turun saat CN dipakai di Account Receive (parity PR billed → Debit Note) |
 
 **Contoh:** satu SO punya dua SI — satu sudah dilunasi AR, satu belum ada AR. Keduanya punya SI → **keduanya Billed** (bukan dipecah karena status payment).
 
