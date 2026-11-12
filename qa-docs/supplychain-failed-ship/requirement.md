@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-failed-ship
 menu_name: "Failed Ship"
-version: 2.8
-last_updated: 2026-10-05
+version: 2.9
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 legacy_sources:
@@ -16,12 +16,15 @@ legacy_sources:
 **Audience:** PM, QA, Developer, Operations  
 **Status:** TO-BE (requirement bisnis) + AS-IS (verifikasi codebase 26 Juni 2026)
 
+**Related:** [ETM-16772](https://erpintegration.atlassian.net/browse/ETM-16772) (judul file export) · paritas [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) / [ETM-16771](https://erpintegration.atlassian.net/browse/ETM-16771)
+
 ---
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.9 | 2026-11-12 | QA - Yemima | **AS-IS** [ETM-16772](https://erpintegration.atlassian.net/browse/ETM-16772): Export With/Without Details wajib judul file (dialog **Export File Name**); Active Page Only tanpa dialog — paritas Sales Order / Sales Invoice |
 | 1.0 | 2026-06-19 | QA - Yemima | Draft awal dari analisis codebase |
 | 1.1 | 2026-06-23 | QA - Yemima | Sinkron partial dengan requirement bisnis |
 | 2.0 | 2026-06-26 | QA - Yemima | Konsolidasi requirement final + deep check codebase (stock flow, gap analysis, export, UI UX) |
@@ -542,9 +545,25 @@ Pola harga/alokasi: referensi `SalesOrderDetailController::extractBundleDetails`
 
 | Opsi export | Keterangan |
 |-------------|------------|
-| With Details | Per baris produk FS |
-| Without Details | Per header SO/FS |
-| Active Page Only | Halaman datalist aktif saja |
+| With Details | Per baris produk FS — **wajib** dialog **Export File Name** |
+| Without Details | Per header SO/FS — **wajib** dialog **Export File Name** |
+| Active Page Only | Halaman datalist aktif saja — **langsung**, tanpa dialog nama file |
+
+#### 5.6.1 Judul / nama file export (AS-IS · ETM-16772)
+
+**Export With Details** dan **Export Without Details** tidak langsung mengunduh. Sistem membuka dialog **Export File Name** (komponen `ExportFileTable`, `require-export-filename`, prefix saran **Failed Ship**).
+
+| Aturan | Detail |
+|--------|--------|
+| Field **File name** | Wajib. Maks. 150 karakter. Placeholder **Enter file name**. Terisi saran, contoh `Failed Ship - With Details Export 12-11-2026_08.40.00` (pola **Failed Ship** + **With Details Export** / **Without Details Export** + `dd-mm-yyyy_HH.MM.SS`) |
+| Nama kosong | Ditolak: **File name is required.** (dialog & backend). File tidak dibuat |
+| Pembersihan | Karakter `< > : " / \ | ? *` dan kontrol diganti `-`. Spasi berlebih jadi satu spasi. Titik/spasi di tepi dihapus. Hasil dipotong 150 karakter |
+| Unduhan | Nama bersih → `.xlsx` (satu bagian) atau `.zip` bila dipecah; bagian dalam zip: `nama {awal} - {akhir}.xlsx` |
+| Judul sama | Dua export berjudul sama disimpan **terpisah** per export; unduhan tiap baris riwayat tidak saling menimpa |
+| Riwayat export | Nama file tercantum di Export File; aksi mengikuti tipe With/Without Details |
+| **Active Page Only** | Tanpa dialog nama file |
+
+Paritas: [All Sales Order §5.9](../all-sales-order/requirement.md) · [Sales Invoice §6.7](../accounting-customer-invoice/requirement.md).
 
 **Kolom export With Details** (`FailedShipExport.php`):
 
@@ -552,7 +571,7 @@ SO Code, Platform Order, FS Code, FS Date, Order Date, Deadline Time, Store Name
 
 **Kolom export Without Details:** sama tanpa kolom produk (SKU, Name, Product Qty, Restock, Lost, Defect, Total FS, Unit).
 
-**Validasi export:** tidak ada validasi khusus; async batch job (`FailedShipExportJob` → `FailedShipExportExcelJob`). Progress timeout 30 menit → status reset.
+**Validasi export (selain nama file):** async batch job (`FailedShipExportJob` → `FailedShipExportExcelJob`). Progress timeout 30 menit → status reset.
 
 ### 5.5 Import Failed Ship — TO-BE
 

@@ -20,6 +20,7 @@ Menu **Failed Ship** (Supply Chain / OmniChannel / Accounting).
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.9 | 2026-11-12 08:45 | Export With/Without Details wajib judul file (Export File Name); Active Page Only tanpa dialog (ETM-16772) |
 | 2.0–2.3 | 2026-06-26 | Konsolidasi FS, eligibility, cross-menu stock flow |
 | 2.4 | 2026-07-15 | Relasi Sales Platform |
 | 2.5 / ug-1.0 | 2026-07-23 | User-guide v1.0; KB Mermaid |
