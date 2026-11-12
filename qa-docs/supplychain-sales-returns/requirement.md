@@ -2,7 +2,7 @@
 doc_type: requirement
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 2.8
+version: 2.9
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
@@ -32,6 +32,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.9 | 2026-11-12 | QA - Yemima | GAP-SR-16 (SCM §7.4): contoh angka fiktif (25 pcs) diganti dua dokumen nyata Staging dengan jurnal tiap tahap: SO-4NBJN4UH (retur lama sudah Complete, Penjualan dan Piutang terbalik, benar) dan SO-5U1VSXC7 (retur lama masih Open; bila di-Complete sekarang Piutang Rp 11.853.408 tidak terbalik). Tambah catatan: belum ada contoh nyata 'retur dulu, SI kemudian' |
 | 2.8 | 2026-11-12 | QA - Yemima | GAP-SR-16: tambah contoh angka yang tidak ambigu (urutan retur dulu lalu SI = piutang 48.000; SI dulu lalu retur Unbilled lama = piutang tetap 50.000), pembanding Purchase Return end to end (Billed/Unbilled dipilih di header, qty dibagi per qty, Supplier Invoice dikurangi qty retur, approve tanpa cek status invoice), dan penjelasan Failed Ship vs retur pada qty SI. Gate di Complete dilacak di card ETM-17365 (Error, Highest, Alvin) |
 | 2.7 | 2026-11-12 | QA - Yemima | Koreksi GAP-SR-16 (SCM §7.4): jalur pembuat SI setelah retur ada (daftar baris SI, impor SI, auto-generate SI, impor Settlement) sudah mengurangi qty yang diretur, jadi skenario SI baru approve setelah retur Unbilled dibuat hanya mungkin lewat API langsung. Yang terbukti: Complete tidak punya gate status SI, sehingga retur Unbilled lama yang SI-nya sudah approve (18 di Staging) bisa di-Complete tanpa pembalik Sales/AR. Deskripsi header SR tidak bisa diedit lewat aplikasi (update hanya menerima transaction_date) |
 | 2.6 | 2026-11-12 | QA - Yemima | GAP-SR-16 dilengkapi kronologi dan skenario (SCM §7.4): SI yang masih Open ditolak saat Create Return, sehingga tidak masuk Billed maupun Unbilled. Retur Unbilled tidak punya pembalik Sales/AR bila SI baru approved setelah retur dibuat, atau bila retur lama (definisi lama, dibuat sebelum 10 Nov 2026) masih Open. Staging 12 Nov 2026: 64 dari 66 retur Unbilled (97,0%) bertaut SI approved, 18 di antaranya masih Open. Dicatat sebagai gap docs; belum ada card Jira. ETM-17064 / ETM-17291 |
@@ -353,17 +354,31 @@ Setelah save qty → status tetap **open** → menunggu Finance. Tidak ada Compl
 - SI dibuat setelah retur: 0 dari 107. SI Open pada baris retur: 0 dari 107.
 - Reproduksi: ambil `omni_sales_returns` (+ `omni_sales_return_details.order_detail_id`) yang punya `stock_mutation_id`, lalu bandingkan dengan `omni_sales_order_details.processed_to_invoice_quantity` / `prepared_to_invoice_quantity` / `sales_order_quantity_in_base_unit` dan `accounting_customer_invoice_detail_items.created_at`.
 
-**Contoh angka (ilustrasi)**
+**Contoh nyata dari Staging (12 Nov 2026, baca saja)**
 
-SO 25 pcs, harga Rp 2.000 per pcs (total Rp 50.000), HPP Rp 1.200 per pcs. Yang diretur: 1 pcs.
+Kasus 1 — retur lama yang sudah Complete (hasil benar). SO-4NBJN4UH (General, company 13): 1 pcs × Rp 50.000, HPP Rp 1.200.
 
-| Urutan kejadian | Jurnal | Piutang akhir | Benar? |
-|-----------------|--------|---------------|--------|
-| A. Retur Unbilled 1 pcs dulu, SI kemudian | Retur: Persediaan 1.200 (D) / HPP 1.200 (K). SI hanya untuk sisa 24 pcs: Piutang 48.000 (D) / Penjualan 48.000 (K) | 48.000 | Ya. Ini jalur normal sekarang dan sama dengan Purchase Return |
-| B. SI 25 pcs dulu, lalu retur Unbilled lama 1 pcs di-Complete (S6) | SI: Piutang 50.000 (D) / Penjualan 50.000 (K). Retur: Persediaan 1.200 (D) / HPP 1.200 (K), tanpa Credit Note | 50.000 | Tidak. Seharusnya 48.000; selisih 2.000 (nilai jual 1 pcs yang kembali) menggantung sebagai piutang yang tidak akan dibayar |
-| C. SI 25 pcs dulu, lalu retur Billed 1 pcs | SI: Piutang 50.000 / Penjualan 50.000. Retur: Persediaan 1.200 / HPP 1.200 dan Credit Note 2.000 (D) / AR (K) | 48.000 | Ya |
+| Tanggal | Dokumen | Jurnal |
+|---------|---------|--------|
+| 17 Apr 2026 | Outbound OT-69E190D8 (Approved) | HPP 1.200 (D) / Persediaan Barang 1.200 (K) |
+| 17 Apr 2026 | SI-5SWTXY9V (Approved, pembayaran 0) | Piutang 50.000 (D) / Penjualan Produk 50.000 (K) |
+| 3 Nov 2026 | SR-5UY3W0NY (Unbilled aturan lama, 1 pcs) di-Complete, GL-EAFE411P5332 | Penjualan Produk 50.000 (D) / Piutang 50.000 (K), dan Persediaan Barang Tidak Dijual 1.200 (D) / HPP 1.200 (K) |
+| Hasil | | Penjualan 0, Piutang 0, HPP 0, persediaan kembali 1.200. Benar. Catatan: akun piutang di jurnal SI (1-11007, per store) berbeda dengan akun piutang di jurnal retur (1-11001); totalnya nol tetapi tidak per akun |
 
-SI hanya mengambil sisa pada urutan A karena qty SI = qty SO − Failed Ship − retur − yang sudah di-invoice (`SalesOrderDetail::invoicableQuantityInBaseUnit`). Selisih pada urutan B hanya terjadi bila retur Unbilled dibuat setelah SI approve, yaitu data lama (S6).
+Kasus 2 — retur lama yang masih Open (GAP-SR-16). SO-5U1VSXC7 (General, company 13): 42 pcs × Rp 282.224 = Rp 11.853.408, HPP Rp 15.000 per pcs.
+
+| Tanggal | Dokumen | Jurnal |
+|---------|---------|--------|
+| 7 Agu 2026 | Outbound OT-5U1VSXDN (Approved) | HPP 630.000 (D) / Persediaan Barang 630.000 (K), GL-5U1VSXBW |
+| 7 Agu 2026 | SI-5U1VSXCH (Approved, pembayaran 0) | Piutang 11.853.408 (D) / Penjualan Produk 11.853.408 (K), GL-5U1VSXCV |
+| 28 Agu 2026 | SR-5U9O0HSD dibuat, 42 pcs, Unbilled aturan lama, status Open | Belum ada jurnal |
+| Bila di-Complete sekarang (hitungan dari kode, belum dijalankan) | SR-5U9O0HSD | Hanya Persediaan Barang Tidak Dijual 630.000 (D) / HPP 630.000 (K). Penjualan dan Piutang tidak disentuh, tanpa Credit Note |
+| Hasil | | Piutang 11.853.408 dan Penjualan 11.853.408 tetap ada padahal 42 pcs sudah kembali; seharusnya 0. SI tidak dibayar, jadi piutang menggantung |
+| Penanganan dengan aturan sekarang (usulan, belum diputuskan) | | SR dihapus lalu dibuat ulang. SO sudah ber-SI, jadi menjadi Billed → Credit Note 11.853.408 → piutang 0. Gate di Complete (ETM-17365) mencegah klik Complete pada SR lama |
+
+Kasus 3 — retur baru tanpa SI (aturan sekarang). SO-5V10XMW1 (General): 1 pcs × Rp 50.000, belum ada SI. SR-5V10Z5K7 di-Complete 11 Nov 2026 (GL-EAMIDFM6LEYK): Persediaan Barang Tidak Dijual 2.000 (D) / HPP 2.000 (K). Sisa qty yang boleh di-SI = 1 − 1 retur − 0 SI = 0, jadi tidak ada SI yang menagih barang yang sudah kembali.
+
+Catatan data: dari 135 baris SO yang punya retur berdokumen, 113 (83,7%) diretur penuh dan 22 (16,3%) sebagian. Belum ada contoh nyata urutan "retur Unbilled dulu, SI kemudian untuk sisa qty" di Staging (SI dibuat setelah retur: 0 dari 107). Urutan itu dijamin oleh rumus qty SI (qty SO − Failed Ship − retur − yang sudah di-invoice, `SalesOrderDetail::invoicableQuantityInBaseUnit`), bukan oleh data.
 
 **Pembanding Purchase Return (alur sudah settle)**
 

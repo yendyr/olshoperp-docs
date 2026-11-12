@@ -2,7 +2,7 @@
 doc_type: technical
 menu: accounting-sales-return
 menu_name: "Sales Return"
-version: 2.8
+version: 2.9
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
