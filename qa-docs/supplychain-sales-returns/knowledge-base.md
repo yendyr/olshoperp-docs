@@ -2,7 +2,7 @@
 doc_type: knowledge-base
 menu: supplychain-sales-returns
 menu_name: "Sales Return"
-version: 3.1
+version: 3.2
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
