@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.10
-last_updated: 2026-11-09
+version: 2.11
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant, Status Restock, Unable to delete Product already has existing relations, Update Variant Product]
@@ -21,6 +21,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 **PM sources:** User requirement (chat) · D&W artifact v1.0 (7 Mei 2026)
 
+> **Changelog 2.11 (2026-11-12 14:10 WIB):** §6.3.2 gate leftover — **tambah saja**; hapus tipe = flow delete (bukan regenerate); ganti in-place = tolak + Add-only; larangan `-DUPLICATE` ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304), [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)).  
 > **Changelog 2.10 (2026-11-09 10:52 WIB):** Tutup GAP-SP-02/05/07 (by design / soft rule); GAP-SP-08 clarify parent variant `-` vs **Bundle tetap angka** + card [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231); foto UI teks = recommendation only.  
 > **Changelog 2.9 (2026-11-09 10:30 WIB):** §6.3.2 + GAP-SP-18 residual — UI expand leftover diblok `Unable to delete…` ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)); **Import Update Variant Product tidak** dikembangkan leftover (tetap boleh tolak tipe beda + child berelasi).  
 > **Changelog 2.8 (2026-11-09):** §13.0 AS-IS [ETM-17180](https://erpintegration.atlassian.net/browse/ETM-17180) — tombol **Import** terkunci per company selama import lain masih jalan (disabled + spinner + label).  
@@ -34,6 +35,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.11 | 2026-11-12 14:10 WIB | QA - Yemima | Gate leftover **add-only**; hapus tipe = delete flow (no regenerate / no `-DUPLICATE`); ganti in-place tolak + Add-only — [ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304) / [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377) |
 | 2.10 | 2026-11-09 10:52 WIB | QA - Yemima | Close SP-02/05/07; SP-08 parent variant vs Bundle + [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231); foto recommendation-only copy |
 | 2.9 | 2026-11-09 10:30 WIB | QA - Yemima | Leftover residual UI [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); import Update Variant **out of scope** leftover; GAP-SP-18 → Partial Open |
 | 2.8 | 2026-11-09 | QA - Yemima | §13.0 kunci import bersamaan per company (ETM-17180); AC #15 |
@@ -351,7 +353,8 @@ Relasi pengunci soft delete (minimal): PR, PO, inbound, outbound, transfer, SO, 
 **Leftover:** tetap Active child di bawah parent yang sama; user boleh Inactive jika memenuhi rule inactive existing; rename manual OK; stok remap manual (Stock Remapping).
 
 **Naming Default-origin:** SKU baru **omit** segment opsi Default  
-→ `SKUPENSIL-biru-pikacu` bukan `SKUPENSIL-{defaultOpt}-biru-pikacu`.
+→ `SKUPENSIL-biru-pikacu` bukan `SKUPENSIL-{defaultOpt}-biru-pikacu`.  
+Parent = `{SKU}-(PARENT)`; child Default awal = kode user (`SKUPENSIL`), **bukan** `SKUPENSIL-standar`.
 
 **Contoh leftover (Default → Warna+Motif, child berelasi):**
 
@@ -362,6 +365,16 @@ SKUPENSIL-hijau-doraemon  ← new
 SKUPENSIL-biru-pikacu     ← new
 SKUPENSIL-hijau-pikacu    ← new
 ```
+
+### 6.3.2a Gate leftover vs delete / ganti in-place — **TO-BE** (keputusan QA Lead 12 Nov 2026 · urgent)
+
+| Aksi user | Jalur | Perilaku |
+|-----------|-------|----------|
+| **+ Add New Variant** / tambah opsi (expand) | **Leftover** | Popup → keep child berelasi → generate kombinasi baru (omit Default); no auto-rename / no auto stock remap |
+| **Hapus** baris tipe / opsi | **Delete varian** (bukan leftover) | Soft-delete **hanya** child yang kombinasi opsinya memakai tipe/opsi yang dihapus, dan hanya jika **zero relation**. Ada relasi → `Unable to delete…` (pesan jelas), data tidak berubah diam-diam. **Jangan** regenerate seluruh kombinasi / recreate child Default leftover → **dilarang** SKU `-DUPLICATE` ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304)) |
+| **Ganti tipe in-place** (dropdown baris tersimpan; opsi ter-clear) | **Tolak** | Bukan leftover. Pesan: tidak bisa hapus/ganti tipe yang child berelasi; untuk menambah tipe pakai **+ Add New Variant** ([ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)) |
+
+**AS-IS bug (hapus tipe):** set tipe berubah masih memicu `isChangingGroup` → jalur leftover/regenerate → `generateUniqueSku` karena leftover Default sudah ada → `-DUPLICATE`.
 
 **Residual UI (Open — [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215), bukti Merdian/WNA `KACALOS-(PARENT)` 2026-11):**  
 Saat **Save All** menambah variant type/group baru sedangkan child lama sudah berelasi, sistem sering menampilkan `Unable to delete, Product already has existing relations.`, **popup leftover tidak muncul**, perubahan **tidak tersimpan**. Guard “jangan hapus opsi berelasi” berjalan **sebelum** precheck leftover — expand tertahan. **Expected fix (UI only):** expand + child berelasi → popup leftover → simpan sukses (bukan error delete).
@@ -832,7 +845,7 @@ PO/PR Without PR: System Product **active**, Single/Variant child, punya COA gro
 | **GAP-SP-06** | Variant max 3 types | Enforced end-to-end | FE batasi add; **BE tidak** validasi max 3 — [ETM-17226](https://erpintegration.atlassian.net/browse/ETM-17226) | **Partial — Open** |
 | **GAP-SP-08** | Parent variant stock datalist | **Parent variant** (`-(PARENT)`): kolom stok `-`. **Bundle:** tetap **angka** (carry komponen). Single/child: angka | BE numerik juga untuk PARENT; tooltip vs angka mismatch — [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231) | **Open** |
 | **GAP-SP-09** | All D&W table + summary | Artifact AC3–AC4 di main form | Hanya modal Edit Unit per primary/alternate | **Partial — Open** (ditunda) |
-| **GAP-SP-18** | Expand leftover (UI) | Expand + child berelasi → confirm leftover → simpan (ETM-15495) | Path leftover ada, tetapi Save All tambah type/group sering error `Unable to delete…` — [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) | **Partial — Open residual** |
+| **GAP-SP-18** | Expand leftover (UI) + gate add-only | Expand + child berelasi → confirm leftover → simpan (ETM-15495). Gate §6.3.2a: leftover **tambah saja**; hapus tipe = delete flow; ganti in-place tolak | Path leftover residual `Unable to delete…` ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)); hapus tipe → `-DUPLICATE` ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304)); in-place → Add-only ([ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)) | **Partial — Open residual** |
 
 ### 19.2 Tabel — Closed / OK (audit 2026-11-09)
 
@@ -896,7 +909,7 @@ Artifact (7 Mei 2026) mensyaratkan tiga section: Unit Configuration ✅, **D&W D
 | **P-SP-03** | 🔴 **Major** | **PM + Dev** | Deploy All D&W + summary cards? (GAP-SP-09) | Modal-only | Prioritas implement vs accept modal-only |
 | **P-SP-06** | 🔴 **Highest** | **Dev + QA** | Parent **variant** stok `-` (GAP-SP-08 / [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231)); **Bundle tetap angka** | PARENT masih numerik | Fix display parent variant only |
 | **P-SP-08** | 🟡 High | **Dev** | Video mkv+mp4+mov ([ETM-17227](https://erpintegration.atlassian.net/browse/ETM-17227) / GAP-SP-04) | FE vs BE mismatch | Terima mkv+mp4+mov |
-| **P-SP-10** | 🔴 **Highest** | **Dev + QA** | UI leftover expand residual (GAP-SP-18 / [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) | Save All tambah type + child berelasi → `Unable to delete…` | Fix UI leftover; jangan leftover di Import Update Variant |
+| **P-SP-10** | 🔴 **Highest** | **Dev + QA** | UI leftover expand + gate add-only (GAP-SP-18 / [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) / [ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304)) | Save All tambah type → `Unable to delete…`; hapus tipe → `-DUPLICATE`; ganti in-place harus tolak | Fix leftover **add-only**; hapus tipe = delete flow; reject in-place + Add-only; jangan leftover di Import Update Variant |
 
 **Closed pending (2026-11-09 10:52):** P-SP-04 (SP-02 by design) · P-SP-09 (SP-05/07 soft / unbounded)
 
@@ -910,7 +923,7 @@ Artifact (7 Mei 2026) mensyaratkan tiga section: Unit Configuration ✅, **D&W D
 - **GAP-SP-03** — Bundle qty ≥2 ✓  
 - **GAP-SP-10** — BoM menu terpisah ✓  
 - **GAP-SP-17** — Default Variant create/import ✓  
-- **GAP-SP-18** — leftover path **di-ship**, residual UI **Open** (ETM-17215); Import Update Variant **tanpa** leftover = **by design** (2026-11-09)  
+- **GAP-SP-18** — leftover path **di-ship**, residual UI **Open** (ETM-17215); gate §6.3.2a **add-only** (ETM-17304 / ETM-17377); Import Update Variant **tanpa** leftover = **by design** (2026-11-09)  
 - **D&W moved from Shipping** ✓  
 - **Status Restock** (ETM-17082) ✓  
 - **DnW default → Pricelist** (ETM-16668) ✓  

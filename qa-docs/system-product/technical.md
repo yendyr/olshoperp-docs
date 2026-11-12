@@ -2,8 +2,8 @@
 doc_type: technical
 menu: system-product
 menu_name: "System Product"
-version: 2.10
-last_updated: 2026-11-09
+version: 2.11
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,6 +13,7 @@ related_docs:
 
 # System Product — Technical Documentation
 
+> **2.11 (2026-11-12 14:10 WIB):** Gate leftover **add-only** (§6.3.2a) — hapus tipe → delete-variant path (bukan `isChangingGroup` regenerate); ganti in-place tolak; larangan `-DUPLICATE` ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304), [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)).  
 > **2.10 (2026-11-09 10:52 WIB):** GAP-SP-02/05/07 Closed; GAP-SP-08 parent variant `-` vs Bundle numeric ([ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231)); photo UI recommendation-only.  
 > **2.9 (2026-11-09 10:30 WIB):** GAP-SP-18 residual UI leftover [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); Import Update Variant **out of scope** leftover. Lihat [requirement §6.3.2](./requirement.md) / §19.
 > **2.8 (2026-11-09):** AS-IS [ETM-17180](https://erpintegration.atlassian.net/browse/ETM-17180) — kunci import bersamaan per company. Lihat §11.3 / [requirement §13.0](./requirement.md).
@@ -279,10 +280,12 @@ Suggested classes: `ImportProductImagesImport` + `ImportProductImagesJob` (or eq
 | Import New (auto-default) | `ProductImport` — Single-eligible rows apply same; skip explicit variant / parent-used SKUs |
 | Expand intended | Hard-block `Cannot add variant, Product already have relations` **commented out**. FE `check_leftover=1` → BE `has_leftover` → leftover popup. Soft-delete only zero-relation children (`ProductVariantController::deleteVariant`) |
 | Expand residual (**Open**) | `ProductSpecificationController` — guard `Unable to delete, Product already has existing relations.` (option_ids related vs `$request->option`) runs **before** `check_leftover`. FE `saveAll` empty `catch` on precheck. Expand + related child can abort without leftover popup — [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) |
+| **TO-BE gate §6.3.2a** | Leftover **hanya** untuk **add** type/option. **Remove** type/option → path `deleteVariant` (scoped soft-delete zero-relation children of removed combo) — **jangan** `isChangingGroup` regenerate. **In-place replace** type on saved row → reject + Add-only message. **Dilarang** `generateUniqueSku` → `-DUPLICATE` saat hapus tipe ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304), [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)) |
+| AS-IS bug remove | Removing a type still flips `isChangingGroup` → leftover/regenerate path → `generateUniqueSku` because Default leftover SKU already exists → `-DUPLICATE` |
 | Import Update Variant | `UpdateVariantProductImport` — if children `haveRelations` and variant types **don't match** → reject row (`Existing: … New: …`). **Out of scope** leftover (keputusan 2026-11-09); do not implement leftover in this import on ETM-17215 |
 | Soft delete gate | `haveRelations()` / `ProductVariantController::checkRelations` — relation-only (not stock-only) |
-| Naming | Omit default option segment when building child SKU from Default-origin products |
-| FE | `FormProductComponent.vue` — confirm OFF→Single; confirm expand leftover; `allOptions` / FormData `option[]` must retain related Default options when adding a new group |
+| Naming | Omit default option segment when building child SKU from Default-origin products. Parent=`{SKU}-(PARENT)`; first Default child=`{SKU}` (user code), not `{SKU}-standar` |
+| FE | `FormProductComponent.vue` — confirm OFF→Single; confirm expand leftover; `allOptions` / FormData `option[]` must retain related Default options when adding a new group. `VariantForm` clears options on `variant_id` change (in-place) — treat as reject path, not leftover |
 
 
 ### 11.3 Kunci import bersamaan per company (AS-IS · ETM-17180)

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.10
-last_updated: 2026-11-09
+version: 2.11
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 audience: operator
@@ -13,6 +13,7 @@ sections:
 
 # System Product — Knowledge Base
 
+> **2.11:** Gate leftover = **tambah tipe/opsi saja**. Hapus tipe = flow hapus varian (bukan regenerate). Ganti tipe in-place ditolak — pakai **+ Add New Variant**. Dilarang SKU `-DUPLICATE` ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304), [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)).  
 > **2.10:** Brand opsional (tanpa default Shopee). Ukuran foto 300×300 = **rekomendasi saja**. Parent variant di datalist seharusnya stok `-` (sedang diperbaiki); **Bundle tetap angka**.  
 > **2.9:** Leftover expand di **edit UI** masih residual ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) — tambah tipe varian + child sudah dipakai transaksi bisa error *Unable to delete…*. Import Update Variant tidak leftover.  
 > **2.8:** Tombol **Import** terkunci selama import lain di company yang sama masih berjalan — ETM-17180.  
@@ -202,7 +203,7 @@ Hanya dari menu **System Product** full:
 | Product Bundle | Import resep bundle |
 | Insert Random | Tambah opsi random ke variant |
 | Alternative Unit | Bulk satuan alternatif |
-| Update Variant | Bulk update opsi/varian **tipe yang sama**. **Tidak** untuk menambah tipe/group baru bila child sudah dipakai transaksi (akan ditolak) — pakai edit di layar (leftover) setelah perbaikan ETM-17215 |
+| Update Variant | Bulk update opsi/varian **tipe yang sama**. **Tidak** untuk menambah tipe/group baru bila child sudah dipakai transaksi (akan ditolak) — pakai **+ Add New Variant** di edit produk (leftover) setelah perbaikan ETM-17215. Jangan hapus/ganti tipe in-place untuk expand |
 | Bulk Update VAT | Update pajak massal |
 | **Import Product Images** | Bulk set/ganti **gambar default** dari link Google Drive publik |
 
@@ -277,7 +278,9 @@ Fitur **terpisah** dari Import Product Images dan upload manual. Dipakai saat co
 | Sync Product Images — SKU tidak berubah | SKU tidak ada di response API sumber | Cek SKU active + cocok di sistem sumber |
 | Tombol Import terkunci / spinner status | Import lain di company yang sama masih jalan (ETM-17180) | Tunggu selesai; jangan force refresh untuk membuka tombol sebelum selesai |
 | Save All setelah tambah tipe varian baru → *Unable to delete, Product already has existing relations.* | Child lama sudah dipakai transaksi; konfirmasi kelebihan belum muncul (sedang diperbaiki) | Jangan hapus PO/child. Catat parent SKU + screenshot. Tunggu perbaikan ETM-17215; jangan pakai Import Update Variant untuk kasus ini |
-| Import Update Variant ditolak *variant types don't match* | Menambah tipe berbeda sementara child sudah berelasi | **Expected** untuk import. Tambah tipe lewat **edit produk** (bukan import) setelah leftover UI diperbaiki |
+| Hapus tipe varian → muncul SKU `-DUPLICATE` / child Default ikut berubah | Hapus tipe masih masuk jalur leftover/regenerate (bug) | **Expected TO-BE:** hapus tipe = flow hapus varian saja — child berelasi tetap, tanpa SKU baru `-DUPLICATE` ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304)). Laporkan parent SKU |
+| Ganti tipe di dropdown baris tersimpan → opsi hilang / tidak bisa simpan | Ganti in-place **bukan** leftover | Pakai **+ Add New Variant** untuk menambah tipe. Pesan Add-only ([ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)) |
+| Import Update Variant ditolak *variant types don't match* | Menambah tipe berbeda sementara child sudah berelasi | **Expected** untuk import. Tambah tipe lewat **+ Add New Variant** di edit produk (bukan import) setelah leftover UI diperbaiki |
 
 ---
 
