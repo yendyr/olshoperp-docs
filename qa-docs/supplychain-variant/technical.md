@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-variant
 menu_name: "Master Variant"
-version: 1.2
-last_updated: 2026-08-12
+version: 1.3
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 related_docs:
@@ -13,7 +13,7 @@ related_docs:
 
 # Master Variant — Technical Documentation
 
-**Behavior:** [requirement.md](./requirement.md) v1.0  
+**Behavior:** [requirement.md](./requirement.md) v1.3  
 **UI:** `/supplychain/variant`  
 **API:** `supplychain/variant`  
 **Stack:** Laravel 13 · Vue 3
@@ -24,9 +24,10 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0 | 2026-08-12 | AS-IS file map + TO-BE `is_default` / GAP-VAR-01 notes |
-| 1.1 | 2026-08-12 | Cross-ref SP consumers GAP-SP-17/18; parent suffix `-(PARENT)` |
+| 1.3 | 2026-11-12 | Cross-ref SP konsumen gate leftover add-only ([system-product §6.3.2a](../system-product/requirement.md)) |
 | 1.2 | 2026-08-12 | Create+Default ON → skip inject `random`; reject Default save if options > 1 |
+| 1.1 | 2026-08-12 | Cross-ref SP consumers GAP-SP-17/18; parent suffix `-(PARENT)` |
+| 1.0 | 2026-08-12 | AS-IS file map + TO-BE `is_default` / GAP-VAR-01 notes |
 
 ---
 

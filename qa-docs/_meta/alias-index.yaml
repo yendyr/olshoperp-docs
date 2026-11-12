@@ -458,6 +458,9 @@ aliases:
   lazada settlement mapping: accounting-settlement-mapping
   ledger account: accounting-chart-of-account
   leftover variant: system-product
+  add new variant: system-product
+  delete variant type: system-product
+  -duplicate: system-product
   legacy profit loss: accounting-profit-loss-v1
   lihat semua order: all-sales-order
   location: supplychain-location

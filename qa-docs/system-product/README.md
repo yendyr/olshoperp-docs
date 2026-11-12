@@ -12,7 +12,7 @@ Menu **System Product** (SCM) — master data SKU, variant, bundle, D&W per unit
 | Capability cards | [capabilities/](./capabilities/) | Semua | draft |
 
 **Help Center:** [`_meta/docs-hub/menus/system-product/`](../_meta/docs-hub/menus/system-product/)  
-**3 layer:** v2.11 · **Technical:** v2.11 · **User Guide:** v1.8 (`source_version` 2.11) · **Feature Map:** v1.1  
+**3 layer:** v2.11 · **Technical:** v2.11 · **User Guide:** v1.8 (`source_version` 2.11) · **Feature Map:** v1.2  
 **Related Jira:** [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377) · [ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304) · [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231) · [ETM-17227](https://erpintegration.atlassian.net/browse/ETM-17227) · [ETM-17226](https://erpintegration.atlassian.net/browse/ETM-17226) · [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) · [ETM-17180](https://erpintegration.atlassian.net/browse/ETM-17180) · [ETM-17082](https://erpintegration.atlassian.net/browse/ETM-17082) · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) · [ETM-15512](https://erpintegration.atlassian.net/browse/ETM-15512) · [ETM-15495](https://erpintegration.atlassian.net/browse/ETM-15495) · [ETM-15529](https://erpintegration.atlassian.net/browse/ETM-15529)  
 **Maintenance owner:** QA — Yemima
 

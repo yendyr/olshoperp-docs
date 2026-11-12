@@ -8,8 +8,8 @@ scope: menu
 summary: >-
   Import/Export Excel hanya di System Product full. New/Update/Bundle/Random/Alt Unit/VAT
   (max 5000). TO-BE: Import Product Images dari Google Drive publik (max 1000, replace primary).
-version: 1.1
-last_updated: 2026-10-26
+version: 1.2
+last_updated: 2026-11-12
 status: review
 ---
 
@@ -45,6 +45,7 @@ Alat bulk untuk membuat/mengubah SKU lewat file Excel, termasuk (TO-BE) set gamb
 - Tipe import biasa: maks **5000** baris. **Import Product Images**: maks **1000** baris.
 - SKU pada import di-scope ke company (Data Owner).
 - Import Bundle memakai endpoint Bill of Material header.
+- **Update Variant:** hanya update opsi/tipe yang **sama**. Menambah tipe baru saat child berelasi → **ditolak** (bukan leftover). Tambah tipe lewat **+ Add New Variant** di edit produk ([requirement §6.3.2a](../requirement.md)).
 - **Export** tersedia untuk download data (with/without detail — lihat shared card).
 - Drive belum publik → error English yang menjelaskan harus set sharing Viewer.
 

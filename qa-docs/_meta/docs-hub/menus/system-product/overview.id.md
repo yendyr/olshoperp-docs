@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: system-product
 menu_name: System Product
 lang: id
-version: 1.1
-last_updated: 2026-10-22
+version: 1.2
+last_updated: 2026-11-12
 status: review
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing. Terpisah dari layer QA. Disusun agent dari QA docs (belum ada file Help Center dari user). ETM-16668 weight→Pricelist.
+notes: Help Center landing. Terpisah dari layer QA. Disusun agent dari QA docs. ETM-16668 weight→Pricelist; leftover gate add-only ETM-17304.
 ---
 
 ## Modul/Fitur: System Product
@@ -64,6 +64,7 @@ flowchart LR
 ## Hal yang sering bikin bingung
 
 * Parent variant tidak transactable — pilih child SKU.
+* Mau menambah tipe varian pada produk yang sudah dipakai transaksi → pakai **+ Add New Variant** (bukan ganti/hapus tipe di baris lama).
 * Activate bundle butuh ≥2 item atau 1 item dengan qty ≥2.
 * Section Accounting & Tax disembunyikan saat toggle bundle ON.
 * Inactive butuh Availability dan ATS = 0 di semua gudang.

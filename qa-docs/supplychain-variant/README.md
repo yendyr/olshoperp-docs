@@ -10,13 +10,14 @@ Menu **Master Variant** / **Variant Group** — master tipe variasi (Color, Size
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | pending (placeholder) |
 
 **UI:** `/supplychain/variant` · breadcrumb **Variant Group** · title **Master Variant Type**  
-**3 layer:** v1.2 · **Last updated:** 2026-08-12  
+**3 layer:** v1.3 · **Last updated:** 2026-11-12  
 **Maintenance owner:** QA — Yemima
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3 | 2026-11-12 | Konsumen SP: leftover **add-only**; hapus tipe = delete flow; cross-ref SP v2.11 / ETM-17304 |
 | 1.2 | 2026-08-12 | Create+Default ON+1 opsi → skip inject `random`; save reject Default jika opsi > 1 |
 | 1.1 | 2026-08-12 | Lock SP konsumen cross-ref (`-(PARENT)`, soft-delete vs leftover, no auto-rename) |
 | 1.0 | 2026-08-12 | Initial AS-IS dari codebase + TO-BE **Set as Default System Product** (`GAP-VAR-01`); test-cases existing tetap di `test-cases/` |
@@ -38,7 +39,7 @@ Menu **Master Variant** / **Variant Group** — master tipe variasi (Color, Size
   3. Create + Default **OFF** → inject `random` AS-IS
   4. Save Default ON + opsi **> 1** → **reject + notif** (create & edit)
   5. Max **1** Default ON / company; semua OFF boleh
-- Konsumen SP: [system-product §6.3.1–§6.3.2](../system-product/) · GAP-SP-17/18
+- Konsumen SP: [system-product §6.3.1–§6.3.2a](../system-product/) · GAP-SP-17/18 · leftover **add-only**
 
 ## Related menus
 

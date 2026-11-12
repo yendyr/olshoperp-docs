@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-variant
 menu_name: "Master Variant"
-version: 1.2
-last_updated: 2026-08-12
+version: 1.3
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 audience: operator
@@ -92,7 +92,7 @@ Toggle mirip **Item Category** / **Unit**: **Set as Default System Product**.
 | `random` + `Red` | Tidak (count = 2) |
 | `Red` + `Blue` | Tidak |
 
-**Efek ke System Product (TO-BE):** create/import kandidat Single → parent `SKU-(PARENT)` + child = kode user. Expand group: soft delete vs leftover — detail [System Product KB](../system-product/knowledge-base.md).
+**Efek ke System Product:** create/import kandidat Single → parent `SKU-(PARENT)` + child = kode user. Di edit produk: **tambah** tipe → leftover; **hapus** tipe → flow hapus varian (bukan regenerate / `-DUPLICATE`); **ganti** in-place ditolak — detail [System Product KB](../system-product/knowledge-base.md) / SP §6.3.2a.
 
 ---
 

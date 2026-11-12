@@ -2,11 +2,11 @@
 doc_type: feature-map
 menu: system-product
 menu_name: "System Product"
-version: 1.1
-last_updated: 2026-10-22
+version: 1.2
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
-aliases: [system product feature map, SKU master features, product bundle variant map]
+aliases: [system product feature map, SKU master features, product bundle variant map, leftover add-only]
 ---
 
 # System Product — Feature Map
@@ -22,7 +22,7 @@ Indeks sub-feature master data SKU. **Klik Label UI** untuk membuka penjelasan L
 | SF-DL-06 | [Show deleted / archived](#sf-lingo:SF-DL-06) | shared | AS-IS | stub | shared · show-deleted | Ya | slice |
 | SF-SP-01 | [Product Type & transactability](#sf-lingo:SF-SP-01) | menu | AS-IS | detailed | capabilities · sf-sp-01 | Ya | overview |
 | SF-SP-02 | [Unit Configuration & D&W per unit](#sf-lingo:SF-SP-02) | menu | AS-IS + TO-BE weight→Pricelist | detailed | capabilities · sf-sp-02 · ETM-16668 | Ya | overview |
-| SF-SP-03 | [Variant Configuration](#sf-lingo:SF-SP-03) | menu | AS-IS | detailed | capabilities · sf-sp-03 | Ya | overview |
+| SF-SP-03 | [Variant Configuration](#sf-lingo:SF-SP-03) | menu | AS-IS + TO-BE leftover gate | detailed | capabilities · sf-sp-03 · ETM-17304/17377 | Ya | overview |
 | SF-SP-04 | [Bundle Configuration & tax hide](#sf-lingo:SF-SP-04) | menu | AS-IS | detailed | capabilities · sf-sp-04 | Ya | overview |
 | SF-SP-05 | [Availability / On Hand / ATS](#sf-lingo:SF-SP-05) | menu | AS-IS | detailed | capabilities · sf-sp-05 | Ya | overview |
 | SF-SP-06 | [Import / Export](#sf-lingo:SF-SP-06) | menu | AS-IS + TO-BE images | detailed | capabilities · sf-sp-06 | Ya | overview |
@@ -36,4 +36,5 @@ Indeks sub-feature master data SKU. **Klik Label UI** untuk membuka penjelasan L
 
 **Siap Lingo:** tipe produk, unit & D&W per satuan, variant, bundle + tax hide, kolom stok, dan import/export.  
 **Backlog:** All D&W section (GAP-SP-09), SKU unique scope create (GAP-SP-01), Inventory flags card lebih dalam.  
-**TO-BE ETM-16668:** ubah weight DnW **default** → auto-recalc Pricelist/Category by Weight + Log (preserve manual).
+**TO-BE ETM-16668:** ubah weight DnW **default** → auto-recalc Pricelist/Category by Weight + Log (preserve manual).  
+**TO-BE leftover gate (ETM-17304 / ETM-17377):** leftover **tambah saja**; hapus tipe = delete flow; ganti in-place tolak + Add-only; dilarang `-DUPLICATE` dari hapus tipe.

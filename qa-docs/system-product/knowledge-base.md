@@ -142,13 +142,14 @@ Hanya **child** yang muncul di PO/SO/inbound.
 
 **AS-IS — Default Variant** (jika Master Variant punya Default ON): create/import Single otomatis jadi Variant — parent `SKU-(PARENT)`, child = kode yang Anda ketik.
 
-**Menambah tipe/group varian baru (edit produk):**
-- Child **belum** dipakai transaksi → kombinasi lama boleh diganti.
-- Child **sudah** dipakai transaksi (PO/SO/dll.) → seharusnya muncul **konfirmasi**: SKU lama tetap (kelebihan) + kombinasi baru dibuat; stok **tidak** pindah sendiri.
-- **Sekarang (residual):** sering muncul error *Unable to delete, Product already has existing relations.*, konfirmasi tidak muncul, data tidak tersimpan — sedang diperbaiki ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)).
-- **Import Update Variant Product:** **tidak** dipakai untuk menambah tipe baru pada produk yang child-nya sudah bertransaksi (akan ditolak). Pakai **edit di layar** setelah perbaikan, bukan import.
+**Menambah / mengubah tipe varian (edit produk) — gate leftover:**
+- **Tambah** tipe/opsi → pakai **+ Add New Variant** saja. Child berelasi → konfirmasi leftover: SKU lama tetap + kombinasi baru (omit segment Default); stok **tidak** pindah sendiri.
+- **Hapus** tipe/opsi → **bukan** leftover; mengikuti flow hapus varian (child berelasi tidak ikut regenerate / tidak jadi `-DUPLICATE`).
+- **Ganti tipe in-place** di baris tersimpan → **ditolak**; arahkan ke **+ Add New Variant**.
+- **Sekarang (residual tambah):** sering *Unable to delete…*, konfirmasi tidak muncul — [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215). Hapus tipe → bug `-DUPLICATE` — [ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304).
+- **Import Update Variant:** **tidak** untuk menambah tipe baru bila child bertransaksi. Pakai **+ Add New Variant** di edit, bukan import.
 
-Detail: [requirement §6.3.1–§6.3.2](./requirement.md).
+Detail: [requirement §6.3.1–§6.3.2a](./requirement.md).
 
 ### Bundle
 

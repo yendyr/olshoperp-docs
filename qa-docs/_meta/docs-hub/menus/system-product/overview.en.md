@@ -3,13 +3,13 @@ doc_type: docs-hub-menu-overview
 menu_slug: system-product
 menu_name: System Product
 lang: en
-version: 1.1
-last_updated: 2026-10-22
+version: 1.2
+last_updated: 2026-11-12
 status: review
 audience: help-center
 source_type: derived
 source_ref: null
-notes: Help Center landing. Separate from QA layers. Derived from QA docs. ETM-16668 weight→Pricelist.
+notes: Help Center landing. Separate from QA layers. Derived from QA docs. ETM-16668 weight→Pricelist; leftover gate add-only ETM-17304.
 ---
 
 ## Module/Feature: System Product
@@ -64,6 +64,7 @@ flowchart LR
 ## Common pitfalls
 
 * Parent variants are not transactable — pick a child SKU.
+* To add a variant type on a product already used in transactions, use **+ Add New Variant** (do not replace/delete an existing type row in place).
 * Bundle activation requires ≥2 items or 1 item with qty ≥2.
 * Accounting & Tax section is hidden when the bundle toggle is ON.
 * Inactivation requires zero Availability and ATS across all warehouses.

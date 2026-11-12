@@ -6,6 +6,8 @@
 - [ETM-15495](https://erpintegration.atlassian.net/browse/ETM-15495) — expand + stok (`GAP-SP-18`, fokus stok leftover)
 - [ETM-15512](https://erpintegration.atlassian.net/browse/ETM-15512) — Default create/import + expand Default-origin (`GAP-SP-17` + `GAP-SP-18`)
 
+> **Update 2026-11-12 (gate §6.3.2a):** matriks ini tetap fokus **ADD leftover** (15495/15512). Skenario **hapus tipe** / **ganti in-place** / larangan `-DUPLICATE` → [ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304) + [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377) — **bukan** overlap dengan baris expand di bawah.
+
 ---
 
 ## Legenda overlap

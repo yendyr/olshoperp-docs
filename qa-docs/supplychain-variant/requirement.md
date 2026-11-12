@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-variant
 menu_name: "Master Variant"
-version: 1.2
-last_updated: 2026-08-12
+version: 1.3
+last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
 aliases: [Master Variant, Variant Group, Variant Type, is_default, Set as Default System Product]
@@ -16,7 +16,7 @@ aliases: [Master Variant, Variant Group, Variant Type, is_default, Set as Defaul
 **UI labels:** breadcrumb **Variant Group** · page **Master Variant Type**  
 **API base:** `supplychain/variant`  
 **Audience:** PM, QA, Ops, Developer  
-**Status:** AS-IS verified codebase 2026-08-12 · TO-BE Default `GAP-VAR-01`
+**Status:** AS-IS verified codebase 2026-08-12 · TO-BE Default `GAP-VAR-01` · SP konsumen gate leftover add-only (2026-11-12)
 
 **Tables:** `scm_variants` · `scm_variant_options`
 
@@ -26,6 +26,7 @@ aliases: [Master Variant, Variant Group, Variant Type, is_default, Set as Defaul
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.3 | 2026-11-12 | QA - Yemima | Konsumen SP §6.6: leftover **add-only**; hapus tipe = delete flow; cross-ref SP v2.11 / ETM-17304 |
 | 1.0 | 2026-08-12 | QA - Yemima | AS-IS codebase + TO-BE **Set as Default System Product** (§6 / GAP-VAR-01); konsumen SP pending |
 | 1.1 | 2026-08-12 | QA - Yemima | Lock konsumen SP cross-ref (`-(PARENT)`, soft-delete vs leftover); GAP-VAR-02 closed → SP GAP-SP-17/18 |
 | 1.2 | 2026-08-12 | QA - Yemima | Create+Default ON+1 opsi → **skip** inject `random`; save reject Default jika opsi > 1 (create & edit) |
@@ -181,7 +182,9 @@ Detail kanonik di [system-product requirement §6.3.1–§6.3.2](../system-produ
 |-------|----------------|
 | Create / import Single-eligible + Default ON | Parent `SKU-(PARENT)`; child = kode user; opsi = nama opsi master Default |
 | Enable Variations OFF | Boleh → Single + **confirm popup** |
-| Expand groups | Soft delete child hanya jika **zero relation**; ada relasi → leftover + generate baru + confirm (**no auto-rename**) |
+| Expand groups (**tambah** tipe/opsi) | Soft delete child hanya jika **zero relation**; ada relasi → leftover + generate baru + confirm (**no auto-rename**). Leftover **hanya** untuk ADD |
+| Hapus tipe / opsi di SP | **Delete varian** — bukan leftover/regenerate; dilarang `-DUPLICATE` ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304)) |
+| Ganti tipe in-place di SP | **Tolak** + arahkan **+ Add New Variant** ([ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)) |
 | Naming expand | Omit segment opsi Default dari SKU baru |
 | Datatable | Kolom Default group **hide** (fase 1 UI) |
 
@@ -226,7 +229,7 @@ Brief: `~/Downloads/improvement-default-variant-master-variant-system-product.md
 | ID | Summary | Status |
 |----|---------|--------|
 | **GAP-VAR-01** | Set as Default System Product + **skip inject `random` on create+Default ON+1 option** + reject Default if options > 1 + unlock remove `random` + mutual exclusive + all-OFF OK | Open (TO-BE) |
-| **GAP-SP-17 / 18** | Konsumen create/import/expand | Open — [system-product](../system-product/requirement.md) |
+| **GAP-SP-17 / 18** | Konsumen create/import/expand + gate add-only | SP-17 Closed; SP-18 Partial Open + gate §6.3.2a — [system-product](../system-product/requirement.md) |
 
 ---
 
@@ -239,7 +242,7 @@ Brief: `~/Downloads/improvement-default-variant-master-variant-system-product.md
 | 1c | Create + Default OFF | Inject `random` AS-IS |
 | 2 | Parent format | `SKU-(PARENT)` |
 | 3 | Variations OFF | Allowed → Single + confirm |
-| 4 | Expand | Soft delete vs leftover; **no auto-rename** |
+| 4 | Expand | Soft delete vs leftover **add-only**; hapus tipe = delete flow; **no auto-rename** / no `-DUPLICATE` |
 | 5 | Company scope | Existing owned_by / login company |
 | 6 | Max 3 | Default **counts** toward 3 |
 | 7 | Docs | Folder `supplychain-variant` + SP consumers |

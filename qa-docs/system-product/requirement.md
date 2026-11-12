@@ -6,14 +6,14 @@ version: 2.11
 last_updated: 2026-11-12
 owner: QA - Yemima
 status: review
-aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant, Status Restock, Unable to delete Product already has existing relations, Update Variant Product]
+aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant, Status Restock, Unable to delete Product already has existing relations, Update Variant Product, -DUPLICATE, Add New Variant, delete variant type]
 ---
 
 # System Product — Requirement Documentation
 
 **Modul:** Supply Chain Management (SCM) / Master Data  
 **Audience:** PM, Operations, QA, Support, Developer  
-**Status:** AS-IS re-verified against codebase per 2026-11-09 (GAP audit — SoT `olshoperp/docs/qa-docs`); leftover residual [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); parent stock [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231)
+**Status:** AS-IS re-verified 2026-11-09 + gate leftover **add-only** TO-BE 2026-11-12 (§6.3.2a) — [ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304) / [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377); residual expand UI [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); parent stock [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231)
 
 **UI route (full):** `/supplychain/product`  
 **API base (full):** `{VITE_API_URL}supplychain/product`  
@@ -894,7 +894,7 @@ Artifact (7 Mei 2026) mensyaratkan tiga section: Unit Configuration ✅, **D&W D
 | **DEV-SP-10** | Parent **variant** stock display `-` (Bundle tetap angka) — [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231) | datalist / `availability_on_hand_ats_formatted` |
 
 ~~DEV-SP-07~~ Closed (foto soft recommendation). ~~DEV-SP-09~~ Closed (warranty unbounded by design).
-| **DEV-SP-11** | UI expand leftover residual — jangan treat tambah group sebagai hapus opsi berelasi; pastikan popup + save ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) | `ProductSpecificationController` + `FormProductComponent` Save All / `check_leftover` |
+| **DEV-SP-11** | UI expand leftover residual + gate add-only — jangan treat tambah group sebagai hapus opsi berelasi; hapus tipe → `deleteVariant` (bukan `isChangingGroup` regenerate); in-place → reject ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215) / [ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304)) | `ProductSpecificationController` + `FormProductComponent` Save All / `check_leftover` + remove-type path |
 
 ~~DEV-SP-05~~ Closed (checkTransaction sudah luas). ~~DEV-SP-06~~ Closed (manifest path OK). ~~DEV-SP-08~~ Closed (rate_disabled kondisional).
 

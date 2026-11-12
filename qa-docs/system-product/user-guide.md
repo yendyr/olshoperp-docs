@@ -118,7 +118,7 @@ Setelah SKU tersimpan:
 
 ### Langkah 3 — Tipe khusus (opsional)
 
-1. [Variant](#sf-lingo:SF-SP-03): Enable Variations → maks 3 tipe → generate child.
+1. [Variant](#sf-lingo:SF-SP-03): Enable Variations → maks 3 tipe → generate child. Tambah tipe nanti → **+ Add New Variant** (leftover); jangan ganti/hapus tipe in-place untuk “regenerate”.
 2. [Bundle](#sf-lingo:SF-SP-04): Set as Product Bundle → isi komponen (≥2 item atau 1 item qty≥2).
 
 ### Langkah 4 — Inventori, pajak, simpan
