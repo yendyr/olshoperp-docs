@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.14
-last_updated: 2026-11-12
+version: 2.15
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 ---
@@ -14,12 +14,13 @@ status: review
 **UI route:** `/accounting/customer-payment`
 **Audience:** PM, Operations, QA, Support, Developer
 
-**Related Improvement:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) (Done) · [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) (Done) · [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) (Done — Summary) · **[ETM-17298](https://erpintegration.atlassian.net/browse/ETM-17298)** (jam import 23:59:00) · **[ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325)** (autosave default Open) · **[ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326)** (audit log readable)
+**Related Improvement:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) (Done) · [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) (Done) · [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) (Done — Summary) · **[ETM-17298](https://erpintegration.atlassian.net/browse/ETM-17298)** (jam import 23:59:00) · **[ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325)** (autosave default Open) · **[ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326)** (audit log readable) · **[ETM-17477](https://erpintegration.atlassian.net/browse/ETM-17477)** (kunci SI Instant Settlement `deleting`)
 
 ## 0. Metadata & Changelog
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.15 | 2026-11-19 | QA - Yemima | **AS-IS** [ETM-17477](https://erpintegration.atlassian.net/browse/ETM-17477): SI dari Instant Settlement `deleting`/soft-deleted tidak di Select Invoice / Available / Import / simpan detail (§5.8) |
 | 2.14 | 2026-11-12 | QA - Yemima | **AS-IS** alur manual lengkap dari narasi QA: Datalist (§4.4), Create/autosave + Basic Info (§5.0), Detail / Available SI / Single Use (§5.9), Receiving Destination (§5.9.1); **GAP-AR-09 Closed** |
 | 2.13 | 2026-11-11 | QA - Yemima | **AS-IS** validasi Approve AR lengkap (§6.4.1); jurnal Approve (§5.11); audit log gap + TO-BE readable (§5.12 / [ETM-17326](https://erpintegration.atlassian.net/browse/ETM-17326)); TO-BE autosave Open [ETM-17325](https://erpintegration.atlassian.net/browse/ETM-17325); Description Adjustment locked wajib ikut kode |
 | 2.12 | 2026-11-11 | QA - Yemima | **AS-IS** §5.10 Adjustment form manual (COA child semua class; Debit/Credit contoh admin bank & pendapatan lebih bayar); copy Single Use modal → Receive wording (FE) |
@@ -275,6 +276,14 @@ Saat user Approve batch Instant Settlement, sistem membentuk satu dokumen AR per
 **Tanggal & jam AR (ETM-15701):** semua Sales Invoice dalam batch wajib **same calendar date** (jam boleh beda). Jika campur tanggal → Approve Instant Settlement ditolak (tidak generate AR). Jika lolos: **tanggal AR** = tanggal SI; **jam AR** = waktu SI paling akhir di batch. Detail: [Instant Settlement §6.3 / V-23](../accounting-settlement-upload/requirement.md).
 
 AR manual tidak ikut terhapus saat settlement di-Reject, dan justru memblokir Delete settlement bila terhubung ke invoice hasil upload. Detail alur bulk ada di [Instant Settlement](../accounting-settlement-upload/requirement.md).
+
+**AS-IS — SI batch Instant Settlement sedang dihapus ([ETM-17477](https://erpintegration.atlassian.net/browse/ETM-17477) / IS V-19):**
+
+| Pintu | Perilaku |
+|-------|----------|
+| **Select Invoice** / **Available Sales Invoice** | SI dari batch `progress = deleting` **tidak** muncul di daftar |
+| Simpan / ubah detail / **Import** detail | Tolak SI batch `deleting` — *This invoice is being deleted via Instant Settlement {ST-…}.* Batch soft-deleted — *Invalid invoice, Instant Settlement {ST-…} has been deleted…* |
+| SI dari batch Instant Settlement aktif | Tetap boleh dipilih / diimport |
 
 ### 5.9 Detail Account Receive (form manual)
 

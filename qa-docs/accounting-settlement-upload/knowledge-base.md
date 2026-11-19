@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.4
-last_updated: 2026-11-04
+version: 2.5
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 audience: operator
@@ -14,6 +14,8 @@ legacy_sources: []
 ---
 
 # Instant Settlement — Knowledge Base
+
+> **2.5:** Saat batch sedang dihapus (`deleting`), tagihan (SI) dari batch itu **tidak bisa** dipakai di Account Receive — [ETM-17477](https://erpintegration.atlassian.net/browse/ETM-17477).
 
 ## 1. Apa itu Instant Settlement?
 
@@ -217,10 +219,12 @@ Langkah:
 
 1. Pastikan batch eligible (lihat aturan di atas)
 2. Klik **Delete** (🗑) pada baris settlement — atau centang beberapa baris eligible lalu **bulk Delete** di atas tabel
-3. Konfirmasi — sistem hapus dokumen yang di-generate settlement (termasuk AR dari Approve, jika ada)
+3. Konfirmasi — sistem hapus dokumen yang di-generate settlement (termasuk AR dari Approve, jika ada). Pesan: *The settlement is being deleted. Please wait.*
 4. Status gudang tetap Shipped — bisa upload ulang tanpa proses fisik dari awal
 
 > **Bulk:** kalau satu saja baris yang dicentang **tidak eligible**, tombol Delete massal **tidak muncul**. Unselect yang terkunci dulu.
+
+> **Saat hapus masih berjalan:** Sales Invoice dari batch itu **tidak muncul** di pilihan tagihan Account Receive dan **tidak bisa** ditambahkan lewat import. Kalau dipaksa, sistem menolak dengan pesan bahwa invoice sedang dihapus lewat Instant Settlement (kode ST). Jangan lunasi tagihan dari batch yang sedang dihapus.
 
 ---
 

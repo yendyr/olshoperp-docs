@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.4
-last_updated: 2026-11-04
+version: 2.5
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 legacy_sources: []
@@ -15,6 +15,7 @@ legacy_sources: []
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.5 | 2026-11-19 | QA - Yemima | **AS-IS** [ETM-17477](https://erpintegration.atlassian.net/browse/ETM-17477): SI dari batch `deleting` / soft-deleted **tidak** boleh dipakai di Account Receive (daftar + simpan/import) — V-19 / §9 Delete lock |
 | 2.4 | 2026-11-04 | QA - Yemima | **TO-BE [ETM-16911](https://erpintegration.atlassian.net/browse/ETM-16911) direvisi (§6.5, §7, §8, A-13):** hitungan progres aman diulang; tombol **Stop Generating** manual bila batch first-stage tanpa kemajuan >1 jam (termasuk batch nyangkut di Validating, kasus ETM-17057); batch Failed → antrean lanjut; data setengah jadi dibersihkan lewat Delete (revert). **Dicabut:** `failed()` per job, pemantau otomatis (auto-retry/Failed/notifikasi), dan cadangan `temp:fix-settlement-counter` |
 | 2.3 | 2026-11-04 | QA - Yemima | **TO-BE** [ETM-17057](https://erpintegration.atlassian.net/browse/ETM-17057): tolak upload store milik company lain (V-24, tanpa batch); job baca file gagal → batch Failed dan antrean lanjut; batch macet bisa Delete atau Retry. AS-IS: diterima lalu macet di Validating dan menahan antrean semua company. **TO-BE** [ETM-16910](https://erpintegration.atlassian.net/browse/ETM-16910): Retry batch dan per baris tetap jalan setelah file asli terhapus (pakai baris Settlement, bukan file); Retry ditolak jika ada batch first-stage lain, dengan pesan jelas |
 | 2.2 | 2026-11-04 | QA - Yemima | **Definisi kolom panel Sales Invoice (§5.1):** Net Sales SO = total SO **sebelum PPN** (AS-IS deploy [ETM-16871](https://erpintegration.atlassian.net/browse/ETM-16871), 3 Nov 2026); **TO-BE** [ETM-17052](https://erpintegration.atlassian.net/browse/ETM-17052) Net Sales SI dan Difference SO-SI memakai dasar yang sama (sebelum PPN) + tooltip header; **GAP-SETU-02** |
@@ -99,6 +100,7 @@ flowchart LR
 | A-06 | User approve settlement → generate 1 AR + jurnal AR (smart skip SI yang sudah punya AR); **semua SI batch wajib same calendar date**; tanggal AR = tanggal SI; jam AR = jam SI paling akhir di batch | V-15, V-16, V-23 | F-10–F-13 |
 | A-07 | Re-settlement order yang sama: skip Outbound, SI baru hanya adjustment | V-17 | F-03 |
 | A-08 | Delete/Revert settlement (hard delete rantai generate): boleh jika OB+SI+AR murni dari Instant Settlement; diblokir jika ada AR luar; bulk Delete ikut eligibility yang sama | V-18 | F-14 |
+| A-09 | Saat batch progress `deleting` (atau soft-deleted), SI hasil batch **tidak** muncul / **tidak** bisa ditambah ke Account Receive (Select Invoice, Available Sales Invoice, Import, simpan detail) | V-19 | — |
 | A-09 | Retry job saat proses stuck/gagal | — | F-15 |
 | A-10 | Antrean In Queue: 1 generate global; jeda 10 menit; Import unlimited (ETM-16060) | §6.5 | F-16 |
 | A-11 | Tidak buat SI kosong (0 detail / Net Sales 0) saat sisa qty ≤0 tanpa OC/OD (ETM-16895 / V-12) | V-12 | F-03 |
@@ -333,6 +335,7 @@ Upload operasional **hanya CSV** (bukan Excel) karena risiko korupsi **Platform 
 | V-23 | **Transaction date Sales Invoice dalam 1 batch harus same calendar date** (abaikan jam) | Approve | Tolak approve jika ada ≥2 tanggal kalender berbeda di SI batch. Bandingkan **tanggal saja** — jam boleh beda. Pesan: jelas ke operator (string final saat ETM-15701). Contoh arah: *Unable to approve settlement. Sales Invoice transaction dates in this batch must be the same date.* |
 | V-17 | Outbound maks 1x per order | Re-upload | `without_outbound` / `outbound_exists` |
 | V-18 | Delete/Revert: bedakan sumber AR | Delete (row + bulk) | **Boleh** jika belum ada AR, atau semua AR pada SI batch = AR dari **Approve Instant Settlement** batch itu (`receive_id`). **Diblokir** jika ada ≥1 SI dengan Customer Payment / `payment_details` dari AR **luar** (bukan receive settlement). Row Delete & bulk Delete memakai eligibility yang sama; bulk: jika ≥1 selected not eligible → tombol bulk Delete **tidak muncul**. API delete wajib reject not eligible. Lihat §9. |
+| V-19 | Kunci SI saat batch dihapus / `deleting` | Account Receive (Select Invoice / Available SI / Import / simpan detail) | **AS-IS** [ETM-17477](https://erpintegration.atlassian.net/browse/ETM-17477): SI dari batch `progress = deleting` **tidak** muncul di daftar outstanding; simpan/import menolak dengan *This invoice is being deleted via Instant Settlement {ST-…}.* Batch soft-deleted: simpan/import menolak *Invalid invoice, Instant Settlement {ST-…} has been deleted…*. Cek AR luar saat klik Delete (V-18) tetap ada; **tidak** ada cek ulang AR di awal job hapus (rem opsional — di luar scope AS-IS ini). |
 | V-19 | Failed Ship status **Open** | Per baris | *"...in failed shipment status"* |
 | V-20 | Failed COD: settle date > failed ship date | Per baris | *"...marked as failed COD on..."* |
 | V-20b | **Qty net setelah Failed Ship** | extractOrderDetails | Qty invoice/outbound = `invoicable_quantity` (order qty − failed ship). Failed ship + qty settled harus konsisten dengan qty order — tidak boleh over/under settle vs sisa fisik |
@@ -775,8 +778,20 @@ User menolak **langkah pelunasan AR** batch ini. Header `SettlementUpload` → `
 Checkbox + toolbar approve. FE: `bulkApprovable` = **AND** semua selected `can_approve`. Campur baris sudah approved / belum eligible → bulk gagal per baris (`MainModuleController::bulkApprove`).
 
 #### Delete / Revert eligibility (ETM-15886 / V-18)
-**TO-BE:** Delete boleh untuk rantai murni IS termasuk AR dari Approve; diblokir hanya jika ada **AR luar**; bulk Delete hide jika ada selected not eligible; API guard wajib.  
-**AS-IS (pre-ETM-15886):** FE mengunci Delete dengan `settlements_with_ar >= generated_invoice_count` (any `payment_details`) → setelah Approve IS, Delete sering terkunci (melanggar skenario A §9.3). Bulk Delete hanya cek Gate `can_delete`. BE `delete()` belum cek external AR. Lihat technical § Delete.
+**AS-IS:** Delete boleh untuk rantai murni IS termasuk AR dari Approve; diblokir hanya jika ada **AR luar**; bulk Delete hide jika ada selected not eligible; API guard wajib.  
+**Histori (pre-ETM-15886):** FE mengunci Delete dengan `settlements_with_ar >= generated_invoice_count` (any `payment_details`) → setelah Approve IS, Delete sering terkunci. Lihat technical § Delete.
+
+#### Kunci SI saat Delete berjalan (ETM-17477 / V-19) — **AS-IS**
+
+Setelah klik Delete lolos V-18, batch jadi `progress = deleting` dan hapus jalan di antrean (bisa beberapa menit / tertahan — lihat juga [ETM-17475](https://erpintegration.atlassian.net/browse/ETM-17475)).
+
+| Aturan | Perilaku |
+|--------|----------|
+| Daftar SI di AR | SI batch `deleting` **tidak** muncul di Select Invoice / Available Sales Invoice |
+| Simpan / ubah detail AR / Import detail | Tolak SI dari batch `deleting` — *This invoice is being deleted via Instant Settlement {code}.* |
+| Batch sudah soft-delete | Tolak — *Invalid invoice, Instant Settlement {code} has been deleted. Please contact system administrator* |
+| SI batch aktif (bukan deleting) | Tetap bisa dipilih / diimport ke AR |
+| Cek ulang AR di awal job hapus | **Tidak** di-AS-IS (pengaman opsional; celah utama ditutup V-19) |
 
 #### Retry — lokasi UI
 
@@ -836,6 +851,7 @@ Export DataList async, Audit log (`Log Data`), bulk approve guard — pola stand
 - Uji **Smart AR**: buat AR manual untuk sebagian SI → approve → hanya sisanya masuk AR baru.  
 - Uji **V-23 / ETM-15701**: batch SI beda tanggal kalender → Approve ditolak; same date beda jam → Approve OK dan AR jam = max jam SI.  
 - Uji **delete / ETM-15886**: (1) rantai murni IS + AR dari Approve → Delete boleh & sukses; (2) AR luar pada SI → Delete row tidak muncul + API reject; (3) belum AR → Delete boleh; (4) bulk: campur eligible+not eligible → bulk Delete hilang; (5) bulk semua eligible → OK. Jangan assert Delete dengan formula lama `settlements_with_ar >= generated_invoice_count`.  
+- Uji **V-19 / ETM-17477**: selama batch `deleting`, SI-nya tidak di Select Invoice / Available / Import AR; SI batch normal tetap bisa; pesan menolak menyebut kode ST.  
 - Uji tiap platform: header sheet/name sesuai §4.1 · **Shopee:** §4.7 (row 3, `Order` only, tolak format lama).  
 - Uji approve tanpa `cash_bank_account_id` → error V-15.  
 - **Template General (Others):** uji G-01–G-06 §4.6 — filter `OC:`/`OD:` per Applied Store & status Active.  

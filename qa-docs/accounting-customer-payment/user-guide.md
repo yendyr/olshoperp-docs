@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 1.8
-last_updated: 2026-11-12
+version: 1.9
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 source_docs:
   - requirement.md
   - knowledge-base.md
   - technical.md
-source_version: 2.14
+source_version: 2.15
 ---
 
 # Account Receive — User Guide
@@ -137,6 +137,8 @@ Dalam satu baris isi salah satu saja — Debit atau Credit, tidak boleh dua-duan
 **"Kenapa muncul keluhan input dikenali sebagai dua hal sekaligus?"** Ada kode akun bank dan nomor deposit yang kebetulan persis sama. Ubah salah satu penamaannya.
 
 **"Dokumen AR muncul sendiri, dari mana?"** Kalau Anda menyetujui batch di menu Instant Settlement, sistem otomatis membuat dokumen pelunasan untuk tagihan hasil batch itu. Tagihan yang sudah Anda lunasi manual tidak akan dibuatkan lagi. Tanggal AR mengikuti tanggal Sales Invoice (semua SI di batch harus hari yang sama); jam AR mengambil jam SI paling akhir di batch.
+
+**"Kenapa tagihan settlement hilang dari pilihan?"** Kalau batch Instant Settlement sedang dihapus, tagihannya tidak bisa dipilih atau di-import ke Account Receive sampai proses hapus selesai (atau batch sudah tidak ada).
 
 **"Saya sudah pilih invoice, kenapa Receiving Destination kosong?"** Tunggu section itu selesai dimuat ulang, lalu cek lagi. Jumlahnya harus sama dengan tagihan yang baru dipilih.
 

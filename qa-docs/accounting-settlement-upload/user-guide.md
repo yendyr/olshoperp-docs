@@ -2,15 +2,15 @@
 doc_type: user-guide
 menu: accounting-settlement-upload
 menu_name: "Instant Settlement"
-version: 2.3
-last_updated: 2026-11-04
+version: 2.4
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 source_docs:
   - ./requirement.md
   - ./knowledge-base.md
   - ./technical.md
-source_version: 2.4
+source_version: 2.5
 ---
 
 # Panduan Pengguna — Instant Settlement
@@ -187,7 +187,7 @@ Ditulis dari yang kamu alami di layar:
 ### Langkah 5 — Re-settlement / hapus / retry
 
 1. **Dana susulan:** upload file baru berisi Order ID yang sama. Settle pertama: outbound + invoice SKU. Settle berikutnya: hanya invoice adjustment.  
-2. **Hapus:** Delete (🗑) → konfirmasi (eligible: belum AR luar, atau AR hanya dari Approve Instant Settlement). Gudang tetap Shipped. Multi-select: semua baris harus eligible atau Delete massal tidak muncul.  
+2. **Hapus:** Delete (🗑) → konfirmasi (eligible: belum AR luar, atau AR hanya dari Approve Instant Settlement). Gudang tetap Shipped. Multi-select: semua baris harus eligible atau Delete massal tidak muncul. Selama hapus masih jalan, tagihan batch itu **tidak bisa** dipilih di Account Receive.  
 3. Error generate (bukan SO Failed): buka log angka merah → **Retry** batch atau **Continue** per baris. Keduanya tetap bisa setelah file asli terhapus. Kalau ada file lain yang sedang diproses, Retry ditolak dan pesannya meminta menunggu sampai selesai.
 
 🎬 [Interactive demo akan ditambahkan di sini]

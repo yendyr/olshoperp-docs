@@ -2,14 +2,16 @@
 doc_type: knowledge-base
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.14
-last_updated: 2026-11-12
+version: 2.15
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 audience: operator
 ---
 
 # Account Receive — Knowledge Base
+
+> **2.15:** Tagihan dari Instant Settlement yang sedang dihapus **tidak bisa** dipilih di sini — [ETM-17477](https://erpintegration.atlassian.net/browse/ETM-17477).
 
 ## Apa itu menu ini
 
@@ -134,6 +136,8 @@ Pada dokumen Account Receive yang masih **Draft** atau **Open**, field **Select 
 Akun pada baris itu mengikuti kas/bank yang tertaut di tagihan.
 
 ## Relasi Instant Settlement
+
+**Hapus Instant Settlement sedang jalan:** tagihan dari batch itu hilang dari **Select Invoice** / **Available Sales Invoice** dan ditolak jika di-import. Pesan menyebut kode ST. Pakai tagihan batch yang masih aktif saja.
 
 | Yang perlu Anda tahu | Penjelasan singkat |
 |----------------------|-------------------|

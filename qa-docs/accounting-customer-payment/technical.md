@@ -2,15 +2,17 @@
 doc_type: technical
 menu: accounting-customer-payment
 menu_name: "Account Receive"
-version: 2.14
-last_updated: 2026-11-12
+version: 2.15
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 ---
 
 # Account Receive — Technical
 
-**Behavior SoT:** [requirement.md](./requirement.md) v2.14  
+**Behavior SoT:** [requirement.md](./requirement.md) v2.15  
+**IS SI lock while deleting (AS-IS):** [ETM-17477](https://erpintegration.atlassian.net/browse/ETM-17477) — outstanding list + `PaymentDetailController::store` + `ReceiveValidateDetailSheet`  
+
 **Summary UI (AS-IS Done):** [ETM-16644](https://erpintegration.atlassian.net/browse/ETM-16644) — `summary` endpoint + FE `Summary.vue`  
 **CN deposit COA (AS-IS Done):** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) — resolve setting by asal CN (`PaymentDetailFundController`, import `createFund`)  
 **Datalist memory / pagination (AS-IS Done):** [ETM-17198](https://erpintegration.atlassian.net/browse/ETM-17198) — FE `pageLengths=[10,20,50]`; trim eager load + TRX. REF tooltip  
@@ -136,6 +138,7 @@ sequenceDiagram
 - Progress import di-poll lewat endpoint `import/progress`.
 - Modal Available Sales Invoice mengambil data dari endpoint outstanding invoice pada dokumen AR terkait.
 - **Select Invoice (ETM-17102):** `DatalistDetail.vue` memanggil `POST .../bulk-select`. `PaymentDetailController::bulkSelectStore` membuat detail dengan `is_full_amount = 1` dan amount = `invoice_remaining_after_vat`, lewat `store()`. Di `store()`, bila Sales Invoice punya `cash_bank`, transaksi yang sama membuat baris fund Cash/Bank (`PaymentDetailFundController::store`) dengan `fund_amount` = amount detail. `Form.vue` harus memuat ulang section Receiving Destination setelah response sukses supaya baris baru tidak tertinggal di tampilan lama. Nama key komponen Vue tidak dicek ulang pada pembaruan ini.
+- **SI Instant Settlement `deleting` (ETM-17477):** outstanding query di `PaymentController` memakai `whereDoesntHave('settlement' → upload progress = deleting)`. `PaymentDetailController::store` + `ReceiveValidateDetailSheet` menolak SI dari upload `deleting` / soft-deleted (pesan ST code). Lihat [Instant Settlement technical § Delete](../accounting-settlement-upload/technical.md).
 
 ## 8. Failure Modes & Transaction Boundary
 

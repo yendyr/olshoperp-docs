@@ -4,10 +4,10 @@ Menu **Instant Settlement** (Accounting) — juga dikenal sebagai Upload Settlem
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) (v2.4) | Operator | review |
-| Requirement | [requirement.md](./requirement.md) (v2.4) | PM, QA | review |
-| Technical | [technical.md](./technical.md) (v2.4) | Developer | review |
-| User Guide | [user-guide.md](./user-guide.md) (v2.3) | Publish eksternal | review |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) (v2.5) | Operator | review |
+| Requirement | [requirement.md](./requirement.md) (v2.5) | PM, QA | review |
+| Technical | [technical.md](./technical.md) (v2.5) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) (v2.4) | Publish eksternal | review |
 | Feature Map | [feature-map.md](./feature-map.md) (v1.1) | Operator (Lingo index) | review |
 | Capability Lingo | [capabilities/](./capabilities/) | Operator (modal cards) | review |
 
@@ -17,6 +17,7 @@ Menu **Instant Settlement** (Accounting) — juga dikenal sebagai Upload Settlem
 **Note (2026-11-04):** Panel Sales Invoice: Net Sales SO sebelum PPN ([ETM-16871](https://erpintegration.atlassian.net/browse/ETM-16871)); Net Sales SI dan Difference SO-SI menyusul sebelum PPN + tooltip header — [ETM-17052](https://erpintegration.atlassian.net/browse/ETM-17052).  
 **Note (2026-10-29):** Antrean **In Queue** (1 generate global + jeda 10 menit) — [ETM-16060](https://erpintegration.atlassian.net/browse/ETM-16060) QA Review; penyempurnaan [ETM-16910](https://erpintegration.atlassian.net/browse/ETM-16910) / stuck [ETM-16911](https://erpintegration.atlassian.net/browse/ETM-16911); SI kosong [ETM-16895](https://erpintegration.atlassian.net/browse/ETM-16895) Done.  
 **Note (2026-09-23):** Shopee Instant Settlement pakai format **Penghasilan** — [ETM-16058](https://erpintegration.atlassian.net/browse/ETM-16058).  
+**Note (2026-11-19):** SI batch `deleting` dikunci dari Account Receive — [ETM-17477](https://erpintegration.atlassian.net/browse/ETM-17477) (V-19).  
 **Note (2026-09-09):** Delete/Revert AR luar vs IS — [ETM-15886](https://erpintegration.atlassian.net/browse/ETM-15886).  
 **Help Center overview:** belum ada di `_meta/docs-hub/menus/accounting-settlement-upload/` (skip sampai dibuat).  
 **TO-BE plan (terpisah):** [Platform Generate API→CSV→batch](../../superpowers/plans/2026-10-28-instant-settlement-platform-generate.md) — belum di layer requirement sampai implementasi.
@@ -28,6 +29,7 @@ Menu **Instant Settlement** (Accounting) — juga dikenal sebagai Upload Settlem
 
 | Date | Changes |
 |------|---------|
+| 2026-11-19 16:20 | v2.5 AS-IS ETM-17477 — kunci SI batch `deleting` di Account Receive (V-19) |
 | 2026-11-04 16:45 | v2.4 TO-BE batch macet ETM-16911 direvisi: tombol Stop Generating setelah 1 jam tanpa kemajuan, Delete untuk bersihkan data setengah jadi |
 | 2026-11-04 11:20 | v2.3 upload toko milik company lain ditolak sejak awal; kalau pembacaan file gagal, batch jadi gagal dan antrean lanjut; batch yang macet bisa dihapus atau diulang (ETM-17057). Ulang proses (Retry) tetap bisa setelah file asli terhapus, dan ditolak dengan pesan jelas kalau ada file lain yang sedang diproses (ETM-16910) |
 | 2026-11-04 | v2.2 definisi kolom panel Sales Invoice (sebelum PPN) + tooltip header ETM-17052 |
