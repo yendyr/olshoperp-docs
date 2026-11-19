@@ -11,13 +11,14 @@
 **API alias:** `work-order` (Work Order / Assembly) · **Code prefix:** `AS-*`
 
 **Help Center overview:** [`_meta/docs-hub/menus/supplychain-assembly/`](../_meta/docs-hub/menus/supplychain-assembly/) (`overview.en.md` / `overview.id.md`)  
-**Layer version:** requirement/KB/technical **2.2** · **Last updated:** 2026-10-20  
-**Open CR:** [ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645) — Export With Details 23 kolom (contoh [Telegram](https://t.me/c/1931573603/3/50865))
+**Layer version:** requirement/KB/technical **2.3** · **Last updated:** 2026-11-19  
+**Open CR:** [ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645) — Export With Details 23 kolom (contoh [Telegram](https://t.me/c/1931573603/3/50865)) · **[ETM-16100](https://erpintegration.atlassian.net/browse/ETM-16100)** — tombol final → Picking List (pending diskusi EU)
 
 ## Changelog
 
 | Date | Changes |
 |------|---------|
+| 2026-11-19 16:44 | TO-BE pending ETM-16100: stub tombol final → Picking List (§9.5) [yemimadocs] |
 | 2026-10-20 | TO-BE ETM-16645: Export All With Details FG×komponen + Outbound; contoh format Telegram |
 | 2026-08-12 | User Guide v1.0 (source 2.1) — onboarding publish |
 | 2026-07-30 | Help Center overview id/en v1.0 — end-user landing (glossary, nested BOM, lifecycle, async approve, journal WIP↔Inventory, import, troubleshooting, FAQ) |

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.7
-last_updated: 2026-11-09
+version: 1.8
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 aliases: [Pricelist Product, product pricelist, harga jual SKU, tier breakdown, Manual Margin, User Set Margin]
@@ -57,6 +57,8 @@ Ubah weight DnW **default** (atau ganti radio default) → Weight + Final Catego
 Icon Sync (per baris & header kolom) hanya muncul jika Category punya minimal satu store **platform**. Category Applied Store kosong atau hanya **Others** → tidak ada Sync. **Sync All** hanya category ber-platform. Final tetap dihitung untuk Others / kosong.
 
 Update dari Category yang tidak mengubah harga tidak membuat Sync mengirim ulang baris itu.
+
+**TO-BE pending [ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258):** Sync All akan dipindah ke job latar belakang agar tidak Out of Memory saat data besar. Cara potong data, status progress, dan retry **belum final** — menunggu diskusi end user.
 
 ## Produk Aktif / Non Aktif (TO-BE ETM-17072)
 

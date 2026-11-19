@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.7
-last_updated: 2026-11-09
+version: 1.8
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16314](https://erpintegration.atlassian.net/browse/ETM-16314)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar F)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §5, §7–9  
-**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** (optimasi Update to Pricelist) · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (kolom Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data) · **[ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149)** (Audit Log Global Search Platform/SKU/User)
+**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** (optimasi Update to Pricelist) · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (kolom Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data) · **[ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149)** (Audit Log Global Search Platform/SKU/User) · **[ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258)** (Sync All via Job — pending diskusi EU)
 
 ---
 
@@ -21,6 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.8 | 2026-11-19 | **TO-BE pending** [ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258): Sync All Master Pricelist via background job (OOM); mekanisme chunking/status/retry masih perlu diskusi end user |
 | 1.7 | 2026-11-09 | **AS-IS** ETM-17071 kolom Images; **AS-IS** ETM-17149 Audit Log Global Search Platform / System Product SKU / User (+ performa < 5 detik) |
 | 1.6 | 2026-11-05 | **TO-BE** ETM-17002: cross-ref optimasi Update to Pricelist (lewati baris tidak berubah, satu log, Last Update level category, Sync 0 baris). Rumus Manual ETM-16884 tidak berubah |
 | 1.5 | 2026-11-05 | **TO-BE** ETM-17071: kolom Images paling kiri (UI & logic sama System Product) |
@@ -63,6 +64,7 @@ Calc Final tetap untuk Applied Store **NULL** / **Others** (ETM-16884).
 | A-14 | Applied Store Others/NULL: Final tetap terhitung; Sync row+header hide; Sync All hanya category ber-platform | **TO-BE** ETM-16884 |
 | A-15 | Update to Pricelist + Manual Price: Final = Default + User Set Margin + Category tier; cell margin tetap nilai user | **TO-BE** ETM-16884 |
 | A-16 | Datalist default hanya SKU status **Aktif**. Switch **Show archived data** di toolbar: ON = SKU **Non Aktif** ikut tampil; OFF lagi = disembunyikan. Perilaku sama dengan menu Product | **TO-BE** ETM-17072 |
+| A-17 | **Sync All** dijalankan via background job/queue (hindari OOM saat banyak Category Price + ribuan SKU). Detail chunking, status sync, logging, retry, dan UI progress **belum dikunci** — menunggu diskusi end user / Pak Yendy | **TO-BE pending** [ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258) |
 | A-17 | Kolom **Images** paling kiri (sebelum Product/SKU): thumbnail 100×100 dari `getImageProduct()`; kosong → `-` di box 100×100; non-orderable / non-searchable; UI & logic sama System Product | **AS-IS** ETM-17071 |
 | A-18 | **Audit Log** Global Search bisa filter kolom Platform, System Product SKU, dan User (parsial & exact), selain Event/nominal yang sudah jalan; muat/search responsif **&lt; 5 detik** | **AS-IS** ETM-17149 |
 
@@ -172,6 +174,17 @@ Hover header: summary tier Category + label jelas **Last Update to Pricelist:** 
 
 Update tanpa perubahan harga **tidak** menaikkan waktu ubah baris, jadi Sync tidak memilih baris itu (0 baris). Aturan platform-only di tabel di atas tidak berubah. Detail: [Category §3.4](../businessdevelopment-category-price/requirement.md).
 
+### 4.4a Sync All via Job (TO-BE pending · ETM-16258)
+
+**Card:** [ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258) · status Jira **PENDING DISCUSSION** · Priority Highest.
+
+| Item | Isi stub (belum dikunci) |
+|------|--------------------------|
+| Masalah AS-IS | Sync All masih sinkron di request HTTP → OOM bila Category Price banyak + SKU ribuan |
+| Arah TO-BE | Sync All memakai **background job / queue** |
+| Belum diputus | Scope (semua category eligible vs pilih), concurrency per company, chunking (per category / N SKU), UI progress, gagal parsial vs rollback, retry, logging/notifikasi |
+| Catatan | Mekanisme harus dibahas langsung dengan end user / Pak Yendy sebelum AC final |
+
 ### 4.5 Advanced Filter — Manual Margin (TO-BE · ETM-16861)
 
 | Item | Aturan |
@@ -256,7 +269,7 @@ Master & band lengkap: final §7.
 | GAP-PL-01 | Default price berubah belakangan | Recalc via Update to Pricelist (bukan scope ETM-16668) |
 | GAP-PL-02 | Produk baru / weight belakangan | ETM-16668 menutup path weight berubah |
 | GAP-PL-03 | Konversi satuan weight → gram | Convert sebelum match |
-| GAP-PL-04 | N rows besar | Job background + toast |
+| GAP-PL-04 | Sync All OOM (N category × ribuan SKU) | **TO-BE pending** [ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258) — job/queue; detail diskusi EU |
 | GAP-PL-05 | Auto-recalc weight | **TO-BE** ETM-16668 |
 | GAP-PL-06 | Filter Manual Margin | **TO-BE** ETM-16861 |
 | GAP-PL-07 | User Set Margin UI + tooltips | **TO-BE** ETM-16883 |

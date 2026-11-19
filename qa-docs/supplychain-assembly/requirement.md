@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-assembly
 menu_name: "Assembly"
-version: 2.2
-last_updated: 2026-10-20
+version: 2.3
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 ---
@@ -23,6 +23,7 @@ status: review
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.3 | 2026-11-19 | QA - Yemima | **TO-BE pending** [ETM-16100](https://erpintegration.atlassian.net/browse/ETM-16100): tombol validasi final di detail Assembly → trigger Picking List; mekanisme & hubungan ke Open/TFI/Approve masih diskusi end user |
 | 2.2 | 2026-10-20 | QA - Yemima | **TO-BE** [ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645): Export All With Details → 23 kolom FG×komponen + Outbound; contoh format [Telegram](https://t.me/c/1931573603/3/50865) |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase analysis |
 | 2.0 | 2026-07-04 | QA - Yemima | Full rewrite: merge PM requirement, codebase verification, stock movement chain, import spec, UI/UX buttons, gap analysis |
@@ -508,6 +509,7 @@ baru Assembly SKU-JADI-A bisa consume SKU-SUB-B dari stok.
 | Print SKU / BOX / SID | ✓ (SKU, BOX) | ✓ | ✓ (+ SID) |
 | BundleProductForm (expand row) | BoM components + availability | Snapshot BOM | Snapshot BOM |
 | Warning banner | — | — | "Stock has been reserved..." |
+| **Tombol “final” → Picking List** | **TO-BE pending** [ETM-16100](https://erpintegration.atlassian.net/browse/ETM-16100) — lihat §9.5 | ? | ? |
 
 ### 9.4 Kolom Detail per Status
 
@@ -520,6 +522,17 @@ baru Assembly SKU-JADI-A bisa consume SKU-SUB-B dari stok.
 | Transfer Code/Date | — | ✓ | ✓ |
 | Inbound Code/Date | — | — | ✓ |
 | Error flag | ✓ | ✓ | ✓ |
+
+### 9.5 Tombol validasi final → Picking List (TO-BE pending · ETM-16100)
+
+**Card:** [ETM-16100](https://erpintegration.atlassian.net/browse/ETM-16100) · status Jira **PENDING DISCUSSION** · Priority Low · Requestor mba Rifa (via Ilyas). Label di request: *Tidak Urgent*.
+
+| Item | Isi stub (belum dikunci) |
+|------|--------------------------|
+| Request | Tambah tombol di **detail Assembly** untuk menandai data input sudah **final**, lalu **trigger create dokumen Picking List** |
+| AS-IS hari ini | Alur tetap Draft → **Open** (buat Transfer Internal) → **Approve** (Outbound WIP + Other Inbound FG via job). **Tidak ada** tombol final / auto Picking List |
+| Belum diputus | Tombol mengganti Open/Approve atau tombol baru; jenis Picking List (Omni vs dokumen baru); status Assembly setelah klik; isi PL (per Assembly vs per FG); hubungan ke TFI/Outbound/OI; boleh batal/buat ulang PL |
+| Catatan | Desain harus dibahas langsung dengan end user / warehouse sebelum AC final. Priority Low — park sebagai stub |
 
 ---
 
@@ -606,6 +619,7 @@ flowchart TB
 | G-09 | Total Header SKU di datalist | Tidak ada kolom dedicated; Product column (hidden) + search | Enhancement jika diperlukan |
 | G-10 | Import Excel qty integer check | BE cek `is_numeric > 0` saja, belum explicit `integer` | UI sudah integer; harden BE jika perlu |
 | G-11 | Export All With Details | AS-IS 17 kolom (1 row/FG); **TO-BE** 23 kolom FG×komponen + Outbound ([ETM-16645](https://erpintegration.atlassian.net/browse/ETM-16645); contoh [Telegram](https://t.me/c/1931573603/3/50865)) | Open |
+| G-12 | Tombol final → Picking List | AS-IS: tidak ada; **TO-BE pending** [ETM-16100](https://erpintegration.atlassian.net/browse/ETM-16100) (§9.5) — diskusi EU | Open |
 
 ---
 
@@ -616,6 +630,7 @@ Fitur yang belum diimplementasi — **bukan bug**, sengaja ditunda.
 | # | Fitur | Status saat ini | Target behaviour (future) |
 |---|-------|-----------------|---------------------------|
 | PD-01 | **Import header Assembly** (bulk create dari datalist) | FE `DataList.vue` punya stub `POST work-order/import` — **route backend tidak ada**; `ImportLog` di-comment out | Bulk create Assembly header via Excel dari datalist |
+| PD-02 | **Tombol final → Picking List** | Belum ada di UI/API | Stub [ETM-16100](https://erpintegration.atlassian.net/browse/ETM-16100) §9.5 — detail menunggu diskusi EU |
 | | Import detail Assembly (FG lines) | ✅ **Aktif** — `POST work-order/{id}/work-order-detail/upload` | Tetap AS-IS |
 
 > **Saat ini:** operator hanya bisa import **detail** (baris FG) dari form edit Assembly, status Draft.

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-assembly
 menu_name: "Assembly"
-version: 2.2
-last_updated: 2026-10-20
+version: 2.3
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 audience: operator
@@ -101,6 +101,8 @@ Sistem **tidak** auto-bongkar sub-assembly menjadi komponen level lebih dalam.
 3. Jika stok tidak cukup → status tetap/revert **Draft** + pesan error
 
 > **Penting:** Detail tidak bisa diedit setelah Open. Hanya bisa Approve atau Reject.
+
+> **TO-BE pending [ETM-16100](https://erpintegration.atlassian.net/browse/ETM-16100):** usulan tombol di detail untuk menandai input sudah **final** dan membuat **Picking List**. Belum ada di aplikasi — desain menunggu diskusi end user / warehouse. Alur Open → Approve di atas tetap berlaku sampai keputusan final.
 
 ### Langkah 4 — Approve
 

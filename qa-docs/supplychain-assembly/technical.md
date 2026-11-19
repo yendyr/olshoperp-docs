@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-assembly
 menu_name: "Assembly"
-version: 2.2
-last_updated: 2026-10-20
+version: 2.3
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,7 +15,8 @@ related_docs:
 
 **UI route:** `/supplychain/assembly`  
 **API base:** `{VITE_API_URL}supplychain/work-order`  
-**Model alias:** Work Order (`WorkOrder`)
+**Model alias:** Work Order (`WorkOrder`)  
+**TO-BE pending:** [ETM-16100](https://erpintegration.atlassian.net/browse/ETM-16100) — tombol validasi final di detail → create Picking List; endpoint/UI **belum ada**; stub requirement §9.5 (diskusi EU).
 
 ---
 

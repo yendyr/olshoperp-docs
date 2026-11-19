@@ -2,8 +2,8 @@
 doc_type: technical
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.7
-last_updated: 2026-11-09
+version: 1.8
+last_updated: 2026-11-19
 owner: QA - Yemima
 status: review
 related_docs:
@@ -24,7 +24,8 @@ related_docs:
 **TO-BE optimasi Update:** [ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002) — skip baris tidak berubah, satu log, chunk 500, penanda Last Update. Detail job: [Category technical §5](../businessdevelopment-category-price/technical.md). Poin 8 (baris turunan tidak disimpan) bukan perilaku ini.  
 **TO-BE filter Aktif:** [ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072) — datalist `show_archived`, pola sama `ProductController` index.  
 **AS-IS kolom Images:** [ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071) — FE `DataList` wire `image_formatted`.  
-**AS-IS Audit Log search:** [ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149) — `pricelistLogIndex` `filterColumn` untuk Platform / SKU / User; target respons &lt; 5 detik.
+**AS-IS Audit Log search:** [ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149) — `pricelistLogIndex` `filterColumn` untuk Platform / SKU / User; target respons &lt; 5 detik.  
+**TO-BE pending Sync All job:** [ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258) — Sync All via queue/job (hindari OOM); chunking/status/retry/UI **belum dikunci** (diskusi EU). Stub di requirement §4.4a.
 
 ---
 
