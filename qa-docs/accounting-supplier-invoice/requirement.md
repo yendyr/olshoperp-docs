@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.9
-last_updated: 2026-11-12
+version: 3.10
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 aliases: [PI, purchase invoice, purchase invoice docs, supplier invoice, faktur beli, tagihan supplier]
@@ -27,6 +27,7 @@ Downstream: [Account Payment](../accounting-supplier-payment/requirement.md)
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.10 | 2026-11-20 | QA - Yemima | **P-PI-SIA-01 dikunci:** Diff &lt; 0 → **tolak** simpan/approve (fase 1); card [ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605); bukan jurnal terbalik |
 | 2.2 | 2026-07-11 | QA - Yemima | Compliance qa-docs-standard (baseline; sebagian perilaku tidak akurat — lihat v3.0) |
 | 3.0 | 2026-07-15 | QA - Yemima | Rewrite dari SoT v3.0: Void → Pending Items; gap registry PI-01/02/03; currency lock 1 rule; cost/disc auto-select + stuck risk; return Billed + Debit Note; print Resolved per SoT |
 | 3.1 | 2026-07-22 | QA - Yemima | DPP/VAT precision: detail & Totals truncate 4dp × qty (`ETM-15313`); AC konsistensi vs panel Totals |
@@ -182,9 +183,11 @@ Header **locked** jika sudah ada detail item.
 | Field **diisi** | Hitung **Invoice Diff** (read-only) = `supplier_invoice_amount − Net Purchase Invoice` |
 | Diff = 0 | Tidak post baris Cash Diff |
 | Diff **> 0** (tagihan fisik lebih besar) | Saat **approve**: **Dr Cash Diff. COA** = diff · **Cr Account Payable** = diff (tambahan utang). Cash Diff. COA dari Internal Company (`cash_difference_coa_id`) |
-| Diff **< 0** (tagihan fisik lebih kecil) | **Open** — tolak / izinkan dengan jurnal terbalik? → **P-PI-SIA-01** |
+| Diff **< 0** (tagihan fisik lebih kecil) | **Tolak** simpan dan/atau approve — fase 1 **tidak** izinkan jurnal terbalik (**P-PI-SIA-01** dikunci 20 Nov 2026 · [ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605)) |
 
-**Contoh:** Net sistem `37.999.999,96` · Supplier's Invoice Amount `38.000.000` → Invoice Diff `0,04` → Dr Cash Diff `0,04` / Cr AP `0,04`.
+**Contoh Diff > 0:** Net sistem `37.999.999,96` · Supplier's Invoice Amount `38.000.000` → Invoice Diff `0,04` → Dr Cash Diff `0,04` / Cr AP `0,04`.
+
+**Contoh Diff < 0 (ditolak):** Net sistem `42.014.000` · Supplier's Invoice Amount `42.000.000` → Invoice Diff `−14.000` → Save/Approve **ditolak**; tidak ada jurnal Cash Diff.
 
 **Payment:** pelunasan **tidak** menerima input desimal → user memakai **Allocate Full Amount** agar sisa sen ikut ter-clear (Cash Diff payment path yang sudah ada tetap relevan).
 
@@ -324,7 +327,7 @@ Hanya jika `supplier_invoice_amount` terisi dan diff ≠ 0. Kasus **diff > 0** (
 
 Ditambahkan ke jurnal approve PI **di samping** entry Unbilled / VAT / OC / OD standar (§5.6). Total kredit AP = net sistem + diff.
 
-Kasus **diff < 0:** lihat **P-PI-SIA-01** (belum dikunci).
+Kasus **diff < 0:** **tolak** sebelum jurnal — **P-PI-SIA-01** dikunci ([ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605)). Tidak ada posting terbalik (Dr AP / Cr Cash Diff) di fase 1.
 
 ---
 
@@ -433,13 +436,13 @@ Bukan gap teknis fitur existing; user **tidak** bisa memakai fitur ini.
 | **Void** | Belum matang (requirement + codebase). Siklus berhenti di Approved — tidak ada jalur void yang bisa dipakai user. Kode sisa (`can_void`, dialog) **deprecated** sebagai dokumentasi perilaku. |
 | **Due Date otomatis dari TOP supplier** | Belum — Due Date murni manual |
 | **Status Processed / Closed** | Ideal untuk konsistensi modul & relasi Payment; saat ini belum ada |
-| **Supplier's Invoice Amount** | TO-BE §5.1b — label dikunci; diff kurang dari Net masih **P-PI-SIA-01** |
+| **Supplier's Invoice Amount** | TO-BE §5.1b — label dikunci; Diff &lt; 0 = **tolak** (**P-PI-SIA-01** locked · [ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605)) |
 
 ### 9.2 Pending — keputusan Supplier's Invoice Amount
 
-| ID | Severity | Owner | Pertanyaan | Default sementara di docs |
-|----|----------|-------|------------|---------------------------|
-| **P-PI-SIA-01** | Medium | Finance + PM | Jika `supplier_invoice_amount` kurang dari Net sistem: tolak simpan, atau izinkan dengan jurnal terbalik (Dr AP / Cr Cash Diff)? | Fase 1: support **diff ≥ 0**; tolak jika lebih kecil |
+| ID | Severity | Owner | Pertanyaan | Status / keputusan |
+|----|----------|-------|------------|---------------------|
+| **P-PI-SIA-01** | Medium | Finance + PM | Jika `supplier_invoice_amount` kurang dari Net sistem: tolak atau jurnal terbalik? | **Locked (20 Nov 2026):** fase 1 **tolak** simpan/approve — [ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605). Bukan jurnal terbalik |
 | **P-PI-SIA-02** | Low | Dev | Kapan recalc Invoice Diff: on change field / on save / only at approve? | Recalc live di form + final di approve |
 | **P-PI-SIA-03** | Medium | Dev + QA | Kolom DB + migrasi + FormRequest + wire FE Basic Information | Belum |
 

@@ -11,8 +11,8 @@ summary: >-
   (TO-BE) Field opsional untuk total nominal di faktur fisik supplier. Jika
   diisi, sistem menghitung selisih ke Net Purchase Invoice dan — pada fase 1 —
   memposting selisih lebih besar ke Cash Diff saat approve.
-version: 0.2
-last_updated: 2026-07-27
+version: 0.3
+last_updated: 2026-11-20
 status: review
 ---
 
@@ -20,7 +20,7 @@ status: review
 
 ## Apa ini
 
-Field opsional di **Basic Information** untuk menuliskan total yang tertera di **faktur fisik** supplier. Jika diisi, sistem menghitung **Invoice Diff** = amount tersebut dikurangi [Net Purchase Invoice](#sf-lingo:SF-TOT-01). Saat approve (fase 1 docs: selisih lebih besar), selisih masuk jurnal Cash Diff plus penyesuaian hutang.
+Field opsional di **Basic Information** untuk menuliskan total yang tertera di **faktur fisik** supplier. Jika diisi, sistem menghitung **Invoice Diff** = amount tersebut dikurangi [Net Purchase Invoice](#sf-lingo:SF-TOT-01). Saat approve (fase 1: selisih **lebih besar**), selisih masuk jurnal Cash Diff plus penyesuaian hutang. Jika amount **lebih kecil** dari Net → simpan/approve **ditolak** ([ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605) / P-PI-SIA-01).
 
 > Status: **belum implementasi** di production — ikuti requirement TO-BE sebelum uji di staging/prod.
 
@@ -41,7 +41,7 @@ Field opsional di **Basic Information** untuk menuliskan total yang tertera di *
 ## Catatan
 
 - Prasyarat: jika field diisi dan diff ≠ 0, **Cash Diff. COA** di Internal Company harus ada.
-- Fase 1 docs: fokus selisih **lebih besar** (supplier amount > net sistem). Kasus amount lebih kecil masih open di requirement.
+- Fase 1: selisih **lebih besar** (supplier amount > net) → Cash Diff saat approve. Amount **lebih kecil** → **tolak** ([ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605)).
 - Account Payment: pelunasan sering tidak terima desimal — gunakan **Allocate Full Amount** agar sisa sen ikut clear bila perlu.
 
 ## Contoh
@@ -50,7 +50,7 @@ Field opsional di **Basic Information** untuk menuliskan total yang tertera di *
 |------------|---------------------------|--------------|--------------|
 | 37.999.999,96 | 38.000.000 | +0,04 | Dr Cash Diff 0,04 / Cr AP 0,04 |
 | 42.014.000 | *(kosong)* | — | Tidak ada post Cash Diff dari field ini |
-| 42.014.000 | 42.000.000 | −14.000 | **Open** di requirement — belum dikunci fase 1 |
+| 42.014.000 | 42.000.000 | −14.000 | **Tolak** simpan/approve (P-PI-SIA-01 · [ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605)) |
 
 ## Lihat juga
 

@@ -17,13 +17,14 @@ Menu **Purchase Invoice** (Accounting / Account Payable).
 **Proposal:** [../_meta/proposals/feature-map-and-capability-lingo.md](../_meta/proposals/feature-map-and-capability-lingo.md)  
 **User-guide:** v1.8 · `source_version` 3.9  
 **Help Center overview:** [ID](../_meta/docs-hub/menus/accounting-supplier-invoice/overview.id.md) · [EN](../_meta/docs-hub/menus/accounting-supplier-invoice/overview.en.md) (`authored`, review)  
-**Version (requirement / KB / technical):** 3.9 · **Feature Map:** 1.1 · **Last updated:** 2026-11-12 09:10  
-**Open Improvement:** [ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338) — max 500 baris detail SKU di semua pintu (TO-BE, selaras PO)
+**Version (requirement / KB / technical):** 3.10 · **Feature Map:** 1.1 · **Last updated:** 2026-11-20 15:20  
+**Open Improvement:** [ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338) — max 500 baris detail SKU · [ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605) — guard Diff &lt; 0 pada Supplier's Invoice Amount (P-PI-SIA-01)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.10 | 2026-11-20 15:20 | P-PI-SIA-01 dikunci: Diff &lt; 0 → tolak simpan/approve ([ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605)) [yemimadocs] |
 | 3.9 | 2026-11-12 09:10 | TO-BE max **500** baris detail SKU per PI di semua pintu (Single/Bulk/Group View/import-job); alasan selaras PO; GAP-PI-08 ([ETM-17338](https://erpintegration.atlassian.net/browse/ETM-17338)) |
 | 3.8 | 2026-11-09 11:04 | Angka di file Excel Purchase Invoice (daftar With Details / Without Details, dan dari halaman detail) mengikuti tampilan di layar: kurs 1 atau 1.00 (bukan 1.0000), kolom uang 2 desimal, quantity tetap presisi sistem (contoh 1.570, tidak dipotong 1.57). Quantity yang masih terpotong belum ikut di sistem (ETM-17224) |
 | 3.7–3.8 | 2026-09-02 ~16:30 | Supplier tampil **kode saja** di daftar/form/export (cari tetap by nama+kode; nama boleh di Print). Parent ETM-15721 / ETM-15724 |

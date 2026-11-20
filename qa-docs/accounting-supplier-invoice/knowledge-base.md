@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.9
-last_updated: 2026-11-12
+version: 3.10
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 aliases: [PI, purchase invoice, supplier invoice, faktur beli, tagihan supplier, hutang supplier]
@@ -58,7 +58,7 @@ flowchart TD
 
 **Keterangan langkah:**
 
-- **Create / header:** isi Supplier (**tampil kode saja** — bisa cari by nama atau kode), Tanggal, Mata Uang, Kurs. Opsional: **Supplier's Reference** (nomor faktur/dokumen supplier), **Due Date** (isi manual — belum otomatis dari termin supplier). **TO-BE:** **Supplier's Invoice Amount** = total nominal di invoice fisik supplier (opsional) — jika diisi, selisih vs Net sistem masuk Cash Diff saat approve. Saat Create, sistem bisa auto-simpan draft; Supplier sering terisi dari PI terakhir Anda. Jika belum pernah punya PI, isi field wajib (termasuk Supplier) manual dulu. Nama supplier **tidak** muncul di daftar/detail/export; hanya di **Print**.
+- **Create / header:** isi Supplier (**tampil kode saja** — bisa cari by nama atau kode), Tanggal, Mata Uang, Kurs. Opsional: **Supplier's Reference** (nomor faktur/dokumen supplier), **Due Date** (isi manual — belum otomatis dari termin supplier). **TO-BE:** **Supplier's Invoice Amount** = total nominal di invoice fisik supplier (opsional) — jika diisi dan **lebih besar** dari Net, selisih masuk Cash Diff saat approve; jika **lebih kecil** dari Net, simpan/approve **ditolak** ([ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605)). Saat Create, sistem bisa auto-simpan draft; Supplier sering terisi dari PI terakhir Anda. Jika belum pernah punya PI, isi field wajib (termasuk Supplier) manual dulu. Nama supplier **tidak** muncul di daftar/detail/export; hanya di **Print**.
 - **Status Open:** wajib sebelum Approve (bukan Draft).
 - **Inbound Transaction:** pakai **Bulk Use** (banyak baris sekaligus), **Single Use** (isi qty per baris lewat modal), atau **Group View → Use** (satu inbound penuh). Hanya barang dari inbound **Approved** yang muncul.
 - **Batas baris SKU (segera / TO-BE):** maksimal **500** baris produk per PI — sama dengan batas Purchase Order, supaya satu inbound sampai 500 SKU tidak harus dipecah jadi banyak invoice. Biaya/diskon tambahan tidak dihitung ke batas itu. Saat ini di sistem belum dibatasi; setelah perbaikan, Bulk/Group View yang melebihi sisa slot akan ditolak seluruhnya (bukan masuk sebagian).
@@ -150,7 +150,7 @@ PPN include 11%. Warisan angka dari PO (SoT 27 Jul 2026).
 
 Lingo: [DPP & VAT di detail](../_meta/shared-capabilities/dpp-vat-breakdown-display.md) (`SF-PRICE-01`) · [Net Purchase Invoice](./capabilities/sf-tot-01-net-purchase-invoice.md) (`SF-TOT-01`).
 
-Setelah **approve PI**, sistem menjurnal: clear **Unbilled Goods** (dari Inbound) + Debit **PPN** + Credit **hutang supplier**. Jika Supplier's Invoice Amount diisi (TO-BE), selisih juga ke **Cash Diff. COA** + tambahan hutang. PPN **tidak** di jurnal saat terima barang.
+Setelah **approve PI**, sistem menjurnal: clear **Unbilled Goods** (dari Inbound) + Debit **PPN** + Credit **hutang supplier**. Jika Supplier's Invoice Amount diisi dan **lebih besar** dari Net (TO-BE), selisih ke **Cash Diff. COA** + tambahan hutang. Jika lebih kecil dari Net → tidak sampai approve (ditolak). PPN **tidak** di jurnal saat terima barang.
 
 ---
 
@@ -205,7 +205,7 @@ A: Nama supplier bersifat sensitif. Di daftar, form, modal, dan export yang tamp
 A: Nomor faktur pajak / dokumen dari supplier (opsional); tampil di daftar sebagai Supplier's Ref.
 
 **Q: Supplier's Invoice Amount untuk apa? (TO-BE)**  
-A: Total **nominal** di invoice fisik supplier (bukan nomor dokumen). Opsional. Jika diisi dan beda dari Net sistem, selisih (Invoice Diff) masuk jurnal **Cash Diff. COA** + tambahan hutang saat approve. Jika kosong, tidak ada pembanding. Pastikan Cash Diff. COA sudah di-set di Internal Company. **Bukan** untuk menutup selisih 1 sen jumlah manual DPP+VAT di layar (itu known behavior tampilan).
+A: Total **nominal** di invoice fisik supplier (bukan nomor dokumen). Opsional. Jika diisi dan **lebih besar** dari Net, selisih (Invoice Diff) masuk jurnal **Cash Diff. COA** + tambahan hutang saat approve. Jika diisi **lebih kecil** dari Net → sistem **menolak** simpan/approve (fase 1, [ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605)) — perbaiki angka atau kosongkan field. Jika kosong, tidak ada pembanding. Pastikan Cash Diff. COA sudah di-set di Internal Company. **Bukan** untuk menutup selisih 1 sen jumlah manual DPP+VAT di layar (itu known behavior tampilan).
 
 **Q: Jumlah DPP + VAT di layar beda 1 sen dari Net?**  
 A: Known behavior UI. Contoh: 38.000 × 25 → DPP 855.855,86 + VAT 94.144,15 = 950.000,01 di kalkulator, Net tetap **950.000,00**. Acuan hutang = **Net**. Di file Excel, kolom uang ikut 2 desimal seperti layar (bukan 4 desimal).

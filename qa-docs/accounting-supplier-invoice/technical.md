@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-supplier-invoice
 menu_name: "Purchase Invoice"
-version: 3.9
-last_updated: 2026-11-12
+version: 3.10
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 aliases: [PI technical, supplier invoice API, purchase invoice code]
@@ -202,7 +202,7 @@ Validates `expense_coa.owned_by == PI.owned_by`.
 | Diff | `diff = supplier_invoice_amount − Net Purchase Invoice` (currency PI, 2dp) |
 | Prereq | `CompanyCoaSetting.cash_difference_coa_id` wajib jika diff ≠ 0 |
 | Journal (diff > 0) | Dr `cash_difference_coa_id` · Cr AP — amount = diff; **tambahan** di `supplierInvoiceAutoJournal` |
-| Fase 1 | Tolak `supplier_invoice_amount < net` (P-PI-SIA-01) |
+| Fase 1 | **Locked:** tolak `supplier_invoice_amount < net` pada simpan/approve — **P-PI-SIA-01** · [ETM-17605](https://erpintegration.atlassian.net/browse/ETM-17605). Tidak ada jurnal terbalik |
 | FE | Basic Information input + read-only Invoice Diff; helper text per requirement §5.1b |
 
 Bukan Exchange Diff (kurs). Jangan campur dengan `exchange_gain_local_currency` line items.
