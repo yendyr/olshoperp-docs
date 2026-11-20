@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-mutation-transfer-external
 menu_name: "Transfer External"
-version: 2.0
-last_updated: 2026-09-01
+version: 2.1
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 audience: operator
@@ -111,4 +111,4 @@ A: Tidak ada Void. Lanjut sampai Delivered di Transfer Inbound.
 A: Tidak dipakai di produksi TF Ext. Dokumen In Transit disembunyikan otomatis.
 
 **Q: Colli?**  
-A: Belum untuk produksi. Route BETA Colli hanya experimental.
+A: Belum untuk produksi. Route BETA Colli hanya experimental dan **belum siap end user** — konsep Colli TF External belum dideskripsikan final / belum diputus C-level ([ETM-15919](https://erpintegration.atlassian.net/browse/ETM-15919); banyak GAP). Pakai route produksi tanpa Colli.

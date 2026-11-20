@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-mutation-transfer-internal
 menu_name: "Transfer Internal"
-version: 2.0
-last_updated: 2026-09-01
+version: 2.1
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 aliases: [TFI, transfer internal, colli v2 TF, mutation-transfer-internal]
@@ -18,12 +18,16 @@ aliases: [TFI, transfer internal, colli v2 TF, mutation-transfer-internal]
 | UI | Route | Colli v2 |
 |----|-------|----------|
 | **Legacy** | `/supplychain/mutation-transfer-internal` | Tidak |
-| **BETA** | `/supplychain/new-mutation-transfer-internal` | Ya — Multisku Colli |
+| **BETA** | `/supplychain/new-mutation-transfer-internal` | Ya — Multisku Colli (**belum siap end user** — lihat callout) |
 
 **SOT:** [supplychain-mutation-transfer-internal-source-of-truth.md](../_meta/sot/supplychain-mutation-transfer-internal-source-of-truth.md) v1.0  
 **Colli master:** [PI Colli v2 SOT](../_meta/sot/supplychain-purchase-inbound-colli-v2-source-of-truth.md) · [Colli Type](../supplychain-colli-type/requirement.md)
 
 **Colli ID v1** (Colli × Colli Qty) **takedown** — canonical Colli v2 only.
+
+> **Colli di Transfer Internal — status produk (20 Nov 2026)**  
+> Fitur Colli (BETA / multi-SKU per colli, menu pisah, full transfer, import, dll.) **masih banyak GAP** dan **belum siap dipakai end user sebagai expected produksi**. Kebutuhan/konsep dari end user **belum dideskripsikan final** dan **belum diputuskan C-level**. Card terkait masih pending diskusi: [ETM-15915](https://erpintegration.atlassian.net/browse/ETM-15915) (+ REOPEN sejenis).  
+> **Yang dipakai end user hari ini:** route **Legacy** (tanpa Colli). Jangan jadikan Colli BETA sebagai acceptance produksi sampai keputusan C-level + AC final.
 
 ---
 
@@ -31,6 +35,7 @@ aliases: [TFI, transfer internal, colli v2 TF, mutation-transfer-internal]
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.1 | 2026-11-20 | QA - Yemima | Callout: Colli TF Internal **not ready for EU** — requirement belum diputus C-level; banyak GAP; [ETM-15915](https://erpintegration.atlassian.net/browse/ETM-15915) |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft from codebase |
 | 1.1 | 2026-07-04 | QA - Yemima | Cross-ref Assembly + Master Unit |
 | 1.2 | 2026-07-05 | QA - Yemima | Relasi Manual Picking List |
@@ -155,6 +160,8 @@ Satu kolom **Colli code**:
 
 ## 7. BETA — Colli v2
 
+> **Bukan expected produksi.** Konsep Colli di TF Internal masih pending keputusan C-level / deskripsi kebutuhan end user ([ETM-15915](https://erpintegration.atlassian.net/browse/ETM-15915)). §7 = catatan teknis/BETA + GAP — **bukan** janji fitur siap pakai.
+
 Toolbar **BulkColliAction**: Existing / New + Colli Type (sama PI). Kolom: Colli Origin, Colli Destination, Full COLLI Transfer (hidden).
 
 ### 7.1 Flow 1 — New Colli
@@ -219,6 +226,7 @@ Legacy V-01..V-08 dari v1.2 tetap berlaku (description max 150, approve lock 60s
 | GAP-TFI-05 | Colli ID v1 takedown | Note |
 | GAP-TFI-06 | BETA URL vs MultiskuColli transactionUrl legacy | Open |
 | GAP-TFI-07 | Loose vs colli FIFO priority edge case | Open — QA watch |
+| GAP-TFI-08 | Konsep Colli TF (menu pisah, full trf, import, dll.) belum final dari EU / C-level | **Open — product** · [ETM-15915](https://erpintegration.atlassian.net/browse/ETM-15915); **not ready for EU** |
 
 ## 10. Permission & Dependencies
 

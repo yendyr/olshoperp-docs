@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-mutation-transfer-internal
 menu_name: "Transfer Internal"
-version: 2.0
-last_updated: 2026-09-01
+version: 2.1
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 related_docs:
@@ -113,6 +113,8 @@ Detail nested routes: `Modules/SupplyChain/Routes/api.php`.
 `multisku_colli_id` — colli-bound stock excluded from loose FIFO.
 
 ## 6. Colli v2 — Implementation Notes
+
+> **Product status:** Colli TF Internal **not ready for EU** — requirement belum diputus C-level ([ETM-15915](https://erpintegration.atlassian.net/browse/ETM-15915)). Notes di bawah = kode/BETA saja, bukan AC produksi.
 
 | Behavior | Location |
 |----------|----------|

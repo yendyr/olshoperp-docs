@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: supplychain-mutation-transfer-external
 menu_name: "Transfer External"
-version: 2.0
-last_updated: 2026-09-01
+version: 2.1
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 aliases: [TF Ext, transfer external, mutation-transfer-external]
@@ -18,10 +18,14 @@ aliases: [TF Ext, transfer external, mutation-transfer-external]
 | UI | Route | Colli |
 |----|-------|-------|
 | **Produksi** | `/supplychain/mutation-transfer-external` | Tidak |
-| **BETA** | `/supplychain/new-mutation-transfer-external` | Experimental — bukan expected produksi |
+| **BETA** | `/supplychain/new-mutation-transfer-external` | Experimental — **bukan** expected produksi; **not ready for EU** |
 
 **SOT:** [supplychain-mutation-transfer-external-source-of-truth.md](../_meta/sot/supplychain-mutation-transfer-external-source-of-truth.md) v1.0  
 **Pasangan:** [Transfer Inbound](../supplychain-transfer-inbound/requirement.md) (approval ke-2)
+
+> **Colli di Transfer External — status produk (20 Nov 2026)**  
+> Fitur Colli di TF External **masih banyak GAP** / experimental dan **belum siap dipakai end user**. Kebutuhan Colli dari end user **belum dideskripsikan final** dan **belum diputuskan C-level**. Card terkait: [ETM-15919](https://erpintegration.atlassian.net/browse/ETM-15919) (+ REOPEN sejenis).  
+> **Yang dipakai end user hari ini:** route **produksi** (tanpa Colli). Jangan jadikan Colli BETA sebagai acceptance produksi sampai keputusan C-level + AC final.
 
 ---
 
@@ -29,6 +33,7 @@ aliases: [TF Ext, transfer external, mutation-transfer-external]
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.1 | 2026-11-20 | QA - Yemima | Callout: Colli TF External **not ready for EU** — requirement belum diputus C-level; [ETM-15919](https://erpintegration.atlassian.net/browse/ETM-15919) |
 | 1.0 | 2026-06-19 | QA - Yemima | Initial draft stub |
 | 2.0 | 2026-09-01 | QA - Yemima | Split SOT v1.0: dual approve, FIFO, import, pairing Inbound; Colli produksi out; Show Virtual TO-BE hide; GAP-TFEXT-01..06 |
 
@@ -223,6 +228,8 @@ Approve ke-1: `transit_status = in transit` + header **Approved**. Approve ke-2 
 
 Produksi **tanpa Colli**. BETA meniru TF Internal tapi Existing Colli di-scope ke **warehouse destination** (beda gedung). Risiko: colli origin SBY tidak muncul di SDA; Detail BETA bisa POST bulk-colli ke route TF Internal. **Jangan** expected produksi sampai redesign. Lihat §9.
 
+> Konsep Colli TF External **belum diputus C-level** / deskripsi EU belum final ([ETM-15919](https://erpintegration.atlassian.net/browse/ETM-15919)). BETA = experimental + banyak GAP — **not ready for end user**.
+
 ## 7. Validasi
 
 | ID | Kondisi | Behavior / pesan (verbatim) |
@@ -287,7 +294,7 @@ flowchart TB
 | ID | Deskripsi | Type | Dampak | Status |
 |----|-----------|------|--------|--------|
 | GAP-TFEXT-01 | Show Virtual: produksi `is_show_virtual=false`; BETA masih true; backend tidak proses `show_virtual`. TO-BE hide. | Missing Behavior (TO-BE) | Toggle membingungkan jika muncul lagi | Pending — hide in progress |
-| GAP-TFEXT-02 | Colli v2 hanya BETA; Existing colli scope destination; Detail BETA POST bulk-colli ke Internal. | Missing Behavior / Contradiction | Colli produksi tidak ada; BETA berisiko | Open — experimental only |
+| GAP-TFEXT-02 | Colli v2 hanya BETA; Existing colli scope destination; Detail BETA POST bulk-colli ke Internal. Konsep Colli TF belum final EU/C-level ([ETM-15919](https://erpintegration.atlassian.net/browse/ETM-15919)). | Missing Behavior / Contradiction | Colli produksi tidak ada; BETA berisiko; **not ready for EU** | Open — experimental only · product pending |
 | GAP-TFEXT-03 | Field `with_picking_list` + guard; UI selalu 0. Manual PL → TF Internal. | Unverified (legacy) | Jangan masuk UG/operator | Resolved for docs: out of scope |
 | GAP-TFEXT-04 | Requirement: tidak reject setelah approve ke-1. Code masih punya jalur residual jika `transit_status` terisi. | Contradiction | Docs ikut requirement user | Pending Decision — Yemima |
 | GAP-TFEXT-05 | Live generate Lost memakai class referensi Transfer (bukan Transfer External) meski text/URL ke TF Ext utama. | Unverified | Filter by class bisa miss | Open |

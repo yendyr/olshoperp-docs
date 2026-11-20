@@ -2,8 +2,8 @@
 doc_type: technical
 menu: supplychain-mutation-transfer-external
 menu_name: "Transfer External"
-version: 2.0
-last_updated: 2026-09-01
+version: 2.1
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 related_docs:
@@ -166,7 +166,7 @@ Approve-time origin level: *Warehouse Origin level must be greater than or equal
 - Pair TC dengan Transfer Inbound (dual approve + Lost/Broken Open).
 - Verifikasi delete unapproved = reserved restore (bukan Transfer column).
 - Import template exact 4 columns.
-- BETA Colli: jangan lock expected produksi.
+- BETA Colli: jangan lock expected produksi. **Not ready for EU** — konsep belum diputus C-level ([ETM-15919](https://erpintegration.atlassian.net/browse/ETM-15919)).
 
 ## 13. Known Issues
 

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: supplychain-mutation-transfer-internal
 menu_name: "Transfer Internal"
-version: 2.0
-last_updated: 2026-09-01
+version: 2.1
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 audience: operator
@@ -93,7 +93,7 @@ Stok SKUPENSIL: 1 Jan rack A 50, 2 Jan B 100, 3 Jan C 150, 4 Jan D 200.
 ## 6. FAQ
 
 **Q: Legacy vs BETA?**  
-A: End-user pakai **legacy**; Colli v2 hanya di **BETA** sampai cutover.
+A: End-user pakai **legacy**. Colli v2 di **BETA** **belum siap** untuk operasi harian: konsep/kebutuhan end user belum final dan belum diputus C-level (banyak GAP; [ETM-15915](https://erpintegration.atlassian.net/browse/ETM-15915)). Jangan andalkan Colli BETA sebagai fitur produksi.
 
 **Q: Wajib pakai colli?**  
 A: Tidak — kosong = barang loose.
