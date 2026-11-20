@@ -2,8 +2,8 @@
 doc_type: technical
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.17
-last_updated: 2026-11-05
+version: 1.18
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 related_docs:
@@ -15,6 +15,7 @@ related_docs:
 
 **UI:** `/omni/sales-order` · **API base:** `omnichannel/sales-order` · **type=platform`**
 
+> Changelog **1.18 (2026-11-20):** Restore deleted SO platform — **GAP-SP-RST-01** pending / high risk / EU not ready ([ETM-13987](https://erpintegration.atlassian.net/browse/ETM-13987)). No production AC for formal restore rules.  
 > Changelog **1.17 (2026-11-05):** Void while still in Wave — [requirement §5.8.1](./requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109); ETM-17110 (`8ef9876`). `handleVoid` calls `deleteDetailTransferWave` after approve, before `createTransferVoid`. Non-void SO details stay. Post-picking void transfer still runs.  
 > Changelog **1.16 (2026-11-05):** TO-BE void releases TF Wave reserved — [requirement §5.8.1](./requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109) / V-VR-07–08; ETM-17109 (process ETM-17110). Delete only active TF Wave details of a void SO via the TF Wave detail-delete path so reserved returns to available. Do not delete details of an SO that is not void. GAP-SPD-02 Open.
 > Changelog **1.15 (2026-11-05):** Export All With/Without Details requires `export_filename` — [requirement §5.9](./requirement.md); ETM-16768. `exportExcelPlatformDetails` / `exportExcelPlatformWithoutDetails`; `SalesOrderExportExcelJob` writes `.xlsx` up to 5000 rows, else `.zip`. GAP-SP-EX-01 Open.  

@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.17
-last_updated: 2026-11-05
+version: 1.18
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
-aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package, Pending Orders, Unmatched Bookings, Void, Void & Recreate, Recreate]
+aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package, Pending Orders, Unmatched Bookings, Void, Void & Recreate, Recreate, restore deleted]
 ---
 
 # Dev - Sales Platform — Requirement Documentation
@@ -17,7 +17,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 **SoT:** 6 file `omni-sales-platform-*-source-of-truth.md` (booking v1.1)  
 **Status:** AS-IS verified + PM SoT merge · lihat §Gaps  
 **Jira (edit detail TO-BE):** [ETM-15749](https://erpintegration.atlassian.net/browse/ETM-15749) · pasangan ASO [ETM-15748](https://erpintegration.atlassian.net/browse/ETM-15748)  
-**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) — Additional Cost/Disc SO → SI · [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) (TikTok unit price) supersedes rumus [ETM-14808](https://erpintegration.atlassian.net/browse/ETM-14808) · [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) (judul file Export All) · [ETM-17109](https://erpintegration.atlassian.net/browse/ETM-17109) (data: void masih menahan reserved TF Wave) · [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110) (proses: void di Wave melepas reserved)
+**Related:** [ETM-16762](https://erpintegration.atlassian.net/browse/ETM-16762) / [ETM-16763](https://erpintegration.atlassian.net/browse/ETM-16763) — Additional Cost/Disc SO → SI · [ETM-16805](https://erpintegration.atlassian.net/browse/ETM-16805) (TikTok unit price) supersedes rumus [ETM-14808](https://erpintegration.atlassian.net/browse/ETM-14808) · [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) (judul file Export All) · [ETM-17109](https://erpintegration.atlassian.net/browse/ETM-17109) (data: void masih menahan reserved TF Wave) · [ETM-17110](https://erpintegration.atlassian.net/browse/ETM-17110) (proses: void di Wave melepas reserved) · [ETM-13987](https://erpintegration.atlassian.net/browse/ETM-13987) (restore SO deleted — pending)
 
 ---
 
@@ -25,6 +25,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.18 | 2026-11-20 | QA - Yemima | **GAP-SP-RST-01:** restore Sales Platform yang deleted — **pending**; high risk (banyak relasi → banyak validasi); EU belum mau handle; [ETM-13987](https://erpintegration.atlassian.net/browse/ETM-13987) |
 | 1.17 | 2026-11-05 | QA - Yemima | TO-BE §5.8.1 / §6.9: Void atau Void & Recreate saat SO masih di Wave (belum picking) menghapus detail Wave milik SO itu, reserved turun, available naik, SO keluar dari Wave. Semua pintu void pusat. Jalur void setelah picking tidak diganti. SO lain yang belum void tidak dihapus (ETM-17110; data ETM-17109) |
 | 1.16 | 2026-11-05 | QA - Hazel (yemimadocs) | **TO-BE** §5.8.1 / §6.9 V-VR-07–08: SO void tidak menyisakan detail TF Wave aktif yang menahan reserved; hapus lewat jalur hapus detail TF Wave; SO yang belum void tidak dihapus — ETM-17109 (proses ETM-17110). GAP-SPD-02 |
 | 1.15 | 2026-11-05 | QA - Yemima | Export All With/Without Details wajib judul file (dialog **Export File Name**); nama kosong ditolak; nama bersih jadi file unduhan dan baris riwayat. Export Active Page Only tanpa dialog. GAP-SP-EX-01 Open (ETM-16768) |
@@ -668,6 +669,7 @@ Detail: [Failed Ship §4.0.5](../supplychain-failed-ship/requirement.md) · [Sal
 | **GAP-BM-14** (consumer) | Snapshot Benchmark COGS = **effective** Manual COGS — [§6.6](#66-benchmark-cogs-snapshot--effective-manual-cogs-to-be--gap-bm-14) | Capture masih rumus mentah | Open (TO-BE) |
 | **GAP-ED-01** | Edit detail sebelum approve + sync lock (add/replace SKU, price, disc, VAT; no delete) — [§6.8](#68-edit-detail-sebelum-approve--addreplace-sku-price-disc-vat-no-delete-sync-lock-to-be--etm-15749) · ETM-15749 | Form platform masih read-mostly; sync bisa timpa price | Open (TO-BE) |
 | **GAP-SP-EX-01** | Nama file export sama bisa saling menimpa file (belum unik per export) — [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) | Dua export berjudul sama belum dijamin file-nya terpisah | Open |
+| **GAP-SP-RST-01** | Requirement formal **restore** SO Sales Platform yang sudah deleted (Show Deleted → restore) — [ETM-13987](https://erpintegration.atlassian.net/browse/ETM-13987) | High risk: makin banyak relasi (Wave, outbound, SI, settlement, retur, dll.) makin banyak validasi yang harus dijaga; salah restore = data/jurnal rusak | **Pending** — end user belum mau handle proses ini; detail AC belum dibahas. Bukan expected produksi sampai keputusan EU + AC final |
 
 **[VERIFY: CODEBASE] terbuka:** Start Date global vs store; Bulk Sync residual; Instant Processing timing vs Complete; Total Price composition; Invoice∪FS caps; bind-error owner mismatch; Buyer Name censor scope; TikTok NULL discount; auto-delete soft/hard.
 
@@ -721,3 +723,6 @@ A: Tidak lewat jalur normal. Approve platform tidak auto-SI; Instant Settlement 
 
 **Q: Export All minta judul file?**  
 A: Ya. **With Details** dan **Without Details** membuka dialog **Export File Name**. Kosongkan **File name** → **File name is required.** Saran awal boleh dipakai atau diganti (maks. 150 karakter). **Export Active Page Only** tidak menanyakan nama. Lihat §5.9 (ETM-16768).
+
+**Q: Order platform sudah deleted — bisa masuk lagi lewat sync / restore?**  
+A: Order yang sudah deleted **tidak** masuk lagi lewat sync biasa kecuali di-restore (UI Show Deleted). **Requirement formal restore** masih **pending** ([ETM-13987](https://erpintegration.atlassian.net/browse/ETM-13987) / **GAP-SP-RST-01**): proses **high risk** karena SO sering punya banyak relasi; end user belum mau handle sampai aturan validasi jelas. Jangan anggap restore sebagai fitur siap produksi.

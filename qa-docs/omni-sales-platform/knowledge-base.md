@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.17
-last_updated: 2026-11-05
+version: 1.18
+last_updated: 2026-11-20
 owner: QA - Yemima
 status: review
 audience: operator
@@ -228,6 +228,8 @@ Pill di Failed Ship menonjolkan return platform yang **belum** outbound penuh. D
 **Kenapa Order ID sudah ada di Shopee tapi di OlshopERP masih `-` / belum nempel?** Sering Order ID datang dulu tanpa Booking Number. Sistem menahan create baris baru sampai webhook **MATCHED** menggabungkan keduanya — supaya tidak dobel. Contoh: booking `260831AASC74GOWV7FM` digabung ke `2609031XP6RKDK` baru saat MATCHED. **TO-BE:** pantau Order ID yang di-hold di **Log Data → Pending Orders**; booking tanpa Order ID lewat pill **Unmatched Bookings** (ETM-15798).
 
 **Apa beda Log Data dan API Data Log?** Log Data = batch sync toko (+ TO-BE Pending Orders); API Data Log = payload/detail di form order (mis. escrow Shopee).
+
+**Order sudah dihapus (deleted) — boleh di-restore supaya sync masuk lagi?** Jangan anggap ini fitur siap pakai. Restore SO platform yang deleted **masih pending** (high risk: banyak relasi = banyak validasi; end user belum mau handle). Card: [ETM-13987](https://erpintegration.atlassian.net/browse/ETM-13987). Sync biasa **tidak** menghidupkan order yang sudah deleted.
 
 ---
 
