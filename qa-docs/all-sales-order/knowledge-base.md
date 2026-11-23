@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.16
-last_updated: 2026-11-05
+version: 1.17
+last_updated: 2026-11-23
 owner: QA - Yemima
 status: review
-aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS, Extract bundle, Pending Orders, Unmatched Bookings, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate]
+aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS, Extract bundle, Pending Orders, Unmatched Bookings, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, auto-save, Save All]
 ---
 
 # All Sales Order — Knowledge Base
@@ -70,6 +70,10 @@ flowchart TD
 5. **Export Active Page Only** tidak membuka dialog.
 
 Karakter yang tidak boleh di nama file diganti tanda minus, dan spasi berlebih dirapikan. Contoh: `Laporan SO 05/11` tersimpan `Laporan SO 05-11`.
+
+### Ubah Basic Information SO internal (auto-save)
+
+Untuk order **internal** (bukan marketplace): di halaman edit, ubah field Basic Information (termasuk Other Information, alamat, lampiran) → tersimpan otomatis tanpa **Save All** (notifikasi sukses). Sama seperti di Dev - Sales Order. Order **marketplace**: data Basic Information dari platform — jangan harap edit manual di sini.
 
 ### Recheck failed process
 

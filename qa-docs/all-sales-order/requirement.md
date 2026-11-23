@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.16
-last_updated: 2026-11-05
+version: 1.17
+last_updated: 2026-11-23
 owner: QA - Yemima
 status: review
-aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail, Pending Orders, Unmatched Bookings, Log Data, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, platform_order_id]
+aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail, Pending Orders, Unmatched Bookings, Log Data, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, platform_order_id, auto-save, Save All]
 ---
 
 # All Sales Order — Requirement Documentation
@@ -27,6 +27,7 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.17 | 2026-11-23 | QA - Yemima | AS-IS §4/§5.10: auto-save Basic Information SO General di form ASO (paritas SOG §5.1a, ETM-17544); SO Platform Basic Information tetap dari marketplace |
 | 1.16 | 2026-11-05 | QA - Yemima | Paritas §5.8: Void atau Void & Recreate saat order masih di Wave melepas reserved dan mengeluarkan order dari Wave. Aturan lengkap di Sales Platform dan Dev - Sales Order (ETM-17110) |
 | 1.15 | 2026-11-05 | QA - Hazel (yemimadocs) | **TO-BE** §5.8 paritas SP: SO void tidak menyisakan detail TF Wave aktif yang menahan reserved; hapus lewat jalur hapus detail TF Wave; SO yang belum void tidak dihapus — ETM-17109 (proses ETM-17110). GAP-ASO-10 |
 | 1.14 | 2026-11-05 | QA - Yemima | Export All With/Without Details wajib judul file (dialog **Export File Name**); nama kosong ditolak; nama bersih jadi file unduhan dan baris riwayat. Export Active Page Only tanpa dialog. GAP-ASO-09 Open (ETM-16768) |
@@ -110,6 +111,8 @@ Filter carousel process status memakai `filter-process-status?type=all`.
 | Datalist columns | Gabungan kolom general+platform (code, store/customer, amounts, processing status, dll.) | FE `AllSalesOrder/DataList.vue` |
 | Error flag column | Muncul saat pill Failed Process | [SP §5.2](../omni-sales-platform/requirement.md) + [SOG §8](../sales-order-general/requirement.md) |
 | Edit form | `from-all-sales-order=true`; field bergantung tipe | General form vs platform — **TO-BE** edit detail platform §5.6 / [SP §6.8](../omni-sales-platform/requirement.md) |
+| Auto-save Basic Information (SO General) | Edit SO **general**: field Basic Information (termasuk Other Information, alamat, attachment) tersimpan otomatis tanpa **Save All** | Kanonik [SOG §5.1a](../sales-order-general/requirement.md) · ETM-17544 · §5.10 |
+| Basic Information SO Platform | Tidak diedit manual di ASO — data dari marketplace | [SP](../omni-sales-platform/requirement.md) |
 | Booking Other Info | Edit booking fields untuk unmatched booking | [SP booking](../omni-sales-platform/requirement.md) — manual edit di ASO, bukan form SP |
 | Detail — flag bundle | Ikon bundle + aksi **Extract** (tooltip *Extract Bundle Details*) | Shared `BundleRandomFlag.vue` · API `extract-bundle` — **§5.5** |
 | Import Excel | **Import Processed** + **Import Non-Processed** (TO-BE paritas SOG) | [SOG §6.3](../sales-order-general/requirement.md) |
@@ -314,6 +317,19 @@ Baris yang di-void saat masih di Wave mengikuti [Dev - Sales Platform §5.8.1](.
 
 Paritas: [Dev - Sales Order](../sales-order-general/requirement.md) · [Dev - Sales Platform](../omni-sales-platform/requirement.md).
 
+### 5.10 Auto-save Basic Information SO General (AS-IS · ETM-17544)
+
+Edit SO tipe **general** dari ASO memakai form yang sama dengan Dev - Sales Order.
+
+| Aturan | AS-IS |
+|--------|--------|
+| Cakupan | Basic Information (field utama + Other Information + alamat + attachment) tersimpan otomatis tanpa **Save All** |
+| Create | Tidak auto-save |
+| Kunci detail | Customer / Currency tetap ditolak jika sudah ada baris detail; Store / Warehouse Process / Transaction Date AS-IS masih bisa diubah — lihat [SOG GAP-SOG-19](../sales-order-general/requirement.md) |
+| SO **platform** | Basic Information **tidak** diedit manual di ASO — seluruh info order dari marketplace |
+
+Kanonik penuh: [SOG §5.1a](../sales-order-general/requirement.md).
+
 ---
 
 ## 6. Validasi
@@ -375,6 +391,7 @@ flowchart TB
 | **GAP-ASO-10** | Void SO masih menahan reserved di Transfer Wave — [§5.8](#58-void--void--recreate--recreate-platform-order-to-be--etm-15859) · ETM-17109 · proses ETM-17110 · kanonik [SP §5.8.1 / GAP-SPD-02](../omni-sales-platform/requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109) | Open (TO-BE) |
 | **GAP-APR-01** | Auto-approve cron mengabaikan toggle/delay — berdampak baris platform di ASO | Open — [SP gaps](../omni-sales-platform/requirement.md) |
 | **GAP-ASO-09** | Nama file export sama bisa saling menimpa file (belum unik per export) — [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) | Open |
+| **GAP-ASO-11** | Paritas kunci header vs detail (Store / Warehouse Process / Transaction Date) — kanonik [SOG GAP-SOG-19](../sales-order-general/requirement.md); ASO tidak mendefinisikan ulang | Open (arah produk) |
 
 ---
 
@@ -395,6 +412,7 @@ flowchart TB
 - [ ] Doc folder terpisah dari SOG & SP
 - [ ] **Extract** bundle dari detail ASO ditolak jika Price header bundle ≤ 0; boleh jika > 0 (ETM-15732); pesan error price must be greater than zero
 - [ ] **Export All** With Details dan Without Details membuka dialog **Export File Name**; nama kosong ditolak (**File name is required.**); nama terisi menjadi nama file unduhan (`.xlsx`, atau `.zip` bila terpecah) dan tampil di riwayat. **Export Active Page Only** tanpa dialog (ETM-16768 / §5.9)
+- [ ] **Auto-save SO General (ETM-17544 / §5.10):** edit Basic Information di ASO tersimpan otomatis tanpa Save All; paritas SOG §5.1a; SO Platform Basic Information tidak diedit manual di ASO
 
 ---
 

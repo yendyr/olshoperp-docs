@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.11
-last_updated: 2026-11-09
+version: 3.12
+last_updated: 2026-11-23
 owner: QA - Yemima
 status: review
-aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost Disc, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
+aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost Disc, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot, auto-save, Save All]
 ---
 
 # Dev - Sales Order — Knowledge Base
@@ -157,6 +157,8 @@ Karakter yang tidak boleh di nama file diganti tanda minus. Contoh: `Laporan SO 
 | Non-Processed **No Stock Available** padahal stok gudang masih ada di batch lain | Dulu beberapa proses bisa mengambil batch masuk yang sama | Seharusnya order tetap berhasil jika total stok cukup; sistem memakai batch berikutnya. Kalau masih gagal, stok di semua batch memang kurang |
 | Sheet 2 cost/disc “aneh” / salah jadi biaya | Kode sama ada di Other Cost dan Other Discount | Ubah salah satu kode di master; re-import. Order harus gagal jika bentrok (aturan baru) |
 | Create langsung ke edit | By design | Lengkapi di halaman edit |
+| Ubah Basic Information lalu refresh — data hilang | Dulu harus **Save All**; sekarang di halaman **edit** field Basic Information (termasuk Other Information, alamat, lampiran) tersimpan otomatis saat keluar field / pilih opsi | Pastikan muncul notifikasi sukses. Kalau error (mis. nomor order/tracking sudah dipakai, atau ganti Customer padahal sudah ada barang), nilai tidak tersimpan — perbaiki lalu coba lagi. Tombol **Save All** tetap ada |
+| Ganti Customer / Currency ditolak | SO sudah punya baris produk | Hapus dulu semua baris detail, atau buat SO baru |
 | Ada tanda harga di bawah HPP / auto-approve gagal | Price Before VAT di bawah Benchmark COGS di line | Unhide kolom Price Before VAT + Benchmark; naikkan harga atau **approve manual**. Filter TO-BE: Error Flag **Below Benchmark COGS** |
 | Harga jadi ratusan juta setelah import | Titik di `10000.6789` dulu dianggap ribuan | Seharusnya Rp 10.000,6789. Qty 1000 → total Rp 10.000.678,90. Kalau masih meledak, kirim file ke support |
 | Baris ditolak “maximum 4 decimal places” | Harga punya lebih dari 4 angka di belakang koma/titik | Potong ke 4 angka desimal, lalu unggah ulang |
@@ -198,7 +200,8 @@ Detail: [Benchmark COGS](../accounting-product-benchmark-price/knowledge-base.md
 **Max detail?** 100 baris per pesanan.  
 **Harga `10000.6789`?** Dibaca Rp 10.000,6789, bukan ratusan juta. Lebih dari 4 angka desimal ditolak. `1.500` tetap seribu lima ratus.  
 **Export All minta nama?** Ya, untuk **With Details** dan **Without Details**. Kosongkan **File name** → **File name is required.** **Export Active Page Only** tidak menanyakan nama.  
-**Void order yang masih di Wave?** Stok yang ditahan kembali bisa dijual, dan order keluar dari antrian. Contoh: ditahan 2, tersedia 8 → setelah void ditahan 0, tersedia 10 (ETM-17110).
+**Void order yang masih di Wave?** Stok yang ditahan kembali bisa dijual, dan order keluar dari antrian. Contoh: ditahan 2, tersedia 8 → setelah void ditahan 0, tersedia 10 (ETM-17110).  
+**Harus Save All tiap ubah header?** Tidak di halaman edit — perubahan Basic Information tersimpan otomatis (notifikasi sukses). Create dokumen baru tetap tanpa auto-save.
 
 ## Referensi
 

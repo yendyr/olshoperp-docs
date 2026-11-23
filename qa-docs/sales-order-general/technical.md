@@ -2,11 +2,11 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.11
-last_updated: 2026-11-09
+version: 3.12
+last_updated: 2026-11-23
 owner: QA - Yemima
 status: review
-aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulfillment Mode, Import Non-Processed, Other Cost/Disc Code, cogs-error, Manual COGS]
+aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulfillment Mode, Import Non-Processed, Other Cost/Disc Code, cogs-error, Manual COGS, auto-save]
 ---
 
 # Dev - Sales Order (Sales Order General) — Technical Documentation
@@ -14,9 +14,10 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 **Type:** `type_sales_order = general`  
 **UI:** `/businessdevelopment/sales-order-general`  
 **API prefix:** `/api/omnichannel/sales-order/*`  
-**Behavior:** [requirement.md](./requirement.md) v3.11  
+**Behavior:** [requirement.md](./requirement.md) v3.12  
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB
 
+> **3.12 (2026-11-23):** Auto-save Basic Information on edit — [requirement §5.1a](./requirement.md); ETM-17544. FE `SalesOrderGeneral/Form.vue`; same `SalesOrderController::update` as Save All. GAP-SOG-19 Open.  
 > **3.11 (2026-11-09):** Export storage path is unique per export: `getExportStoragePath('exports/sales_order_general/excels', export_file_id, fileName)` (77512a0) and no `makeDirectory` before `Excel::store` on S3 (a567481, ETM-17177). GAP-SOG-16 Closed (ETM-16769).  
 > **3.10 (2026-11-05):** Void while still in Wave releases reserved — [requirement §6.7 / §7.5](./requirement.md); ETM-17110 (`8ef9876`). Same `SalesOrderApprovalController::handleVoid` path as Sales Platform. Canonical call site: [Sales Platform technical](../omni-sales-platform/technical.md).  
 > **3.9 (2026-11-05):** Export All With/Without Details requires `export_filename` — [requirement §6.8](./requirement.md); ETM-16768. `SalesOrderController::exportExcelGeneral` + `SalesOrderGeneralExportExcelJob` (appends `.xlsx`). GAP-SOG-16 Open.  
@@ -31,6 +32,7 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.12 | 2026-11-23 | Auto-save Basic Information on edit (blur/Enter/select/date/editor/attachment) via shared `update`; audit bump without full detail refresh when `isAutoSave` (ETM-17544). GAP-SOG-19 Open |
 | 3.11 | 2026-11-09 | Export All file stored at `exports/sales_order_general/excels/{export_file_id}/{file_name}.xlsx`; GAP-SOG-16 Closed (ETM-16769) |
 | 3.10 | 2026-11-05 | Void in Wave: `handleVoid` → `WaveController::deleteDetailTransferWave` before `createTransferVoid` (ETM-17110). Stock effect lives in `ItemStockMutation::deleteTransferDetailRow` `is_wave` |
 | 3.9 | 2026-11-05 | Export All: `export_filename` required; `export_type` drives history action (ETM-16768). GAP-SOG-16 Open |
@@ -294,6 +296,8 @@ Random SKU: `SalesOrderGenerateRandomLogic` calls `validateDetail` for details c
 | Behavior | Notes |
 |----------|-------|
 | Create | `default-values` → POST create → redirect edit |
+| Auto-save Basic Information (ETM-17544) | Edit only (`is_edit` + `can_update`). Text: `@focusout` / Enter → `flushAutoSave` → `autoSaveBasicInfo` → same `update()` as Save All with `isAutoSave: true` (audit key++, no full `auditupdate`/detail refresh). Select/date: watchers + `revertKeys` on error. Attachment: `fileDirty` then flush. Shared form with All Sales Order general edit |
+| Header lock when details exist | BE `SalesOrderController::update`: reject customer / `type_sales_order` / currency+exchange_rate change if `sales_order_details()->exists()`. Store / `wh_process_id` / `transaction_date` **not** locked (GAP-SOG-19) |
 | Carousel | `filter-process-status?type=general` + filter `sales_order_process_status` |
 | ASO upload | Still `upload?type=general` |
 | Processing icons | `formatAvailabilityAndProcessStatus` (TransferSummary) |

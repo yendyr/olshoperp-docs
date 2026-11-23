@@ -11,7 +11,7 @@ Route: `/businessdevelopment/all-sales-order`
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **User-guide:** v1.10 · `source_version` 1.16  
-**Version (3 layer):** 1.16 · **Last updated:** 2026-11-05 17:05
+**Version (3 layer):** 1.17 · **Last updated:** 2026-11-23 10:00
 
 ## Peran vs dua menu sumber
 
@@ -28,6 +28,7 @@ Route: `/businessdevelopment/all-sales-order`
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.17 | 2026-11-23 10:00 | Edit SO General di All Sales Order: perubahan Basic Information tersimpan otomatis tanpa Save All (sama Dev - Sales Order). SO Platform tetap ambil data dari marketplace (ETM-17544) |
 | 1.16 | 2026-11-05 17:05 | Catatan paritas: Void atau Void & Recreate pada order yang masih di Wave mengembalikan stok yang ditahan dan mengeluarkan order itu dari Wave, sama seperti Sales Platform dan Dev - Sales Order. Order lain yang masih aktif tidak ikut hilang (ETM-17110) |
 | 1.15 | 2026-11-05 16:58 | Paritas Sales Platform: Sales Order yang sudah void tidak boleh masih menahan stok reserved di Transfer Wave. Baris milik order void dilepas supaya stok kembali available. Order yang masih aktif tidak ikut terhapus (ETM-17109) |
 | 1.14 | 2026-11-05 15:06 | Export All (With Details dan Without Details) wajib isi judul file di dialog Export File Name sebelum unduh. Nama itu yang tampil di riwayat export dan jadi nama file. Export Active Page Only tetap langsung, tanpa dialog (ETM-16768) |

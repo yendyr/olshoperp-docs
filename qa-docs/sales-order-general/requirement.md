@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.11
-last_updated: 2026-11-09
+version: 3.12
+last_updated: 2026-11-23
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -27,6 +27,7 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.12 | 2026-11-23 | QA - Yemima | AS-IS §5.1a: auto-save Basic Information (termasuk Other Information, alamat, attachment) di halaman edit SO General tanpa Save All — paritas All Sales Order; create tidak auto-save; kunci Customer/Currency saat ada detail tetap berlaku (ETM-17544). GAP-SOG-19 Open: perluasan kunci Store / Warehouse Process / Transaction Date |
 | 3.11 | 2026-11-09 | QA - Yemima | Export All: setiap export disimpan terpisah per export, jadi dua export dengan judul sama tidak saling menimpa file. GAP-SOG-16 Closed. Contoh saran nama file disesuaikan dengan layar (ETM-16769, ETM-16768) |
 | 3.10 | 2026-11-05 | QA - Yemima | TO-BE §7.5 / §6.7: Void atau Void & Recreate saat SO masih di Wave (belum picking) menghapus detail Wave, reserved turun, available naik, SO keluar dari Wave. Jalur void setelah picking tidak diganti (ETM-17110) |
 | 3.9 | 2026-11-05 | QA - Yemima | Export All With/Without Details wajib judul file (dialog **Export File Name**); nama kosong ditolak; nama bersih jadi file unduhan dan baris riwayat. Export Active Page Only tanpa dialog. GAP-SOG-16 Open (ETM-16768) |
@@ -159,16 +160,33 @@ Endpoint: `POST omnichannel/sales-order/get?type=general` (ASO: `type=all`, engi
 
 | Field | Wajib | Default | Validasi | Catatan |
 |---|---|---|---|---|
-| Transaction Date | Ya | Hari ini | Fiscal period aktif | — |
-| Customer | Ya | Default API | General customer aktif; locked setelah ada detail | — |
-| Store | Ya | Default API | Required | Warehouse proses |
-| Currency | Ya | ID 1 | Locked setelah ada detail | — |
-| Exchange Rate | Ya | 1 | Numeric min 1; =1 jika primary | — |
-| Shipper Service | Ya | Default | Valid & aktif | — |
+| Transaction Date | Ya | Hari ini | Fiscal period aktif | AS-IS: masih boleh diubah meski ada detail — lihat GAP-SOG-19 |
+| Customer | Ya | Default API | General customer aktif; **locked** setelah ada detail | Ganti ditolak (pesan sistem menyebut detailed data) |
+| Store | Ya | Default API | Required | AS-IS: masih boleh diubah meski ada detail (ikut ubah konteks gudang) — GAP-SOG-19 |
+| Currency | Ya | ID 1 | **Locked** setelah ada detail | Bersama Exchange Rate |
+| Exchange Rate | Ya | 1 | Numeric min 1; =1 jika primary; **locked** setelah ada detail | — |
+| Shipper Service | Ya | Default | Valid & aktif | Boleh edit + auto-save meski ada detail |
+| Warehouse Process | Tidak | Dari Store | Harus owned_by terkait Store | AS-IS: masih boleh diubah meski ada detail — GAP-SOG-19 |
 | With Quotation | Ya | 0 | Boolean | — |
-| Platform Order ID | Tidak | — | Max 100; unique non-void | Grouping import |
-| Tracking Number | Tidak | — | Max 100; unique non-void | — |
-| Description / Your Ref. / COD / Attachment | Tidak | — | Max length / numeric ≥0 / extension | — |
+| Platform Order ID | Tidak | — | Max 100; unique non-void | Grouping import; auto-save |
+| Tracking Number | Tidak | — | Max 100; unique non-void | Auto-save |
+| Description / Your Ref. / COD / Attachment | Tidak | — | Max length / numeric ≥0 / extension | Auto-save (termasuk Other Information & alamat) |
+
+### 5.1a Auto-save Basic Information (AS-IS — ETM-17544)
+
+Berlaku di form edit **Dev - Sales Order** dan **All Sales Order** (SO tipe **general** saja; form shared).
+
+| Aturan | AS-IS |
+|--------|--------|
+| Kapan | Hanya halaman **edit**, SO masih boleh diubah (`draft` / `open` / `rejected` yang editable). **Create** tidak auto-save |
+| Cakupan | Seluruh field section **Basic Information** yang editable: field utama, **Other Information**, alamat (Consignee / Billing / Customer Address), Buyer Notes, Term and Condition, **attachment** |
+| Pemicu | Teks: keluar field (blur) atau Enter. Pilihan / tanggal: saat dipilih. Editor: keluar editor. Attachment: setelah file ditambah |
+| Save All | Tetap ada; tidak diganti. Toggle Draft/Open & Approve tetap normal setelah auto-save |
+| Validasi | Sama dengan Save All (duplikat Platform Order ID / Tracking, kunci Customer & Currency saat ada detail, dll.). Gagal → toast error; data tersimpan tidak berubah (cek refresh) |
+| Platform SO | Di All Sales Order, Basic Information platform **tidak** diedit di jalur ini (data dari marketplace) |
+| Side effect | Tiap auto-save = satu kali simpan header (+ jejak audit). Ganti Warehouse Process via auto-save **tidak** me-refresh tabel detail seperti Save All |
+
+**Kunci header vs detail (AS-IS vs arah produk):** saat ini hanya **Customer** dan **Currency / Exchange Rate** yang ditolak jika SO sudah punya baris detail. Field lain (termasuk Store, Warehouse Process, Transaction Date) masih bisa diubah + auto-save. Arah produk: kunci juga field yang mengikat konteks detail — lihat **GAP-SOG-19**.
 
 ### 5.2 Detail line
 
@@ -502,6 +520,7 @@ Kanonik: [Benchmark COGS §6.5](../accounting-product-benchmark-price/requiremen
 | GAP-SOG-14 | Error Flag Below Benchmark COGS (icon/tooltip/filter/detail) — shared dengan Platform/ASO; spec kanonik GAP-BM-13 | Ops sulit filter under-COGS di list General | Open (TO-BE) |
 | GAP-SOG-15 | Snapshot Benchmark COGS = effective Manual COGS (GAP-BM-14 consumer) | Capture masih rumus mentah | Open (TO-BE) |
 | GAP-SOG-16 | Nama file export sama bisa saling menimpa file (belum unik per export) — [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) — ditutup 2026-11-09: file disimpan per export (ETM-16769) | Dua export berjudul sama belum dijamin file-nya terpisah | Closed |
+| GAP-SOG-19 | Perluasan kunci header saat ada detail: AS-IS hanya Customer + Currency/Exchange Rate; arah produk mengunci juga **Transaction Date**, **Store**, **Warehouse Process** (mengikat konteks detail / stok gudang). Field non-relasi tetap boleh edit + auto-save (§5.1a, ETM-17544) | Operator bisa ganti Store/WH/Trx Date padahal detail sudah ada → risiko info stok/gudang & konteks detail tidak selaras; komplain “kok header bisa diubah” vs “kok dikunci” | Open (arah produk — CR terpisah) |
 
 ---
 
@@ -548,6 +567,9 @@ A: 100 detail/SO; total baris tanpa hard cap tapi ~2.000 berisiko stuck (GAP-SOG
 
 **Q: Export All minta judul file?**  
 A: Ya. **With Details** dan **Without Details** membuka dialog **Export File Name**. Kosongkan **File name** → **File name is required.** Saran awal boleh dipakai atau diganti (maks. 150 karakter). **Export Active Page Only** tidak menanyakan nama. Lihat §6.8 (ETM-16768).
+
+**Q: Ubah Basic Information harus klik Save All?**  
+A: Tidak (AS-IS ETM-17544). Di halaman **edit**, perubahan field Basic Information (termasuk Other Information, alamat, attachment) tersimpan otomatis. **Create** masih tanpa auto-save. **Customer** / **Currency** tetap tidak boleh diganti jika sudah ada baris detail. Detail §5.1a.
 
 ---
 

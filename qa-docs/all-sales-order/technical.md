@@ -2,8 +2,8 @@
 doc_type: technical
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.16
-last_updated: 2026-11-05
+version: 1.17
+last_updated: 2026-11-23
 owner: QA - Yemima
 status: review
 related_docs:
@@ -19,8 +19,9 @@ related_docs:
 **UI:** `/businessdevelopment/all-sales-order`  
 **API list:** `businessdevelopment/all-sales-order`  
 **Shared Omni:** `omnichannel/sales-order/*` (`type=all` / general endpoints)  
-**Behavior:** [requirement.md](./requirement.md) v1.16 · import general → [SOG technical](../sales-order-general/technical.md)
+**Behavior:** [requirement.md](./requirement.md) v1.17 · import general → [SOG technical](../sales-order-general/technical.md)
 
+> **1.17 (2026-11-23):** Auto-save Basic Information on SO General edit — [requirement §5.10](./requirement.md); kanonik [SOG §5.1a](../sales-order-general/requirement.md) / [SOG technical §8](../sales-order-general/technical.md); ETM-17544.  
 > **1.16 (2026-11-05):** Void-in-Wave process is not redefined here — [requirement §5.8](./requirement.md); ETM-17110. Canonical: [Sales Platform technical](../omni-sales-platform/technical.md) invariant 19.  
 > **1.15 (2026-11-05):** TO-BE void releases TF Wave reserved — [requirement §5.8](./requirement.md#58-void--void--recreate--recreate-platform-order-to-be--etm-15859); kanonik [SP §5.8.1](../omni-sales-platform/requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109); ETM-17109 (process ETM-17110). GAP-ASO-10 / GAP-SPD-02 Open.
 > **1.14 (2026-11-05):** Export All With/Without Details requires `export_filename` — [requirement §5.9](./requirement.md); ETM-16768. `sanitizeExportFileName` + `SalesOrderExportFile.export_type`. GAP-ASO-09 Open.  
@@ -38,6 +39,7 @@ related_docs:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.17 | 2026-11-23 | Cross-ref auto-save Basic Information SO General (ETM-17544); shared `SalesOrderGeneral/Form.vue`. GAP-ASO-11 / SOG GAP-SOG-19 |
 | 1.16 | 2026-11-05 | Cross-ref only: void in Wave releases reserved via `handleVoid` → `deleteDetailTransferWave` (ETM-17110). See Sales Platform technical invariant 19 |
 | 1.15 | 2026-11-05 | TO-BE void TF Wave reserved release (ETM-17109); kanonik SP §5.8.1. GAP-ASO-10 Open |
 | 1.14 | 2026-11-05 | Export All: `export_filename` required; action column from `export_type` (ETM-16768). GAP-ASO-09 Open |
@@ -158,6 +160,7 @@ sequenceDiagram
 | `type="all"` pills | Counters gabungan |
 | Import history | Shared Omni SO General endpoints |
 | `from-all-sales-order` | Form flag untuk breadcrumb/back |
+| Auto-save Basic Information (SO General) | Same as SOG: `SalesOrderGeneral/Form.vue` — blur/Enter/select/date/editor/attachment → `update` with `isAutoSave`. Platform header not edited here |
 | Export File Name dialog | **Export All** With/Without Details. **Export Active Page Only** skips the dialog |
 
 ---
@@ -175,6 +178,7 @@ sequenceDiagram
 ## 8. Known Issues
 
 - GAP-ASO-09 — same export title is not unique per export (ETM-16768). Open. Do not treat a colliding name as accepted behaviour
+- GAP-ASO-11 / SOG GAP-SOG-19 — expand header locks when details exist (Store / WH / Trx Date); ASO defers to SOG
 - GAP-ASO-01 Partial — tombol ada; residual Last Checked per-icon + O-01…O-03 + `in_progress` hardcode
 - GAP-ASO-07 — Last Checked Expected = `getStockDate()` (POD / now); AS-IS = `error_info.updated_at`
 - GAP-ASO-08 / GAP-SPD-01 — Void vs Recreate + sync anti auto-create (ETM-15859); touchpoints: approval/void path, platform sync services, FE show Recreate + rename Void & Clone
