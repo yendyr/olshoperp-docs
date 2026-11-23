@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: system-product
 menu_name: "System Product"
-version: 2.11
-last_updated: 2026-11-12
+version: 2.12
+last_updated: 2026-11-23
 owner: QA - Yemima
 status: review
 audience: operator
@@ -13,6 +13,7 @@ sections:
 
 # System Product — Knowledge Base
 
+> **2.12:** TO-BE ([ETM-17636](https://erpintegration.atlassian.net/browse/ETM-17636)): Platform Default akan dipakai kirim & tarik marketplace; Unit Default dari unit di baris dipakai transaksi + Picking List / Manual Picking List (nilai apa adanya, bukan dibagi konversi unit). Trx & Report Default belum dipakai proses mana pun. Sekarang radio sudah ada; pemakaian di luar System Product sedang dikerjakan.  
 > **2.11:** Gate leftover = **tambah tipe/opsi saja**. Hapus tipe = flow hapus varian (bukan regenerate). Ganti tipe in-place ditolak — pakai **+ Add New Variant**. Dilarang SKU `-DUPLICATE` ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304), [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)).  
 > **2.10:** Brand opsional (tanpa default Shopee). Ukuran foto 300×300 = **rekomendasi saja**. Parent variant di datalist seharusnya stok `-` (sedang diperbaiki); **Bundle tetap angka**.  
 > **2.9:** Leftover expand di **edit UI** masih residual ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)) — tambah tipe varian + child sudah dipakai transaksi bisa error *Unable to delete…*. Import Update Variant tidak leftover.  
@@ -111,10 +112,12 @@ Setiap satuan punya **profil D&W** (bisa lebih dari satu):
 | L × W × H (cm) | Dimensi |
 | Weight (g) | Berat |
 | **Unit Default** | Default untuk satuan ini |
-| **Platform Default** | **Global** — dipakai sync stok ke marketplace |
-| **Trx & Report Default** | **Global** — dipakai transaksi & laporan |
+| **Platform Default** | **Global** — dipakai sync ke marketplace (TO-BE ETM-17636; AS-IS: radio tersimpan, kirim/tarik belum selalu ikut) |
+| **Trx & Report Default** | **Global** — disiapkan untuk transaksi & laporan; belum dipakai proses mana pun (pemakaiannya diputuskan setelah diskusi E2E, ETM-17636). Picking List & Manual Picking List memakai **Unit Default** |
 
-**Penting:** Platform Default dan Trx Default **hanya satu** untuk seluruh produk — pilih di Box otomatis lepas di Pieces.
+**Penting:** Platform Default dan Trx Default **hanya satu** untuk seluruh produk — pilih di Box otomatis lepas di Pieces. Product baru otomatis punya D&W 1×1×1×1 g yang jadi default di primary unit. Berat dibaca **apa adanya** per profil (Box 500 g bukan 500÷isi Pcs — bisa include kardus).
+
+**Variant:** atur unit & D&W di **SKU parent** saja; child tidak punya layar D&W sendiri.
 
 **Shipping section:** hanya **asuransi pengiriman** (Required/Optional). D&W **tidak ada** di sana lagi.
 

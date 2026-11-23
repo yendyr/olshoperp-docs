@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: system-product
 menu_name: "System Product"
-version: 2.11
-last_updated: 2026-11-12
+version: 2.12
+last_updated: 2026-11-23
 owner: QA - Yemima
 status: review
 aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion, Price Before VAT bundle, coefficient tax bundle, Import Product Images, Google Drive product image, Product Image Sync, product_sync_url, Sync Product Images, Master Variant Default, Set as Default System Product, SKU-(PARENT), leftover variant, Status Restock, Unable to delete Product already has existing relations, Update Variant Product, -DUPLICATE, Add New Variant, delete variant type]
@@ -21,6 +21,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 **PM sources:** User requirement (chat) · D&W artifact v1.0 (7 Mei 2026)
 
+> **Changelog 2.12 (2026-11-23 14:20 WIB):** §5.4a TO-BE [ETM-17636](https://erpintegration.atlassian.net/browse/ETM-17636) — picking/transaksi = Unit Default unit line (bukan Trx Default); push/pull = Platform Default; Pricelist = Unit Default primary; GAP-SP-19 Open.  
 > **Changelog 2.11 (2026-11-12 14:10 WIB):** §6.3.2 gate leftover — **tambah saja**; hapus tipe = flow delete (bukan regenerate); ganti in-place = tolak + Add-only; larangan `-DUPLICATE` ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304), [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)).  
 > **Changelog 2.10 (2026-11-09 10:52 WIB):** Tutup GAP-SP-02/05/07 (by design / soft rule); GAP-SP-08 clarify parent variant `-` vs **Bundle tetap angka** + card [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231); foto UI teks = recommendation only.  
 > **Changelog 2.9 (2026-11-09 10:30 WIB):** §6.3.2 + GAP-SP-18 residual — UI expand leftover diblok `Unable to delete…` ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)); **Import Update Variant Product tidak** dikembangkan leftover (tetap boleh tolak tipe beda + child berelasi).  
@@ -35,6 +36,7 @@ aliases: [product bundle tax, bundle parent tax hide, bundle pricing proportion,
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.12 | 2026-11-23 14:20 WIB | QA - Yemima | §5.4a TO-BE ETM-17636: transaksi+picking = Unit Default unit line; push/pull = Platform Default; Pricelist = Unit Default primary; Trx & Report Default belum di-wire consumer v1; absolute + fallback; variant parent — GAP-SP-19 Open |
 | 2.11 | 2026-11-12 14:10 WIB | QA - Yemima | Gate leftover **add-only**; hapus tipe = delete flow (no regenerate / no `-DUPLICATE`); ganti in-place tolak + Add-only — [ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304) / [ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377) |
 | 2.10 | 2026-11-09 10:52 WIB | QA - Yemima | Close SP-02/05/07; SP-08 parent variant vs Bundle + [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231); foto recommendation-only copy |
 | 2.9 | 2026-11-09 10:30 WIB | QA - Yemima | Leftover residual UI [ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215); import Update Variant **out of scope** leftover; GAP-SP-18 → Partial Open |
@@ -253,9 +255,34 @@ Variant child → mengikuti konfigurasi unit parent (tidak edit sendiri)
 
 **Banner modal:** *"Platform Default and Trx & Report Default are global — selecting here deselects from other units."*
 
-**Backend:** `ProductDnWController` — fields `is_unit_default`, `is_platform_default`, `is_trx_default`. Default create: unit=1 jika unset; platform/trx=0.
+**Backend:** `ProductDnWController` — fields `is_unit_default`, `is_platform_default`, `is_trx_default`. Create product (UI): seed L=W=H=Weight=**1** + label master primary; jika Platform/Trx belum dipilih di primary unit → fallback set **Unit + Platform + Trx Default** = 1 pada baris itu (juga `is_primary` legacy bila Unit Default primary).
 
-**Default values D&W baru:** L=W=H=Weight=**1**; label dari master yang `Set as Primary` ON (artifact AC6). UI min weight **1** (0 hampir tidak terjadi); weight 0/kosong tetap = **No weight** di Pricelist (untuk TC).
+**Default values D&W baru (modal):** L=W=H=Weight=**1**; label dari master yang `Set as Primary` ON (artifact AC6). UI min weight **1** (0 hampir tidak terjadi); weight 0/kosong tetap = **No weight** di Pricelist (untuk TC).
+
+**Variant (AS-IS UI):** unit & D&W dikonfigurasi **hanya di SKU parent** (satu form dengan parent). Child variant **tidak** punya layar D&W/unit independen. BE boleh punya row D&W turunan pada child; Expected operasional = ikut parent.
+
+#### 5.4a Consumer 3 default D&W (TO-BE · [ETM-17636](https://erpintegration.atlassian.net/browse/ETM-17636) · GAP-SP-19)
+
+**Struktur radio:**
+
+| Radio | Scope | Multiplicity |
+|-------|--------|--------------|
+| **Unit Default** | Per unit | 1 aktif **per unit**; tiap unit boleh banyak profil D&W |
+| **Platform Default** | Seluruh product (semua unit) | **Hanya 1** dari seluruh baris D&W |
+| **Trx & Report Default** | Seluruh product (semua unit) | **Hanya 1** (struktur = Platform). **Bukan** sumber D&W line transaksi/picking di v1 — consumer khusus flag ini menunggu E2E |
+
+AS-IS consumer masih `first()` / `is_primary`. Wiring TO-BE ETM-17636:
+
+| Jalur | Baca | Nilai |
+|-------|------|--------|
+| Push → **semua platform** registered | **Platform Default** | Absolute |
+| Pull marketplace (`syncProductDnW` & setara) | Tulis ke **Platform Default** aktif | Absolute |
+| **Line transaksi** (PR, PO, SO, …) **dan** **Picking List / Manual Picking List** | **Unit Default** unit di baris/dokumen | Absolute — PR Box vs PO Pieces boleh beda (**by design**) |
+| **Pricelist** (by Weight) | **Unit Default primary unit** | Absolute (AS-IS primary) |
+
+**Fallback** (Platform kosong): Unit Default **primary** (create seed 1×1×1×1 + default). Jangan reject.  
+**Dilarang:** ÷/× qty conversion (alasan: kemasan/kardus).  
+**Variant:** D&W = parent UI; cleanup row child → card terpisah (Tyas/Merdian).
 
 #### Side effect → Pricelist / Category Price (AS-IS · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) Done)
 
@@ -845,6 +872,7 @@ PO/PR Without PR: System Product **active**, Single/Variant child, punya COA gro
 | **GAP-SP-06** | Variant max 3 types | Enforced end-to-end | FE batasi add; **BE tidak** validasi max 3 — [ETM-17226](https://erpintegration.atlassian.net/browse/ETM-17226) | **Partial — Open** |
 | **GAP-SP-08** | Parent variant stock datalist | **Parent variant** (`-(PARENT)`): kolom stok `-`. **Bundle:** tetap **angka** (carry komponen). Single/child: angka | BE numerik juga untuk PARENT; tooltip vs angka mismatch — [ETM-17231](https://erpintegration.atlassian.net/browse/ETM-17231) | **Open** |
 | **GAP-SP-09** | All D&W table + summary | Artifact AC3–AC4 di main form | Hanya modal Edit Unit per primary/alternate | **Partial — Open** (ditunda) |
+| **GAP-SP-19** | Consumer 3 default D&W | Push/pull = Platform Default; line trx + picking = Unit Default unit line; Pricelist = Unit Default primary; Trx & Report Default belum di-wire v1 — [§5.4a](#54a-consumer-3-default-dw-to-be--etm-17636--gap-sp-19) · [ETM-17636](https://erpintegration.atlassian.net/browse/ETM-17636) | Masih `first()` / `is_primary` | **Open (TO-BE)** |
 | **GAP-SP-18** | Expand leftover (UI) + gate add-only | Expand + child berelasi → confirm leftover → simpan (ETM-15495). Gate §6.3.2a: leftover **tambah saja**; hapus tipe = delete flow; ganti in-place tolak | Path leftover residual `Unable to delete…` ([ETM-17215](https://erpintegration.atlassian.net/browse/ETM-17215)); hapus tipe → `-DUPLICATE` ([ETM-17304](https://erpintegration.atlassian.net/browse/ETM-17304)); in-place → Add-only ([ETM-17377](https://erpintegration.atlassian.net/browse/ETM-17377)) | **Partial — Open residual** |
 
 ### 19.2 Tabel — Closed / OK (audit 2026-11-09)

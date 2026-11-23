@@ -2,8 +2,8 @@
 doc_type: technical
 menu: system-product
 menu_name: "System Product"
-version: 2.11
-last_updated: 2026-11-12
+version: 2.12
+last_updated: 2026-11-23
 owner: QA - Yemima
 status: review
 related_docs:
@@ -181,6 +181,10 @@ Index formats cache 1 minute:
 | All D&W flat table | — | ❌ Modal only |
 
 **Platform/Trx global exclusivity:** enforced in FE modal + BE on save.
+
+**Create seed:** `ProductController@store` → D&W L/W/H/W=1 + `ProductDnWController` fallback sets unit/platform/trx default on primary when unset.
+
+**Consumer (TO-BE · ETM-17636 / GAP-SP-19):** push+pull all registered platforms read/write **Platform Default** row (not `first()`); line transactions (PR, PO, SO, …) + Picking List / Manual Picking List read the **Unit Default** of the line's unit; Pricelist reads the primary unit's **Unit Default**; **Trx & Report Default** has no consumer in v1 (pending E2E); absolute values (no qty conversion); variant consumers use **parent** D&W. AS-IS still `first()` / `is_primary`.
 
 ### Side effect → Pricelist (AS-IS · ETM-16668)
 
