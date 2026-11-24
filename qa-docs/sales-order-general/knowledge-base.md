@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.12
-last_updated: 2026-11-23
+version: 3.13
+last_updated: 2026-11-24
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order internal, import SO, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost Disc, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot, auto-save, Save All]

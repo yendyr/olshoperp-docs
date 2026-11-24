@@ -2,8 +2,8 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.12
-last_updated: 2026-11-23
+version: 3.13
+last_updated: 2026-11-24
 owner: QA - Yemima
 status: review
 aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulfillment Mode, Import Non-Processed, Other Cost/Disc Code, cogs-error, Manual COGS, auto-save]
@@ -14,9 +14,10 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 **Type:** `type_sales_order = general`  
 **UI:** `/businessdevelopment/sales-order-general`  
 **API prefix:** `/api/omnichannel/sales-order/*`  
-**Behavior:** [requirement.md](./requirement.md) v3.12  
+**Behavior:** [requirement.md](./requirement.md) v3.13  
 **Stack:** Laravel 13 · Vue 3 · Horizon · MariaDB
 
+> **3.13 (2026-11-24):** Docs-only correction — random SKU allocated in `MoveToDefaultWaveLogic` → `SalesOrderGenerateRandomLogic` (via `SOApproveToWave` from Send to Default Waves / Skip Wave Process) and `SalesOrderImportGenerateLogic` (Import Non-Processed), not on Approve. `process_to_wave = 0` excludes SO General from Unassign Wave / Skip Wave (`UnassignWaveController`, `SkipWaveProcessJob`) — [requirement §6.2](./requirement.md).  
 > **3.12 (2026-11-23):** Auto-save Basic Information on edit — [requirement §5.1a](./requirement.md); ETM-17544. FE `SalesOrderGeneral/Form.vue`; same `SalesOrderController::update` as Save All. GAP-SOG-19 Open.  
 > **3.11 (2026-11-09):** Export storage path is unique per export: `getExportStoragePath('exports/sales_order_general/excels', export_file_id, fileName)` (77512a0) and no `makeDirectory` before `Excel::store` on S3 (a567481, ETM-17177). GAP-SOG-16 Closed (ETM-16769).  
 > **3.10 (2026-11-05):** Void while still in Wave releases reserved — [requirement §6.7 / §7.5](./requirement.md); ETM-17110 (`8ef9876`). Same `SalesOrderApprovalController::handleVoid` path as Sales Platform. Canonical call site: [Sales Platform technical](../omni-sales-platform/technical.md).  
@@ -32,6 +33,7 @@ aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulf
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.13 | 2026-11-24 | Docs-only: random SKU allocation point corrected to Send to Default Waves / Skip Wave Process / Import Non-Processed; `process_to_wave = 0` = SO General excluded from wave (no code change) |
 | 3.12 | 2026-11-23 | Auto-save Basic Information on edit (blur/Enter/select/date/editor/attachment) via shared `update`; audit bump without full detail refresh when `isAutoSave` (ETM-17544). GAP-SOG-19 Open |
 | 3.11 | 2026-11-09 | Export All file stored at `exports/sales_order_general/excels/{export_file_id}/{file_name}.xlsx`; GAP-SOG-16 Closed (ETM-16769) |
 | 3.10 | 2026-11-05 | Void in Wave: `handleVoid` → `WaveController::deleteDetailTransferWave` before `createTransferVoid` (ETM-17110). Stock effect lives in `ItemStockMutation::deleteTransferDetailRow` `is_wave` |

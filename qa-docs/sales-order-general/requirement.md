@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.12
-last_updated: 2026-11-23
+version: 3.13
+last_updated: 2026-11-24
 owner: QA - Yemima
 status: review
 aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
@@ -27,6 +27,7 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.13 | 2026-11-24 | QA - Yemima | Koreksi §6.2: produk random dipilih SKU fisiknya saat Send to Default Waves / Skip Wave Process / Import Non-Processed, bukan saat Approve. `process_to_wave = OFF` = SO General tidak masuk Wave (keluar lewat Outbound manual), bukan alokasi random saat Approve |
 | 3.12 | 2026-11-23 | QA - Yemima | AS-IS §5.1a: auto-save Basic Information (termasuk Other Information, alamat, attachment) di halaman edit SO General tanpa Save All — paritas All Sales Order; create tidak auto-save; kunci Customer/Currency saat ada detail tetap berlaku (ETM-17544). GAP-SOG-19 Open: perluasan kunci Store / Warehouse Process / Transaction Date |
 | 3.11 | 2026-11-09 | QA - Yemima | Export All: setiap export disimpan terpisah per export, jadi dua export dengan judul sama tidak saling menimpa file. GAP-SOG-16 Closed. Contoh saran nama file disesuaikan dengan layar (ETM-16769, ETM-16768) |
 | 3.10 | 2026-11-05 | QA - Yemima | TO-BE §7.5 / §6.7: Void atau Void & Recreate saat SO masih di Wave (belum picking) menghapus detail Wave, reserved turun, available naik, SO keluar dari Wave. Jalur void setelah picking tidak diganti (ETM-17110) |
@@ -218,7 +219,8 @@ Create → ambil default values → **langsung POST draft** → redirect edit �
 
 Set `approved`; simpan MA buffer & price history; lalu:
 
-- `process_to_wave = OFF` → alokasi Random SKU langsung.
+- **Produk random tidak dialokasi saat Approve.** Baris detail tetap berisi produk random sampai SO dikirim ke Wave. SKU fisik dipilih sistem (FIFO, hierarki gudang proses store) saat **Send to Default Waves** (Unassign Wave) atau **Skip Wave Process**, dan saat **Import Non-Processed**.
+- `process_to_wave = OFF` (Order Process Setting) → SO General **tidak** bisa dikirim ke Wave (`Cannot process to wave because the setting is currently off.`) dan tidak tampil di Unassign Wave / Skip Wave Process; barang keluar lewat Outbound manual (outstanding SO General Approved/Processed). Setting ini **tidak** memicu alokasi Random SKU saat Approve.
 - `approve_with_validation = true` → validasi bundle, belum outbound, random SKU, FIFO, buat wave.
 - **Default `approve_with_validation = false`:** tidak assign wave; user jalankan Unassign Wave / Skip Wave Process di SCM.
 

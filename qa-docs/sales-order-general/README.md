@@ -12,12 +12,13 @@ Route: `/businessdevelopment/sales-order-general`
 
 **SoT:** busdev SO General v1.0 + Fulfillment Mode TO-BE  
 **User-guide:** v1.9 · `source_version` 3.11  
-**Version (3 layer):** 3.12 · **Last updated:** 2026-11-23 10:00
+**Version (3 layer):** 3.13 · **Last updated:** 2026-11-24 13:50
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.13 | 2026-11-24 13:50 | Keterangan Approve diperjelas: produk random baru dipilih SKU fisiknya saat order dikirim ke Wave (Send to Default Waves / Skip Wave Process) atau saat Import Non-Processed, bukan saat Approve. Jika setting Process to Wave mati, SO General tidak masuk Wave dan barangnya dikeluarkan lewat Outbound manual. User guide tidak terdampak |
 | 3.12 | 2026-11-23 10:00 | Di halaman edit, perubahan Basic Information (termasuk Other Information, alamat, lampiran) tersimpan otomatis tanpa Save All — sama di All Sales Order untuk SO General. Create tidak auto-save. Customer/Currency tetap terkunci jika sudah ada detail (ETM-17544) |
 | 3.11 | 2026-11-09 09:30 | Export All: dua export dengan judul file sama sekarang tersimpan sebagai file terpisah, tidak saling menimpa. Contoh saran nama file mengikuti yang tampil di layar (Sales Order General - ...) (ETM-16769) |
 | 3.10 | 2026-11-05 16:55 | Void atau Void & Recreate pada order yang masih di Wave (belum diambil) mengeluarkan order dari Wave dan mengembalikan stok yang ditahan supaya bisa dijual lagi. Void setelah barang diambil tetap seperti semula (ETM-17110) |
