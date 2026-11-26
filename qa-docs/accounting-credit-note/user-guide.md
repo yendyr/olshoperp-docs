@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.5
-last_updated: 2026-11-09
+version: 1.6
+last_updated: 2026-11-26
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.7
+source_version: 1.9
 owner: QA - Yemima
 status: review
 ---
@@ -93,10 +93,10 @@ Pastikan ini sudah siap:
 Setelah Credit Note **di-approve**:
 
 - Jurnal otomatis terbentuk (bisa dilihat dari kolom Journal di list).
-- Saldo siap dipilih sebagai sumber deposit di **Account Receive**.
+- Saldo siap dipilih sebagai sumber deposit di **Account Receive**, atau dikembalikan sebagai uang lewat **Credit Note Refund**. Keduanya memakai sisa yang sama.
 - Pemakaian muncul di section **Detail Related Transaction**.
 - Header dan baris Receiving Destination menjadi read-only.
-- Angka [Total / Paid / Outstanding](#sf-lingo:SF-CN-02) di list ikut berubah saat CN dipakai.
+- Angka [Total / Paid / Outstanding](#sf-lingo:SF-CN-02), **Used Status**, dan **Remaining Balance** di list ikut berubah saat CN dipakai di Account Receive atau Credit Note Refund.
 
 Kalau Credit Note dari **Sales Return Billed**, langkah approve manual sering tidak perlu — sistem sudah approve saat Complete retur.
 

@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.8
-last_updated: 2026-11-12
+version: 1.9
+last_updated: 2026-11-26
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, credit note docs, nota kredit, customer deposit credit]
@@ -26,6 +26,7 @@ Downstream: [Account Receive](../accounting-customer-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.9 | 2026-11-26 | QA - Yemima | Menu baru Credit Note Refund (ETM-17655): saldo CN dipakai bersama AR dan Refund; Paid ikut menghitung Refund; kolom datalist Used Status + Remaining Balance; Related Transaction menampilkan Type + Status |
 | 1.8 | 2026-11-12 | QA - Yemima | Penjelasan retur Unbilled di KB dan capability disamakan: tanpa CN dan tanpa jurnal penjualan/piutang (hanya persediaan dan HPP); lihat Sales Return v2.5 (ETM-17291) |
 | 1.7 | 2026-11-09 | QA - Yemima | **AS-IS** ETM-17111: CN baru dari Sales Return mengisi Description dan Reference Doc (kode retur). GAP-CN-08 ditutup untuk CN baru; CN lama tidak diisi ulang |
 | 1.6 | 2026-11-05 | QA - Yemima | Gap baru dari uji Staging: GAP-CN-07 (halaman edit CN kosong saat customer tidak terbaca; ETM-17108) dan GAP-CN-08 (CN dari Sales Return tanpa Description/Reference Doc; ETM-17111); §5.1 + FAQ merujuk |
@@ -114,8 +115,10 @@ Field kritikal terkunci setelah ada Receiving Destination: Customer, Currency, E
 | Trx Ref | Ya | Lihat aturan di bawah | Hyperlink jika ada dokumen asal |
 | Curr / Rate | Ya | Header | — |
 | Total Amount | Ya | Σ fund | §6.1 |
-| Paid | Ya | Σ deposit di AR Approved | §6.1 |
+| Paid | Ya | Σ pemakaian di AR + Credit Note Refund yang Approved | §6.1 |
 | Outstanding | Ya | Total − Paid | §6.1 |
+| Used Status | Ya | Prepared / Processed CN | §6.3 (ETM-17655) |
+| Remaining Balance | Ya | Total − Prepared − Processed (tooltip di judul) | §6.3 (ETM-17655) |
 | Trx Status | Ya | Header | Draft, Open, Approved, Rejected, Void, Closed (GAP-CN-03) |
 | Journal Code \| Date | Ya | Journal | Kosong sebelum approve |
 | Created by \| at | Ya | Audit | — |
@@ -199,7 +202,7 @@ Validasi fund bersama: header editable; amount > 0 kecuali seed create; no dupli
 
 ### 5.3 Detail Related Transaction
 
-Read-only: Trx Date, Trx Code, Description, Amount — pemakaian CN di AR (dan sejenis) sebagai deposit.
+Read-only: Trx. Date, Trx. Code, **Type** (Account Receive / Credit Note Refund), **Status**, Description, Amount — semua dokumen yang memakai CN (termasuk yang belum Approved).
 
 ---
 
@@ -209,7 +212,7 @@ Read-only: Trx Date, Trx Code, Description, Amount — pemakaian CN di AR (dan s
 
 ```
 total_amount = SUM(Receiving Destination)
-paid         = SUM(deposit CN di Account Receive Approved)
+paid         = SUM(pemakaian CN di Account Receive + Credit Note Refund yang Approved)
 outstanding  = total_amount - paid
 ```
 
@@ -221,10 +224,10 @@ Setiap tambah/ubah/hapus fund: `grand_total = SUM(amount fund)`.
 
 ```
 basis           = grand_total (atau total fund jika grand_total 0)
-remaining_funds = basis - dipakai_draft_open_AR - dipakai_approved_AR
+remaining_funds = basis - dipesan (AR/Refund belum Approved) - terpakai (AR/Refund Approved)
 ```
 
-Saat AR memakai CN: `remaining - amount_diminta >= 0` dan `amount_diminta <= grand_total`.
+Saat AR atau Credit Note Refund memakai CN: `remaining - amount_diminta >= 0` dan `amount_diminta <= grand_total`. Saldo ini **satu untuk AR dan Refund** — lihat [Credit Note Refund](../accounting-credit-note-refund/requirement.md) §6.2.
 
 ### 6.4 Fund foreign currency
 
@@ -380,6 +383,7 @@ flowchart TB
 | Sales Invoice | Penentu billed vs unbilled (baris retur sudah punya SI) |
 | Sales Return Approval | Trigger auto CN + approve (billed); Trx Ref CN baru = kode SR + tautan edit Sales Return |
 | Account Receive | Konsumen deposit CN; bisa generate CN dari overpay/import |
+| Credit Note Refund | Mengembalikan sisa CN sebagai uang; memakai saldo CN yang sama dengan AR (ETM-17655) |
 | Journal | Output jurnal approve |
 | Store Binding / General Company | Actor + Deposit COA |
 | Product Sales COA | Fund COA auto return |
@@ -427,7 +431,7 @@ A: **GAP-CN-07** — customer CN tidak terbaca dari company aktif (mis. customer
 A: Untuk CN **baru**, keduanya terisi. Reference Doc = kode Sales Return. Description = "Auto generated from Sales Return" diikuti kode itu, dan terlihat di halaman edit. CN yang sudah ada sebelum perbaikan ETM-17111 tidak diisi ulang; untuk nota lama itu, asal masih bisa dilihat di kolom Trx Ref.
 
 **Q: Paid vs Outstanding?**  
-A: Paid = terpakai di AR approved; Outstanding = Total − Paid.
+A: Paid = terpakai di AR dan Credit Note Refund yang Approved; Outstanding = Total − Paid. Remaining Balance juga mengurangi yang masih dipesan dokumen belum Approved.
 
 **Q: Tidak bisa ubah Customer/Currency?**  
 A: Hapus semua Receiving Destination dulu.
@@ -444,6 +448,7 @@ A: **TO-BE** — Free COA picker di Receiving Destination (bukan COA yang sudah 
 
 | Tanggal | Versi | Perubahan |
 |---------|-------|-----------|
+| 26 Nov 2026 | 1.9 | Credit Note Refund: saldo bersama, Paid, Used Status, Remaining Balance, Related Transaction |
 | 9 Nov 2026 | 1.7 | ETM-17111: Description + Reference Doc CN baru dari Sales Return; GAP-CN-08 closed untuk CN baru |
 | 5 Nov 2026 | 1.6 | GAP-CN-07 dan GAP-CN-08 dari uji Staging; ETM-17108, ETM-17111 |
 | 5 Nov 2026 | 1.5 | Trx Ref CN baru dari Sales Return Billed = `SR-xxxxx` + tautan edit retur; ETM-17070 |

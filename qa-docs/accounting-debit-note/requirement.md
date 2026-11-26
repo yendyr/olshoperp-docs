@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.4
-last_updated: 2026-11-05
+version: 1.5
+last_updated: 2026-11-26
 owner: QA - Yemima
 status: review
 aliases: [DN, debit note, nota debit, supplier deposit, klaim supplier]
@@ -28,6 +28,7 @@ Downstream: [Account Payment](../accounting-supplier-payment/requirement.md) · 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.5 | 2026-11-26 | QA - Yemima | Menu baru Debit Note Refund (ETM-17686): saldo DN dipakai bersama AP dan Refund; Paid ikut menghitung Refund; kolom Used Status + Remaining Balance; Detail Related Transaction |
 | 1.4 | 2026-11-05 | QA - Yemima | Gap baru dari uji Staging: GAP-DN-07 (halaman edit DN kosong bila data supplier tidak terbaca; latent, simulasi; ETM-17120) |
 | 1.3 | 2026-10-26 | QA - Yemima | Klarifikasi final ETM-16761: AP baca COA dari **setting** by asal DN (bukan historis dokumen/jurnal) |
 | 1.2 | 2026-10-22 | QA - Yemima | **TO-BE** [ETM-16761](https://erpintegration.atlassian.net/browse/ETM-16761): consume DN di AP memakai COA deposit asal DN; GAP-DN-06 |
@@ -119,8 +120,10 @@ Field kritikal (Supplier, Currency, Rate, Date) terkunci jika sudah ada baris fu
 | Trx Ref | Ya | PR / AP / `-` — klikable |
 | Curr / Rate | Ya | |
 | Total Amount | Ya | Manual: Σ funds; PR: `grand_total` |
-| Paid | Ya | Σ pemakaian DN di AP **approved** |
+| Paid | Ya | Σ pemakaian DN di AP + Debit Note Refund yang **Approved** |
 | Outstanding | Ya | Total − Paid |
+| Used Status | Ya | Prepared / Processed DN (ETM-17686) |
+| Remaining Balance | Ya | Total − Prepared − Processed (ETM-17686) |
 | Trx Status | Ya | Badge |
 | Journal | Ya | Kode setelah approve atau `-` |
 | Created by \| Created at | Ya | Standar |
@@ -201,7 +204,8 @@ Standard slideover; sticky Draft/Open radio, Save All, Approve jika eligible.
 
 - **Total (manual):** Σ fund amount (foreign-aware).  
 - **Total (PR):** `grand_total`.  
-- **Paid:** Σ deposit usage di AP approved.  
+- **Paid:** Σ deposit usage di AP + Debit Note Refund yang Approved.  
+- **Remaining Balance:** Total − Prepared (dipesan AP/Refund belum Approved) − Processed. Saldo satu untuk AP dan [Debit Note Refund](../accounting-debit-note-refund/requirement.md).  
 - **Outstanding:** Total − Paid.
 
 ### 6.2 Create + auto-save last transaction
@@ -276,6 +280,7 @@ Standard slideover; sticky Draft/Open radio, Save All, Approve jika eligible.
 | [Purchase Invoice](../accounting-supplier-invoice/README.md) | Hutang; hulu PR billed |
 | [Purchase Return](../accounting-purchase-return/README.md) | Sumber DN PR |
 | [Account Payment](../accounting-supplier-payment/requirement.md) | Konsumen DN approved; Import spawn DN |
+| [Debit Note Refund](../accounting-debit-note-refund/requirement.md) | Supplier mengembalikan sisa DN sebagai uang; saldo DN dipakai bersama AP (ETM-17686) |
 | [Journal](../journal/README.md) | Hasil approve |
 | [General Company](../generalsetting-general-company/README.md) | Supplier master |
 | [Cash/Bank Account](../accounting-company-detail-bank/README.md) | Payment Source manual |
@@ -291,7 +296,7 @@ Standard slideover; sticky Draft/Open radio, Save All, Approve jika eligible.
 | DN-01 | Manual create wajib supplier General Company + currency + fiscal; Payment Source Cash/Bank |
 | DN-02 | PR billed & AP import Adjustment `DEBIT NOTE` menghasilkan DN open dengan trx ref benar |
 | DN-03 | Approve wajib detail (fund atau return deposit) + journal; approved terkunci |
-| DN-04 | Paid/Outstanding dari pemakaian AP approved |
+| DN-04 | Paid/Outstanding dari pemakaian AP + Debit Note Refund yang Approved |
 | DN-05 | Reject → Save: draft default; Open jika dipilih |
 | DN-06 | Gap registry terdokumentasi |
 

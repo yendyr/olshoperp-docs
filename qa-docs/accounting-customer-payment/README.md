@@ -10,7 +10,7 @@ Menu **Account Receive** (Accounting).
 | User Guide | [user-guide.md](./user-guide.md) | End user | review |
 | Test Cases | [test-cases/README.md](./test-cases/README.md) | QA, Manual Tester | review |
 
-**Menu terkait:** [Sales Invoice](../accounting-customer-invoice/README.md) (sumber piutang yang dilunasi) · [Credit Note](../accounting-credit-note/README.md) (sumber dana deposit sekaligus hasil kelebihan bayar) · [Instant Settlement](../accounting-settlement-upload/README.md) (Approve settlement membentuk dokumen AR otomatis)
+**Menu terkait:** [Sales Invoice](../accounting-customer-invoice/README.md) (sumber piutang yang dilunasi) · [Credit Note](../accounting-credit-note/README.md) (sumber dana deposit sekaligus hasil kelebihan bayar) · [Credit Note Refund](../accounting-credit-note-refund/README.md) (memakai sisa Credit Note yang sama — refund mengurangi sisa yang bisa dipakai AR) · [Instant Settlement](../accounting-settlement-upload/README.md) (Approve settlement membentuk dokumen AR otomatis)
 
 **PM source:** `_meta/sot/accounting-customer-payment-source-of-truth.md` v1.0 — dari raw requirement Import AR v3.0 (April 2026) + verifikasi codebase.
 

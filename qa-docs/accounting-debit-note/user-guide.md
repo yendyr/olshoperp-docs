@@ -2,8 +2,8 @@
 doc_type: user-guide
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.2
-last_updated: 2026-09-02
+version: 1.3
+last_updated: 2026-11-26
 owner: QA - Yemima
 status: review
 source_docs:
@@ -11,7 +11,7 @@ source_docs:
   - ./knowledge-base.md
   - ./technical.md
   - ./feature-map.md
-source_version: 1.1
+source_version: 1.5
 ---
 
 # Panduan Pengguna — Debit Note
@@ -70,7 +70,8 @@ flowchart LR
 
 - DN **Approved** → muncul di pemilihan Debit Note saat **[Account Payment](#sf-lingo:SF-DN-03)**.  
 - Kolom [**Paid** / **Outstanding**](#sf-lingo:SF-DN-02) di datalist DN menunjukkan sisa yang masih bisa dipakai.  
-- Setelah outstanding = 0, DN tidak bisa dipakai lagi di AP.
+- Sisa DN bisa dipotongkan ke tagihan lewat Account Payment, atau dicatat sebagai uang kembali lewat **Debit Note Refund**. Keduanya memakai sisa yang sama; cek **Used Status** dan **Remaining Balance** di datalist.
+- Setelah sisa = 0, DN tidak bisa dipakai lagi.
 
 ---
 

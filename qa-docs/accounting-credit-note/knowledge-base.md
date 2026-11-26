@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.8
-last_updated: 2026-11-12
+version: 1.9
+last_updated: 2026-11-26
 owner: QA - Yemima
 status: review
 aliases: [CN, credit note, nota kredit, customer credit, deposit credit note]
@@ -73,12 +73,14 @@ Cabang auto dari retur: lihat [Sales Return Approval](../accounting-sales-return
 | Kolom | Arti sederhana |
 |-------|----------------|
 | **Total Amount** | Jumlah semua baris Receiving Destination |
-| **Paid** | Sudah dipakai di Account Receive yang **sudah di-approve** |
-| **Outstanding** | Sisa = Total dikurangi Paid — inilah yang masih “tersisa” di list |
+| **Paid** | Sudah dipakai di Account Receive atau **Credit Note Refund** yang sudah di-approve |
+| **Outstanding** | Sisa = Total dikurangi Paid |
+| **Used Status** | Prepared = sedang dipesan dokumen yang belum di-approve; Processed = sudah terpakai final |
+| **Remaining Balance** | Sisa yang benar-benar masih bisa dipakai (Total dikurangi yang dipesan dan yang sudah terpakai) |
 | **Trx Ref** | Dokumen asal yang bisa diklik. Dari Sales Return Billed: nomor retur `SR-xxxxx` ke halaman Sales Return. Dari Account Receive (kelebihan bayar): nomor AR. Manual: kosong |
 | **Journal** | Muncul setelah CN di-approve |
 
-**Sisa yang masih bisa dipakai di AR** juga memperhitungkan AR yang masih draft/open (sedang dialokasikan tapi belum final). Kalau AR menolak karena melebihi sisa, turunkan amount atau selesaikan/batalkan alokasi lama dulu.
+Sisa Credit Note bisa dipakai di **Account Receive** (dipotongkan ke tagihan) atau **Credit Note Refund** (dikembalikan sebagai uang). Keduanya memakai sisa yang sama: kalau sebagian sudah dipakai di satu menu, menu lain hanya bisa memakai sisanya. **Sisa yang masih bisa dipakai** juga memperhitungkan AR atau Refund yang masih draft/open (sedang dialokasikan tapi belum final). Kalau AR menolak karena melebihi sisa, turunkan amount atau selesaikan/batalkan alokasi lama dulu.
 
 ---
 

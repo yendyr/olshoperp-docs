@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.4
-last_updated: 2026-11-05
+version: 1.5
+last_updated: 2026-11-26
 owner: QA - Yemima
 status: review
 audience: operator
@@ -45,8 +45,10 @@ flowchart LR
 |---------|-----------|
 | **Payment Source** | Baris kas/bank yang “mendanai” DN manual |
 | **Return Deposit** | Baris nilai DN dari barang retur ke PI |
-| **Outstanding** | Sisa DN belum dipakai di Account Payment |
-| **Paid** | Nilai DN yang sudah dipakai di AP approved |
+| **Outstanding** | Sisa DN belum dipakai di Account Payment / Debit Note Refund yang sudah di-approve |
+| **Remaining Balance** | Sisa yang benar-benar masih bisa dipakai (sudah dikurangi yang sedang dipesan dokumen belum di-approve) |
+| **Used Status** | Prepared = sedang dipesan; Processed = sudah terpakai final |
+| **Paid** | Nilai DN yang sudah dipakai di Account Payment atau **Debit Note Refund** (supplier mengembalikan uang) yang sudah di-approve |
 | **Trx Ref** | Link ke dokumen sumber (PR atau AP) |
 | **Auto-save last trx** | Saat Create, sistem isi dari DN terakhir lalu simpan header otomatis |
 

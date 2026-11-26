@@ -15,13 +15,14 @@ Menu **Credit Note** (Accounting / Account Receivable).
 **UI route:** `/accounting/credit-note`  
 **Help Center overview:** [`_meta/docs-hub/menus/accounting-credit-note/`](../_meta/docs-hub/menus/accounting-credit-note/)  
 **SoT:** `accounting-credit-note-source-of-truth.md` v1.0 (17 Jul 2026)  
-**3 layer version:** 1.8 · **User-guide:** v1.5 · `source_version` 1.8 · **Feature Map:** 1.0 · **Last updated:** 2026-11-12
-**Related Jira:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) · [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) · [ETM-17070](https://erpintegration.atlassian.net/browse/ETM-17070) · [ETM-17108](https://erpintegration.atlassian.net/browse/ETM-17108) · [ETM-17111](https://erpintegration.atlassian.net/browse/ETM-17111)
+**3 layer version:** 1.9 · **User-guide:** v1.6 · `source_version` 1.9 · **Feature Map:** 1.0 · **Last updated:** 2026-11-26
+**Related Jira:** [ETM-16764](https://erpintegration.atlassian.net/browse/ETM-16764) · [ETM-17064](https://erpintegration.atlassian.net/browse/ETM-17064) · [ETM-17070](https://erpintegration.atlassian.net/browse/ETM-17070) · [ETM-17108](https://erpintegration.atlassian.net/browse/ETM-17108) · [ETM-17111](https://erpintegration.atlassian.net/browse/ETM-17111) · [ETM-17655](https://erpintegration.atlassian.net/browse/ETM-17655)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.9 | 2026-11-26 17:00 | Sisa Credit Note sekarang bisa dikembalikan sebagai uang lewat menu baru Credit Note Refund; sisa dipakai bersama Account Receive. Daftar CN menampilkan Used Status dan Remaining Balance, Paid ikut menghitung refund, dan Detail Related Transaction menampilkan jenis dan status dokumen (ETM-17655) |
 | 1.8 | 2026-11-12 | Penjelasan retur Unbilled disamakan dengan Sales Return v2.5: tanpa CN dan tanpa jurnal penjualan/piutang (ETM-17291) |
 | 1.7 | 2026-11-09 08:59 | Credit Note baru dari Sales Return mengisi keterangan asal dan nomor retur di halaman edit; nota yang sudah ada tidak diisi ulang (ETM-17111) |
 | 1.6 | 2026-11-05 17:00 | Gap baru dari uji Staging: halaman edit CN kosong saat customer tidak terbaca (ETM-17108), dan CN dari Sales Return tanpa Description/Reference Doc (ETM-17111); penjelasan awam di KB + user-guide |
@@ -40,6 +41,7 @@ Menu **Credit Note** (Accounting / Account Receivable).
 | Sales Return Approval | [../accounting-sales-return/](../accounting-sales-return/) — auto-generate CN billed; Trx Ref CN baru = nomor SR |
 | Sales Return (SC) | [../supplychain-sales-returns/](../supplychain-sales-returns/) — qty/nilai retur |
 | Account Receive | [../accounting-customer-payment/](../accounting-customer-payment/) — pakai CN sebagai deposit |
+| Credit Note Refund | [../accounting-credit-note-refund/](../accounting-credit-note-refund/) — kembalikan sisa CN sebagai uang; saldo bersama AR |
 | Debit Note (mirror AP) | [../accounting-debit-note/](../accounting-debit-note/) — klaim supplier; dipakai di Account Payment |
 | Journal | [../journal/](../journal/) — auto journal approve |
 | Store Binding | [../omni-store-binding/](../omni-store-binding/) — Deposit COA Platform |

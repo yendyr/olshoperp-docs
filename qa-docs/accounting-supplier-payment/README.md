@@ -38,6 +38,7 @@ Menu **Account Payment** (Accounting / Account Payable).
 |------|------|
 | Purchase Invoice | [../accounting-supplier-invoice/](../accounting-supplier-invoice/) — sumber hutang |
 | Debit Note | [../accounting-debit-note/](../accounting-debit-note/) — payment source potong hutang; import AP spawn DN |
+| Debit Note Refund | [../accounting-debit-note-refund/](../accounting-debit-note-refund/) — memakai sisa Debit Note yang sama dengan AP |
 | Purchase Return | [../accounting-purchase-return/](../accounting-purchase-return/) — sumber DN retur billed |
 | Purchase Inbound | [../supplychain-new-purchase-inbound/](../supplychain-new-purchase-inbound/) — barang masuk sebelum PI |
 | Purchase Order | [../supplychain-purchase-order/](../supplychain-purchase-order/) — acuan harga/biaya |

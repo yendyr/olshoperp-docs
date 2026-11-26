@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-debit-note
 menu_name: "Debit Note"
-version: 1.4
-last_updated: 2026-11-05
+version: 1.5
+last_updated: 2026-11-26
 owner: QA - Yemima
 status: review
 related_docs:
@@ -23,6 +23,7 @@ related_docs:
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.5 | 2026-11-26 | QA - Yemima | Debit Note Refund memakai saldo DN yang sama (prepared/processed); Paid + kolom saldo baru |
 | 1.2 | 2026-10-22 | QA - Yemima | TO-BE ETM-16761: AP consume DN stamp COA asal DN |
 | 1.0 | 2026-08-12 | QA - Yemima | DebitNoteController, export jobs, AP import, journal |
 | 1.1 | 2026-09-02 | QA - Yemima | Supplier display code-only via ETM-15721 helpers |
@@ -55,7 +56,7 @@ related_docs:
 4. Approve butuh minimal satu jenis detail.  
 5. Fund currency = header currency; amount > 0; no duplicate COA.  
 6. Add/update fund cek remaining cash/bank balance.  
-7. Paid hanya dari AP approved deposit lines.  
+7. Paid dari deposit lines payment Approved: AP + Debit Note Refund (ETM-17686). Datalist juga punya `used_status_formatted` + `remaining_balance_formatted`.  
 8. Soft delete header hanya draft/open/rejected.
 
 ---

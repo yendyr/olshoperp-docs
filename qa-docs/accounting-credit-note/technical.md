@@ -2,8 +2,8 @@
 doc_type: technical
 menu: accounting-credit-note
 menu_name: "Credit Note"
-version: 1.8
-last_updated: 2026-11-12
+version: 1.9
+last_updated: 2026-11-26
 owner: QA - Yemima
 status: review
 aliases: [CN technical, credit note API, credit note code]
@@ -94,7 +94,7 @@ Invoice tracking (return path): `prepared_to_amount_credit_note`, `processed_to_
 
 | Concern | Implementation |
 |---------|----------------|
-| List totals | `withSum` funds as `total_amount`; deposit_details as `total_paid_amount` (AR Approved only) |
+| List totals | `withSum` funds as `total_amount`; deposit_details as `total_paid_amount` (payment Approved: AR + Credit Note Refund); kolom `used_status_formatted` + `remaining_balance_formatted` (ETM-17655) |
 | `remaining_funds` | Attribute on `Payment`: basis `grand_total` or `total_funds` minus prepared/processed use |
 | Fund create on CN | Updates `grand_total = SUM(payment_detail_funds.amount)` |
 | Approve journal | `JournalProcess::creditNoteAutoJournal($cn, $with_auth, $invert_journal)` |
@@ -233,7 +233,8 @@ Detail messages: [requirement §7](./requirement.md).
 | Credit Note | `prepared_to_use_amount` | AR allocates CN as deposit (draft/open) |
 | Credit Note | `processed_to_use_amount` | AR approved |
 | Journal | `transaction_reference` → Payment | On CN approve |
-| PaymentDetailDeposit | `deposit_id` → CN | Related Transaction rows |
+| PaymentDetailDeposit | `deposit_id` → CN | Related Transaction rows (AR + Credit Note Refund, dengan Type + Status) |
+| Credit Note Refund | `prepared/processed_to_use_amount` CN | Sama seperti AR: + saat baris ditambah, pindah saat Approve — lihat [CNR technical §10](../accounting-credit-note-refund/technical.md) |
 
 ---
 
