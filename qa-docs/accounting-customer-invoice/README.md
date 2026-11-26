@@ -41,4 +41,3 @@ Menu **Sales Invoice** (Accounting / Account Receivable) — faktur penjualan / 
 | Purchase Invoice | [../accounting-supplier-invoice/](../accounting-supplier-invoice/) — cermin AP |
 
 **Maintenance owner:** QA — Yemima
-

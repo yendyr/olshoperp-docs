@@ -38,11 +38,12 @@ Untuk **aturan QA** (primary vs derived, HJ-01…08, gerbang batch, observasi vs
 |------|-------|---------------------|------|------------------------------|
 | Settlement Upload | Accounting | [`settlement-upload.md`](./settlement-upload.md) | [`settlement-upload.html`](./settlement-upload.html) | https://claude.ai/artifact/X8Lz3madDjKjuQdv7taUzh |
 | Sales Order | OmniChannel | [`sales-order.md`](./sales-order.md) | [`sales-order.html`](./sales-order.html) | https://claude.ai/artifact/1EU2utNEMhgBkj7mvU2CfC |
+| Transfer Picking & Packing | OmniChannel | [`transfer-picking-packing.md`](./transfer-picking-packing.md) | [`transfer-picking-packing.html`](./transfer-picking-packing.html) | https://claude.ai/artifact/Tau3aYZfWnv2h1vHt3aM2s |
 | Skip Wave Process | SupplyChain/OmniChannel | *(jangan duplikasi panjang)* → pipeline kanonik | — | **Kanonik:** [`../../horizon-jobs/pipelines/skip-wave-process.md`](../../horizon-jobs/pipelines/skip-wave-process.md) · Artifact: https://claude.ai/artifact/M58zF2JXjuVMgHxP8sTSe4 · https://claude.ai/artifact/EQRpX3Pwvj2BRSF9wPzpk6 |
 
 ## Kandidat berikutnya
 
-Transfer Picking / Packing (lanjutan Wave), Stock Monitoring Export (pola export→batch→merge→cleanup), Product Platform Sync, Work Order Export.
+Stock Monitoring Export (pola export→batch→merge→cleanup), Product Platform Sync, Work Order Export.
 
 ## Routing ke dokumentasi menu (qa-docs)
 

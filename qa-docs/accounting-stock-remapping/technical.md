@@ -169,5 +169,3 @@ Lihat [requirement §12](./requirement.md#12-gap-registry): aktif **GAP-RM-03, 0
 | Requirement | [requirement.md](./requirement.md) |
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | User Guide | [user-guide.md](./user-guide.md) |
-
-

@@ -2,34 +2,40 @@
 
 Dokumentasi requirement & knowledge base per menu OlshopERP — dioptimalkan untuk agent, RAG, dan Cursor.
 
-> **Agent/Cursor:** Protokol wajib di `.cursor/rules/09-menu-documentation.mdc` (**alwaysApply**). Skill: `.cursor/skills/qa-menu-documentation/SKILL.md`. Jangan pakai `_legacy/` sebagai canonical.
+> **Agent/Cursor/Antigravity:** Q&A pakai lookup slim di [`_meta/README-lookup.md`](./_meta/README-lookup.md) (`alias-index.yaml` / `lookup.tsv`) — jangan baca full `manifest.yaml`. Menulis/update docs tetap protokol developer di `.cursor/rules/09-menu-documentation.mdc`. Skill: `.cursor/skills/qa-menu-documentation/SKILL.md`. Jangan pakai `_legacy/` sebagai canonical.
 
 ## Agent protocol (ringkas)
 
 | Aksi | Wajib |
 |------|-------|
-| Jawab pertanyaan menu/fitur | Baca `manifest.yaml` → `{menu-slug}/README.md` → layer doc |
-| Buat menu doc baru | Folder `{menu-slug}/` + template + entry manifest |
+| Jawab satu pertanyaan menu/fitur | `_meta/alias-index.yaml` atau `lookup.tsv` → `{menu-slug}/README.md` → **satu** layer. Jangan baca full `manifest.yaml`. |
+| Buat menu doc baru | Folder `{menu-slug}/` + template + entry manifest + regenerate lookup |
 | Update doc | Edit canonical di folder menu; sync `status` manifest ↔ frontmatter |
 | Implementasi kode | Baca requirement + technical; ingatkan update doc jika behavior berubah |
 
-**Larangan:** flat file di root `qa-docs/` · `_legacy/` sebagai sumber · manifest tanpa update commit.
+**Larangan:** flat file di root `qa-docs/` · `_legacy/` sebagai sumber · manifest tanpa update commit · Q&A lewat `**/test-cases/**` / `_legacy/` / `_meta/sot/` / `_meta/gemini-briefs/`.
 
 ## Mulai di sini (agent / human)
 
-1. Baca **`_meta/manifest.yaml`** — source of truth semua menu, status doc, legacy sources, code globs
-2. Buka folder `{menu-slug}/README.md` untuk menu yang relevan
-3. Pilih layer doc sesuai audience:
-   - `knowledge-base.md` — operator / ops
-   - `requirement.md` — PM, QA, support
-   - `technical.md` — developer
+**Q&A / ops:** [`_meta/alias-index.yaml`](./_meta/alias-index.yaml) atau [`_meta/lookup.tsv`](./_meta/lookup.tsv) → `{menu-slug}/README.md` → satu layer. Cara pakai: [`_meta/README-lookup.md`](./_meta/README-lookup.md).
+
+**Menulis / registry menu:** `_meta/manifest.yaml` (developer SoT: status, legacy, code globs).
+
+Lalu pilih layer sesuai audience:
+
+- `knowledge-base.md` — operator / ops
+- `requirement.md` — PM, QA, support
+- `technical.md` — developer
 
 ## Struktur
 
 ```
 docs/qa-docs/
 ├── _meta/
-│   ├── manifest.yaml          ← WAJIB dibaca agent dulu
+│   ├── lookup.tsv / alias-index.yaml  ← Q&A lookup (bukan full manifest)
+│   ├── README-lookup.md               ← cara regenerate + protokol agent
+│   ├── generate-lookup.py             ← rebuild lookup dari manifest + frontmatter
+│   ├── manifest.yaml                  ← developer SoT (tulis/update menu)
 │   ├── MERMAID_STYLE_GUIDE.md ← standar penulisan diagram Mermaid
 │   ├── templates/             ← template doc baru
 │   ├── proposals/             ← desain belum jadi standar (review dulu)
@@ -45,15 +51,17 @@ docs/qa-docs/
 
 ## Menu terdaftar
 
-**Total:** 118 menu di `_meta/manifest.yaml` — in-app help aktif untuk modul `OmniChannel`, `Accounting`, `SupplyChain`, `Gate`, `GeneralSetting`.
+**Total:** 128 menu di `_meta/manifest.yaml` (lookup: [`_meta/lookup.tsv`](./_meta/lookup.tsv)) — in-app help aktif untuk modul `OmniChannel`, `Accounting`, `SupplyChain`, `Gate`, `GeneralSetting`.
 
 | Modul | Jumlah menu | Contoh slug |
 |-------|-------------|-------------|
-| OmniChannel | 12 | [manage-platform-product](./manage-platform-product/), [omni-sales-platform](./omni-sales-platform/), [sales-order-general](./sales-order-general/), [all-sales-order](./all-sales-order/) |
-| Accounting | 42 | [journal](./journal/), [general-ledger](./general-ledger/) |
-| SupplyChain | 55 | [system-product](./system-product/), [bill-of-material](./bill-of-material/) |
-| Gate | 3 | [gate-user](./gate-user/), [gate-role](./gate-role/) |
+| OmniChannel | 13 | [manage-platform-product](./manage-platform-product/), [omni-sales-platform](./omni-sales-platform/), [sales-order-general](./sales-order-general/) |
+| Accounting | 44 | [journal](./journal/), [general-ledger](./general-ledger/), [accounting-supplier-invoice](./accounting-supplier-invoice/) |
+| SupplyChain | 58 | [system-product](./system-product/), [bill-of-material](./bill-of-material/) |
+| Gate | 4 | [gate-user](./gate-user/), [gate-role](./gate-role/) |
 | GeneralSetting | 6 | [generalsetting-country](./generalsetting-country/), [generalsetting-application](./generalsetting-application/) |
+| AI | 2 | [ai-kb-assistant](./ai-kb-assistant/), [kb-store-monitor](./kb-store-monitor/) |
+| BusinessDevelopment | 1 | [all-sales-order](./all-sales-order/) |
 
 Menu dengan konten lengkap (review/draft):
 
@@ -81,7 +89,7 @@ Menu dengan konten lengkap (review/draft):
 
 Sisanya: stub `knowledge-base.md` status **pending** — konten diisi berkala oleh QA.
 
-Status detail semua menu: lihat `_meta/manifest.yaml`.
+Status detail semua menu: `_meta/manifest.yaml`. Resolusi nama/alias untuk Q&A: `_meta/alias-index.yaml`.
 
 ## Dokumentasi lain di repo
 
@@ -91,7 +99,7 @@ Status detail semua menu: lihat `_meta/manifest.yaml`.
 | `docs/db-schema/{module}/*.md` | Schema per tabel | Cek kolom & relasi DB |
 | `docs/workflow.json` | n8n RAG chatbot workflow | Integrasi Telegram docs bot |
 
-**Catatan:** Laravel Boost MCP tidak mengindeks `docs/qa-docs/` — gunakan manifest + glob rule `.cursor/rules/09-menu-documentation.mdc`.
+**Catatan:** Laravel Boost MCP tidak mengindeks `docs/qa-docs/` — Q&A pakai `_meta/alias-index.yaml` + rule `.cursor/rules/09-menu-documentation.mdc`. Full manifest hanya saat menulis/update registry.
 
 ## Menambah menu baru
 
@@ -99,5 +107,6 @@ Status detail semua menu: lihat `_meta/manifest.yaml`.
 2. Buat folder `{menu-slug}/` + `README.md`
 3. Update `_meta/manifest.yaml` (commit yang sama)
 4. Sinkronkan `status` frontmatter dengan manifest
+5. `python3 docs/qa-docs/_meta/generate-lookup.py` — commit `lookup.tsv` + `alias-index.yaml`
 
 **Maintenance owner:** QA — Yemima

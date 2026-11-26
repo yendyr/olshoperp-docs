@@ -41,5 +41,3 @@ Menu **Stock Remapping** (Finance Accounting, prefix `RM-`) — remap identitas 
 | 2026-08-04 | 2.1 | Revisi scope card: batalkan lintas parent + icon; Stock ID / Base Unit / duplicate / Unit Class+approve / import tanpa Unit |
 | 2026-07-30 | 2.0 | SoT v2.0 (lintas parent) — superseded |
 | 2026-07-09 | 1.0 | Initial docs |
-
-

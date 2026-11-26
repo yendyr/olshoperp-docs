@@ -29,7 +29,3 @@ Menu **Stock Shortage Monitoring** (Omni Channel → Report Omni) — report agr
 - [Sales Order General](../businessdevelopment-sales-order-general/README.md) / Sales Platform — sumber SO
 
 **Maintenance owner:** QA — Yemima
-
-## Test Cases
-
-- [TC-SSM-DATA-001](test-cases/TC-SSM-DATA-001.md) — validasi data vs SO/BoM/Real Time Stock (ETM-16583)

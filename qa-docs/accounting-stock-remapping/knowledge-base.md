@@ -104,5 +104,3 @@ A: SKU itu masih dipakai transaksi lain yang belum selesai di lokasi yang sama. 
 | Requirement | [requirement.md](./requirement.md) |
 | Technical | [technical.md](./technical.md) |
 | User Guide | [user-guide.md](./user-guide.md) |
-
-

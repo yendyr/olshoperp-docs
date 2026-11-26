@@ -338,5 +338,3 @@ A: SKU itu masih dipakai transaksi Draft/Open lain di lokasi yang sama (Stock Ad
 | Knowledge Base | [knowledge-base.md](./knowledge-base.md) |
 | Technical | [technical.md](./technical.md) |
 | User Guide | [user-guide.md](./user-guide.md) |
-
-

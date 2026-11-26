@@ -186,4 +186,3 @@ A: Ya, untuk **Export Without Details** dan **Export With Details**. Kosongkan *
 | User Guide | [user-guide.md](./user-guide.md) |
 | Account Receive | [../accounting-customer-payment/knowledge-base.md](../accounting-customer-payment/knowledge-base.md) |
 | Credit Note | [../accounting-credit-note/knowledge-base.md](../accounting-credit-note/knowledge-base.md) |
-

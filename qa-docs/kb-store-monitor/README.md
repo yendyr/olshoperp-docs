@@ -1,6 +1,6 @@
 # KB Store Monitor — Dokumentasi
 
-Menu **KB Store Monitor** di grup **Documentation Assistant** — pantau status vector store Gemini, cakupan corpus, dan trigger indexing dokumentasi.
+Menu **KB Store Monitor** di grup **Documentation Assistant** — pantau status local vector store (MariaDB), cakupan corpus, dan trigger indexing dokumentasi. Gemini File Search Store sudah hard-deprecated.
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|

@@ -208,4 +208,3 @@ Full registry: [requirement §9](./requirement.md).
 | Account Receive | [../accounting-customer-payment/technical.md](../accounting-customer-payment/technical.md) |
 | Credit Note | [../accounting-credit-note/technical.md](../accounting-credit-note/technical.md) |
 | Journal helper | `app/Helpers/Accounting/JournalProcess.php` |
-

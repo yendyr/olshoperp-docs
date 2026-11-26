@@ -193,4 +193,3 @@ Setelah SI **di-approve**:
 ---
 
 *Derivatif dari requirement / knowledge-base / technical v2.4 — Feature Map v1.0 ditautkan untuk Lingo.*
-

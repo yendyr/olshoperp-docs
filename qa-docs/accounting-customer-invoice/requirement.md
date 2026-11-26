@@ -439,4 +439,3 @@ A: Ya. **Export With Details** dan **Export Without Details** membuka dialog **E
 | SoT | [../_meta/sot/accounting-customer-invoice-source-of-truth.md](../_meta/sot/accounting-customer-invoice-source-of-truth.md) |
 | Account Receive | [../accounting-customer-payment/requirement.md](../accounting-customer-payment/requirement.md) |
 | Credit Note | [../accounting-credit-note/requirement.md](../accounting-credit-note/requirement.md) |
-

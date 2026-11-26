@@ -118,5 +118,3 @@ flowchart LR
 | [Knowledge Base](./knowledge-base.md) | Troubleshooting |
 | [Requirement](./requirement.md) | Aturan & AC |
 | [Technical](./technical.md) | Developer |
-
-
