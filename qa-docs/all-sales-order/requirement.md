@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.17
-last_updated: 2026-11-23
+version: 1.18
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
-aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail, Pending Orders, Unmatched Bookings, Log Data, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, platform_order_id, auto-save, Save All]
+aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Processed, Fulfillment Mode, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit platform detail, Pending Orders, Unmatched Bookings, Log Data, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, platform_order_id, auto-save, Save All, Bulk Update Sales Order, BUSO]
 ---
 
 # All Sales Order — Requirement Documentation
@@ -27,6 +27,7 @@ aliases: [all sales order, ASO, gabungan SO, Import Processed, Import Non-Proces
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.18 | 2026-11-27 | QA - Yemima | Relates TO-BE §5.11 Bulk Update Sales Order (ETM-17847/17854/17855): ASO = tempat verifikasi hasil setelah Process Bulk; Stop AA / audit Reference BS- |
 | 1.17 | 2026-11-23 | QA - Yemima | AS-IS §4/§5.10: auto-save Basic Information SO General di form ASO (paritas SOG §5.1a, ETM-17544); SO Platform Basic Information tetap dari marketplace |
 | 1.16 | 2026-11-05 | QA - Yemima | Paritas §5.8: Void atau Void & Recreate saat order masih di Wave melepas reserved dan mengeluarkan order dari Wave. Aturan lengkap di Sales Platform dan Dev - Sales Order (ETM-17110) |
 | 1.15 | 2026-11-05 | QA - Hazel (yemimadocs) | **TO-BE** §5.8 paritas SP: SO void tidak menyisakan detail TF Wave aktif yang menahan reserved; hapus lewat jalur hapus detail TF Wave; SO yang belum void tidak dihapus — ETM-17109 (proses ETM-17110). GAP-ASO-10 |
@@ -330,6 +331,21 @@ Edit SO tipe **general** dari ASO memakai form yang sama dengan Dev - Sales Orde
 
 Kanonik penuh: [SOG §5.1a](../sales-order-general/requirement.md).
 
+### 5.11 Bulk Update Sales Order — verifikasi hasil di ASO (TO-BE · ETM-17847)
+
+Menu [Bulk Update Sales Order](../bulk-update-sales-order/requirement.md) (dokumen `BS-…`) mengubah detail SO general/platform secara massal. **Kanonik aturan BUSO** ada di folder itu (ETM-17847 / [ETM-17854](https://erpintegration.atlassian.net/browse/ETM-17854) audit / [ETM-17855](https://erpintegration.atlassian.net/browse/ETM-17855) Import Detail Lines).
+
+**Peran ASO (testing & ops):** setelah **Process Bulk** sukses, order yang ter-update **wajib terlihat benar** di datalist/form ASO (System SKU, qty, unit price, VAT, baris Added SKU). Approve order bisa dari Process Log BUSO atau dari ASO/SO — perilaku approve sama.
+
+| Efek dari BUSO yang terlihat di ASO | Catatan |
+|-------------------------------------|---------|
+| Replace / edit qty-price / Add SKU | Hanya order Success di Process Log |
+| Auto Approve Stopped | Order tidak ikut auto-approve; perlu approve manual |
+| Unapprove dari BUSO | Status kembali Open (platform) / Draft (general) |
+| Audit Log SO | Jejak perubahan memuat `Reference: BS-…` |
+
+ASO **tidak** mendefinisikan ulang filter/stop AA/Process Bulk — hanya relates + titik verifikasi lintas menu.
+
 ---
 
 ## 6. Validasi
@@ -359,6 +375,7 @@ flowchart TB
     ASO[All Sales Order]
     ASO --> SP[Dev Sales Platform]
     ASO --> SOG[Dev Sales Order]
+    BUSO[Bulk Update Sales Order] --> ASO
     ASO --> FS[Failed Ship]
     ASO --> SR[Sales Return]
     ASO --> WV[Waves]
@@ -369,6 +386,7 @@ flowchart TB
 |------|---------------------|
 | Dev - Sales Platform | Sumber baris platform; sync & booking rules |
 | Dev - Sales Order | Sumber baris general; CRUD; dual import Processed/Non-Processed |
+| [Bulk Update Sales Order](../bulk-update-sales-order/requirement.md) | Mass update detail → hasil diverifikasi di ASO (§5.11 · ETM-17847) |
 | Store | Fulfillment Mode gate untuk import general |
 | Failed Ship / Sales Return | Cabang Return pada order platform di ASO |
 | Waves / Processing | Pipeline setelah approve |
@@ -392,6 +410,7 @@ flowchart TB
 | **GAP-APR-01** | Auto-approve cron mengabaikan toggle/delay — berdampak baris platform di ASO | Open — [SP gaps](../omni-sales-platform/requirement.md) |
 | **GAP-ASO-09** | Nama file export sama bisa saling menimpa file (belum unik per export) — [ETM-16768](https://erpintegration.atlassian.net/browse/ETM-16768) | Open |
 | **GAP-ASO-11** | Paritas kunci header vs detail (Store / Warehouse Process / Transaction Date) — kanonik [SOG GAP-SOG-19](../sales-order-general/requirement.md); ASO tidak mendefinisikan ulang | Open (arah produk) |
+| **GAP-ASO-12** | Verifikasi lintas menu setelah BUSO Process Bulk (SKU/qty/price/VAT/Added SKU + Stop AA) di ASO — [§5.11](#511-bulk-update-sales-order--verifikasi-hasil-di-aso-to-be--etm-17847) · ETM-17847 | Open (TO-BE) |
 
 ---
 
@@ -413,6 +432,7 @@ flowchart TB
 - [ ] **Extract** bundle dari detail ASO ditolak jika Price header bundle ≤ 0; boleh jika > 0 (ETM-15732); pesan error price must be greater than zero
 - [ ] **Export All** With Details dan Without Details membuka dialog **Export File Name**; nama kosong ditolak (**File name is required.**); nama terisi menjadi nama file unduhan (`.xlsx`, atau `.zip` bila terpecah) dan tampil di riwayat. **Export Active Page Only** tanpa dialog (ETM-16768 / §5.9)
 - [ ] **Auto-save SO General (ETM-17544 / §5.10):** edit Basic Information di ASO tersimpan otomatis tanpa Save All; paritas SOG §5.1a; SO Platform Basic Information tidak diedit manual di ASO
+- [ ] **BUSO → ASO (ETM-17847 / §5.11):** setelah Process Bulk sukses, perubahan detail order terlihat benar di ASO; order Stopped AA tidak auto-approve; audit SO memuat Reference BS-…
 
 ---
 

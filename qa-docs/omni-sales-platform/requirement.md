@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.18
-last_updated: 2026-11-20
+version: 1.19
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
 aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Platform, omni sales order, Below Benchmark COGS, Auto Add VAT, Manual COGS, Benchmark COGS snapshot, Extract bundle, Extract Bundle Details, edit detail before approve, sync lock, Shopee booking, MATCHED, advance package, Pending Orders, Unmatched Bookings, Void, Void & Recreate, Recreate, restore deleted]
@@ -25,6 +25,7 @@ aliases: [sales platform, SO platform, marketplace sales order, Dev - Sales Plat
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.19 | 2026-11-27 | QA - Yemima | Relates §6.8: mass path [Bulk Update Sales Order](../bulk-update-sales-order/requirement.md) (ETM-17847/17854); replace tetap baris sama + Reference BS-… |
 | 1.18 | 2026-11-20 | QA - Yemima | **GAP-SP-RST-01:** restore Sales Platform yang deleted — **pending**; high risk (banyak relasi → banyak validasi); EU belum mau handle; [ETM-13987](https://erpintegration.atlassian.net/browse/ETM-13987) |
 | 1.17 | 2026-11-05 | QA - Yemima | TO-BE §5.8.1 / §6.9: Void atau Void & Recreate saat SO masih di Wave (belum picking) menghapus detail Wave milik SO itu, reserved turun, available naik, SO keluar dari Wave. Semua pintu void pusat. Jalur void setelah picking tidak diganti. SO lain yang belum void tidak dihapus (ETM-17110; data ETM-17109) |
 | 1.16 | 2026-11-05 | QA - Hazel (yemimadocs) | **TO-BE** §5.8.1 / §6.9 V-VR-07–08: SO void tidak menyisakan detail TF Wave aktif yang menahan reserved; hapus lewat jalur hapus detail TF Wave; SO yang belum void tidak dihapus — ETM-17109 (proses ETM-17110). GAP-SPD-02 |
@@ -501,6 +502,8 @@ Kartu pasangan ASO: [ETM-15732](https://erpintegration.atlassian.net/browse/ETM-
 Edit detail apa pun → `prevent_auto_approve = 1` (keluar auto-approve; approve manual).
 
 **Audit log (minimum):** SKU code + nama variable yang diubah + old value + new value (pola audit existing).
+
+**Mass path (TO-BE):** untuk banyak order sekaligus, pakai [Bulk Update Sales Order](../bulk-update-sales-order/requirement.md) (ETM-17847). Replace lewat BUSO **wajib tetap di baris yang sama** (Detail ID / Platform SKU / ikatan marketplace terbawa) — beda residual AS-IS form edit yang sering deleted+created. Audit dari BUSO: satu baris `updated` + `Reference: BS-…` ([ETM-17854](https://erpintegration.atlassian.net/browse/ETM-17854)). Hasil dicek di [All Sales Order §5.11](../all-sales-order/requirement.md).
 
 **Accepted risk (end user):** inkonsistensi price/SKU vs marketplace diterima selama last input user menang dan sync lock + audit terpenuhi.
 

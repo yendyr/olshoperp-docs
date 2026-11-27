@@ -4,7 +4,7 @@
 # Field `status` must match frontmatter `status` in each doc file.
 
 version: 1
-last_updated: 2026-10-07
+last_updated: 2026-11-26
 
 menus:
   manage-platform-product:
@@ -479,6 +479,35 @@ menus:
       frontend:
         - olshoperp-frontend/src/pages/BusinessDevelopment/Report/AllSalesOrder/**/*
 
+  bulk-update-sales-order:
+    menu_name: "Bulk Update Sales Order"
+    short_description: "Mass update System SKU, qty, and price on existing sales orders (document BS-)."
+    path: bulk-update-sales-order
+    module: BusinessDevelopment
+    menu_links:
+      - businessdevelopment/bulk-update-sales-order
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: draft
+      requirement:
+        file: requirement.md
+        status: draft
+      technical:
+        file: technical.md
+        status: draft
+      user-guide:
+        file: user-guide.md
+        status: pending
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/BusinessDevelopment/Http/Controllers/*BulkUpdateSalesOrder*
+      frontend:
+        - olshoperp-frontend/src/pages/BusinessDevelopment/BulkUpdateSalesOrder/**/*
+
   accounting-account-payable-report:
     menu_name: "Account Payable Report"
     short_description: "See how much you still owe suppliers and track outstanding payables."
@@ -850,6 +879,43 @@ menus:
         - olshoperp-frontend/src/pages/Accounting/CreditNote/**/*
         - olshoperp-frontend/src/stores/project/CreditNote/**/*
 
+  accounting-credit-note-refund:
+    menu_name: "Credit Note Refund"
+    short_description: "Refund the remaining Credit Note balance to customers through Cash/Bank."
+    path: accounting-credit-note-refund
+    module: Accounting
+    menu_links:
+      - accounting/credit-note-refund
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+      user-guide:
+        file: user-guide.md
+        status: review
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/CreditNoteRefundController.php
+        - Modules/Accounting/Http/Controllers/CreditNoteRefundDetailController.php
+        - Modules/Accounting/Http/Controllers/CreditNoteRefundAdjustmentController.php
+        - Modules/Accounting/Entities/CreditNoteRefund.php
+        - Modules/Accounting/Http/Controllers/PaymentController.php
+        - Modules/Accounting/Http/Controllers/PaymentDetailFundController.php
+        - Modules/Accounting/Http/Controllers/PaymentDetailAdjustmentController.php
+        - app/Helpers/Accounting/NoteRefundAmount.php
+        - app/Helpers/Accounting/PaymentPrice.php
+        - app/Helpers/Accounting/JournalProcess.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/CreditNoteRefund/**/*
   accounting-customer-invoice:
     menu_name: "Sales Invoice"
     short_description: "Create customer invoices and track accounts receivable from sales."
@@ -979,6 +1045,44 @@ menus:
         - olshoperp-frontend/src/pages/Accounting/DebitNote/**/*
         - olshoperp-frontend/src/stores/project/DebitNote/**/*
 
+  accounting-debit-note-refund:
+    menu_name: "Debit Note Refund"
+    short_description: "Record money returned by suppliers for the remaining Debit Note balance."
+    path: accounting-debit-note-refund
+    module: Accounting
+    menu_links:
+      - accounting/debit-note-refund
+    owner: QA - Yemima
+    docs:
+      knowledge-base:
+        file: knowledge-base.md
+        status: review
+      requirement:
+        file: requirement.md
+        status: review
+      technical:
+        file: technical.md
+        status: review
+      user-guide:
+        file: user-guide.md
+        status: review
+    legacy_sources:
+      []
+    code_globs:
+      backend:
+        - Modules/Accounting/Http/Controllers/DebitNoteRefundController.php
+        - Modules/Accounting/Http/Controllers/DebitNoteRefundDetailController.php
+        - Modules/Accounting/Http/Controllers/DebitNoteRefundAdjustmentController.php
+        - Modules/Accounting/Entities/DebitNoteRefund.php
+        - Modules/Accounting/Http/Controllers/PaymentController.php
+        - Modules/Accounting/Http/Controllers/PaymentDetailFundController.php
+        - Modules/Accounting/Http/Controllers/PaymentDetailAdjustmentController.php
+        - app/Helpers/Accounting/NoteRefundAmount.php
+        - app/Helpers/Accounting/PaymentPrice.php
+        - app/Helpers/Accounting/JournalProcess.php
+      frontend:
+        - olshoperp-frontend/src/pages/Accounting/DebitNoteRefund/**/*
+        - olshoperp-frontend/src/pages/Accounting/CreditNoteRefund/**/*
   accounting-default-vat:
     menu_name: "Default VAT"
     short_description: "Set default VAT rates used on purchase and sales documents."
@@ -2218,9 +2322,6 @@ menus:
         status: review
       user-guide:
         file: user-guide.md
-        status: review
-      test_cases:
-        path: test-cases/
         status: review
     legacy_sources: []
     code_globs:

@@ -2,8 +2,8 @@
 doc_type: knowledge-base
 menu: omni-sales-platform
 menu_name: "Dev - Sales Platform"
-version: 1.18
-last_updated: 2026-11-20
+version: 1.19
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
 audience: operator

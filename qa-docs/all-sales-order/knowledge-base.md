@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.17
-last_updated: 2026-11-23
+version: 1.18
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
-aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS, Extract bundle, Pending Orders, Unmatched Bookings, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, auto-save, Save All]
+aliases: [all sales order, lihat semua order, gabungan sales order, Import Processed, Import Non-Processed, Below Benchmark COGS, Auto Add VAT, Manual COGS, Extract bundle, Pending Orders, Unmatched Bookings, Unavailable Stock, Last Checked, Void, Void & Recreate, Recreate, auto-save, Save All, Bulk Update Sales Order]
 ---
 
 # All Sales Order — Knowledge Base
@@ -23,6 +23,7 @@ Pakai All Sales Order bila Anda perlu:
 - Mengecek Failed Process lintas tipe  
 - Menjalankan **Recheck failed process**  
 - Export gabungan  
+- **(TO-BE)** Mengecek hasil setelah **Bulk Update Sales Order** selesai (SKU/qty/harga sudah berubah)
 - Import order internal dengan **Import Processed** atau **Import Non-Processed** (sama seperti Dev - Sales Order)
 - **(TO-BE)** Edit detail order **platform** sebelum Approve (tambah/ganti SKU, harga, VAT) — perilaku sama Sales Platform
 - **(TO-BE)** Cek Order ID booking yang di-hold / booking tanpa Order ID lewat **Log Data** → tab **Pending Orders** (+ pill **Unmatched Bookings**)
@@ -129,10 +130,11 @@ Jangan harap schedule sync “menghidupkan” order void. Detail: [requirement �
 | Order ID Shopee sudah ada di Seller Center tapi tidak kelihatan di list SO | Sering Order ID advance package tanpa booking — di-hold sampai MATCHED. Cek **Log Data → Pending Orders** (TO-BE). Booking tanpa Order ID: pill **Unmatched Bookings**. |
 | Setelah Void, sync bikin SO baru (duplikat) | AS-IS residual. TO-BE (ETM-15859): Void tanpa prefix + gate sync; recreate hanya manual (**Recreate** / **Void & Recreate**) |
 | **Export All** tidak jalan / pesan **File name is required.** | Field **File name** di dialog **Export File Name** masih kosong. Isi nama, lalu klik **Export** lagi |
+| Setelah mass update SKU, order belum berubah di list | Pastikan **Process Bulk** di [Bulk Update Sales Order](../bulk-update-sales-order/knowledge-base.md) sudah Success; lalu refresh ASO. Kalau masih Draft/Open, approve manual (auto-approve mungkin sudah di-stop) |
 
 ---
 
 ## Related
 
 - [requirement.md](./requirement.md) · [technical.md](./technical.md) · [user-guide.md](./user-guide.md)  
-- [Dev Sales Order](../sales-order-general/knowledge-base.md) · [Store](../omni-store-binding/knowledge-base.md)
+- [Dev Sales Order](../sales-order-general/knowledge-base.md) · [Store](../omni-store-binding/knowledge-base.md) · [Bulk Update Sales Order](../bulk-update-sales-order/knowledge-base.md) (TO-BE)

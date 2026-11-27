@@ -10,12 +10,13 @@ Menu **Dev - Sales Platform** (SO marketplace hasil sync). Route: `/omni/sales-o
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **SoT (6 file):** datalist · order-detail · sync-ingestion · sync-price-mapping · **booking v1.1** · approval-automation  
-**Version:** 1.18 · **User-guide:** v1.8 · `source_version` 1.17 · **Last updated:** 2026-11-20 15:44
+**Version:** 1.19 · **User-guide:** v1.8 · `source_version` 1.17 · **Last updated:** 2026-11-27 16:28
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.19 | 2026-11-27 16:28 | Relates TO-BE [Bulk Update Sales Order](../bulk-update-sales-order/) (ETM-17847/17854): mass replace tetap baris sama; hasil di ASO |
 | 1.18 | 2026-11-20 15:44 | GAP-SP-RST-01: restore SO deleted **pending** — high risk (banyak relasi); EU belum mau handle ([ETM-13987](https://erpintegration.atlassian.net/browse/ETM-13987)) [yemimadocs] |
 | 1.17 | 2026-11-05 17:05 | Void atau Void & Recreate pada order yang masih di Wave (belum diambil) mengeluarkan order itu dari Wave dan mengembalikan stok yang ditahan. Order lain yang masih aktif tidak ikut hilang. Berlaku dari form, daftar, Checking List, dan pembatalan otomatis marketplace. Void setelah barang diambil tetap seperti semula (ETM-17110) |
 | 1.16 | 2026-11-05 16:58 | Sales Order yang sudah void tidak boleh masih menahan stok reserved di Transfer Wave. Baris Wave milik order void dihapus lewat jalur yang benar supaya stok kembali available. Order yang masih aktif tidak ikut terhapus (ETM-17109) |

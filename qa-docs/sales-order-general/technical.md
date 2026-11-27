@@ -2,8 +2,8 @@
 doc_type: technical
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.13
-last_updated: 2026-11-24
+version: 3.14
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
 aliases: [SO General technical, sales order import, SalesOrderImportSheet2, Fulfillment Mode, Import Non-Processed, Other Cost/Disc Code, cogs-error, Manual COGS, auto-save]

@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: sales-order-general
 menu_name: "Dev - Sales Order"
-version: 3.13
-last_updated: 2026-11-24
+version: 3.14
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
-aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot]
+aliases: [SO General, Dev Sales Order, sales order general, SO internal, import SO general, Fulfillment Mode, Import Processed, Import Non-Processed, Other Cost/Disc Code, Below Benchmark COGS, Manual COGS, Benchmark COGS snapshot, Bulk Update Sales Order, BUSO]
 ---
 
 # Dev - Sales Order (Sales Order General) — Requirement Documentation
@@ -27,6 +27,7 @@ Master flag: [Store — Fulfillment Mode](../omni-store-binding/requirement.md).
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 3.14 | 2026-11-27 | QA - Yemima | Relates §8: [Bulk Update Sales Order](../bulk-update-sales-order/requirement.md) (ETM-17847) — mass update; Unapprove dari BUSO → Draft |
 | 3.13 | 2026-11-24 | QA - Yemima | Koreksi §6.2: produk random dipilih SKU fisiknya saat Send to Default Waves / Skip Wave Process / Import Non-Processed, bukan saat Approve. `process_to_wave = OFF` = SO General tidak masuk Wave (keluar lewat Outbound manual), bukan alokasi random saat Approve |
 | 3.12 | 2026-11-23 | QA - Yemima | AS-IS §5.1a: auto-save Basic Information (termasuk Other Information, alamat, attachment) di halaman edit SO General tanpa Save All — paritas All Sales Order; create tidak auto-save; kunci Customer/Currency saat ada detail tetap berlaku (ETM-17544). GAP-SOG-19 Open: perluasan kunci Store / Warehouse Process / Transaction Date |
 | 3.11 | 2026-11-09 | QA - Yemima | Export All: setiap export disimpan terpisah per export, jadi dua export dengan judul sama tidak saling menimpa file. GAP-SOG-16 Closed. Contoh saran nama file disesuaikan dengan layar (ETM-16769, ETM-16768) |
@@ -464,6 +465,7 @@ flowchart TB
 | Point of Sales | Create SO retail + auto fulfill/invoice |
 | **All Sales Order** | View gabungan; Create/Import pola General; PillButtons + Recheck |
 | **Dev - Sales Platform** | Marketplace sync; tampil di ASO |
+| **[Bulk Update Sales Order](../bulk-update-sales-order/requirement.md)** | TO-BE mass update detail SO (termasuk general): Stop AA, Unapprove → Draft, Replace/Add SKU, Process Bulk; hasil diverifikasi di ASO (ETM-17847). Unapprove dari BUSO mengembalikan SO General ke **Draft** |
 
 ### 8.1 General vs Platform vs ASO
 

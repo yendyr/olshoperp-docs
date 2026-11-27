@@ -11,7 +11,7 @@ Route: `/businessdevelopment/all-sales-order`
 | User Guide | [user-guide.md](./user-guide.md) | Publish eksternal | review |
 
 **User-guide:** v1.10 · `source_version` 1.16  
-**Version (3 layer):** 1.17 · **Last updated:** 2026-11-23 10:00
+**Version (3 layer):** 1.18 · **Last updated:** 2026-11-27 16:28
 
 ## Peran vs dua menu sumber
 
@@ -22,12 +22,14 @@ Route: `/businessdevelopment/all-sales-order`
 | [Store](../omni-store-binding/) | Fulfillment Mode · Auto Add VAT Platform | Gate import · VAT platform |
 | [Benchmark COGS](../accounting-product-benchmark-price/) | Error Flag + Manual COGS | Shared `cogs-error` · effective snapshot |
 | [Unassign Wave](../omni-unassign-wave/) | Processing Order Date | Acuan FIFO Unavailable Stock / Last Checked |
+| [Bulk Update Sales Order](../bulk-update-sales-order/) | Dokumen BS- mass update detail | Goals ending: order ter-update terlihat di ASO (ETM-17847) |
 | **All Sales Order** | Window | Monitor, Recheck, import dual (paritas SOG) |
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.18 | 2026-11-27 16:28 | Relates TO-BE [Bulk Update Sales Order](../bulk-update-sales-order/): setelah Process Bulk, verifikasi hasil di ASO (ETM-17847 / 17854 / 17855) |
 | 1.17 | 2026-11-23 10:00 | Edit SO General di All Sales Order: perubahan Basic Information tersimpan otomatis tanpa Save All (sama Dev - Sales Order). SO Platform tetap ambil data dari marketplace (ETM-17544) |
 | 1.16 | 2026-11-05 17:05 | Catatan paritas: Void atau Void & Recreate pada order yang masih di Wave mengembalikan stok yang ditahan dan mengeluarkan order itu dari Wave, sama seperti Sales Platform dan Dev - Sales Order. Order lain yang masih aktif tidak ikut hilang (ETM-17110) |
 | 1.15 | 2026-11-05 16:58 | Paritas Sales Platform: Sales Order yang sudah void tidak boleh masih menahan stok reserved di Transfer Wave. Baris milik order void dilepas supaya stok kembali available. Order yang masih aktif tidak ikut terhapus (ETM-17109) |

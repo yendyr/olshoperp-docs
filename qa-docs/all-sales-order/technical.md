@@ -2,8 +2,8 @@
 doc_type: technical
 menu: all-sales-order
 menu_name: "All Sales Order"
-version: 1.17
-last_updated: 2026-11-23
+version: 1.18
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
 related_docs:
@@ -12,6 +12,7 @@ related_docs:
   - ../sales-order-general/technical.md
   - ../omni-sales-platform/technical.md
   - ../omni-unassign-wave/technical.md
+  - ../bulk-update-sales-order/technical.md
 ---
 
 # All Sales Order — Technical Documentation
@@ -19,8 +20,9 @@ related_docs:
 **UI:** `/businessdevelopment/all-sales-order`  
 **API list:** `businessdevelopment/all-sales-order`  
 **Shared Omni:** `omnichannel/sales-order/*` (`type=all` / general endpoints)  
-**Behavior:** [requirement.md](./requirement.md) v1.17 · import general → [SOG technical](../sales-order-general/technical.md)
+**Behavior:** [requirement.md](./requirement.md) v1.18 · import general → [SOG technical](../sales-order-general/technical.md)
 
+> **1.18 (2026-11-27):** Cross-menu verify after BUSO Process Bulk — [requirement §5.11](./requirement.md); [bulk-update-sales-order/technical.md](../bulk-update-sales-order/technical.md); ETM-17847.  
 > **1.17 (2026-11-23):** Auto-save Basic Information on SO General edit — [requirement §5.10](./requirement.md); kanonik [SOG §5.1a](../sales-order-general/requirement.md) / [SOG technical §8](../sales-order-general/technical.md); ETM-17544.  
 > **1.16 (2026-11-05):** Void-in-Wave process is not redefined here — [requirement §5.8](./requirement.md); ETM-17110. Canonical: [Sales Platform technical](../omni-sales-platform/technical.md) invariant 19.  
 > **1.15 (2026-11-05):** TO-BE void releases TF Wave reserved — [requirement §5.8](./requirement.md#58-void--void--recreate--recreate-platform-order-to-be--etm-15859); kanonik [SP §5.8.1](../omni-sales-platform/requirement.md#581-reserved-transfer-wave-saat-void-to-be--etm-17109); ETM-17109 (process ETM-17110). GAP-ASO-10 / GAP-SPD-02 Open.

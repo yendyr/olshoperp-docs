@@ -3,12 +3,12 @@
 # Agents (Cursor, Antigravity, others): resolve a user phrase here, then open
 # docs/qa-docs/{slug}/README.md and ONE layer. Do not read full manifest.yaml for Q&A.
 version: 1
-generated: '2026-11-09T03:32:56Z'
+generated: '2026-11-27T10:21:38Z'
 source: docs/qa-docs/_meta/manifest.yaml + per-menu frontmatter + lookup-overrides.yaml
 regenerate: python3 docs/qa-docs/_meta/generate-lookup.py
-menu_count: 133
-alias_count: 838
-ambiguous_count: 28
+menu_count: 136
+alias_count: 880
+ambiguous_count: 36
 aliases:
   3pl: supplychain-delivery-order
   account payable report: accounting-account-payable-report
@@ -28,9 +28,11 @@ aliases:
   accounting company detail bank: accounting-company-detail-bank
   accounting consolidation report: accounting-consolidation-report
   accounting credit note: accounting-credit-note
+  accounting credit note refund: accounting-credit-note-refund
   accounting customer invoice: accounting-customer-invoice
   accounting customer payment: accounting-customer-payment
   accounting debit note: accounting-debit-note
+  accounting debit note refund: accounting-debit-note-refund
   accounting default vat: accounting-default-vat
   accounting fiscal period: accounting-fiscal-period
   accounting item: accounting-item
@@ -69,9 +71,11 @@ aliases:
   accounting-company-detail-bank: accounting-company-detail-bank
   accounting-consolidation-report: accounting-consolidation-report
   accounting-credit-note: accounting-credit-note
+  accounting-credit-note-refund: accounting-credit-note-refund
   accounting-customer-invoice: accounting-customer-invoice
   accounting-customer-payment: accounting-customer-payment
   accounting-debit-note: accounting-debit-note
+  accounting-debit-note-refund: accounting-debit-note-refund
   accounting-default-vat: accounting-default-vat
   accounting-fiscal-period: accounting-fiscal-period
   accounting-item: accounting-item
@@ -100,6 +104,8 @@ aliases:
   accounting_settlement_mappings: accounting-settlement-mapping
   ad hoc picking: supplychain-manual-picking-list
   ad-hoc picking: supplychain-manual-picking-list
+  add new variant: system-product
+  add sku: bulk-update-sales-order
   advance package: omni-sales-platform
   ai assistant: ai-kb-assistant
   ai kb assistant: ai-kb-assistant
@@ -131,6 +137,24 @@ aliases:
     by_slug:
       omni-sales-platform: OmniChannel = Dev - Sales Platform (/omni/sales-order)
       all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  auto save:
+    slugs:
+    - sales-order-general
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general). BusinessDevelopment
+      = All Sales Order (/businessdevelopment/all-sales-order).
+    by_slug:
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+  auto-save:
+    slugs:
+    - sales-order-general
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general). BusinessDevelopment
+      = All Sales Order (/businessdevelopment/all-sales-order).
+    by_slug:
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
   automated distribution: omni-waves-management
   available product: accounting-purchase-return
   balance sheet: accounting-balance-sheet
@@ -153,7 +177,15 @@ aliases:
       sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
       all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
       accounting-product-benchmark-price: Accounting = Benchmark COGS (/accounting/product-benchmark-price)
-  benchmark cogs: accounting-product-benchmark-price
+  benchmark cogs:
+    slugs:
+    - accounting-product-benchmark-price
+    - businessdevelopment-pricelist-product
+    hint: Accounting = Benchmark COGS (/accounting/product-benchmark-price). BusinessDevelopment = Pricelist
+      Product (/businessdevelopment/pricelist).
+    by_slug:
+      accounting-product-benchmark-price: Accounting = Benchmark COGS (/accounting/product-benchmark-price)
+      businessdevelopment-pricelist-product: BusinessDevelopment = Pricelist Product (/businessdevelopment/pricelist)
   benchmark cogs snapshot:
     slugs:
     - omni-sales-platform
@@ -176,13 +208,35 @@ aliases:
   box pallet: supplychain-colli-type
   br reconcile: accounting-cash-bank-reconcile
   broken (transfer scrap): supplychain-mutation-transfer-scrap
-  bs: accounting-balance-sheet
+  bs:
+    slugs:
+    - bulk-update-sales-order
+    - accounting-balance-sheet
+    hint: BusinessDevelopment = Bulk Update Sales Order (/businessdevelopment/bulk-update-sales-order).
+      Accounting = Balance Sheet (/accounting/balance-sheet).
+    by_slug:
+      bulk-update-sales-order: BusinessDevelopment = Bulk Update Sales Order (/businessdevelopment/bulk-update-sales-order)
+      accounting-balance-sheet: Accounting = Balance Sheet (/accounting/balance-sheet)
   buku besar: general-ledger
   bulk action log: omni-process-summary
   bulk generate pick list: omni-process-summary
   bulk pick list: omni-process-summary
   bulk skip: omni-skip-processing
   bulk skip processing: omni-skip-processing
+  bulk update: bulk-update-sales-order
+  bulk update sales order:
+    slugs:
+    - sales-order-general
+    - all-sales-order
+    - bulk-update-sales-order
+    hint: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general). BusinessDevelopment
+      = All Sales Order (/businessdevelopment/all-sales-order). BusinessDevelopment = Bulk Update Sales
+      Order (/businessdevelopment/bulk-update-sales-order).
+    by_slug:
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+      bulk-update-sales-order: BusinessDevelopment = Bulk Update Sales Order (/businessdevelopment/bulk-update-sales-order)
+  bulk-update-sales-order: bulk-update-sales-order
   bundle parent tax hide: system-product
   bundle pricing proportion: system-product
   bundle stock: supplychain-bundle-stock-report
@@ -196,6 +250,18 @@ aliases:
   businessdevelopment-category-price: businessdevelopment-category-price
   businessdevelopment-pricelist-product: businessdevelopment-pricelist-product
   businessdevelopment-variable-price: businessdevelopment-variable-price
+  buso:
+    slugs:
+    - sales-order-general
+    - all-sales-order
+    - bulk-update-sales-order
+    hint: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general). BusinessDevelopment
+      = All Sales Order (/businessdevelopment/all-sales-order). BusinessDevelopment = Bulk Update Sales
+      Order (/businessdevelopment/bulk-update-sales-order).
+    by_slug:
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
+      bulk-update-sales-order: BusinessDevelopment = Bulk Update Sales Order (/businessdevelopment/bulk-update-sales-order)
   cancelled order: supplychain-cancelled-order
   cash bank account: accounting-company-detail-bank
   cash bank reconcile: accounting-cash-bank-reconcile
@@ -215,6 +281,8 @@ aliases:
   closing period: accounting-fiscal-period
   cn: accounting-credit-note
   cn technical: accounting-credit-note
+  cnr: accounting-credit-note-refund
+  cnr technical: accounting-credit-note-refund
   coa: accounting-chart-of-account
   coa group: accounting-product-coa-group
   cod failed: supplychain-failed-ship
@@ -235,6 +303,10 @@ aliases:
   credit note api: accounting-credit-note
   credit note code: accounting-credit-note
   credit note docs: accounting-credit-note
+  credit note payment: accounting-credit-note-refund
+  credit note refund: accounting-credit-note-refund
+  credit note refund api: accounting-credit-note-refund
+  credit note refund code: accounting-credit-note-refund
   customer credit: accounting-credit-note
   customer deposit credit: accounting-credit-note
   customer invoice: accounting-customer-invoice
@@ -242,6 +314,10 @@ aliases:
   customer payment: accounting-customer-payment
   daily cogs: accounting-product-benchmark-price
   debit note: accounting-debit-note
+  debit note payment: accounting-debit-note-refund
+  debit note refund: accounting-debit-note-refund
+  debit note refund api: accounting-debit-note-refund
+  debit note refund code: accounting-debit-note-refund
   default pajak: accounting-default-vat
   default ppn: accounting-default-vat
   default tax: accounting-default-vat
@@ -249,8 +325,10 @@ aliases:
   default wave: omni-unassign-wave
   default wave queue: omni-unassign-wave
   default waves: omni-waves-management
+  delete variant type: system-product
   delivery order: supplychain-delivery-order
   deposit credit note: accounting-credit-note
+  detail lines: bulk-update-sales-order
   dev - inventory detail: supplychain-inventory-detail
   dev - product ending stock: supplychain-product-ending-stock
   dev - product mutation history: supplychain-product-mutation
@@ -275,7 +353,10 @@ aliases:
   dev stock monitoring: supplychain-stock-monitoring
   dimension and weight label: supplychain-dimension-and-weight-label
   dn: accounting-debit-note
+  dnr: accounting-debit-note-refund
+  dnr technical: accounting-debit-note-refund
   do: supplychain-delivery-order
+  duplicate: system-product
   edit detail before approve: omni-sales-platform
   edit platform detail: all-sales-order
   ending balance per warehouse: supplychain-product-mutation-stock
@@ -288,6 +369,15 @@ aliases:
   etm 15729: accounting-purchase-report
   etm 16011: accounting-purchase-report
   etm 16805: omni-sales-platform
+  exchange gain:
+    slugs:
+    - accounting-credit-note-refund
+    - accounting-debit-note-refund
+    hint: Accounting = Credit Note Refund (/accounting/credit-note-refund). Accounting = Debit Note Refund
+      (/accounting/debit-note-refund).
+    by_slug:
+      accounting-credit-note-refund: Accounting = Credit Note Refund (/accounting/credit-note-refund)
+      accounting-debit-note-refund: Accounting = Debit Note Refund (/accounting/debit-note-refund)
   extract bundle:
     slugs:
     - omni-sales-platform
@@ -330,6 +420,7 @@ aliases:
   gabungan sales order: all-sales-order
   gabungan so: all-sales-order
   gagal kirim: supplychain-failed-ship
+  ganti sku massal: bulk-update-sales-order
   gate global audit log: gate-global-audit-log
   gate role: gate-role
   gate user: gate-user
@@ -373,6 +464,7 @@ aliases:
   horizon-jobs: horizon-jobs
   hpp acuan: accounting-product-benchmark-price
   hutang supplier: accounting-supplier-invoice
+  import detail lines: bulk-update-sales-order
   import non processed:
     slugs:
     - sales-order-general
@@ -458,9 +550,6 @@ aliases:
   lazada settlement mapping: accounting-settlement-mapping
   ledger account: accounting-chart-of-account
   leftover variant: system-product
-  add new variant: system-product
-  delete variant type: system-product
-  -duplicate: system-product
   legacy profit loss: accounting-profit-loss-v1
   lihat semua order: all-sales-order
   location: supplychain-location
@@ -628,10 +717,13 @@ aliases:
       all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
   penerimaan customer: accounting-customer-payment
   penerimaan tf ext: supplychain-transfer-inbound
+  pengembalian dana customer: accounting-credit-note-refund
+  pengembalian dana supplier: accounting-debit-note-refund
   pengurangan stok: supplychain-adjustment-deduction
   period lock: accounting-fiscal-period
   periode fiskal: accounting-fiscal-period
   permintaan pembelian: supplychain-purchase-requisition
+  persentase profit: businessdevelopment-pricelist-product
   pesanan pembelian: supplychain-purchase-order
   pi: accounting-supplier-invoice
   pi technical: accounting-supplier-invoice
@@ -667,6 +759,7 @@ aliases:
   primary vs derived jobs: horizon-jobs
   print awb: omni-process-summary
   print awb technical: omni-process-summary
+  process bulk: bulk-update-sales-order
   process summary: omni-process-summary
   processing date:
     slugs:
@@ -741,14 +834,20 @@ aliases:
   random-sku: random-sku
   real time stock: supplychain-real-stock
   receiving: supplychain-new-purchase-inbound
+  refund credit note: accounting-credit-note-refund
+  refund customer: accounting-credit-note-refund
+  refund dari supplier: accounting-debit-note-refund
+  refund debit note: accounting-debit-note-refund
   rekening bank: accounting-company-detail-bank
   rekening kas: accounting-company-detail-bank
   rekening kas bank: accounting-company-detail-bank
   rekonsiliasi bank: accounting-cash-bank-reconcile
   remapping stok: accounting-stock-remapping
   replace defective: omni-checking-list
+  replace sku: bulk-update-sales-order
   report shortage: omni-stock-shortage-monitoring
   restock lost scrap: supplychain-failed-ship
+  restore deleted: omni-sales-platform
   retry skip: omni-skip-processing
   retur beli: accounting-purchase-return
   retur jual finance: accounting-sales-return
@@ -783,6 +882,15 @@ aliases:
   sales return scm: supplychain-sales-returns
   sales-order-general: sales-order-general
   salesorderimportsheet2: sales-order-general
+  save all:
+    slugs:
+    - sales-order-general
+    - all-sales-order
+    hint: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general). BusinessDevelopment
+      = All Sales Order (/businessdevelopment/all-sales-order).
+    by_slug:
+      sales-order-general: OmniChannel = Dev - Sales Order (/businessdevelopment/sales-order-general)
+      all-sales-order: BusinessDevelopment = All Sales Order (/businessdevelopment/all-sales-order)
   scheduler dump window: horizon-jobs
   scm picking list: omni-picking-list
   select multiple products: supplychain-purchase-order
@@ -880,6 +988,7 @@ aliases:
   stock shortage monitoring: omni-stock-shortage-monitoring
   stock take: supplychain-stock-opname
   stockmutationoutbound: supplychain-mutation-outbound
+  stop auto approve: bulk-update-sales-order
   store: omni-store-binding
   sunday reboot: horizon-jobs
   supplier deposit: accounting-debit-note
