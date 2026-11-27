@@ -4,21 +4,22 @@ Menu **Credit Note Refund** (Accounting / Account Receivable): mengembalikan uan
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) | Operator, Support | review |
-| Requirement | [requirement.md](./requirement.md) | PM, QA | review |
-| Technical | [technical.md](./technical.md) | Developer | review |
-| User Guide | [user-guide.md](./user-guide.md) | Publish eksternal (Notion/Lark) | review |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) (v1.1) | Operator, Support | review |
+| Requirement | [requirement.md](./requirement.md) (v1.1) | PM, QA | review |
+| Technical | [technical.md](./technical.md) (v1.1) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) (v1.1) | Publish eksternal (Notion/Lark) | review |
 
 **UI route:** `/accounting/credit-note-refund`  
-**Origin:** [ETM-17655](https://erpintegration.atlassian.net/browse/ETM-17655) · prototype: https://claude.ai/artifact/XuJtr2bgsH5Mnn4tuoQ8t8  
-**3 layer version:** 1.0 · **User-guide:** v1.0 · `source_version` 1.0 · **Last updated:** 2026-11-26  
-**Test Case Jira:** ETM-17757 … ETM-17790  
+**Origin:** [ETM-17655](https://erpintegration.atlassian.net/browse/ETM-17655) · prototype: https://claude.ai/artifact/XuJtr2bgsH5Mnn4tuoQ8t8 · **[ETM-17829](https://erpintegration.atlassian.net/browse/ETM-17829)** (Exchange Gain)  
+**3 layer version:** 1.1 · **User-guide:** v1.1 · `source_version` 1.1 · **Last updated:** 2026-11-27  
+**Test Case Jira:** ETM-17757 … ETM-17790 · valas: [ETM-17787](https://erpintegration.atlassian.net/browse/ETM-17787)  
 **Related Jira:** [ETM-17620](https://erpintegration.atlassian.net/browse/ETM-17620) · [ETM-17657](https://erpintegration.atlassian.net/browse/ETM-17657) · [ETM-17686](https://erpintegration.atlassian.net/browse/ETM-17686)
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-11-27 09:35 | TO-BE ETM-17829: kolom/summary Exchange Gain + rumus/jurnal selisih kurs konsisten Account Payment [yemimadocs] |
 | 1.0 | 2026-11-26 17:00 | Menu baru: refund sisa Credit Note ke customer lewat Cash/Bank; sisa Credit Note dipakai bersama Account Receive; customer General atau store Platform; saldo Cash/Bank dicek saat isi dan saat Approve |
 
 ## Related menus

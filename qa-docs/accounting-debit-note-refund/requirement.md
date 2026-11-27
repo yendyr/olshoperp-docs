@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: accounting-debit-note-refund
 menu_name: "Debit Note Refund"
-version: 1.0
-last_updated: 2026-11-26
+version: 1.1
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
-aliases: [DNR, debit note refund, refund debit note, refund dari supplier, pengembalian dana supplier, debit note payment]
+aliases: [DNR, debit note refund, refund debit note, refund dari supplier, pengembalian dana supplier, debit note payment, Exchange Gain]
 ---
 
 # Debit Note Refund — Requirement Documentation
@@ -15,7 +15,7 @@ aliases: [DNR, debit note refund, refund debit note, refund dari supplier, penge
 **Prefix:** `DNR`  
 **Audience:** PM, Finance, QA  
 **UI route:** `/accounting/debit-note-refund`  
-**Origin:** [ETM-17686](https://erpintegration.atlassian.net/browse/ETM-17686) (kembaran ETM-17655 + 3 perbedaan disetujui 24 Nov 2026)
+**Origin:** [ETM-17686](https://erpintegration.atlassian.net/browse/ETM-17686) (kembaran ETM-17655 + 3 perbedaan disetujui 24 Nov 2026) · **[ETM-17830](https://erpintegration.atlassian.net/browse/ETM-17830)** (Exchange Gain UI + konsistensi jurnal AR)
 
 Upstream: [Debit Note](../accounting-debit-note/requirement.md) · Saldo dipakai bersama: [Account Payment](../accounting-supplier-payment/requirement.md) · Kembaran sisi customer: [Credit Note Refund](../accounting-credit-note-refund/requirement.md)
 
@@ -25,6 +25,7 @@ Upstream: [Debit Note](../accounting-debit-note/requirement.md) · Saldo dipakai
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-11-27 | QA - Yemima | **TO-BE** [ETM-17830](https://erpintegration.atlassian.net/browse/ETM-17830): kolom/summary **Exchange Gain**; rumus & sisi jurnal selisih kurs konsisten konsep Account Receive |
 | 1.0 | 2026-11-26 | QA - Yemima | Dokumen awal dari keputusan ETM-17686 + kode dev (PR refund, 26 Nov 2026) |
 
 ---
@@ -137,7 +138,7 @@ Terkunci setelah ada DN di detail: Supplier, Currency, Exchange Rate, Transactio
 
 ### 5.2 Detail Debit Note Refund
 
-Lewat **Select Debit Note** atau **Available Debit Note** (Use / pilih banyak). Kolom: Debit Note Code / Date, Trx. Ref, Total Amount, Used Status, Remaining Balance, Refund Amount (default sisa penuh, bisa diedit), GL Account (akun deposit yang dikredit).
+Lewat **Select Debit Note** atau **Available Debit Note** (Use / pilih banyak). Kolom: Debit Note Code / Date, Trx. Ref, Total Amount, Used Status, Remaining Balance, Refund Amount (default sisa penuh, bisa diedit), **Exchange Gain** (IDR) setelah Refund Amount (**TO-BE** [ETM-17830](https://erpintegration.atlassian.net/browse/ETM-17830) — §6.8), GL Account (akun deposit yang dikredit).
 
 ### 5.3 Receiving Destination
 
@@ -149,7 +150,7 @@ Select Account, Debit, Credit, Description. Rumus ikut Account Receive (§6.4).
 
 ### 5.5 Summary
 
-Debit Note · Adj Debit · Adj Credit · Receiving Destination · **Difference** = (Debit Note − Adj Debit + Adj Credit) − Receiving Destination; harus 0.
+Debit Note · Adj Debit · Adj Credit · Receiving Destination · **Exchange Gain** (IDR, **TO-BE** ETM-17830 — total selisih kurs bila currency bukan primary; **informasi saja**, tidak masuk Difference; primary → baris disembunyikan) · **Difference** = (Debit Note − Adj Debit + Adj Credit) − Receiving Destination; harus 0 (currency dokumen).
 
 ---
 
@@ -203,11 +204,11 @@ Tidak ada cek saldo karena uang masuk. Rekonsiliasi Cash/Bank tetap dicek saat A
 | Debit | Cash/Bank Receiving Destination | Amount (kurs dokumen) |
 | Debit / Kredit | Akun Adjustment | Sesuai isian |
 | Kredit | Akun deposit tiap baris DN (§6.5) | Refund Amount (kurs DN) |
-| Debit / Kredit | Exchange Diff. COA | Selisih kurs |
+| Debit / Kredit | Exchange Diff. COA | Selisih kurs — §6.8 |
 
-Jurnal langsung Approved, tanggal = tanggal refund, deskripsi "Auto-Journal from Debit Note Refund: {kode}".
+Jurnal langsung Approved, tanggal = tanggal refund, deskripsi `"Auto-Journal from Debit Note Refund: {kode}"` (termasuk baris selisih kurs — sama dengan keterangan jurnal refund / konsep Account Receive).
 
-**Contoh jurnal:**
+**Contoh jurnal (IDR / tanpa selisih kurs):**
 
 | Akun | Debit | Kredit |
 |------|------:|-------:|
@@ -218,7 +219,29 @@ Jurnal langsung Approved, tanggal = tanggal refund, deskripsi "Auto-Journal from
 | Deposit of Purchase Return (DN dari retur) | | 600.000 |
 | **Total** | **902.000** | **902.000** |
 
-**Contoh valas:** DN USD 100 kurs 15.500 (Rp 1.550.000) di-refund kurs 16.000 (Rp 1.600.000) → laba selisih kurs Rp 50.000.
+### 6.8 Selisih kurs / Exchange Gain (TO-BE · ETM-17830)
+
+DNR = uang **masuk**, konsep sama **Account Receive**.
+
+| Item | Aturan |
+|------|--------|
+| Rumus per baris DN | `exchange_gain_local_currency = (Exchange Rate refund − Exchange Rate DN) × Refund Amount valas` (hasil IDR) |
+| Plus | Laba kurs → **Kredit** Exchange Diff. COA |
+| Minus | Rugi kurs → **Debit** Exchange Diff. COA |
+| Akun | Setting company **"Exchange Diff. COA"** (sama AP/AR). Tidak dipisah Laba/Rugi Kurs |
+| Currency primary (IDR) | Selisih 0; kolom detail 0; Summary Exchange Gain disembunyikan; tidak ada baris selisih di jurnal |
+| Rate sama dengan DN | Selisih 0; tidak ada baris selisih di jurnal |
+| Setting kosong (valas) | Approve ditolak: `Please Configure Company "Exchange Diff. COA"` |
+| Keterangan baris jurnal selisih | Sama refund: `"Auto-Journal from Debit Note Refund: {kode DNR}"` |
+| UI | Kolom **Exchange Gain** setelah Refund Amount; total footer = Summary; tidak mengubah Difference |
+
+**Contoh valas:** DN USD 100 kurs 15.500 (Rp 1.550.000) di-refund kurs 16.000 (Rp 1.600.000 masuk). Selisih = (16.000 − 15.500) × 100 = **+50.000** → laba kurs.
+
+| Akun | Debit | Credit |
+|------|------:|-------:|
+| Cash/Bank (USD) | 1.600.000 | 0 |
+| Akun deposit asal DN | 0 | 1.550.000 |
+| Exchange Diff. COA (laba kurs) | 0 | 50.000 |
 
 ---
 
@@ -290,6 +313,7 @@ flowchart TB
 | GAP-DNR-02 | Tombol Print menampilkan "still under development" | Belum ada cetakan | Open |
 | GAP-DNR-03 | Import belum ada | Input satu per satu | Di luar lingkup ETM-17686 |
 | GAP-DNR-04 | Aturan tanggal Refund (≤) beda dengan AP (<) | DN tanggal sama bisa di-refund tapi tidak muncul di AP | Open |
+| GAP-DNR-05 | Kolom/Summary Exchange Gain + konsistensi jurnal AR | Layar belum menampilkan selisih kurs (hitung/jurnal BE sudah ada) | **Open (TO-BE)** [ETM-17830](https://erpintegration.atlassian.net/browse/ETM-17830) |
 
 ---
 

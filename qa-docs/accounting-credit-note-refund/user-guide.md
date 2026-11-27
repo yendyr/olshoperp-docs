@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-credit-note-refund
 menu_name: "Credit Note Refund"
-version: 1.0
-last_updated: 2026-11-26
+version: 1.1
+last_updated: 2026-11-27
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.0
+source_version: 1.1
 owner: QA - Yemima
 status: review
 ---
@@ -100,9 +100,12 @@ Versi teks:
 5. Di **Payment Source**, klik **Select Cash/Bank** dan isi Amount.
 6. (Opsional) Di **Adjustment**, isi biaya transfer (Debit) atau potongan (Credit).
 7. Cek **Summary**: Difference harus 0. Rumusnya: Cash/Bank = total Refund + Debit − Credit.
-8. Pilih **Open**, **Save All**, lalu klik tombol **Approve**.
+8. (Valas) Cek kolom **Exchange Gain** di detail dan Summary — itu selisih kurs dalam Rupiah; **tidak** mengubah Difference.
+9. Pilih **Open**, **Save All**, lalu klik tombol **Approve**.
 
 Contoh: refund 900.000, biaya transfer 6.500 ditanggung perusahaan, potongan admin 5.000 dari customer → isi Cash/Bank 901.500.
+
+Contoh valas: CN USD 100 kurs 15.500 di-refund kurs 16.000 → Exchange Gain **+50.000** (rugi kurs); jurnal memakai akun **Exchange Diff. COA**.
 
 ---
 

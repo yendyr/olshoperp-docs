@@ -2,11 +2,11 @@
 doc_type: requirement
 menu: accounting-credit-note-refund
 menu_name: "Credit Note Refund"
-version: 1.0
-last_updated: 2026-11-26
+version: 1.1
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
-aliases: [CNR, credit note refund, refund credit note, pengembalian dana customer, refund customer, credit note payment]
+aliases: [CNR, credit note refund, refund credit note, pengembalian dana customer, refund customer, credit note payment, Exchange Gain]
 ---
 
 # Credit Note Refund — Requirement Documentation
@@ -15,7 +15,7 @@ aliases: [CNR, credit note refund, refund credit note, pengembalian dana custome
 **Prefix:** `CNR`  
 **Audience:** PM, Finance, QA  
 **UI route:** `/accounting/credit-note-refund`  
-**Origin:** [ETM-17655](https://erpintegration.atlassian.net/browse/ETM-17655) (keputusan G1–G17, 23–24 Nov 2026)
+**Origin:** [ETM-17655](https://erpintegration.atlassian.net/browse/ETM-17655) (keputusan G1–G17, 23–24 Nov 2026) · **[ETM-17829](https://erpintegration.atlassian.net/browse/ETM-17829)** (Exchange Gain UI + konsistensi jurnal AP)
 
 Upstream: [Credit Note](../accounting-credit-note/requirement.md) · Saldo dipakai bersama: [Account Receive](../accounting-customer-payment/requirement.md) · Kembaran sisi supplier: [Debit Note Refund](../accounting-debit-note-refund/requirement.md)
 
@@ -25,6 +25,7 @@ Upstream: [Credit Note](../accounting-credit-note/requirement.md) · Saldo dipak
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 1.1 | 2026-11-27 | QA - Yemima | **TO-BE** [ETM-17829](https://erpintegration.atlassian.net/browse/ETM-17829): kolom/summary **Exchange Gain**; rumus & sisi jurnal selisih kurs konsisten konsep Account Payment |
 | 1.0 | 2026-11-26 | QA - Yemima | Dokumen awal dari keputusan ETM-17655 + kode dev (PR refund, 26 Nov 2026) |
 
 ---
@@ -149,6 +150,7 @@ Tambah lewat dropdown **Select Credit Note** atau tombol **Available Credit Note
 | Used Status | Prepared / Processed CN saat ini |
 | Remaining Balance | Sisa CN yang masih bisa dipakai (tooltip di judul) |
 | Refund Amount | Bisa diedit; default = Remaining Balance saat Use |
+| **Exchange Gain** (IDR) | **TO-BE** [ETM-17829](https://erpintegration.atlassian.net/browse/ETM-17829): setelah Refund Amount; pola kolom **EXCHANGE GAIN** Account Payment (`exchange_gain_formatted`). Lihat §6.8 |
 | GL Account | Akun deposit yang akan didebit (sesuai asal CN, §6.5) |
 
 ### 5.3 Payment Source
@@ -167,7 +169,8 @@ Sama dengan Adjustment Account Receive: Select Account, Debit, Credit, Descripti
 | Adj Debit | Total Adjustment Debit |
 | Adj Credit | Total Adjustment Credit |
 | Payment Source | Total Cash/Bank |
-| Difference | (Credit Note + Adj Debit − Adj Credit) − Payment Source; harus 0 untuk Approve |
+| **Exchange Gain** (IDR) | **TO-BE** ETM-17829: total selisih kurs IDR bila currency **bukan** primary; **informasi saja** — **tidak** masuk hitungan Difference. Currency primary → baris disembunyikan |
+| Difference | (Credit Note + Adj Debit − Adj Credit) − Payment Source; harus 0 untuk Approve (tetap dalam currency dokumen) |
 
 ---
 
@@ -238,11 +241,11 @@ Pesan: "There is no available balance or insufficient funds in the selected bank
 | Debit | Akun deposit tiap baris CN (§6.5) | Refund Amount (kurs CN) |
 | Debit / Kredit | Akun Adjustment | Sesuai isian |
 | Kredit | Akun Cash/Bank Payment Source | Amount (kurs dokumen) |
-| Debit / Kredit | Exchange Diff. COA | Selisih kurs CN vs dokumen (valas) |
+| Debit / Kredit | Exchange Diff. COA | Selisih kurs CN vs dokumen (valas) — §6.8 |
 
-Jurnal langsung Approved, tanggal = tanggal refund, deskripsi "Auto-Journal from Credit Note Refund: {kode}". Store (Platform) ikut ditandai di jurnal. Debit harus sama dengan Kredit; jika tidak, Approve gagal ("Credit Note Refund journal is not balanced.").
+Jurnal langsung Approved, tanggal = tanggal refund, deskripsi header jurnal `"Auto-Journal from Credit Note Refund: {kode}"`. Store (Platform) ikut ditandai di jurnal. Debit harus sama dengan Kredit; jika tidak, Approve gagal ("Credit Note Refund journal is not balanced.").
 
-**Contoh jurnal:**
+**Contoh jurnal (IDR / tanpa selisih kurs):**
 
 | Akun | Debit | Kredit |
 |------|------:|-------:|
@@ -253,7 +256,29 @@ Jurnal langsung Approved, tanggal = tanggal refund, deskripsi "Auto-Journal from
 | Bank BCA (Payment Source) | | 901.500 |
 | **Total** | **906.500** | **906.500** |
 
-**Contoh valas:** CN USD 100 kurs 15.500 (Rp 1.550.000) di-refund kurs 16.000 (Rp 1.600.000) → rugi selisih kurs Rp 50.000.
+### 6.8 Selisih kurs / Exchange Gain (TO-BE · ETM-17829)
+
+CNR = uang **keluar**, konsep sama **Account Payment**.
+
+| Item | Aturan |
+|------|--------|
+| Rumus per baris CN | `exchange_gain_local_currency = (Exchange Rate refund − Exchange Rate CN) × Refund Amount valas` (hasil IDR) |
+| Minus | Laba kurs → **Kredit** Exchange Diff. COA |
+| Plus | Rugi kurs → **Debit** Exchange Diff. COA |
+| Akun | Satu sumber: setting company **"Exchange Diff. COA"** (sama AP/AR). Tidak dipisah Laba/Rugi Kurs |
+| Currency primary (IDR) | Selisih selalu 0; kolom detail tampil 0; baris Summary Exchange Gain disembunyikan; tidak ada baris selisih di jurnal |
+| Rate sama dengan CN | Selisih 0; tidak ada baris selisih di jurnal |
+| Setting kosong (valas) | Approve ditolak: `Please Configure Company "Exchange Diff. COA"` |
+| Keterangan baris jurnal selisih | `"Auto-Journal from Differential Rate Credit Note Refund: {kode CNR}. Customer Name: {nama customer/store}"` |
+| UI | Kolom **Exchange Gain** setelah Refund Amount; footer/total detail = Summary; tidak mengubah Difference |
+
+**Contoh valas:** CN USD 100 kurs 15.500 (Rp 1.550.000) di-refund kurs 16.000 (Rp 1.600.000). Selisih = (16.000 − 15.500) × 100 = **+50.000** → rugi kurs.
+
+| Akun | Debit | Credit |
+|------|------:|-------:|
+| Akun deposit asal CN | 1.550.000 | 0 |
+| Exchange Diff. COA (rugi kurs) | 50.000 | 0 |
+| Cash/Bank (USD) | 0 | 1.600.000 |
 
 ---
 
@@ -337,6 +362,7 @@ flowchart TB
 | GAP-CNR-02 | Tombol Print ada, tapi menampilkan "This feature is still under development…" | Belum ada cetakan bukti refund | Open |
 | GAP-CNR-03 | Import refund belum ada | Input satu per satu | Di luar lingkup ETM-17655 |
 | GAP-CNR-04 | Aturan tanggal Refund (≤) berbeda dengan AR (<) | CN tanggal sama bisa di-refund tapi tidak bisa dipakai AR | Open — keputusan apakah AR disamakan |
+| GAP-CNR-05 | Kolom/Summary Exchange Gain + keterangan jurnal Differential Rate | Layar belum menampilkan selisih kurs (hitung/jurnal BE sudah ada) | **Open (TO-BE)** [ETM-17829](https://erpintegration.atlassian.net/browse/ETM-17829) |
 
 ---
 
@@ -362,3 +388,6 @@ A: Bisa. Sisa CN tetap bisa dipakai AR atau refund lain.
 
 **Q: Kenapa tidak ada tombol Void?**  
 A: Void belum tersedia (GAP-CNR-01).
+
+**Q: Apa arti kolom Exchange Gain di refund valas?**  
+A: Selisih kurs dokumen refund vs kurs CN, dalam IDR: `(rate refund − rate CN) × amount`. Plus = rugi kurs; minus = laba kurs. Tidak mengubah Difference Summary (§6.8 / ETM-17829).

@@ -2,19 +2,19 @@
 doc_type: technical
 menu: accounting-credit-note-refund
 menu_name: "Credit Note Refund"
-version: 1.0
-last_updated: 2026-11-26
+version: 1.1
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
-aliases: [CNR technical, credit note refund API, credit note refund code]
+aliases: [CNR technical, credit note refund API, credit note refund code, Exchange Gain]
 ---
 
 # Credit Note Refund — Technical Documentation
 
 **API prefix:** `accounting/credit-note-refund`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.0  
-**Origin:** [ETM-17655](https://erpintegration.atlassian.net/browse/ETM-17655) · kode: PR `refund` (BE #6846, FE #4580) + fix `2d9c01733` (match by customer source)
+**Behavior SoT:** [requirement.md](./requirement.md) v1.1  
+**Origin:** [ETM-17655](https://erpintegration.atlassian.net/browse/ETM-17655) · kode: PR `refund` (BE #6846, FE #4580) + fix `2d9c01733` (match by customer source) · **TO-BE UI Exchange Gain:** [ETM-17829](https://erpintegration.atlassian.net/browse/ETM-17829)
 
 ---
 
@@ -92,6 +92,7 @@ aliases: [CNR technical, credit note refund API, credit note refund code]
 | Akun deposit baris | `PaymentDetailFundController::store`: CN asal `CustomerInvoice` → Deposit of Sales Return (actor company / owner company; store `sales_return_deposit_coa_id`); lainnya → Customer's Deposit COA (company) / `deposit_coa_id` (store) |
 | Cek saldo bank | Fund store/update: `available <= 0 || available − reserved < amount` → tolak (CNR + source Cash/Bank). Approve: sama, `reserved` dikurangi amount dokumen sendiri |
 | Journal | `noteRefundAutoJournal(deposit_side=debit, cash_bank_side=credit, positive_exchange_side=debit)`; adjustment debit/credit; selisih kurs ke `Exchange Diff. COA`; tag store; auto Approved; `updateCurrentProfitLoss` |
+| Exchange Gain (ETM-17829) | Field `exchange_gain_local_currency` / `exchange_gain_formatted` sudah dihitung BE (`(rate_refund − rate_note) × amount`). **TO-BE FE:** kolom detail setelah Refund Amount + baris Summary (non-primary only); mirror pola AP. Keterangan baris jurnal Differential Rate: `Auto-Journal from Differential Rate Credit Note Refund: {code}. Customer Name: {name}` |
 
 ---
 

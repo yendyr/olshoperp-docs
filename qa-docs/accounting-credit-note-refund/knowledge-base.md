@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: accounting-credit-note-refund
 menu_name: "Credit Note Refund"
-version: 1.0
-last_updated: 2026-11-26
+version: 1.1
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
-aliases: [CNR, credit note refund, refund credit note, refund customer, pengembalian dana customer]
+aliases: [CNR, credit note refund, refund credit note, refund customer, pengembalian dana customer, Exchange Gain]
 ---
 
 # Credit Note Refund — Knowledge Base (Operator)
@@ -75,6 +75,7 @@ flowchart TD
 | Used Status → Prepared | Sedang dipesan dokumen yang belum di-approve (Account Receive atau Refund) |
 | Used Status → Processed | Sudah terpakai final (dokumen Approved) |
 | Summary → Difference | Harus 0 sebelum Approve |
+| Detail / Summary → **Exchange Gain** | Selisih kurs IDR (TO-BE ETM-17829). Info saja — tidak mengubah Difference. Plus = rugi kurs; minus = laba kurs |
 | Total Amount (datalist refund) | Uang yang keluar dari Cash/Bank |
 
 **Uang keluar = total Refund Amount + Adjustment Debit − Adjustment Credit.**
@@ -127,7 +128,7 @@ Bisa. Contoh: Credit Note 1.000.000, refund 300.000 → sisa 700.000 masih bisa 
 Boleh, asal customer dan mata uangnya sama.
 
 **Kalau refund dalam USD?**  
-Pilih currency USD dan isi kurs. Hanya Credit Note dan Cash/Bank USD yang muncul. Selisih kurs antara Credit Note dan refund dicatat otomatis.
+Pilih currency USD dan isi kurs. Hanya Credit Note dan Cash/Bank USD yang muncul. Selisih kurs antara Credit Note dan refund dicatat otomatis. Di layar (TO-BE ETM-17829) muncul kolom **Exchange Gain** (IDR) setelah Refund Amount; angka di Summary juga, tapi Difference tetap dihitung tanpa Exchange Gain.
 
 ---
 

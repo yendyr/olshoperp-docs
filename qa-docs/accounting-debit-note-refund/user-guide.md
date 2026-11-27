@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: accounting-debit-note-refund
 menu_name: "Debit Note Refund"
-version: 1.0
-last_updated: 2026-11-26
+version: 1.1
+last_updated: 2026-11-27
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: 1.0
+source_version: 1.1
 owner: QA - Yemima
 status: review
 ---
@@ -79,9 +79,12 @@ Status: dokumen baru **Open** → **Approve** (selesai) atau **Reject**. Rejecte
 4. Di **Receiving Destination**, klik **Select Cash/Bank** dan isi Amount uang yang diterima.
 5. (Opsional) **Adjustment**: biaya yang dipotong bank (Debit) atau kelebihan transfer supplier (Credit).
 6. Cek **Summary**: Difference harus 0. Rumusnya: uang masuk = total Refund + Credit − Debit.
-7. Pilih **Open**, **Save All**, lalu **Approve**.
+7. (Valas) Cek kolom **Exchange Gain** — selisih kurs Rupiah; tidak mengubah Difference.
+8. Pilih **Open**, **Save All**, lalu **Approve**.
 
 Contoh: refund 900.000, bank memotong 6.500, supplier transfer lebih 2.000 → isi Receiving Destination 895.500.
+
+Contoh valas: DN USD 100 kurs 15.500 di-refund kurs 16.000 → Exchange Gain **+50.000** (laba kurs).
 
 ---
 
@@ -90,7 +93,7 @@ Contoh: refund 900.000, bank memotong 6.500, supplier transfer lebih 2.000 → i
 - **Debit Note tidak muncul?** Cek status, supplier, mata uang, tanggal, dan sisanya.
 - **Pesan "still being used in other transaction"?** Ada user lain memakai Debit Note yang sama; ulangi sebentar lagi.
 - **Rumus Adjustment kok beda dengan Credit Note Refund?** Karena di sini uangnya masuk, bukan keluar.
-- **Refund dalam USD?** Pilih USD dan isi kurs; selisih kurs dicatat otomatis.
+- **Refund dalam USD?** Pilih USD dan isi kurs; selisih kurs dicatat otomatis. TO-BE: kolom **Exchange Gain** (IDR) setelah Refund Amount (ETM-17830).
 
 ---
 

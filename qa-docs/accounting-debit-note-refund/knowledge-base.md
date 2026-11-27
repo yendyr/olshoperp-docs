@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: accounting-debit-note-refund
 menu_name: "Debit Note Refund"
-version: 1.0
-last_updated: 2026-11-26
+version: 1.1
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
-aliases: [DNR, debit note refund, refund debit note, refund dari supplier, pengembalian dana supplier]
+aliases: [DNR, debit note refund, refund debit note, refund dari supplier, pengembalian dana supplier, Exchange Gain]
 ---
 
 # Debit Note Refund — Knowledge Base (Operator)
@@ -78,6 +78,7 @@ Contoh: supplier mengembalikan 900.000; bank memotong biaya transfer 6.500 (Debi
 | Used Status → Prepared | Dipesan dokumen yang belum di-approve |
 | Used Status → Processed | Sudah terpakai final |
 | Summary → Difference | Harus 0 sebelum Approve |
+| Detail / Summary → **Exchange Gain** | Selisih kurs IDR (TO-BE ETM-17830). Info saja — tidak mengubah Difference. Plus = laba kurs; minus = rugi kurs |
 
 ---
 
@@ -115,6 +116,8 @@ Void belum ada.
 **Bisa sebagian?** Bisa. Contoh Debit Note 1.000.000, refund 300.000, sisa 700.000 masih bisa dipakai Account Payment.
 
 **Debit Note tanggal hari ini tidak muncul di Account Payment?** Account Payment hanya menampilkan Debit Note bertanggal sebelum tanggal pembayaran; refund boleh tanggal yang sama.
+
+**Kalau refund dalam USD?** Pilih USD dan isi kurs. Selisih kurs dicatat otomatis. TO-BE ETM-17830: kolom **Exchange Gain** (IDR) setelah Refund Amount; di Summary juga, tanpa mengubah Difference. Plus = laba kurs; minus = rugi kurs.
 
 ---
 

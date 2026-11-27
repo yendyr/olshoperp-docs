@@ -2,19 +2,19 @@
 doc_type: technical
 menu: accounting-debit-note-refund
 menu_name: "Debit Note Refund"
-version: 1.0
-last_updated: 2026-11-26
+version: 1.1
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
-aliases: [DNR technical, debit note refund API, debit note refund code]
+aliases: [DNR technical, debit note refund API, debit note refund code, Exchange Gain]
 ---
 
 # Debit Note Refund — Technical Documentation
 
 **API prefix:** `accounting/debit-note-refund`  
 **Module:** `Modules/Accounting`  
-**Behavior SoT:** [requirement.md](./requirement.md) v1.0  
-**Origin:** [ETM-17686](https://erpintegration.atlassian.net/browse/ETM-17686) · kode: PR `refund` (BE #6846, FE #4580)  
+**Behavior SoT:** [requirement.md](./requirement.md) v1.1  
+**Origin:** [ETM-17686](https://erpintegration.atlassian.net/browse/ETM-17686) · kode: PR `refund` (BE #6846, FE #4580) · **TO-BE UI Exchange Gain:** [ETM-17830](https://erpintegration.atlassian.net/browse/ETM-17830)  
 **Kembaran:** [Credit Note Refund technical](../accounting-credit-note-refund/technical.md) — kode dipakai bersama; dokumen ini mencatat bedanya.
 
 ---
@@ -73,6 +73,7 @@ Sama pola dengan Credit Note Refund: `accounting/debit-note-refund` index/store/
 | Cek saldo bank | **Tidak ada** (fund store hanya cek untuk Payment to Supplier / CNR) |
 | Approve | Detail ada; Cash/Bank ada; diff ≤ 0.01; lock DN + `canUseDebitNote`; prepared cukup; remaining ≥ 0 |
 | Journal | `noteRefundAutoJournal(deposit_side=credit, cash_bank_side=debit, positive_exchange_side=credit)` |
+| Exchange Gain (ETM-17830) | `exchange_gain_local_currency` / `exchange_gain_formatted` sudah dihitung BE (`(rate_refund − rate_note) × amount`). **TO-BE FE:** kolom detail setelah Refund Amount + Summary (non-primary). Plus → Kredit Exchange Diff; minus → Debit. Keterangan baris jurnal selisih sama `"Auto-Journal from Debit Note Refund: {code}"` |
 | Pesan | "The supplier field is required.", "… debit note detail data.", "Complete the receiving destination section…", "Approval Failed. Total Receiving Destination must be equal to Total Payment Detail." |
 
 ---
