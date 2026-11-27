@@ -2,11 +2,11 @@
 doc_type: knowledge-base
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.8
-last_updated: 2026-11-19
+version: 1.9
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
-aliases: [Pricelist Product, product pricelist, harga jual SKU, tier breakdown, Manual Margin, User Set Margin]
+aliases: [Pricelist Product, product pricelist, harga jual SKU, tier breakdown, Manual Margin, User Set Margin, Benchmark COGS, Persentase Profit]
 ---
 
 # Pricelist Product — Knowledge Base
@@ -36,9 +36,22 @@ flowchart TD
     G -->|Ya| H[Margin user tetap; Final = default + margin user + tier category]
 ```
 
+## Benchmark COGS & Persentase Profit (TO-BE ETM-17831)
+
+Setelah kolom System Product SKU (sebelum **Weight**) ada dua kolom read-only:
+
+| Kolom | Arti untuk operator |
+|-------|---------------------|
+| **Benchmark COGS** | HPP acuan **efektif** dari menu Benchmark COGS (bisa Manual COGS atau hasil rumus). Ikut berubah kalau Benchmark COGS berubah. |
+| **Persentase Profit** | `((Default Price − Benchmark COGS) / Default Price) × 100`. Boleh **minus** jika COGS lebih besar dari Default Price. Kalau Default Price 0 → 0. |
+
+Keduanya boleh di-sort, di-filter, dan ikut export. **Belum** ada History Qty 30 hari / modal history di phase ini.
+
+Cek angka: bandingkan Benchmark COGS di baris ini dengan COGS di menu **Benchmark COGS** untuk SKU yang sama.
+
 ## Kolom Weight
 
-Setelah SKU. Ambil dari Dimension & Weight **primary** (gram). Kosong → **"No weight"** — aturan berat di-skip; aturan harga tetap jalan.
+Setelah **Persentase Profit**. Ambil dari Dimension & Weight **primary** (gram). Kosong → **"No weight"** — aturan berat di-skip; aturan harga tetap jalan.
 
 ### Auto-update dari System Product (TO-BE ETM-16668)
 
@@ -95,5 +108,7 @@ Switch ini hanya mengubah isi daftar, bukan mengaktifkan kembali produk.
 | SKU Non Aktif tidak muncul | Nyalakan **Show archived data** di toolbar. Default daftar hanya Aktif |
 | Tidak ada kolom Images | Refresh / hard reload — kolom Images sudah AS-IS (ETM-17071) |
 | Global Search Audit Log kosong untuk Platform/SKU/User | Harusnya sudah jalan (ETM-17149). Coba kata lebih pendek; bila masih kosong → laporkan bug regresi |
+| Benchmark COGS di Pricelist beda dengan menu Benchmark COGS | Bandingkan SKU yang sama; harus COGS **efektif** yang sama (ETM-17831). Beda → laporkan |
+| Persentase Profit terlihat aneh / selalu 0 | Cek Default Price dan Benchmark COGS baris itu; rumus `(Default − COGS) / Default × 100` |
 
 Detail: [requirement.md](./requirement.md)

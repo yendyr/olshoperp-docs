@@ -2,13 +2,14 @@
 doc_type: technical
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.8
-last_updated: 2026-11-19
+version: 1.9
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
 related_docs:
   - ./requirement.md
   - ../businessdevelopment-category-price/technical.md
+  - ../accounting-product-benchmark-price/requirement.md
 ---
 
 # Pricelist Product — Technical
@@ -25,7 +26,8 @@ related_docs:
 **TO-BE filter Aktif:** [ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072) — datalist `show_archived`, pola sama `ProductController` index.  
 **AS-IS kolom Images:** [ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071) — FE `DataList` wire `image_formatted`.  
 **AS-IS Audit Log search:** [ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149) — `pricelistLogIndex` `filterColumn` untuk Platform / SKU / User; target respons &lt; 5 detik.  
-**TO-BE pending Sync All job:** [ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258) — Sync All via queue/job (hindari OOM); chunking/status/retry/UI **belum dikunci** (diskusi EU). Stub di requirement §4.4a.
+**TO-BE pending Sync All job:** [ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258) — Sync All via queue/job (hindari OOM); chunking/status/retry/UI **belum dikunci** (diskusi EU). Stub di requirement §4.4a.  
+**TO-BE Benchmark COGS + Persentase Profit:** [ETM-17831](https://erpintegration.atlassian.net/browse/ETM-17831) — requirement §4.0c; sumber COGS efektif = menu Benchmark COGS.
 
 ---
 
@@ -40,6 +42,8 @@ related_docs:
 | Category contains platform | TO-BE: drive Sync UI (bukan hanya `stores_count` produk) |
 | Last Update to Pricelist | TO-BE: penanda category = `updated_at` snapshot tier yang dipakai run, di-set di akhir batch meski 0 baris berubah. Tooltip header saat ini masih `MAX(log.updated_at)` tipe `update_to_pricelist` (GAP-CP-08) |
 | `image_formatted` | AS-IS ETM-17071: HTML thumbnail 100×100 dari `getImageProduct()`; kosong → `-` |
+| Benchmark COGS (display) | TO-BE ETM-17831: COGS **efektif** per product (reuse logic Benchmark COGS / Manual COGS); bukan persist wajib di tabel pricelist kecuali dipilih caching |
+| Persentase Profit (display) | TO-BE ETM-17831: `((default_price − effective_cogs) / default_price) × 100`; `default_price = 0` → `0`; boleh negatif |
 
 **UI display (ETM-16883):** jika `!is_edited` → render User Set Margin sebagai `-` (nilai calc tetap di breakdown tooltip / dipakai Final).
 
@@ -83,8 +87,9 @@ Untuk tiap tier snapshot di Category:
 | Datalist Aktif (17072) | `PricelistController::index()` dan `showRowDatatable($id)`: `where products.status = 1` hanya jika request `show_archived` bukan true (`boolean('show_archived')`). FE `DataList.vue` mengirim `show_archived=true` lewat DataTablesV3 (`is_show_archived`, `show_archived`, `whenShowArchived`). Default OFF = hanya Aktif |
 | Images (17071) | **AS-IS** BE `image_formatted` + FE `DataList` kolom sebelum `product_formatted` (`orderable/searchable: false`) |
 | Audit Log search (17149) | **AS-IS** `pricelistLogIndex`: `filterColumn` Platform / SKU / User (+ Event/nominal); jaga query &lt; 5 detik |
+| Benchmark COGS + Persentase Profit (17831) | FE `DataList`: sisipkan kolom setelah `product_formatted` / SKU, **sebelum** Weight. `orderable` + searchable/filter + ikut export. BE: resolve effective COGS sama path Benchmark COGS; hitung % di resource/API index (hindari N+1 — batch load COGS). History Qty / modal **tidak** di scope |
 
-**Known behaviour (ETM-17072):** `updateBulkMarginPricelist` tetap hanya memproses produk Aktif (`status = 1`); tidak ikut switch. `export()` tetap `PricelistCategoryExport` (template category), tidak diubah.
+**Known behaviour (ETM-17072):** `updateBulkMarginPricelist` tetap hanya memproses produk Aktif (`status = 1`); tidak ikut switch. `export()` tetap `PricelistCategoryExport` (template category), tidak diubah — **kecuali** ETM-17831 mewajibkan kolom Benchmark COGS + Persentase Profit ikut export datalist/export yang dipakai operator (ikut export yang ada di menu).
 
 ---
 
@@ -106,9 +111,10 @@ Untuk tiap tier snapshot di Category:
 | G-12 | ETM-17072 Show archived (sudah di BE/FE OTW DEV — verifikasi QA) |
 | G-13 | ETM-17002 skip-unchanged + satu log + chunk 500 (job di Category). Poin 8 bukan scope |
 | G-14 | ETM-17149 Audit Log Global Search — **Closed AS-IS** |
+| G-15 | ETM-17831 Benchmark COGS + Persentase Profit columns — **Open (TO-BE)** |
 
 ---
 
 ## Related
 
-[requirement.md](./requirement.md) · [Category technical](../businessdevelopment-category-price/technical.md)
+[requirement.md](./requirement.md) · [Category technical](../businessdevelopment-category-price/technical.md) · [Benchmark COGS requirement](../accounting-product-benchmark-price/requirement.md)

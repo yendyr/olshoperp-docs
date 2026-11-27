@@ -2,10 +2,10 @@
 doc_type: user-guide
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.7
-last_updated: 2026-11-09
+version: 1.9
+last_updated: 2026-11-27
 source_docs: [requirement.md, knowledge-base.md, technical.md]
-source_version: "1.7"
+source_version: "1.9"
 owner: QA - Yemima
 status: review
 ---
@@ -20,11 +20,13 @@ status: review
 
 Daftar harga jual per produk. Angka besar = **Final Price**. Angka kecil = **User Set Margin** — hanya muncul jika kamu mengubah harga manual; jika belum diubah, tampil **`-`** (detail hitungan tetap bisa dilihat di tooltip).
 
+Setelah kolom SKU ada juga **Benchmark COGS** dan **Persentase Profit** (lihat §2a) agar kamu bisa lihat HPP acuan dan margin vs Default Price tanpa buka menu lain.
+
 ---
 
 ## 2. Setelah Update dari Category
 
-1. Cek kolom **Weight** (dari System Product primary).
+1. Cek kolom **Weight** (dari System Product primary) — posisinya setelah Persentase Profit.
 2. Lihat **Final Price** (besar). **User Set Margin** tetap `-` kalau kamu belum edit manual.
 3. Arahkan mouse ke area margin → pecahan per tier (tooltip calculation).
 4. Arahkan mouse ke **nama kolom category** → ringkasan tier + waktu **Last Update to Pricelist**. Waktu itu ikut Update terakhir yang selesai, termasuk kalau tidak ada harga yang berubah.
@@ -32,6 +34,16 @@ Daftar harga jual per produk. Angka besar = **Final Price**. Angka kecil = **Use
 Contoh: 16.000 + berat 1.500 g → Final **24.500**; User Set Margin `-`.
 
 Harga yang tidak berubah tidak ditulis ulang, jadi Sync tidak mengirim ulang baris itu. Contoh manual: harga dasar 7.000, margin kamu 2.000, tier category naik ke +6.500 → margin tetap 2.000, Final **15.500**.
+
+---
+
+## 2a. Benchmark COGS dan Persentase Profit (ETM-17831)
+
+1. Setelah **System Product SKU**, lihat kolom **Benchmark COGS** — ini HPP acuan **efektif** (sama seperti di menu Benchmark COGS; bisa dari Manual COGS atau hitungan sistem).
+2. Kolom berikutnya **Persentase Profit** = `((Default Price − Benchmark COGS) / Default Price) × 100`.
+3. Angka boleh **minus** jika Benchmark COGS lebih besar dari Default Price.
+4. Kedua kolom bisa diurutkan, difilter, dan ikut export.
+5. History penjualan 30 hari **belum** ada di phase ini.
 
 ---
 
@@ -78,9 +90,13 @@ Saat membuka daftar, yang tampil hanya produk **Aktif**.
 
 Perilakunya sama dengan switch yang sama di menu Product. Switch ini hanya mengubah isi daftar, bukan status produk.
 
+---
+
 ## 8. Kolom Images (ETM-17071)
 
 Kolom **Images** di paling kiri daftar menampilkan thumbnail produk (sama System Product). Tanpa gambar → tanda `-`. Kolom ini tidak untuk sort atau search teks.
+
+---
 
 ## 9. Audit Log — cari Platform / SKU / User (ETM-17149)
 

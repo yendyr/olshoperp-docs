@@ -1,24 +1,25 @@
 # Pricelist Product — Dokumentasi QA
 
-Menu **Pricelist Product** (Business Development) — multi-tier margin, Weight, User Set Margin, Sync platform, override audit.
+Menu **Pricelist Product** (Business Development) — multi-tier margin, Weight, User Set Margin, Sync platform, override audit, Benchmark COGS + Persentase Profit (TO-BE).
 
 | Dokumen | File | Audience | Status |
 |---------|------|----------|--------|
-| Knowledge Base | [knowledge-base.md](./knowledge-base.md) (v1.8) | Operator BD | review |
-| Requirement | [requirement.md](./requirement.md) (v1.8) | PM, QA, Dev | review |
-| Technical | [technical.md](./technical.md) (v1.8) | Developer | review |
-| User Guide | [user-guide.md](./user-guide.md) (v1.7) | Publish | review |
+| Knowledge Base | [knowledge-base.md](./knowledge-base.md) (v1.9) | Operator BD | review |
+| Requirement | [requirement.md](./requirement.md) (v1.9) | PM, QA, Dev | review |
+| Technical | [technical.md](./technical.md) (v1.9) | Developer | review |
+| User Guide | [user-guide.md](./user-guide.md) (v1.9) | Publish | review |
 
-**Jira:** [ETM-16314](https://erpintegration.atlassian.net/browse/ETM-16314) · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) · [ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861) · [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** · Category Applied Store: **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (Show archived data) · **[ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149)** (Audit Log search) · **[ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258)** (Sync All via Job — pending)  
+**Jira:** [ETM-16314](https://erpintegration.atlassian.net/browse/ETM-16314) · [ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668) · [ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861) · [ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** · Category Applied Store: **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (Show archived data) · **[ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149)** (Audit Log search) · **[ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258)** (Sync All via Job — pending) · **[ETM-17831](https://erpintegration.atlassian.net/browse/ETM-17831)** (Benchmark COGS + Persentase Profit)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89  
 **Final E2E:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md)  
-**3 layer:** 1.8 · **Last updated:** 2026-11-19  
+**3 layer:** 1.9 · **Last updated:** 2026-11-27  
 **Route:** `/businessdevelopment/pricelist`
 
 ## Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.9 | 2026-11-27 09:30 | TO-BE ETM-17831: kolom Benchmark COGS (efektif) + Persentase Profit setelah SKU / sebelum Weight; History Qty 30 hari out of scope [yemimadocs] |
 | 1.8 | 2026-11-19 16:44 | TO-BE pending ETM-16258 Sync All via Job (diskusi EU) [yemimadocs] |
 | 1.7 | 2026-11-09 11:40 | AS-IS ETM-17071 Images + AS-IS ETM-17149 Audit Log Global Search Platform/SKU/User [yemimadocs] |
 | 1.6 | 2026-11-05 16:27 | Last Update to Pricelist di header category tetap menunjuk Update terakhir meski tidak ada harga yang berubah; Sync tidak mengulang baris yang harganya sama (ETM-17002) |
@@ -34,5 +35,6 @@ Menu **Pricelist Product** (Business Development) — multi-tier margin, Weight,
 
 - [Variable Price](../businessdevelopment-variable-price/README.md) — ETM-16312
 - [Category Price](../businessdevelopment-category-price/README.md) — ETM-16313 · ETM-16882
+- [Benchmark COGS](../accounting-product-benchmark-price/README.md) — sumber COGS efektif (ETM-17831)
 
 **Maintenance owner:** QA — Yemima

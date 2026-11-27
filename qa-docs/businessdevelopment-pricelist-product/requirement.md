@@ -2,8 +2,8 @@
 doc_type: requirement
 menu: businessdevelopment-pricelist-product
 menu_name: "Pricelist Product"
-version: 1.8
-last_updated: 2026-11-19
+version: 1.9
+last_updated: 2026-11-27
 owner: QA - Yemima
 status: review
 ---
@@ -13,7 +13,7 @@ status: review
 **Modul:** Business Development · **Jira:** [ETM-16314](https://erpintegration.atlassian.net/browse/ETM-16314)  
 **Wireframe:** https://claude.ai/artifact/CSgXVMhzsztTJqwpeD7f89 (layar F)  
 **E2E final:** [`_meta/sot/variable-price-multi-tier-final-requirement.md`](../_meta/sot/variable-price-multi-tier-final-requirement.md) §2, §5, §7–9  
-**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** (optimasi Update to Pricelist) · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (kolom Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data) · **[ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149)** (Audit Log Global Search Platform/SKU/User) · **[ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258)** (Sync All via Job — pending diskusi EU)
+**Relates:** ETM-16312 · ETM-16313 · **[ETM-16668](https://erpintegration.atlassian.net/browse/ETM-16668)** (auto-recalc weight) · **[ETM-16861](https://erpintegration.atlassian.net/browse/ETM-16861)** (filter Manual Margin) · **[ETM-16835](https://erpintegration.atlassian.net/browse/ETM-16835)** (Max Value) · **[ETM-16882](https://erpintegration.atlassian.net/browse/ETM-16882)** (Applied Store Others di Category) · **[ETM-16883](https://erpintegration.atlassian.net/browse/ETM-16883)** (User Set Margin + tooltips) · **[ETM-16884](https://erpintegration.atlassian.net/browse/ETM-16884)** (calc Others/NULL + Sync + stack Manual Price) · **[ETM-17002](https://erpintegration.atlassian.net/browse/ETM-17002)** (optimasi Update to Pricelist) · **[ETM-17071](https://erpintegration.atlassian.net/browse/ETM-17071)** (kolom Images) · **[ETM-17072](https://erpintegration.atlassian.net/browse/ETM-17072)** (default Aktif + Show archived data) · **[ETM-17149](https://erpintegration.atlassian.net/browse/ETM-17149)** (Audit Log Global Search Platform/SKU/User) · **[ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258)** (Sync All via Job — pending diskusi EU) · **[ETM-17831](https://erpintegration.atlassian.net/browse/ETM-17831)** (Benchmark COGS + Persentase Profit di datalist)
 
 ---
 
@@ -21,6 +21,7 @@ status: review
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.9 | 2026-11-27 | **TO-BE** [ETM-17831](https://erpintegration.atlassian.net/browse/ETM-17831): kolom **Benchmark COGS** (COGS efektif) + **Persentase Profit** setelah System Product SKU / sebelum Weight; History Qty 30 hari out of scope phase 1 |
 | 1.8 | 2026-11-19 | **TO-BE pending** [ETM-16258](https://erpintegration.atlassian.net/browse/ETM-16258): Sync All Master Pricelist via background job (OOM); mekanisme chunking/status/retry masih perlu diskusi end user |
 | 1.7 | 2026-11-09 | **AS-IS** ETM-17071 kolom Images; **AS-IS** ETM-17149 Audit Log Global Search Platform / System Product SKU / User (+ performa < 5 detik) |
 | 1.6 | 2026-11-05 | **TO-BE** ETM-17002: cross-ref optimasi Update to Pricelist (lewati baris tidak berubah, satu log, Last Update level category, Sync 0 baris). Rumus Manual ETM-16884 tidak berubah |
@@ -49,7 +50,10 @@ Calc Final tetap untuk Applied Store **NULL** / **Others** (ETM-16884).
 | ID | Kriteria | Status |
 |----|----------|--------|
 | A-01 | Setelah Update to Pricelist, SKU contoh 16.000 / 1.500 g → Final 24.500; detail margin di tooltip; cell User Set Margin `-` jika non-manual | **TO-BE** |
-| A-02 | Kolom Weight setelah SKU; header info = primary DnW gram | **TO-BE** |
+| A-02 | Kolom Weight setelah **Persentase Profit** (urutan: SKU → Benchmark COGS → Persentase Profit → Weight); header info = primary DnW gram | **TO-BE** (posisi Weight digeser ETM-17831) |
+| A-19 | Kolom **Benchmark COGS** setelah System Product SKU, sebelum Weight: nilai = **COGS efektif** menu Benchmark COGS (Manual aktif → manual; else rumus); Parent/Bundle/Single/Variant samakan menu Benchmark COGS; sort/filter/export boleh; read-only; tanpa modal phase 1 | **TO-BE** [ETM-17831](https://erpintegration.atlassian.net/browse/ETM-17831) |
+| A-20 | Kolom **Persentase Profit** setelah Benchmark COGS: `((Default Price − Benchmark COGS) / Default Price) × 100`; Default Price 0 → 0; boleh **minus** jika COGS > Default Price; acuan **Default Price** (bukan Final); sort/filter/export boleh; read-only; tanpa modal phase 1 | **TO-BE** ETM-17831 |
+| A-21 | History Qty Penjualan 30 hari + modal history **tidak** dikerjakan di ETM-17831 (ditunda diskusi Lukas) | **Out of scope** ETM-17831 |
 | A-03 | Weight kosong/0 → warning "No weight" + skip tier by Weight | **TO-BE** |
 | A-04 | Hover User Set Margin / breakdown → komponen calc readable (default, tiers, final; + manual/stack bila ada) | **TO-BE** ETM-16883 |
 | A-05 | Edit Final atau User Set Margin = Manual Price; label **User Set Margin**; orange hanya jika edited | **TO-BE** ETM-16883 |
@@ -119,9 +123,26 @@ Global Search di modal/tabel **Audit Log** memfilter seluruh kolom yang tampil, 
 
 Parsial maupun exact match wajib menemukan baris. Pemuatan awal, pagination, dan search wajib **&lt; 5 detik**.
 
+### 4.0c Benchmark COGS & Persentase Profit (TO-BE · ETM-17831)
+
+Sumber keputusan: [ETM-17831](https://erpintegration.atlassian.net/browse/ETM-17831) · Request ID `reczz28VpFZmbZqL`.  
+Kanonik COGS efektif: [Benchmark COGS §3.5](../accounting-product-benchmark-price/requirement.md#35-manual-cogs-override-to-be-v13).  
+Acuan tampilan minus: semangat [Product Profit Loss — Profit Margin (%)](../accounting-product-profit-loss/requirement.md) `(Net / Gross) × 100`.
+
+**Urutan kolom (setelah Images):** System Product SKU → **Benchmark COGS** → **Persentase Profit** → **Weight** → …
+
+| Kolom | Aturan |
+|-------|--------|
+| **Benchmark COGS** | Nilai = **COGS efektif** SKU yang sama di menu Benchmark COGS. Manual COGS aktif & belum expired → Manual; else rumus. Perilaku Parent / Bundle / Single / Variant **samakan persis** menu Benchmark COGS. Read-only. **Sort / filter / export** boleh. Tanpa modal phase 1. Nilai ikut perubahan Benchmark COGS (job harian / Manual). |
+| **Persentase Profit** | `((Default Price − Benchmark COGS) / Default Price) × 100`. Acuan harga = **Default Price** saja (bukan Final Price). Acuan COGS = kolom Benchmark COGS di baris yang sama. Default Price = 0 → tampil **0**. Benchmark COGS > Default Price → **boleh negatif**. Read-only. **Sort / filter / export** boleh. Tanpa modal phase 1. |
+
+**Out of scope phase 1 (ETM-17831):** History Qty Penjualan 30 hari; klik → modal history; ubah formula Final / User Set Margin / Sync.
+
+**Validitas (Test Case):** sample SKU — Benchmark COGS di Pricelist = COGS efektif di menu Benchmark COGS.
+
 ### 4.1 Weight
 
-Setelah SKU. Format `1.500 g`. Info header. Kosong/0: icon oranye + **"No weight"** + tooltip skip Weight tiers.
+Setelah kolom **Persentase Profit** (sebelum ETM-17831: langsung setelah SKU). Format `1.500 g`. Info header. Kosong/0: icon oranye + **"No weight"** + tooltip skip Weight tiers.
 
 ### 4.2 User Set Margin & tooltips (TO-BE · ETM-16883)
 
@@ -279,9 +300,10 @@ Master & band lengkap: final §7.
 | GAP-PL-11 | Default Aktif + Show archived | **TO-BE** ETM-17072 |
 | GAP-PL-12 | Last Update saat 0 baris berubah | Ikut [GAP-CP-08](../businessdevelopment-category-price/requirement.md): tooltip header masih dari log per baris |
 | GAP-PL-13 | Audit Log Global Search Platform/SKU/User | **Closed AS-IS** ETM-17149 (`filterColumn` + performa) |
+| GAP-PL-14 | Kolom Benchmark COGS + Persentase Profit di datalist | **Open (TO-BE)** [ETM-17831](https://erpintegration.atlassian.net/browse/ETM-17831) — §4.0c; History Qty 30 hari ditunda |
 
 ---
 
 ## Related
 
-[knowledge-base.md](./knowledge-base.md) · [Category Price](../businessdevelopment-category-price/) · [Variable Price](../businessdevelopment-variable-price/)
+[knowledge-base.md](./knowledge-base.md) · [Category Price](../businessdevelopment-category-price/) · [Variable Price](../businessdevelopment-variable-price/) · [Benchmark COGS](../accounting-product-benchmark-price/requirement.md) (sumber COGS efektif)
